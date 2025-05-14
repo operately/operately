@@ -96,7 +96,7 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
   return items.map((item) => ({
     ...item,
     children: prepareWorkMapData(item.children),
-    people: [],
+    assignees: assertPresent(item.assignees),
     completed: false,
   }));
 }

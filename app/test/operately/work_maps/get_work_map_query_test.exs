@@ -52,6 +52,68 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "functionality - execute/1 with include_assignees parameter" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:member1)
+      |> Factory.add_company_member(:member2)
+      |> Factory.add_goal(:goal, :space, champion: :creator, reviewer: :member1)
+      |> Factory.add_project(:project, :space, champion: :member2)
+    end
+
+    test "includes assignees when include_assignees is true", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          include_assignees: true
+        })
+
+      # Find the goal and project
+      goal = Enum.find(work_map, fn item -> item.type == :goal end)
+      project = Enum.find(work_map, fn item -> item.type == :project end)
+
+      # # Verify assignees are included
+      assert goal.assignees != nil
+      assert length(goal.assignees) == 2
+      assert Enum.any?(goal.assignees, fn person -> person.id == ctx.creator.id end)
+      assert Enum.any?(goal.assignees, fn person -> person.id == ctx.member1.id end)
+
+      assert project.assignees != nil
+      assert length(project.assignees) == 1
+      assert hd(project.assignees).id == ctx.member2.id
+    end
+
+    test "does not include assignees when include_assignees is false", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          include_assignees: false
+        })
+
+      # Find the goal and project
+      goal = Enum.find(work_map, fn item -> item.type == :goal end)
+      project = Enum.find(work_map, fn item -> item.type == :project end)
+
+      # Verify assignees are not included
+      assert goal.assignees == nil
+      assert project.assignees == nil
+    end
+
+    test "does not include assignees by default", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
+
+      # Find the goal and project
+      goal = Enum.find(work_map, fn item -> item.type == :goal end)
+      project = Enum.find(work_map, fn item -> item.type == :project end)
+
+      # Verify assignees are not included by default
+      assert goal.assignees == nil
+      assert project.assignees == nil
+    end
+  end
+
   describe "functionality - execute/1 with company_id and space_id parameters" do
     setup ctx do
       ctx
@@ -98,15 +160,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert length(work_map) == 2
 
       # Find the root goal
-      root_goal_item = Enum.find(work_map, fn item ->
-        item.type == :goal && item.parent_id == nil
-      end)
+      root_goal_item =
+        Enum.find(work_map, fn item ->
+          item.type == :goal && item.parent_id == nil
+        end)
+
       assert root_goal_item
 
       # Find the root project
       assert Enum.find(work_map, fn item ->
-        item.type == :project && item.parent_id == nil
-      end)
+               item.type == :project && item.parent_id == nil
+             end)
 
       # Verify all items belong to space2
       Enum.each(work_map, fn item ->
@@ -117,9 +181,11 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert length(root_goal_item.children) == 2
 
       # Find child_goal1 in children
-      child_goal1_item = Enum.find(root_goal_item.children, fn item ->
-        item.type == :goal && item.id == ctx.child_goal1.id
-      end)
+      child_goal1_item =
+        Enum.find(root_goal_item.children, fn item ->
+          item.type == :goal && item.id == ctx.child_goal1.id
+        end)
+
       assert child_goal1_item
 
       # Verify child_goal1 has grandchild_goal
@@ -190,9 +256,10 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       end)
 
       # Find child_goal1 in the results
-      child_goal1_item = Enum.find(work_map, fn item ->
-        item.type == :goal && item.id == ctx.child_goal1.id
-      end)
+      child_goal1_item =
+        Enum.find(work_map, fn item ->
+          item.type == :goal && item.id == ctx.child_goal1.id
+        end)
 
       # Verify child_goal1 has grandchild_goal
       assert length(child_goal1_item.children) == 1
@@ -203,22 +270,26 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert length(grandchild_goal_item.children) == 2
 
       # Verify the projects under grandchild_goal
-      project_ids = Enum.map(grandchild_goal_item.children, fn item ->
-        assert item.type == :project
-        item.id
-      end)
+      project_ids =
+        Enum.map(grandchild_goal_item.children, fn item ->
+          assert item.type == :project
+          item.id
+        end)
+
       assert Enum.sort(project_ids) == Enum.sort([ctx.grandchild_project1.id, ctx.grandchild_project2.id])
 
       # Verify child_goal2 has no children
-      child_goal2_item = Enum.find(work_map, fn item ->
-        item.type == :goal && item.id == ctx.child_goal2.id
-      end)
+      child_goal2_item =
+        Enum.find(work_map, fn item ->
+          item.type == :goal && item.id == ctx.child_goal2.id
+        end)
+
       assert child_goal2_item.children == []
 
       # Verify child_project is in the results
       assert Enum.find(work_map, fn item ->
-        item.type == :project && item.id == ctx.child_project.id
-      end)
+               item.type == :project && item.id == ctx.child_project.id
+             end)
     end
   end
 
@@ -286,18 +357,22 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert length(root_item.children) == 3
 
       # Find level1_goal in children
-      level1_item = Enum.find(root_item.children, fn item ->
-        item.type == :goal && item.id == ctx.level1_goal.id
-      end)
+      level1_item =
+        Enum.find(root_item.children, fn item ->
+          item.type == :goal && item.id == ctx.level1_goal.id
+        end)
+
       assert level1_item
 
       # level1_goal should have 2 children: 1 level2 goal and 1 project
       assert length(level1_item.children) == 2
 
       # Find level2_goal in children
-      level2_item = Enum.find(level1_item.children, fn item ->
-        item.type == :goal && item.id == ctx.level2_goal.id
-      end)
+      level2_item =
+        Enum.find(level1_item.children, fn item ->
+          item.type == :goal && item.id == ctx.level2_goal.id
+        end)
+
       assert level2_item
 
       # level2_goal should have 1 child: 1 project
@@ -329,12 +404,13 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     test "filters correctly with all parameters", %{company: company, space1: space1, parent_goal1: parent_goal1, creator: creator} do
       # Test with all parameters
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{
-        company_id: company.id,
-        space_id: space1.id,
-        parent_goal_id: parent_goal1.id,
-        owner_id: creator.id
-      })
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: company.id,
+          space_id: space1.id,
+          parent_goal_id: parent_goal1.id,
+          owner_id: creator.id
+        })
 
       # Should return 2 items: 1 child goal and 1 project owned by creator in space1 under parent_goal1
       assert length(work_map) == 2
@@ -354,10 +430,10 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
   describe "permissions - query root projects" do
     @table [
-      %{person: :company_member,  count: 1,   expected_projects: [:public_project]},
-      %{person: :space_member,    count: 3,   expected_projects: [:public_project, :project1, :project2]},
-      %{person: :creator,         count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
-      %{person: :champion,        count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :company_member, count: 1, expected_projects: [:public_project]},
+      %{person: :space_member, count: 3, expected_projects: [:public_project, :project1, :project2]},
+      %{person: :creator, count: 4, expected_projects: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion, count: 4, expected_projects: [:public_project, :project1, :project2, :secret_project]}
     ]
 
     setup ctx do
@@ -376,19 +452,20 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:public_project, :space)
       |> Factory.add_project(:project1, :space, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, [
+      |> Factory.add_project(:secret_project, :space,
         champion: :champion,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      ])
+        space_access_level: Binding.no_access()
+      )
     end
 
     tabletest @table do
       test "#{@test.person} has access to #{Enum.map_join(@test.expected_projects, ", ", &Atom.to_string/1)}", ctx do
         expected_projects = Enum.map(@test.expected_projects, &ctx[&1].id)
-        {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{ company_id: ctx.company.id })
+        {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{company_id: ctx.company.id})
 
         assert length(work_map) == @test.count
+
         Enum.each(work_map, fn item ->
           assert Enum.member?(expected_projects, item.id)
         end)
@@ -398,10 +475,10 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
   describe "permissions - query nested projects" do
     @table [
-      %{person: :company_member,  count: 1,   expected_projects: [:public_project]},
-      %{person: :space_member,    count: 3,   expected_projects: [:public_project, :project1, :project2]},
-      %{person: :creator,         count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
-      %{person: :champion,        count: 4,   expected_projects: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :company_member, count: 1, expected_projects: [:public_project]},
+      %{person: :space_member, count: 3, expected_projects: [:public_project, :project1, :project2]},
+      %{person: :creator, count: 4, expected_projects: [:public_project, :project1, :project2, :secret_project]},
+      %{person: :champion, count: 4, expected_projects: [:public_project, :project1, :project2, :secret_project]}
     ]
 
     setup ctx do
@@ -424,17 +501,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:public_project, :space, goal: :child_goal)
       |> Factory.add_project(:project1, :space, goal: :child_goal, company_access_level: Binding.no_access())
       |> Factory.add_project(:project2, :space, goal: :child_goal, company_access_level: Binding.no_access())
-      |> Factory.add_project(:secret_project, :space, [
+      |> Factory.add_project(:secret_project, :space,
         goal: :child_goal,
         champion: :champion,
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      ])
+        space_access_level: Binding.no_access()
+      )
     end
 
     tabletest @table do
       test "#{@test.person} has access to #{Enum.map_join(@test.expected_projects, ", ", &Atom.to_string/1)}", ctx do
-        {:ok, [parent_goal]} = GetWorkMapQuery.execute(ctx[@test.person], %{ company_id: ctx.company.id })
+        {:ok, [parent_goal]} = GetWorkMapQuery.execute(ctx[@test.person], %{company_id: ctx.company.id})
         assert parent_goal.id == ctx.parent_goal.id
 
         [child_goal] = parent_goal.children
@@ -445,6 +522,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         Enum.each(child_goal.children, fn item ->
           assert Enum.member?(expected_projects, item.id)
         end)
+
         assert length(child_goal.children) == @test.count
       end
     end
@@ -470,21 +548,21 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_goal(:public2, :space, parent_goal: :public1)
       |> Factory.add_goal(:internal1, :space, parent_goal: :public1, company_access: Binding.no_access())
       |> Factory.add_goal(:internal2, :space, parent_goal: :public2, company_access: Binding.no_access())
-      |> Factory.add_goal(:secret1, :space, [
+      |> Factory.add_goal(:secret1, :space,
         champion: :champion,
         company_access: Binding.no_access(),
-        space_access: Binding.no_access(),
-      ])
-      |> Factory.add_goal(:secret2, :space, [
+        space_access: Binding.no_access()
+      )
+      |> Factory.add_goal(:secret2, :space,
         parent_goal: :internal2,
         champion: :champion,
         company_access: Binding.no_access(),
-        space_access: Binding.no_access(),
-      ])
+        space_access: Binding.no_access()
+      )
     end
 
     test "company member has access to 2 public goals", ctx do
-      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.company_member, %{ company_id: ctx.company.id })
+      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.company_member, %{company_id: ctx.company.id})
       assert public1.id == ctx.public1.id
 
       [public2] = public1.children
@@ -494,7 +572,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "space member has access to 4 public and internal goals", ctx do
-      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.space_member, %{ company_id: ctx.company.id })
+      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.space_member, %{company_id: ctx.company.id})
 
       assert public1.id == ctx.public1.id
       assert length(public1.children) == 2
@@ -511,12 +589,12 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
 
     @table [
       %{person: :creator},
-      %{person: :champion},
+      %{person: :champion}
     ]
 
     tabletest @table do
       test "#{@test.person} has access to 6 public, internal and secret goals", ctx do
-        {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{ company_id: ctx.company.id })
+        {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{company_id: ctx.company.id})
 
         # Should see both root goals (public1 and secret1)
         assert length(work_map) == 2
