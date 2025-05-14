@@ -18,7 +18,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
         |> Factory.preload(:project, :last_check_in)
         |> Factory.preload(:project, :milestones)
 
-      item = WorkMapItem.build_item(ctx.project, [])
+      item = WorkMapItem.build_item(ctx.project, [], false)
       assert item.status == "completed"
     end
 
@@ -33,7 +33,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
           |> Factory.preload(:project, :last_check_in)
           |> Factory.preload(:project, :milestones)
 
-        item = WorkMapItem.build_item(ctx.project, [])
+        item = WorkMapItem.build_item(ctx.project, [], false)
         assert item.status == @test
       end
     end
@@ -45,7 +45,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
         |> Factory.preload(:project, :last_check_in)
         |> Factory.preload(:project, :milestones)
 
-      item = WorkMapItem.build_item(ctx.project, [])
+      item = WorkMapItem.build_item(ctx.project, [], false)
       assert item.status == "on_track"
     end
   end

@@ -10,23 +10,24 @@ defmodule Operately.WorkMaps.WorkMapItem do
   Type that represents a work map item (goal or project)
   """
   @type t() :: %__MODULE__{
-    id: String.t(),
-    parent_id: String.t() | nil,
-    name: String.t(),
-    status: String.t(),
-    progress: float(),
-    space: map(),
-    owner: map() | nil,
-    next_step: String.t(),
-    is_new: boolean(),
-    children: list(t()),
-    completed_on: DateTime.t() | nil,
-    timeframe: map() | nil,
-    type: atom(),
-    company: map(),
-    resource: map(),
-    privacy: :public | :internal | :confidential | :secret,
-  }
+          id: String.t(),
+          parent_id: String.t() | nil,
+          name: String.t(),
+          status: String.t(),
+          progress: float(),
+          space: map(),
+          owner: map() | nil,
+          next_step: String.t(),
+          is_new: boolean(),
+          children: list(t()),
+          completed_on: DateTime.t() | nil,
+          timeframe: map() | nil,
+          type: atom(),
+          company: map(),
+          resource: map(),
+          privacy: :public | :internal | :confidential | :secret,
+          assignees: list(map()) | nil
+        }
 
   defstruct [
     :id,
@@ -45,9 +46,10 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :company,
     :resource,
     :privacy,
+    :assignees
   ]
 
-  def build_item(goal = %Goal{}, children) do
+  def build_item(goal = %Goal{}, children, include_assignees) do
     %__MODULE__{
       id: goal.id,
       parent_id: goal.parent_goal_id,
@@ -64,11 +66,18 @@ defmodule Operately.WorkMaps.WorkMapItem do
       type: :goal,
       company: goal.company,
       resource: goal,
-      privacy: find_privacy(goal),
+      privacy: find_privacy(goal)
     }
+    |> then(fn item ->
+      if include_assignees do
+        Map.put(item, :assignees, build_goal_assignees(goal))
+      else
+        item
+      end
+    end)
   end
 
-  def build_item(project = %Project{}, children) do
+  def build_item(project = %Project{}, children, include_assignees) do
     project = Project.set_next_milestone(project)
 
     %__MODULE__{
@@ -87,15 +96,32 @@ defmodule Operately.WorkMaps.WorkMapItem do
       type: :project,
       company: project.company,
       resource: project,
-      privacy: find_privacy(project),
+      privacy: find_privacy(project)
     }
+    |> then(fn item ->
+      if include_assignees do
+        Map.put(item, :assignees, project.contributing_people)
+      else
+        item
+      end
+    end)
+  end
+
+  defp build_goal_assignees(goal = %Goal{}) do
+    [
+      goal.champion,
+      goal.reviewer
+    ]
+    |> Enum.reject(&is_nil/1)
   end
 
   defp next_target(goal = %Goal{}) do
     case goal.targets do
-      [] -> ""
+      [] ->
+        ""
 
-      %Ecto.Association.NotLoaded{} -> ""
+      %Ecto.Association.NotLoaded{} ->
+        ""
 
       targets ->
         target =
@@ -110,7 +136,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
           |> Enum.sort_by(fn target -> target.index end)
           |> List.first()
 
-
         if target, do: target.name, else: ""
     end
   end
@@ -119,7 +144,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     %{
       start_date: project.started_at,
       end_date: project.deadline,
-      type: "days",
+      type: "days"
     }
   end
 
@@ -140,9 +165,11 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
   defp build_access_levels_from_context(access_context, company_id, space_id) do
     case access_context do
-      nil -> %Operately.Access.AccessLevels{ public: nil, company: nil, space: nil }
+      nil ->
+        %Operately.Access.AccessLevels{public: nil, company: nil, space: nil}
 
-      %Ecto.Association.NotLoaded{} -> %Operately.Access.AccessLevels{ public: nil, company: nil, space: nil }
+      %Ecto.Association.NotLoaded{} ->
+        %Operately.Access.AccessLevels{public: nil, company: nil, space: nil}
 
       %{bindings: bindings} ->
         public = find_binding_by_criteria(bindings, {:company_id, company_id}, :anonymous)
