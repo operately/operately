@@ -52,7 +52,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       id: goal.id,
       parent_id: goal.parent_goal_id,
       name: goal.name,
-      status: goal_status(goal),
+      status: Goal.status(goal),
       progress: Goals.progress_percentage(goal),
       space: goal.group,
       owner: goal.champion,
@@ -129,16 +129,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
       project.status == "paused" -> "paused"
       Projects.outdated?(project) -> "outdated"
       project.last_check_in -> project.last_check_in.status
-      true -> "on_track"
-    end
-  end
-
-  defp goal_status(goal = %Goal{}) do
-    cond do
-      goal.success == "yes" -> "achieved"
-      goal.success == "no" -> "missed"
-      Goals.outdated?(goal) -> "outdated"
-      goal.last_update -> goal.last_update.status
       true -> "on_track"
     end
   end

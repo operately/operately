@@ -17,7 +17,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
   end
 
   #
-  # Edits to the status, timeframe, and targets are allowed within 3 days of the 
+  # Edits to the status, timeframe, and targets are allowed within 3 days of the
   # check-in being created and only if it is the latest check-in.
   # Otherwise, only the message can be edited.
   #
@@ -34,14 +34,14 @@ defmodule Operately.Operations.GoalCheckInEdit do
     Multi.update(multi, :check_in, fn changes ->
       if changes.full_edit_allowed do
         Update.changeset(check_in, %{
-          status: attrs.status, 
-          message: attrs.content, 
+          status: attrs.status,
+          message: attrs.content,
           targets: encode_new_target_values(attrs.new_target_values, check_in),
           timeframe: attrs[:timeframe] || check_in.timeframe
         })
       else
         Update.changeset(check_in, %{
-          message: attrs.content, 
+          message: attrs.content
         })
       end
     end)
@@ -52,7 +52,8 @@ defmodule Operately.Operations.GoalCheckInEdit do
       if changes.full_edit_allowed do
         update_targets(targets, new_target_values)
       else
-        Multi.new() # no-op
+        # no-op
+        Multi.new()
       end
     end)
   end
@@ -83,7 +84,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
   defp maybe_update_goal(multi, goal) do
     Multi.update(multi, :goal, fn changes ->
       if changes.full_edit_allowed do
-        Goal.changeset(goal, %{timeframe: changes.check_in.timeframe})
+        Goal.changeset(goal, %{timeframe: changes.check_in.timeframe, last_update_status: changes.check_in.status})
       else
         Goal.changeset(goal, %{})
       end
