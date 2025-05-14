@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useEffect } from "react";
 import { SecondaryButton } from "../../Button";
 import { BlackLink } from "../../Link";
-import { DragAndDropProvider, useDropZone } from "../../utils/DragAndDrop";
+import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import {
   IconFileText,
   IconMessageCircle,
@@ -16,6 +16,7 @@ import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { DueDateDisplay } from "./DueDateDisplay";
 import { TaskList } from "./TaskList";
+import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 
 export namespace TaskBoard {
   export type Status = "pending" | "in_progress" | "done" | "canceled";
@@ -124,21 +125,6 @@ const getStatusDisplayName = (status: TaskBoard.Status): string => {
       return status;
   }
 };
-
-// Empty milestone drop zone component that allows dropping tasks into empty milestones
-function EmptyMilestoneDropZone({ milestoneId }: { milestoneId: string }) {
-  // Set up drop zone with the same ID pattern as TaskList
-  const { ref } = useDropZone({ id: `milestone-${milestoneId}`, dependencies: [] });
-
-  return (
-    <div
-      ref={ref as React.RefObject<HTMLDivElement>}
-      className="py-3 px-4 text-center text-content-subtle text-sm min-h-[40px]"
-    >
-      No tasks in this milestone. Click + to add a task or drag a task here.
-    </div>
-  );
-}
 
 export function TaskBoard({
   tasks: externalTasks,
