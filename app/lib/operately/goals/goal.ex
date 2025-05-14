@@ -26,6 +26,7 @@ defmodule Operately.Goals.Goal do
     # Check-Ins (they are called updates for historical reasons)
     has_many :updates, Operately.Goals.Update
     belongs_to :last_update, Operately.Goals.Update, foreign_key: :last_check_in_id
+    field :last_update_status, :string
     field :next_update_scheduled_at, :utc_datetime
 
     embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
