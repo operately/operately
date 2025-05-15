@@ -10,13 +10,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       progress: item.progress,
       type: item.type,
       item_path: item_path(item),
-      children: OperatelyWeb.Api.Serializer.serialize(item.children, level: :essential)
-    }
-  end
-
-  def serialize(item, level: :full) do
-    serialize(item, level: :essential)
-    |> Map.merge(%{
       space: OperatelyWeb.Api.Serializer.serialize(item.space),
       space_path: Paths.space_work_map_path(item.company, item.space),
       owner: OperatelyWeb.Api.Serializer.serialize(item.owner),
@@ -25,10 +18,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       is_new: item.is_new,
       completed_on: OperatelyWeb.Api.Serializer.serialize(item.completed_on),
       timeframe: OperatelyWeb.Api.Serializers.Timeframe.serialize(item.timeframe),
-      children: OperatelyWeb.Api.Serializer.serialize(item.children, level: :full),
+      children: OperatelyWeb.Api.Serializer.serialize(item.children),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
       assignees: OperatelyWeb.Api.Serializer.serialize(item.assignees)
-    })
+    }
   end
 
   defp item_id(item) do
