@@ -28,7 +28,7 @@ export function convertToWorkMapItem(item: WorkMapItem): WorkMap.Item {
       name: item.space.name,
     },
     spacePath: item.spacePath,
-    owner: {
+    owner: item.owner && {
       id: item.owner.id,
       fullName: item.owner.fullName,
       avatarUrl: item.owner.avatarUrl,

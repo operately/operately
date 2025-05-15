@@ -92,7 +92,7 @@ export namespace WorkMap {
     space: Space;
     spacePath: string;
     owner: Person | null;
-    ownerPath: string;
+    ownerPath: string | null;
     nextStep: string;
     isNew: boolean;
     children: Item[];

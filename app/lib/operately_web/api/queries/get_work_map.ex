@@ -28,6 +28,6 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMap do
         include_assignees: inputs[:include_assignees] || false
       })
 
-    {:ok, %{work_map: Serializer.serialize(work_map, level: :full)}}
+    {:ok, %{work_map: Serializer.serialize(work_map)}}
   end
 end
