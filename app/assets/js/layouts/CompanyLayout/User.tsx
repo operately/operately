@@ -8,6 +8,8 @@ import { Paths } from "@/routes/paths";
 export function User() {
   const me = useMe();
 
+  if (!me) return null;
+
   return (
     <Link
       to={Paths.accountPath()}
