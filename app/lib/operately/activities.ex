@@ -20,6 +20,12 @@ defmodule Operately.Activities do
     ListActivitiesOperation.run(scope_type, scope_id, actions)
   end
 
+  def update_activity(activity, attrs) do
+    activity
+    |> Activity.changeset(attrs)
+    |> Repo.update()
+  end
+
   def insert_sync(multi, author_id, action, callback, opts \\ []) do
     multi
     |> Ecto.Multi.insert(:activity, fn changes ->
