@@ -1534,11 +1534,13 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   enum(:work_map_item_privacy, values: [:public, :internal, :confidential, :secret])
+  enum(:work_map_item_state, values: [:active, :paused, :closed])
 
   object :work_map_item do
     field :id, :string, optional: false, nullable: false
     field :parent_id, :string, optional: false, nullable: true
     field :name, :string, optional: false, nullable: false
+    field :state, :work_map_item_state, optional: false, nullable: false
     field :status, :work_map_item_status, optional: false, nullable: false
     field :progress, :float, optional: false, nullable: false
     field :space, :space, optional: false, nullable: false

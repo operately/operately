@@ -14,6 +14,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
           parent_id: String.t() | nil,
           name: String.t(),
           status: String.t(),
+          state: String.t(),
           progress: float(),
           space: map(),
           owner: map() | nil,
@@ -34,6 +35,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
     :parent_id,
     :name,
     :status,
+    :state,
     :progress,
     :space,
     :owner,
@@ -55,6 +57,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       parent_id: goal.parent_goal_id,
       name: goal.name,
       status: Goal.status(goal),
+      state: goal_state(goal),
       progress: Goals.progress_percentage(goal),
       space: goal.group,
       owner: goal.champion,
@@ -85,6 +88,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       parent_id: project.goal_id,
       name: project.name,
       status: project_status(project),
+      state: project_state(project),
       progress: Projects.progress_percentage(project),
       space: project.group,
       owner: project.champion,
@@ -105,6 +109,22 @@ defmodule Operately.WorkMaps.WorkMapItem do
         item
       end
     end)
+  end
+
+  defp goal_state(goal = %Goal{}) do
+    if goal.closed_at do
+      "closed"
+    else
+      "active"
+    end
+  end
+
+  defp project_state(project = %Project{}) do
+    cond do
+      project.closed_at -> "closed"
+      project.status == "paused" -> "paused"
+      true -> "active"
+    end
   end
 
   defp build_goal_assignees(goal = %Goal{}) do
