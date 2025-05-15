@@ -89,8 +89,9 @@ const createSampleTasks = (): Types.Task[] => [
  */
 export const Default: Story = {
   render: () => {
-    // State for tasks to allow adding new ones
+    // State for tasks and milestone
     const [tasks, setTasks] = useState<Types.Task[]>(createSampleTasks());
+    const [milestone, setMilestone] = useState<Types.Milestone>(sampleMilestone);
     
     // Handler for creating a new task
     const handleTaskCreate = (newTaskData: Omit<Types.Task, "id">) => {
@@ -121,9 +122,22 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
     
+    // Handler for due date changes
+    const handleDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+      console.log("Due date changed:", { milestoneId, dueDate });
+      // If dueDate is null, we're clearing the date
+      if (dueDate === null) {
+        const { dueDate, ...restOfMilestone } = milestone;
+        setMilestone(restOfMilestone);
+      } else {
+        // Otherwise set the new date
+        setMilestone({ ...milestone, dueDate });
+      }
+    };
+    
     return (
       <MilestonePage
-        milestone={sampleMilestone}
+        milestone={milestone}
         tasks={tasks}
         spaceName="Engineering"
         spaceUrl="#space"
@@ -133,6 +147,7 @@ export const Default: Story = {
         onTaskReorder={handleTaskReorder}
         onStatusChange={handleStatusChange}
         onCommentCreate={(comment) => console.log("Comment created:", comment)}
+        onDueDateChange={handleDueDateChange}
       />
     );
   },
@@ -143,23 +158,37 @@ export const Default: Story = {
  */
 export const EmptyMilestone: Story = {
   render: () => {
-    const emptyMilestone: Types.Milestone = {
+    // Use state to manage the milestone with its due date
+    const [milestone, setMilestone] = useState<Types.Milestone>({
       id: "milestone-empty",
       name: "New Initiative Planning",
-      dueDate: new Date(new Date().setDate(new Date().getDate() + 30)),
       hasDescription: true,
       hasComments: false,
+    });
+    
+    // Handler for due date changes
+    const handleDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+      console.log("Due date changed:", { milestoneId, dueDate });
+      // If dueDate is null, we're clearing the date
+      if (dueDate === null) {
+        const { dueDate, ...restOfMilestone } = milestone;
+        setMilestone(restOfMilestone);
+      } else {
+        // Otherwise set the new date
+        setMilestone({ ...milestone, dueDate });
+      }
     };
     
     return (
       <MilestonePage
-        milestone={emptyMilestone}
+        milestone={milestone}
         tasks={[]}
         spaceName="Product"
         spaceUrl="#space"
         projectName="Mobile App"
         projectUrl="#project"
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
+        onDueDateChange={handleDueDateChange}
       />
     );
   }
