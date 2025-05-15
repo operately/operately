@@ -24,8 +24,9 @@ function calculateCompletionPercentage(stats: {
 import { DragAndDropProvider } from "../utils/DragAndDrop";
 import { reorderTasksInList } from "../TaskBoard/utils/taskReorderingUtils";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
-import { DueDateDisplay } from "../TaskBoard/components/DueDateDisplay";
+// Using DateDisplayField instead of DueDateDisplay
 import { IconPlus, IconCalendar, IconMessageCircle, IconFileText } from "@tabler/icons-react";
+import { DateDisplayField } from "../DateDisplayField";
 import { GhostButton } from "../Button";
 import * as Types from "../TaskBoard/types";
 
@@ -47,6 +48,7 @@ interface MilestonePageProps {
   onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
   onTaskReorder?: (tasks: Types.Task[]) => void;
   onCommentCreate?: (comment: string) => void;
+  onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
 }
 
 export function MilestonePage({
@@ -56,10 +58,9 @@ export function MilestonePage({
   spaceUrl,
   projectName,
   projectUrl,
-  onStatusChange,
   onTaskCreate,
   onTaskReorder,
-  onCommentCreate,
+  onDueDateChange,
 }: MilestonePageProps) {
   // State
   const [showCompleted, setShowCompleted] = useState(false);
@@ -100,8 +101,6 @@ export function MilestonePage({
     setIsTaskModalOpen(false);
   };
 
-
-
   return (
     <Page
       title={milestone.name}
@@ -136,12 +135,22 @@ export function MilestonePage({
             {/* Milestone title */}
             <h1 className="text-2xl font-bold">{milestone.name}</h1>
 
-            {/* Due date (if available) */}
-            {milestone.dueDate && (
-              <div className="ml-4 flex items-center text-content-subtle">
-                <DueDateDisplay dueDate={milestone.dueDate} />
-              </div>
-            )}
+            {/* Due date or Set target date affordance */}
+            <div className="ml-4 flex items-center text-content-subtle">
+              <DateDisplayField
+                date={milestone.dueDate || null}
+                onChange={(date) => {
+                  if (onDueDateChange) {
+                    // Handle both setting a date and clearing a date (null)
+                    onDueDateChange(milestone.id, date);
+                  }
+                }}
+                placeholder="Set target date"
+                size="xxs"
+                isEditable={!!onDueDateChange}
+                showOverdueWarning={true}
+              />
+            </div>
           </div>
         </div>
 
@@ -166,7 +175,7 @@ export function MilestonePage({
 
           {/* Task list */}
           <div className="rounded-md border border-surface-outline overflow-hidden">
-            <DragAndDropProvider 
+            <DragAndDropProvider
               onDrop={(_, draggedId, index) => {
                 if (onTaskReorder) {
                   onTaskReorder(reorderTasksInList(filteredTasks, draggedId, index));
