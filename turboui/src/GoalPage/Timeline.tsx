@@ -1,3 +1,4 @@
+import React from "react";
 import { GoalPage } from ".";
 import { Chronometer } from "../Chronometer";
 import { SectionHeader } from "./SectionHeader";

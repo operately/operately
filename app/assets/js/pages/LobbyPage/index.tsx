@@ -11,6 +11,7 @@ import classnames from "classnames";
 import { Paths } from "@/routes/paths";
 import plurarize from "@/utils/plurarize";
 import { PageModule } from "@/routes/types";
+import { assertPresent } from "@/utils/assertions";
 
 export default { name: "LobbyPage", loader, Page } as PageModule;
 
@@ -31,7 +32,8 @@ async function loader(): Promise<LoaderResult> {
 function Page() {
   const { account, companies } = Pages.useLoadedData<LoaderResult>();
 
-  const firstName = People.firstName(account);
+  assertPresent(account.fullName);
+  const firstName = People.firstName({ fullName: account.fullName });
 
   return (
     <Pages.Page title={"Lobby"} testId="lobby-page">

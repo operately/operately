@@ -1,6 +1,6 @@
+import React from "react";
 import { useForm } from "react-hook-form";
 import { Page } from "../Page";
-import { Textfield } from "../forms/Textfield";
 import { PrimaryButton, SecondaryButton } from "../Button";
 
 namespace GoalClosePage {

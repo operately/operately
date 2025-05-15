@@ -15,11 +15,7 @@ export function Description(props: GoalPage.Props) {
         showButtons={props.canEdit}
       />
 
-      {props.description ? (
-        <DescriptionContent description={props.description!} />
-      ) : (
-        <DescriptionZeroState {...props} />
-      )}
+      {props.description ? <DescriptionContent description={props.description!} /> : <DescriptionZeroState />}
     </div>
   );
 }
@@ -42,7 +38,7 @@ function DescriptionContent({ description }: { description: string }) {
   );
 }
 
-function DescriptionZeroState(props: GoalPage.Props) {
+function DescriptionZeroState() {
   return (
     <div className="mb-1">
       <div className="text-content-dimmed text-sm">Describe the goal to provide context and clarity.</div>

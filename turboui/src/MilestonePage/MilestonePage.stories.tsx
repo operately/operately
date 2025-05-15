@@ -40,7 +40,7 @@ const createSampleTasks = (): Types.Task[] => [
     title: "Implement user authentication",
     status: "done",
     milestone: sampleMilestone,
-    assignees: [mockPeople[0]],
+    assignees: [mockPeople[0]!],
     hasComments: true,
     commentCount: 2,
   },
@@ -49,7 +49,7 @@ const createSampleTasks = (): Types.Task[] => [
     title: "Design user profile page",
     status: "in_progress",
     milestone: sampleMilestone,
-    assignees: [mockPeople[1]],
+    assignees: [mockPeople[1]!],
     hasDescription: true,
   },
   {
@@ -63,7 +63,7 @@ const createSampleTasks = (): Types.Task[] => [
     title: "Add support for dark mode",
     status: "pending",
     milestone: sampleMilestone,
-    assignees: [mockPeople[2]],
+    assignees: [mockPeople[2]!],
     dueDate: new Date(new Date().setDate(new Date().getDate() + 5)),
   },
   {

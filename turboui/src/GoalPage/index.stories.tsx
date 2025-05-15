@@ -1,3 +1,4 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
 import { GoalPage } from ".";
@@ -21,7 +22,9 @@ const meta: Meta<typeof GoalPage> = {
   ],
 } satisfies Meta<typeof GoalPage>;
 
-const [champion, reviewer] = genPeople(2);
+const people = genPeople(2);
+const champion = people[0]!;
+const reviewer = people[1]!;
 
 const mockTargets = [
   {
@@ -221,15 +224,21 @@ const contributions = [
   [{ role: "Software Engineer", link: "/goals/1", location: "Backend Infrastructure" }],
 ];
 
-const contributors = genPeople(10).map((p, i) => {
+const contributors: GoalPage.Contributor[] = genPeople(10).map((p, i) => {
+  const person = p!;
+  
+  const personContributions = i < contributions.length 
+    ? contributions[i] 
+    : (contributions.length > 0 ? contributions[contributions.length - 1] : []);
+    
   return {
-    person: p,
-    personLink: `/people/${p.id}`,
-    contributions: i < contributions.length ? contributions[i] : contributions[contributions.length - 1],
+    person,
+    personLink: `/people/${person.id}`,
+    contributions: personContributions || [],
   };
 });
 
-contributors.sort((a, b) => b.contributions.length - a.contributions.length);
+contributors.sort((a, b) => (b.contributions?.length || 0) - (a.contributions?.length || 0));
 
 const description = [
   "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",

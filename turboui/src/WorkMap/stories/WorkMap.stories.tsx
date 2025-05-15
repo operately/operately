@@ -1,3 +1,4 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import WorkMap from "../components";
 import { Page } from "../../Page";

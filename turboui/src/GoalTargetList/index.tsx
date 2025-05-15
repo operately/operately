@@ -58,7 +58,7 @@ function TargetList({ state }: { state: State }) {
     <div ref={ref}>
       <TargetListHeader />
 
-      {state.targets.map((target, index) => (
+      {state.targets.map((target) => (
         <TargetCard key={target.id} state={state} target={target} />
       ))}
 

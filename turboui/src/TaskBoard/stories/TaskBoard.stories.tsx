@@ -2,9 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState, useEffect } from "react";
 import * as Types from "../types";
 import { TaskBoard } from "../components";
-import TaskCreationModal from "../components/TaskCreationModal";
-import MilestoneCreationModal from "../components/MilestoneCreationModal";
-import { mockTasks, mockEmptyTasks, mockMilestones } from "../tests/mockData";
+import { mockTasks, mockMilestones } from "../tests/mockData";
 import { Page } from "../../Page";
 
 /**
@@ -33,26 +31,6 @@ const meta: Meta<typeof TaskBoard> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-// Mock people data for the assignee selection
-const mockPeople = [
-  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-  { id: "user-3", fullName: "Carol Williams", avatarUrl: "https://i.pravatar.cc/150?u=carol" },
-];
-
-// Extract milestones from mock tasks
-const extractMilestones = (tasks) => {
-  const milestoneMap = new Map();
-
-  tasks.forEach((task) => {
-    if (task.milestone && !milestoneMap.has(task.milestone.id)) {
-      milestoneMap.set(task.milestone.id, task.milestone);
-    }
-  });
-
-  return Array.from(milestoneMap.values());
-};
 
 // Create a minimal milestone for testing different UI states
 const standaloneTestMilestone: Types.Milestone = {

@@ -8,26 +8,10 @@ const generatedPeople = genPeople(4);
 
 // Mock people - mapped into an object for easy reference with proper Types.Person typing
 export const mockPeople: Record<string, Types.Person> = {
-  john: {
-    id: generatedPeople[0].id,
-    fullName: generatedPeople[0].fullName,
-    avatarUrl: generatedPeople[0].avatarUrl,
-  },
-  jane: {
-    id: generatedPeople[1].id,
-    fullName: generatedPeople[1].fullName,
-    avatarUrl: generatedPeople[1].avatarUrl,
-  },
-  bob: {
-    id: generatedPeople[2].id,
-    fullName: generatedPeople[2].fullName,
-    avatarUrl: generatedPeople[2].avatarUrl,
-  },
-  alice: {
-    id: generatedPeople[3].id,
-    fullName: generatedPeople[3].fullName,
-    avatarUrl: generatedPeople[3].avatarUrl,
-  },
+  john: generatedPeople[0]!,
+  jane: generatedPeople[1]!,
+  bob: generatedPeople[2]!,
+  alice: generatedPeople[3]!,
 };
 
 // Mock milestones
@@ -71,7 +55,7 @@ export const mockTasks: Types.Task[] = [
     title: "Implement user authentication",
     status: "pending",
     description: "Create login/signup flows with OAuth integration",
-    assignees: [mockPeople.john, mockPeople.jane],
+    assignees: [mockPeople.john!, mockPeople.jane!],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-05-10"), // Future date
     points: 8,
@@ -83,7 +67,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-2",
     title: "Fix navigation bug on mobile",
     status: "in_progress",
-    assignees: [mockPeople.bob],
+    assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-05-01"), // Past due
     points: 3,
@@ -94,7 +78,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-3",
     title: "Update documentation for API v2",
     status: "in_progress",
-    assignees: [mockPeople.alice],
+    assignees: [mockPeople.alice!],
     milestone: mockMilestones.q2Release,
     points: 5,
     hasDescription: true,
@@ -123,7 +107,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-6",
     title: "Implement dark mode toggle",
     status: "pending",
-    assignees: [mockPeople.bob, mockPeople.alice],
+    assignees: [mockPeople.bob!, mockPeople.alice!],
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -132,7 +116,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-7",
     title: "Optimize database queries",
     status: "in_progress",
-    assignees: [mockPeople.john],
+    assignees: [mockPeople.john!],
     dueDate: new Date("2025-04-30"), // Past due
     points: 5,
     hasDescription: true,
@@ -143,7 +127,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-8",
     title: "Set up CI/CD pipeline",
     status: "done",
-    assignees: [mockPeople.alice, mockPeople.jane],
+    assignees: [mockPeople.alice!, mockPeople.jane!],
     milestone: mockMilestones.q2Release,
     points: 8,
     hasDescription: true,
@@ -162,7 +146,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-10",
     title: "Implement social login options",
     status: "in_progress",
-    assignees: [mockPeople.jane],
+    assignees: [mockPeople.jane!],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-05-20"),
     points: 5,
@@ -174,7 +158,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-11",
     title: "Redesign user profile page",
     status: "done",
-    assignees: [mockPeople.bob],
+    assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-04-15"), // Past due but completed
     points: 8,
@@ -195,7 +179,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-13",
     title: "Optimize image loading",
     status: "in_progress",
-    assignees: [mockPeople.bob],
+    assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
     dueDate: new Date("2025-05-25"),
     points: 3,
@@ -206,7 +190,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-14",
     title: "Setup internationalization",
     status: "pending",
-    assignees: [mockPeople.jane],
+    assignees: [mockPeople.jane!],
     milestone: mockMilestones.marketExpansion,
     dueDate: new Date("2025-08-10"),
     points: 8,
@@ -218,7 +202,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-15",
     title: "Implement payment gateway integration",
     status: "done",
-    assignees: [mockPeople.john, mockPeople.alice],
+    assignees: [mockPeople.john!, mockPeople.alice!],
     milestone: mockMilestones.productLaunch,
     dueDate: new Date("2025-06-01"),
     points: 13,
@@ -230,7 +214,7 @@ export const mockTasks: Types.Task[] = [
     id: "task-16",
     title: "Create automated email campaigns",
     status: "pending",
-    assignees: [mockPeople.alice],
+    assignees: [mockPeople.alice!],
     milestone: mockMilestones.marketExpansion,
     dueDate: new Date("2025-07-30"),
     points: 5,

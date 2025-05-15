@@ -1,75 +1,13 @@
-import React, { useState, useMemo, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { SecondaryButton } from "../../Button";
-import { BlackLink } from "../../Link";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
-import {
-  IconFileText,
-  IconMessageCircle,
-  IconCircleDashed,
-  IconCircleDot,
-  IconCircleCheckFilled,
-  IconX,
-  IconPlus,
-} from "@tabler/icons-react";
-import { PieChart } from "../../PieChart";
+import { IconPlus } from "@tabler/icons-react";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
-import { DueDateDisplay } from "./DueDateDisplay";
 import { TaskList } from "./TaskList";
-import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import { MilestoneCard } from "./MilestoneCard";
-
-// Helper to group tasks by status
-const groupTasksByStatus = (tasks: Types.Task[]) => {
-  const grouped: Record<string, Types.Task[]> = {
-    pending: [],
-    in_progress: [],
-    done: [],
-    canceled: [],
-  };
-
-  tasks.forEach((task) => {
-    // Skip helper tasks used for showing empty milestones
-    if (task._isHelperTask) return;
-
-    if (!grouped[task.status]) {
-      grouped[task.status] = [];
-    }
-    grouped[task.status].push(task);
-  });
-
-  return grouped;
-};
-
-// Create colored icon components for each status
-const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheckFilled = (props: any) => (
-  <IconCircleCheckFilled {...props} className="text-callout-success-icon" />
-);
-
-// Map task status to badge status, labels and icons
-const taskStatusConfig: Record<Types.Status, { status: string; label: string; icon: any; color?: string }> = {
-  pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
-  in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
-  done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
-  canceled: { status: "canceled", label: "Canceled", icon: IconX },
-};
-
-// Helper to get the display name for a status
-const getStatusDisplayName = (status: Types.Status): string => {
-  switch (status) {
-    case "pending":
-      return "Not started";
-    case "in_progress":
-      return "In progress";
-    case "done":
-      return "Done";
-    default:
-      return status;
-  }
-};
 
 export function TaskBoard({
   tasks: externalTasks,
@@ -123,9 +61,9 @@ export function TaskBoard({
 
       if (task.milestone) {
         const milestoneId = task.milestone.id;
-        grouped[milestoneId].push(task);
+        grouped[milestoneId]?.push(task);
       } else {
-        grouped["no_milestone"].push(task);
+        grouped["no_milestone"]?.push(task);
       }
     });
 
@@ -135,7 +73,6 @@ export function TaskBoard({
   // Get all unique milestones from tasks with completion statistics
   const getMilestones = () => {
     type MilestoneStats = Types.MilestoneStats;
-    type MilestoneWithStats = Types.MilestoneWithStats;
 
     const milestoneMap = new Map<
       string,
@@ -295,7 +232,7 @@ export function TaskBoard({
           <SecondaryButton
             size="xxs"
             onClick={() => {
-              setActiveTaskMilestoneId(undefined);
+              setActiveTaskMilestoneId(null as unknown as string | undefined);
               setIsTaskModalOpen(true);
             }}
           >
@@ -359,7 +296,7 @@ export function TaskBoard({
                 ))}
 
                 {/* Tasks with no milestone */}
-                {groupedTasks["no_milestone"].length > 0 && (
+                {groupedTasks["no_milestone"] &&groupedTasks["no_milestone"].length > 0 && (
                   <li>
                     {/* No milestone header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
@@ -380,7 +317,7 @@ export function TaskBoard({
                     </div>
 
                     {/* Tasks with no milestone */}
-                    <TaskList tasks={groupedTasks["no_milestone"]} milestoneId="no-milestone" />
+                    <TaskList tasks={groupedTasks["no_milestone"] || []} milestoneId="no-milestone" />
                   </li>
                 )}
               </ul>

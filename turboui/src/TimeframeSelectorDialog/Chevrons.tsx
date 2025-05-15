@@ -1,3 +1,4 @@
+import React from "react";
 import * as Icons from "@tabler/icons-react";
 
 export function LeftChevron({ onClick }) {

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState } from "react";
+import React from "react";
 import { TaskItem } from "../components/TaskItem";
 import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";

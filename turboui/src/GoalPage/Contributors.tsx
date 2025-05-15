@@ -1,3 +1,4 @@
+import React from "react";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";

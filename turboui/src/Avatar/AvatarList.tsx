@@ -1,3 +1,4 @@
+import React from "react";
 import classNames from "../utils/classnames";
 import { AvatarListProps } from "./types";
 import { Avatar } from ".";

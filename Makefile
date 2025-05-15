@@ -195,7 +195,7 @@ test.js.dead.code:
 	./devenv bash -c "cd app && npm --no-update-notifier run knip"
 
 test.tsc.lint:
-	./devenv bash -c "cd app && npx tsc --noEmit -p ."
+	./devenv bash -c "cd app && npx tsc --noEmit -p tsconfig.lint.json"
 
 test.pr.name:
 	ruby scripts/pr-name-check

@@ -1,3 +1,4 @@
+import React from "react";
 import { WorkMapTab } from "./WorkMapTab";
 import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck } from "@tabler/icons-react";
 import { WorkMap } from ".";
