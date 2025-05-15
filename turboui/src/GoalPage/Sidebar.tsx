@@ -1,3 +1,4 @@
+import React from "react";
 import { GoalPage } from ".";
 import { IconQuestionMark } from "@tabler/icons-react";
 import { Avatar, AvatarPerson } from "../Avatar";

@@ -1,28 +1,50 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "module": "esnext", // Use ESM format
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "jsx": "react-jsx",
-    "declaration": true,
-    "outDir": "./dist",
+    // project options
+    "lib": ["ESNext", "dom"], // specifies which default set of type definitions to use
+    "outDir": "./dist", // .js (as well as .d.ts, .js.map, etc.) files will be emitted into this directory
+    "removeComments": true, // Strips all comments from TypeScript files when converting into JavaScript
+    "target": "ES6", // Target environment. Most modern browsers support ES6
+    "declaration": true, // Generate .d.ts files (needed for library)
+    "jsx": "react", // Match app's jsx handling
     "rootDir": "./src",
-    "strict": true,
-    "noImplicitAny": false,
-    "esModuleInterop": true,
+
+    // Module resolution
+    "baseUrl": ".",
+    "esModuleInterop": true, // fixes some issues TS originally had with the ES6 spec
+    "moduleResolution": "node", // Pretty much always node for modern JS
+    "module": "esnext", // Use ESM format
+
+    // Source Map
+    "sourceMap": true, // enables the use of source maps for debuggers and error reporting
+    "sourceRoot": "/", // Specify the location where a debugger should locate TypeScript files
+
+    // Strict Checks
+    "alwaysStrict": true, // Ensures that your files are parsed in the ECMAScript strict mode
+    "allowUnreachableCode": false, // pick up dead code paths
+    "noImplicitAny": false, // Match app's setting
+    "strictNullChecks": true, // null and undefined have their own distinct types
+
+    // Linter Checks
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true, // accessing index must always check for undefined
+    "noUnusedLocals": true, // Report errors on unused local variables
+    "noUnusedParameters": true, // Report errors on unused parameters in functions
+
+    // Additional needed options for turboui
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    
+    // Paths for dependencies
     "paths": {
       "*": ["../app/node_modules/*"],
       "react": ["../app/node_modules/react", "../app/node_modules/@types/react"],
       "react/*": ["../app/node_modules/react/*", "../app/node_modules/@types/react/*"]
     },
-    "typeRoots": ["../app/node_modules/@types"],
-    "allowSyntheticDefaultImports": true
+    "typeRoots": ["../app/node_modules/@types", "./src/types"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules/**/*", "dist"]
 }

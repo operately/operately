@@ -1,3 +1,4 @@
+import React from "react";
 import { match } from "ts-pattern";
 import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";

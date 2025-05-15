@@ -1,3 +1,4 @@
+import React from "react";
 import { BadgeStatus, StatusBadgeProps } from "./types";
 import {
   IconCircleDashed,
@@ -7,8 +8,8 @@ import {
 } from "@tabler/icons-react";
 
 export function StatusBadge({ status, hideIcon = false, className = "", style, customLabel }: StatusBadgeProps) {
-  const { bgColor, textColor, dotColor, borderColor, label } = getStatusProperties(status);
-  const icon = hideIcon ? null : getStatusIcon(status, textColor, dotColor);
+  const { bgColor, textColor, borderColor, label } = getStatusProperties(status);
+  const icon = hideIcon ? null : getStatusIcon(status, textColor);
 
   return (
     <span
@@ -150,7 +151,7 @@ const getStatusProperties = (status: BadgeStatus) => {
   }
 };
 
-const getStatusIcon = (status: BadgeStatus, textColor: string, dotColor: string) => {
+const getStatusIcon = (status: BadgeStatus, textColor: string) => {
   switch (status) {
     case "not_started":
       return <IconCircleDashed size={10} className={`${textColor} mr-1.5 flex-shrink-0`} />;

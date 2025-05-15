@@ -1,3 +1,4 @@
+import React from "react";
 import classNames from "../utils/classnames";
 
 export function Paper({ children }: { children: React.ReactNode }) {

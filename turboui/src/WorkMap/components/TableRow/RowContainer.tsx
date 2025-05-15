@@ -1,3 +1,4 @@
+import React from "react";
 import WorkMap from "..";
 import classNames from "../../../utils/classnames";
 

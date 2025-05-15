@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { parse } from "../../utils/time";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
@@ -52,7 +52,9 @@ function extractAllGoals(items: WorkMap.Item[]): WorkMap.Item[] {
     let filteredChildren: WorkMap.Item[] = [];
 
     if (item.children && item.children.length > 0) {
-      filteredChildren = item.children.map((child) => processItem(child)).filter((child) => child !== null);
+      filteredChildren = item.children
+        .map((child) => processItem(child))
+        .filter((child): child is WorkMap.Item => child !== null);
     }
 
     // Include if item is ongoing or has ongoing children
@@ -66,7 +68,7 @@ function extractAllGoals(items: WorkMap.Item[]): WorkMap.Item[] {
     return { ...item, children: filteredChildren };
   };
 
-  return items.map((item) => processItem(item)).filter((item) => item !== null);
+  return items.map((item) => processItem(item)).filter((item): item is WorkMap.Item => item !== null);
 }
 
 /**
@@ -122,7 +124,7 @@ function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
     let filteredChildren: WorkMap.Item[] = [];
 
     if (item.children && item.children.length > 0) {
-      filteredChildren = item.children.map(filterOngoingItems).filter((child) => child !== null);
+      filteredChildren = item.children.map(filterOngoingItems).filter((child): child is WorkMap.Item => child !== null);
     }
 
     const isOngoing = !CLOSED_STATUSES.includes(item.status) && item.status !== "paused";
@@ -135,7 +137,7 @@ function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
     return { ...item, children: filteredChildren };
   };
 
-  return data.map(filterOngoingItems).filter((item) => item !== null);
+  return data.map(filterOngoingItems).filter((item): item is WorkMap.Item => item !== null);
 }
 
 /**
@@ -270,5 +272,8 @@ function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
 }
 
 function getDefaultTab(allowedTabs: WorkMap.Filter[], tabOptions?: WorkMap.TabOptions): WorkMap.Filter {
-  return (tabOptions?.hideAll || !allowedTabs.includes("all")) && allowedTabs.length > 0 ? allowedTabs[0] : "all";
+  if ((tabOptions?.hideAll || !allowedTabs.includes("all")) && allowedTabs.length > 0) {
+    return allowedTabs[0] || "all";
+  }
+  return "all";
 }

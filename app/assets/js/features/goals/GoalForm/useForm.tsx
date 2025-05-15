@@ -160,11 +160,17 @@ function useTimeframe(config: FormConfig): [Timeframes.Timeframe, Timeframes.Set
 }
 
 function useSpaces(config: FormConfig): [SpaceOption | null, (space: SpaceOption | null) => void, SpaceOption[]] {
-  const [space, setSpace] = React.useState<Fields["space"]>(() => {
+  const [space, setSpace] = React.useState<SpaceOption | null>(() => {
     if (config.allowSpaceSelection || config.mode === "edit") {
       return null;
     } else {
-      return { ...config.space, value: config.space!.id!, label: config.space!.name! };
+      const spaceValue: SpaceOption = {
+        ...config.space!,
+        value: config.space!.id,
+        label: config.space!.name,
+        id: config.space!.id,
+      };
+      return spaceValue;
     }
   });
 
