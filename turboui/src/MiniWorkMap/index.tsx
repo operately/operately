@@ -25,6 +25,7 @@ export namespace MiniWorkMap {
   export interface WorkItem {
     id: string;
     type: "goal" | "project";
+    state: "active" | "paused" | "closed";
     status:
       | "on_track"
       | "completed"
@@ -41,7 +42,6 @@ export namespace MiniWorkMap {
     itemPath: string;
     progress: number;
     children?: WorkItem[];
-    completed: boolean;
     assignees: Person[];
   }
 
@@ -103,7 +103,9 @@ function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
     </BlackLink>
   );
 
-  if (!item.completed) return nameElement;
-
-  return <s>{nameElement}</s>;
+  if (item.state === "closed") {
+    return <s>{nameElement}</s>;
+  } else {
+    return nameElement;
+  }
 }
