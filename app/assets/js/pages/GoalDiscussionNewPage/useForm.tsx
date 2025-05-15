@@ -6,6 +6,7 @@ import * as TipTapEditor from "@/components/Editor";
 import { Paths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
 import { useFormState, formValidator } from "@/components/Form/useFormState";
+import { Options, SubscriptionsState } from "@/features/Subscriptions";
 
 type FormFields = {
   title: string;
@@ -13,7 +14,7 @@ type FormFields = {
   editor: TipTapEditor.EditorState;
 };
 
-export function useForm({ goal }: { goal: Goals.Goal }) {
+export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
   const navigate = useNavigate();
 
   const [title, setTitle] = React.useState("");
@@ -44,6 +45,8 @@ export function useForm({ goal }: { goal: Goals.Goal }) {
           goalId: goal.id,
           title: fields.title,
           message: JSON.stringify(fields.editor.editor.getJSON()),
+          sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+          subscriberIds: subscriptionsState.currentSubscribersList,
         })
           .then((data) => navigate(Paths.goalActivityPath(data.id!)))
           .finally(() => setSubmitting(false));

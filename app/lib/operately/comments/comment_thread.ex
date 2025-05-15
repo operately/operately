@@ -2,12 +2,13 @@ defmodule Operately.Comments.CommentThread do
   use Operately.Schema
 
   schema "comment_threads" do
+    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment_thread]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :comment_thread]
 
     field :parent_id, :binary_id
     field :parent_type, Ecto.Enum, values: [:activity]
-    
+
     field :title, :string
     field :has_title, :boolean, default: false
 
@@ -21,8 +22,8 @@ defmodule Operately.Comments.CommentThread do
   end
 
   def changeset(comment_thread, attrs) do
-    comment_thread 
-    |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title])
-    |> validate_required([:message, :parent_id, :parent_type])
+    comment_thread
+    |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title, :subscription_list_id])
+    |> validate_required([:message, :parent_id, :parent_type, :subscription_list_id])
   end
 end

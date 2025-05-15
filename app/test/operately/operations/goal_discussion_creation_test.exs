@@ -24,10 +24,16 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
 
   test "GoalDiscussionCreation operation creates activity, thread and notification", ctx do
     title = "some title"
-    message = notification_message(ctx.reader)
+    message = Jason.decode!(notification_message(ctx.reader))
 
     Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, title, message)
+      {:ok, _} = Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, %{
+        title: title,
+        content: message,
+        subscription_parent_type: :comment_thread,
+        send_to_everyone: false,
+        subscriber_ids: []
+      })
     end)
 
     activity = from(a in Activity,
@@ -36,13 +42,13 @@ defmodule Operately.Operations.GoalDiscussionCreationTest do
     )
     |> Repo.one()
 
-    assert activity.comment_thread_id != nil
+    assert activity.comment_thread_id
     assert activity.comment_thread.title == title
     assert 0 == notifications_count()
 
     perform_job(activity.id)
 
     assert 1 == notifications_count()
-    assert nil != fetch_notification(activity.id)
+    assert fetch_notification(activity.id)
   end
 end
