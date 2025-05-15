@@ -18,29 +18,8 @@ export function convertToWorkMapItem(item: WorkMapItem): WorkMap.Item {
   };
 
   return {
-    id: item.id,
-    parentId: item.parentId,
-    name: item.name,
-    status: item.status,
-    progress: item.progress,
-    space: {
-      id: item.space.id,
-      name: item.space.name,
-    },
-    spacePath: item.spacePath,
-    owner: {
-      id: item.owner.id,
-      fullName: item.owner.fullName,
-      avatarUrl: item.owner.avatarUrl,
-    },
-    ownerPath: item.ownerPath,
-    nextStep: item.nextStep,
-    isNew: item.isNew,
-    completedOn: item.completedOn,
+    ...item,
     timeframe: convertTimeframe(item.timeframe),
-    type: item.type,
-    itemPath: item.itemPath,
-    privacy: item.privacy,
     children: item.children.map(convertToWorkMapItem),
   };
 }

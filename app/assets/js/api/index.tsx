@@ -1494,8 +1494,8 @@ export interface WorkMapItem {
   progress: number;
   space: Space;
   spacePath: string;
-  owner: Person;
-  ownerPath: string;
+  owner: Person | null;
+  ownerPath: string | null;
   nextStep: string;
   isNew: boolean;
   completedOn: string | null;
