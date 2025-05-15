@@ -1,6 +1,6 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { fn } from "@storybook/test";
+import React from "react";
 import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { genPeople } from "../utils/storybook/genPeople";
@@ -139,7 +139,7 @@ const relatedWorkItems: MiniWorkMap.WorkItem[] = [
     name: "Backend Infrastructure",
     itemPath: "/goals/1",
     progress: 75,
-    completed: false,
+    state: "active",
     children: [
       {
         id: "3",
@@ -148,7 +148,7 @@ const relatedWorkItems: MiniWorkMap.WorkItem[] = [
         name: "API Development",
         itemPath: "/projects/3",
         progress: 60,
-        completed: false,
+        state: "active",
         children: [],
         assignees: genPeople(10, { random: true }),
       },
@@ -159,7 +159,7 @@ const relatedWorkItems: MiniWorkMap.WorkItem[] = [
         name: "Database Optimization",
         itemPath: "/goals/4",
         progress: 90,
-        completed: false,
+        state: "active",
         children: [
           {
             id: "5",
@@ -168,7 +168,7 @@ const relatedWorkItems: MiniWorkMap.WorkItem[] = [
             name: "Query Performance",
             itemPath: "/projects/5",
             progress: 100,
-            completed: true,
+            state: "closed",
             children: [],
             assignees: genPeople(2, { random: true }),
           },
@@ -185,7 +185,7 @@ const relatedWorkItems: MiniWorkMap.WorkItem[] = [
     name: "UI/UX Design",
     itemPath: "/goals/2",
     progress: 100,
-    completed: true,
+    state: "closed",
     assignees: genPeople(7, { random: true }),
     children: [
       {
@@ -195,7 +195,7 @@ const relatedWorkItems: MiniWorkMap.WorkItem[] = [
         name: "Design System",
         itemPath: "/projects/6",
         progress: 100,
-        completed: true,
+        state: "closed",
         children: [],
         assignees: genPeople(3, { random: true }),
       },
@@ -226,11 +226,14 @@ const contributions = [
 
 const contributors: GoalPage.Contributor[] = genPeople(10).map((p, i) => {
   const person = p!;
-  
-  const personContributions = i < contributions.length 
-    ? contributions[i] 
-    : (contributions.length > 0 ? contributions[contributions.length - 1] : []);
-    
+
+  const personContributions =
+    i < contributions.length
+      ? contributions[i]
+      : contributions.length > 0
+      ? contributions[contributions.length - 1]
+      : [];
+
   return {
     person,
     personLink: `/people/${person.id}`,
