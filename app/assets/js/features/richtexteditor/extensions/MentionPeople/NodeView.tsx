@@ -23,15 +23,8 @@ interface Node {
 
 export function NodeView({ node }: { node: Node }) {
   const ref = React.useRef<HTMLDivElement>(null);
-  const { fullName, avatar, loading } = usePersonNameAndAvatar(node.attrs.id);
-
-  let person: People.Person;
-
-  if (loading) {
-    person = { fullName: node.attrs.label };
-  } else {
-    person = { fullName: fullName, avatarUrl: avatar };
-  }
+  const { person: loadedPerson } = usePersonNameAndAvatar(node.attrs.id);
+  const person = loadedPerson || { fullName: node.attrs.label, id: node.attrs.id, title: "", avatarUrl: "" };
 
   const [avatarsize, setAvatarsize] = React.useState(20);
 
