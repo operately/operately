@@ -1,3 +1,4 @@
+import React from "react";
 import { AvatarWithName } from "../../../Avatar/AvatarWithName";
 import { WorkMap } from "..";
 import { useItemStatus } from "../../hooks/useItemStatus";

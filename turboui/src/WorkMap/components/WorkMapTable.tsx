@@ -1,3 +1,4 @@
+import React from "react";
 import { WorkMap } from "..";
 import { TableRow } from "./TableRow";
 import classNames from "../../utils/classnames";

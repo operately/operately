@@ -1,3 +1,4 @@
+import React from "react";
 import * as Time from "../utils/time";
 
 export default function ShortDateWithWeekday({ time }: { time: Date }) {

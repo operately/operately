@@ -1,6 +1,6 @@
+import React from "react";
 import { useState } from "react";
 
-import { StatusBadge } from "../../../StatusBadge";
 import { WorkMap } from "..";
 
 import { ChildRows } from "./ChildRows";

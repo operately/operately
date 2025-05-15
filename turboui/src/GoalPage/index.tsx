@@ -1,3 +1,4 @@
+import React from "react";
 import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
 

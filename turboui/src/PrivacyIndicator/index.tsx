@@ -1,3 +1,4 @@
+import React from "react";
 import * as Icons from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { Tooltip } from "../Tooltip";

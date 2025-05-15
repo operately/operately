@@ -92,16 +92,16 @@ export function DimmedLink(props: LinkProps) {
   return <UnstyledLink {...props} className={className} />;
 }
 
-export function DivLink({ to, children, testId, target, external, ...props }: DivLinkProps) {
+export function DivLink({ to, children, testId, target, external, style, ...props }: DivLinkProps) {
   if (external) {
     return (
-      <a href={to} data-test-id={testId} {...props} target={target}>
+      <a href={to} data-test-id={testId} {...props} target={target} style={style as any}>
         {children}
       </a>
     );
   } else {
     return (
-      <Router.Link to={to} data-test-id={testId} {...props} target={target}>
+      <Router.Link to={to} data-test-id={testId} {...props} target={target} style={style as any}>
         {children}
       </Router.Link>
     );
