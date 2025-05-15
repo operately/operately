@@ -1,3 +1,4 @@
+import React from "react";
 import { PageBanner } from ".";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Page } from "../Page";

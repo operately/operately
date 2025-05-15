@@ -25,7 +25,7 @@ import { DragAndDropProvider } from "../utils/DragAndDrop";
 import { reorderTasksInList } from "../TaskBoard/utils/taskReorderingUtils";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 // Using DateDisplayField instead of DueDateDisplay
-import { IconPlus, IconCalendar, IconMessageCircle, IconFileText } from "@tabler/icons-react";
+import { IconPlus, IconMessageCircle } from "@tabler/icons-react";
 import { DateDisplayField } from "../DateDisplayField";
 import { GhostButton } from "../Button";
 import * as Types from "../TaskBoard/types";

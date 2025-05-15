@@ -1,3 +1,4 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Avatar, AvatarList, AvatarWithName } from ".";
 import { AvatarProps, AvatarSize } from "./types";
@@ -25,7 +26,7 @@ const meta = {
 export default meta;
 
 const EXAMPLE_PEOPLE = genPeople(10);
-const defaultPerson = EXAMPLE_PEOPLE[0];
+const defaultPerson = EXAMPLE_PEOPLE[0]!;
 const personWithAvatar = EXAMPLE_PEOPLE[0];
 
 /**
@@ -117,27 +118,27 @@ export const Sizes: StoryObj<{}> = {
         <h3 className="text-sm font-medium mb-2">Predefined sizes (with images)</h3>
         <div className="flex items-end gap-4">
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[0]} size="tiny" />
+            <Avatar person={EXAMPLE_PEOPLE[0]!} size="tiny" />
             <span className="text-xs">tiny</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[1]} size="small" />
+            <Avatar person={EXAMPLE_PEOPLE[1]!} size="small" />
             <span className="text-xs">small</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[2]} size="normal" />
+            <Avatar person={EXAMPLE_PEOPLE[2]!} size="normal" />
             <span className="text-xs">normal</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[3]} size="large" />
+            <Avatar person={EXAMPLE_PEOPLE[3]!} size="large" />
             <span className="text-xs">large</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[4]} size="xlarge" />
+            <Avatar person={EXAMPLE_PEOPLE[4]!} size="xlarge" />
             <span className="text-xs">xlarge</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[5]} size="xxlarge" />
+            <Avatar person={EXAMPLE_PEOPLE[5]!} size="xxlarge" />
             <span className="text-xs">xxlarge</span>
           </div>
         </div>
@@ -147,27 +148,27 @@ export const Sizes: StoryObj<{}> = {
         <h3 className="text-sm font-medium mb-2">Custom numeric sizes</h3>
         <div className="flex items-end gap-4">
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[6]} size={20} />
+            <Avatar person={EXAMPLE_PEOPLE[6]!} size={20} />
             <span className="text-xs">20px</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[7]} size={24} />
+            <Avatar person={EXAMPLE_PEOPLE[7]!} size={24} />
             <span className="text-xs">24px</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[8]} size={32} />
+            <Avatar person={EXAMPLE_PEOPLE[8]!} size={32} />
             <span className="text-xs">32px</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[9]} size={40} />
+            <Avatar person={EXAMPLE_PEOPLE[9]!} size={40} />
             <span className="text-xs">40px</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[10]} size={56} />
+            <Avatar person={EXAMPLE_PEOPLE[10]!} size={56} />
             <span className="text-xs">56px</span>
           </div>
           <div className="flex flex-col items-center gap-2">
-            <Avatar person={EXAMPLE_PEOPLE[11]} size={96} />
+            <Avatar person={EXAMPLE_PEOPLE[11]!} size={96} />
             <span className="text-xs">96px</span>
           </div>
         </div>
@@ -212,7 +213,7 @@ const AvatarWithNameBlock = ({ title, size }: { title: string; size: AvatarProps
         <div key={nameFormat}>
           <h3 className="text-sm font-medium mb-1">{`${nameFormat} name format`}</h3>
           <AvatarWithName
-            person={EXAMPLE_PEOPLE[0]}
+            person={EXAMPLE_PEOPLE[0]!}
             size={size}
             nameFormat={nameFormat as "full" | "first" | "short"}
           />

@@ -1,3 +1,4 @@
+import React from "react";
 import { SecondaryButton } from "../Button";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { GoalPage } from ".";

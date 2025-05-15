@@ -1,3 +1,4 @@
+import React from "react";
 import { BlackLink } from "../Link";
 import { Avatar } from ".";
 import { AvatarWithNameProps, NameFormat } from "./types";

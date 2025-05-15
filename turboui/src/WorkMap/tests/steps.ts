@@ -13,7 +13,10 @@ export const assertRowsNumber = async (canvasElement, step, count) => {
   const canvas = within(canvasElement);
 
   await step(`Verify there are ${count} rows`, async () => {
-    const tableBody = canvas.getAllByRole("rowgroup")[1]; // Second rowgroup is tbody
+    const rowgroups = canvas.getAllByRole("rowgroup");
+    expect(rowgroups.length).toBeGreaterThan(1); // Ensure we have at least 2 rowgroups
+    
+    const tableBody = rowgroups[1]!; // Second rowgroup is tbody
     const tableRows = within(tableBody).queryAllByRole("row");
 
     expect(tableRows.length).toEqual(count);
@@ -96,9 +99,7 @@ export const selectMonth = async (canvasElement, step, month) => {
   });
 };
 
-export const closeTimeframeSelector = async (canvasElement, step) => {
-  const canvas = within(canvasElement);
-
+export const closeTimeframeSelector = async (_, step) => {
   await step("Close the timeframe selector", async () => {
     await document.body.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape" }));
 

@@ -63,8 +63,12 @@ export function StatusSelector({
   // Handle enter key in search input
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && filteredStatusOptions.length > 0) {
-      const [firstMatchStatus] = filteredStatusOptions[0];
-      onStatusChange && onStatusChange(firstMatchStatus as Types.Status);
+      const firstOption = filteredStatusOptions[0];
+
+      if (firstOption) {
+        const status = firstOption[0];
+        onStatusChange && onStatusChange(status as Types.Status);
+      }
     }
   };
 

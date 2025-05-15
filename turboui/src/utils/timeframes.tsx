@@ -93,7 +93,6 @@ export function lastYear(): Timeframe {
 }
 
 export function currentMonth(): Timeframe {
-  const now = new Date();
   return {
     startDate: new Date(getCurrentFullYear(), getCurrentMonth(), 1),
     endDate: new Date(getCurrentFullYear(), getCurrentMonth() + 1, 0),

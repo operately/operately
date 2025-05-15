@@ -1,3 +1,4 @@
+import React from "react";
 import { match } from "ts-pattern";
 import type { ProgressBarProps } from "./types";
 

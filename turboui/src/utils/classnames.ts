@@ -24,7 +24,7 @@ interface ClassArray extends Array<ClassValue> {}
  * @returns {string} - Space-separated class names
  */
 export default function classNames(...args: ClassValue[]): string {
-  return args.reduce((classes: string, arg) => {
+  return args.reduce<string>((classes, arg) => {
     if (!arg) return classes;
     return joinClasses(classes, parseClassArg(arg));
   }, "");

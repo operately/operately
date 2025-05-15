@@ -16,7 +16,7 @@ const meta: Meta<typeof MilestoneCard> = {
     layout: "padded",
   },
   decorators: [
-    (Story, context) => {
+    (_, context) => {
       // Create a wrapper with state management for proper drag-and-drop
       const MilestoneCardWithDragAndDrop = () => {
         const [tasks, setTasks] = React.useState<Types.Task[]>([]);

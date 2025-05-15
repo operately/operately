@@ -16,7 +16,7 @@ const meta: Meta<typeof TaskList> = {
     layout: "padded",
   },
   decorators: [
-    (Story, context) => {
+    (_, context) => {
       // Create a wrapper component with state for the story
       const TaskListWithReordering = ({ initialTasks }: { initialTasks: Types.Task[] }) => {
         const [tasks, setTasks] = useState<Types.Task[]>([]);

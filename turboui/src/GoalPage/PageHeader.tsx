@@ -1,3 +1,4 @@
+import React from "react";
 import { IconBuilding, IconPencil, IconTarget } from "@tabler/icons-react";
 import { GoalPage } from ".";
 import { PrimaryButton, SecondaryButton } from "../Button";

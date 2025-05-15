@@ -13,12 +13,14 @@ export function genPeople(count: number, opts?: Opts): Person[] {
   const people: Person[] = [];
 
   for (let i = 0; i < count; i++) {
-    const person = EXAMPLE_PEOPLE[i % EXAMPLE_PEOPLE.length];
+    const index = i % EXAMPLE_PEOPLE.length;
+    const person = EXAMPLE_PEOPLE[index];
+
     people.push({
-      id: person.id,
-      fullName: person.fullName,
-      title: person.title,
-      avatarUrl: person.avatarUrl,
+      id: person!.id,
+      fullName: person!.fullName,
+      title: person!.title,
+      avatarUrl: person!.avatarUrl,
     });
   }
 

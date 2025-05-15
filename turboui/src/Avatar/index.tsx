@@ -1,3 +1,4 @@
+import React from "react";
 import { AvatarProps, AvatarSize } from "./types";
 
 export type { AvatarPerson, AvatarProps } from "./types";

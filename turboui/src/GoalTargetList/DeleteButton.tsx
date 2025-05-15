@@ -1,3 +1,4 @@
+import React from "react";
 import { IconTrash } from "@tabler/icons-react";
 import { SecondaryButton } from "../Button";
 import { State, TargetState } from "./useGoalTargetListState";
