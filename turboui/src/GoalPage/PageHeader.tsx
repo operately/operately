@@ -34,13 +34,17 @@ function Buttons(props: GoalPage.Props) {
   return (
     <div className="flex items-center gap-2 mt-4 sm:mt-0">
       {props.canEdit && (
-        <SecondaryButton size="sm">
+        <SecondaryButton size="sm" linkTo={props.editGoalLink}>
           <div className="flex items-center gap-1.5">
             <IconPencil size="16" /> Edit
           </div>
         </SecondaryButton>
       )}
-      {props.canEdit && <PrimaryButton size="sm">Check-In</PrimaryButton>}
+      {props.canEdit && (
+        <PrimaryButton size="sm" linkTo={props.newCheckInLink}>
+          Check-In
+        </PrimaryButton>
+      )}
     </div>
   );
 }

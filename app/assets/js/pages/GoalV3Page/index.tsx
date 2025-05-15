@@ -1,6 +1,6 @@
+import { PageModule } from "@/routes/types";
 import * as React from "react";
 import * as Timeframes from "../../utils/timeframes";
-import { PageModule } from "@/routes/types";
 
 import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -57,6 +57,8 @@ function Page() {
     workmapLink: Paths.spaceGoalsPath(goal.space.id),
     spaceLink: Paths.spacePath(goal.space.id),
     closeLink: Paths.goalClosePath(goal.id),
+    editGoalLink: Paths.goalEditPath(goal.id),
+    newCheckInLink: Paths.goalCheckInNewPath(goal.id),
     privacyLevel: goal.privacy,
     timeframe: Timeframes.parse(goal.timeframe),
     parentGoal: prepareParentGoal(goal.parentGoal),
