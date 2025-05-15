@@ -1,6 +1,6 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { TableRow } from "../components/TableRow";
-import type { WorkMap } from "../components";
 import { TableHeader } from "../components/WorkMapTable";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 

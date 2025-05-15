@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TimeframeSelector } from "./index";
-import { useState } from "react";
+import React, { useState } from "react";
 import { currentMonth, currentQuarter, currentYear, Timeframe } from "../utils/timeframes";
 
 const meta = {

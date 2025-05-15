@@ -1,3 +1,4 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { WorkMapPage } from "../components";
 import { mockItems, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";

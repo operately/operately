@@ -55,7 +55,7 @@ export const reorderTasksInList = (
   
   // Insert at the new position, ensuring it's within bounds
   const insertIndex = Math.min(newIndex, updatedTasks.length);
-  updatedTasks.splice(insertIndex, 0, draggedTask);
+  updatedTasks.splice(insertIndex, 0, draggedTask!);
   
   return updatedTasks;
 };
@@ -83,7 +83,7 @@ export const reorderTasksAcrossMilestones = (
   }
   
   // Get the task and remember its original milestone
-  const draggedTask = updatedTasks[draggedTaskIndex];
+  const draggedTask = updatedTasks[draggedTaskIndex]!;
   const originalMilestoneId = draggedTask.milestone?.id;
   
   // Remove the task from its current position
@@ -111,16 +111,16 @@ export const reorderTasksAcrossMilestones = (
     // For no-milestone, count tasks in other milestones that come first
     for (const milestoneId in tasksByMilestone) {
       if (milestoneId === "no_milestone") break;
-      globalInsertIndex += tasksByMilestone[milestoneId].length;
+      globalInsertIndex += tasksByMilestone[milestoneId]?.length || 0;
     }
     
-    // Add the insertion index within no_milestone
-    globalInsertIndex += Math.min(indexInTargetMilestone, tasksByMilestone["no_milestone"].length);
+    const noMilestoneTasks = tasksByMilestone["no_milestone"] || [];
+    globalInsertIndex += Math.min(indexInTargetMilestone, noMilestoneTasks.length);
   } else {
     // For a specific milestone, count tasks up to that milestone
     for (const milestoneId in tasksByMilestone) {
       if (milestoneId === targetMilestoneId) break;
-      globalInsertIndex += tasksByMilestone[milestoneId].length;
+      globalInsertIndex += tasksByMilestone[milestoneId]?.length || 0;
     }
     
     // Add the insertion index within the milestone
@@ -209,9 +209,6 @@ export const reorderTasks = (
   }
   
   console.log(`Current milestone: ${currentMilestoneId}, target: ${normalizedTargetId}`);
-  // Check if we're working in the same milestone or across milestones
-  const isSameMilestone = currentMilestoneId === normalizedTargetId;
-  
   // Always use the across-milestones function for the main TaskBoard component,
   // but still use the same-milestone logic for the standalone components
   // For now, always use reorderTasksAcrossMilestones for all cases.

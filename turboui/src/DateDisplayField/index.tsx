@@ -11,11 +11,6 @@ const formatDate = (date: Date) => {
   return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
 };
 
-// Helper function to check if a date is in the past
-const isOverdue = (date: Date) => {
-  return date < new Date();
-};
-
 interface DateDisplayFieldProps {
   date?: Date | null;
   onChange?: (date: Date | null) => void;

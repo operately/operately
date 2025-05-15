@@ -73,6 +73,7 @@ export function Modal({
         document.removeEventListener("keydown", handleEsc);
       };
     }
+    return
   }, [isOpen, onClose]);
   
   // Handle clicks outside the modal

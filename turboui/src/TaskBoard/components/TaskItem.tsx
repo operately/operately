@@ -8,7 +8,6 @@ import { StatusSelector } from "./StatusSelector";
 import { DueDateDisplay } from "./DueDateDisplay";
 
 // Using shared types
-import * as Types from "../types";
 import { TaskWithIndex } from "../types";
 
 interface TaskItemProps {
@@ -84,7 +83,7 @@ export function TaskItem({
             {task.assignees && task.assignees.length > 0 && (
               <span className="flex-shrink-0">
                 <AvatarWithName
-                  person={task.assignees[0]}
+                  person={task.assignees[0]!}
                   size="tiny"
                   nameFormat="short"
                   className="text-xs text-content-dimmed"
