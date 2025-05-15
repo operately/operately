@@ -5,6 +5,7 @@ import { GhostButton } from "turboui";
 import { Paths } from "./paths";
 import { useRouteError } from "react-router-dom";
 import { AxiosError } from "axios";
+import { captureException } from "@sentry/react";
 
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
@@ -17,6 +18,13 @@ export default function ErrorPage() {
 }
 
 function ServerErrorPage() {
+  const error = useRouteError() as AxiosError | null;
+
+  React.useEffect(() => {
+    console.error(error);
+    captureException(error, { level: 'fatal' })
+  }, [error])
+
   return (
     <div className="absolute inset-0 flex justify-center items-center gap-16">
       <div className="flex flex-col text-center -mt-64">
