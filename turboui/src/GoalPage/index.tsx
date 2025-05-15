@@ -55,6 +55,8 @@ export namespace GoalPage {
     workmapLink: string;
     closeLink: string;
     deleteLink: string;
+    editGoalLink: string;
+    newCheckInLink: string;
 
     parentGoal: ParentGoal | null;
     goalName: string;

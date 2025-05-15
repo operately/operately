@@ -258,6 +258,8 @@ const defaultArgs: GoalPage.Props = {
   workmapLink: "/spaces/1/workmaps/1",
   closeLink: storyPath("Pages/GoalClosePage", "Default"),
   deleteLink: storyPath("Pages/GoalDeletePage", "Default"),
+  editGoalLink: storyPath("Pages/GoalEditPage", "Default"),
+  newCheckInLink: storyPath("Pages/GoalCheckInPage", "Default"),
 
   goalName: "Launch AI Platform",
   spaceName: "Product",
