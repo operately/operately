@@ -45,8 +45,8 @@ export function useMe(): People.Person | null {
   return ctx.me;
 }
 
-export function usePersonNameAndAvatar(id: string): { fullName: string; avatar: string; loading: boolean } {
-  const loading = { fullName: "", avatar: "", loading: true };
+export function usePersonNameAndAvatar(id: string): { person?: People.Person; loading: boolean } {
+  const loading = { loading: true };
 
   const ctx = React.useContext(CurrentCompanyContext);
   if (!ctx) return loading;
@@ -60,7 +60,7 @@ export function usePersonNameAndAvatar(id: string): { fullName: string; avatar: 
     return loading;
   }
 
-  return { fullName: person.fullName!, avatar: person.avatarUrl!, loading: false };
+  return { person, loading: false };
 }
 
 const THREE_HOURS = 3 * 60 * 60 * 1000;

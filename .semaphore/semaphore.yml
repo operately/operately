@@ -52,7 +52,7 @@ blocks:
         - name: Lint
           commands:
             - make test.js.dead.code
-            - make test.tsc.lint || true # temp disable linter
+            - make test.tsc.lint
             - make test.elixir.warnings
             - make test.pr.name
 
