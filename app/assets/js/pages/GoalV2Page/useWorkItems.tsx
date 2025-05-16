@@ -20,6 +20,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
       return {
         id: project.id!,
         type: "project" as const,
+        state: project.closedAt ? "closed" : project.status === "paused" ? "paused" : "active",
         status: project.lastCheckIn?.status || "pending",
         name: project.name,
         itemPath: Paths.projectPath(project.id),
@@ -39,6 +40,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
       return {
         id: goal.id,
         type: "goal",
+        state: goal.closedAt ? "closed" : "active",
         status: goal.lastCheckIn?.status || "pending",
         name: goal.name,
         itemPath: Paths.goalPath(goal.id),

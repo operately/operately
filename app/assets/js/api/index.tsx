@@ -1490,6 +1490,7 @@ export interface WorkMapItem {
   id: string;
   parentId: string | null;
   name: string;
+  state: WorkMapItemState;
   status: WorkMapItemStatus;
   progress: number;
   space: Space;
@@ -1606,6 +1607,8 @@ export type GoalStatus =
   | "outdated";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
+
+export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
   | "on_track"
