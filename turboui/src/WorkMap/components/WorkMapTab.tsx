@@ -1,8 +1,8 @@
 import React from "react";
-import { DivLink } from "../../Link";
-import classNames from "../../utils/classnames";
-import { TestableElement } from "../../TestableElement";
 import WorkMap from ".";
+import { DivLink } from "../../Link";
+import { TestableElement } from "../../TestableElement";
+import classNames from "../../utils/classnames";
 import { isStorybook } from "../../utils/storybook/isStorybook";
 
 interface Props extends TestableElement {
@@ -22,7 +22,7 @@ interface Props extends TestableElement {
 export function WorkMapTab({ label, tab, isActive, icon, hide, testId, setTab }: Props) {
   const url = getTabUrl(tab);
   const className = classNames(
-    "border-b-2 px-1 pt-2.5 pb-1 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer",
+    "border-b-2 px-1 pt-1.5 pb-1.5 text-xs sm:text-sm font-medium flex items-center gap-1 sm:gap-1.5 whitespace-nowrap cursor-pointer",
     isActive
       ? "border-blue-500 text-content-base"
       : "border-transparent text-content-dimmed hover:text-content-base hover:border-surface-accent",

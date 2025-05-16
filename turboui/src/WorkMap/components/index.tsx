@@ -1,44 +1,50 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 
+import { Page } from "../../Page";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { currentYear } from "../../utils/timeframes";
-import { PrivacyIndicator } from "../../PrivacyIndicator";
-import { Page } from "../../Page";
 
+import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
-import { useWorkMapTab } from "../hooks/useWorkMapTab";
 
 const defaultTimeframe = currentYear();
 
 export function WorkMapPage(props: WorkMap.Props) {
+  const navigation = [
+    {
+      label: "Home",
+      to: "#",
+    },
+    {
+      label: "Work Map",
+      to: "#",
+    },
+  ];
+
   return (
-    <Page title={props.title} size="fullwidth">
+    <Page title={props.title} size="fullwidth" navigation={navigation}>
       <WorkMap {...props} />
     </Page>
   );
 }
 
-export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
+export function WorkMap({ items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
   const [timeframe, setTimeframe] = useState(defaultTimeframe);
   const { filteredItems, tab, setTab } = useWorkMapTab(items, timeframe, { tabOptions });
 
   return (
-    <div className="flex flex-col w-full bg-surface-base rounded-lg">
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
-        </div>
-      </header>
+    <div className="flex flex-col w-full">
+      <WorkMapNavigation
+        activeTab={tab}
+        setTab={setTab}
+        timeframe={timeframe}
+        setTimeframe={setTimeframe}
+        tabOptions={tabOptions}
+      />
+      <div className="text-xl font-bold mt-6 mb-4 px-4">All ongoing work in the company</div>
       <div className="flex-1 overflow-auto">
-        <WorkMapNavigation
-          activeTab={tab}
-          setTab={setTab}
-          timeframe={timeframe}
-          setTimeframe={setTimeframe}
-          tabOptions={tabOptions}
-        />
         <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} />
       </div>
     </div>

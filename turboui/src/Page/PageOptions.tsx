@@ -1,10 +1,10 @@
-import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as React from "react";
 
-import { Page } from ".";
+import { IconDots, IconX } from "@tabler/icons-react";
 import { match } from "ts-pattern";
+import { Page } from ".";
 import { DivLink } from "../Link";
-import { IconX, IconDots } from "@tabler/icons-react";
 import { createTestId } from "../TestableElement";
 
 import classNames from "classnames";
@@ -24,7 +24,7 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
   }
 
   return (
-    <div className="absolute right-0 top-0">
+    <div className="absolute right-1 top-1">
       <div className="absolute right-2.5 top-2.5 flex items-center gap-2">
         <DropdownMenu.Root open={open} onOpenChange={setOpen}>
           <Trigger />
@@ -37,13 +37,13 @@ export function PageOptions({ options }: { options?: Page.Option[] }) {
 
 function Trigger() {
   const className = classNames({
-    "rounded-full border border-surface-outline cursor-pointer": true,
+    "rounded-full border border-stroke-base cursor-pointer": true,
     "p-1 hover:bg-surface-dimmed": true,
   });
 
   return (
     <DropdownMenu.Trigger className={className} data-test-id="page-options-trigger">
-      <IconDots size={20} />
+      <IconDots size={14} />
     </DropdownMenu.Trigger>
   );
 }

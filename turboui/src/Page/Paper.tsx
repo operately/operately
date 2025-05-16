@@ -10,12 +10,12 @@ export function Paper({ children }: { children: React.ReactNode }) {
     "min-h-dvh sm:min-h-0",
 
     // apply border shadow and rounded corners on larger screens
-    "sm:border sm:border-surface-outline",
+    // "sm:border sm:border-surface-outline",
 
-    "sm:rounded-lg",
-    "sm:shadow-xl",
+    // "sm:rounded-lg",
+    // "sm:shadow-xl",
 
-    "sm:mx-4"
+    // "sm:mx-4",
   );
 
   return <div className={classname}>{children}</div>;

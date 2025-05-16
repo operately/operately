@@ -1,8 +1,8 @@
+import { IconChecklist, IconCircleCheck, IconLayoutGrid, IconTarget } from "@tabler/icons-react";
 import React from "react";
-import { WorkMapTab } from "./WorkMapTab";
-import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck } from "@tabler/icons-react";
 import { WorkMap } from ".";
 import { TimeframeSelector } from "../../TimeframeSelector";
+import { WorkMapTab } from "./WorkMapTab";
 
 export interface Props {
   activeTab: WorkMap.Filter;
@@ -14,10 +14,10 @@ export interface Props {
 
 export function WorkMapNavigation({ activeTab, setTab, timeframe, setTimeframe, tabOptions = {} }: Props) {
   return (
-    <div className="overflow-x-auto">
-      <div className="border-b border-surface-outline">
-        <div className="px-4 sm:px-6">
-          <nav className="flex justify-between items-center overflow-x-auto pb-1" aria-label="Work Map Tabs">
+    <div className="overflow-x-auto bg-zinc-50 border-b border-stroke-base">
+      <div className="">
+        <div className="px-4">
+          <nav className="flex justify-between items-center overflow-x-auto" aria-label="Work Map Tabs">
             <div className="flex space-x-4">
               <WorkMapTab
                 label="All work"
@@ -55,10 +55,6 @@ export function WorkMapNavigation({ activeTab, setTab, timeframe, setTimeframe, 
                 hide={tabOptions.hideCompleted}
                 setTab={setTab}
               />
-            </div>
-
-            <div className="mt-1">
-              <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} size="xs" />
             </div>
           </nav>
         </div>

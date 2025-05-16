@@ -1,21 +1,21 @@
 import React from "react";
 
 import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { AvatarList, PrimaryButton, SecondaryButton } from "turboui";
 
-import { useJoinSpace } from "@/models/spaces";
-import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { assertPresent } from "@/utils/assertions";
+import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 import { ToolsSection } from "@/features/SpaceTools";
+import { useJoinSpace } from "@/models/spaces";
+import { assertPresent } from "@/utils/assertions";
 
-import { useLoadedData, useRefresh } from "./loader";
 import { Paths } from "@/routes/paths";
 import { match } from "ts-pattern";
+import * as Turboui from "turboui";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const { space, tools } = useLoadedData();
@@ -23,19 +23,21 @@ export function Page() {
   assertPresent(space.notifications, "notifications must be present in space");
   useClearNotificationsOnLoad(space.notifications);
 
+  const navigation = [
+    { label: "Home", to: "/" },
+    { label: space.name, to: Paths.spacePath(space.id!) },
+  ];
+
   return (
-    <Pages.Page title={space.name!} testId="space-page">
-      <Paper.Root size="xlarge">
-        <Paper.Body>
-          <SpaceEdit />
-          <SpaceHeader space={space} />
-          <SpaceMembers space={space} />
-          <JoinButton space={space} />
-          <ToolsSection space={space} tools={tools} />
-          <SpaceFooter space={space} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+    <Turboui.Page title="Space" navigation={navigation} size="xlarge">
+      <div className="py-4 lg:py-6">
+        <SpaceHeader space={space} />
+        <SpaceMembers space={space} />
+        <JoinButton space={space} />
+        <ToolsSection space={space} tools={tools} />
+        <SpaceFooter space={space} />
+      </div>
+    </Turboui.Page>
   );
 }
 
@@ -98,10 +100,10 @@ function SpaceMembers({ space }: { space: Spaces.Space }) {
 
 function SpaceFooter({ space }: { space: Spaces.Space }) {
   return (
-    <Paper.DimmedSection>
+    <div className="mt-12 px-32">
       <div className="uppercase text-xs font-semibold mb-2">Activity</div>
       <SpaceActivity space={space} />
-    </Paper.DimmedSection>
+    </div>
   );
 }
 

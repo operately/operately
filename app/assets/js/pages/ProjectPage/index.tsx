@@ -1,22 +1,19 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { banner } from "./Banner";
-import { Header } from "./Header";
-import { Navigation } from "./Navigation";
-import { ProjectFeed } from "./ProjectFeed";
-import { CheckInSection } from "./CheckInSection";
-import { StatusOverview } from "./StatusOverview";
-import { ProjectOptions } from "./ProjectOptions";
-import { TimelineSection } from "./TimelineSection";
-import { ResourcesSection } from "./ResourcesSection";
-import { ContributorsSection } from "./ContributorsSection";
-import { ProjectDescriptionSection } from "./ProjectDescriptionSection";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
+import { assertPresent } from "@/utils/assertions";
+import * as Turboui from "turboui";
+import { CheckInSection } from "./CheckInSection";
+import { ContributorsSection } from "./ContributorsSection";
+import { Header } from "./Header";
+import { ProjectDescriptionSection } from "./ProjectDescriptionSection";
+import { ProjectFeed } from "./ProjectFeed";
+import { ResourcesSection } from "./ResourcesSection";
+import { StatusOverview } from "./StatusOverview";
+import { TimelineSection } from "./TimelineSection";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 
@@ -50,27 +47,28 @@ function Page() {
   assertPresent(project.notifications, "Project notifications must be defined");
   useClearNotificationsOnLoad(project.notifications);
 
+  const navigation = [
+    { label: "Home", to: "/" },
+    { label: project.space!.name!, to: "/" },
+    { label: project.name!, to: "/" },
+  ];
+
   return (
-    <Pages.Page title={project.name!} testId="project-page">
-      <Paper.Root size="large">
-        <Navigation space={project.space!} />
+    <Turboui.Page title={[project.name!]} navigation={navigation}>
+      <div className="py-4 lg:py-20">
+        <Header project={project} />
+        <ContributorsSection project={project} />
 
-        <Paper.Body banner={banner(project)}>
-          <Header project={project} />
-          <ContributorsSection project={project} />
+        <div className="mt-4">
+          <StatusOverview project={project} />
+          <ProjectDescriptionSection project={project} />
+          <TimelineSection project={project} />
+          <CheckInSection project={project} />
+          <ResourcesSection project={project} />
+        </div>
 
-          <div className="mt-4">
-            <ProjectOptions project={project} />
-            <StatusOverview project={project} />
-            <ProjectDescriptionSection project={project} />
-            <TimelineSection project={project} />
-            <CheckInSection project={project} />
-            <ResourcesSection project={project} />
-          </div>
-
-          <ProjectFeed project={project} />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+        <ProjectFeed project={project} />
+      </div>
+    </Turboui.Page>
   );
 }

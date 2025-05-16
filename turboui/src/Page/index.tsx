@@ -1,9 +1,9 @@
 import * as React from "react";
+import classNames from "../utils/classnames";
 import { Navigation } from "./Navigation";
+import { PageOptions } from "./PageOptions";
 import { Paper } from "./Paper";
 import { useHtmlTitle } from "./useHtmlTitle";
-import { PageOptions } from "./PageOptions";
-import classNames from "../utils/classnames";
 
 export namespace Page {
   export type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "fullwidth";
@@ -38,16 +38,15 @@ const sizeClasses: Record<Page.Size, string> = {
 
 export function Page(props: Page.Props) {
   useHtmlTitle(props.title);
-  const containerClass = classNames("sm:my-8", sizeClasses[props.size || "medium"]);
+  const containerClass = classNames(sizeClasses[props.size || "medium"]);
 
   return (
-    <div className={containerClass}>
+    <div className="mt-2 mr-2 mb-2 overflow-scroll flex-1 bg-surface-base rounded-lg border border-stone-300">
       {props.navigation && <Navigation items={props.navigation} />}
-
-      <Paper>
+      <div className={containerClass}>
         <PageOptions options={props.options} />
-        {props.children}
-      </Paper>
+        <Paper>{props.children}</Paper>
+      </div>
     </div>
   );
 }

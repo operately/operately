@@ -4,13 +4,13 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { Link } from "../Link";
 import { Page } from "../Page";
-import { PageFooter } from "../Page/PageFooter";
 
 import { IconCircleCheck, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
 import { PageBanner } from "../PageBanner";
 import { BadgeStatus } from "../StatusBadge/types";
 import { isOverdue, Timeframe } from "../utils/timeframes";
+import { WorkMapTab } from "../WorkMap/components/WorkMapTab";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
@@ -102,8 +102,10 @@ export namespace GoalPage {
 
 export function GoalPage(props: GoalPage.Props) {
   const navigation = [
+    { to: props.spaceLink, label: "Home" },
     { to: props.spaceLink, label: props.spaceName },
     { to: props.workmapLink, label: "Goals" },
+    { to: props.workmapLink, label: props.goalName },
   ];
 
   const options = [
@@ -124,20 +126,54 @@ export function GoalPage(props: GoalPage.Props) {
   ];
 
   return (
-    <Page title={[props.goalName]} navigation={navigation} options={options} size="xlarge">
-      {props.closedOn && <ClosedBanner {...props} />}
+    <Page title={[props.goalName]} navigation={navigation} options={options} size="fullwidth">
+      <Tabs activeTab="overview" />
+      <div className="max-w-5xl mx-auto">
+        {props.closedOn && <ClosedBanner {...props} />}
 
-      <div className="p-4 sm:px-24">
-        <PageHeader {...props} />
+        <div className="p-4 lg:pt-14">
+          <PageHeader {...props} />
 
-        <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
-          <MainContent {...props} />
-          <Sidebar {...props} />
+          <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
+            <MainContent {...props} />
+            <Sidebar {...props} />
+          </div>
+
+          <ActivityFooter {...props} />
         </div>
       </div>
-
-      <ActivityFooter {...props} />
     </Page>
+  );
+}
+
+export function Tabs({ activeTab, setTab, tabOptions = {} }: Props) {
+  return (
+    <div className="overflow-x-auto bg-zinc-50 border-b border-stroke-base">
+      <div className="">
+        <div className="px-2.5">
+          <nav className="flex justify-between items-center overflow-x-auto" aria-label="Work Map Tabs">
+            <div className="flex space-x-4">
+              <WorkMapTab
+                label="Overview"
+                tab="overview"
+                isActive={activeTab === "overview"}
+                testId="work-map-tab-all"
+                hide={tabOptions.hideAll}
+                setTab={setTab}
+              />
+              <WorkMapTab
+                label="Conversation"
+                tab="convo"
+                isActive={activeTab === "goals"}
+                testId="work-map-tab-goals"
+                hide={tabOptions.hideGoals}
+                setTab={setTab}
+              />
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -157,10 +193,10 @@ function MainContent(props: GoalPage.Props) {
 
 function ActivityFooter({ activityFeed }: { activityFeed: React.ReactNode }) {
   return (
-    <PageFooter className="p-4 sm:px-24 sm:p-8">
+    <div className="mt-20">
       <h3 className="text-xs uppercase font-medium tracking-wider mb-2">Activity</h3>
       {activityFeed}
-    </PageFooter>
+    </div>
   );
 }
 

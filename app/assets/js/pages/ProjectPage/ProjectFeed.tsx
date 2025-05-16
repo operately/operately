@@ -1,15 +1,14 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 
 export function ProjectFeed({ project }: { project: Projects.Project }) {
   return (
-    <Paper.DimmedSection>
+    <div>
       <div className="uppercase text-xs text-content-accent font-semibold mb-4">Project Activity</div>
       <ProjectFeedItems project={project} />
-    </Paper.DimmedSection>
+    </div>
   );
 }
 
