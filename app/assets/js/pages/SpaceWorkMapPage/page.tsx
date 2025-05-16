@@ -8,6 +8,6 @@ export function Page() {
   const title = `${space.name} Work Map`;
 
   return (
-    <WorkMapPage title={title} items={workMap} tabOptions={{ hideAll: true }} columnOptions={{ hideSpace: true }} />
+    <WorkMapPage title={title} items={workMap} columnOptions={{ hideSpace: true }} />
   );
 }
