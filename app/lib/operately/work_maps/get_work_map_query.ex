@@ -25,8 +25,11 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     company_id = Map.get(args, :company_id)
     include_assignees = Map.get(args, :include_assignees, false)
 
-    goals = get_goals_tree(person, company_id, include_assignees)
-    projects = get_projects(person, company_id, include_assignees)
+    goals_task = Task.async(fn -> get_goals_tree(person, company_id, include_assignees) end)
+    projects_task = Task.async(fn -> get_projects(person, company_id, include_assignees) end)
+
+    goals = Task.await(goals_task)
+    projects = Task.await(projects_task)
 
     work_map = build_work_map(goals, projects, args)
 
