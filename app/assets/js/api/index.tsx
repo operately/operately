@@ -2424,6 +2424,8 @@ export interface CreateGoalDiscussionInput {
   goalId?: string | null;
   title?: string | null;
   message?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: string[] | null;
 }
 
 export interface CreateGoalDiscussionResult {

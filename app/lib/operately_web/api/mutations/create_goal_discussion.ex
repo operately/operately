@@ -2,14 +2,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
-
-  alias Operately.Repo
+  alias Operately.Goals.{Goal, Permissions}
+  alias Operately.Operations.GoalDiscussionCreation
 
   inputs do
-    field :goal_id, :string
+    field :goal_id, :id
     field :title, :string
     field :message, :string
+    field :send_notifications_to_everyone, :boolean
+    field :subscriber_ids, list_of(:string)
   end
 
   outputs do
@@ -17,28 +18,36 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
   end
 
   def call(conn, inputs) do
-    author = me(conn)
-    {:ok, goal_id} = decode_id(inputs.goal_id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.goal_id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_open_discussion) end)
+    |> run(:attrs, fn -> parse_inputs(inputs) end)
+    |> run(:operation, fn ctx -> GoalDiscussionCreation.run(ctx.me, ctx.goal, ctx.attrs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{id: OperatelyWeb.Paths.activity_id(ctx.operation)}} end)
+    |> respond()
+  end
 
-    case load_goal(author, goal_id) do
-      nil ->
-        query(goal_id)
-        |> forbidden_or_not_found(author.id)
-
-      goal ->
-        {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(author, goal, inputs.title, inputs.message)
-        activity = Operately.Repo.preload(activity, :comment_thread)
-        {:ok, %{id: OperatelyWeb.Paths.activity_id(activity)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :goal, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load_goal(author, goal_id) do
-    query(goal_id)
-    |> filter_by_edit_access(author.id)
-    |> Repo.one()
-  end
+  defp parse_inputs(inputs) do
+    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
 
-  defp query(goal_id) do
-    from(g in Operately.Goals.Goal, where: g.id == ^goal_id)
+    {:ok, %{
+      title: inputs.title,
+      content: Jason.decode!(inputs.message),
+      subscription_parent_type: :comment_thread,
+      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      subscriber_ids: subscriber_ids || []
+    }}
   end
 end
