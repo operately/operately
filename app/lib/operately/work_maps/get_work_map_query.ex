@@ -23,64 +23,41 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   """
   def execute(person, args) do
     company_id = Map.get(args, :company_id)
-    space_id = Map.get(args, :space_id)
-    parent_goal_id = Map.get(args, :parent_goal_id)
-    owner_id = Map.get(args, :owner_id)
     include_assignees = Map.get(args, :include_assignees, false)
 
-    goals = get_goals_tree(person, company_id, space_id, parent_goal_id, owner_id, include_assignees)
-    projects = get_projects(person, company_id, space_id, owner_id, parent_goal_id, include_assignees, goals)
+    goals = get_goals_tree(person, company_id, include_assignees)
+    projects = get_projects(person, company_id, include_assignees)
 
-    work_map = build_work_map(goals, projects, include_assignees)
+    work_map = build_work_map(goals, projects, args)
 
     {:ok, work_map}
   end
 
-  defp get_projects(person, company_id, space_id, owner_id, goal_id, include_assignees, goals) do
-    goal_ids = Enum.map(goals, & &1.id)
-
+  defp get_projects(person, company_id, include_assignees) do
     from(Project, as: :projects)
     |> where([p], p.company_id == ^company_id)
-    |> filter_by_space(space_id)
-    |> filter_by_owner_project(owner_id)
-    |> filter_by_goal(goal_id, goal_ids)
     |> join_preload_project_associations(include_assignees)
     |> filter_by_view_access(person, :projects)
     |> load_access_levels()
     |> Repo.all()
   end
 
-  defp get_goals_tree(person, company_id, space_id, parent_goal_id, owner_id, include_assignees) do
-    initial_query =
-      from(Goal, as: :goals)
-      |> where([g], g.company_id == ^company_id)
-      |> filter_by_space(space_id)
-      |> filter_by_owner_goal(owner_id)
-      |> filter_by_parent_goal(parent_goal_id)
-      |> filter_by_view_access(person, :goals)
-
-    recursive_query =
-      from(Goal, as: :goals)
-      |> join(:inner, [g], parent in "goal_tree", on: g.parent_goal_id == parent.id)
-      |> where([g], g.company_id == ^company_id)
-      |> filter_by_space(space_id)
-      |> filter_by_owner_goal(owner_id)
-      |> filter_by_view_access(person, :goals)
-
-    goal_tree_query = union_all(initial_query, ^recursive_query)
-
-    {"goal_tree", Goal}
-    |> recursive_ctes(true)
-    |> with_cte("goal_tree", as: ^goal_tree_query)
-    |> select([g], g)
+  defp get_goals_tree(person, company_id, include_assignees) do
+    from(Goal, as: :goals)
+    |> where([g], g.company_id == ^company_id)
     |> join_preload_goal_associations(include_assignees)
+    |> filter_by_view_access(person, :goals)
     |> load_access_levels()
     |> Repo.all()
   end
 
-  defp build_work_map(goals, projects, include_assignees) do
+  defp build_work_map(goals, projects, args) do
+    include_assignees = Map.get(args, :include_assignees, false)
+    filters = Map.take(args, [:space_id, :parent_goal_id, :owner_id])
+
     (goals ++ projects)
     |> Enum.map(fn item -> WorkMapItem.build_item(item, [], include_assignees) end)
+    |> WorkMap.filter_flat_list(filters)
     |> WorkMap.build_hierarchy()
   end
 
@@ -94,31 +71,13 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [g], c in assoc(g, :champion), as: :champion)
     |> join(:left, [g], gr in assoc(g, :group), as: :group)
     |> join(:left, [g], t in assoc(g, :targets), as: :targets)
-    |> then(fn q ->
-      if include_assignees do
-        q |> join(:left, [g], r in assoc(g, :reviewer), as: :reviewer)
-      else
-        q
-      end
-    end)
-    |> then(fn q ->
-      if include_assignees do
-        preload(q, [company: company, champion: c, group: gr, targets: t, reviewer: r],
-          company: company,
-          champion: c,
-          group: gr,
-          targets: t,
-          reviewer: r
-        )
-      else
-        preload(q, [company: company, champion: c, group: gr, targets: t],
-          company: company,
-          champion: c,
-          group: gr,
-          targets: t
-        )
-      end
-    end)
+    |> preload([company: company, champion: c, group: gr, targets: t],
+      company: company,
+      champion: c,
+      group: gr,
+      targets: t
+    )
+    |> maybe_preload_goal_assignees(include_assignees)
   end
 
   defp join_preload_project_associations(query, include_assignees) do
@@ -128,36 +87,37 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [p], gr in assoc(p, :group), as: :group)
     |> join(:left, [p], m in assoc(p, :milestones), as: :milestones)
     |> join(:left, [p], lci in assoc(p, :last_check_in), as: :last_check_in)
-    |> then(fn q ->
-      if include_assignees do
-        join(q, :left, [p], a in assoc(p, :contributing_people), as: :contributing_people)
-      else
-        q
-      end
-    end)
-    |> then(fn q ->
-      if include_assignees do
-        q
-        |> preload([company: company, champion: c, group: gr, milestones: m, last_check_in: lci, contributing_people: cp],
-          company: company,
-          champion: c,
-          group: gr,
-          milestones: m,
-          last_check_in: lci,
-          contributing_people: cp
-        )
-      else
-        q
-        |> preload([company: company, champion: c, group: gr, milestones: m, last_check_in: lci],
-          company: company,
-          champion: c,
-          group: gr,
-          milestones: m,
-          last_check_in: lci
-        )
-      end
-    end)
+    |> preload([company: company, champion: c, group: gr, milestones: m, last_check_in: lci],
+      company: company,
+      champion: c,
+      group: gr,
+      milestones: m,
+      last_check_in: lci
+    )
+    |> maybe_preload_project_assignees(include_assignees)
   end
+
+  #
+  # Assignees
+  #
+
+  defp maybe_preload_goal_assignees(query, true) do
+    query
+    |> join(:left, [g], r in assoc(g, :reviewer), as: :reviewer)
+    |> preload([reviewer: r], reviewer: r)
+  end
+  defp maybe_preload_goal_assignees(query, _), do: query
+
+  defp maybe_preload_project_assignees(query, true) do
+    query
+    |> join(:left, [p], a in assoc(p, :contributing_people), as: :contributing_people)
+    |> preload([contributing_people: a], contributing_people: a)
+  end
+  defp maybe_preload_project_assignees(query, _), do: query
+
+  #
+  # Access
+  #
 
   defp load_access_levels(query) do
     # If the `context` association is not established by filter_by_view_access/3,
@@ -173,46 +133,6 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp maybe_join_context(q) when is_named_binding(q, :context), do: q
   defp maybe_join_context(q), do: join(q, :left, [r], c in assoc(r, :access_context), as: :context)
-
-  #
-  # Filters
-  #
-
-  defp filter_by_parent_goal(query, nil) do
-    where(query, [g], is_nil(g.parent_goal_id))
-  end
-
-  defp filter_by_parent_goal(query, parent_goal_id) do
-    where(query, [g], g.parent_goal_id == ^parent_goal_id)
-  end
-
-  defp filter_by_goal(query, nil, goal_ids) do
-    where(query, [p], is_nil(p.goal_id) or p.goal_id in ^goal_ids)
-  end
-
-  defp filter_by_goal(query, id, goal_ids) do
-    where(query, [p], p.goal_id in ^[id | goal_ids])
-  end
-
-  defp filter_by_space(query, nil), do: query
-
-  defp filter_by_space(query, space_id) do
-    where(query, [item], item.group_id == ^space_id)
-  end
-
-  defp filter_by_owner_goal(query, nil), do: query
-
-  defp filter_by_owner_goal(query, owner_id) do
-    where(query, [g], g.champion_id == ^owner_id)
-  end
-
-  defp filter_by_owner_project(query, nil), do: query
-
-  defp filter_by_owner_project(query, owner_id) do
-    query
-    |> join(:inner, [p], c in Operately.Projects.Contributor, on: c.project_id == p.id and c.role == :champion)
-    |> where([_, c], c.person_id == ^owner_id)
-  end
 
   defp filter_by_view_access(query, :system, _name), do: query
 

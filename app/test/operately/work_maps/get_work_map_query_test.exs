@@ -31,24 +31,16 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     test "returns only root goals and projects for the specified company", ctx do
       {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
-      # Should return 4 items: 2 root goals and 2 root projects
-      assert length(work_map) == 4
-
-      # Count goals and projects
-      goal_count = Enum.count(work_map, fn item -> item.type == :goal end)
-      project_count = Enum.count(work_map, fn item -> item.type == :project end)
-
-      assert goal_count == 2
-      assert project_count == 2
-
-      # Verify each each project has empty children array and goal doesn't
-      Enum.each(work_map, fn item ->
-        if item.type == :goal do
-          assert length(item.children) == 1
-        else
-          assert item.children == []
-        end
-      end)
+      assert_work_map_structure(work_map, ctx, %{
+        root_goal1: %{
+          project_with_goal1: []
+        },
+        root_goal2: %{
+          project_with_goal2: []
+        },
+        root_project1: [],
+        root_project2: []
+      })
     end
   end
 
@@ -64,11 +56,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "includes assignees when include_assignees is true", ctx do
-      {:ok, work_map} =
-        GetWorkMapQuery.execute(:system, %{
-          company_id: ctx.company.id,
-          include_assignees: true
-        })
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id, include_assignees: true })
 
       # Find the goal and project
       goal = Enum.find(work_map, fn item -> item.type == :goal end)
@@ -141,79 +129,71 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:project_s3_3, :space3)
     end
 
-    test "returns only goals and projects for the specified space", %{company: company, space1: space1} do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, space_id: space1.id})
+    test "returns only goals and projects for the specified space", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
 
-      # Should return 2 items: 1 goal and 1 project from space1
-      assert length(work_map) == 2
-
-      # Verify all items belong to space1
-      Enum.each(work_map, fn item ->
-        assert item.space.id == space1.id
-      end)
+      assert_work_map_structure(work_map, ctx, %{
+        goal1: [],
+        project1: []
+      })
     end
 
-    test "returns only goals and projects for space2 with correct hierarchy", %{company: company, space2: space2} = ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, space_id: space2.id})
+    test "returns only goals and projects for space2 with correct hierarchy", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space2.id})
 
-      # Should return 2 items: 1 root goal and 1 root project from space2
-      assert length(work_map) == 2
-
-      # Find the root goal
-      root_goal_item =
-        Enum.find(work_map, fn item ->
-          item.type == :goal && item.parent_id == nil
-        end)
-
-      assert root_goal_item
-
-      # Find the root project
-      assert Enum.find(work_map, fn item ->
-               item.type == :project && item.parent_id == nil
-             end)
-
-      # Verify all items belong to space2
-      Enum.each(work_map, fn item ->
-        assert item.space.id == space2.id
-      end)
-
-      # Verify the hierarchy
-      assert length(root_goal_item.children) == 2
-
-      # Find child_goal1 in children
-      child_goal1_item =
-        Enum.find(root_goal_item.children, fn item ->
-          item.type == :goal && item.id == ctx.child_goal1.id
-        end)
-
-      assert child_goal1_item
-
-      # Verify child_goal1 has grandchild_goal
-      assert length(child_goal1_item.children) == 1
-      grandchild_goal_item = Enum.at(child_goal1_item.children, 0)
-      assert grandchild_goal_item.id == ctx.grandchild_goal.id
-
-      # Verify grandchild_goal has 2 projects
-      assert length(grandchild_goal_item.children) == 2
-
-      Enum.each(grandchild_goal_item.children, fn item ->
-        assert item.type == :project
-        assert Enum.member?([ctx.grandchild_project1.id, ctx.grandchild_project2.id], item.id)
-      end)
+      assert_work_map_structure(work_map, ctx, %{
+        root_goal: %{
+          child_goal1: %{
+            grandchild_goal: %{
+              grandchild_project1: [],
+              grandchild_project2: []
+            }
+          },
+          child_goal2: []
+        },
+        root_project: []
+      })
     end
 
-    test "returns only projects for space3", %{company: company, space3: space3} = ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, space_id: space3.id})
+    test "returns only projects for space3", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space3.id})
 
-      # Should return 3 projects from space3
-      assert length(work_map) == 3
+      assert_work_map_structure(work_map, ctx, %{
+        project_s3_1: [],
+        project_s3_2: [],
+        project_s3_3: []
+      })
+    end
 
-      # Verify all items are projects and belong to space3
-      Enum.each(work_map, fn item ->
-        assert item.type == :project
-        assert item.space.id == space3.id
-        assert Enum.member?([ctx.project_s3_1.id, ctx.project_s3_2.id, ctx.project_s3_3.id], item.id)
-      end)
+    test "given parent and greatgrandchild have the same space, but child and grandchild have another space, returns only parent and greatgrandchild", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :space2, parent_goal: :goal1)
+        |> Factory.add_goal(:grand_child, :space2, parent_goal: :child)
+        |> Factory.add_goal(:great_grand_child, :space1, parent_goal: :grand_child)
+        |> Factory.add_project(:grand_child_project, :space1, goal: :child)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: [],
+        goal1: %{
+          great_grand_child: [],
+          grand_child_project: []
+        }
+      })
+    end
+
+    test "given parent and child have different spaces, returns child as root", ctx do
+      ctx = Factory.add_goal(ctx, :child, :space1, parent_goal: :root_goal)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        goal1: [],
+        project1: [],
+        child: []
+      })
     end
   end
 
@@ -237,59 +217,19 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_goal(:root_goal, :space)
     end
 
-    test "returns only child goals and projects for the specified parent goal", %{company: company, parent_goal: parent_goal} = ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, parent_goal_id: parent_goal.id})
+    test "returns only child goals and projects for the specified parent goal", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, parent_goal_id: ctx.parent_goal.id})
 
-      # Should return 3 items: 2 child goals and 1 child project
-      assert length(work_map) == 3
-
-      # Count goals and projects
-      goal_count = Enum.count(work_map, fn item -> item.type == :goal end)
-      project_count = Enum.count(work_map, fn item -> item.type == :project end)
-
-      assert goal_count == 2
-      assert project_count == 1
-
-      # Verify parent relationships
-      Enum.each(work_map, fn item ->
-        assert item.parent_id == parent_goal.id
-      end)
-
-      # Find child_goal1 in the results
-      child_goal1_item =
-        Enum.find(work_map, fn item ->
-          item.type == :goal && item.id == ctx.child_goal1.id
-        end)
-
-      # Verify child_goal1 has grandchild_goal
-      assert length(child_goal1_item.children) == 1
-      grandchild_goal_item = Enum.at(child_goal1_item.children, 0)
-      assert grandchild_goal_item.id == ctx.grandchild_goal.id
-
-      # Verify grandchild_goal has 2 projects
-      assert length(grandchild_goal_item.children) == 2
-
-      # Verify the projects under grandchild_goal
-      project_ids =
-        Enum.map(grandchild_goal_item.children, fn item ->
-          assert item.type == :project
-          item.id
-        end)
-
-      assert Enum.sort(project_ids) == Enum.sort([ctx.grandchild_project1.id, ctx.grandchild_project2.id])
-
-      # Verify child_goal2 has no children
-      child_goal2_item =
-        Enum.find(work_map, fn item ->
-          item.type == :goal && item.id == ctx.child_goal2.id
-        end)
-
-      assert child_goal2_item.children == []
-
-      # Verify child_project is in the results
-      assert Enum.find(work_map, fn item ->
-               item.type == :project && item.id == ctx.child_project.id
-             end)
+      assert_work_map_structure(work_map, ctx, %{
+        child_goal1: %{
+          grandchild_goal: %{
+            grandchild_project1: [],
+            grandchild_project2: []
+          }
+        },
+        child_goal2: [],
+        child_project: []
+      })
     end
   end
 
@@ -309,16 +249,44 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:project2, :space, champion: :member)
     end
 
-    test "returns only goals and projects owned by the specified person", %{company: company, creator: creator} do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: company.id, owner_id: creator.id})
+    test "returns only goals and projects owned by the specified person", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
 
-      # Should return 2 items: 1 goal and 1 project owned by creator
-      assert length(work_map) == 2
+      assert_work_map_structure(work_map, ctx, %{
+        goal1: [],
+        project1: []
+      })
+    end
 
-      # Verify ownership
-      Enum.each(work_map, fn item ->
-        assert item.owner.id == creator.id
-      end)
+    test "given parent and greatgrandchild have the same owner, but child and grandchild have another owner, returns only parent and greatgrandchild", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :space, parent_goal: :goal1, champion: :member)
+        |> Factory.add_goal(:grand_child, :space, parent_goal: :child, champion: :member)
+        |> Factory.add_goal(:great_grand_child, :space, parent_goal: :grand_child, champion: :creator)
+        |> Factory.add_project(:grand_child_project, :space, goal: :child, champion: :creator)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: [],
+        goal1: %{
+          great_grand_child: [],
+          grand_child_project: []
+        }
+      })
+    end
+
+    test "given parent and child have different owners, returns child as root", ctx do
+      ctx = Factory.add_goal(ctx, :child, :space, parent_goal: :goal2, champion: :creator)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        goal1: [],
+        project1: [],
+        child: []
+      })
     end
   end
 
@@ -346,37 +314,20 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     test "returns complete hierarchy with all nested children", ctx do
       {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id})
 
-      # Should return only the root goal (other goals are nested as children)
-      assert length(work_map) == 1
-
-      # Get the root goal
-      root_item = Enum.find(work_map, fn item -> item.type == :goal end)
-      assert root_item
-
-      # Root goal should have 3 children: 2 level1 goals and 1 project
-      assert length(root_item.children) == 3
-
-      # Find level1_goal in children
-      level1_item =
-        Enum.find(root_item.children, fn item ->
-          item.type == :goal && item.id == ctx.level1_goal.id
-        end)
-
-      assert level1_item
-
-      # level1_goal should have 2 children: 1 level2 goal and 1 project
-      assert length(level1_item.children) == 2
-
-      # Find level2_goal in children
-      level2_item =
-        Enum.find(level1_item.children, fn item ->
-          item.type == :goal && item.id == ctx.level2_goal.id
-        end)
-
-      assert level2_item
-
-      # level2_goal should have 1 child: 1 project
-      assert length(level2_item.children) == 1
+      assert_work_map_structure(work_map, ctx, %{
+        root_goal: %{
+          root_project: [],
+          level1_goal: %{
+            level1_project: [],
+            level2_goal: %{
+              level2_project: []
+            }
+          },
+          level1_goal2: %{
+            level1_project2: []
+          }
+        }
+      })
     end
   end
 
@@ -402,29 +353,19 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:project2, :space1, goal: :parent_goal1, champion: :member)
     end
 
-    test "filters correctly with all parameters", %{company: company, space1: space1, parent_goal1: parent_goal1, creator: creator} do
-      # Test with all parameters
+    test "filters correctly with all parameters", ctx do
       {:ok, work_map} =
         GetWorkMapQuery.execute(:system, %{
-          company_id: company.id,
-          space_id: space1.id,
-          parent_goal_id: parent_goal1.id,
-          owner_id: creator.id
+          company_id: ctx.company.id,
+          space_id: ctx.space1.id,
+          parent_goal_id: ctx.parent_goal1.id,
+          owner_id: ctx.creator.id
         })
 
-      # Should return 2 items: 1 child goal and 1 project owned by creator in space1 under parent_goal1
-      assert length(work_map) == 2
-
-      # Verify correct filtering
-      Enum.each(work_map, fn item ->
-        # Check space
-        assert item.space.id == space1.id
-
-        # Check parent relationship
-        assert Enum.member?([:goal, :project], item.type)
-        assert item.parent_id == parent_goal1.id
-        assert item.owner.id == creator.id
-      end)
+      assert_work_map_structure(work_map, ctx, %{
+        child_goal1: [],
+        project1: []
+      })
     end
   end
 
@@ -562,29 +503,26 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "company member has access to 2 public goals", ctx do
-      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.company_member, %{company_id: ctx.company.id})
-      assert public1.id == ctx.public1.id
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.company_member, %{company_id: ctx.company.id})
 
-      [public2] = public1.children
-      assert public2.id == ctx.public2.id
-
-      assert public2.children == []
+      assert_work_map_structure(work_map, ctx, %{
+        public1: %{
+          public2: []
+        }
+      })
     end
 
     test "space member has access to 4 public and internal goals", ctx do
-      {:ok, [public1]} = GetWorkMapQuery.execute(ctx.space_member, %{company_id: ctx.company.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.space_member, %{company_id: ctx.company.id})
 
-      assert public1.id == ctx.public1.id
-      assert length(public1.children) == 2
-
-      internal1 = Enum.find(public1.children, fn item -> item.id == ctx.internal1.id end)
-      assert internal1.children == []
-
-      public2 = Enum.find(public1.children, fn item -> item.id == ctx.public2.id end)
-      [internal2] = public2.children
-
-      assert internal2.id == ctx.internal2.id
-      assert internal2.children == []
+      assert_work_map_structure(work_map, ctx, %{
+        public1: %{
+          public2: %{
+            internal2: []
+          },
+          internal1: []
+        },
+      })
     end
 
     @table [
@@ -596,32 +534,108 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       test "#{@test.person} has access to 6 public, internal and secret goals", ctx do
         {:ok, work_map} = GetWorkMapQuery.execute(ctx[@test.person], %{company_id: ctx.company.id})
 
-        # Should see both root goals (public1 and secret1)
-        assert length(work_map) == 2
-
-        # Verify secret1 root goal has no children
-        secret1 = Enum.find(work_map, fn item -> item.id == ctx.secret1.id end)
-        assert secret1.children == []
-
-        # Verify public1 has both public2 and internal1 children
-        public1 = Enum.find(work_map, fn item -> item.id == ctx.public1.id end)
-
-        assert length(public1.children) == 2
-        internal1 = Enum.find(public1.children, fn item -> item.id == ctx.internal1.id end)
-        public2 = Enum.find(public1.children, fn item -> item.id == ctx.public2.id end)
-
-        # Verify internal1 has no children
-        assert internal1.children == []
-
-        # Verify internal2 is only child of public2
-        [internal2] = public2.children
-        assert internal2.id == ctx.internal2.id
-
-        # Verify secret2 has no children
-        [secret2] = internal2.children
-        assert secret2.id == ctx.secret2.id
-        assert secret2.children == []
+        assert_work_map_structure(work_map, ctx, %{
+          public1: %{
+            public2: %{
+              internal2: %{
+                secret2: []
+              }
+            },
+            internal1: []
+          },
+          secret1: []
+        })
       end
     end
+  end
+
+  #
+  # Helpers
+  #
+
+  defp assert_work_map_structure(work_map, ctx, expected_structure) do
+    expected_root_ids = Map.keys(expected_structure) |> Enum.map(fn key -> ctx[key].id end)
+    actual_root_ids = Enum.map(work_map, & &1.id)
+
+    assert Enum.sort(actual_root_ids) == Enum.sort(expected_root_ids), "Root nodes do not match expected structure. Expected: #{inspect(expected_root_ids)}, Got: #{inspect(actual_root_ids)}"
+
+    # Build a map of all items by id for easier lookup
+    items_by_id = index_work_map_by_id(work_map)
+
+    # Recursively check each expected node and its children
+    Enum.each(expected_structure, fn {node_key, expected_children} ->
+      node_id = ctx[node_key].id
+      node = Map.get(items_by_id, node_id)
+
+      assert node, "Expected node #{inspect(node_key)} (ID: #{node_id}) not found in work map"
+
+      case expected_children do
+        [] ->
+          assert node.children == [], "Expected node #{inspect(node_key)} to have no children"
+
+        children ->
+          actual_child_ids = Enum.map(node.children, & &1.id) |> Enum.sort()
+          expected_child_ids = Map.keys(children) |> Enum.map(fn key -> ctx[key].id end) |> Enum.sort()
+
+          assert actual_child_ids == expected_child_ids,
+                 "Children of node #{inspect(node_key)} do not match. " <>
+                 "Expected: #{inspect(expected_child_ids)}, Got: #{inspect(actual_child_ids)}"
+
+          # Recursively check each child's structure
+          Enum.each(node.children, fn child ->
+            child_key = find_key_for_id(child.id, ctx)
+            child_children = Map.get(children, child_key)
+            assert_child_structure(child, child_children, ctx, items_by_id)
+          end)
+      end
+    end)
+  end
+
+  # Helper to assert a child node's structure
+  defp assert_child_structure(node, expected_children, ctx, items_by_id) do
+    case expected_children do
+      [] ->
+        assert node.children == [], "Expected node #{node.id} to have no children"
+
+      children when is_map(children) and map_size(children) > 0 ->
+        actual_child_ids = Enum.map(node.children, & &1.id) |> Enum.sort()
+        expected_child_ids = Map.keys(children) |> Enum.map(fn key -> ctx[key].id end) |> Enum.sort()
+
+        assert actual_child_ids == expected_child_ids,
+               "Children of node #{node.id} do not match. " <>
+               "Expected: #{inspect(expected_child_ids)}, Got: #{inspect(actual_child_ids)}"
+
+        # Recursively check each child's structure
+        Enum.each(node.children, fn child ->
+          child_key = find_key_for_id(child.id, ctx)
+          child_children = Map.get(children, child_key)
+          assert_child_structure(child, child_children, ctx, items_by_id)
+        end)
+    end
+  end
+
+  defp find_key_for_id(id, ctx) do
+    Enum.find_value(ctx, fn {key, value} ->
+      if is_map(value) && Map.has_key?(value, :id) && value.id == id, do: key, else: nil
+    end)
+  end
+
+  # Helper to build a map of all items in the work map by ID
+  defp index_work_map_by_id(work_map) do
+    flatten_for_index(work_map, %{})
+  end
+
+  # Non-recursive approach to flatten a tree and create an ID -> item mapping
+  defp flatten_for_index(items, acc) when is_list(items) do
+    items
+    |> Enum.reduce(acc, fn item, acc ->
+      acc = Map.put(acc, item.id, item)
+
+      if item.children && length(item.children) > 0 do
+        flatten_for_index(item.children, acc)
+      else
+        acc
+      end
+    end)
   end
 end
