@@ -1,5 +1,5 @@
-import React from "react";
 import { IconBuilding, IconPencil, IconTarget } from "@tabler/icons-react";
+import React from "react";
 import { GoalPage } from ".";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { DimmedLink } from "../Link";
@@ -8,12 +8,10 @@ import { StatusBadge } from "../StatusBadge";
 
 export function PageHeader(props: GoalPage.Props) {
   return (
-    <div className="border-b border-stroke-base sm:pt-6 pb-4">
-      <ParentGoal {...props} />
-
+    <div className="border-b border-stroke-base sm:pt-4 pb-4">
       <div className="sm:flex sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold inline">{props.goalName}</h1>
+          <h1 className="text-xl font-bold inline">{props.goalName}</h1>
 
           <PrivacyIndicator
             resourceType="goal"
@@ -35,14 +33,14 @@ function Buttons(props: GoalPage.Props) {
   return (
     <div className="flex items-center gap-2 mt-4 sm:mt-0">
       {props.canEdit && (
-        <SecondaryButton size="sm" linkTo={props.editGoalLink}>
+        <SecondaryButton size="xs" linkTo={props.editGoalLink}>
           <div className="flex items-center gap-1.5">
             <IconPencil size="16" /> Edit
           </div>
         </SecondaryButton>
       )}
       {props.canEdit && (
-        <PrimaryButton size="sm" linkTo={props.newCheckInLink}>
+        <PrimaryButton size="xs" linkTo={props.newCheckInLink}>
           Check-In
         </PrimaryButton>
       )}

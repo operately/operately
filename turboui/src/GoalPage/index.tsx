@@ -14,7 +14,6 @@ import { WorkMapTab } from "../WorkMap/components/WorkMapTab";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
-import { Messages } from "./Messages";
 import { PageHeader } from "./PageHeader";
 import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
@@ -102,9 +101,8 @@ export namespace GoalPage {
 
 export function GoalPage(props: GoalPage.Props) {
   const navigation = [
-    { to: props.spaceLink, label: "Home" },
+    { to: props.spaceLink, label: "Acme" },
     { to: props.spaceLink, label: props.spaceName },
-    { to: props.workmapLink, label: "Goals" },
     { to: props.workmapLink, label: props.goalName },
   ];
 
@@ -128,18 +126,16 @@ export function GoalPage(props: GoalPage.Props) {
   return (
     <Page title={[props.goalName]} navigation={navigation} options={options} size="fullwidth">
       <Tabs activeTab="overview" />
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-5xl mx-auto mt-8">
         {props.closedOn && <ClosedBanner {...props} />}
 
-        <div className="p-4 lg:pt-14">
+        <div className="p-4">
           <PageHeader {...props} />
 
           <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
             <MainContent {...props} />
             <Sidebar {...props} />
           </div>
-
-          <ActivityFooter {...props} />
         </div>
       </div>
     </Page>
@@ -162,7 +158,7 @@ export function Tabs({ activeTab, setTab, tabOptions = {} }: Props) {
                 setTab={setTab}
               />
               <WorkMapTab
-                label="Conversation"
+                label="Check-Ins"
                 tab="convo"
                 isActive={activeTab === "goals"}
                 testId="work-map-tab-goals"
@@ -184,7 +180,6 @@ function MainContent(props: GoalPage.Props) {
       <Description {...props} />
       <Targets {...props} />
       <CheckIns {...props} />
-      <Messages {...props} />
       <RelatedWork {...props} />
       <Contributors {...props} />
     </div>

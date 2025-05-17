@@ -43,7 +43,6 @@ export function WorkMap({ items, columnOptions = {}, tabOptions = {} }: WorkMap.
         setTimeframe={setTimeframe}
         tabOptions={tabOptions}
       />
-      <div className="text-xl font-bold mt-6 mb-4 px-4">All ongoing work in the company</div>
       <div className="flex-1 overflow-auto">
         <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} />
       </div>

@@ -34,7 +34,7 @@ export function Navigation({ items }: Navigation.Props) {
       {hiddenCount > 0 && <HiddenItems items={items} hiddenCount={hiddenCount} />}
 
       {items.slice(hiddenCount).map((item, index) => (
-        <NavItem key={index + item.label} item={item} index={index + hiddenCount} />
+        <NavItem key={index + item.label} item={item} index={index + hiddenCount} last={index === items.length - 1} />
       ))}
     </div>
   );
@@ -75,8 +75,10 @@ function HiddenItems({ items, hiddenCount }: { items: Navigation.Item[]; hiddenC
   );
 }
 
-function NavItem({ item, index }: { item: Navigation.Item; index: number }) {
-  const className = classNames("truncate");
+function NavItem({ item, index, last }: { item: Navigation.Item; index: number }) {
+  const className = classNames("truncate", {
+    "font-bold": last,
+  });
 
   return (
     <React.Fragment key={`fragment-${index}`}>
