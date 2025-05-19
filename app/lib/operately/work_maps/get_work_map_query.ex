@@ -36,44 +36,29 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     {:ok, work_map}
   end
 
-  defp debug_query(query, label) do
-    {sql, params} = Ecto.Adapters.SQL.to_sql(:all, Repo, query)
-
-    case Repo.query("EXPLAIN ANALYZE #{sql}", params) do
-      {:ok, result} ->
-        IO.puts("\n----- EXECUTION PLAN: #{label} -----")
-        Enum.each(result.rows, &IO.puts(List.to_string(&1)))
-      _ -> :ok
-    end
-
-    query
-  end
-
   defp get_projects(person, company_id, include_assignees) do
-    p_ids =
+    ids_query =
       from(Project, as: :projects)
       |> where([p], p.company_id == ^company_id)
       |> filter_by_view_access(person, :projects)
       |> select([projects: p], p.id)
-      |> Repo.all()
 
     from(Project, as: :projects)
-    |> where([p], p.id in ^p_ids)
+    |> where([p], p.id in subquery(ids_query))
     |> join_preload_project_associations(include_assignees)
     |> load_access_levels()
     |> Repo.all()
   end
 
   defp get_goals_tree(person, company_id, include_assignees) do
-    g_ids =
+    ids_query =
       from(Goal, as: :goals)
       |> where([g], g.company_id == ^company_id)
       |> filter_by_view_access(person, :goals)
       |> select([goals: g], g.id)
-      |> Repo.all()
 
     from(Goal, as: :goals)
-    |> where([g], g.id in ^g_ids)
+    |> where([g], g.id in subquery(ids_query))
     |> join_preload_goal_associations(include_assignees)
     |> load_access_levels()
     |> Repo.all()
@@ -148,8 +133,6 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   #
 
   defp load_access_levels(query) do
-    # If the `context` association is not established by filter_by_view_access/3,
-    # it will be established by maybe_join_context/1.
     query
     |> join(:left, [r], c in assoc(r, :access_context), as: :context)
     |> join(:left, [context: c], b in assoc(c, :bindings), as: :bindings)
