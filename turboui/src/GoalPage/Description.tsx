@@ -1,7 +1,8 @@
 import * as React from "react";
 import { GoalPage } from ".";
 import { SecondaryButton } from "../Button";
-import { truncate } from "../utils/strings";
+import RichContent, { countCharacters, shortenContent } from "../RichContent";
+import { MentionedPersonLookupFn } from "../RichEditor";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: GoalPage.Props) {
@@ -15,18 +16,44 @@ export function Description(props: GoalPage.Props) {
         showButtons={props.canEdit}
       />
 
-      {props.description ? <DescriptionContent description={props.description!} /> : <DescriptionZeroState />}
+      {props.description ? (
+        <DescriptionContent description={props.description!} mentionedPersonLookup={props.mentionedPersonLookup} />
+      ) : (
+        <DescriptionZeroState />
+      )}
     </div>
   );
 }
 
-function DescriptionContent({ description }: { description: string }) {
+function DescriptionContent({
+  description,
+  mentionedPersonLookup,
+}: {
+  description: string;
+  mentionedPersonLookup: MentionedPersonLookupFn;
+}) {
   const [isExpanded, setIsExpanded] = React.useState(false);
+
+  const length = React.useMemo(() => {
+    return description ? countCharacters(description, { skipParse: true }) : 0;
+  }, [description]);
+
+  const displayedDescription = React.useMemo(() => {
+    if (length <= 200) {
+      return description;
+    } else if (isExpanded) {
+      return description;
+    } else {
+      return shortenContent(description, 200, { suffix: "...", skipParse: true });
+    }
+  }, [description, length, isExpanded]);
+
+  console.log(displayedDescription);
 
   return (
     <div className="mt-2">
-      <div className="whitespace-pre-wrap">{isExpanded ? description : truncate(description!, 200)}</div>
-      {description!.length > 200 && (
+      <RichContent content={displayedDescription} mentionedPersonLookup={mentionedPersonLookup} />
+      {length > 200 && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-content-dimmed hover:underline text-sm mt-1 font-medium"

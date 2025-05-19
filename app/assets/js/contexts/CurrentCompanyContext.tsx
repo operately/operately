@@ -1,5 +1,5 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import { useProfileUpdatedSignal } from "@/signals";
 import { assertPresent } from "@/utils/assertions";
@@ -43,6 +43,26 @@ export function useMe(): People.Person | null {
   if (!ctx) return null;
 
   return ctx.me;
+}
+
+export function useMentionedPersonLookupFn(): (id: string) => Promise<People.Person | null> {
+  const ctx = React.useContext(CurrentCompanyContext);
+  if (!ctx) {
+    return async () => null;
+  }
+
+  if (ctx.peopleLoading) {
+    return async () => null;
+  }
+
+  return async (id: string) => {
+    const person = ctx.people?.find((p) => p.id === id);
+    if (person) {
+      return person;
+    }
+    ctx.peopleRefetch();
+    return null;
+  };
 }
 
 export function usePersonNameAndAvatar(id: string): { person?: People.Person; loading: boolean } {
