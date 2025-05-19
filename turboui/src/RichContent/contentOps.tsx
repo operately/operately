@@ -2,7 +2,7 @@
 // It does not remove non-text content.
 //
 export function shortenContent(jsonContent: string, limit: number, opts?: { skipParse?: boolean; suffix?: string }) {
-  const content = opts?.skipParse ? jsonContent : JSON.parse(jsonContent);
+  const content = opts?.skipParse ? deepCopy(jsonContent) : JSON.parse(jsonContent);
 
   const dfs = (content: any, count: number) => {
     if (content.text) {
@@ -48,7 +48,7 @@ export function shortenContent(jsonContent: string, limit: number, opts?: { skip
 
   dfs(content, 0);
 
-  return JSON.stringify(content);
+  return content;
 }
 
 export function countCharacters(jsonContent: string, opts?: { skipParse?: boolean }) {
@@ -133,4 +133,22 @@ export function richContentToString(node: any): string {
 
 export function parseContent(content?: string | any): any {
   return typeof content === "string" ? JSON.parse(content) : content;
+}
+
+function deepCopy(obj: any): any {
+  if (obj === null || typeof obj !== "object") {
+    return obj;
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(deepCopy);
+  }
+
+  const copy: any = {};
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      copy[key] = deepCopy(obj[key]);
+    }
+  }
+  return copy;
 }

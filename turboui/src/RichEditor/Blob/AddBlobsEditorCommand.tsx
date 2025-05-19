@@ -1,5 +1,5 @@
-import { UploadFileFn } from "..";
 import { useUploadFile } from "../EditorContext";
+import { UploadFileFn } from "../useEditor";
 
 export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | FileList; pos: number; view: any }) {
   if (!view.editable) return false;

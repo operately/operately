@@ -1,16 +1,18 @@
 import * as React from "react";
 
 import RichContent, { parseContent, richContentToString, shortenContent } from ".";
+import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 
 interface SummaryProps {
-  jsonContent: string;
+  content: any;
   characterCount: number;
+  mentionedPersonLookup: MentionedPersonLookupFn;
 }
 
-export function Summary({ jsonContent, characterCount }: SummaryProps) {
-  const summary = useSummarized(jsonContent, characterCount);
+export function Summary({ content, characterCount, mentionedPersonLookup }: SummaryProps): JSX.Element {
+  const summary = useSummarized(content, characterCount);
 
-  return <RichContent jsonContent={summary} />;
+  return <RichContent content={summary} mentionedPersonLookup={mentionedPersonLookup} />;
 }
 
 //

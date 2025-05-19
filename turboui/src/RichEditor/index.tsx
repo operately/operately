@@ -6,6 +6,7 @@ import { useLinkEditFormClose } from "./LinkEditForm";
 import { EditorState } from "./useEditor";
 
 export { useEditor } from "./useEditor";
+export type { MentionedPersonLookupFn } from "./useEditor";
 
 interface EditorProps {
   editor: EditorState;
