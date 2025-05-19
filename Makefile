@@ -69,6 +69,9 @@ turboui.build:
 	@rm -rf turboui/dist
 	./devenv bash -c "cd turboui && npm install && npm run build"
 
+turboui.test:
+	./devenv bash -c "cd turboui && npm install && npm run test"
+
 dev.shell:
 	./devenv shell
 
