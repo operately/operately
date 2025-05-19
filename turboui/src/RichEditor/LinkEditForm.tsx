@@ -1,7 +1,7 @@
 import React from "react";
 
-import classNames from "classnames";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { PrimaryButton, SecondaryButton } from "../Button";
+import classNames from "../utils/classnames";
 import { useLinkState, useTipTapEditor } from "./EditorContext";
 
 export function useLinkEditFormClose() {

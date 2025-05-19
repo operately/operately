@@ -16,28 +16,25 @@ import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
 
 import { useWindowSizeBreakpoints } from "../../utils/useWindowSizeBreakpoint";
+import { useTipTapEditor } from "../EditorContext";
 import { LinkEditForm } from "../LinkEditForm";
 import { CodeBlockButton } from "./CodeBlockButton";
 import { ColorPicker } from "./ColorPicker";
 import { DividerButton } from "./DividerButton";
 
-interface Props {
-  editor: any;
-  noTopBorder?: boolean;
-}
-
-export function Toolbar(props: Props): JSX.Element {
+export function Toolbar(): JSX.Element {
   const size = useWindowSizeBreakpoints();
 
   if (size == "xs") {
-    return <MobileToolbar {...props} />;
+    return <MobileToolbar />;
   } else {
-    return <DesktopToolbar {...props} />;
+    return <DesktopToolbar />;
   }
 }
 
-function DesktopToolbar({ editor, noTopBorder }: Props): JSX.Element {
-  const border = noTopBorder ? "border-b" : "border-y";
+function DesktopToolbar() {
+  const editor = useTipTapEditor();
+  const border = "border-y";
 
   return (
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0">
@@ -81,8 +78,9 @@ function DesktopToolbar({ editor, noTopBorder }: Props): JSX.Element {
   );
 }
 
-function MobileToolbar({ editor, noTopBorder }: Props): JSX.Element {
-  const border = noTopBorder ? "border-b" : "border-y";
+function MobileToolbar() {
+  const border = "border-y";
+  const editor = useTipTapEditor();
 
   return (
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0">

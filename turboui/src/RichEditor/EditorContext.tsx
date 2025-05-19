@@ -1,5 +1,7 @@
+import * as TipTap from "@tiptap/react";
 import * as React from "react";
-import { EditorState } from ".";
+
+import { EditorState } from "./useEditor";
 
 export const EditorContext = React.createContext<EditorState | null>(null);
 
@@ -17,7 +19,7 @@ export function useLinkState(): [boolean, React.Dispatch<React.SetStateAction<bo
   return [ctx.linkEditActive, ctx.setLinkEditActive];
 }
 
-export function useTipTapEditor(): EditorState {
+export function useTipTapEditor(): TipTap.Editor {
   return useEditorContext().editor;
 }
 
@@ -29,4 +31,10 @@ function useEditorContext(): EditorState {
   } else {
     return ctx;
   }
+}
+
+export function TipTapEditorContent() {
+  const editor = useTipTapEditor();
+
+  return <TipTap.EditorContent editor={editor} />;
 }

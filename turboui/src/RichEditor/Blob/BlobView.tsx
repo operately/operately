@@ -1,10 +1,10 @@
 import React from "react";
 
-import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
 import * as Icons from "@tabler/icons-react";
+import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
 
-import { LoadingProgressBar } from "@/components/LoadingProgressBar";
+import classNames from "../../utils/classnames";
 
 //
 // This is view component for the blob node for the TipTap editor.
@@ -230,4 +230,17 @@ function FileIcon({ filetype }: { filetype: string }) {
 
 function downloadableUrl(url: string) {
   return url + "?disposition=attachment";
+}
+
+function LoadingProgressBar({ progress, barClassName }: { progress: number; barClassName?: string }) {
+  const className = classNames(
+    "bg-content-accent rounded-xl text-content-accent font-medium h-5 overflow-hidden",
+    barClassName || "",
+  );
+
+  return (
+    <div className={className}>
+      <div className="bg-accent-1 h-full" style={{ width: `${progress}%` }}></div>
+    </div>
+  );
 }
