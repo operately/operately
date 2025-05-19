@@ -50,7 +50,7 @@ dev.build:
 	./devenv bash -c "cd app && mix deps.get"
 	./devenv bash -c "cd app && mix compile"
 	./devenv bash -c "cd app && npm install"
-	./devenv bash -c "cd turboui && npm install && npm run build"
+	$(MAKE) turboui.build
 	$(MAKE) dev.db.create
 	$(MAKE) test.db.create
 	$(MAKE) dev.db.migrate
@@ -64,6 +64,10 @@ design.server:
 
 turboui.storybook:
 	./devenv bash -c "cd turboui && npm run storybook"
+
+turboui.build:
+	@rm -rf turboui/dist
+	./devenv bash -c "cd turboui && npm install && npm run build"
 
 dev.shell:
 	./devenv shell
