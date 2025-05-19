@@ -1,15 +1,18 @@
 import React from "react";
 import { Content, useEditor } from "../RichEditor";
+import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 
 interface RichContentProps {
   content: any;
   className?: string;
+  mentionedPersonLookup: MentionedPersonLookupFn;
 }
 
-export default function RichContent({ content, className }: RichContentProps): JSX.Element {
+export default function RichContent({ content, className, mentionedPersonLookup }: RichContentProps): JSX.Element {
   const editor = useEditor({
     content: content,
     editable: false,
+    mentionedPersonLookup,
   });
 
   React.useEffect(() => {

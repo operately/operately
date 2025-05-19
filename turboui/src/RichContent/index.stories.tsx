@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { Page } from "../Page";
+import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import { genPeople } from "../utils/storybook/genPeople";
 import RichContent from "./index";
 
 const meta: Meta<typeof RichContent> = {
@@ -102,10 +104,19 @@ const complexContent = {
   ],
 };
 
+const people = genPeople(3);
+
+const mentionedPersonLookup: MentionedPersonLookupFn = async (id: string) => {
+  return new Promise((resolve) => {
+    resolve(people.find((person) => person.id === id) || null);
+  });
+};
+
 // Simple paragraph story
 export const SimpleParagraph: Story = {
   args: {
     content: simpleParagraphContent,
+    mentionedPersonLookup,
   },
 };
 
@@ -113,6 +124,7 @@ export const SimpleParagraph: Story = {
 export const FormattedText: Story = {
   args: {
     content: formattedContent,
+    mentionedPersonLookup,
   },
 };
 
@@ -120,6 +132,7 @@ export const FormattedText: Story = {
 export const ComplexContent: Story = {
   args: {
     content: complexContent,
+    mentionedPersonLookup,
   },
 };
 
@@ -128,6 +141,7 @@ export const WithCustomClass: Story = {
   args: {
     content: formattedContent,
     className: "custom-rich-content p-4 bg-gray-100 rounded",
+    mentionedPersonLookup,
   },
 };
 
@@ -141,9 +155,20 @@ export const EmptyContent: Story = {
   },
 };
 
+function personToMention(person: { id: string; fullName: string }) {
+  return {
+    type: "mention",
+    attrs: {
+      id: person.id,
+      label: person.fullName,
+    },
+  };
+}
+
 // Content with mentioned people
 export const WithMentions: Story = {
   args: {
+    mentionedPersonLookup,
     content: {
       type: "doc",
       content: [
@@ -151,21 +176,9 @@ export const WithMentions: Story = {
           type: "paragraph",
           content: [
             { type: "text", text: "This paragraph mentions " },
-            {
-              type: "mention",
-              attrs: {
-                id: "user-1",
-                label: "John Doe",
-              },
-            },
+            personToMention(people[0]!),
             { type: "text", text: " and " },
-            {
-              type: "mention",
-              attrs: {
-                id: "user-2",
-                label: "Jane Smith",
-              },
-            },
+            personToMention(people[1]!),
             { type: "text", text: " who are working on the project." },
           ],
         },
@@ -173,13 +186,7 @@ export const WithMentions: Story = {
           type: "paragraph",
           content: [
             { type: "text", text: "Another team member, " },
-            {
-              type: "mention",
-              attrs: {
-                id: "user-3",
-                label: "Alex Johnson",
-              },
-            },
+            personToMention(people[2]!),
             { type: "text", text: ", will join next week." },
           ],
         },

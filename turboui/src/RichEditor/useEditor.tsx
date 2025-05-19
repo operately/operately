@@ -10,7 +10,7 @@ import FakeTextSelection from "./extensions/FakeTextSelection";
 import Highlight from "./extensions/Highlight";
 import MentionPeople, { SearchFn } from "./extensions/MentionPeople";
 
-interface Person {
+export interface Person {
   id: string;
   fullName: string;
   avatarUrl: string | null;
@@ -27,7 +27,7 @@ interface OnBlurData {
 }
 
 export type UploadFileFn = (file: File, onProgress: (progress: number) => void) => Promise<{ id: string; url: string }>;
-export type FindPersonFn = (id: string) => Person | null;
+export type MentionedPersonLookupFn = (id: string) => Promise<Person | null>;
 
 interface UseEditorProps {
   placeholder?: string;
@@ -40,7 +40,7 @@ interface UseEditorProps {
   autoFocus?: boolean;
   tabindex?: string;
 
-  findPerson?: FindPersonFn;
+  mentionedPersonLookup: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
 }
@@ -53,7 +53,7 @@ export interface EditorState {
   uploading: boolean;
   linkEditActive: boolean;
   setLinkEditActive: (active: boolean) => void;
-  findPerson: FindPersonFn;
+  mentionedPersonLookup: MentionedPersonLookupFn;
   uploadFile: UploadFileFn;
   setContent: (content: any) => void;
 }
@@ -158,7 +158,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     uploading,
     linkEditActive,
     setLinkEditActive,
-    findPerson: props.findPerson!,
+    mentionedPersonLookup: props.mentionedPersonLookup,
     uploadFile: props.uploadFile!,
     setContent,
   };

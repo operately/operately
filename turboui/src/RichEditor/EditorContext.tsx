@@ -1,7 +1,7 @@
 import * as TipTap from "@tiptap/react";
 import * as React from "react";
 
-import { EditorState } from "./useEditor";
+import { EditorState, Person } from "./useEditor";
 
 export const EditorContext = React.createContext<EditorState | null>(null);
 
@@ -9,8 +9,35 @@ export function useUploadFile(): EditorState["editor"]["uploadFile"] {
   return useEditorContext().editor.uploadFile;
 }
 
-export function usePerson(id: string): ReturnType<EditorState["editor"]["findPerson"]> {
-  return useEditorContext().findPerson(id);
+export function usePerson(id: string): Person | null {
+  const [person, setPerson] = React.useState<Person | null>(null);
+  const { mentionedPersonLookup } = useEditorContext();
+
+  React.useEffect(() => {
+    let isMounted = true;
+
+    const fetchPerson = async () => {
+      try {
+        const result = await mentionedPersonLookup(id);
+        if (isMounted) {
+          setPerson(result);
+        }
+      } catch (error) {
+        console.error("Error fetching person:", error);
+        if (isMounted) {
+          setPerson(null);
+        }
+      }
+    };
+
+    fetchPerson();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [id, mentionedPersonLookup]);
+
+  return person;
 }
 
 export function useLinkState(): [boolean, React.Dispatch<React.SetStateAction<boolean>>] {
