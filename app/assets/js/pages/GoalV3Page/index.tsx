@@ -4,7 +4,7 @@ import * as Timeframes from "../../utils/timeframes";
 
 import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { getGoal, Goal } from "@/models/goals";
+import { getGoal, Goal, Target } from "@/models/goals";
 import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
@@ -68,7 +68,7 @@ function Page() {
 
     description: "",
     status: goal.status,
-    targets: [],
+    targets: prepareTargets(goal.targets),
     checkIns: [],
     messages: [],
     contributors: [],
@@ -110,4 +110,29 @@ function GoalFeedItems() {
   if (!data) return null;
 
   return <Feed items={data!.activities!} page="goal" testId="goal-feed" />;
+}
+
+function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["targets"] {
+  if (!targets) return [];
+
+  return targets.map((target) => {
+    assertPresent(target.id);
+    assertPresent(target.name);
+    assertPresent(target.from);
+    assertPresent(target.to);
+    assertPresent(target.value);
+    assertPresent(target.unit);
+    assertPresent(target.index);
+
+    return {
+      id: target.id,
+      name: target.name,
+      from: target.from,
+      to: target.to,
+      value: target.value,
+      unit: target.unit,
+      index: target.index,
+      mode: "view" as const,
+    };
+  });
 }
