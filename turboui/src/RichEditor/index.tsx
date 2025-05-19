@@ -1,15 +1,14 @@
 import React from "react";
 
 import * as TipTap from "@tiptap/react";
-import * as People from "@/models/people";
 
 import Link from "@tiptap/extension-link";
-import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
-import MentionPeople, { SearchFn } from "@/features/richtexteditor/extensions/MentionPeople";
-import Highlight from "@/features/richtexteditor/extensions/Highlight";
-import FakeTextSelection from "@/features/richtexteditor/extensions/FakeTextSelection";
-import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
+import StarterKit from "@tiptap/starter-kit";
+import { Toolbar } from "./components/Toolbar";
+import FakeTextSelection from "./extensions/FakeTextSelection";
+import Highlight from "./extensions/Highlight";
+import MentionPeople, { SearchFn } from "./extensions/MentionPeople";
 
 import Blob, { isUploadInProgress } from "./Blob";
 
@@ -17,8 +16,8 @@ import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 
 export type Editor = TipTap.Editor;
-export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
+export { LinkEditForm } from "./LinkEditForm";
 
 interface OnSaveData {
   json: any;
@@ -51,8 +50,6 @@ function RootBody({ children, className = "" }): JSX.Element {
 }
 
 interface UseEditorProps {
-  mentionSearchScope: People.SearchScope;
-
   peopleSearch?: SearchFn;
   placeholder?: string;
   content?: any;
@@ -82,15 +79,19 @@ const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
 function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
+  if (props.editable) {
+    if (!props.peopleSearch) {
+      throw new Error("peopleSearch function is required when editable is true");
+    }
+  }
+
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
   const [uploading, setUploading] = React.useState(false);
 
-  const defaultPeopleSearch = People.usePeopleSearch(props.mentionSearchScope);
-
   const mentionPeople = React.useMemo(() => {
-    return MentionPeople.configure(props.peopleSearch || defaultPeopleSearch);
+    return MentionPeople.configure(props.peopleSearch);
   }, []);
 
   const editor = TipTap.useEditor({
@@ -157,7 +158,7 @@ function useEditor(props: UseEditorProps): EditorState {
 
 const EditorContent = TipTap.EditorContent;
 
-export { useEditor, EditorContent, Toolbar };
+export { EditorContent, Toolbar, useEditor };
 
 export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element {
   return (
