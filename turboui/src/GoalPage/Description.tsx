@@ -1,7 +1,7 @@
 import * as React from "react";
 import { GoalPage } from ".";
 import { SecondaryButton } from "../Button";
-import { truncate } from "../utils/strings";
+import RichContent, { countCharacters, shortenContent } from "../RichContent";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: GoalPage.Props) {
@@ -23,10 +23,24 @@ export function Description(props: GoalPage.Props) {
 function DescriptionContent({ description }: { description: string }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
+  const length = React.useMemo(() => {
+    return description ? countCharacters(description) : 0;
+  }, [description]);
+
+  const displayedDescription = React.useMemo(() => {
+    if (length <= 200) {
+      return description;
+    } else if (isExpanded) {
+      return description;
+    } else {
+      return shortenContent(description, 200, { suffix: "..." });
+    }
+  }, [description, length, isExpanded]);
+
   return (
     <div className="mt-2">
-      <div className="whitespace-pre-wrap">{isExpanded ? description : truncate(description!, 200)}</div>
-      {description!.length > 200 && (
+      <RichContent jsonContent={displayedDescription} />
+      {length > 200 && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
           className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
