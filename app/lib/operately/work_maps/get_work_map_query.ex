@@ -37,19 +37,29 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp get_projects(person, company_id, include_assignees) do
+    ids_query =
+      from(Project, as: :projects)
+      |> where([p], p.company_id == ^company_id)
+      |> filter_by_view_access(person, :projects)
+      |> select([projects: p], p.id)
+
     from(Project, as: :projects)
-    |> where([p], p.company_id == ^company_id)
+    |> where([p], p.id in subquery(ids_query))
     |> join_preload_project_associations(include_assignees)
-    |> filter_by_view_access(person, :projects)
     |> load_access_levels()
     |> Repo.all()
   end
 
   defp get_goals_tree(person, company_id, include_assignees) do
+    ids_query =
+      from(Goal, as: :goals)
+      |> where([g], g.company_id == ^company_id)
+      |> filter_by_view_access(person, :goals)
+      |> select([goals: g], g.id)
+
     from(Goal, as: :goals)
-    |> where([g], g.company_id == ^company_id)
+    |> where([g], g.id in subquery(ids_query))
     |> join_preload_goal_associations(include_assignees)
-    |> filter_by_view_access(person, :goals)
     |> load_access_levels()
     |> Repo.all()
   end
@@ -123,19 +133,14 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   #
 
   defp load_access_levels(query) do
-    # If the `context` association is not established by filter_by_view_access/3,
-    # it will be established by maybe_join_context/1.
     query
-    |> maybe_join_context()
+    |> join(:left, [r], c in assoc(r, :access_context), as: :context)
     |> join(:left, [context: c], b in assoc(c, :bindings), as: :bindings)
     |> join(:left, [bindings: b], g in assoc(b, :group), as: :access_group)
     |> preload([bindings: b, context: c, access_group: g],
       access_context: {c, [bindings: {b, group: g}]}
     )
   end
-
-  defp maybe_join_context(q) when is_named_binding(q, :context), do: q
-  defp maybe_join_context(q), do: join(q, :left, [r], c in assoc(r, :access_context), as: :context)
 
   defp filter_by_view_access(query, :system, _name), do: query
 
