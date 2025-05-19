@@ -21,7 +21,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((pr
     <div className={className}>
       {label && <label className="font-bold text-sm mb-1 block">{label}</label>}
       <div className={cn}>
-        <TextareaAutosize ref={ref} className="w-full" style={{ resize: "none" }} {...rest} />
+        <TextareaAutosize ref={ref} className="w-full border-0 p-0 focus:ring-0" style={{ resize: "none" }} {...rest} />
       </div>
       {error && <div className="text-red-500 text-xs mb-1">{error}</div>}
     </div>

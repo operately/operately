@@ -1,19 +1,19 @@
 import React from "react";
 
-import { ExpandIcon } from "./ExpandIcon";
 import { PieChart } from "../PieChart";
+import { ExpandIcon } from "./ExpandIcon";
 
+import { IconGripVertical } from "@tabler/icons-react";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
-import { IconGripVertical } from "@tabler/icons-react";
 
+import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
 import { State, TargetState, useGoalTargetListState } from "./useGoalTargetListState";
-import { useForm } from "react-hook-form";
 
-import { UpdateButton } from "./UpdateButton";
-import { EditButton } from "./EditButton";
 import { DeleteButton } from "./DeleteButton";
+import { EditButton } from "./EditButton";
+import { UpdateButton } from "./UpdateButton";
 
 import { Textarea } from "../forms/Textarea";
 import { Textfield } from "../forms/Textfield";
@@ -76,7 +76,7 @@ function TargetListHeader() {
   return (
     <div className={className}>
       <div className="flex-1">Name</div>
-      <div className="w-40 mr-4 text-right">Current value</div>
+      <div className="w-40 text-right">Current value</div>
     </div>
   );
 }
@@ -192,7 +192,7 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
 
   return (
     <InlineModal index={target.index}>
-      <p className="mb-4">{target.name}</p>
+      <p className="mb-4 font-medium">Update {target.name}</p>
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
@@ -309,7 +309,7 @@ function TargetDelete({ state, target }: { state: State; target: TargetState }) 
 function InlineModal({ index, children }: { index: number; children: React.ReactNode }) {
   const outerClass = "border-b border-stroke-base";
 
-  const innerClass = classNames("border border-surface-outline rounded-lg p-4 shadow-lg", {
+  const innerClass = classNames("border border-surface-outline rounded-lg p-8 px-6 shadow-lg", {
     "mb-4": index === 0,
     "my-4": index !== 0,
   });
