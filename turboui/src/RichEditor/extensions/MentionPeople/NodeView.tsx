@@ -19,14 +19,8 @@ interface Person {
 // node.attrs.id is the person ID, based on which we fetch the person's avatar.
 //
 
-interface Node {
-  attrs: {
-    id: string;
-    label: string;
-  };
-}
-
-export function NodeView({ node }: { node: Node }) {
+export const NodeView: React.FC<TipTap.NodeViewProps> = (props) => {
+  const { node } = props;
   const ref = React.useRef<HTMLDivElement>(null);
   const loadedPerson = usePerson(node.attrs.id);
   const person = loadedPerson || { fullName: node.attrs.label, id: node.attrs.id, title: "", avatarUrl: "" };
@@ -49,7 +43,7 @@ export function NodeView({ node }: { node: Node }) {
       {firstName(person)}
     </TipTap.NodeViewWrapper>
   );
-}
+};
 
 function firstName(person: Person): string {
   if (!person) return "";

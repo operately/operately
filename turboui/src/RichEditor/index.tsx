@@ -18,6 +18,14 @@ import { useLinkEditFormClose } from "./LinkEditForm";
 export type Editor = TipTap.Editor;
 export { EditorContext } from "./EditorContext";
 export { LinkEditForm } from "./LinkEditForm";
+export { Toolbar, useEditor };
+export const EditorContent = TipTap.EditorContent;
+
+interface Person {
+  id: string;
+  fullName: string;
+  avatarUrl: string | null;
+}
 
 interface OnSaveData {
   json: any;
@@ -29,12 +37,16 @@ interface OnBlurData {
   html: string;
 }
 
-export function Root({ editor, children, className = "" }): JSX.Element {
-  const [linkEditActive, setLinkEditActive] = React.useState(false);
+interface RootProps {
+  editor: EditorState;
+  children: React.ReactNode;
+  className?: string;
+}
 
+function Root({ editor, children, className = "" }: RootProps) {
   return (
-    <EditorContext.Provider value={{ editor, linkEditActive, setLinkEditActive }}>
-      <RootBody children={children} className={className}></RootBody>
+    <EditorContext.Provider value={editor}>
+      <RootBody children={children} className={className} />
     </EditorContext.Provider>
   );
 }
@@ -49,8 +61,10 @@ function RootBody({ children, className = "" }): JSX.Element {
   );
 }
 
+export type UploadFileFn = (file: File, onProgress: (progress: number) => void) => Promise<{ id: string; url: string }>;
+export type FindPersonFn = (id: string) => Person | null;
+
 interface UseEditorProps {
-  peopleSearch?: SearchFn;
   placeholder?: string;
   content?: any;
   onSave?: (data: OnSaveData) => void;
@@ -60,6 +74,10 @@ interface UseEditorProps {
   editable?: boolean;
   autoFocus?: boolean;
   tabindex?: string;
+
+  findPerson?: FindPersonFn;
+  peopleSearch?: SearchFn;
+  uploadFile?: UploadFileFn;
 }
 
 export interface EditorState {
@@ -68,6 +86,10 @@ export interface EditorState {
   focused: boolean;
   empty: boolean;
   uploading: boolean;
+  linkEditActive: boolean;
+  setLinkEditActive: (active: boolean) => void;
+  findPerson: FindPersonFn;
+  uploadFile: UploadFileFn;
 }
 
 const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
@@ -85,6 +107,7 @@ function useEditor(props: UseEditorProps): EditorState {
     }
   }
 
+  const [linkEditActive, setLinkEditActive] = React.useState(false);
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
   const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
@@ -153,20 +176,26 @@ function useEditor(props: UseEditorProps): EditorState {
     },
   });
 
-  return { editor: editor, submittable: submittable, focused: focused, empty: empty, uploading: uploading };
+  return {
+    editor,
+    submittable,
+    focused,
+    empty,
+    uploading,
+    linkEditActive,
+    setLinkEditActive,
+    findPerson: props.findPerson!,
+    uploadFile: props.uploadFile!,
+  };
 }
 
-const EditorContent = TipTap.EditorContent;
-
-export { EditorContent, Toolbar, useEditor };
-
-export function StandardEditorForm({ editor }: { editor: Editor }): JSX.Element {
+export function StandardEditorForm({ editor }: { editor: EditorState }): JSX.Element {
   return (
     <Root editor={editor}>
       <Toolbar editor={editor} noTopBorder />
 
       <div className="text-content-accent relative px-2 rounded-t">
-        <EditorContent editor={editor} />
+        <TipTap.EditorContent editor={editor.editor} />
       </div>
     </Root>
   );

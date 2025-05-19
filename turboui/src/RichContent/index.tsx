@@ -24,7 +24,6 @@ export default function RichContent({ jsonContent, className, skipParse }: RichC
   const { editor } = useEditor({
     content: content,
     editable: false,
-    mentionSearchScope: People.NoneSearchScope,
   });
 
   React.useEffect(() => {

@@ -1,23 +1,26 @@
-import * as Blobs from "@/models/blobs";
+import { UploadFileFn } from "..";
+import { useUploadFile } from "../EditorContext";
 
 export function AddBlobsEditorCommand({ files, pos, view }: { files: File[] | FileList; pos: number; view: any }) {
   if (!view.editable) return false;
 
+  const uploadFile = useUploadFile();
+
   Array.from(files).forEach(async (file) => {
-    handleUpload(file, view, pos);
+    handleUpload(file, view, pos, uploadFile);
   });
 
   return true;
 }
 
-async function handleUpload(file: File, view: any, pos: any) {
+async function handleUpload(file: File, view: any, pos: any, uploadFile: UploadFileFn) {
   const tempId = generateUniqueId();
 
   // Step 1: Add a placeholder node before uploading the file.
   createNode(tempId, file, view, pos);
 
   // Step 2: Start the upload process and hook up progress updates.
-  const promise = Blobs.uploadFile(file, (progress) => {
+  const promise = uploadFile(file, (progress) => {
     updateNodeAttrs(tempId, { progress: progress }, view);
   });
 

@@ -3,10 +3,10 @@ import * as React from "react";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
-import { EditorContext } from "../EditorContext";
+import { useLinkState } from "../EditorContext";
 
 export function LinkButton({ editor, iconSize }): JSX.Element {
-  const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext);
+  const [linkEditActive, setLinkEditActive] = useLinkState();
 
   const toggleLink = React.useCallback(() => {
     if (linkEditActive) {

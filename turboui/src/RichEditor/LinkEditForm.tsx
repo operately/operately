@@ -1,11 +1,12 @@
 import React from "react";
 
-import { EditorContext, Context } from "./EditorContext";
-import { PrimaryButton, SecondaryButton } from "turboui";
 import classNames from "classnames";
+import { PrimaryButton, SecondaryButton } from "turboui";
+import { useLinkState, useTipTapEditor } from "./EditorContext";
 
 export function useLinkEditFormClose() {
-  const { editor, linkEditActive, setLinkEditActive } = React.useContext(EditorContext) as Context;
+  const editor = useTipTapEditor();
+  const [linkEditActive, setLinkEditActive] = useLinkState();
 
   return React.useCallback(
     (e: any) => {
@@ -24,7 +25,8 @@ export function useLinkEditFormClose() {
 }
 
 export function LinkEditForm({ editor }): JSX.Element {
-  const { linkEditActive, setLinkEditActive } = React.useContext(EditorContext) as Context;
+  const [linkEditActive, setLinkEditActive] = useLinkState();
+
   const [link, setLink] = React.useState("");
   const [error, setError] = React.useState(false);
 
