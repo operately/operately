@@ -1,5 +1,5 @@
 {
-  "name": "turboui",
+ "name": "turboui",
   "license": "Apache-2.0",
   "main": "./dist/index.js",
   "module": "./dist/esm/index.js",
@@ -50,6 +50,15 @@
     "ts-pattern": "^5.0.8"
   },
   "dependencies": {
-    "react-hook-form": "^7.56.1"
+    "react-hook-form": "^7.56.1",
+    "@tiptap/core": "^2.3.0",
+    "@tiptap/extension-link": "^2.3.0",
+    "@tiptap/extension-mention": "^2.3.0",
+    "@tiptap/extension-placeholder": "^2.3.0",
+    "@tiptap/pm": "^2.3.0",
+    "@tiptap/react": "^2.3.0",
+    "@tiptap/starter-kit": "^2.3.0",
+    "@tiptap/suggestion": "^2.3.0",
+    "lucide-react": "^0.475.0"
   }
 }
