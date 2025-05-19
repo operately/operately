@@ -3,7 +3,7 @@ import * as React from "react";
 
 import classNames from "classnames";
 import { PaintBucket } from "lucide-react";
-import { SecondaryButton } from "turboui";
+import { SecondaryButton } from "../../Button";
 import { createTestId } from "../../TestableElement";
 
 const DROPDOWN_CLASS = classNames(

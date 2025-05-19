@@ -1,7 +1,7 @@
 import * as TipTap from "@tiptap/react";
 import React from "react";
 
-import { Avatar } from "turboui";
+import { Avatar } from "../../../Avatar";
 import { usePerson } from "../../EditorContext";
 
 interface Person {

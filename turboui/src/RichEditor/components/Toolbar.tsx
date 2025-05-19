@@ -1,6 +1,6 @@
-import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import { AttachmentButton } from "./AttachmentButton";
 import { BlockquoteButton } from "./BlockquoteButton";
@@ -15,11 +15,11 @@ import { RedoButton } from "./RedoButton";
 import { StrikeButton } from "./StrikeButton";
 import { UndoButton } from "./UndoButton";
 
-import { LinkEditForm } from "@/components/Editor";
+import { useWindowSizeBreakpoints } from "../../utils/useWindowSizeBreakpoint";
+import { LinkEditForm } from "../LinkEditForm";
 import { CodeBlockButton } from "./CodeBlockButton";
 import { ColorPicker } from "./ColorPicker";
 import { DividerButton } from "./DividerButton";
-import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 interface Props {
   editor: any;

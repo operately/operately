@@ -6,7 +6,7 @@ interface Person {
   avatarUrl: string | null;
 }
 
-import { Avatar } from "turboui";
+import { Avatar } from "../../../Avatar";
 
 /**
  *  This is a custom mention list component for tiptap.
