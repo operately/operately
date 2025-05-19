@@ -7,6 +7,7 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
 import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
+import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
 import { assertDefined, assertPresent } from "../../utils/assertions";
@@ -43,6 +44,7 @@ async function loader({ params }): Promise<LoadedData> {
 
 function Page() {
   const { goal, workMap } = useLoadedData<LoadedData>();
+  const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
   assertPresent(goal.privacy);
@@ -66,13 +68,14 @@ function Page() {
     champion: goal.champion,
     reviewer: goal.reviewer,
 
-    description: "",
+    description: goal.description && JSON.parse(goal.description),
     status: goal.status,
     targets: prepareTargets(goal.targets),
     checkIns: [],
     messages: [],
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
+    mentionedPersonLookup,
 
     deleteLink: "",
     updateTimeframe: function (timeframe: Timeframe): Promise<void> {
