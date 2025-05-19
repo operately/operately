@@ -9,6 +9,7 @@ import { PageFooter } from "../Page/PageFooter";
 import { IconCircleCheck, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
 import { PageBanner } from "../PageBanner";
+import { MentionedPersonLookupFn } from "../RichEditor";
 import { BadgeStatus } from "../StatusBadge/types";
 import { isOverdue, Timeframe } from "../utils/timeframes";
 import { CheckIns } from "./CheckIns";
@@ -58,6 +59,7 @@ export namespace GoalPage {
     deleteLink: string;
     editGoalLink: string;
     newCheckInLink: string;
+    mentionedPersonLookup: MentionedPersonLookupFn;
 
     parentGoal: ParentGoal | null;
     goalName: string;
