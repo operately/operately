@@ -243,22 +243,46 @@ const contributors: GoalPage.Contributor[] = genPeople(10).map((p, i) => {
 
 contributors.sort((a, b) => (b.contributions?.length || 0) - (a.contributions?.length || 0));
 
-const description = [
-  "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses ",
-  "interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, ",
-  "natural language processing, and automated decision-making systems to provide comprehensive AI solutions.",
-  "\n",
-  "\n",
-  "Key features include real-time data processing, scalable infrastructure, and user-friendly interfaces ",
-  "for both technical and non-technical users. The platform will support multiple AI models, custom ",
-  "training pipelines, and enterprise-grade security measures.",
-  "\n",
-  "\n",
-  "We aim to make AI technology more accessible and practical for businesses of all sizes, while ",
-  "maintaining high standards of performance and reliability. This initiative aligns with our company's ",
-  "strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for ",
-  "future AI-driven products and services.`,",
-].join("");
+const description: any = {
+  type: "doc",
+  content: [
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "Our mission is to develop and launch a cutting-edge AI platform that will revolutionize how businesses interact with artificial intelligence. This platform will integrate advanced machine learning capabilities, natural language processing, and automated decision-making systems to provide comprehensive AI solutions.",
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      content: [],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "Key features include real-time data processing, scalable infrastructure, and user-friendly interfaces for both technical and non-technical users. The platform will support multiple AI models, custom training pipelines, and enterprise-grade security measures.",
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      content: [],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "We aim to make AI technology more accessible and practical for businesses of all sizes, while maintaining high standards of performance and reliability. This initiative aligns with our company's strategic goal of becoming a leader in the AI solutions market and will serve as a foundation for future AI-driven products and services.",
+        },
+      ],
+    },
+  ],
+};
 
 const parentGoal = {
   name: "Accelerate product growth",
@@ -289,6 +313,7 @@ const defaultArgs: GoalPage.Props = {
   status: "on_track",
   privacyLevel: "internal" as const,
   updateTimeframe: fn(),
+  mentionedPersonLookup: async (_id: string) => null,
 
   activityFeed: <div></div>,
 };
@@ -316,7 +341,10 @@ export const ZeroStateForChampions: Story = {
     contributors: [],
     relatedWorkItems: [],
     canEdit: true,
-    description: "",
+    description: {
+      type: "doc",
+      content: [{ type: "paragraph" }],
+    },
     reviewer: null,
     status: "pending",
     timeframe: {

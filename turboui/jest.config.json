@@ -1,0 +1,18 @@
+{
+  "transform": {
+    "^.+\\.(ts|tsx|js|jsx)$": ["ts-jest", { "tsconfig": "tsconfig.json" }]
+  },
+  "testMatch": [
+    "**/?(*.)+(test).+(ts|tsx|js)"
+  ],
+  "modulePaths": [
+    "<rootDir>/node_modules"
+  ],
+  "testEnvironment": "jsdom",
+  "transformIgnorePatterns": [
+    "/node_modules/(?!lucide-react|.+\\.js$)"
+  ],
+  "moduleNameMapper": {
+    "\\.css$": "<rootDir>/src/__mocks__/styleMock.js"
+  }
+}
