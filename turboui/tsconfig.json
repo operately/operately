@@ -36,6 +36,7 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
     
     // Paths for dependencies
     "paths": {

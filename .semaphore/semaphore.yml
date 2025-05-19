@@ -30,6 +30,38 @@ blocks:
           commands:
             - make test.license.check
 
+  - name: Turboui
+    run:
+      when: "change_in('/turboui', {default_branch: 'main'})"
+    dependencies: []
+    task:
+      secrets:
+        - name: ci-cache-credentials
+      prologue:
+        commands:
+          - checkout
+          - cache restore app-deps
+          - cache restore app-build
+          - cache restore app-node-modules
+          - cache restore turboui-node-modules
+          - cache restore turboui-dist
+          - make test.build
+
+      jobs:
+        - name: Lint
+          commands:
+            - make turboui.build
+
+        - name: Test
+          commands:
+            - make turboui.build
+
+      epilogue:
+        always:
+          commands:
+            - "[ -f app/testreports/junit.xml ] && test-results publish app/testreports/junit.xml"
+            - artifact push workflow screenshots
+
   - name: App Tests
     run:
       when: "change_in('/app', {default_branch: 'main'}) or change_in('/turboui', {default_branch: 'main'})"
