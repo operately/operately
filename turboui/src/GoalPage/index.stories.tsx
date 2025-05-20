@@ -13,13 +13,6 @@ const meta: Meta<typeof GoalPage> = {
   parameters: {
     layout: "fullscreen",
   },
-  decorators: [
-    (Story) => (
-      <div className="sm:mt-12">
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof GoalPage>;
 
 const people = genPeople(2);

@@ -12,10 +12,9 @@ import { PageBanner } from "../PageBanner";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { BadgeStatus } from "../StatusBadge/types";
 import { isOverdue, Timeframe } from "../utils/timeframes";
-import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
-import { Messages } from "./Messages";
+import { GoalTabs } from "./GoalTabs";
 import { PageHeader } from "./PageHeader";
 import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
@@ -103,11 +102,6 @@ export namespace GoalPage {
 }
 
 export function GoalPage(props: GoalPage.Props) {
-  const navigation = [
-    { to: props.spaceLink, label: props.spaceName },
-    { to: props.workmapLink, label: "Goals" },
-  ];
-
   const options = [
     {
       type: "link" as const,
@@ -126,12 +120,12 @@ export function GoalPage(props: GoalPage.Props) {
   ];
 
   return (
-    <Page title={[props.goalName]} navigation={navigation} options={options} size="xlarge">
+    <Page title={[props.goalName]} options={options} size="fullwidth">
+      <PageHeader {...props} />
+      <GoalTabs />
       {props.closedOn && <ClosedBanner {...props} />}
 
-      <div className="p-4 sm:px-24">
-        <PageHeader {...props} />
-
+      <div className="p-4 max-w-5xl mx-auto">
         <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
           <MainContent {...props} />
           <Sidebar {...props} />
@@ -145,12 +139,10 @@ export function GoalPage(props: GoalPage.Props) {
 
 function MainContent(props: GoalPage.Props) {
   return (
-    <div className="space-y-8 sm:col-span-7 sm:pr-4">
+    <div className="space-y-12 sm:col-span-7 sm:pr-4">
       <Warnings {...props} />
       <Description {...props} />
       <Targets {...props} />
-      <CheckIns {...props} />
-      <Messages {...props} />
       <RelatedWork {...props} />
       <Contributors {...props} />
     </div>

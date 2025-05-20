@@ -1,10 +1,10 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import { Link } from "../Link";
-import classNames from "../utils/classnames";
 import { createTestId } from "../TestableElement";
+import classNames from "../utils/classnames";
 
 export namespace Navigation {
   export interface Item {
@@ -22,7 +22,7 @@ const navigationClassName = classNames(
   "flex items-center gap-1 justify-center",
   "px-2 pt-2 pb-1 mx-0 sm:mx-10",
   "font-semibold rounded-t",
-  "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline"
+  "border-b sm:border-b-0 sm:border-t sm:border-x border-surface-outline",
 );
 
 export function Navigation({ items }: Navigation.Props) {
@@ -31,16 +31,10 @@ export function Navigation({ items }: Navigation.Props) {
 
   return (
     <div className={navigationClassName} ref={containerRef}>
-      {hiddenCount > 0 && (
-        <HiddenItems items={items} hiddenCount={hiddenCount} />
-      )}
+      {hiddenCount > 0 && <HiddenItems items={items} hiddenCount={hiddenCount} />}
 
       {items.slice(hiddenCount).map((item, index) => (
-        <NavItem
-          key={index + item.label}
-          item={item}
-          index={index + hiddenCount}
-        />
+        <NavItem key={index + item.label} item={item} index={index + hiddenCount} />
       ))}
     </div>
   );
@@ -53,16 +47,10 @@ const menuContentClass = classNames(
   "shadow-xl ring-1 transition ring-surface-outline",
   "focus:outline-none",
   "bg-surface-base",
-  "animateMenuSlideDown"
+  "animateMenuSlideDown",
 );
 
-function HiddenItems({
-  items,
-  hiddenCount,
-}: {
-  items: Navigation.Item[];
-  hiddenCount: number;
-}) {
+function HiddenItems({ items, hiddenCount }: { items: Navigation.Item[]; hiddenCount: number }) {
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className="border border-surface-outline px-1 rounded">
@@ -94,11 +82,7 @@ function NavItem({ item, index }: { item: Navigation.Item; index: number }) {
     <React.Fragment key={`fragment-${index}`}>
       {index > 0 && <NavSeparator key={`separator-${index}`} />}
 
-      <Link
-        to={item.to}
-        testId={createTestId("nav-item", item.label)}
-        className={className}
-      >
+      <Link to={item.to} testId={createTestId("nav-item", item.label)} className={className}>
         {item.label}
       </Link>
     </React.Fragment>
@@ -128,10 +112,7 @@ function NavSeparator() {
 // good enough for our use case.
 //
 
-function useHiddenItemCounter(
-  containerRef: React.RefObject<HTMLDivElement>,
-  items: Navigation.Item[]
-) {
+function useHiddenItemCounter(containerRef: React.RefObject<HTMLDivElement>, items: Navigation.Item[]) {
   const [hiddenCount, setHiddenCount] = React.useState(0);
 
   function handleResize() {

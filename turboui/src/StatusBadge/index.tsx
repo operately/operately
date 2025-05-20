@@ -1,11 +1,6 @@
+import { IconCheck, IconCircleDashed, IconCircleFilled, IconX } from "@tabler/icons-react";
 import React from "react";
 import { BadgeStatus, StatusBadgeProps } from "./types";
-import {
-  IconCircleDashed,
-  IconCheck,
-  IconCircleFilled,
-  IconX,
-} from "@tabler/icons-react";
 
 export function StatusBadge({ status, hideIcon = false, className = "", style, customLabel }: StatusBadgeProps) {
   const { bgColor, textColor, borderColor, label } = getStatusProperties(status);
