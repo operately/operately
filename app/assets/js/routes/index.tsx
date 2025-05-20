@@ -3,7 +3,7 @@ import ErrorPage from "./ErrorPage";
 
 import pages from "@/pages";
 
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, ShouldRevalidateFunction } from "react-router-dom";
 import { companyLoader } from "./companyLoader";
 import { pageRoute } from "./pageRoute";
 
@@ -68,6 +68,7 @@ export function createAppRoutes() {
       loader: companyLoader,
       element: <CompanyRoutes />,
       errorElement: <ErrorPage />,
+      shouldRevalidate: companyShouldRevalidate,
       children: [
         pageRoute("", pages.HomePage),
         pageRoute("feed", pages.FeedPage),
@@ -186,3 +187,16 @@ export function createAppRoutes() {
     },
   ]);
 }
+
+/**
+ * Prevents the company loader from rerunning when only the search parameters change.
+ * This applies to all routes that use CompanyLayout.
+ */
+const companyShouldRevalidate: ShouldRevalidateFunction = ({ currentUrl, nextUrl, defaultShouldRevalidate }) => {
+  // If only search params changed but pathname is the same, don't revalidate
+  if (currentUrl.pathname === nextUrl.pathname && currentUrl.search !== nextUrl.search) {
+    return false;
+  }
+
+  return defaultShouldRevalidate;
+};
