@@ -26,7 +26,7 @@ export async function redirectIfFeatureNotEnabled(params: any, { feature, path }
   }
 }
 
-const ENABLED_FEATURES_CACHE = {};
+const ENABLED_FEATURES_CACHE: Record<string, string[]> = {};
 
 async function getCachedEnabledFeatures(companyId: string): Promise<string[]> {
   const cached = ENABLED_FEATURES_CACHE[companyId];
@@ -35,7 +35,7 @@ async function getCachedEnabledFeatures(companyId: string): Promise<string[]> {
     return cached;
   } else {
     const company = await Companies.getCompany({ id: companyId }).then((data) => data.company!);
-    ENABLED_FEATURES_CACHE[companyId] = company.enabledExperimentalFeatures!;
-    return ENABLED_FEATURES_CACHE[companyId];
+    ENABLED_FEATURES_CACHE[companyId] = company.enabledExperimentalFeatures || [];
+    return ENABLED_FEATURES_CACHE[companyId]!;
   }
 }
