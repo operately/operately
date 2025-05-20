@@ -8,32 +8,56 @@ export function GoalTabs() {
 
   const tabs = [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "checkins", label: "Check-Ins", icon: <IconMessage size={14} /> },
+    { id: "checkins", label: "Check-Ins", icon: <IconMessage size={14} />, count: 3 },
   ];
 
-  const tabClass = (active: boolean) =>
-    classNames("flex items-center gap-1 mt-8 pb-2.5 px-0.5 text-sm relative border-b-[1.5px] -mb-px font-medium", {
-      "text-content-base border-content-base": active,
-      "text-content-dimmed hover:text-content-base border-transparent": !active,
-    });
-
   return (
-    <div className="border-b shadow-b-xs px-6">
+    <div className="border-b shadow-b-xs pl-4 mt-2">
       <nav className="flex gap-4 px-2 sm:px-0 mt-2">
         {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={tabClass(activeTab === tab.id)}
-            style={{ outline: "none" }}
-            aria-current={activeTab === tab.id ? "page" : undefined}
-            onClick={() => setActiveTab(tab.id)}
-            type="button"
-          >
-            {tab.icon}
-            <span className="leading-none">{tab.label}</span>
-          </button>
+          <Tab key={tab.id} {...tab} activeTab={activeTab} setActiveTab={setActiveTab} />
         ))}
       </nav>
+    </div>
+  );
+}
+
+interface TabProps {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  activeTab: string;
+  count?: number;
+  setActiveTab: (id: string) => void;
+}
+
+function Tab({ id, label, icon, activeTab, setActiveTab, count }: TabProps) {
+  const labelClass = classNames("flex items-center gap-1 px-1.5 py-1.5 text-sm relative -mb-px font-medium -mx-1.5", {
+    "text-white rounded-t": activeTab === id,
+    "text-content-dimmed hover:text-content-base": activeTab !== id,
+    "hover:bg-surface-dimmed rounded-lg": activeTab !== id,
+  });
+
+  const underlineClass = classNames(
+    "absolute inset-x-0 bottom-0 h-[1.5px] bg-blue-500 transition-all duration-200 ease-in-out",
+    {
+      "scale-x-100": activeTab === id,
+      "scale-x-0": activeTab !== id,
+    },
+  );
+
+  return (
+    <div className="relative pb-1.5">
+      <button className={labelClass} style={{ outline: "none" }} onClick={() => setActiveTab(id)} type="button">
+        {icon}
+        <span className="leading-none">{label}</span>
+
+        {count && count > 0 && (
+          <span className="bg-stone-100 dark:bg-stone-900 text-xs font-medium rounded-lg px-1.5">{count}</span>
+        )}
+      </button>
+
+      <div className={underlineClass} />
     </div>
   );
 }
