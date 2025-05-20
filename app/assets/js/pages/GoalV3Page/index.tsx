@@ -5,6 +5,7 @@ import * as Timeframes from "../../utils/timeframes";
 import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
+import { PageCache } from "@/routes/PageCache";
 import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
@@ -14,36 +15,35 @@ import { assertDefined, assertPresent } from "../../utils/assertions";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
-interface LoadedData {
-  goal: Goal;
-  workMap: WorkMapItem[];
-}
-
-async function loader({ params }): Promise<LoadedData> {
-  const [goal, workMap] = await Promise.all([
-    getGoal({
-      id: params.id,
-      includeSpace: true,
-      includeChampion: true,
-      includeReviewer: true,
-      includeTargets: true,
-      includePermissions: true,
-      includeUnreadNotifications: true,
-      includeLastCheckIn: true,
-      includeAccessLevels: true,
-      includePrivacy: true,
-    }).then((d) => d.goal!),
-    getWorkMap({
-      parentGoalId: params.id,
-      includeAssignees: true,
-    }).then((d) => d.workMap!),
-  ]);
-
-  return { goal, workMap };
+async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[]]> {
+  return await PageCache.fetch({
+    cacheKey: `v4-GoalPage.goal-${params.id}`,
+    maxAgeMs: 1000 * 60 * 5,
+    refreshCache,
+    fetchFn: () =>
+      Promise.all([
+        getGoal({
+          id: params.id,
+          includeSpace: true,
+          includeChampion: true,
+          includeReviewer: true,
+          includeTargets: true,
+          includePermissions: true,
+          includeUnreadNotifications: true,
+          includeLastCheckIn: true,
+          includeAccessLevels: true,
+          includePrivacy: true,
+        }).then((d) => d.goal!),
+        getWorkMap({
+          parentGoalId: params.id,
+          includeAssignees: true,
+        }).then((d) => d.workMap!),
+      ]),
+  });
 }
 
 function Page() {
-  const { goal, workMap } = useLoadedData<LoadedData>();
+  const [goal, workMap] = PageCache.useData(loader);
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
@@ -105,7 +105,7 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
 }
 
 function GoalFeedItems() {
-  const { goal } = useLoadedData();
+  const [goal] = useLoadedData();
   const { data, loading, error } = useItemsQuery("goal", goal.id!);
 
   if (loading) return <div>Loading...</div>;
