@@ -11,39 +11,39 @@ import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
 import { assertDefined, assertPresent } from "../../utils/assertions";
+import { PageCache } from "./cache";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
-interface LoadedData {
-  goal: Goal;
-  workMap: WorkMapItem[];
-}
-
-async function loader({ params }): Promise<LoadedData> {
-  const [goal, workMap] = await Promise.all([
-    getGoal({
-      id: params.id,
-      includeSpace: true,
-      includeChampion: true,
-      includeReviewer: true,
-      includeTargets: true,
-      includePermissions: true,
-      includeUnreadNotifications: true,
-      includeLastCheckIn: true,
-      includeAccessLevels: true,
-      includePrivacy: true,
-    }).then((d) => d.goal!),
-    getWorkMap({
-      parentGoalId: params.id,
-      includeAssignees: true,
-    }).then((d) => d.workMap!),
-  ]);
-
-  return { goal, workMap };
+async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[]]> {
+  return await PageCache.fetch({
+    cacheKey: `v4-GoalPage.goal-${params.id}`,
+    maxAgeMs: 1000 * 60 * 5,
+    refreshCache,
+    fetchFn: () =>
+      Promise.all([
+        getGoal({
+          id: params.id,
+          includeSpace: true,
+          includeChampion: true,
+          includeReviewer: true,
+          includeTargets: true,
+          includePermissions: true,
+          includeUnreadNotifications: true,
+          includeLastCheckIn: true,
+          includeAccessLevels: true,
+          includePrivacy: true,
+        }).then((d) => d.goal!),
+        getWorkMap({
+          parentGoalId: params.id,
+          includeAssignees: true,
+        }).then((d) => d.workMap!),
+      ]),
+  });
 }
 
 function Page() {
-  const { goal, workMap } = useLoadedData<LoadedData>();
+  const [goal, workMap] = PageCache.useData(loader);
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
@@ -105,7 +105,7 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
 }
 
 function GoalFeedItems() {
-  const { goal } = useLoadedData();
+  const [goal] = useLoadedData();
   const { data, loading, error } = useItemsQuery("goal", goal.id!);
 
   if (loading) return <div>Loading...</div>;
