@@ -15,6 +15,7 @@ import { isOverdue, Timeframe } from "../utils/timeframes";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
+import { GoalTabs } from "./GoalTabs";
 import { Messages } from "./Messages";
 import { PageHeader } from "./PageHeader";
 import { RelatedWork } from "./RelatedWork";
@@ -128,6 +129,7 @@ export function GoalPage(props: GoalPage.Props) {
   return (
     <Page title={[props.goalName]} navigation={navigation} options={options} size="xlarge">
       {props.closedOn && <ClosedBanner {...props} />}
+      <GoalTabs />
 
       <div className="p-4 sm:px-24">
         <PageHeader {...props} />
