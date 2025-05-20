@@ -1,5 +1,3 @@
-import * as Pages from "@/components/Pages";
-
 import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
 import { Paths } from "@/routes/paths";
@@ -16,8 +14,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
   });
 
   return await PageCache.fetch({
-    cacheKey: `v6-CompanyWorkMap.goal-${params.id}`,
-    maxAgeMs: 1000 * 60 * 5,
+    cacheKey: `v1-CompanyWorkMap.goal-${params.id}`,
     refreshCache,
     fetchFn: () =>
       getWorkMap({}).then((data) => ({
@@ -27,5 +24,5 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
 }
 
 export function useLoadedData(): LoaderResult {
-  return Pages.useLoadedData() as LoaderResult;
+  return PageCache.useData(loader);
 }

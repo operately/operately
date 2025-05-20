@@ -18,7 +18,6 @@ export default { name: "GoalV3Page", loader, Page } as PageModule;
 async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[]]> {
   return await PageCache.fetch({
     cacheKey: `v4-GoalPage.goal-${params.id}`,
-    maxAgeMs: 1000 * 60 * 5,
     refreshCache,
     fetchFn: () =>
       Promise.all([

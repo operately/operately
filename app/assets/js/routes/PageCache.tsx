@@ -3,16 +3,18 @@ import React from "react";
 import { useParams } from "react-router-dom";
 type PageLoaderFn<T> = ({ params, refreshCache }) => Promise<T>;
 
+const DEFAULT_MAX_AGE_MS = 1000 * 60 * 5; // 5 minutes
+
 export const PageCache = {
   fetch: async function getOrSetCache({
     cacheKey,
     fetchFn,
-    maxAgeMs,
+    maxAgeMs = DEFAULT_MAX_AGE_MS,
     refreshCache,
   }: {
     cacheKey: string;
     fetchFn: () => Promise<any>;
-    maxAgeMs: number;
+    maxAgeMs?: number;
     refreshCache: boolean;
   }): Promise<any> {
     const cached = localStorage.getItem(cacheKey);
