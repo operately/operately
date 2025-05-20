@@ -5,13 +5,13 @@ import * as Timeframes from "../../utils/timeframes";
 import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
+import { PageCache } from "@/routes/PageCache";
 import { GoalPage } from "turboui";
 import { Timeframe } from "turboui/src/utils/timeframes";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
 import { assertDefined, assertPresent } from "../../utils/assertions";
-import { PageCache } from "./cache";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
