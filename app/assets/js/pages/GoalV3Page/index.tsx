@@ -4,7 +4,6 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 import * as Timeframes from "../../utils/timeframes";
 
-import { useLoadedData } from "@/components/Pages";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
@@ -89,7 +88,7 @@ function Page() {
       throw new Error("Function not implemented.");
     },
 
-    activityFeed: <GoalFeedItems />,
+    activityFeed: <GoalFeedItems goalId={goal.id!} />,
   };
 
   return <GoalPage {...props} />;
@@ -128,9 +127,8 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
   });
 }
 
-function GoalFeedItems() {
-  const [goal] = useLoadedData();
-  const { data, loading, error } = useItemsQuery("goal", goal.id!);
+function GoalFeedItems({ goalId }: { goalId: string }) {
+  const { data, loading, error } = useItemsQuery("goal", goalId);
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
