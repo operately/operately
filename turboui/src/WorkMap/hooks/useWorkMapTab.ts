@@ -20,17 +20,20 @@ export function useWorkMapTab(
     const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
 
     if (tab === "all") {
-      return extractOngoingItems(timeframeFilteredItems);
+      const goals = extractOngoingItems(timeframeFilteredItems);
+      return sortItemsByDuration(goals);
     }
     if (tab === "projects") {
-      return extractAllProjects(timeframeFilteredItems);
+      const projects = extractAllProjects(timeframeFilteredItems);
+      return sortItemsByDueDate(projects);
     }
     if (tab === "completed") {
       const completedItems = extractCompletedItems(timeframeFilteredItems);
       return sortItemsByClosedDate(completedItems);
     }
 
-    return extractAllGoals(timeframeFilteredItems);
+    const goals = extractAllGoals(timeframeFilteredItems);
+    return sortItemsByDuration(goals);
   }, [rawItems, tab, timeframe]);
 
   return {
@@ -153,6 +156,56 @@ function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
     if (!dateB) return -1; // If B is null, A comes first
 
     return dateB.getTime() - dateA.getTime();
+  });
+}
+
+/**
+ * Helper function to sort items by their due date (timeframe.endDate) in ascending order
+ * If items have the same due date, they are sorted by name
+ */
+function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
+  return [...items].sort((a, b) => {
+    const dateA = a.timeframe?.endDate ? parse(a.timeframe.endDate) : null;
+    const dateB = b.timeframe?.endDate ? parse(b.timeframe.endDate) : null;
+
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1; // Items without due dates come last
+    if (!dateB) return -1; // Items with due dates come first
+
+    const dateCompare = dateA.getTime() - dateB.getTime();
+    if (dateCompare !== 0) return dateCompare;
+
+    return (a.name || "").localeCompare(b.name || "");
+  });
+}
+
+/**
+ * Helper function to sort items by their duration in descending order (longer duration first)
+ * If items have the same duration, they are sorted by name
+ */
+function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
+  return [...items].sort((a, b) => {
+    const startA = a.timeframe?.startDate ? parse(a.timeframe.startDate) : null;
+    const endA = a.timeframe?.endDate ? parse(a.timeframe.endDate) : null;
+    const startB = b.timeframe?.startDate ? parse(b.timeframe.startDate) : null;
+    const endB = b.timeframe?.endDate ? parse(b.timeframe.endDate) : null;
+
+    // Calculate durations (positive values only to account for potential data issues)
+    const durationA = startA && endA && endA > startA ? endA.getTime() - startA.getTime() : null;
+    const durationB = startB && endB && endB > startB ? endB.getTime() - startB.getTime() : null;
+
+    // Items with both dates come first
+    if (durationA !== null && durationB !== null) {
+      const durationCompare = durationB - durationA;
+      if (durationCompare !== 0) return durationCompare;
+    }
+
+    // Handle cases where one or both items are missing dates
+    if (durationA === null && durationB === null) return 0;
+    if (durationA === null) return 1; // Items without duration come last
+    if (durationB === null) return -1; // Items with duration come first
+
+    return (a.name || "").localeCompare(b.name || "");
   });
 }
 
