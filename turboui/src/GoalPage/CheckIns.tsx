@@ -42,7 +42,7 @@ interface CheckInProps {
 
 export function CheckIn({ checkIn, mentionedPersonLookup }: CheckInProps) {
   const className = classNames(
-    "flex gap-4",
+    "flex gap-4 items-center",
     "py-3 px-3",
     "last:border-b border-t border-stroke-base",
     "cursor-pointer hover:bg-surface-highlight",
@@ -50,28 +50,28 @@ export function CheckIn({ checkIn, mentionedPersonLookup }: CheckInProps) {
 
   return (
     <DivLink to={checkIn.link} className={className}>
-      <div className="shrink-0">
-        <Avatar person={checkIn.author} size="large" />
-      </div>
-
-      <div className="flex-1 h-full">
-        <div className="font-semibold leading-none mb-1">Check-In for {getMonth(checkIn.date!)}</div>
-        <div className="break-words">
-          <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
+      <div className="flex gap-4 flex-1">
+        <div className="shrink-0">
+          <Avatar person={checkIn.author} size="large" />
         </div>
 
-        <div className="flex gap-1 mt-1 text-xs">
-          <div className="text-sm text-content-dimmed">{checkIn.author.fullName}</div>
-          <div className="text-sm text-content-dimmed">·</div>
-          <div className="text-sm text-content-dimmed">
-            <FormattedTime time={checkIn.date!} format="relative-weekday-or-date" />
+        <div className="flex-1 h-full">
+          <div className="font-semibold leading-none mb-1">Check-In for {getMonth(checkIn.date!)}</div>
+          <div className="break-words">
+            <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={mentionedPersonLookup} />
+          </div>
+
+          <div className="flex gap-1 mt-1 text-xs">
+            <div className="text-sm text-content-dimmed">{checkIn.author.fullName}</div>
+            <div className="text-sm text-content-dimmed">·</div>
+            <div className="text-sm text-content-dimmed">
+              <FormattedTime time={checkIn.date!} format="relative-weekday-or-date" />
+            </div>
           </div>
         </div>
       </div>
 
-      <div className="mt-8">
-        <CommentsCountIndicator count={4} size={28} />
-      </div>
+      <CommentsCountIndicator count={checkIn.commentCount} size={28} />
     </DivLink>
   );
 }

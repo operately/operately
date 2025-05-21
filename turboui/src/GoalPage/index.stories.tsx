@@ -61,6 +61,7 @@ const checkIns = [
     content: asRichText(
       "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
     ),
+    commentCount: 48,
   },
   {
     link: "/checkins/1",
@@ -70,6 +71,7 @@ const checkIns = [
     content: asRichText(
       "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
     ),
+    commentCount: 2,
   },
   {
     link: "/checkins/1",
@@ -79,6 +81,7 @@ const checkIns = [
     content: asRichText(
       "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
     ),
+    commentCount: 0,
   },
 ];
 

@@ -94,6 +94,7 @@ export namespace GoalPage {
     date: Date;
     content: string;
     link: string;
+    commentCount: number;
   }
 }
 
