@@ -17,7 +17,7 @@ export function GoalTabs(props: GoalTabsProps) {
 
   return (
     <div className="border-b shadow-b-xs pl-4 mt-2">
-      <nav className="flex gap-4 px-2 sm:px-0 mt-2">
+      <nav className="flex gap-4 px-2 sm:px-0">
         {tabs.map((tab) => (
           <Tab key={tab.id} {...tab} activeTab={props.activeTab} setActiveTab={props.setActiveTab} />
         ))}
