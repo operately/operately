@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconClipboardText, IconMessage } from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage } from "@tabler/icons-react";
 import classNames from "../utils/classnames";
 
 interface GoalTabsProps {
@@ -13,6 +13,7 @@ export function GoalTabs(props: GoalTabsProps) {
   const tabs = [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkInCount },
+    { id: "activity", label: "Activity Feed", icon: <IconLogs size={14} /> },
   ];
 
   return (

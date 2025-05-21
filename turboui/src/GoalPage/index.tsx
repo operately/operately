@@ -126,14 +126,24 @@ export function GoalPage(props: GoalPage.Props) {
       <div className="flex-1 overflow-scroll">
         {activeTab === "overview" && <Overview {...props} />}
         {activeTab === "check-ins" && <CheckIns {...props} />}
+        {activeTab === "activity" && <ActivityFeed {...props} />}
       </div>
     </PageNew>
   );
 }
 
+function ActivityFeed(props: GoalPage.Props) {
+  return (
+    <div className="p-4 max-w-5xl mx-auto my-6">
+      <div className="font-bold text-lg mb-4">Activity Feed</div>
+      {props.activityFeed}
+    </div>
+  );
+}
+
 function Overview(props: GoalPage.Props) {
   return (
-    <div className="p-4 max-w-5xl mx-auto my-6 overflow-scroll">
+    <div className="p-4 max-w-5xl mx-auto my-6">
       <div className="sm:grid sm:grid-cols-10 sm:gap-8">
         <MainContent {...props} />
         <Sidebar {...props} />
