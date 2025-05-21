@@ -96,31 +96,3 @@ function Breadcrumbs({ navigation }: { navigation: { to: string; label: string }
 //     </div>
 //   );
 // }
-
-// function ParentGoal(props: GoalPage.Props) {
-//   if (!props.parentGoal) {
-//     return <CompanyWideGoal />;
-//   } else {
-//     return <ParentGoalLink {...props} />;
-//   }
-// }
-
-// function CompanyWideGoal() {
-//   return (
-//     <div className="flex items-center gap-1.5 text-sm mb-2">
-//       <IconBuilding size={14} />
-//       <span>Company-wide goal</span>
-//     </div>
-//   );
-// }
-
-// function ParentGoalLink(props: GoalPage.Props) {
-//   return (
-//     <div className="flex items-center gap-1.5 text-sm mb-2">
-//       <IconTarget size={14} className="text-red-500" />
-//       <DimmedLink to={props.parentGoal!.link} underline="hover">
-//         {props.parentGoal!.name}
-//       </DimmedLink>
-//     </div>
-//   );
-// }
