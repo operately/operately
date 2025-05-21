@@ -48,8 +48,6 @@ function DescriptionContent({
     }
   }, [description, length, isExpanded]);
 
-  console.log(displayedDescription);
-
   return (
     <div className="mt-2">
       <RichContent content={displayedDescription} mentionedPersonLookup={mentionedPersonLookup} />
