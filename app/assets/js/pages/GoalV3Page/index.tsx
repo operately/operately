@@ -1,4 +1,6 @@
+import * as Activities from "@/models/activities";
 import { PageModule } from "@/routes/types";
+import * as Time from "@/utils/time";
 import * as React from "react";
 import * as Timeframes from "../../utils/timeframes";
 
@@ -15,9 +17,9 @@ import { assertDefined, assertPresent } from "../../utils/assertions";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
-async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[]]> {
+async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[], Activities.Activity[]]> {
   return await PageCache.fetch({
-    cacheKey: `v4-GoalPage.goal-${params.id}`,
+    cacheKey: `v7-GoalPage.goal-${params.id}`,
     refreshCache,
     fetchFn: () =>
       Promise.all([
@@ -37,12 +39,17 @@ async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapI
           parentGoalId: params.id,
           includeAssignees: true,
         }).then((d) => d.workMap!),
+        Activities.getActivities({
+          scopeType: "goal",
+          scopeId: params.id,
+          actions: ["goal_check_in"],
+        }),
       ]),
   });
 }
 
 function Page() {
-  const [goal, workMap] = PageCache.useData(loader);
+  const [goal, workMap, checkIns] = PageCache.useData(loader);
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
@@ -70,7 +77,7 @@ function Page() {
     description: goal.description && JSON.parse(goal.description),
     status: goal.status,
     targets: prepareTargets(goal.targets),
-    checkIns: [],
+    checkIns: prepareCheckIns(checkIns),
     messages: [],
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
@@ -86,6 +93,24 @@ function Page() {
   };
 
   return <GoalPage {...props} />;
+}
+
+function prepareCheckIns(checkIns: Activities.Activity[]): GoalPage.Props["checkIns"] {
+  return checkIns.map((activity) => {
+    const content = activity.content as Activities.ActivityContentGoalCheckIn;
+
+    assertPresent(activity.author, "author must be present in activity");
+    assertPresent(content.update, "update must be present in activity content");
+    assertPresent(content.update.id, "update.id must be present in activity content");
+
+    return {
+      id: content.update.id,
+      author: activity.author,
+      date: Time.parse(content.update.insertedAt!)!,
+      link: Paths.goalCheckInPath(content.update.id!),
+      content: JSON.parse(content.update.message!),
+    };
+  });
 }
 
 function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGoal"] {

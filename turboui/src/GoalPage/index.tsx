@@ -90,11 +90,7 @@ export namespace GoalPage {
 
   export interface CheckIn {
     id: string;
-    author: {
-      id: string;
-      fullName: string;
-      avatarUrl: string | null;
-    };
+    author: Person;
     date: Date;
     content: string;
     link: string;
