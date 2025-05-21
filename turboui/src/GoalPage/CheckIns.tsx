@@ -76,7 +76,7 @@ export function CheckIn({ checkIn, mentionedPersonLookup }: CheckInProps) {
   );
 }
 
-function CommentsCountIndicator({ count, size }: { count: number; size: number }) {
+export function CommentsCountIndicator({ count, size }: { count: number; size: number }) {
   if (count < 1) return <></>;
 
   const style = {
@@ -97,7 +97,7 @@ function CommentsCountIndicator({ count, size }: { count: number; size: number }
   );
 }
 
-function getMonth(date: Date) {
+export function getMonth(date: Date) {
   const year = date.getFullYear();
   const thisYear = new Date().getFullYear();
 
