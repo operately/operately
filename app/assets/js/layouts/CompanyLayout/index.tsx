@@ -131,6 +131,10 @@ function MobileSectionAction({ onClick, children, icon }) {
 }
 
 function DesktopNavigation({ company }: { company: Api.Company }) {
+  const goalPath = company.enabledExperimentalFeatures?.includes("work_map_page")
+    ? Paths.workMapPath()
+    : Paths.goalsPath();
+
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
@@ -148,7 +152,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
               Home
             </SectionLink>
 
-            <SectionLink to={Paths.goalsPath()} icon={Icons.IconTargetArrow}>
+            <SectionLink to={goalPath} icon={Icons.IconTargetArrow}>
               Goals
             </SectionLink>
 
