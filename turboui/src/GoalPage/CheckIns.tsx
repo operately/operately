@@ -1,15 +1,13 @@
 import React from "react";
+import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
 import { SecondaryButton } from "../Button";
 import { Link } from "../Link";
 import { formatDateWithDaySuffix } from "../utils/date";
 import { truncate } from "../utils/strings";
-import { GoalPage } from ".";
 import { SectionHeader } from "./SectionHeader";
 
 export function CheckIns(props: GoalPage.Props) {
-  if (props.checkIns.length === 0) return null;
-
   return (
     <div>
       <SectionHeader

@@ -3,19 +3,23 @@ import React from "react";
 import { IconClipboardText, IconMessage } from "@tabler/icons-react";
 import classNames from "../utils/classnames";
 
-export function GoalTabs() {
-  const [activeTab, setActiveTab] = React.useState("overview");
+interface GoalTabsProps {
+  activeTab: string;
+  setActiveTab: (id: string) => void;
+  checkInCount: number;
+}
 
+export function GoalTabs(props: GoalTabsProps) {
   const tabs = [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "checkins", label: "Check-Ins", icon: <IconMessage size={14} />, count: 3 },
+    { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkInCount },
   ];
 
   return (
     <div className="border-b shadow-b-xs pl-4 mt-2">
       <nav className="flex gap-4 px-2 sm:px-0 mt-2">
         {tabs.map((tab) => (
-          <Tab key={tab.id} {...tab} activeTab={activeTab} setActiveTab={setActiveTab} />
+          <Tab key={tab.id} {...tab} activeTab={props.activeTab} setActiveTab={props.setActiveTab} />
         ))}
       </nav>
     </div>
