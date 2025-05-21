@@ -1294,6 +1294,8 @@ defmodule OperatelyWeb.Api.Types do
     field :comments, list_of(:comment)
     field :comments_count, :integer
     field :author, :person
+    field :subscription_list, :subscription_list
+    field :potential_subscribers, list_of(:subscriber)
   end
 
   object :comment do
