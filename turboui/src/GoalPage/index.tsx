@@ -3,7 +3,7 @@ import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { Link } from "../Link";
-import { Page } from "../Page";
+import { PageNew } from "../Page";
 
 import { IconCircleCheck, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
@@ -122,21 +122,21 @@ export function GoalPage(props: GoalPage.Props) {
   const [activeTab, setActiveTab] = React.useState("overview");
 
   return (
-    <Page title={[props.goalName]} options={options} size="fullwidth">
+    <PageNew title={[props.goalName]} options={options} size="fullwidth">
       <PageHeader {...props} />
-      <GoalTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+      <GoalTabs activeTab={activeTab} setActiveTab={setActiveTab} checkInCount={props.checkIns.length} />
       {props.closedOn && <ClosedBanner {...props} />}
 
       {activeTab === "overview" && <Overview {...props} />}
       {activeTab === "check-ins" && <CheckIns {...props} />}
-    </Page>
+    </PageNew>
   );
 }
 
 function Overview(props: GoalPage.Props) {
   return (
-    <div className="p-4 max-w-5xl mx-auto">
-      <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
+    <div className="p-4 max-w-5xl mx-auto my-8">
+      <div className="sm:grid sm:grid-cols-10 sm:gap-8">
         <MainContent {...props} />
         <Sidebar {...props} />
       </div>

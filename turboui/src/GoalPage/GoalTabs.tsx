@@ -56,7 +56,7 @@ function Tab({ id, label, icon, activeTab, setActiveTab, count }: TabProps) {
         {icon}
         <span className="leading-none">{label}</span>
 
-        {count && count > 0 && (
+        {Boolean(count && count > 0) && (
           <span className="bg-stone-100 dark:bg-stone-900 text-xs font-medium rounded-lg px-1.5">{count}</span>
         )}
       </button>

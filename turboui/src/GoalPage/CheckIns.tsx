@@ -9,7 +9,7 @@ import { SectionHeader } from "./SectionHeader";
 
 export function CheckIns(props: GoalPage.Props) {
   return (
-    <div>
+    <div className="p-4 max-w-5xl mx-auto my-8">
       <SectionHeader
         title="Check-Ins"
         buttons={<SecondaryButton size="xxs">Check-In</SecondaryButton>}
