@@ -160,6 +160,12 @@ defmodule Operately.Notifications do
           join: s in assoc(l, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
+      :comment_thread ->
+        from(a in Operately.Activities.Activity, as: :resource,
+          join: c in assoc(a, :comment_thread),
+          join: s in assoc(c, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :subscription_list)
   end
