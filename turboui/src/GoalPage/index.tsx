@@ -5,16 +5,16 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 import { Link } from "../Link";
 import { PageNew } from "../Page";
 
-import { IconCircleCheck, IconTrash } from "@tabler/icons-react";
+import { IconCircleCheck, IconClipboardText, IconLogs, IconMessage, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
 import { PageBanner } from "../PageBanner";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { BadgeStatus } from "../StatusBadge/types";
+import { Tabs, useTabs } from "../Tabs";
 import { isOverdue, Timeframe } from "../utils/timeframes";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
-import { GoalTabs } from "./GoalTabs";
 import { PageHeader } from "./PageHeader";
 import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
@@ -116,18 +116,22 @@ export function GoalPage(props: GoalPage.Props) {
     },
   ];
 
-  const [activeTab, setActiveTab] = React.useState("overview");
+  const tabs = useTabs("overview", [
+    { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
+    { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkIns.length },
+    { id: "activity", label: "Activity Feed", icon: <IconLogs size={14} /> },
+  ]);
 
   return (
     <PageNew title={[props.goalName]} options={options} size="fullwidth">
       <PageHeader {...props} />
-      <GoalTabs activeTab={activeTab} setActiveTab={setActiveTab} checkInCount={props.checkIns.length} />
+      <Tabs tabs={tabs} />
       {props.closedOn && <ClosedBanner {...props} />}
 
       <div className="flex-1 overflow-scroll">
-        {activeTab === "overview" && <Overview {...props} />}
-        {activeTab === "check-ins" && <CheckIns {...props} />}
-        {activeTab === "activity" && <ActivityFeed {...props} />}
+        {tabs.active === "overview" && <Overview {...props} />}
+        {tabs.active === "check-ins" && <CheckIns {...props} />}
+        {tabs.active === "activity" && <ActivityFeed {...props} />}
       </div>
     </PageNew>
   );

@@ -151,8 +151,8 @@ function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["t
     assertPresent(target.index);
 
     return {
-      id: target.id,
       name: target.name,
+      id: target.id,
       from: target.from,
       to: target.to,
       value: target.value,
