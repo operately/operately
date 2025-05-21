@@ -127,7 +127,7 @@ function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkIt
   });
 }
 
-function GoalFeedItems({ goalId }: { goalId?: string }) {
+function GoalFeedItems({ goalId }: { goalId: string }) {
   const { data, loading, error } = useItemsQuery("goal", goalId);
 
   if (loading) return <div>Loading...</div>;

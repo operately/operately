@@ -135,7 +135,7 @@ export function GoalPage(props: GoalPage.Props) {
 function ActivityFeed(props: GoalPage.Props) {
   return (
     <div className="p-4 max-w-5xl mx-auto my-6">
-      Activity
+      <div className="font-bold text-lg mb-4">Activity Feed</div>
       {props.activityFeed}
     </div>
   );
