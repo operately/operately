@@ -165,8 +165,8 @@ function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
  */
 function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
   return [...items].sort((a, b) => {
-    const dateA = a.timeframe?.endDate ? parse(a.timeframe.endDate) : null;
-    const dateB = b.timeframe?.endDate ? parse(b.timeframe.endDate) : null;
+    const dateA = parse(a.timeframe?.endDate);
+    const dateB = parse(b.timeframe?.endDate);
 
     if (!dateA && !dateB) return 0;
     if (!dateA) return 1; // Items without due dates come last
@@ -185,14 +185,8 @@ function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
  */
 function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
   return [...items].sort((a, b) => {
-    const startA = a.timeframe?.startDate ? parse(a.timeframe.startDate) : null;
-    const endA = a.timeframe?.endDate ? parse(a.timeframe.endDate) : null;
-    const startB = b.timeframe?.startDate ? parse(b.timeframe.startDate) : null;
-    const endB = b.timeframe?.endDate ? parse(b.timeframe.endDate) : null;
-
-    // Calculate durations (positive values only to account for potential data issues)
-    const durationA = startA && endA && endA > startA ? endA.getTime() - startA.getTime() : null;
-    const durationB = startB && endB && endB > startB ? endB.getTime() - startB.getTime() : null;
+    const durationA = getDuration(a);
+    const durationB = getDuration(b);
 
     // Items with both dates come first
     if (durationA !== null && durationB !== null) {
@@ -200,8 +194,6 @@ function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
       if (durationCompare !== 0) return durationCompare;
     }
 
-    // Handle cases where one or both items are missing dates
-    if (durationA === null && durationB === null) return 0;
     if (durationA === null) return 1; // Items without duration come last
     if (durationB === null) return -1; // Items with duration come first
 
@@ -329,4 +321,12 @@ function getDefaultTab(allowedTabs: WorkMap.Filter[], tabOptions?: WorkMap.TabOp
     return allowedTabs[0] || "all";
   }
   return "all";
+}
+
+function getDuration(item: WorkMap.Item): number | null {
+  const start = parse(item.timeframe?.startDate);
+  const end = parse(item.timeframe?.endDate);
+
+  // Calculate duration only if both dates exist and are valid (end is after start)
+  return start && end && end > start ? end.getTime() - start.getTime() : null;
 }
