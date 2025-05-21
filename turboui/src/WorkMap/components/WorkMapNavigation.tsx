@@ -2,13 +2,10 @@ import React from "react";
 import { WorkMapTab } from "./WorkMapTab";
 import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck } from "@tabler/icons-react";
 import { WorkMap } from ".";
-import { TimeframeSelector } from "../../TimeframeSelector";
 
 export interface Props {
   activeTab: WorkMap.Filter;
   setTab: (tab: WorkMap.Filter) => void;
-  timeframe: TimeframeSelector.Timeframe;
-  setTimeframe: TimeframeSelector.SetTimeframe;
   tabOptions?: WorkMap.TabOptions;
 }
 

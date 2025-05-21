@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import { parse } from "../../utils/time";
-import { TimeframeSelector } from "../../TimeframeSelector";
 import { WorkMap } from "../components";
 import { useSearchParams } from "react-router-dom";
 import { isStorybook } from "../../utils/storybook/isStorybook";
@@ -9,32 +8,26 @@ export interface WorkMapFilterOptions {
   tabOptions?: WorkMap.TabOptions;
 }
 
-export function useWorkMapTab(
-  rawItems: WorkMap.Item[],
-  timeframe: TimeframeSelector.Timeframe,
-  options: WorkMapFilterOptions = {},
-) {
+export function useWorkMapTab(rawItems: WorkMap.Item[], options: WorkMapFilterOptions = {}) {
   const [tab, setTab] = useWorkMapUrlTab(options.tabOptions);
 
   const filteredItems = useMemo(() => {
-    const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
-
     if (tab === "all") {
-      const goals = extractOngoingItems(timeframeFilteredItems);
+      const goals = extractOngoingItems(rawItems);
       return sortItemsByDuration(goals);
     }
     if (tab === "projects") {
-      const projects = extractAllProjects(timeframeFilteredItems);
+      const projects = extractAllProjects(rawItems);
       return sortItemsByDueDate(projects);
     }
     if (tab === "completed") {
-      const completedItems = extractCompletedItems(timeframeFilteredItems);
+      const completedItems = extractCompletedItems(rawItems);
       return sortItemsByClosedDate(completedItems);
     }
 
-    const goals = extractAllGoals(timeframeFilteredItems);
+    const goals = extractAllGoals(rawItems);
     return sortItemsByDuration(goals);
-  }, [rawItems, tab, timeframe]);
+  }, [rawItems, tab]);
 
   return {
     filteredItems,
@@ -199,68 +192,6 @@ function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
 
     return (a.name || "").localeCompare(b.name || "");
   });
-}
-
-/**
- * Filter items based on their timeframe
- * An item is included if it overlaps with the provided timeframe in any way
- */
-function filterItemsByTimeframe(items: WorkMap.Item[], timeframe: TimeframeSelector.Timeframe): WorkMap.Item[] {
-  const processItemAndChildren = (item: WorkMap.Item): WorkMap.Item[] => {
-    const result: WorkMap.Item[] = [];
-    const itemOverlaps = itemOverlapsWithTimeframe(item, timeframe);
-
-    let matchingChildren: WorkMap.Item[] = [];
-
-    if (item.children && item.children.length > 0) {
-      item.children.forEach((child) => {
-        const childResults = processItemAndChildren(child);
-        matchingChildren.push(...childResults);
-      });
-    }
-
-    // If the item itself overlaps with the timeframe, include it with its matching children
-    if (itemOverlaps) {
-      result.push({ ...item, children: matchingChildren });
-    } else if (matchingChildren.length > 0) {
-      // If the item doesn't overlap but has matching children, add those children directly to result
-      // This moves the children up one level in the hierarchy
-      result.push(...matchingChildren);
-    }
-
-    return result;
-  };
-
-  const allResults: WorkMap.Item[] = [];
-
-  items.forEach((item) => {
-    const results = processItemAndChildren(item);
-    allResults.push(...results);
-  });
-
-  return allResults;
-}
-
-function itemOverlapsWithTimeframe(item: WorkMap.Item, timeframe: TimeframeSelector.Timeframe) {
-  const timeframeStart = parse(timeframe.startDate);
-  const timeframeEnd = parse(timeframe.endDate);
-  const itemStart = parse(item.timeframe?.startDate);
-  const itemEnd = parse(item.timeframe?.endDate || item.completedOn);
-
-  // Item doesn't have a start date, we can't determine if it's in the timeframe
-  if (!itemStart) {
-    return false;
-  }
-
-  if (!timeframeStart || !timeframeEnd) {
-    return true;
-  }
-
-  if (itemEnd) {
-    return !(itemEnd < timeframeStart || itemStart > timeframeEnd);
-  }
-
-  return itemStart <= timeframeEnd;
 }
 
 /**

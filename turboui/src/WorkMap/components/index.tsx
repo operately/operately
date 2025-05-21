@@ -1,16 +1,12 @@
 import React from "react";
-import { useState } from "react";
 
 import { TimeframeSelector } from "../../TimeframeSelector";
-import { currentYear } from "../../utils/timeframes";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 import { Page } from "../../Page";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
-
-const defaultTimeframe = currentYear();
 
 export function WorkMapPage(props: WorkMap.Props) {
   return (
@@ -21,8 +17,7 @@ export function WorkMapPage(props: WorkMap.Props) {
 }
 
 export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
-  const [timeframe, setTimeframe] = useState(defaultTimeframe);
-  const { filteredItems, tab, setTab } = useWorkMapTab(items, timeframe, { tabOptions });
+  const { filteredItems, tab, setTab } = useWorkMapTab(items, { tabOptions });
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -32,13 +27,7 @@ export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: W
         </div>
       </header>
       <div className="flex-1 overflow-auto">
-        <WorkMapNavigation
-          activeTab={tab}
-          setTab={setTab}
-          timeframe={timeframe}
-          setTimeframe={setTimeframe}
-          tabOptions={tabOptions}
-        />
+        <WorkMapNavigation activeTab={tab} setTab={setTab} tabOptions={tabOptions} />
         <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} />
       </div>
     </div>
