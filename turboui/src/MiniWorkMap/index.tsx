@@ -61,7 +61,9 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }
         <ItemName item={item} />
         <ItemPeople item={item} />
         <div className="flex-1" />
-        <StatusBadge status={item.status} />
+        <div className="shrink-0">
+          <StatusBadge status={item.status} />
+        </div>
       </div>
 
       {item.children && <Subitems items={item.children} depth={depth + 1} />}
@@ -104,7 +106,7 @@ function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   );
 
   if (item.state === "closed") {
-    return <s>{nameElement}</s>;
+    return <s className="truncate">{nameElement}</s>;
   } else {
     return nameElement;
   }
