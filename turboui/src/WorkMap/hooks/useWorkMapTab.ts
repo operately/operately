@@ -20,17 +20,20 @@ export function useWorkMapTab(
     const timeframeFilteredItems = filterItemsByTimeframe(rawItems, timeframe);
 
     if (tab === "all") {
-      return extractOngoingItems(timeframeFilteredItems);
+      const goals = extractOngoingItems(timeframeFilteredItems);
+      return sortItemsByDuration(goals);
     }
     if (tab === "projects") {
-      return extractAllProjects(timeframeFilteredItems);
+      const projects = extractAllProjects(timeframeFilteredItems);
+      return sortItemsByDueDate(projects);
     }
     if (tab === "completed") {
       const completedItems = extractCompletedItems(timeframeFilteredItems);
       return sortItemsByClosedDate(completedItems);
     }
 
-    return extractAllGoals(timeframeFilteredItems);
+    const goals = extractAllGoals(timeframeFilteredItems);
+    return sortItemsByDuration(goals);
   }, [rawItems, tab, timeframe]);
 
   return {
@@ -157,6 +160,48 @@ function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
 }
 
 /**
+ * Helper function to sort items by their due date (timeframe.endDate) in ascending order
+ * If items have the same due date, they are sorted by name
+ */
+function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
+  return [...items].sort((a, b) => {
+    const dateA = parse(a.timeframe?.endDate);
+    const dateB = parse(b.timeframe?.endDate);
+
+    if (!dateA && !dateB) return 0;
+    if (!dateA) return 1; // Items without due dates come last
+    if (!dateB) return -1; // Items with due dates come first
+
+    const dateCompare = dateA.getTime() - dateB.getTime();
+    if (dateCompare !== 0) return dateCompare;
+
+    return (a.name || "").localeCompare(b.name || "");
+  });
+}
+
+/**
+ * Helper function to sort items by their duration in descending order (longer duration first)
+ * If items have the same duration, they are sorted by name
+ */
+function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
+  return [...items].sort((a, b) => {
+    const durationA = getDuration(a);
+    const durationB = getDuration(b);
+
+    // Items with both dates come first
+    if (durationA !== null && durationB !== null) {
+      const durationCompare = durationB - durationA;
+      if (durationCompare !== 0) return durationCompare;
+    }
+
+    if (durationA === null) return 1; // Items without duration come last
+    if (durationB === null) return -1; // Items with duration come first
+
+    return (a.name || "").localeCompare(b.name || "");
+  });
+}
+
+/**
  * Filter items based on their timeframe
  * An item is included if it overlaps with the provided timeframe in any way
  */
@@ -276,4 +321,12 @@ function getDefaultTab(allowedTabs: WorkMap.Filter[], tabOptions?: WorkMap.TabOp
     return allowedTabs[0] || "all";
   }
   return "all";
+}
+
+function getDuration(item: WorkMap.Item): number | null {
+  const start = parse(item.timeframe?.startDate);
+  const end = parse(item.timeframe?.endDate);
+
+  // Calculate duration only if both dates exist and are valid (end is after start)
+  return start && end && end > start ? end.getTime() - start.getTime() : null;
 }
