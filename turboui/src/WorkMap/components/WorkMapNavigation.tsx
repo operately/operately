@@ -12,7 +12,7 @@ export interface Props {
   tabOptions?: WorkMap.TabOptions;
 }
 
-export function WorkMapNavigation({ activeTab, setTab, timeframe, setTimeframe, tabOptions = {} }: Props) {
+export function WorkMapNavigation({ activeTab, setTab, tabOptions = {} }: Props) {
   return (
     <div className="overflow-x-auto">
       <div className="border-b border-surface-outline">
@@ -55,10 +55,6 @@ export function WorkMapNavigation({ activeTab, setTab, timeframe, setTimeframe, 
                 hide={tabOptions.hideCompleted}
                 setTab={setTab}
               />
-            </div>
-
-            <div className="mt-1">
-              <TimeframeSelector timeframe={timeframe} setTimeframe={setTimeframe} size="xs" />
             </div>
           </nav>
         </div>
