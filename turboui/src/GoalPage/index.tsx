@@ -123,15 +123,17 @@ export function GoalPage(props: GoalPage.Props) {
       <GoalTabs activeTab={activeTab} setActiveTab={setActiveTab} checkInCount={props.checkIns.length} />
       {props.closedOn && <ClosedBanner {...props} />}
 
-      {activeTab === "overview" && <Overview {...props} />}
-      {activeTab === "check-ins" && <CheckIns {...props} />}
+      <div className="flex-1 overflow-scroll">
+        {activeTab === "overview" && <Overview {...props} />}
+        {activeTab === "check-ins" && <CheckIns {...props} />}
+      </div>
     </PageNew>
   );
 }
 
 function Overview(props: GoalPage.Props) {
   return (
-    <div className="p-4 max-w-5xl mx-auto my-8">
+    <div className="p-4 max-w-5xl mx-auto my-6 overflow-scroll">
       <div className="sm:grid sm:grid-cols-10 sm:gap-8">
         <MainContent {...props} />
         <Sidebar {...props} />
