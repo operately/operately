@@ -62,6 +62,7 @@ const checkIns = [
       "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
     ),
     commentCount: 48,
+    status: "on_track",
   },
   {
     link: "/checkins/1",
@@ -72,6 +73,7 @@ const checkIns = [
       "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
     ),
     commentCount: 2,
+    status: "on_track",
   },
   {
     link: "/checkins/1",
@@ -82,6 +84,7 @@ const checkIns = [
       "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
     ),
     commentCount: 0,
+    status: "on_track",
   },
 ];
 
@@ -340,10 +343,7 @@ export const ZeroStateForChampions: Story = {
     contributors: [],
     relatedWorkItems: [],
     canEdit: true,
-    description: {
-      type: "doc",
-      content: [{ type: "paragraph" }],
-    },
+    description: null,
     reviewer: null,
     status: "pending",
     timeframe: {
@@ -362,7 +362,7 @@ export const ZeroStateReadOnly: Story = {
     contributors: [],
     relatedWorkItems: [],
     canEdit: false,
-    description: "",
+    description: null,
     reviewer: null,
     status: "pending",
     timeframe: {
