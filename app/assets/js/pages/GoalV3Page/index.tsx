@@ -109,6 +109,7 @@ function prepareCheckIns(checkIns: Activities.Activity[]): GoalPage.Props["check
       date: Time.parse(content.update.insertedAt!)!,
       link: Paths.goalCheckInPath(content.update.id!),
       content: JSON.parse(content.update.message!),
+      commentCount: 4,
     };
   });
 }
