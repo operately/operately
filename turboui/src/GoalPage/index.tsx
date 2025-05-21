@@ -3,8 +3,7 @@ import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { Link } from "../Link";
-import { Page } from "../Page";
-import { PageFooter } from "../Page/PageFooter";
+import { PageNew } from "../Page";
 
 import { IconCircleCheck, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
@@ -12,6 +11,7 @@ import { PageBanner } from "../PageBanner";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { BadgeStatus } from "../StatusBadge/types";
 import { isOverdue, Timeframe } from "../utils/timeframes";
+import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
 import { GoalTabs } from "./GoalTabs";
@@ -119,21 +119,28 @@ export function GoalPage(props: GoalPage.Props) {
     },
   ];
 
+  const [activeTab, setActiveTab] = React.useState("overview");
+
   return (
-    <Page title={[props.goalName]} options={options} size="fullwidth">
+    <PageNew title={[props.goalName]} options={options} size="fullwidth">
       <PageHeader {...props} />
-      <GoalTabs />
+      <GoalTabs activeTab={activeTab} setActiveTab={setActiveTab} checkInCount={props.checkIns.length} />
       {props.closedOn && <ClosedBanner {...props} />}
 
-      <div className="p-4 max-w-5xl mx-auto">
-        <div className="sm:grid sm:grid-cols-10 sm:gap-8 my-8">
-          <MainContent {...props} />
-          <Sidebar {...props} />
-        </div>
-      </div>
+      {activeTab === "overview" && <Overview {...props} />}
+      {activeTab === "check-ins" && <CheckIns {...props} />}
+    </PageNew>
+  );
+}
 
-      <ActivityFooter {...props} />
-    </Page>
+function Overview(props: GoalPage.Props) {
+  return (
+    <div className="p-4 max-w-5xl mx-auto my-8">
+      <div className="sm:grid sm:grid-cols-10 sm:gap-8">
+        <MainContent {...props} />
+        <Sidebar {...props} />
+      </div>
+    </div>
   );
 }
 
@@ -146,15 +153,6 @@ function MainContent(props: GoalPage.Props) {
       <RelatedWork {...props} />
       <Contributors {...props} />
     </div>
-  );
-}
-
-function ActivityFooter({ activityFeed }: { activityFeed: React.ReactNode }) {
-  return (
-    <PageFooter className="p-4 sm:px-24 sm:p-8">
-      <h3 className="text-xs uppercase font-medium tracking-wider mb-2">Activity</h3>
-      {activityFeed}
-    </PageFooter>
   );
 }
 

@@ -36,6 +36,7 @@ const sizeClasses: Record<Page.Size, string> = {
   fullwidth: "max-w-full",
 };
 
+// Old style pages
 export function Page(props: Page.Props) {
   useHtmlTitle(props.title);
   const containerClass = classNames("sm:my-4", sizeClasses[props.size || "medium"]);
@@ -48,6 +49,35 @@ export function Page(props: Page.Props) {
         <PageOptions options={props.options} />
         {props.children}
       </Paper>
+    </div>
+  );
+}
+
+// New style pages
+export function PageNew(props: Page.Props) {
+  useHtmlTitle(props.title);
+
+  const containerClass = classNames("absolute inset-0 sm:p-4 mt-11");
+
+  const innerClass = classNames(
+    "absolute",
+    "inset-3",
+    "bg-surface-base",
+
+    // apply border shadow and rounded corners on larger screens
+    "sm:border sm:border-surface-outline",
+    "sm:rounded-lg",
+    "sm:shadow-xl",
+  );
+
+  return (
+    <div className={containerClass}>
+      {props.navigation && <Navigation items={props.navigation} />}
+
+      <div className={innerClass}>
+        <PageOptions options={props.options} />
+        {props.children}
+      </div>
     </div>
   );
 }
