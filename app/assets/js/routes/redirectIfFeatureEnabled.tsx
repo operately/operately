@@ -26,6 +26,12 @@ export async function redirectIfFeatureNotEnabled(params: any, { feature, path }
   }
 }
 
+export async function hasFeatureEnabled(companyId: string, feature: string) {
+  const features = await getCachedEnabledFeatures(companyId);
+
+  return features?.includes(feature);
+}
+
 const ENABLED_FEATURES_CACHE: Record<string, string[]> = {};
 
 async function getCachedEnabledFeatures(companyId: string): Promise<string[]> {
