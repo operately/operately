@@ -776,6 +776,8 @@ export interface CommentThread {
   comments?: Comment[] | null;
   commentsCount?: number | null;
   author?: Person | null;
+  subscriptionList?: SubscriptionList | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface Company {
@@ -1647,6 +1649,8 @@ export interface GetActivityInput {
   id?: string | null;
   includeUnreadGoalNotifications?: boolean | null;
   includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetActivityResult {
@@ -2421,7 +2425,7 @@ export interface CreateGoalResult {
 }
 
 export interface CreateGoalDiscussionInput {
-  goalId?: string | null;
+  goalId?: Id | null;
   title?: string | null;
   message?: string | null;
   sendNotificationsToEveryone?: boolean | null;
