@@ -58,24 +58,27 @@ const checkIns = [
     id: "1",
     author: champion,
     date: new Date(2025, 3, 17), // Apr 17th, 2025
-    content:
+    content: asRichText(
       "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
+    ),
   },
   {
     link: "/checkins/1",
     id: "2",
     author: reviewer,
     date: new Date(2025, 3, 24), // Apr 24th, 2025
-    content:
+    content: asRichText(
       "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
+    ),
   },
   {
     link: "/checkins/1",
     id: "3",
     author: champion,
     date: new Date(2025, 3, 30), // Apr 30th, 2025
-    content:
+    content: asRichText(
       "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
+    ),
   },
 ];
 
@@ -427,3 +430,20 @@ export const OverdueGoal: Story = {
     timeframe: lastYear(),
   },
 };
+
+function asRichText(content: string): any {
+  return {
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: content,
+          },
+        ],
+      },
+    ],
+  };
+}

@@ -10,7 +10,7 @@ import classNames from "../utils/classnames";
 
 export function CheckIns(props: GoalPage.Props) {
   return (
-    <div className="p-4 max-w-3xl mx-auto my-6">
+    <div className="p-4 max-w-3xl mx-auto my-6 overflow-scroll">
       <div className="flex items-center gap-2 justify-between">
         <div>
           <h2 className="font-bold text-lg">Check-Ins</h2>
@@ -26,7 +26,7 @@ export function CheckIns(props: GoalPage.Props) {
         )}
       </div>
 
-      <div className="space-y-4 mt-8">
+      <div className="mt-8">
         {props.checkIns.map((checkIn) => (
           <CheckIn key={checkIn.id} checkIn={checkIn} mentionedPersonLookup={props.mentionedPersonLookup} />
         ))}
@@ -35,13 +35,12 @@ export function CheckIns(props: GoalPage.Props) {
   );
 }
 
-export function CheckIn({
-  checkIn,
-  mentionedPersonLookup,
-}: {
+interface CheckInProps {
   checkIn: GoalPage.CheckIn;
   mentionedPersonLookup: MentionedPersonLookupFn;
-}) {
+}
+
+export function CheckIn({ checkIn, mentionedPersonLookup }: CheckInProps) {
   const className = classNames(
     "flex gap-4",
     "py-3 px-3",

@@ -68,6 +68,8 @@ export function PageNew(props: Page.Props) {
     "sm:border sm:border-surface-outline",
     "sm:rounded-lg",
     "sm:shadow-xl",
+
+    "flex flex-col",
   );
 
   return (
