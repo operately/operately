@@ -109,6 +109,7 @@ function prepareCheckIns(checkIns: Activities.Activity[]): GoalPage.Props["check
       link: Paths.goalCheckInPath(content.update.id!),
       content: JSON.parse(content.update.message!),
       commentCount: 4,
+      status: content.update.status,
     };
   });
 }
