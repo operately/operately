@@ -32,7 +32,7 @@ export const Default: Story = {
     items: [
       {
         id: "goal-a",
-        name: "Goal A",
+        name: "Increase revenue by 20% by focusing on new customers in the US",
         type: "goal",
         itemPath: "#",
         state: "active",
@@ -42,7 +42,7 @@ export const Default: Story = {
         children: [
           {
             id: "goal-b",
-            name: "Goal B",
+            name: "Deliver the new product to 100 customers",
             type: "goal",
             itemPath: "#",
             state: "closed",
