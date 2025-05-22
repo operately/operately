@@ -20,9 +20,16 @@ defmodule TurboConnect.TsGen.Queries do
       input_type = ts_type(fullname) <> "Input"
       result_type = ts_type(fullname) <> "Result"
 
+      path =
+        if query.namespace == nil do
+          "/#{query.name}"
+        else
+          "/#{query.namespace}/#{query.name}"
+        end
+
       """
         #{fn_name}: function(client: ApiClient, input: #{input_type}): Promise<#{result_type}> {
-          return client.get("/#{name}", input);
+          return client.get("#{path}", input);
         }
       """
     end)

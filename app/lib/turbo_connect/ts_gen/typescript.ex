@@ -28,7 +28,7 @@ defmodule TurboConnect.TsGen.Typescript do
   end
 
   def ts_function_name(name) do
-    result = name |> Macro.camelize()
+    result = name |> to_string() |> Macro.camelize()
     String.downcase(String.at(result, 0)) <> String.slice(result, 1, String.length(result) - 1)
   end
 

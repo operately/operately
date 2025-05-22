@@ -258,25 +258,29 @@ defmodule TurboConnect.TsGenTest do
   };
   """
 
-  namespaces("""
+  @namespaces """
   export const ApiNamespaceRoot = {
     getUser: async (client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> => {
-      return client.get(client.getBasePath() + "/get_user", input);
+      return client.get("/get_user", input);
     },
+
     createUser: async (client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> => {
-      return client.post(client.getBasePath() + "/create_user", input);
+      return client.post("/create_user", input);
     },
+
   };
 
   export const ApiNamespaceUsers = {
     getUser: async (client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> => {
-      return client.get(client.getBasePath() + "/users/get_user", input);
+      return client.get("/users/get_user", input);
     },
+
     createUser: async (client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> => {
-      return client.post(client.getBasePath() + "/users/create_user", input);
+      return client.post("/users/create_user", input);
     },
+
   };
-  """)
+  """
 
   test "generating TypeScript imports" do
     assert_same(TurboConnect.TsGen.generate_imports(), @ts_imports)

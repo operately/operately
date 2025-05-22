@@ -15,11 +15,22 @@ defmodule TurboConnect.TsGen.Mutations do
   def generate_functions(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, _mutation} ->
+    |> Enum.map_join("\n", fn {fullname, mutation} ->
+      fn_name = ts_function_name(mutation.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
+
+      path =
+        if mutation.namespace == nil do
+          "/#{mutation.name}"
+        else
+          "/#{mutation.namespace}/#{mutation.name}"
+        end
+
       """
-        async #{ts_function_name(name)}(input: #{ts_type(name)}Input): Promise<#{ts_type(name)}Result> {
-          return this.post("/#{name}", input);
-        }
+        #{fn_name}: function(client: ApiClient, input: #{input_type}): Promise<#{result_type}> {
+          return client.post("#{path}", input);
+        },
       """
     end)
   end
