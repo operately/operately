@@ -402,6 +402,16 @@ export const LongName: Story = {
   },
 };
 
+export const LongParentName: Story = {
+  args: {
+    ...defaultArgs,
+    parentGoal: {
+      id: "1",
+      name: "Enchance the AI Platform with Advanced Features and Integrations",
+    },
+  },
+};
+
 export const ClosedGoal: Story = {
   args: {
     ...defaultArgs,
