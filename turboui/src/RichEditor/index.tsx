@@ -24,23 +24,25 @@ interface EditorProps {
 //
 // <Editor editor={editor} />
 //
-export function Editor({ editor, className = "" }: EditorProps) {
+export function Editor({ editor }: EditorProps) {
   return (
     <EditorContext.Provider value={editor}>
-      <EditorContent className={className} />
+      <EditorContent />
     </EditorContext.Provider>
   );
 }
 
-function EditorContent({ className = "" }): JSX.Element {
+function EditorContent(): JSX.Element {
   const handleClick = useLinkEditFormClose();
+
+  const className = "border border-surface-outline rounded-lg";
 
   return (
     <div onClick={handleClick} className={className}>
       <Toolbar />
 
-      <div className="ProseMirror text-content-accent relative px-2 rounded-t">
-        <TipTapEditorContent />
+      <div className="ProseMirror text-content-accent relative">
+        <TipTapEditorContent className="p-3 min-h-[100px]" />
       </div>
     </div>
   );

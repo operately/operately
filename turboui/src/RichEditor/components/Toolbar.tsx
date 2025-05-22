@@ -34,7 +34,7 @@ export function Toolbar(): JSX.Element {
 
 function DesktopToolbar() {
   const editor = useTipTapEditor();
-  const border = "border-y";
+  const border = "border-b";
 
   return (
     <div className="sticky bg-surface-base z-10 rounded-t-lg top-0">
