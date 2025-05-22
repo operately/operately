@@ -90,7 +90,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     injectCSS: false,
     editorProps: {
       attributes: {
-        class: "focus:outline-none" + " " + props.className,
+        class: "focus:outline-none h-96 p-2" + " " + props.className,
         tabindex: props.tabindex!,
       },
     },
