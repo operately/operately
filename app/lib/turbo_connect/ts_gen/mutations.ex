@@ -5,8 +5,8 @@ defmodule TurboConnect.TsGen.Mutations do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n\n", fn {name, %{inputs: inputs, outputs: outputs}} ->
-      input = ts_interface(Atom.to_string(name) <> "_input", inputs.fields)
-      output = ts_interface(Atom.to_string(name) <> "_result", outputs.fields)
+      input = ts_interface("#{name}_input", inputs.fields)
+      output = ts_interface("#{name}_result", outputs.fields)
 
       input <> "\n" <> output
     end)
@@ -40,11 +40,14 @@ defmodule TurboConnect.TsGen.Mutations do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _mutation} ->
-      Enum.join([
-        "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
-        "  return defaultApiClient.#{ts_function_name(name)}(input);",
-        "}"
-      ], "\n")
+      Enum.join(
+        [
+          "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
+          "  return defaultApiClient.#{ts_function_name(name)}(input);",
+          "}"
+        ],
+        "\n"
+      )
     end)
   end
 

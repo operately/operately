@@ -99,6 +99,11 @@ defmodule TurboConnect.TsGenTest do
 
     query(:get_user, GetUserQuery)
     mutation(:create_user, CreateUserMutation)
+
+    namespace(:users) do
+      query(:get_user, GetUserQuery)
+      mutation(:create_user, CreateUserMutation)
+    end
   end
 
   @ts_imports """
@@ -151,12 +156,29 @@ defmodule TurboConnect.TsGenTest do
     user?: User | null;
   }
 
+  export interface UsersGetUserInput {
+    userId?: number | null;
+  }
+
+  export interface UsersGetUserResult {
+    user?: User | null;
+  }
+
   export interface CreateUserInput {
     fullName?: string | null;
     address?: Address | null;
   }
 
   export interface CreateUserResult {
+    user?: User | null;
+  }
+
+  export interface UsersCreateUserInput {
+    fullName?: string | null;
+    address?: Address | null;
+  }
+
+  export interface UsersCreateUserResult {
     user?: User | null;
   }
   """
@@ -259,19 +281,19 @@ defmodule TurboConnect.TsGenTest do
     if result == expected do
       :ok
     else
-      result_lines = String.split(result, "\n")
-      expected_lines = String.split(expected, "\n")
+      IO.puts("Expected:")
+      IO.puts(expected)
+      IO.puts("Got:")
+      IO.puts(result)
 
-      result_lines
-      |> Enum.with_index()
-      |> Enum.each(fn {line, index} ->
-        if line != Enum.at(expected_lines, index) do
-          IO.puts("Expected: #{inspect(Enum.at(expected_lines, index))}")
-          IO.puts("Got:      #{inspect(line)}")
-        end
-      end)
+      diff_line = Enum.zip(String.split(result, "\n"), String.split(expected, "\n"))
+      first_diff = Enum.find_index(diff_line, fn {a, b} -> a != b end)
 
-      flunk("Expected to be the same, but got different values")
+      IO.puts("First difference at line #{first_diff + 1}:")
+      IO.puts("Expected: #{inspect(elem(Enum.at(diff_line, first_diff), 1))}")
+      IO.puts("Got:      #{inspect(elem(Enum.at(diff_line, first_diff), 0))}")
+
+      raise "Generated TypeScript code does not match expected output"
     end
   end
 end
