@@ -45,6 +45,10 @@ defmodule Operately.Groups do
     Repo.all(query)
   end
 
+  def list_groups(company_id) do
+    Repo.all(from g in Group, where: g.company_id == ^company_id)
+  end
+
   def get_group(nil), do: nil
   def get_group(id), do: Repo.get(Group, id)
   def get_group!(id), do: Repo.get!(Group, id)
