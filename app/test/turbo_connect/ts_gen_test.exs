@@ -156,6 +156,7 @@ defmodule TurboConnect.TsGenTest do
     user?: User | null;
   }
 
+
   export interface UsersGetUserInput {
     userId?: number | null;
   }
@@ -172,6 +173,7 @@ defmodule TurboConnect.TsGenTest do
   export interface CreateUserResult {
     user?: User | null;
   }
+
 
   export interface UsersCreateUserInput {
     fullName?: string | null;
@@ -281,19 +283,29 @@ defmodule TurboConnect.TsGenTest do
     if result == expected do
       :ok
     else
-      IO.puts("Expected:")
-      IO.puts(expected)
-      IO.puts("Got:")
-      IO.puts(result)
+      show_side_by_side(result, expected)
 
-      diff_line = Enum.zip(String.split(result, "\n"), String.split(expected, "\n"))
-      first_diff = Enum.find_index(diff_line, fn {a, b} -> a != b end)
+      raise "Generated code does not match expected code"
+    end
+  end
 
-      IO.puts("First difference at line #{first_diff + 1}:")
-      IO.puts("Expected: #{inspect(elem(Enum.at(diff_line, first_diff), 1))}")
-      IO.puts("Got:      #{inspect(elem(Enum.at(diff_line, first_diff), 0))}")
+  defp show_side_by_side(result, expected) do
+    IO.puts("\n")
 
-      raise "Generated TypeScript code does not match expected output"
+    result = "Result:\n" <> result
+    expected = "Expected:\n" <> expected
+
+    result_lines = String.split(result, "\n")
+    expected_lines = String.split(expected, "\n")
+
+    max_length = max(length(result_lines), length(expected_lines))
+    max_line_length = Enum.sort_by(result_lines, &String.length/1) |> List.last() |> String.length()
+
+    for i <- 0..(max_length - 1) do
+      result_line = Enum.at(result_lines, i, "")
+      expected_line = Enum.at(expected_lines, i, "")
+
+      IO.puts("#{String.pad_trailing(result_line, max_line_length)} | #{expected_line}")
     end
   end
 end
