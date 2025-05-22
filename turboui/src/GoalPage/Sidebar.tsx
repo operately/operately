@@ -127,7 +127,7 @@ function LastCheckIn(props: GoalPage.Props) {
 
     if (checkIn.status === "on_track") {
       borderColor = "border-green-500";
-    } else if (checkIn.status === "caution" || checkIn.status === "attention") {
+    } else if (checkIn.status === "caution" || checkIn.status === "concern") {
       borderColor = "border-yellow-500";
     } else if (checkIn.status === "issue") {
       borderColor = "border-red-500";
