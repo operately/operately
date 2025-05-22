@@ -14,7 +14,7 @@ const mockPeopleSearch = async ({ query }: { query: string }) => {
   if (!query) return people;
   return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
 };
-const mockUploadFile = async (file, onProgress) => {
+const mockUploadFile = async (_file, onProgress) => {
   onProgress(100);
   return { id: "1", url: "https://example.com/file.png" };
 };
