@@ -62,10 +62,23 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_api_client_class(api_module) do
+    namespaces =
+      api_module.__namespaces__()
+      |> Enum.map(fn namespace ->
+        ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
+
+        "    this.apiNamespace#{ns} = new ApiNamespace#{ns}(this);"
+      end)
+      |> Enum.join("\n")
+
     """
     export class ApiClient {
       private basePath: string;
       private headers: any;
+
+      constructor() {
+    #{namespaces}
+      }
 
       setBasePath(basePath: string) {
         this.basePath = basePath;
@@ -96,8 +109,6 @@ defmodule TurboConnect.TsGen do
         return toCamel(response.data);
       }
 
-    #{Queries.generate_class_functions(api_module.__queries__())}
-    #{Mutations.generate_class_functions(api_module.__mutations__())}
     }
     """
   end

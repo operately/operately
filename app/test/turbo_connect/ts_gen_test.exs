@@ -190,6 +190,11 @@ defmodule TurboConnect.TsGenTest do
     private basePath: string;
     private headers: any;
 
+    constructor() {
+      this.apiNamespaceUsers = new ApiNamespaceUsers(this);
+      this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    }
+
     setBasePath(basePath: string) {
       this.basePath = basePath;
     }
@@ -217,14 +222,6 @@ defmodule TurboConnect.TsGenTest do
     private async get(path: string, params: any) {
       const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
       return toCamel(response.data);
-    }
-
-    async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return this.get("/get_user", input);
-    }
-
-    async createUser(input: CreateUserInput): Promise<CreateUserResult> {
-      return this.post("/create_user", input);
     }
 
   }
@@ -292,6 +289,10 @@ defmodule TurboConnect.TsGenTest do
 
   test "generating TypeScript namespaces" do
     assert_same(TurboConnect.TsGen.generate_namespaces(ExampleApi), @namespaces)
+  end
+
+  test "generating TypeScript api client class" do
+    assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
   end
 
   test "generating everything together" do
