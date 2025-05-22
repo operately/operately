@@ -12,17 +12,17 @@ defmodule TurboConnect.TsGen.Queries do
     end)
   end
 
-  def generate_class_functions(queries) do
+  def generate_functions(queries) do
     queries
     |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, _query} ->
-      fn_name = ts_function_name(name)
-      input_type = ts_type(name) <> "Input"
-      result_type = ts_type(name) <> "Result"
+    |> Enum.map_join("\n", fn {fullname, query} ->
+      fn_name = ts_function_name(query.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
 
       """
-        async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return this.get("/#{name}", input);
+        #{fn_name}: function(client: ApiClient, input: #{input_type}): Promise<#{result_type}> {
+          return client.get("/#{name}", input);
         }
       """
     end)

@@ -42,25 +42,22 @@ defmodule TurboConnect.TsGen do
     )
   end
 
-  defp generate_namespaces(api_module) do
+  def generate_namespaces(api_module) do
     api_module.__namespaces__()
-    |> Enum.map(
-      fn namespace -> generate_namespace(api_module, namespace) end
-      |> Enum.join("\n")
-    )
+    |> Enum.map(fn namespace -> generate_namespace(api_module, namespace) end)
+    |> Enum.join("\n")
   end
 
   defp generate_namespace(api_module, namespace) do
-    namespace
-    |> Enum.map(fn {name, module} ->
-      """
-      export const #{name} = {
-        #{Queries.generate_namespace_functions(module.__queries__())}
-        #{Mutations.generate_namespace_functions(module.__mutations__())}
-      };
-      """
-    end)
-    |> Enum.join("\n")
+    queries = api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+    mutations = api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+
+    """
+    export const ApiNamespace#{namespace} = {
+    #{Queries.generate_functions(queries)}
+    #{Mutations.generate_functions(mutations)}
+    };
+    """
   end
 
   def generate_api_client_class(api_module) do

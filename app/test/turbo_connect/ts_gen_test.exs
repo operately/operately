@@ -258,10 +258,42 @@ defmodule TurboConnect.TsGenTest do
   };
   """
 
-  test "generating TypeScript code" do
+  namespaces("""
+  export const ApiNamespaceRoot = {
+    getUser: async (client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> => {
+      return client.get(client.getBasePath() + "/get_user", input);
+    },
+    createUser: async (client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> => {
+      return client.post(client.getBasePath() + "/create_user", input);
+    },
+  };
+
+  export const ApiNamespaceUsers = {
+    getUser: async (client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> => {
+      return client.get(client.getBasePath() + "/users/get_user", input);
+    },
+    createUser: async (client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> => {
+      return client.post(client.getBasePath() + "/users/create_user", input);
+    },
+  };
+  """)
+
+  test "generating TypeScript imports" do
     assert_same(TurboConnect.TsGen.generate_imports(), @ts_imports)
+  end
+
+  test "generating TypeScript types" do
     assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
-    assert_same(TurboConnect.TsGen.generate_namespaces(ExampleApi), "")
+  end
+
+  test "generating TypeScript namespaces" do
+    assert_same(TurboConnect.TsGen.generate_namespaces(ExampleApi), @namespaces)
+  end
+
+  test "generating everything together" do
+    # assert_same(TurboConnect.TsGen.generate_imports(), @ts_imports)
+    # assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
+    # assert_same(TurboConnect.TsGen.generate_namespaces(ExampleApi), "")
     # assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
     # assert_same(TurboConnect.TsGen.generate_default_exports(ExampleApi), @ts_default)
 
@@ -284,17 +316,16 @@ defmodule TurboConnect.TsGenTest do
     if result == expected do
       :ok
     else
-      # show_side_by_side(result, expected)
-
+      show_side_by_side(result, expected)
       raise "Generated code does not match expected code"
     end
   end
 
   defp show_side_by_side(result, expected) do
-    IO.puts("\n")
+    IO.puts("\n\n")
 
-    result = "Result:\n" <> result
-    expected = "Expected:\n" <> expected
+    result = "Result:\n\n" <> result
+    expected = "Expected:\n\n" <> expected
 
     result_lines = String.split(result, "\n")
     expected_lines = String.split(expected, "\n")

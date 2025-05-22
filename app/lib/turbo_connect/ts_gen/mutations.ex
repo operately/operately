@@ -12,7 +12,7 @@ defmodule TurboConnect.TsGen.Mutations do
     end)
   end
 
-  def generate_class_functions(mutations) do
+  def generate_functions(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _mutation} ->
