@@ -224,6 +224,14 @@ defmodule TurboConnect.TsGenTest do
       return toCamel(response.data);
     }
 
+    getUser(input: GetUserInput): Promise<GetUserResult> {
+      return this.apiNamespaceRoot.getUser(input);
+    }
+
+    createUser(input: CreateUserInput): Promise<CreateUserResult> {
+      return this.apiNamespaceRoot.createUser(input);
+    }
+
   }
   """
 
@@ -256,25 +264,29 @@ defmodule TurboConnect.TsGenTest do
   """
 
   @namespaces """
-  export const ApiNamespaceUsers = {
-    getUser: function(client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> {
-      return client.get("/users/get_user", input);
-    },
+  class ApiNamespaceUsers {
+    constructor(private client: ApiClient) {}
 
-    createUser: function(client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> {
-      return client.post("/users/create_user", input);
-    },
+    async getUser(input: UsersGetUserInput): Promise<UsersGetUserResult> {
+      return this.client.get("/users/get_user", input);
+    }
+
+    async createUser(input: UsersCreateUserInput): Promise<UsersCreateUserResult> {
+      return this.client.post("/users/create_user", input);
+    }
 
   };
 
-  export const ApiNamespaceRoot = {
-    getUser: function(client: ApiClient, input: GetUserInput): Promise<GetUserResult> {
-      return client.get("/get_user", input);
-    },
+  class ApiNamespaceRoot {
+    constructor(private client: ApiClient) {}
 
-    createUser: function(client: ApiClient, input: CreateUserInput): Promise<CreateUserResult> {
-      return client.post("/create_user", input);
-    },
+    async getUser(input: GetUserInput): Promise<GetUserResult> {
+      return this.client.get("/get_user", input);
+    }
+
+    async createUser(input: CreateUserInput): Promise<CreateUserResult> {
+      return this.client.post("/create_user", input);
+    }
 
   };
   """
@@ -296,12 +308,6 @@ defmodule TurboConnect.TsGenTest do
   end
 
   test "generating everything together" do
-    # assert_same(TurboConnect.TsGen.generate_imports(), @ts_imports)
-    # assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
-    # assert_same(TurboConnect.TsGen.generate_namespaces(ExampleApi), "")
-    # assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
-    # assert_same(TurboConnect.TsGen.generate_default_exports(ExampleApi), @ts_default)
-
     assert_same(
       TurboConnect.TsGen.generate(ExampleApi),
       """

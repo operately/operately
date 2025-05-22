@@ -28,9 +28,9 @@ defmodule TurboConnect.TsGen.Mutations do
         end
 
       """
-        #{fn_name}: function(client: ApiClient, input: #{input_type}): Promise<#{result_type}> {
-          return client.post("#{path}", input);
-        },
+        async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
+          return this.client.post("#{path}", input);
+        }
       """
     end)
   end

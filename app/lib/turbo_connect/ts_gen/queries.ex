@@ -28,9 +28,9 @@ defmodule TurboConnect.TsGen.Queries do
         end
 
       """
-        #{fn_name}: function(client: ApiClient, input: #{input_type}): Promise<#{result_type}> {
-          return client.get("#{path}", input);
-        },
+        async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
+          return this.client.get("#{path}", input);
+        }
       """
     end)
   end

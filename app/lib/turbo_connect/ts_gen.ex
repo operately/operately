@@ -54,7 +54,9 @@ defmodule TurboConnect.TsGen do
     namespace_name = if namespace == nil, do: "api_namespace_root", else: "api_namespace_#{namespace}"
 
     """
-    export const #{Macro.camelize(namespace_name)} = {
+    class #{Macro.camelize(namespace_name)} {
+      constructor(private client: ApiClient) {}
+
     #{Queries.generate_functions(queries)}
     #{Mutations.generate_functions(mutations)}
     };
