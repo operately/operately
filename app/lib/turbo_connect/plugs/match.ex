@@ -42,7 +42,7 @@ defmodule TurboConnect.Plugs.Match do
   def resolve_request_name(conn, _opts) do
     case conn.path_info do
       [] -> err_missing_query_name(conn)
-      [namespace, name] -> assign(conn, :turbo_req_name, "#{namespace}_#{name}")
+      [namespace, name] -> assign(conn, :turbo_req_name, "#{namespace}/#{name}")
       [name] -> assign(conn, :turbo_req_name, "#{name}")
       _ -> err_invalid_query_name(conn)
     end
