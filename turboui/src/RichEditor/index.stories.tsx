@@ -24,7 +24,7 @@ const meta: Meta<typeof Editor> = {
   component: Editor,
   decorators: [
     (Story) => (
-      <div className="max-w-2xl mx-auto my-20 bg-surface-base h-96 rounded-lg shadow-lg">
+      <div className="max-w-4xl mx-auto my-20 bg-surface-base h-[500px] rounded-lg shadow-lg p-12">
         <Story />
       </div>
     ),
@@ -51,7 +51,20 @@ export const WithContent: Story = {
   render: () => {
     const editor = useEditor({
       placeholder: "Type something...",
-      content: "<p>This is some <strong>rich</strong> content!</p>",
+      content: {
+        type: "doc",
+        content: [
+          {
+            type: "paragraph",
+            content: [
+              {
+                type: "text",
+                text: "This is a paragraph with some text.",
+              },
+            ],
+          },
+        ],
+      },
       mentionedPersonLookup: mockMentionedPersonLookup,
       peopleSearch: mockPeopleSearch,
       uploadFile: mockUploadFile,

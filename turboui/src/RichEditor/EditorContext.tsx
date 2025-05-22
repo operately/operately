@@ -60,8 +60,8 @@ function useEditorContext(): EditorState {
   }
 }
 
-export function TipTapEditorContent() {
+export function TipTapEditorContent({ className = "" }: { className?: string }) {
   const editor = useTipTapEditor();
 
-  return <TipTap.EditorContent editor={editor} />;
+  return <TipTap.EditorContent editor={editor} className={className} />;
 }
