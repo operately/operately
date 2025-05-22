@@ -58,6 +58,10 @@ function Page() {
   assertDefined(goal.reviewer);
   assertPresent(goal.timeframe);
 
+  const peopleSearch = () => {
+    throw new Error("peopleSearch function is not implemented");
+  };
+
   const props: GoalPage.Props = {
     goalName: goal.name,
     spaceName: goal.space.name,
@@ -74,6 +78,7 @@ function Page() {
     reviewer: goal.reviewer,
 
     description: goal.description && JSON.parse(goal.description),
+    deleteLink: "",
     status: goal.status,
     targets: prepareTargets(goal.targets),
     checkIns: prepareCheckIns(checkIns),
@@ -81,10 +86,15 @@ function Page() {
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
+    peopleSearch,
 
-    deleteLink: "",
     updateTimeframe: function (timeframe: Timeframe): Promise<void> {
       console.log("updateTimeframe", timeframe);
+      throw new Error("Function not implemented.");
+    },
+
+    updateDescription: function (description: string | null): Promise<void> {
+      console.log("updateDescription", description);
       throw new Error("Function not implemented.");
     },
 

@@ -319,11 +319,12 @@ const defaultArgs: GoalPage.Props = {
   parentGoal,
   status: "on_track",
   privacyLevel: "internal" as const,
-  updateTimeframe: fn(),
   mentionedPersonLookup: async (_id: string) => null,
   peopleSearch: searchFn,
-
   activityFeed: <div></div>,
+
+  updateTimeframe: fn(),
+  updateDescription: fn(),
 };
 
 export default meta;

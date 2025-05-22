@@ -2,86 +2,56 @@ import * as React from "react";
 import { GoalPage } from ".";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, shortenContent } from "../RichContent";
+import { isContentEmpty } from "../RichContent/isContentEmpty";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: GoalPage.Props) {
-  const [content, setContent] = React.useState<string | null>(props.description || null);
-
-  const [mode, setMode] = React.useState<"view" | "edit" | "zero">(
-    !props.description && !props.canEdit ? "zero" : "edit",
-  );
-
-  const save = React.useCallback(
-    (content: string) => {
-      if (content === null) {
-        setMode("zero");
-      } else {
-        setContent(content);
-        setMode("view");
-      }
-      props.description = content;
-    },
-    [props],
-  );
-
-  const cancel = React.useCallback(() => {
-    setMode("view");
-  }, []);
+  const state = useDescriptionState(props);
 
   if (!props.description && !props.canEdit) return null;
 
   const editButton = (
-    <SecondaryButton size="xxs" onClick={() => setMode("edit")}>
+    <SecondaryButton size="xxs" onClick={state.startEdit}>
       {props.description ? "Edit" : "Write"}
     </SecondaryButton>
   );
 
   return (
     <div>
-      <SectionHeader title="Goal Description" buttons={editButton} showButtons={props.canEdit && mode !== "edit"} />
+      <SectionHeader
+        title="Goal Description"
+        buttons={editButton}
+        showButtons={props.canEdit && state.mode !== "edit"}
+      />
 
-      {mode === "view" && <DescriptionContent content={content} mentionedPersonLookup={props.mentionedPersonLookup} />}
-      {mode === "zero" && <DescriptionZeroState />}
-      {mode === "edit" && (
-        <DescriptionEditor
-          content={content}
-          save={save}
-          cancel={cancel}
-          mentionedPersonLookup={props.mentionedPersonLookup}
-          peopleSearch={props.peopleSearch}
-        />
-      )}
+      {state.mode === "zero" && <DescriptionZeroState />}
+      {state.mode === "view" && <DescriptionContent state={state} />}
+      {state.mode === "edit" && <DescriptionEditor state={state} />}
     </div>
   );
 }
 
-function DescriptionContent({
-  content,
-  mentionedPersonLookup,
-}: {
-  content: string | null;
-  mentionedPersonLookup: MentionedPersonLookupFn;
-}) {
+function DescriptionContent({ state }: { state: State }) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const length = React.useMemo(() => {
-    return content ? countCharacters(content, { skipParse: true }) : 0;
-  }, [content]);
+    return state.description ? countCharacters(state.description, { skipParse: true }) : 0;
+  }, [state.description]);
 
   const displayedDescription = React.useMemo(() => {
     if (length <= 200) {
-      return content;
+      return state.description;
     } else if (isExpanded) {
-      return content;
+      return state.description;
     } else {
-      return shortenContent(content!, 200, { suffix: "...", skipParse: true });
+      return shortenContent(state.description!, 200, { suffix: "...", skipParse: true });
     }
-  }, [content, length, isExpanded]);
+  }, [state.description, length, isExpanded]);
 
   return (
     <div className="mt-2">
-      <RichContent content={displayedDescription} mentionedPersonLookup={mentionedPersonLookup} />
+      <RichContent content={displayedDescription} mentionedPersonLookup={state.mentionedPersonLookup} />
 
       {length > 200 && (
         <button
@@ -103,38 +73,79 @@ function DescriptionZeroState() {
   );
 }
 
-function DescriptionEditor({
-  content,
-  save,
-  cancel,
-  mentionedPersonLookup,
-  peopleSearch,
-}: {
-  content: string | null;
-  save: (content: string) => void;
-  cancel: () => void;
-  mentionedPersonLookup: MentionedPersonLookupFn;
-  peopleSearch: GoalPage.Props["peopleSearch"];
-}) {
-  const editorState = useEditor({
-    content: content,
-    autoFocus: true,
-    editable: true,
-    mentionedPersonLookup: mentionedPersonLookup,
-    peopleSearch: peopleSearch,
-  });
-
+function DescriptionEditor({ state }: { state: State }) {
   return (
     <div className="mt-2">
-      <Editor editor={editorState} />
+      <Editor editor={state.editor} />
       <div className="flex gap-2 mt-2">
-        <PrimaryButton size="xs" onClick={() => save(editorState.editor.getJSON())}>
+        <PrimaryButton size="xs" onClick={state.save}>
           Save
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={cancel}>
+        <SecondaryButton size="xs" onClick={state.cancel}>
           Cancel
         </SecondaryButton>
       </div>
     </div>
   );
+}
+
+interface State {
+  description: string | null;
+  mode: "view" | "edit" | "zero";
+  mentionedPersonLookup: MentionedPersonLookupFn;
+  setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
+  setDescription: React.Dispatch<React.SetStateAction<string | null>>;
+  editor: ReturnType<typeof useEditor>;
+  startEdit: () => void;
+  save: () => void;
+  cancel: () => void;
+}
+
+function useDescriptionState(props: GoalPage.Props): State {
+  const initialMode = !props.description && !props.canEdit ? "zero" : "view";
+
+  const [description, setDescription] = React.useState<string | null>(props.description || null);
+  const [mode, setMode] = React.useState<"view" | "edit" | "zero">(initialMode);
+
+  const editor = useEditor({
+    content: props.description,
+    autoFocus: true,
+    editable: true,
+    mentionedPersonLookup: props.mentionedPersonLookup,
+    peopleSearch: props.peopleSearch,
+  });
+
+  const save = React.useCallback(() => {
+    const content = editor.getJson();
+
+    props.updateDescription(content);
+    setDescription(content);
+
+    if (isContentEmpty(content)) {
+      setMode("zero");
+    } else {
+      setMode("view");
+    }
+  }, [editor, setDescription, setMode]);
+
+  const cancel = React.useCallback(() => {
+    setMode("view");
+  }, [setMode]);
+
+  const startEdit = React.useCallback(() => {
+    editor.setContent(props.description);
+    setMode("edit");
+  }, [setMode]);
+
+  return {
+    description,
+    mode,
+    editor,
+    startEdit,
+    setMode,
+    setDescription,
+    save,
+    cancel,
+    mentionedPersonLookup: props.mentionedPersonLookup,
+  };
 }
