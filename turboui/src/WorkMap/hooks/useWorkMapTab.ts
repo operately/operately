@@ -1,7 +1,9 @@
 import { useMemo, useState } from "react";
-import { parse } from "../../utils/time";
-import { WorkMap } from "../components";
 import { useSearchParams } from "react-router-dom";
+
+import * as sort from "../utils/sort";
+
+import { WorkMap } from "../components";
 import { isStorybook } from "../../utils/storybook/isStorybook";
 
 export interface WorkMapFilterOptions {
@@ -14,19 +16,23 @@ export function useWorkMapTab(rawItems: WorkMap.Item[], options: WorkMapFilterOp
   const filteredItems = useMemo(() => {
     if (tab === "all") {
       const goals = extractOngoingItems(rawItems);
-      return sortItemsByDuration(goals);
+      return sort.sortItemsByDuration(goals);
     }
     if (tab === "projects") {
       const projects = extractAllProjects(rawItems);
-      return sortItemsByDueDate(projects);
+      return sort.sortItemsByDueDate(projects);
     }
     if (tab === "completed") {
       const completedItems = extractCompletedItems(rawItems);
-      return sortItemsByClosedDate(completedItems);
+      return sort.sortItemsByClosedDate(completedItems);
+    }
+    if (tab === "paused") {
+      const pausedItems = extractPausedItems(rawItems);
+      return sort.sortItemsByDueDate(pausedItems);
     }
 
     const goals = extractAllGoals(rawItems);
-    return sortItemsByDuration(goals);
+    return sort.sortItemsByDuration(goals);
   }, [rawItems, tab]);
 
   return {
@@ -137,61 +143,26 @@ function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
 }
 
 /**
- * Helper function to sort items by their completedOn date in descending order
+ * Helper function to extract all items with "paused" status
+ * Returns a flat list of all paused items without hierarchy
  */
-function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
-  return [...items].sort((a, b) => {
-    const dateA = parse((a as any).completedOn);
-    const dateB = parse((b as any).completedOn);
+function extractPausedItems(data: WorkMap.Item[]): WorkMap.Item[] {
+  const result: WorkMap.Item[] = [];
 
-    if (!dateA && !dateB) return 0;
-    if (!dateA) return 1; // If A is null, B comes first
-    if (!dateB) return -1; // If B is null, A comes first
+  const findPausedItems = (items: WorkMap.Item[]) => {
+    for (const item of items) {
+      if (item.status === "paused") {
+        result.push(item);
+      }
 
-    return dateB.getTime() - dateA.getTime();
-  });
-}
-
-/**
- * Helper function to sort items by their due date (timeframe.endDate) in ascending order
- * If items have the same due date, they are sorted by name
- */
-function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
-  return [...items].sort((a, b) => {
-    const dateA = parse(a.timeframe?.endDate);
-    const dateB = parse(b.timeframe?.endDate);
-
-    if (!dateA && !dateB) return 0;
-    if (!dateA) return 1; // Items without due dates come last
-    if (!dateB) return -1; // Items with due dates come first
-
-    const dateCompare = dateA.getTime() - dateB.getTime();
-    if (dateCompare !== 0) return dateCompare;
-
-    return (a.name || "").localeCompare(b.name || "");
-  });
-}
-
-/**
- * Helper function to sort items by their duration in descending order (longer duration first)
- * If items have the same duration, they are sorted by name
- */
-function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
-  return [...items].sort((a, b) => {
-    const durationA = getDuration(a);
-    const durationB = getDuration(b);
-
-    // Items with both dates come first
-    if (durationA !== null && durationB !== null) {
-      const durationCompare = durationB - durationA;
-      if (durationCompare !== 0) return durationCompare;
+      if (item.children && item.children.length > 0) {
+        findPausedItems(item.children);
+      }
     }
+  };
 
-    if (durationA === null) return 1; // Items without duration come last
-    if (durationB === null) return -1; // Items with duration come first
-
-    return (a.name || "").localeCompare(b.name || "");
-  });
+  findPausedItems(data);
+  return result;
 }
 
 /**
@@ -226,7 +197,7 @@ function useLocalFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, (newF
 }
 
 function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
-  let allowedTabs: WorkMap.Filter[] = ["all", "goals", "projects", "completed"];
+  let allowedTabs: WorkMap.Filter[] = ["all", "goals", "projects", "completed", "paused"];
 
   if (tabOptions?.hideAll) {
     allowedTabs = allowedTabs.filter((tab) => tab !== "all");
@@ -244,6 +215,10 @@ function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
     allowedTabs = allowedTabs.filter((tab) => tab !== "completed");
   }
 
+  if (tabOptions?.hidePaused) {
+    allowedTabs = allowedTabs.filter((tab) => tab !== "paused");
+  }
+
   return allowedTabs;
 }
 
@@ -252,12 +227,4 @@ function getDefaultTab(allowedTabs: WorkMap.Filter[], tabOptions?: WorkMap.TabOp
     return allowedTabs[0] || "all";
   }
   return "all";
-}
-
-function getDuration(item: WorkMap.Item): number | null {
-  const start = parse(item.timeframe?.startDate);
-  const end = parse(item.timeframe?.endDate);
-
-  // Calculate duration only if both dates exist and are valid (end is after start)
-  return start && end && end > start ? end.getTime() - start.getTime() : null;
 }

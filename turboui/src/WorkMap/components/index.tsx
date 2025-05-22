@@ -92,13 +92,14 @@ export namespace WorkMap {
     privacy: PrivacyIndicator.PrivacyLevels;
   }
 
-  export type Filter = "all" | "goals" | "projects" | "completed";
+  export type Filter = "all" | "goals" | "projects" | "completed" | "paused";
 
   export interface TabOptions {
     hideAll?: boolean;
     hideGoals?: boolean;
     hideProjects?: boolean;
     hideCompleted?: boolean;
+    hidePaused?: boolean;
   }
 
   export interface ColumnOptions {
