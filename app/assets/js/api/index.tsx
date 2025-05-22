@@ -2333,9 +2333,11 @@ export interface ChangeTaskDescriptionResult {
 }
 
 export interface CloseGoalInput {
-  goalId?: string | null;
+  goalId?: Id | null;
   success?: string | null;
   retrospective?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface CloseGoalResult {
@@ -2999,8 +3001,10 @@ export interface RenameResourceHubFolderResult {
 }
 
 export interface ReopenGoalInput {
-  id?: string | null;
+  id?: Id | null;
   message?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ReopenGoalResult {
