@@ -25,13 +25,12 @@ export function Description(props: GoalPage.Props) {
   );
 }
 
-function DescriptionContent({
-  description,
-  mentionedPersonLookup,
-}: {
+interface DescriptionContentProps {
   description: string;
   mentionedPersonLookup: MentionedPersonLookupFn;
-}) {
+}
+
+function DescriptionContent({ description, mentionedPersonLookup }: DescriptionContentProps) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const length = React.useMemo(() => {
