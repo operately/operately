@@ -85,7 +85,8 @@ defmodule TurboConnect.Api do
              outputs: module.__outputs__(),
              handler: module,
              name: name,
-             namespace: namespace
+             namespace: namespace,
+             type: :query
            }}
         end)
         |> Enum.into(%{})
@@ -99,7 +100,8 @@ defmodule TurboConnect.Api do
              outputs: module.__outputs__(),
              handler: module,
              name: name,
-             namespace: namespace
+             namespace: namespace,
+             type: :mutation
            }}
         end)
         |> Enum.into(%{})
@@ -108,6 +110,15 @@ defmodule TurboConnect.Api do
       def __subscriptions__() do
         Enum.map(@subscriptions, fn {full_name, _name, module} -> {full_name, module} end)
         |> Enum.into(%{})
+      end
+
+      def __namespaces__() do
+        query_namespaces = Enum.map(@queries, fn {_, namespace, _, _} -> namespace end)
+        mutuation_namespaces = Enum.map(@mutations, fn {_, namespace, _, _} -> namespace end)
+        subscription_namespaces = Enum.map(@subscriptions, fn {_, namespace, _, _} -> namespace end)
+        all_namespaces = query_namespaces ++ mutuation_namespaces ++ subscription_namespaces
+
+        Enum.uniq(all_namespaces)
       end
     end
   end

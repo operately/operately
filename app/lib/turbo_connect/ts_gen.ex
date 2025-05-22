@@ -15,6 +15,7 @@ defmodule TurboConnect.TsGen do
     #{Queries.define_generic_use_query_hook()}
     #{Mutations.define_generic_use_mutation_hook()}
     #{generate_types(api_module)}
+    #{generate_namespaces(api_module)}
     #{generate_api_client_class(api_module)}
     #{generate_default_exports(api_module)}
     """
@@ -39,6 +40,27 @@ defmodule TurboConnect.TsGen do
       ],
       "\n"
     )
+  end
+
+  defp generate_namespaces(api_module) do
+    api_module.__namespaces__()
+    |> Enum.map(
+      fn namespace -> generate_namespace(api_module, namespace) end
+      |> Enum.join("\n")
+    )
+  end
+
+  defp generate_namespace(api_module, namespace) do
+    namespace
+    |> Enum.map(fn {name, module} ->
+      """
+      export const #{name} = {
+        #{Queries.generate_namespace_functions(module.__queries__())}
+        #{Mutations.generate_namespace_functions(module.__mutations__())}
+      };
+      """
+    end)
+    |> Enum.join("\n")
   end
 
   def generate_api_client_class(api_module) do
