@@ -100,7 +100,9 @@ defmodule TurboConnect.ApiTest do
 
   test "__queries__ returns the queries defined in the module" do
     assert ExampleApi.__queries__() == %{
-             get_user: %{
+             "get_user" => %{
+               namespace: nil,
+               name: :get_user,
                handler: ExampleQuery,
                inputs: %{
                  fields: [
@@ -118,7 +120,9 @@ defmodule TurboConnect.ApiTest do
 
   test "__mutations__ returns the mutations defined in the module" do
     assert ExampleApi.__mutations__() == %{
-             create_user: %{
+             "create_user" => %{
+               namespace: nil,
+               name: :create_user,
                handler: ExampleMutation,
                inputs: %{
                  fields: [

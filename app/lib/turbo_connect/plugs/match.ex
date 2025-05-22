@@ -28,11 +28,13 @@ defmodule TurboConnect.Plugs.Match do
 
   def resolve_http_method(conn, _opts) do
     case conn.method do
-      "GET" -> 
+      "GET" ->
         assign(conn, :turbo_req_type, :query)
-      "POST" -> 
+
+      "POST" ->
         assign(conn, :turbo_req_type, :mutation)
-      _ -> 
+
+      _ ->
         err_method_not_allowed(conn)
     end
   end
@@ -40,7 +42,8 @@ defmodule TurboConnect.Plugs.Match do
   def resolve_request_name(conn, _opts) do
     case conn.path_info do
       [] -> err_missing_query_name(conn)
-      [name] -> assign(conn, :turbo_req_name, String.to_existing_atom(name))
+      [namespace, name] -> assign(conn, :turbo_req_name, "#{namespace}_#{name}")
+      [name] -> assign(conn, :turbo_req_name, "#{name}")
       _ -> err_invalid_query_name(conn)
     end
   rescue
