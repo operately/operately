@@ -39,7 +39,7 @@ function EditorContent({ className = "" }): JSX.Element {
     <div onClick={handleClick} className={className}>
       <Toolbar />
 
-      <div className="text-content-accent relative px-2 rounded-t">
+      <div className="ProseMirror text-content-accent relative px-2 rounded-t">
         <TipTapEditorContent />
       </div>
     </div>

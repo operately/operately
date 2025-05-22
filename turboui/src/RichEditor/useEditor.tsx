@@ -56,6 +56,7 @@ export interface EditorState {
   mentionedPersonLookup: MentionedPersonLookupFn;
   uploadFile: UploadFileFn;
   setContent: (content: any) => void;
+  getJson: () => any;
 }
 
 const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
@@ -150,6 +151,11 @@ export function useEditor(props: UseEditorProps): EditorState {
     [editor],
   );
 
+  const getJson = React.useCallback(() => {
+    if (!editor) return null;
+    return editor.getJSON();
+  }, [editor]);
+
   return {
     editor,
     submittable,
@@ -161,5 +167,6 @@ export function useEditor(props: UseEditorProps): EditorState {
     mentionedPersonLookup: props.mentionedPersonLookup,
     uploadFile: props.uploadFile!,
     setContent,
+    getJson,
   };
 }

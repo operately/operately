@@ -9,6 +9,7 @@ import { IconCircleCheck, IconClipboardText, IconLogs, IconMessage, IconTrash } 
 import { WarningCallout } from "../Callouts";
 import { PageBanner } from "../PageBanner";
 import { MentionedPersonLookupFn } from "../RichEditor";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
 import { isOverdue, Timeframe } from "../utils/timeframes";
@@ -60,6 +61,7 @@ export namespace GoalPage {
     editGoalLink: string;
     newCheckInLink: string;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    peopleSearch: SearchFn;
 
     parentGoal: ParentGoal | null;
     goalName: string;
@@ -85,6 +87,7 @@ export namespace GoalPage {
     neglectedGoal?: boolean;
 
     updateTimeframe: (timeframe: Timeframe) => Promise<void>;
+    updateDescription: (description: string | null) => Promise<void>;
 
     activityFeed: React.ReactNode;
   }
