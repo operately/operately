@@ -291,6 +291,11 @@ const parentGoal = {
   link: "/goals/1",
 };
 
+const searchFn = async ({ query }: { query: string }) => {
+  if (!query) return people;
+  return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+};
+
 const defaultArgs: GoalPage.Props = {
   spaceLink: "/spaces/1",
   workmapLink: "/spaces/1/workmaps/1",
@@ -316,6 +321,7 @@ const defaultArgs: GoalPage.Props = {
   privacyLevel: "internal" as const,
   updateTimeframe: fn(),
   mentionedPersonLookup: async (_id: string) => null,
+  peopleSearch: searchFn,
 
   activityFeed: <div></div>,
 };

@@ -1,55 +1,88 @@
 import * as React from "react";
 import { GoalPage } from ".";
-import { SecondaryButton } from "../Button";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, shortenContent } from "../RichContent";
-import { MentionedPersonLookupFn } from "../RichEditor";
+import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: GoalPage.Props) {
+  const [content, setContent] = React.useState<string | null>(props.description || null);
+
+  const [mode, setMode] = React.useState<"view" | "edit" | "zero">(
+    !props.description && !props.canEdit ? "zero" : "edit",
+  );
+
+  const save = React.useCallback(
+    (content: string) => {
+      if (content === null) {
+        setMode("zero");
+      } else {
+        setContent(content);
+        setMode("view");
+      }
+      props.description = content;
+    },
+    [props],
+  );
+
+  const cancel = React.useCallback(() => {
+    setMode("view");
+  }, []);
+
   if (!props.description && !props.canEdit) return null;
+
+  const editButton = (
+    <SecondaryButton size="xxs" onClick={() => setMode("edit")}>
+      {props.description ? "Edit" : "Write"}
+    </SecondaryButton>
+  );
 
   return (
     <div>
-      <SectionHeader
-        title="Goal Description"
-        buttons={<SecondaryButton size="xxs">{props.description ? "Edit" : "Write"}</SecondaryButton>}
-        showButtons={props.canEdit}
-      />
+      <SectionHeader title="Goal Description" buttons={editButton} showButtons={props.canEdit && mode !== "edit"} />
 
-      {props.description ? (
-        <DescriptionContent description={props.description!} mentionedPersonLookup={props.mentionedPersonLookup} />
-      ) : (
-        <DescriptionZeroState />
+      {mode === "view" && <DescriptionContent content={content} mentionedPersonLookup={props.mentionedPersonLookup} />}
+      {mode === "zero" && <DescriptionZeroState />}
+      {mode === "edit" && (
+        <DescriptionEditor
+          content={content}
+          save={save}
+          cancel={cancel}
+          mentionedPersonLookup={props.mentionedPersonLookup}
+          peopleSearch={props.peopleSearch}
+        />
       )}
     </div>
   );
 }
 
-interface DescriptionContentProps {
-  description: string;
+function DescriptionContent({
+  content,
+  mentionedPersonLookup,
+}: {
+  content: string | null;
   mentionedPersonLookup: MentionedPersonLookupFn;
-}
-
-function DescriptionContent({ description, mentionedPersonLookup }: DescriptionContentProps) {
+}) {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const length = React.useMemo(() => {
-    return description ? countCharacters(description, { skipParse: true }) : 0;
-  }, [description]);
+    return content ? countCharacters(content, { skipParse: true }) : 0;
+  }, [content]);
 
   const displayedDescription = React.useMemo(() => {
     if (length <= 200) {
-      return description;
+      return content;
     } else if (isExpanded) {
-      return description;
+      return content;
     } else {
-      return shortenContent(description, 200, { suffix: "...", skipParse: true });
+      return shortenContent(content!, 200, { suffix: "...", skipParse: true });
     }
-  }, [description, length, isExpanded]);
+  }, [content, length, isExpanded]);
 
   return (
     <div className="mt-2">
       <RichContent content={displayedDescription} mentionedPersonLookup={mentionedPersonLookup} />
+
       {length > 200 && (
         <button
           onClick={() => setIsExpanded(!isExpanded)}
@@ -66,6 +99,42 @@ function DescriptionZeroState() {
   return (
     <div className="mb-1">
       <div className="text-content-dimmed text-sm">Describe the goal to provide context and clarity.</div>
+    </div>
+  );
+}
+
+function DescriptionEditor({
+  content,
+  save,
+  cancel,
+  mentionedPersonLookup,
+  peopleSearch,
+}: {
+  content: string | null;
+  save: (content: string) => void;
+  cancel: () => void;
+  mentionedPersonLookup: MentionedPersonLookupFn;
+  peopleSearch: GoalPage.Props["peopleSearch"];
+}) {
+  const editorState = useEditor({
+    content: content,
+    autoFocus: true,
+    editable: true,
+    mentionedPersonLookup: mentionedPersonLookup,
+    peopleSearch: peopleSearch,
+  });
+
+  return (
+    <div className="mt-2">
+      <Editor editor={editorState} />
+      <div className="flex gap-2 mt-2">
+        <PrimaryButton size="xs" onClick={() => save(editorState.editor.getJSON())}>
+          Save
+        </PrimaryButton>
+        <SecondaryButton size="xs" onClick={cancel}>
+          Cancel
+        </SecondaryButton>
+      </div>
     </div>
   );
 }
