@@ -21,9 +21,9 @@ export function Sidebar(props: GoalPage.Props) {
       <div className="space-y-2">
         <div className="font-bold text-sm">Due Date</div>
         <div className="flex items-center gap-2">
-          <IconCalendar size={20} />
+          <IconCalendar size={18} />
           <div className="text-sm font-medium mt-0.5">
-            {props.timeframe?.startDate && <FormattedTime time={props.timeframe!.endDate!} format="short-date" />}
+            {props.timeframe?.endDate && <FormattedTime time={props.timeframe!.endDate!} format="short-date" />}
           </div>
         </div>
       </div>
@@ -60,8 +60,8 @@ function CompanyWideGoal() {
 
 function ParentGoalLink(props: GoalPage.Props) {
   return (
-    <div className="flex items-center gap-1.5 text-sm mb-2">
-      <IconTarget size={14} className="text-red-500" />
+    <div className="flex items-start gap-1.5 text-sm mb-2">
+      <IconTarget size={18} className="text-red-500 shrink-0 mt-px" />
       <BlackLink to={props.parentGoal!.link} underline="hover">
         {props.parentGoal!.name}
       </BlackLink>
