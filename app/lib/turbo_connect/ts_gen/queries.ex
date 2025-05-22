@@ -30,7 +30,7 @@ defmodule TurboConnect.TsGen.Queries do
       """
         #{fn_name}: function(client: ApiClient, input: #{input_type}): Promise<#{result_type}> {
           return client.get("#{path}", input);
-        }
+        },
       """
     end)
   end

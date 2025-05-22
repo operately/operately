@@ -51,9 +51,10 @@ defmodule TurboConnect.TsGen do
   defp generate_namespace(api_module, namespace) do
     queries = api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
     mutations = api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+    namespace_name = if namespace == nil, do: "api_namespace_root", else: "api_namespace_#{namespace}"
 
     """
-    export const ApiNamespace#{namespace} = {
+    export const #{Macro.camelize(namespace_name)} = {
     #{Queries.generate_functions(queries)}
     #{Mutations.generate_functions(mutations)}
     };

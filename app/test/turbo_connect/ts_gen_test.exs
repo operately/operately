@@ -259,24 +259,24 @@ defmodule TurboConnect.TsGenTest do
   """
 
   @namespaces """
-  export const ApiNamespaceRoot = {
-    getUser: async (client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> => {
-      return client.get("/get_user", input);
+  export const ApiNamespaceUsers = {
+    getUser: function(client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> {
+      return client.get("/users/get_user", input);
     },
 
-    createUser: async (client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> => {
-      return client.post("/create_user", input);
+    createUser: function(client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> {
+      return client.post("/users/create_user", input);
     },
 
   };
 
-  export const ApiNamespaceUsers = {
-    getUser: async (client: ApiClient, input: UsersGetUserInput): Promise<UsersGetUserResult> => {
-      return client.get("/users/get_user", input);
+  export const ApiNamespaceRoot = {
+    getUser: function(client: ApiClient, input: GetUserInput): Promise<GetUserResult> {
+      return client.get("/get_user", input);
     },
 
-    createUser: async (client: ApiClient, input: UsersCreateUserInput): Promise<UsersCreateUserResult> => {
-      return client.post("/users/create_user", input);
+    createUser: function(client: ApiClient, input: CreateUserInput): Promise<CreateUserResult> {
+      return client.post("/create_user", input);
     },
 
   };
@@ -341,7 +341,11 @@ defmodule TurboConnect.TsGenTest do
       result_line = Enum.at(result_lines, i, "")
       expected_line = Enum.at(expected_lines, i, "")
 
-      IO.puts("#{String.pad_trailing(result_line, max_line_length)} | #{expected_line}")
+      if result_line == expected_line do
+        IO.puts("#{String.pad_trailing(result_line, max_line_length)} | #{expected_line}")
+      else
+        IO.puts("\e[31m#{String.pad_trailing(result_line, max_line_length)}\e[0m | \e[32m#{expected_line}\e[0m")
+      end
     end
   end
 end
