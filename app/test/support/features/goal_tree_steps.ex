@@ -35,7 +35,13 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :given_goal_is_closed, ctx, goal_name do
-    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "yes", RichText.rich_text("text", :as_string))
+    {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
+      success: "yes",
+      content: RichText.rich_text("text"),
+      send_notifications_to_everyone: true,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
     ctx
   end
 
@@ -226,12 +232,24 @@ defmodule Operately.Support.Features.GoalTreeSteps do
   end
 
   step :given_goal_is_closed_as_accomplished, ctx, goal_name do
-    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "yes", RichText.rich_text("text", :as_string))
+    {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
+      success: "yes",
+      content: RichText.rich_text("text"),
+      send_notifications_to_everyone: true,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
     ctx
   end
 
   step :given_goal_is_closed_as_not_accomplished, ctx, goal_name do
-    Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], "no", RichText.rich_text("text", :as_string))
+    {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx[goal_name], %{
+      success: "no",
+      content: RichText.rich_text("text"),
+      send_notifications_to_everyone: true,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
     ctx
   end
 
