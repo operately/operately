@@ -174,9 +174,34 @@ export interface EnableFeatureResult {
   success?: boolean | null;
 }
 
+class ApiNamespaceRoot {
+  constructor(private client: ApiClient) {}
+
+  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.client.get("/get_activities", input);
+  }
+
+  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return this.client.get("/get_companies", input);
+  }
+
+  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.client.get("/get_company", input);
+  }
+
+  async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
+    return this.client.post("/enable_feature", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
+  private apiNamespaceRoot: ApiNamespaceRoot;
+
+  constructor() {
+    this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+  }
 
   setBasePath(basePath: string) {
     this.basePath = basePath;
@@ -196,13 +221,13 @@ export class ApiClient {
   }
 
   // @ts-ignore
-  private async post(path: string, data: any) {
+  async post(path: string, data: any) {
     const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
     return toCamel(response.data);
   }
 
   // @ts-ignore
-  private async get(path: string, params: any) {
+  async get(path: string, params: any) {
     const response = await axios.get(this.getBasePath() + path, {
       params: toSnake(params),
       headers: this.getHeaders(),
@@ -210,20 +235,20 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.get("/get_activities", input);
+  getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.apiNamespaceRoot.getActivities(input);
   }
 
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.get("/get_companies", input);
+  getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return this.apiNamespaceRoot.getCompanies(input);
   }
 
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.get("/get_company", input);
+  getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.apiNamespaceRoot.getCompany(input);
   }
 
-  async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
-    return this.post("/enable_feature", input);
+  enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
+    return this.apiNamespaceRoot.enableFeature(input);
   }
 }
 

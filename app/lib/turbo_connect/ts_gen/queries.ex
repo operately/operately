@@ -35,6 +35,23 @@ defmodule TurboConnect.TsGen.Queries do
     end)
   end
 
+  def generate_root_namespace_delegators(queries) do
+    queries
+    |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {fullname, query} ->
+      fn_name = ts_function_name(query.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
+
+      """
+        #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
+          return this.apiNamespaceRoot.#{fn_name}(input);
+        }
+      """
+    end)
+  end
+
   def generate_hooks(queries) do
     queries
     |> Enum.sort_by(&elem(&1, 0))
@@ -66,7 +83,7 @@ defmodule TurboConnect.TsGen.Queries do
     end)
   end
 
-  def generate_default_exports(queries) do
+  def generate_default_root_exports(queries) do
     queries
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _query} ->
