@@ -14,16 +14,26 @@ defmodule TurboConnect.Plugs.Dispatch do
     res = conn.assigns.turbo_req_handler.call(conn, conn.assigns.turbo_inputs)
 
     case res do
-      {:ok, result} ->  ok(conn, result)
+      {:ok, result} ->
+        ok(conn, result)
 
-      {:error, :not_found} -> not_found(conn, "The requested resource was not found")
-      {:error, :not_found, message} -> not_found(conn, message)
+      {:error, :not_found} ->
+        not_found(conn, "The requested resource was not found")
 
-      {:error, :bad_request} -> bad_request(conn, "The request was malformed")
-      {:error, :bad_request, message} -> bad_request(conn, message)
+      {:error, :not_found, message} ->
+        not_found(conn, message)
 
-      {:error, :forbidden} -> forbidden(conn, "You don't have permission to perform this action")
-      {:error, :forbidden, message} -> forbidden(conn, message)
+      {:error, :bad_request} ->
+        bad_request(conn, "The request was malformed")
+
+      {:error, :bad_request, message} ->
+        bad_request(conn, message)
+
+      {:error, :forbidden} ->
+        forbidden(conn, "You don't have permission to perform this action")
+
+      {:error, :forbidden, message} ->
+        forbidden(conn, message)
 
       {:error, message} ->
         Logger.error("\n")
