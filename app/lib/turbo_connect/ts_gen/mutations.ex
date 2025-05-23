@@ -35,6 +35,23 @@ defmodule TurboConnect.TsGen.Mutations do
     end)
   end
 
+  def generate_root_namespace_delegators(mutations) do
+    mutations
+    |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {fullname, mutation} ->
+      fn_name = ts_function_name(mutation.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
+
+      """
+        #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
+          return this.apiNamespaceRoot.#{fn_name}(input);
+        }
+      """
+    end)
+  end
+
   def generate_hooks(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
@@ -62,7 +79,7 @@ defmodule TurboConnect.TsGen.Mutations do
     end)
   end
 
-  def generate_default_exports(mutations) do
+  def generate_default_root_exports(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _mutation} ->
