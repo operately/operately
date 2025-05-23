@@ -4,7 +4,10 @@ defmodule Operately.Projects.Project do
 
   alias Operately.Repo
   alias Operately.Access.AccessLevels
+  alias Operately.WorkMaps.WorkMapItem
   alias Operately.Projects.{Contributor, Permissions}
+
+  @behaviour WorkMapItem
 
   schema "projects" do
     belongs_to :company, Operately.Companies.Company, foreign_key: :company_id
@@ -89,6 +92,51 @@ defmodule Operately.Projects.Project do
       :group_id,
       :creator_id
     ])
+  end
+
+  @impl WorkMapItem
+  def status(project = %__MODULE__{}) do
+    cond do
+      project.closed_at -> :completed
+      project.status == "closed" -> :completed
+      project.status == "paused" -> :paused
+      Operately.Projects.outdated?(project) -> :outdated
+      project.last_check_in -> String.to_atom(project.last_check_in.status)
+      true -> :on_track
+    end
+  end
+
+  @impl WorkMapItem
+  def state(project = %__MODULE__{}) do
+    cond do
+      project.closed_at -> :closed
+      project.status == "paused" -> :paused
+      true -> :active
+    end
+  end
+
+  @impl WorkMapItem
+  def next_step(project = %__MODULE__{}) do
+    project = set_next_milestone(project)
+
+    if(project.next_milestone, do: project.next_milestone.title, else: "")
+  end
+
+  @impl WorkMapItem
+  def progress_percentage(project = %__MODULE__{}) do
+    total_milestones = length(project.milestones)
+
+    if total_milestones > 0 do
+      completed_milestones = Enum.count(project.milestones, fn milestone ->
+        case milestone do
+          %{status: status} when status == :done -> true
+          _ -> false
+        end
+      end)
+      (completed_milestones / total_milestones) * 100
+    else
+      0
+    end
   end
 
   # Scopes
