@@ -44,13 +44,14 @@ defmodule OperatelyWeb.TurboCase do
   defdelegate log_in_account(conn, account, company), to: OperatelyWeb.ConnCase
 
   def query(conn, query_name, inputs) do
-    conn = Phoenix.ConnTest.dispatch(
-      conn,
-      OperatelyWeb.Endpoint,
-      :get,
-      request_path(query_name),
-      inputs
-    )
+    conn =
+      Phoenix.ConnTest.dispatch(
+        conn,
+        OperatelyWeb.Endpoint,
+        :get,
+        request_path(query_name),
+        inputs
+      )
 
     case Jason.decode(conn.resp_body, keys: :atoms) do
       {:ok, res} -> {conn.status, res}
@@ -59,18 +60,26 @@ defmodule OperatelyWeb.TurboCase do
   end
 
   def mutation(conn, mutation_name, inputs) do
-    conn = Phoenix.ConnTest.dispatch(
-      conn,
-      OperatelyWeb.Endpoint,
-      :post,
-      request_path(mutation_name),
-      inputs
-    )
+    conn =
+      Phoenix.ConnTest.dispatch(
+        conn,
+        OperatelyWeb.Endpoint,
+        :post,
+        request_path(mutation_name),
+        inputs
+      )
 
     case Jason.decode(conn.resp_body, keys: :atoms) do
       {:ok, res} -> {conn.status, res}
       _ -> {conn.status, conn.resp_body}
     end
+  end
+
+  defp request_path(name_parts) when is_list(name_parts) do
+    name_parts
+    |> Enum.map(&to_string/1)
+    |> Enum.join("/")
+    |> request_path()
   end
 
   defp request_path(name) when is_atom(name) do
@@ -88,5 +97,4 @@ defmodule OperatelyWeb.TurboCase do
   def not_found_response do
     {404, %{error: "Not found", message: "The requested resource was not found"}}
   end
-
 end
