@@ -31,7 +31,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       description: goal.description && Jason.encode!(goal.description),
       parent_goal_id: goal.parent_goal && OperatelyWeb.Paths.goal_id(goal.parent_goal),
       parent_goal: OperatelyWeb.Api.Serializer.serialize(goal.parent_goal),
-      progress_percentage: Operately.Goals.progress_percentage(goal),
+      progress_percentage: Operately.Goals.Goal.progress_percentage(goal),
       projects: OperatelyWeb.Api.Serializer.serialize(goal.projects, level: :full),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(goal.last_update, level: :full),
       access_levels: OperatelyWeb.Api.Serializer.serialize(goal.access_levels, level: :full),
