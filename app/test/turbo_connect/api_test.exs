@@ -107,6 +107,7 @@ defmodule TurboConnect.ApiTest do
     assert ExampleApi.__queries__() == %{
              "get_user" => %{
                namespace: nil,
+               type: :query,
                name: :get_user,
                handler: ExampleQuery,
                inputs: %{
@@ -122,6 +123,7 @@ defmodule TurboConnect.ApiTest do
              },
              "users/get_user" => %{
                namespace: :users,
+               type: :query,
                name: :get_user,
                handler: ExampleQuery,
                inputs: %{
@@ -142,6 +144,7 @@ defmodule TurboConnect.ApiTest do
     assert ExampleApi.__mutations__() == %{
              "create_user" => %{
                namespace: nil,
+               type: :mutation,
                name: :create_user,
                handler: ExampleMutation,
                inputs: %{
@@ -158,6 +161,7 @@ defmodule TurboConnect.ApiTest do
              },
              "users/create_user" => %{
                namespace: :users,
+               type: :mutation,
                name: :create_user,
                handler: ExampleMutation,
                inputs: %{
