@@ -99,6 +99,11 @@ defmodule TurboConnect.TsGenTest do
 
     query(:get_user, GetUserQuery)
     mutation(:create_user, CreateUserMutation)
+
+    namespace(:users) do
+      query(:get_user, GetUserQuery)
+      mutation(:create_user, CreateUserMutation)
+    end
   end
 
   @ts_imports """
@@ -151,6 +156,15 @@ defmodule TurboConnect.TsGenTest do
     user?: User | null;
   }
 
+
+  export interface UsersGetUserInput {
+    userId?: number | null;
+  }
+
+  export interface UsersGetUserResult {
+    user?: User | null;
+  }
+
   export interface CreateUserInput {
     fullName?: string | null;
     address?: Address | null;
@@ -159,12 +173,29 @@ defmodule TurboConnect.TsGenTest do
   export interface CreateUserResult {
     user?: User | null;
   }
+
+
+  export interface UsersCreateUserInput {
+    fullName?: string | null;
+    address?: Address | null;
+  }
+
+  export interface UsersCreateUserResult {
+    user?: User | null;
+  }
   """
 
   @ts_api_client """
   export class ApiClient {
     private basePath: string;
     private headers: any;
+    private apiNamespaceUsers: ApiNamespaceUsers;
+    private apiNamespaceRoot: ApiNamespaceRoot;
+
+    constructor() {
+      this.apiNamespaceUsers = new ApiNamespaceUsers(this);
+      this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    }
 
     setBasePath(basePath: string) {
       this.basePath = basePath;
@@ -184,26 +215,55 @@ defmodule TurboConnect.TsGenTest do
     }
 
     // @ts-ignore
-    private async post(path: string, data: any) {
+    async post(path: string, data: any) {
       const response = await axios.post(this.getBasePath() + path, toSnake(data), { headers: this.getHeaders() });
       return toCamel(response.data);
     }
 
     // @ts-ignore
-    private async get(path: string, params: any) {
+    async get(path: string, params: any) {
       const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
       return toCamel(response.data);
     }
 
+    getUser(input: GetUserInput): Promise<GetUserResult> {
+      return this.apiNamespaceRoot.getUser(input);
+    }
+
+    createUser(input: CreateUserInput): Promise<CreateUserResult> {
+      return this.apiNamespaceRoot.createUser(input);
+    }
+
+
+  }
+  """
+
+  @ts_namespaces """
+  class ApiNamespaceUsers {
+    constructor(private client: ApiClient) {}
+
+    async getUser(input: UsersGetUserInput): Promise<UsersGetUserResult> {
+      return this.client.get("/users/get_user", input);
+    }
+
+    async createUser(input: UsersCreateUserInput): Promise<UsersCreateUserResult> {
+      return this.client.post("/users/create_user", input);
+    }
+
+  };
+
+  class ApiNamespaceRoot {
+    constructor(private client: ApiClient) {}
+
     async getUser(input: GetUserInput): Promise<GetUserResult> {
-      return this.get("/get_user", input);
+      return this.client.get("/get_user", input);
     }
 
     async createUser(input: CreateUserInput): Promise<CreateUserResult> {
-      return this.post("/create_user", input);
+      return this.client.post("/create_user", input);
     }
 
-  }
+  };
   """
 
   @ts_default """
@@ -231,15 +291,40 @@ defmodule TurboConnect.TsGenTest do
     useGetUser,
     createUser,
     useCreateUser,
+
+    users: {
+      getUser: defaultApiClient.apiNamespaceUsers.getUser,
+      useGetUser: (input: UsersGetUserInput) => useQuery<UsersGetUserInput, UsersGetUserResult>(defaultApiClient.apiNamespaceUsers.getUser),
+
+      createUser: defaultApiClient.apiNamespaceUsers.createUser,
+      useCreateUser: (input: UsersCreateUserInput) => useMutation<UsersCreateUserInput, UsersCreateUserResult>(defaultApiClient.apiNamespaceUsers.createUser),
+
+    },
+
   };
   """
 
-  test "generating TypeScript code" do
+  test "generating TypeScript imports" do
     assert_same(TurboConnect.TsGen.generate_imports(), @ts_imports)
-    assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
-    assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
-    assert_same(TurboConnect.TsGen.generate_default_exports(ExampleApi), @ts_default)
+  end
 
+  test "generating TypeScript types" do
+    assert_same(TurboConnect.TsGen.generate_types(ExampleApi), @ts_types)
+  end
+
+  test "generating TypeScript namespaces" do
+    assert_same(TurboConnect.TsGen.generate_namespaces(ExampleApi), @ts_namespaces)
+  end
+
+  test "generating TypeScript api client class" do
+    assert_same(TurboConnect.TsGen.generate_api_client_class(ExampleApi), @ts_api_client)
+  end
+
+  test "generating TypeScript default exports" do
+    assert_same(TurboConnect.TsGen.generate_default_exports(ExampleApi), @ts_default)
+  end
+
+  test "generating everything together" do
     assert_same(
       TurboConnect.TsGen.generate(ExampleApi),
       """
@@ -249,6 +334,7 @@ defmodule TurboConnect.TsGenTest do
       #{TurboConnect.TsGen.Queries.define_generic_use_query_hook()}
       #{TurboConnect.TsGen.Mutations.define_generic_use_mutation_hook()}
       #{@ts_types}
+      #{@ts_namespaces}
       #{@ts_api_client}
       #{@ts_default}
       """
@@ -259,19 +345,32 @@ defmodule TurboConnect.TsGenTest do
     if result == expected do
       :ok
     else
-      result_lines = String.split(result, "\n")
-      expected_lines = String.split(expected, "\n")
+      show_side_by_side(result, expected)
+      raise "Generated code does not match expected code"
+    end
+  end
 
-      result_lines
-      |> Enum.with_index()
-      |> Enum.each(fn {line, index} ->
-        if line != Enum.at(expected_lines, index) do
-          IO.puts("Expected: #{inspect(Enum.at(expected_lines, index))}")
-          IO.puts("Got:      #{inspect(line)}")
-        end
-      end)
+  defp show_side_by_side(result, expected) do
+    IO.puts("\n\n")
 
-      flunk("Expected to be the same, but got different values")
+    result = "Result:\n\n" <> result
+    expected = "Expected:\n\n" <> expected
+
+    result_lines = String.split(result, "\n")
+    expected_lines = String.split(expected, "\n")
+
+    max_length = max(length(result_lines), length(expected_lines))
+    max_line_length = Enum.map(result_lines, &String.length/1) |> Enum.reduce(0, &max/2)
+
+    for i <- 0..(max_length - 1) do
+      result_line = Enum.at(result_lines, i, "")
+      expected_line = Enum.at(expected_lines, i, "")
+
+      if result_line == expected_line do
+        IO.puts("#{String.pad_trailing(result_line, max_line_length)} | #{expected_line}")
+      else
+        IO.puts("\e[31m#{String.pad_trailing(result_line, max_line_length)}\e[0m | \e[32m#{expected_line}\e[0m")
+      end
     end
   end
 end
