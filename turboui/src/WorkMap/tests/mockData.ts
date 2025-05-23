@@ -146,7 +146,7 @@ export const mockItems: WorkMap.Item[] = [
             parentId: "goal-1-1",
             type: "project",
             name: "Create onboarding email sequence",
-            status: "on_track",
+            status: "paused",
             progress: 75,
             space: { name: "Marketing", id: "space-marketing" },
             spacePath: "#",
