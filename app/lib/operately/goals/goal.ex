@@ -82,6 +82,51 @@ defmodule Operately.Goals.Goal do
     ])
   end
 
+  def update_name(requester, goal_id, name) do
+    with(
+      {:ok, goal} <- get(requester, id: goal_id),
+      {:ok, _} <- Permissions.check(goal.request_info.access_level, :can_edit)
+    ) do
+      Repo.transaction(fn ->
+        goal
+        |> changeset(%{name: name})
+        |> Repo.update()
+      end)
+    end
+  end
+
+  def update_description(requester, goal_id, description) do
+    with(
+      {:ok, goal} <- get(requester, id: goal_id),
+      {:ok, _} <- Permissions.check(goal.request_info.access_level, :can_edit)
+    ) do
+      Repo.transaction(fn ->
+        goal
+        |> changeset(%{description: description})
+        |> Repo.update()
+      end)
+    end
+  end
+
+  def update_due_date(requester, goal_id, due_date) do
+    with(
+      {:ok, goal} <- get(requester, id: goal_id),
+      {:ok, _} <- Permissions.check(goal.request_info.access_level, :can_edit)
+    ) do
+      Repo.transaction(fn ->
+        goal
+        |> changeset(%{
+          timeframe: %{
+            start_date: due_date,
+            end_date: due_date,
+            type: "days"
+          }
+        })
+        |> Repo.update()
+      end)
+    end
+  end
+
   def status(goal = %__MODULE__{}) do
     cond do
       goal.success == "yes" -> "achieved"

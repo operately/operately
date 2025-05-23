@@ -18,16 +18,16 @@ defmodule OperatelyWeb.Api do
   alias OperatelyWeb.Api.Mutations, as: M
   alias OperatelyWeb.Api.Subscriptions, as: S
 
-  # namespace(:goals) do
-  #   mutation(:update_name, M.UpdateGoalName)
-  #   mutation(:update_description, M.UpdateGoalDescription)
-  #   mutation(:update_due_date, M.UpdateGoalDueDate)
+  namespace(:goals) do
+    mutation(:update_name, M.UpdateGoalName)
+    mutation(:update_description, M.UpdateGoalDescription)
+    mutation(:update_due_date, M.UpdateGoalDueDate)
 
-  #   mutation(:delete_target, M.DeleteGoalTarget)
-  #   mutation(:update_target, M.UpdateGoalTarget)
-  #   mutation(:update_target_value, M.UpdateGoalTargetValue)
-  #   mutation(:add_target, M.AddGoalTarget)
-  # end
+    # mutation(:delete_target, M.DeleteGoalTarget)
+    # mutation(:update_target, M.UpdateGoalTarget)
+    # mutation(:update_target_value, M.UpdateGoalTargetValue)
+    # mutation(:add_target, M.AddGoalTarget)
+  end
 
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)
