@@ -12,7 +12,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       reviewer: OperatelyWeb.Api.Serializer.serialize(goal.reviewer),
       timeframe: OperatelyWeb.Api.Serializer.serialize(goal.timeframe),
       success: goal.success == "yes",
-      status: Goal.status(goal),
+      status: Goal.status(goal) |> Atom.to_string(),
       last_check_in_id: goal.last_check_in_id && OperatelyWeb.Paths.goal_update_id(goal.last_check_in_id),
       is_archived: goal.deleted_at != nil,
       is_closed: goal.closed_at != nil,

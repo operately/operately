@@ -19,17 +19,17 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
         |> Factory.preload(:project, :milestones)
 
       item = WorkMapItem.build_item(ctx.project, [], false)
-      assert item.status == "completed"
+      assert item.status == :completed
     end
 
-    @status ["on_track", "caution", "issue"]
+    @status [:on_track, :caution, :issue]
 
     tabletest @status do
       test "given a project's last check-in is #{@test}, its status should also be #{@test}", ctx do
         ctx =
           ctx
           |> Factory.add_project(:project, :space)
-          |> Factory.add_project_check_in(:check_in, :project, :creator, status: @test)
+          |> Factory.add_project_check_in(:check_in, :project, :creator, status: Atom.to_string(@test))
           |> Factory.preload(:project, :last_check_in)
           |> Factory.preload(:project, :milestones)
 
@@ -46,7 +46,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
         |> Factory.preload(:project, :milestones)
 
       item = WorkMapItem.build_item(ctx.project, [], false)
-      assert item.status == "on_track"
+      assert item.status == :on_track
     end
   end
 end
