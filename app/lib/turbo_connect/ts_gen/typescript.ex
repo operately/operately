@@ -28,7 +28,7 @@ defmodule TurboConnect.TsGen.Typescript do
   end
 
   def ts_function_name(name) do
-    result = name |> Atom.to_string() |> Macro.camelize()
+    result = name |> to_string() |> Macro.camelize()
     String.downcase(String.at(result, 0)) <> String.slice(result, 1, String.length(result) - 1)
   end
 
@@ -66,8 +66,8 @@ defmodule TurboConnect.TsGen.Typescript do
       :date -> "string"
       :time -> "string"
       :datetime -> "string"
-      type when is_atom(type) -> Macro.camelize(Atom.to_string(type))
-      type when is_binary(type) -> Macro.camelize(type)
+      type when is_atom(type) -> type |> Atom.to_string() |> String.replace("/", "_") |> Macro.camelize()
+      type when is_binary(type) -> type |> String.replace("/", "_") |> Macro.camelize()
       _ -> raise ArgumentError, "Unknown type: #{inspect(type)}"
     end
   end
