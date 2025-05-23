@@ -3,7 +3,7 @@ defmodule TurboConnect.TsGen do
   This module generates TypeScript code from the specs defined with TurboConnect.Specs.
   """
 
-  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2, ts_type_alias: 2, ts_enum: 2]
+  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2, ts_type_alias: 2, ts_enum: 2, ts_function_name: 1, ts_type: 1]
   alias TurboConnect.TsGen.{Queries, Mutations}
 
   @spec generate(module) :: String.t()
@@ -64,22 +64,13 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_api_client_class(api_module) do
-    namespaces =
-      api_module.__namespaces__()
-      |> Enum.map(fn namespace ->
-        ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
-
-        "    this.apiNamespace#{ns} = new ApiNamespace#{ns}(this);"
-      end)
-      |> Enum.join("\n")
-
     """
     export class ApiClient {
       private basePath: string;
       private headers: any;
 
       constructor() {
-    #{namespaces}
+    #{namespace_initializers(api_module)}
       }
 
       setBasePath(basePath: string) {
@@ -111,7 +102,25 @@ defmodule TurboConnect.TsGen do
         return toCamel(response.data);
       }
 
+    #{generate_root_namespace_delegators(api_module)}
     }
+    """
+  end
+
+  def namespace_initializers(api_module) do
+    api_module.__namespaces__()
+    |> Enum.map(fn namespace ->
+      ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
+
+      "    this.apiNamespace#{ns} = new ApiNamespace#{ns}(this);"
+    end)
+    |> Enum.join("\n")
+  end
+
+  def generate_root_namespace_delegators(api_module) do
+    """
+    #{Queries.generate_root_namespace_delegators(api_module.__queries__())}
+    #{Mutations.generate_root_namespace_delegators(api_module.__mutations__())}
     """
   end
 
@@ -203,20 +212,77 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_default_exports(api_module) do
+    root_queries = api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+    root_mutations = api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+
     """
     const defaultApiClient = new ApiClient();
 
-    #{Queries.generate_default_functions(api_module.__queries__())}
-    #{Mutations.generate_default_functions(api_module.__mutations__())}
+    #{Queries.generate_default_functions(root_queries)}
+    #{Mutations.generate_default_functions(root_mutations)}
 
-    #{Queries.generate_hooks(api_module.__queries__())}
-    #{Mutations.generate_hooks(api_module.__mutations__())}
+    #{Queries.generate_hooks(root_queries)}
+    #{Mutations.generate_hooks(root_mutations)}
     export default {
       default: defaultApiClient,
 
-    #{Queries.generate_default_exports(api_module.__queries__())}
-    #{Mutations.generate_default_exports(api_module.__mutations__())}
+    #{Queries.generate_default_root_exports(root_queries)}
+    #{Mutations.generate_default_root_exports(root_mutations)}
+
+    #{generate_default_namespace_exports(api_module)}
     };
+    """
+  end
+
+  def generate_default_namespace_exports(api_module) do
+    api_module.__namespaces__()
+    |> Enum.filter(fn namespace -> namespace != nil end)
+    |> Enum.map(fn namespace ->
+      generate_default_namespace_export(api_module, namespace)
+    end)
+    |> Enum.join("\n")
+  end
+
+  def generate_default_namespace_export(api_module, namespace) do
+    queries =
+      api_module.__queries__()
+      |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+      |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
+        fnName = ts_function_name(name)
+        hookName = ts_function_name("use_#{name}")
+        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}"
+        input_type = ts_type(fullname) <> "Input"
+        result_type = ts_type(fullname) <> "Result"
+
+        """
+            #{fnName}: #{fnCall},
+            #{hookName}: (input: #{input_type}) => useQuery<#{input_type}, #{result_type}>(#{fnCall}),
+        """
+      end)
+      |> Enum.join("\n")
+
+    mutations =
+      api_module.__mutations__()
+      |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+      |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
+        fnName = ts_function_name(name)
+        hookName = ts_function_name("use_#{name}")
+        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}"
+        input_type = ts_type(fullname) <> "Input"
+        result_type = ts_type(fullname) <> "Result"
+
+        """
+            #{fnName}: #{fnCall},
+            #{hookName}: (input: #{input_type}) => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
+        """
+      end)
+      |> Enum.join("\n")
+
+    """
+      #{namespace}: {
+    #{queries}
+    #{mutations}
+      },
     """
   end
 end

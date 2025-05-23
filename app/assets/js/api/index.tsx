@@ -3116,9 +3116,621 @@ export interface UpdateTaskStatusResult {
   task?: Task | null;
 }
 
+class ApiNamespaceRoot {
+  constructor(private client: ApiClient) {}
+
+  async getAccount(input: GetAccountInput): Promise<GetAccountResult> {
+    return this.client.get("/get_account", input);
+  }
+
+  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.client.get("/get_activities", input);
+  }
+
+  async getActivity(input: GetActivityInput): Promise<GetActivityResult> {
+    return this.client.get("/get_activity", input);
+  }
+
+  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+    return this.client.get("/get_assignments", input);
+  }
+
+  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+    return this.client.get("/get_assignments_count", input);
+  }
+
+  async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
+    return this.client.get("/get_binded_people", input);
+  }
+
+  async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
+    return this.client.get("/get_comments", input);
+  }
+
+  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return this.client.get("/get_companies", input);
+  }
+
+  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.client.get("/get_company", input);
+  }
+
+  async getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
+    return this.client.get("/get_discussion", input);
+  }
+
+  async getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
+    return this.client.get("/get_discussions", input);
+  }
+
+  async getGoal(input: GetGoalInput): Promise<GetGoalResult> {
+    return this.client.get("/get_goal", input);
+  }
+
+  async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
+    return this.client.get("/get_goal_progress_update", input);
+  }
+
+  async getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
+    return this.client.get("/get_goal_progress_updates", input);
+  }
+
+  async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
+    return this.client.get("/get_goals", input);
+  }
+
+  async getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
+    return this.client.get("/get_invitation", input);
+  }
+
+  async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
+    return this.client.get("/get_key_resource", input);
+  }
+
+  async getMe(input: GetMeInput): Promise<GetMeResult> {
+    return this.client.get("/get_me", input);
+  }
+
+  async getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
+    return this.client.get("/get_milestone", input);
+  }
+
+  async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
+    return this.client.get("/get_notifications", input);
+  }
+
+  async getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
+    return this.client.get("/get_people", input);
+  }
+
+  async getPerson(input: GetPersonInput): Promise<GetPersonResult> {
+    return this.client.get("/get_person", input);
+  }
+
+  async getProject(input: GetProjectInput): Promise<GetProjectResult> {
+    return this.client.get("/get_project", input);
+  }
+
+  async getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
+    return this.client.get("/get_project_check_in", input);
+  }
+
+  async getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
+    return this.client.get("/get_project_check_ins", input);
+  }
+
+  async getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
+    return this.client.get("/get_project_contributor", input);
+  }
+
+  async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
+    return this.client.get("/get_project_retrospective", input);
+  }
+
+  async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
+    return this.client.get("/get_projects", input);
+  }
+
+  async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
+    return this.client.get("/get_resource_hub", input);
+  }
+
+  async getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
+    return this.client.get("/get_resource_hub_document", input);
+  }
+
+  async getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
+    return this.client.get("/get_resource_hub_file", input);
+  }
+
+  async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
+    return this.client.get("/get_resource_hub_folder", input);
+  }
+
+  async getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
+    return this.client.get("/get_resource_hub_link", input);
+  }
+
+  async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
+    return this.client.get("/get_space", input);
+  }
+
+  async getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
+    return this.client.get("/get_spaces", input);
+  }
+
+  async getTask(input: GetTaskInput): Promise<GetTaskResult> {
+    return this.client.get("/get_task", input);
+  }
+
+  async getTasks(input: GetTasksInput): Promise<GetTasksResult> {
+    return this.client.get("/get_tasks", input);
+  }
+
+  async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
+    return this.client.get("/get_unread_notification_count", input);
+  }
+
+  async getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
+    return this.client.get("/get_work_map", input);
+  }
+
+  async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
+    return this.client.get("/list_goal_contributors", input);
+  }
+
+  async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
+    return this.client.get("/list_resource_hub_nodes", input);
+  }
+
+  async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
+    return this.client.get("/list_space_tools", input);
+  }
+
+  async runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
+    return this.client.get("/run_ai_prompt", input);
+  }
+
+  async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
+    return this.client.get("/search_people", input);
+  }
+
+  async searchPotentialSpaceMembers(
+    input: SearchPotentialSpaceMembersInput,
+  ): Promise<SearchPotentialSpaceMembersResult> {
+    return this.client.get("/search_potential_space_members", input);
+  }
+
+  async searchProjectContributorCandidates(
+    input: SearchProjectContributorCandidatesInput,
+  ): Promise<SearchProjectContributorCandidatesResult> {
+    return this.client.get("/search_project_contributor_candidates", input);
+  }
+
+  async acknowledgeGoalProgressUpdate(
+    input: AcknowledgeGoalProgressUpdateInput,
+  ): Promise<AcknowledgeGoalProgressUpdateResult> {
+    return this.client.post("/acknowledge_goal_progress_update", input);
+  }
+
+  async acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
+    return this.client.post("/acknowledge_project_check_in", input);
+  }
+
+  async addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
+    return this.client.post("/add_company", input);
+  }
+
+  async addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
+    return this.client.post("/add_company_admins", input);
+  }
+
+  async addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
+    return this.client.post("/add_company_member", input);
+  }
+
+  async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
+    return this.client.post("/add_company_owners", input);
+  }
+
+  async addCompanyTrustedEmailDomain(
+    input: AddCompanyTrustedEmailDomainInput,
+  ): Promise<AddCompanyTrustedEmailDomainResult> {
+    return this.client.post("/add_company_trusted_email_domain", input);
+  }
+
+  async addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
+    return this.client.post("/add_first_company", input);
+  }
+
+  async addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
+    return this.client.post("/add_key_resource", input);
+  }
+
+  async addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
+    return this.client.post("/add_project_contributor", input);
+  }
+
+  async addProjectContributors(input: AddProjectContributorsInput): Promise<AddProjectContributorsResult> {
+    return this.client.post("/add_project_contributors", input);
+  }
+
+  async addReaction(input: AddReactionInput): Promise<AddReactionResult> {
+    return this.client.post("/add_reaction", input);
+  }
+
+  async addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
+    return this.client.post("/add_space_members", input);
+  }
+
+  async archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
+    return this.client.post("/archive_goal", input);
+  }
+
+  async archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
+    return this.client.post("/archive_message", input);
+  }
+
+  async archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
+    return this.client.post("/archive_project", input);
+  }
+
+  async changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
+    return this.client.post("/change_goal_parent", input);
+  }
+
+  async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
+    return this.client.post("/change_password", input);
+  }
+
+  async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
+    return this.client.post("/change_task_description", input);
+  }
+
+  async closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
+    return this.client.post("/close_goal", input);
+  }
+
+  async closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
+    return this.client.post("/close_project", input);
+  }
+
+  async connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
+    return this.client.post("/connect_goal_to_project", input);
+  }
+
+  async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
+    return this.client.post("/copy_resource_hub_folder", input);
+  }
+
+  async createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
+    return this.client.post("/create_account", input);
+  }
+
+  async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
+    return this.client.post("/create_blob", input);
+  }
+
+  async createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
+    return this.client.post("/create_comment", input);
+  }
+
+  async createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
+    return this.client.post("/create_email_activation_code", input);
+  }
+
+  async createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
+    return this.client.post("/create_goal", input);
+  }
+
+  async createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
+    return this.client.post("/create_goal_discussion", input);
+  }
+
+  async createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
+    return this.client.post("/create_project", input);
+  }
+
+  async createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
+    return this.client.post("/create_resource_hub", input);
+  }
+
+  async createResourceHubDocument(input: CreateResourceHubDocumentInput): Promise<CreateResourceHubDocumentResult> {
+    return this.client.post("/create_resource_hub_document", input);
+  }
+
+  async createResourceHubFile(input: CreateResourceHubFileInput): Promise<CreateResourceHubFileResult> {
+    return this.client.post("/create_resource_hub_file", input);
+  }
+
+  async createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
+    return this.client.post("/create_resource_hub_folder", input);
+  }
+
+  async createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
+    return this.client.post("/create_resource_hub_link", input);
+  }
+
+  async createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
+    return this.client.post("/create_space", input);
+  }
+
+  async createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
+    return this.client.post("/create_task", input);
+  }
+
+  async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
+    return this.client.post("/delete_goal", input);
+  }
+
+  async deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
+    return this.client.post("/delete_resource_hub_document", input);
+  }
+
+  async deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
+    return this.client.post("/delete_resource_hub_file", input);
+  }
+
+  async deleteResourceHubFolder(input: DeleteResourceHubFolderInput): Promise<DeleteResourceHubFolderResult> {
+    return this.client.post("/delete_resource_hub_folder", input);
+  }
+
+  async deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
+    return this.client.post("/delete_resource_hub_link", input);
+  }
+
+  async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
+    return this.client.post("/disconnect_goal_from_project", input);
+  }
+
+  async editComment(input: EditCommentInput): Promise<EditCommentResult> {
+    return this.client.post("/edit_comment", input);
+  }
+
+  async editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
+    return this.client.post("/edit_company", input);
+  }
+
+  async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
+    return this.client.post("/edit_discussion", input);
+  }
+
+  async editGoal(input: EditGoalInput): Promise<EditGoalResult> {
+    return this.client.post("/edit_goal", input);
+  }
+
+  async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
+    return this.client.post("/edit_goal_discussion", input);
+  }
+
+  async editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
+    return this.client.post("/edit_goal_progress_update", input);
+  }
+
+  async editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
+    return this.client.post("/edit_goal_timeframe", input);
+  }
+
+  async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
+    return this.client.post("/edit_key_resource", input);
+  }
+
+  async editParentFolderInResourceHub(
+    input: EditParentFolderInResourceHubInput,
+  ): Promise<EditParentFolderInResourceHubResult> {
+    return this.client.post("/edit_parent_folder_in_resource_hub", input);
+  }
+
+  async editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
+    return this.client.post("/edit_project_check_in", input);
+  }
+
+  async editProjectName(input: EditProjectNameInput): Promise<EditProjectNameResult> {
+    return this.client.post("/edit_project_name", input);
+  }
+
+  async editProjectPermissions(input: EditProjectPermissionsInput): Promise<EditProjectPermissionsResult> {
+    return this.client.post("/edit_project_permissions", input);
+  }
+
+  async editProjectRetrospective(input: EditProjectRetrospectiveInput): Promise<EditProjectRetrospectiveResult> {
+    return this.client.post("/edit_project_retrospective", input);
+  }
+
+  async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
+    return this.client.post("/edit_project_timeline", input);
+  }
+
+  async editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
+    return this.client.post("/edit_resource_hub_document", input);
+  }
+
+  async editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
+    return this.client.post("/edit_resource_hub_file", input);
+  }
+
+  async editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
+    return this.client.post("/edit_resource_hub_link", input);
+  }
+
+  async editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
+    return this.client.post("/edit_space", input);
+  }
+
+  async editSpaceMembersPermissions(
+    input: EditSpaceMembersPermissionsInput,
+  ): Promise<EditSpaceMembersPermissionsResult> {
+    return this.client.post("/edit_space_members_permissions", input);
+  }
+
+  async editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
+    return this.client.post("/edit_space_permissions", input);
+  }
+
+  async editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
+    return this.client.post("/edit_subscriptions_list", input);
+  }
+
+  async joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
+    return this.client.post("/join_company", input);
+  }
+
+  async joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
+    return this.client.post("/join_space", input);
+  }
+
+  async markAllNotificationsAsRead(input: MarkAllNotificationsAsReadInput): Promise<MarkAllNotificationsAsReadResult> {
+    return this.client.post("/mark_all_notifications_as_read", input);
+  }
+
+  async markNotificationAsRead(input: MarkNotificationAsReadInput): Promise<MarkNotificationAsReadResult> {
+    return this.client.post("/mark_notification_as_read", input);
+  }
+
+  async markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
+    return this.client.post("/mark_notifications_as_read", input);
+  }
+
+  async moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
+    return this.client.post("/move_project_to_space", input);
+  }
+
+  async newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
+    return this.client.post("/new_invitation_token", input);
+  }
+
+  async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
+    return this.client.post("/pause_project", input);
+  }
+
+  async postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
+    return this.client.post("/post_discussion", input);
+  }
+
+  async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
+    return this.client.post("/post_goal_progress_update", input);
+  }
+
+  async postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
+    return this.client.post("/post_milestone_comment", input);
+  }
+
+  async postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
+    return this.client.post("/post_project_check_in", input);
+  }
+
+  async publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
+    return this.client.post("/publish_discussion", input);
+  }
+
+  async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
+    return this.client.post("/publish_resource_hub_document", input);
+  }
+
+  async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
+    return this.client.post("/remove_company_admin", input);
+  }
+
+  async removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
+    return this.client.post("/remove_company_member", input);
+  }
+
+  async removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
+    return this.client.post("/remove_company_owner", input);
+  }
+
+  async removeCompanyTrustedEmailDomain(
+    input: RemoveCompanyTrustedEmailDomainInput,
+  ): Promise<RemoveCompanyTrustedEmailDomainResult> {
+    return this.client.post("/remove_company_trusted_email_domain", input);
+  }
+
+  async removeGroupMember(input: RemoveGroupMemberInput): Promise<RemoveGroupMemberResult> {
+    return this.client.post("/remove_group_member", input);
+  }
+
+  async removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
+    return this.client.post("/remove_key_resource", input);
+  }
+
+  async removeProjectContributor(input: RemoveProjectContributorInput): Promise<RemoveProjectContributorResult> {
+    return this.client.post("/remove_project_contributor", input);
+  }
+
+  async removeProjectMilestone(input: RemoveProjectMilestoneInput): Promise<RemoveProjectMilestoneResult> {
+    return this.client.post("/remove_project_milestone", input);
+  }
+
+  async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
+    return this.client.post("/rename_resource_hub_folder", input);
+  }
+
+  async reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
+    return this.client.post("/reopen_goal", input);
+  }
+
+  async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
+    return this.client.post("/request_password_reset", input);
+  }
+
+  async resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
+    return this.client.post("/reset_password", input);
+  }
+
+  async restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
+    return this.client.post("/restore_company_member", input);
+  }
+
+  async resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
+    return this.client.post("/resume_project", input);
+  }
+
+  async subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
+    return this.client.post("/subscribe_to_notifications", input);
+  }
+
+  async unsubscribeFromNotifications(
+    input: UnsubscribeFromNotificationsInput,
+  ): Promise<UnsubscribeFromNotificationsResult> {
+    return this.client.post("/unsubscribe_from_notifications", input);
+  }
+
+  async updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
+    return this.client.post("/update_milestone", input);
+  }
+
+  async updateMilestoneDescription(input: UpdateMilestoneDescriptionInput): Promise<UpdateMilestoneDescriptionResult> {
+    return this.client.post("/update_milestone_description", input);
+  }
+
+  async updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
+    return this.client.post("/update_profile", input);
+  }
+
+  async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
+    return this.client.post("/update_project_contributor", input);
+  }
+
+  async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
+    return this.client.post("/update_project_description", input);
+  }
+
+  async updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
+    return this.client.post("/update_task", input);
+  }
+
+  async updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
+    return this.client.post("/update_task_status", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
+
+  constructor() {
+    this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+  }
 
   setBasePath(basePath: string) {
     this.basePath = basePath;
@@ -3152,608 +3764,600 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  async getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-    return this.get("/get_account", input);
+  getAccount(input: GetAccountInput): Promise<GetAccountResult> {
+    return this.apiNamespaceRoot.getAccount(input);
   }
 
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.get("/get_activities", input);
+  getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.apiNamespaceRoot.getActivities(input);
   }
 
-  async getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-    return this.get("/get_activity", input);
+  getActivity(input: GetActivityInput): Promise<GetActivityResult> {
+    return this.apiNamespaceRoot.getActivity(input);
   }
 
-  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.get("/get_assignments", input);
+  getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
+    return this.apiNamespaceRoot.getAssignments(input);
   }
 
-  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.get("/get_assignments_count", input);
+  getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
+    return this.apiNamespaceRoot.getAssignmentsCount(input);
   }
 
-  async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-    return this.get("/get_binded_people", input);
+  getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
+    return this.apiNamespaceRoot.getBindedPeople(input);
   }
 
-  async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-    return this.get("/get_comments", input);
+  getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
+    return this.apiNamespaceRoot.getComments(input);
   }
 
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.get("/get_companies", input);
+  getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return this.apiNamespaceRoot.getCompanies(input);
   }
 
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.get("/get_company", input);
+  getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.apiNamespaceRoot.getCompany(input);
   }
 
-  async getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-    return this.get("/get_discussion", input);
+  getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
+    return this.apiNamespaceRoot.getDiscussion(input);
   }
 
-  async getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-    return this.get("/get_discussions", input);
+  getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
+    return this.apiNamespaceRoot.getDiscussions(input);
   }
 
-  async getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-    return this.get("/get_goal", input);
+  getGoal(input: GetGoalInput): Promise<GetGoalResult> {
+    return this.apiNamespaceRoot.getGoal(input);
   }
 
-  async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-    return this.get("/get_goal_progress_update", input);
+  getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
+    return this.apiNamespaceRoot.getGoalProgressUpdate(input);
   }
 
-  async getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
-    return this.get("/get_goal_progress_updates", input);
+  getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
+    return this.apiNamespaceRoot.getGoalProgressUpdates(input);
   }
 
-  async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-    return this.get("/get_goals", input);
+  getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
+    return this.apiNamespaceRoot.getGoals(input);
   }
 
-  async getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-    return this.get("/get_invitation", input);
+  getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
+    return this.apiNamespaceRoot.getInvitation(input);
   }
 
-  async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-    return this.get("/get_key_resource", input);
+  getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
+    return this.apiNamespaceRoot.getKeyResource(input);
   }
 
-  async getMe(input: GetMeInput): Promise<GetMeResult> {
-    return this.get("/get_me", input);
+  getMe(input: GetMeInput): Promise<GetMeResult> {
+    return this.apiNamespaceRoot.getMe(input);
   }
 
-  async getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-    return this.get("/get_milestone", input);
+  getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
+    return this.apiNamespaceRoot.getMilestone(input);
   }
 
-  async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-    return this.get("/get_notifications", input);
+  getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
+    return this.apiNamespaceRoot.getNotifications(input);
   }
 
-  async getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-    return this.get("/get_people", input);
+  getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
+    return this.apiNamespaceRoot.getPeople(input);
   }
 
-  async getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-    return this.get("/get_person", input);
+  getPerson(input: GetPersonInput): Promise<GetPersonResult> {
+    return this.apiNamespaceRoot.getPerson(input);
   }
 
-  async getProject(input: GetProjectInput): Promise<GetProjectResult> {
-    return this.get("/get_project", input);
+  getProject(input: GetProjectInput): Promise<GetProjectResult> {
+    return this.apiNamespaceRoot.getProject(input);
   }
 
-  async getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-    return this.get("/get_project_check_in", input);
+  getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
+    return this.apiNamespaceRoot.getProjectCheckIn(input);
   }
 
-  async getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-    return this.get("/get_project_check_ins", input);
+  getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
+    return this.apiNamespaceRoot.getProjectCheckIns(input);
   }
 
-  async getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
-    return this.get("/get_project_contributor", input);
+  getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
+    return this.apiNamespaceRoot.getProjectContributor(input);
   }
 
-  async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
-    return this.get("/get_project_retrospective", input);
+  getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
+    return this.apiNamespaceRoot.getProjectRetrospective(input);
   }
 
-  async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-    return this.get("/get_projects", input);
+  getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
+    return this.apiNamespaceRoot.getProjects(input);
   }
 
-  async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-    return this.get("/get_resource_hub", input);
+  getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
+    return this.apiNamespaceRoot.getResourceHub(input);
   }
 
-  async getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
-    return this.get("/get_resource_hub_document", input);
+  getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
+    return this.apiNamespaceRoot.getResourceHubDocument(input);
   }
 
-  async getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-    return this.get("/get_resource_hub_file", input);
+  getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
+    return this.apiNamespaceRoot.getResourceHubFile(input);
   }
 
-  async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-    return this.get("/get_resource_hub_folder", input);
+  getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
+    return this.apiNamespaceRoot.getResourceHubFolder(input);
   }
 
-  async getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-    return this.get("/get_resource_hub_link", input);
+  getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
+    return this.apiNamespaceRoot.getResourceHubLink(input);
   }
 
-  async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-    return this.get("/get_space", input);
+  getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
+    return this.apiNamespaceRoot.getSpace(input);
   }
 
-  async getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-    return this.get("/get_spaces", input);
+  getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
+    return this.apiNamespaceRoot.getSpaces(input);
   }
 
-  async getTask(input: GetTaskInput): Promise<GetTaskResult> {
-    return this.get("/get_task", input);
+  getTask(input: GetTaskInput): Promise<GetTaskResult> {
+    return this.apiNamespaceRoot.getTask(input);
   }
 
-  async getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-    return this.get("/get_tasks", input);
+  getTasks(input: GetTasksInput): Promise<GetTasksResult> {
+    return this.apiNamespaceRoot.getTasks(input);
   }
 
-  async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
-    return this.get("/get_unread_notification_count", input);
+  getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
+    return this.apiNamespaceRoot.getUnreadNotificationCount(input);
   }
 
-  async getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-    return this.get("/get_work_map", input);
+  getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
+    return this.apiNamespaceRoot.getWorkMap(input);
   }
 
-  async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-    return this.get("/list_goal_contributors", input);
+  listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
+    return this.apiNamespaceRoot.listGoalContributors(input);
   }
 
-  async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-    return this.get("/list_resource_hub_nodes", input);
+  listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
+    return this.apiNamespaceRoot.listResourceHubNodes(input);
   }
 
-  async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-    return this.get("/list_space_tools", input);
+  listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
+    return this.apiNamespaceRoot.listSpaceTools(input);
   }
 
-  async runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
-    return this.get("/run_ai_prompt", input);
+  runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
+    return this.apiNamespaceRoot.runAiPrompt(input);
   }
 
-  async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-    return this.get("/search_people", input);
+  searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
+    return this.apiNamespaceRoot.searchPeople(input);
   }
 
-  async searchPotentialSpaceMembers(
-    input: SearchPotentialSpaceMembersInput,
-  ): Promise<SearchPotentialSpaceMembersResult> {
-    return this.get("/search_potential_space_members", input);
+  searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput): Promise<SearchPotentialSpaceMembersResult> {
+    return this.apiNamespaceRoot.searchPotentialSpaceMembers(input);
   }
 
-  async searchProjectContributorCandidates(
+  searchProjectContributorCandidates(
     input: SearchProjectContributorCandidatesInput,
   ): Promise<SearchProjectContributorCandidatesResult> {
-    return this.get("/search_project_contributor_candidates", input);
+    return this.apiNamespaceRoot.searchProjectContributorCandidates(input);
   }
 
-  async acknowledgeGoalProgressUpdate(
+  acknowledgeGoalProgressUpdate(
     input: AcknowledgeGoalProgressUpdateInput,
   ): Promise<AcknowledgeGoalProgressUpdateResult> {
-    return this.post("/acknowledge_goal_progress_update", input);
+    return this.apiNamespaceRoot.acknowledgeGoalProgressUpdate(input);
   }
 
-  async acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
-    return this.post("/acknowledge_project_check_in", input);
+  acknowledgeProjectCheckIn(input: AcknowledgeProjectCheckInInput): Promise<AcknowledgeProjectCheckInResult> {
+    return this.apiNamespaceRoot.acknowledgeProjectCheckIn(input);
   }
 
-  async addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
-    return this.post("/add_company", input);
+  addCompany(input: AddCompanyInput): Promise<AddCompanyResult> {
+    return this.apiNamespaceRoot.addCompany(input);
   }
 
-  async addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
-    return this.post("/add_company_admins", input);
+  addCompanyAdmins(input: AddCompanyAdminsInput): Promise<AddCompanyAdminsResult> {
+    return this.apiNamespaceRoot.addCompanyAdmins(input);
   }
 
-  async addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
-    return this.post("/add_company_member", input);
+  addCompanyMember(input: AddCompanyMemberInput): Promise<AddCompanyMemberResult> {
+    return this.apiNamespaceRoot.addCompanyMember(input);
   }
 
-  async addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
-    return this.post("/add_company_owners", input);
+  addCompanyOwners(input: AddCompanyOwnersInput): Promise<AddCompanyOwnersResult> {
+    return this.apiNamespaceRoot.addCompanyOwners(input);
   }
 
-  async addCompanyTrustedEmailDomain(
-    input: AddCompanyTrustedEmailDomainInput,
-  ): Promise<AddCompanyTrustedEmailDomainResult> {
-    return this.post("/add_company_trusted_email_domain", input);
+  addCompanyTrustedEmailDomain(input: AddCompanyTrustedEmailDomainInput): Promise<AddCompanyTrustedEmailDomainResult> {
+    return this.apiNamespaceRoot.addCompanyTrustedEmailDomain(input);
   }
 
-  async addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
-    return this.post("/add_first_company", input);
+  addFirstCompany(input: AddFirstCompanyInput): Promise<AddFirstCompanyResult> {
+    return this.apiNamespaceRoot.addFirstCompany(input);
   }
 
-  async addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
-    return this.post("/add_key_resource", input);
+  addKeyResource(input: AddKeyResourceInput): Promise<AddKeyResourceResult> {
+    return this.apiNamespaceRoot.addKeyResource(input);
   }
 
-  async addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
-    return this.post("/add_project_contributor", input);
+  addProjectContributor(input: AddProjectContributorInput): Promise<AddProjectContributorResult> {
+    return this.apiNamespaceRoot.addProjectContributor(input);
   }
 
-  async addProjectContributors(input: AddProjectContributorsInput): Promise<AddProjectContributorsResult> {
-    return this.post("/add_project_contributors", input);
+  addProjectContributors(input: AddProjectContributorsInput): Promise<AddProjectContributorsResult> {
+    return this.apiNamespaceRoot.addProjectContributors(input);
   }
 
-  async addReaction(input: AddReactionInput): Promise<AddReactionResult> {
-    return this.post("/add_reaction", input);
+  addReaction(input: AddReactionInput): Promise<AddReactionResult> {
+    return this.apiNamespaceRoot.addReaction(input);
   }
 
-  async addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
-    return this.post("/add_space_members", input);
+  addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
+    return this.apiNamespaceRoot.addSpaceMembers(input);
   }
 
-  async archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-    return this.post("/archive_goal", input);
+  archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
+    return this.apiNamespaceRoot.archiveGoal(input);
   }
 
-  async archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
-    return this.post("/archive_message", input);
+  archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
+    return this.apiNamespaceRoot.archiveMessage(input);
   }
 
-  async archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-    return this.post("/archive_project", input);
+  archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
+    return this.apiNamespaceRoot.archiveProject(input);
   }
 
-  async changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
-    return this.post("/change_goal_parent", input);
+  changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
+    return this.apiNamespaceRoot.changeGoalParent(input);
   }
 
-  async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
-    return this.post("/change_password", input);
+  changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
+    return this.apiNamespaceRoot.changePassword(input);
   }
 
-  async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-    return this.post("/change_task_description", input);
+  changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
+    return this.apiNamespaceRoot.changeTaskDescription(input);
   }
 
-  async closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
-    return this.post("/close_goal", input);
+  closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
+    return this.apiNamespaceRoot.closeGoal(input);
   }
 
-  async closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
-    return this.post("/close_project", input);
+  closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
+    return this.apiNamespaceRoot.closeProject(input);
   }
 
-  async connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
-    return this.post("/connect_goal_to_project", input);
+  connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
+    return this.apiNamespaceRoot.connectGoalToProject(input);
   }
 
-  async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
-    return this.post("/copy_resource_hub_folder", input);
+  copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
+    return this.apiNamespaceRoot.copyResourceHubFolder(input);
   }
 
-  async createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
-    return this.post("/create_account", input);
+  createAccount(input: CreateAccountInput): Promise<CreateAccountResult> {
+    return this.apiNamespaceRoot.createAccount(input);
   }
 
-  async createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
-    return this.post("/create_blob", input);
+  createBlob(input: CreateBlobInput): Promise<CreateBlobResult> {
+    return this.apiNamespaceRoot.createBlob(input);
   }
 
-  async createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
-    return this.post("/create_comment", input);
+  createComment(input: CreateCommentInput): Promise<CreateCommentResult> {
+    return this.apiNamespaceRoot.createComment(input);
   }
 
-  async createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
-    return this.post("/create_email_activation_code", input);
+  createEmailActivationCode(input: CreateEmailActivationCodeInput): Promise<CreateEmailActivationCodeResult> {
+    return this.apiNamespaceRoot.createEmailActivationCode(input);
   }
 
-  async createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
-    return this.post("/create_goal", input);
+  createGoal(input: CreateGoalInput): Promise<CreateGoalResult> {
+    return this.apiNamespaceRoot.createGoal(input);
   }
 
-  async createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
-    return this.post("/create_goal_discussion", input);
+  createGoalDiscussion(input: CreateGoalDiscussionInput): Promise<CreateGoalDiscussionResult> {
+    return this.apiNamespaceRoot.createGoalDiscussion(input);
   }
 
-  async createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
-    return this.post("/create_project", input);
+  createProject(input: CreateProjectInput): Promise<CreateProjectResult> {
+    return this.apiNamespaceRoot.createProject(input);
   }
 
-  async createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
-    return this.post("/create_resource_hub", input);
+  createResourceHub(input: CreateResourceHubInput): Promise<CreateResourceHubResult> {
+    return this.apiNamespaceRoot.createResourceHub(input);
   }
 
-  async createResourceHubDocument(input: CreateResourceHubDocumentInput): Promise<CreateResourceHubDocumentResult> {
-    return this.post("/create_resource_hub_document", input);
+  createResourceHubDocument(input: CreateResourceHubDocumentInput): Promise<CreateResourceHubDocumentResult> {
+    return this.apiNamespaceRoot.createResourceHubDocument(input);
   }
 
-  async createResourceHubFile(input: CreateResourceHubFileInput): Promise<CreateResourceHubFileResult> {
-    return this.post("/create_resource_hub_file", input);
+  createResourceHubFile(input: CreateResourceHubFileInput): Promise<CreateResourceHubFileResult> {
+    return this.apiNamespaceRoot.createResourceHubFile(input);
   }
 
-  async createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
-    return this.post("/create_resource_hub_folder", input);
+  createResourceHubFolder(input: CreateResourceHubFolderInput): Promise<CreateResourceHubFolderResult> {
+    return this.apiNamespaceRoot.createResourceHubFolder(input);
   }
 
-  async createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
-    return this.post("/create_resource_hub_link", input);
+  createResourceHubLink(input: CreateResourceHubLinkInput): Promise<CreateResourceHubLinkResult> {
+    return this.apiNamespaceRoot.createResourceHubLink(input);
   }
 
-  async createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
-    return this.post("/create_space", input);
+  createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
+    return this.apiNamespaceRoot.createSpace(input);
   }
 
-  async createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-    return this.post("/create_task", input);
+  createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
+    return this.apiNamespaceRoot.createTask(input);
   }
 
-  async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
-    return this.post("/delete_goal", input);
+  deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
+    return this.apiNamespaceRoot.deleteGoal(input);
   }
 
-  async deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
-    return this.post("/delete_resource_hub_document", input);
+  deleteResourceHubDocument(input: DeleteResourceHubDocumentInput): Promise<DeleteResourceHubDocumentResult> {
+    return this.apiNamespaceRoot.deleteResourceHubDocument(input);
   }
 
-  async deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
-    return this.post("/delete_resource_hub_file", input);
+  deleteResourceHubFile(input: DeleteResourceHubFileInput): Promise<DeleteResourceHubFileResult> {
+    return this.apiNamespaceRoot.deleteResourceHubFile(input);
   }
 
-  async deleteResourceHubFolder(input: DeleteResourceHubFolderInput): Promise<DeleteResourceHubFolderResult> {
-    return this.post("/delete_resource_hub_folder", input);
+  deleteResourceHubFolder(input: DeleteResourceHubFolderInput): Promise<DeleteResourceHubFolderResult> {
+    return this.apiNamespaceRoot.deleteResourceHubFolder(input);
   }
 
-  async deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
-    return this.post("/delete_resource_hub_link", input);
+  deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
+    return this.apiNamespaceRoot.deleteResourceHubLink(input);
   }
 
-  async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
-    return this.post("/disconnect_goal_from_project", input);
+  disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
+    return this.apiNamespaceRoot.disconnectGoalFromProject(input);
   }
 
-  async editComment(input: EditCommentInput): Promise<EditCommentResult> {
-    return this.post("/edit_comment", input);
+  editComment(input: EditCommentInput): Promise<EditCommentResult> {
+    return this.apiNamespaceRoot.editComment(input);
   }
 
-  async editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
-    return this.post("/edit_company", input);
+  editCompany(input: EditCompanyInput): Promise<EditCompanyResult> {
+    return this.apiNamespaceRoot.editCompany(input);
   }
 
-  async editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
-    return this.post("/edit_discussion", input);
+  editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
+    return this.apiNamespaceRoot.editDiscussion(input);
   }
 
-  async editGoal(input: EditGoalInput): Promise<EditGoalResult> {
-    return this.post("/edit_goal", input);
+  editGoal(input: EditGoalInput): Promise<EditGoalResult> {
+    return this.apiNamespaceRoot.editGoal(input);
   }
 
-  async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
-    return this.post("/edit_goal_discussion", input);
+  editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
+    return this.apiNamespaceRoot.editGoalDiscussion(input);
   }
 
-  async editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
-    return this.post("/edit_goal_progress_update", input);
+  editGoalProgressUpdate(input: EditGoalProgressUpdateInput): Promise<EditGoalProgressUpdateResult> {
+    return this.apiNamespaceRoot.editGoalProgressUpdate(input);
   }
 
-  async editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
-    return this.post("/edit_goal_timeframe", input);
+  editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
+    return this.apiNamespaceRoot.editGoalTimeframe(input);
   }
 
-  async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
-    return this.post("/edit_key_resource", input);
+  editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
+    return this.apiNamespaceRoot.editKeyResource(input);
   }
 
-  async editParentFolderInResourceHub(
+  editParentFolderInResourceHub(
     input: EditParentFolderInResourceHubInput,
   ): Promise<EditParentFolderInResourceHubResult> {
-    return this.post("/edit_parent_folder_in_resource_hub", input);
+    return this.apiNamespaceRoot.editParentFolderInResourceHub(input);
   }
 
-  async editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
-    return this.post("/edit_project_check_in", input);
+  editProjectCheckIn(input: EditProjectCheckInInput): Promise<EditProjectCheckInResult> {
+    return this.apiNamespaceRoot.editProjectCheckIn(input);
   }
 
-  async editProjectName(input: EditProjectNameInput): Promise<EditProjectNameResult> {
-    return this.post("/edit_project_name", input);
+  editProjectName(input: EditProjectNameInput): Promise<EditProjectNameResult> {
+    return this.apiNamespaceRoot.editProjectName(input);
   }
 
-  async editProjectPermissions(input: EditProjectPermissionsInput): Promise<EditProjectPermissionsResult> {
-    return this.post("/edit_project_permissions", input);
+  editProjectPermissions(input: EditProjectPermissionsInput): Promise<EditProjectPermissionsResult> {
+    return this.apiNamespaceRoot.editProjectPermissions(input);
   }
 
-  async editProjectRetrospective(input: EditProjectRetrospectiveInput): Promise<EditProjectRetrospectiveResult> {
-    return this.post("/edit_project_retrospective", input);
+  editProjectRetrospective(input: EditProjectRetrospectiveInput): Promise<EditProjectRetrospectiveResult> {
+    return this.apiNamespaceRoot.editProjectRetrospective(input);
   }
 
-  async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
-    return this.post("/edit_project_timeline", input);
+  editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
+    return this.apiNamespaceRoot.editProjectTimeline(input);
   }
 
-  async editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
-    return this.post("/edit_resource_hub_document", input);
+  editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
+    return this.apiNamespaceRoot.editResourceHubDocument(input);
   }
 
-  async editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
-    return this.post("/edit_resource_hub_file", input);
+  editResourceHubFile(input: EditResourceHubFileInput): Promise<EditResourceHubFileResult> {
+    return this.apiNamespaceRoot.editResourceHubFile(input);
   }
 
-  async editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
-    return this.post("/edit_resource_hub_link", input);
+  editResourceHubLink(input: EditResourceHubLinkInput): Promise<EditResourceHubLinkResult> {
+    return this.apiNamespaceRoot.editResourceHubLink(input);
   }
 
-  async editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
-    return this.post("/edit_space", input);
+  editSpace(input: EditSpaceInput): Promise<EditSpaceResult> {
+    return this.apiNamespaceRoot.editSpace(input);
   }
 
-  async editSpaceMembersPermissions(
-    input: EditSpaceMembersPermissionsInput,
-  ): Promise<EditSpaceMembersPermissionsResult> {
-    return this.post("/edit_space_members_permissions", input);
+  editSpaceMembersPermissions(input: EditSpaceMembersPermissionsInput): Promise<EditSpaceMembersPermissionsResult> {
+    return this.apiNamespaceRoot.editSpaceMembersPermissions(input);
   }
 
-  async editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
-    return this.post("/edit_space_permissions", input);
+  editSpacePermissions(input: EditSpacePermissionsInput): Promise<EditSpacePermissionsResult> {
+    return this.apiNamespaceRoot.editSpacePermissions(input);
   }
 
-  async editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
-    return this.post("/edit_subscriptions_list", input);
+  editSubscriptionsList(input: EditSubscriptionsListInput): Promise<EditSubscriptionsListResult> {
+    return this.apiNamespaceRoot.editSubscriptionsList(input);
   }
 
-  async joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
-    return this.post("/join_company", input);
+  joinCompany(input: JoinCompanyInput): Promise<JoinCompanyResult> {
+    return this.apiNamespaceRoot.joinCompany(input);
   }
 
-  async joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
-    return this.post("/join_space", input);
+  joinSpace(input: JoinSpaceInput): Promise<JoinSpaceResult> {
+    return this.apiNamespaceRoot.joinSpace(input);
   }
 
-  async markAllNotificationsAsRead(input: MarkAllNotificationsAsReadInput): Promise<MarkAllNotificationsAsReadResult> {
-    return this.post("/mark_all_notifications_as_read", input);
+  markAllNotificationsAsRead(input: MarkAllNotificationsAsReadInput): Promise<MarkAllNotificationsAsReadResult> {
+    return this.apiNamespaceRoot.markAllNotificationsAsRead(input);
   }
 
-  async markNotificationAsRead(input: MarkNotificationAsReadInput): Promise<MarkNotificationAsReadResult> {
-    return this.post("/mark_notification_as_read", input);
+  markNotificationAsRead(input: MarkNotificationAsReadInput): Promise<MarkNotificationAsReadResult> {
+    return this.apiNamespaceRoot.markNotificationAsRead(input);
   }
 
-  async markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
-    return this.post("/mark_notifications_as_read", input);
+  markNotificationsAsRead(input: MarkNotificationsAsReadInput): Promise<MarkNotificationsAsReadResult> {
+    return this.apiNamespaceRoot.markNotificationsAsRead(input);
   }
 
-  async moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
-    return this.post("/move_project_to_space", input);
+  moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
+    return this.apiNamespaceRoot.moveProjectToSpace(input);
   }
 
-  async newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
-    return this.post("/new_invitation_token", input);
+  newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
+    return this.apiNamespaceRoot.newInvitationToken(input);
   }
 
-  async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
-    return this.post("/pause_project", input);
+  pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
+    return this.apiNamespaceRoot.pauseProject(input);
   }
 
-  async postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
-    return this.post("/post_discussion", input);
+  postDiscussion(input: PostDiscussionInput): Promise<PostDiscussionResult> {
+    return this.apiNamespaceRoot.postDiscussion(input);
   }
 
-  async postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
-    return this.post("/post_goal_progress_update", input);
+  postGoalProgressUpdate(input: PostGoalProgressUpdateInput): Promise<PostGoalProgressUpdateResult> {
+    return this.apiNamespaceRoot.postGoalProgressUpdate(input);
   }
 
-  async postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
-    return this.post("/post_milestone_comment", input);
+  postMilestoneComment(input: PostMilestoneCommentInput): Promise<PostMilestoneCommentResult> {
+    return this.apiNamespaceRoot.postMilestoneComment(input);
   }
 
-  async postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
-    return this.post("/post_project_check_in", input);
+  postProjectCheckIn(input: PostProjectCheckInInput): Promise<PostProjectCheckInResult> {
+    return this.apiNamespaceRoot.postProjectCheckIn(input);
   }
 
-  async publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
-    return this.post("/publish_discussion", input);
+  publishDiscussion(input: PublishDiscussionInput): Promise<PublishDiscussionResult> {
+    return this.apiNamespaceRoot.publishDiscussion(input);
   }
 
-  async publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
-    return this.post("/publish_resource_hub_document", input);
+  publishResourceHubDocument(input: PublishResourceHubDocumentInput): Promise<PublishResourceHubDocumentResult> {
+    return this.apiNamespaceRoot.publishResourceHubDocument(input);
   }
 
-  async removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
-    return this.post("/remove_company_admin", input);
+  removeCompanyAdmin(input: RemoveCompanyAdminInput): Promise<RemoveCompanyAdminResult> {
+    return this.apiNamespaceRoot.removeCompanyAdmin(input);
   }
 
-  async removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
-    return this.post("/remove_company_member", input);
+  removeCompanyMember(input: RemoveCompanyMemberInput): Promise<RemoveCompanyMemberResult> {
+    return this.apiNamespaceRoot.removeCompanyMember(input);
   }
 
-  async removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
-    return this.post("/remove_company_owner", input);
+  removeCompanyOwner(input: RemoveCompanyOwnerInput): Promise<RemoveCompanyOwnerResult> {
+    return this.apiNamespaceRoot.removeCompanyOwner(input);
   }
 
-  async removeCompanyTrustedEmailDomain(
+  removeCompanyTrustedEmailDomain(
     input: RemoveCompanyTrustedEmailDomainInput,
   ): Promise<RemoveCompanyTrustedEmailDomainResult> {
-    return this.post("/remove_company_trusted_email_domain", input);
+    return this.apiNamespaceRoot.removeCompanyTrustedEmailDomain(input);
   }
 
-  async removeGroupMember(input: RemoveGroupMemberInput): Promise<RemoveGroupMemberResult> {
-    return this.post("/remove_group_member", input);
+  removeGroupMember(input: RemoveGroupMemberInput): Promise<RemoveGroupMemberResult> {
+    return this.apiNamespaceRoot.removeGroupMember(input);
   }
 
-  async removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
-    return this.post("/remove_key_resource", input);
+  removeKeyResource(input: RemoveKeyResourceInput): Promise<RemoveKeyResourceResult> {
+    return this.apiNamespaceRoot.removeKeyResource(input);
   }
 
-  async removeProjectContributor(input: RemoveProjectContributorInput): Promise<RemoveProjectContributorResult> {
-    return this.post("/remove_project_contributor", input);
+  removeProjectContributor(input: RemoveProjectContributorInput): Promise<RemoveProjectContributorResult> {
+    return this.apiNamespaceRoot.removeProjectContributor(input);
   }
 
-  async removeProjectMilestone(input: RemoveProjectMilestoneInput): Promise<RemoveProjectMilestoneResult> {
-    return this.post("/remove_project_milestone", input);
+  removeProjectMilestone(input: RemoveProjectMilestoneInput): Promise<RemoveProjectMilestoneResult> {
+    return this.apiNamespaceRoot.removeProjectMilestone(input);
   }
 
-  async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
-    return this.post("/rename_resource_hub_folder", input);
+  renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
+    return this.apiNamespaceRoot.renameResourceHubFolder(input);
   }
 
-  async reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
-    return this.post("/reopen_goal", input);
+  reopenGoal(input: ReopenGoalInput): Promise<ReopenGoalResult> {
+    return this.apiNamespaceRoot.reopenGoal(input);
   }
 
-  async requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
-    return this.post("/request_password_reset", input);
+  requestPasswordReset(input: RequestPasswordResetInput): Promise<RequestPasswordResetResult> {
+    return this.apiNamespaceRoot.requestPasswordReset(input);
   }
 
-  async resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
-    return this.post("/reset_password", input);
+  resetPassword(input: ResetPasswordInput): Promise<ResetPasswordResult> {
+    return this.apiNamespaceRoot.resetPassword(input);
   }
 
-  async restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
-    return this.post("/restore_company_member", input);
+  restoreCompanyMember(input: RestoreCompanyMemberInput): Promise<RestoreCompanyMemberResult> {
+    return this.apiNamespaceRoot.restoreCompanyMember(input);
   }
 
-  async resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
-    return this.post("/resume_project", input);
+  resumeProject(input: ResumeProjectInput): Promise<ResumeProjectResult> {
+    return this.apiNamespaceRoot.resumeProject(input);
   }
 
-  async subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
-    return this.post("/subscribe_to_notifications", input);
+  subscribeToNotifications(input: SubscribeToNotificationsInput): Promise<SubscribeToNotificationsResult> {
+    return this.apiNamespaceRoot.subscribeToNotifications(input);
   }
 
-  async unsubscribeFromNotifications(
-    input: UnsubscribeFromNotificationsInput,
-  ): Promise<UnsubscribeFromNotificationsResult> {
-    return this.post("/unsubscribe_from_notifications", input);
+  unsubscribeFromNotifications(input: UnsubscribeFromNotificationsInput): Promise<UnsubscribeFromNotificationsResult> {
+    return this.apiNamespaceRoot.unsubscribeFromNotifications(input);
   }
 
-  async updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
-    return this.post("/update_milestone", input);
+  updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
+    return this.apiNamespaceRoot.updateMilestone(input);
   }
 
-  async updateMilestoneDescription(input: UpdateMilestoneDescriptionInput): Promise<UpdateMilestoneDescriptionResult> {
-    return this.post("/update_milestone_description", input);
+  updateMilestoneDescription(input: UpdateMilestoneDescriptionInput): Promise<UpdateMilestoneDescriptionResult> {
+    return this.apiNamespaceRoot.updateMilestoneDescription(input);
   }
 
-  async updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
-    return this.post("/update_profile", input);
+  updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
+    return this.apiNamespaceRoot.updateProfile(input);
   }
 
-  async updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
-    return this.post("/update_project_contributor", input);
+  updateProjectContributor(input: UpdateProjectContributorInput): Promise<UpdateProjectContributorResult> {
+    return this.apiNamespaceRoot.updateProjectContributor(input);
   }
 
-  async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
-    return this.post("/update_project_description", input);
+  updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
+    return this.apiNamespaceRoot.updateProjectDescription(input);
   }
 
-  async updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
-    return this.post("/update_task", input);
+  updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
+    return this.apiNamespaceRoot.updateTask(input);
   }
 
-  async updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
-    return this.post("/update_task_status", input);
+  updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
+    return this.apiNamespaceRoot.updateTaskStatus(input);
   }
 }
 
