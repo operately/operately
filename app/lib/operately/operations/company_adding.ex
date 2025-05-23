@@ -46,7 +46,7 @@ defmodule Operately.Operations.CompanyAdding do
 
   defp insert_group(multi) do
     attrs = %{
-      name: "Company",
+      name: "General",
       mission: "Organization-wide announcements and resources",
       company_permissions: Binding.view_access(),
     }
@@ -161,7 +161,7 @@ defmodule Operately.Operations.CompanyAdding do
   end
 
   defp insert_activity(multi) do
-    multi 
+    multi
     |> Multi.merge(fn parent_changes ->
       Activities.insert_sync(Multi.new(), parent_changes.person.id, :company_adding, fn _changes ->
         %{
