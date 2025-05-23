@@ -86,6 +86,7 @@ defmodule Operately.Goals.Goal do
     cond do
       goal.success == "yes" -> "achieved"
       goal.success == "no" -> "missed"
+      goal.closed_at -> "completed"
       Operately.Goals.outdated?(goal) -> "outdated"
       goal.last_update_status -> Atom.to_string(goal.last_update_status)
       true -> "on_track"

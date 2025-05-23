@@ -170,6 +170,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
 
   defp project_status(project = %Project{}) do
     cond do
+      project.closed_at -> "completed"
       project.status == "closed" -> "completed"
       project.status == "paused" -> "paused"
       Projects.outdated?(project) -> "outdated"
