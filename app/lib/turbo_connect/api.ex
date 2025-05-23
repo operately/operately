@@ -25,21 +25,35 @@ defmodule TurboConnect.Api do
     end
   end
 
+  defmacro namespace(ns, do: block) do
+    quote do
+      @tc_namespace unquote(ns)
+      unquote(block)
+      @tc_namespace nil
+    end
+  end
+
   defmacro query(name, module) do
     quote do
-      @queries {unquote(name), unquote(module)}
+      namespace = Module.get_attribute(__MODULE__, :tc_namespace)
+      full_name = TurboConnect.Api.full_name(namespace, unquote(name))
+      @queries {full_name, namespace, unquote(name), unquote(module)}
     end
   end
 
   defmacro mutation(name, module) do
     quote do
-      @mutations {unquote(name), unquote(module)}
+      namespace = Module.get_attribute(__MODULE__, :tc_namespace)
+      full_name = TurboConnect.Api.full_name(namespace, unquote(name))
+      @mutations {full_name, namespace, unquote(name), unquote(module)}
     end
   end
 
   defmacro subscription(name, module) do
     quote do
-      @subscriptions {unquote(name), unquote(module)}
+      namespace = Module.get_attribute(__MODULE__, :tc_namespace)
+      full_name = TurboConnect.Api.full_name(namespace, unquote(name))
+      @subscriptions {full_name, namespace, unquote(name), unquote(module)}
     end
   end
 
@@ -64,23 +78,51 @@ defmodule TurboConnect.Api do
       end
 
       def __queries__() do
-        Enum.map(@queries, fn {name, module} ->
-          {name, %{inputs: module.__inputs__(), outputs: module.__outputs__(), handler: module}}
+        Enum.map(@queries, fn {full_name, namespace, name, module} ->
+          {full_name,
+           %{
+             inputs: module.__inputs__(),
+             outputs: module.__outputs__(),
+             handler: module,
+             name: name,
+             namespace: namespace,
+             type: :query
+           }}
         end)
         |> Enum.into(%{})
       end
 
       def __mutations__() do
-        Enum.map(@mutations, fn {name, module} ->
-          {name, %{inputs: module.__inputs__(), outputs: module.__outputs__(), handler: module}}
+        Enum.map(@mutations, fn {full_name, namespace, name, module} ->
+          {full_name,
+           %{
+             inputs: module.__inputs__(),
+             outputs: module.__outputs__(),
+             handler: module,
+             name: name,
+             namespace: namespace,
+             type: :mutation
+           }}
         end)
         |> Enum.into(%{})
       end
 
       def __subscriptions__() do
-        Enum.map(@subscriptions, fn {name, module} -> {name, module} end)
+        Enum.map(@subscriptions, fn {full_name, _name, module} -> {full_name, module} end)
         |> Enum.into(%{})
+      end
+
+      def __namespaces__() do
+        query_namespaces = Enum.map(@queries, fn {_, namespace, _, _} -> namespace end)
+        mutuation_namespaces = Enum.map(@mutations, fn {_, namespace, _, _} -> namespace end)
+        subscription_namespaces = Enum.map(@subscriptions, fn {_, namespace, _, _} -> namespace end)
+        all_namespaces = query_namespaces ++ mutuation_namespaces ++ subscription_namespaces
+
+        Enum.uniq(all_namespaces)
       end
     end
   end
+
+  def full_name(nil, name), do: "#{name}"
+  def full_name(namespace, name), do: "#{namespace}/#{name}"
 end
