@@ -40,7 +40,7 @@ export const Default: Story = {
     items: mockItems,
   },
   play: async ({ canvasElement, step }) => {
-    await Steps.assertRowsNumber(canvasElement, step, 15);
+    await Steps.assertRowsNumber(canvasElement, step, 14);
   },
 };
 
@@ -104,7 +104,7 @@ export const GoalsTab: Story = {
     items: mockItems,
   },
   play: async ({ canvasElement, step }) => {
-    await Steps.assertRowsNumber(canvasElement, step, 15);
+    await Steps.assertRowsNumber(canvasElement, step, 14);
 
     await Steps.selectTab(canvasElement, step, "goals");
 
@@ -131,14 +131,21 @@ export const ProjectsTab: Story = {
     items: mockItems,
   },
   play: async ({ canvasElement, step }) => {
-    await Steps.assertRowsNumber(canvasElement, step, 15);
+    await Steps.assertRowsNumber(canvasElement, step, 14);
 
     await Steps.selectTab(canvasElement, step, "projects");
 
-    await Steps.assertRowsNumber(canvasElement, step, 6);
+    await Steps.assertRowsNumber(canvasElement, step, 5);
 
-    await Steps.assertItemName(canvasElement, step, "Release 0.4");
+    await Steps.assertItemName(canvasElement, step, "Redesign welcome screen");
     await Steps.assertItemName(canvasElement, step, "Research phase: ML model selection");
+
+    // Paused projects are not shown
+    await Steps.refuteItemName(canvasElement, step, "Release 0.4");
+    await Steps.refuteItemName(canvasElement, step, "Create onboarding email sequence");
+
+    // Completed projects are not shown
+    await Steps.refuteItemName(canvasElement, step, "Legacy data migration");
   },
 };
 

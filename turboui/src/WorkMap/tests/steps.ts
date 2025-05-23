@@ -32,6 +32,15 @@ export const assertItemName = async (canvasElement, step, name) => {
   });
 };
 
+export const refuteItemName = async (canvasElement, step, name) => {
+  const canvas = within(canvasElement);
+
+  await step("Verify the item name is not present", async () => {
+    const itemName = canvas.queryByText(name);
+    expect(itemName).not.toBeInTheDocument();
+  });
+};
+
 export const openTimeframeSelector = async (canvasElement, step) => {
   const canvas = within(canvasElement);
 

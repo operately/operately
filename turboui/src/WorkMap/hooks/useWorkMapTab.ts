@@ -92,8 +92,8 @@ function extractAllProjects(data: WorkMap.Item[]): WorkMap.Item[] {
 
   extract(data);
 
-  // Filter out closed projects before returning
-  return allProjects.filter((project) => !CLOSED_STATUSES.includes(project.status));
+  // Filter out closed and paused projects before returning
+  return allProjects.filter((project) => !CLOSED_STATUSES.includes(project.status) && project.status !== "paused");
 }
 
 /**
