@@ -50,7 +50,7 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :name, :string
+      field :name, :string, required: true
       field :email, :string
     end
 
@@ -149,7 +149,7 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, []},
+                   {:name, :string, [required: true]},
                    {:email, :string, []}
                  ]
                },
@@ -166,7 +166,7 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, []},
+                   {:name, :string, [required: true]},
                    {:email, :string, []}
                  ]
                },
@@ -211,14 +211,14 @@ defmodule TurboConnect.ApiTest do
 
   describe "routing mutations" do
     test "route mutations to the correct handler" do
-      conn = conn(:post, "/create_user")
+      conn = conn(:post, "/create_user", %{"name" => "John Doe"})
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 200
     end
 
     test "route namespaced queries to the correct handler" do
-      conn = conn(:post, "/users/create_user")
+      conn = conn(:post, "/users/create_user", %{"name" => "John Doe"})
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 200
@@ -236,6 +236,16 @@ defmodule TurboConnect.ApiTest do
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 400
+    end
+  end
+
+  describe "required field validation" do
+    test "return 400 for missing required fields in mutations" do
+      conn = conn(:post, "/create_user", %{})
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 400
+      assert conn.resp_body == ~s({"error":"Bad request","message":"Missing required fields: name"})
     end
   end
 end

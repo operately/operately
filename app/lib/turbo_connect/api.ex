@@ -59,6 +59,7 @@ defmodule TurboConnect.Api do
 
   defmacro __before_compile__(_) do
     quote do
+      plug TurboConnect.Plugs.RequiredFieldValidator
       plug TurboConnect.Plugs.Dispatch
 
       def __types__() do
