@@ -70,6 +70,11 @@ defmodule TurboConnect.ApiTest do
 
     query(:get_user, ExampleQuery)
     mutation(:create_user, ExampleMutation)
+
+    namespace(:users) do
+      query(:get_user, ExampleQuery)
+      mutation(:create_user, ExampleMutation)
+    end
   end
 
   test "__types__ returns the types defined in the module" do
@@ -100,7 +105,26 @@ defmodule TurboConnect.ApiTest do
 
   test "__queries__ returns the queries defined in the module" do
     assert ExampleApi.__queries__() == %{
-             get_user: %{
+             "get_user" => %{
+               namespace: nil,
+               type: :query,
+               name: :get_user,
+               handler: ExampleQuery,
+               inputs: %{
+                 fields: [
+                   {:id, :id, []}
+                 ]
+               },
+               outputs: %{
+                 fields: [
+                   {:user, :user, []}
+                 ]
+               }
+             },
+             "users/get_user" => %{
+               namespace: :users,
+               type: :query,
+               name: :get_user,
                handler: ExampleQuery,
                inputs: %{
                  fields: [
@@ -118,7 +142,27 @@ defmodule TurboConnect.ApiTest do
 
   test "__mutations__ returns the mutations defined in the module" do
     assert ExampleApi.__mutations__() == %{
-             create_user: %{
+             "create_user" => %{
+               namespace: nil,
+               type: :mutation,
+               name: :create_user,
+               handler: ExampleMutation,
+               inputs: %{
+                 fields: [
+                   {:name, :string, []},
+                   {:email, :string, []}
+                 ]
+               },
+               outputs: %{
+                 fields: [
+                   {:user, :user, []}
+                 ]
+               }
+             },
+             "users/create_user" => %{
+               namespace: :users,
+               type: :mutation,
+               name: :create_user,
                handler: ExampleMutation,
                inputs: %{
                  fields: [
@@ -143,6 +187,13 @@ defmodule TurboConnect.ApiTest do
       assert conn.status == 200
     end
 
+    test "route namespaced queries to the correct handler" do
+      conn = conn(:get, "/users/get_user")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 200
+    end
+
     test "return 404 for unknown queries" do
       conn = conn(:get, "/unknown_query")
       conn = ExampleApi.call(conn, [])
@@ -161,6 +212,13 @@ defmodule TurboConnect.ApiTest do
   describe "routing mutations" do
     test "route mutations to the correct handler" do
       conn = conn(:post, "/create_user")
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 200
+    end
+
+    test "route namespaced queries to the correct handler" do
+      conn = conn(:post, "/users/create_user")
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 200

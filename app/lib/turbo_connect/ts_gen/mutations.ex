@@ -5,20 +5,48 @@ defmodule TurboConnect.TsGen.Mutations do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n\n", fn {name, %{inputs: inputs, outputs: outputs}} ->
-      input = ts_interface(Atom.to_string(name) <> "_input", inputs.fields)
-      output = ts_interface(Atom.to_string(name) <> "_result", outputs.fields)
+      input = ts_interface("#{name}_input", inputs.fields)
+      output = ts_interface("#{name}_result", outputs.fields)
 
       input <> "\n" <> output
     end)
   end
 
-  def generate_class_functions(mutations) do
+  def generate_functions(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
-    |> Enum.map_join("\n", fn {name, _mutation} ->
+    |> Enum.map_join("\n", fn {fullname, mutation} ->
+      fn_name = ts_function_name(mutation.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
+
+      path =
+        if mutation.namespace == nil do
+          "/#{mutation.name}"
+        else
+          "/#{mutation.namespace}/#{mutation.name}"
+        end
+
       """
-        async #{ts_function_name(name)}(input: #{ts_type(name)}Input): Promise<#{ts_type(name)}Result> {
-          return this.post("/#{name}", input);
+        async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
+          return this.client.post("#{path}", input);
+        }
+      """
+    end)
+  end
+
+  def generate_root_namespace_delegators(mutations) do
+    mutations
+    |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+    |> Enum.sort_by(&elem(&1, 0))
+    |> Enum.map_join("\n", fn {fullname, mutation} ->
+      fn_name = ts_function_name(mutation.name)
+      input_type = ts_type(fullname) <> "Input"
+      result_type = ts_type(fullname) <> "Result"
+
+      """
+        #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
+          return this.apiNamespaceRoot.#{fn_name}(input);
         }
       """
     end)
@@ -40,15 +68,18 @@ defmodule TurboConnect.TsGen.Mutations do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _mutation} ->
-      Enum.join([
-        "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
-        "  return defaultApiClient.#{ts_function_name(name)}(input);",
-        "}"
-      ], "\n")
+      Enum.join(
+        [
+          "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
+          "  return defaultApiClient.#{ts_function_name(name)}(input);",
+          "}"
+        ],
+        "\n"
+      )
     end)
   end
 
-  def generate_default_exports(mutations) do
+  def generate_default_root_exports(mutations) do
     mutations
     |> Enum.sort_by(&elem(&1, 0))
     |> Enum.map_join("\n", fn {name, _mutation} ->

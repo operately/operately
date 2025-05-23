@@ -36,4 +36,4 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompanyTest do
       assert Operately.Companies.count_companies() == 1
     end
   end
-end 
+end
