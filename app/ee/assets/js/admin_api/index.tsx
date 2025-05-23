@@ -174,9 +174,33 @@ export interface EnableFeatureResult {
   success?: boolean | null;
 }
 
+class ApiNamespaceRoot {
+  constructor(private client: ApiClient) {}
+
+  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.client.get("/get_activities", input);
+  }
+
+  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return this.client.get("/get_companies", input);
+  }
+
+  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.client.get("/get_company", input);
+  }
+
+  async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
+    return this.client.post("/enable_feature", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
+
+  constructor() {
+    this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+  }
 
   setBasePath(basePath: string) {
     this.basePath = basePath;
@@ -210,20 +234,20 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.get("/get_activities", input);
+  getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
+    return this.apiNamespaceRoot.getActivities(input);
   }
 
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.get("/get_companies", input);
+  getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
+    return this.apiNamespaceRoot.getCompanies(input);
   }
 
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.get("/get_company", input);
+  getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
+    return this.apiNamespaceRoot.getCompany(input);
   }
 
-  async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
-    return this.post("/enable_feature", input);
+  enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
+    return this.apiNamespaceRoot.enableFeature(input);
   }
 }
 

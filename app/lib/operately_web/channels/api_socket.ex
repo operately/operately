@@ -84,7 +84,6 @@ defmodule OperatelyWeb.ApiSocket do
 
     @impl true
     def join("api:" <> topic, payload, socket) do
-      topic = String.to_existing_atom(topic)
       handler = OperatelyWeb.Api.__subscriptions__()[topic]
       socket = assign_company_and_person(socket, payload)
 
@@ -107,6 +106,7 @@ defmodule OperatelyWeb.ApiSocket do
 
       Enum.reduce(topics, socket, fn topic, acc ->
         topics = acc.assigns.topics
+
         if topic in topics do
           acc
         else
@@ -131,7 +131,7 @@ defmodule OperatelyWeb.ApiSocket do
 
         company = Operately.Companies.get_company!(id)
         socket = assign(socket, :company, company)
-        
+
         if socket.assigns[:account] do
           person = Operately.People.get_person!(socket.assigns.account, company)
           assign(socket, :person, person)
