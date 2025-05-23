@@ -17,14 +17,23 @@ defmodule Operately.CommentsFixtures do
   end
 
   def comment_thread_fixture(attrs) do
+    # add person_ids to attrs with a list of person ids to create subscriptions
+    subscription_list = Operately.NotificationsFixtures.subscriptions_list_fixture(attrs)
+
     {:ok, thread} =
       attrs
       |> Enum.into(%{
         parent_type: :activity,
-        message: %{"message" => "some message"}
+        message: %{"message" => "some message"},
+        subscription_list_id: subscription_list.id
       })
       |> CommentThread.changeset()
       |> Repo.insert()
+
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_type: :comment_thread,
+      parent_id: thread.id,
+    })
 
     thread
   end

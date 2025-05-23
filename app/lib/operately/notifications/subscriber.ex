@@ -56,6 +56,20 @@ defmodule Operately.Notifications.Subscriber do
     merge_subs_and_potential_subs(subs, potential_subs)
   end
 
+  def from_goal_discussion(comment_thread, goal) do
+    subs =
+      exclude_canceled_subscriptions(comment_thread.subscription_list)
+      |> Enum.into(%{}, fn s ->
+      {s.person.id, from_subscription(s)}
+    end)
+
+    potential_subs = Enum.into(from_goal(goal), %{}, fn sub ->
+      {sub.person.id, sub}
+    end)
+
+    merge_subs_and_potential_subs(subs, potential_subs)
+  end
+
   def from_message(%Message{} = message) do
     subs =
       exclude_canceled_subscriptions(message.subscription_list)

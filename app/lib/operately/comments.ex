@@ -37,6 +37,12 @@ defmodule Operately.Comments do
     Repo.all(CommentThread)
   end
 
+  def update_comment_thread(thread = %CommentThread{}, attrs) do
+    thread
+    |> CommentThread.changeset(attrs)
+    |> Repo.update()
+  end
+
   def list_milestone_comments do
     Repo.all(MilestoneComment)
   end

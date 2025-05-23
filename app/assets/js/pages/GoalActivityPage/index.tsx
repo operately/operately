@@ -15,6 +15,7 @@ import ActivityHandler from "@/features/activities";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { PageModule } from "@/routes/types";
+import { CurrentSubscriptions } from "@/features/Subscriptions";
 
 export default { name: "GoalActivityPage", loader, Page } as PageModule;
 
@@ -28,6 +29,8 @@ async function loader({ params }): Promise<LoaderResult> {
       id: params.id,
       includeUnreadGoalNotifications: true,
       includePermissions: true,
+      includeSubscriptionsList: true,
+      includePotentialSubscribers: true,
     }),
   };
 }
@@ -53,6 +56,8 @@ function Page() {
 
           <ActivityReactions />
           <Comments goal={goal} />
+
+          <Subscriptions />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -109,5 +114,25 @@ function Comments({ goal }: { goal: Goals.Goal }) {
         canComment={activity.permissions.canCommentOnThread}
       />
     </>
+  );
+}
+
+function Subscriptions() {
+  const refresh = Pages.useRefresh();
+  const { activity } = Pages.useLoadedData<LoaderResult>();
+
+  assertPresent(activity.commentThread?.subscriptionList, "subscriptionList must be present in commentThread");
+  assertPresent(activity.commentThread?.potentialSubscribers, "potentialSubscribers must be present in commentThread");
+
+  return (
+    <div className="border-t border-stroke-base mt-16 pt-8">
+      <CurrentSubscriptions
+        subscriptionList={activity.commentThread.subscriptionList}
+        potentialSubscribers={activity.commentThread.potentialSubscribers}
+        name="discussion"
+        type="comment_thread"
+        callback={refresh}
+      />
+    </div>
   );
 }

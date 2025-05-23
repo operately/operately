@@ -46,6 +46,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
           reactions: OperatelyWeb.Api.Serializer.serialize(c.reactions),
         }
       end),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(comment_thread.subscription_list),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(comment_thread.potential_subscribers),
     }
   end
 
