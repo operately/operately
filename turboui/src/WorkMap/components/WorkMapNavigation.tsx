@@ -44,21 +44,21 @@ export function WorkMapNavigation({ activeTab, setTab, tabOptions = {} }: Props)
                 setTab={setTab}
               />
               <WorkMapTab
-                label="Completed"
-                tab="completed"
-                isActive={activeTab === "completed"}
-                icon={<IconCircleCheck size={16} />}
-                testId="work-map-tab-completed"
-                hide={tabOptions.hideCompleted}
-                setTab={setTab}
-              />
-              <WorkMapTab
                 label="Paused"
                 tab="paused"
                 isActive={activeTab === "paused"}
                 icon={<IconCalendarPause size={16} />}
                 testId="work-map-tab-paused"
                 hide={tabOptions.hidePaused}
+                setTab={setTab}
+              />
+              <WorkMapTab
+                label="Completed"
+                tab="completed"
+                isActive={activeTab === "completed"}
+                icon={<IconCircleCheck size={16} />}
+                testId="work-map-tab-completed"
+                hide={tabOptions.hideCompleted}
                 setTab={setTab}
               />
             </div>
