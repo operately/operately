@@ -2,7 +2,12 @@ defmodule Operately.WorkMaps.WorkMapItem do
   @moduledoc """
   Defines structs for work map items (goals and projects)
   """
-  alias Operately.{Goals, Projects}
+
+  @callback status(item :: any()) :: :on_track | :completed | :achieved | :partial | :missed | :paused | :caution | :issue | :dropped | :pending | :outdated
+  @callback state(item :: any()) :: :active | :paused | :closed
+  @callback next_step(item :: any()) :: String.t()
+  @callback progress_percentage(item :: any()) :: float()
+
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
 
@@ -57,11 +62,11 @@ defmodule Operately.WorkMaps.WorkMapItem do
       parent_id: goal.parent_goal_id,
       name: goal.name,
       status: Goal.status(goal),
-      state: goal_state(goal),
-      progress: Goals.progress_percentage(goal),
+      state: Goal.state(goal),
+      progress: Goal.progress_percentage(goal),
       space: goal.group,
       owner: goal.champion,
-      next_step: next_target(goal),
+      next_step: Goal.next_step(goal),
       is_new: false,
       children: children,
       completed_on: goal.closed_at,
@@ -81,18 +86,16 @@ defmodule Operately.WorkMaps.WorkMapItem do
   end
 
   def build_item(project = %Project{}, children, include_assignees) do
-    project = Project.set_next_milestone(project)
-
     %__MODULE__{
       id: project.id,
       parent_id: project.goal_id,
       name: project.name,
-      status: project_status(project),
-      state: project_state(project),
-      progress: Projects.progress_percentage(project),
+      status: Project.status(project),
+      state: Project.state(project),
+      progress: Project.progress_percentage(project),
       space: project.group,
       owner: project.champion,
-      next_step: if(project.next_milestone, do: project.next_milestone.title, else: ""),
+      next_step: Project.next_step(project),
       is_new: false,
       children: children,
       completed_on: project.closed_at,
@@ -111,22 +114,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
     end)
   end
 
-  defp goal_state(goal = %Goal{}) do
-    if goal.closed_at do
-      "closed"
-    else
-      "active"
-    end
-  end
-
-  defp project_state(project = %Project{}) do
-    cond do
-      project.closed_at -> "closed"
-      project.status == "paused" -> "paused"
-      true -> "active"
-    end
-  end
-
   defp build_goal_assignees(goal = %Goal{}) do
     [
       goal.champion,
@@ -135,48 +122,12 @@ defmodule Operately.WorkMaps.WorkMapItem do
     |> Enum.reject(&is_nil/1)
   end
 
-  defp next_target(goal = %Goal{}) do
-    case goal.targets do
-      [] ->
-        ""
-
-      %Ecto.Association.NotLoaded{} ->
-        ""
-
-      targets ->
-        target =
-          targets
-          |> Enum.filter(fn target ->
-            cond do
-              target.from < target.to -> target.value < target.to
-              target.from > target.to -> target.value > target.to
-              true -> false
-            end
-          end)
-          |> Enum.sort_by(fn target -> target.index end)
-          |> List.first()
-
-        if target, do: target.name, else: ""
-    end
-  end
-
   defp project_timeframe(project = %Project{}) do
     %{
       start_date: project.started_at,
       end_date: project.deadline,
       type: "days"
     }
-  end
-
-  defp project_status(project = %Project{}) do
-    cond do
-      project.closed_at -> "completed"
-      project.status == "closed" -> "completed"
-      project.status == "paused" -> "paused"
-      Projects.outdated?(project) -> "outdated"
-      project.last_check_in -> project.last_check_in.status
-      true -> "on_track"
-    end
   end
 
   defp find_privacy(item) do
