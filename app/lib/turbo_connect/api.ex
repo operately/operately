@@ -108,7 +108,14 @@ defmodule TurboConnect.Api do
       end
 
       def __subscriptions__() do
-        Enum.map(@subscriptions, fn {full_name, _name, module} -> {full_name, module} end)
+        Enum.map(@subscriptions, fn {full_name, namespace, name, module} ->
+          {full_name,
+           %{
+             handler: module,
+             namespace: namespace,
+             name: name
+           }}
+        end)
         |> Enum.into(%{})
       end
 

@@ -84,15 +84,22 @@ defmodule OperatelyWeb.ApiSocket do
 
     @impl true
     def join("api:" <> topic, payload, socket) do
-      handler = OperatelyWeb.Api.__subscriptions__()[topic]
-      socket = assign_company_and_person(socket, payload)
+      subscriptions = OperatelyWeb.Api.__subscriptions__()
 
-      {:ok, socket, topics} = apply(handler, :join, [topic, payload, socket])
+      case Map.get(subscriptions, topic) do
+        nil ->
+          {:error, :unauthorized}
 
-      topics = Enum.map(topics, fn t -> "api:#{topic}:#{t}" end)
-      socket = put_new_topics(socket, topics)
+        sub ->
+          socket = assign_company_and_person(socket, payload)
 
-      {:ok, put_new_topics(socket, topics)}
+          {:ok, socket, topics} = apply(sub.handler, :join, [topic, payload, socket])
+
+          topics = Enum.map(topics, fn t -> "api:#{topic}:#{t}" end)
+          socket = put_new_topics(socket, topics)
+
+          {:ok, put_new_topics(socket, topics)}
+      end
     end
 
     @impl true
