@@ -1,21 +1,11 @@
-defmodule OperatelyWeb.Api.Ids do
-  def decode_id(id) when id == nil or id == "" do
+defmodule OperatelyWeb.Api.Types.Id do
+  def decode(id) when id == nil or id == "" do
     {:ok, nil}
   end
 
-  def decode_id(id) when is_binary(id) do
+  def decode(id) when is_binary(id) do
     remove_comments(id)
     |> Operately.ShortUuid.decode()
-    |> handle_error()
-  end
-
-  def decode_company_id(id) when id == nil do
-    {:ok, nil}
-  end
-
-  def decode_company_id(id) do
-    remove_comments(id)
-    |> Operately.Companies.ShortId.decode()
     |> handle_error()
   end
 

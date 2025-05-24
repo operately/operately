@@ -40,6 +40,8 @@ defmodule OperatelyWeb.Api.GoalsTest do
   end
 
   describe "update description" do
+    @content Jason.encode!(RichText.rich_text("Test"))
+
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_description], %{})
     end
@@ -47,7 +49,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     test "it requires a goal_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goals, :update_description], %{description: "test"})
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_description], %{description: @content})
       assert res.message == "Missing required fields: goal_id"
     end
 
@@ -61,13 +63,11 @@ defmodule OperatelyWeb.Api.GoalsTest do
     test "it updates the description", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      new_description = RichText.rich_text("New Description")
-
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_description], %{goal_id: Paths.goal_id(ctx.goal), description: Jason.encode!(new_description)})
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_description], %{goal_id: Paths.goal_id(ctx.goal), description: @content})
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)
-      assert ctx.goal.description == new_description
+      assert ctx.goal.description == Jason.decode!(@content)
     end
   end
 

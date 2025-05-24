@@ -13,7 +13,7 @@ defmodule Operately.Activities.Content.GoalDescriptionChanged do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required(__schema__(:fields) -- [:old_description])
   end
 
   def build(params) do

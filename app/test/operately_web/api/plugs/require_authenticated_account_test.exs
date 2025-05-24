@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Plugs.RequireAuthenticatedAccountTest do
       conn = assign(conn, :turbo_req_name, "get_user")
       conn = assign(conn, :turbo_req_type, "query")
 
-      conn = OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount.call(conn, except: [{"query", :get_user}])
+      conn = OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount.call(conn, except: [{"query", "get_user"}])
       assert conn.status == nil
       assert conn.resp_body == nil
 
