@@ -4,7 +4,7 @@ defmodule OperatelyEE.AdminApi.Types do
   primitive :company_id,
     encoded_type: :string,
     decoded_type: :number,
-    decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
+    decode_with: &OperatelyWeb.Api.Types.Id.decode/1
 
   object :company do
     field :id, :string
