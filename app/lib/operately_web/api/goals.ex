@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.Goals do
-  alias OperatelyWeb.Api
+  alias __MODULE__.SharedMultiSteps, as: Steps
 
   defmodule UpdateName do
     use TurboConnect.Mutation
@@ -14,7 +14,22 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def call(conn, inputs) do
-      Api.Goals.update_goal(conn, inputs.goal_id, %{name: inputs.name})
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_goal_name(inputs.name)
+      |> Steps.save_activity(:goal_name_changed, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_name: changes.goal.name,
+          new_name: changes.updated_goal.name
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
     end
   end
 
@@ -31,7 +46,22 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def call(conn, inputs) do
-      Api.Goals.update_goal(conn, inputs.goal_id, %{description: inputs.description})
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_goal_description(inputs.description)
+      |> Steps.save_activity(:goal_description_changed, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_description: changes.goal.description,
+          new_description: inputs.description
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
     end
   end
 
@@ -48,39 +78,90 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def call(conn, inputs) do
-      Api.Goals.update_goal(conn, inputs.goal_id, fn goal ->
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_goal_due_date(inputs.due_date)
+      |> Steps.save_activity(:goal_due_date_changed, fn changes ->
         %{
-          timeframe: %{
-            start_date: goal.timeframe.start_date,
-            end_date: inputs.due_date,
-            type: "days"
-          }
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_due_date: changes.goal.timeframe.end_date,
+          new_due_date: changes.updated_goal.timeframe.end_date
         }
       end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
     end
   end
 
-  #
-  # Utility functions
+  defmodule SharedMultiSteps do
+    require Logger
 
-  def update_goal(conn, goal_id, updates) when is_map(updates) do
-    update_goal(conn, goal_id, fn _goal -> updates end)
-  end
+    def start_transaction(conn) do
+      Ecto.Multi.new()
+      |> Ecto.Multi.put(:conn, conn)
+      |> Ecto.Multi.run(:me, fn _repo, %{conn: conn} ->
+        {:ok, conn.assigns.current_person}
+      end)
+    end
 
-  def update_goal(conn, goal_id, updates) when is_function(updates) do
-    alias Operately.Repo
-    alias OperatelyWeb.Api.Helpers
-    alias Operately.Goals.{Goal, Permissions}
+    def find_goal(multi, goal_id) do
+      Ecto.Multi.run(multi, :goal, fn _repo, %{me: me} -> Operately.Goals.Goal.get(me, id: goal_id) end)
+    end
 
-    with(
-      {:ok, me} <- Helpers.find_me(conn),
-      {:ok, goal} <- Goal.get(me, id: goal_id),
-      {:ok, _} <- Permissions.check(goal.request_info.access_level, :can_edit),
-      {:ok, _} <- Goal.changeset(goal, updates.(goal)) |> Repo.update()
-    ) do
-      {:ok, %{success: true}}
-    else
-      {:error, reason} -> {:error, reason}
+    def check_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal} ->
+        Operately.Goals.Permissions.check(goal.request_info.access_level, permission)
+      end)
+    end
+
+    def save_activity(multi, activity_type, callback) do
+      Ecto.Multi.merge(multi, fn changes ->
+        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ -> callback.(changes) end)
+      end)
+    end
+
+    def update_goal_name(multi, new_name) do
+      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+        Operately.Goals.Goal.changeset(goal, %{name: new_name})
+      end)
+    end
+
+    def update_goal_description(multi, new_description) do
+      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+        Operately.Goals.Goal.changeset(goal, %{description: new_description})
+      end)
+    end
+
+    def update_goal_due_date(multi, new_due_date) do
+      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+        Operately.Goals.Goal.changeset(goal, %{timeframe: %{end_date: new_due_date}})
+      end)
+    end
+
+    def commit(multi) do
+      Operately.Repo.transaction(multi)
+    end
+
+    def respond_with_success_or_error(result) do
+      result
+      |> case do
+        {:ok, val} ->
+          {:ok, val}
+
+        {:error, _failed_operation, :not_found, _changes} ->
+          {:error, :not_found}
+
+        {:error, _failed_operation, :fobidden, _changes} ->
+          {:error, :not_found}
+
+        {:error, _failed_operation, reason, _changes} ->
+          Logger.error("Transaction failed: #{inspect(reason)}")
+          {:error, :bad_request}
+      end
     end
   end
 end
