@@ -13,6 +13,12 @@ defmodule OperatelyWeb.Api.Types do
     decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
   )
 
+  primitive(:json,
+    encoded_type: :string,
+    decoded_type: :map,
+    decode_with: &OperatelyWeb.Api.Helpers.decode_json/1
+  )
+
   object :account do
     field :full_name, :string
     field :site_admin, :boolean
