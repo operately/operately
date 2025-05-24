@@ -59,6 +59,7 @@ defmodule Operately.Goals.Goal do
     |> cast(attrs, [
       :name,
       :company_id,
+      :description,
       :group_id,
       :champion_id,
       :reviewer_id,

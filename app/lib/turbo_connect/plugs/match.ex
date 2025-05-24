@@ -44,7 +44,7 @@ defmodule TurboConnect.Plugs.Match do
       [] -> err_missing_query_name(conn)
       [namespace, name] -> assign(conn, :turbo_req_name, "#{namespace}/#{name}")
       [name] -> assign(conn, :turbo_req_name, "#{name}")
-      _ -> err_invalid_query_name(conn)
+      path -> err_invalid_query_name(conn, path)
     end
   rescue
     _ -> err_unknown_query(conn)
@@ -88,8 +88,10 @@ defmodule TurboConnect.Plugs.Match do
     conn |> send_resp(400, "Missing query name") |> halt()
   end
 
-  defp err_invalid_query_name(conn) do
-    conn |> send_resp(400, "Invalid query name") |> halt()
+  defp err_invalid_query_name(conn, path) do
+    message = "Invalid query name: #{Enum.join(path, "/")}"
+
+    conn |> send_resp(400, message) |> halt()
   end
 
   defp err_mutation_not_found(conn) do
