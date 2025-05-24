@@ -149,8 +149,8 @@ defmodule OperatelyWeb.Api.Goals do
     def respond_with_success_or_error(result) do
       result
       |> case do
-        {:ok, val} ->
-          {:ok, val}
+        {:ok, _val} ->
+          {:ok, %{success: true}}
 
         {:error, _failed_operation, :not_found, _changes} ->
           {:error, :not_found}
