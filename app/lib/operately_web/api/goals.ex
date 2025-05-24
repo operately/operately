@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, required: true
-      field :description, :string, required: true
+      field :description, :json, required: true
     end
 
     outputs do
@@ -138,7 +138,9 @@ defmodule OperatelyWeb.Api.Goals do
 
     def update_goal_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
-        Operately.Goals.Goal.changeset(goal, %{timeframe: %{end_date: new_due_date}})
+        new_timeframe = Map.put(goal.timeframe, :end_date, new_due_date)
+        new_timeframe = Map.put(new_timeframe, :type, "days")
+        Operately.Goals.Goal.changeset(goal, %{timeframe: new_timeframe})
       end)
     end
 
