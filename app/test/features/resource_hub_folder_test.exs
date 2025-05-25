@@ -15,6 +15,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.assert_zero_state()
     end
 
+    @tag :trace
     feature "create folders at the root of resource hub", ctx do
       folder1 = "First Folder"
       folder2 = "Second Folder"
@@ -80,7 +81,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
     feature "folder can be renamed", ctx do
       attrs = %{
         current_name: "folder",
-        new_name: "edited folder",
+        new_name: "edited folder"
       }
 
       ctx
@@ -147,7 +148,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
     feature "copy folder in the same location", ctx do
       copied_folder = %{
         name: "Folder's Copy",
-        index: 1,
+        index: 1
       }
 
       ctx
@@ -163,7 +164,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
     feature "copy folder into another folder", ctx do
       copied_folder = %{
         name: "Folder's Copy",
-        index: 0,
+        index: 0
       }
 
       ctx
@@ -180,7 +181,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
     feature "copy folder into resource hub root", ctx do
       copied_folder = %{
         name: "Folder's Copy",
-        index: 0,
+        index: 0
       }
 
       ctx
@@ -198,7 +199,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
       copied_folder = %{
         original_name: "folder",
         name: "Folder's Copy",
-        index: 0,
+        index: 0
       }
 
       ctx

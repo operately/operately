@@ -37,7 +37,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def new_session(state) do
-    execute(state, fn _ ->
+    execute("new_session", state, fn _ ->
       metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Operately.Repo, self())
       {:ok, session} = Wallaby.start_session(metadata: metadata, window_size: [width: 1920, height: 2000])
       session
@@ -54,7 +54,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def click(state, %Wallaby.Query{} = query) do
-    execute(state, fn session ->
+    execute("click", state, fn session ->
       session |> Browser.click(query)
     end)
   end
@@ -63,7 +63,7 @@ defmodule Operately.Support.Features.UI do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
-    execute(state, fn session ->
+    execute("click", state, fn session ->
       session |> Browser.click(Query.css(css_query))
     end)
   rescue
@@ -96,13 +96,13 @@ defmodule Operately.Support.Features.UI do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
-    execute(state, fn session ->
+    execute("hover", state, fn session ->
       session |> Browser.hover(Query.css(css_query))
     end)
   end
 
   def send_keys(state, keys) do
-    execute(state, fn session ->
+    execute("send_keys", state, fn session ->
       session |> Browser.send_keys(keys)
     end)
   end
@@ -127,7 +127,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def assert_has(state, %Wallaby.Query{} = query) do
-    execute(state, fn session ->
+    execute("assert_has", state, fn session ->
       case Browser.execute_query(session, query) do
         {:ok, _query_result} ->
           session
@@ -146,13 +146,13 @@ defmodule Operately.Support.Features.UI do
   end
 
   def click_button(state, text) do
-    execute(state, fn session ->
+    execute("click_button", state, fn session ->
       session |> Browser.click(Query.button(text))
     end)
   end
 
   def click_link(state, text) do
-    execute(state, fn session ->
+    execute("click_link", state, fn session ->
       session |> Browser.click(Query.link(text))
     end)
   end
@@ -170,7 +170,7 @@ defmodule Operately.Support.Features.UI do
     # to update the value, but not too long to slow down the tests. We've tried
     # 10ms, but that was too short.
     #
-    execute(ctx, fn session ->
+    execute("fill", ctx, fn session ->
       session
       |> sleep(50)
       |> Browser.clear(query)
@@ -193,7 +193,7 @@ defmodule Operately.Support.Features.UI do
   def fill_rich_text(state, message) when is_binary(message) do
     query = Query.css(".ProseMirror[contenteditable=true]")
 
-    execute(state, fn session ->
+    execute("fill_rich_text", state, fn session ->
       session
       |> Browser.clear(query)
       |> Browser.find(query, fn element ->
@@ -205,7 +205,7 @@ defmodule Operately.Support.Features.UI do
   def fill_rich_text(state, testid: id, with: message) when is_binary(message) do
     query = Query.css("[data-test-id=\"#{id}\"] .ProseMirror[contenteditable=true]")
 
-    execute(state, fn session ->
+    execute("fill_rich_text", state, fn session ->
       session
       |> Browser.clear(query)
       |> Browser.find(query, fn element ->
@@ -215,7 +215,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def select_person_in(state, id: id, name: name) do
-    execute(state, fn session ->
+    execute("select_person_in", state, fn session ->
       Browser.fill_in(session, Query.css("#" <> id), with: name)
     end)
     |> assert_has(testid: testid(["person-option", name]))
@@ -228,7 +228,7 @@ defmodule Operately.Support.Features.UI do
     input_query = Query.css("input")
     option_query = Query.css("[data-test-id=\"#{testid(["person-option", name])}\"]")
 
-    execute(state, fn session ->
+    execute("select_person_in", state, fn session ->
       Browser.find(session, root_query, fn element ->
         element
         |> Browser.fill_in(input_query, with: name)
@@ -238,13 +238,13 @@ defmodule Operately.Support.Features.UI do
   end
 
   def press_enter(state) do
-    execute(state, fn session ->
+    execute("press_enter", state, fn session ->
       session |> Browser.send_keys([:enter])
     end)
   end
 
   def select(state, testid: id, option: option_name) do
-    execute(state, fn session ->
+    execute("select", state, fn session ->
       session
       |> Browser.click(query(testid: id))
       |> Browser.click(Query.text(option_name))
@@ -252,13 +252,13 @@ defmodule Operately.Support.Features.UI do
   end
 
   def assert_text(state, text) do
-    execute(state, fn session ->
+    execute("assert_text", state, fn session ->
       session |> Browser.assert_text(text)
     end)
   end
 
   def assert_text(state, text, testid: id) do
-    execute(state, fn session ->
+    execute("assert_text", state, fn session ->
       session
       |> Browser.find(query(testid: id), fn element ->
         element |> Browser.assert_text(text)
@@ -267,7 +267,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_has(state, %Wallaby.Query{} = query) do
-    execute(state, fn session ->
+    execute("refute_has", state, fn session ->
       case Browser.execute_query(session, query) do
         {:error, :invalid_selector} -> raise Wallaby.QueryError, Query.ErrorMessage.message(query, :invalid_selector)
         {:error, _not_found} -> session
@@ -280,11 +280,11 @@ defmodule Operately.Support.Features.UI do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
-    refute_has(state, Query.css(css_query), attempts: [50, 150, 250, 400, 1000])
+    refute_has(state, Query.css(css_query), attempts: [1, 50, 150, 250, 400, 1000])
   end
 
   defp refute_has(state, query, attempts: [delay | attempts]) do
-    execute(state, fn session ->
+    execute("refute_has", state, fn session ->
       :timer.sleep(delay)
 
       has_element = session |> Browser.has?(query)
@@ -306,7 +306,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_text(state, text, testid: id, attempts: [delay | attempts]) do
-    execute(state, fn session ->
+    execute("refute_has", state, fn session ->
       :timer.sleep(delay)
 
       session
@@ -324,7 +324,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_text(state, text, attempts: [delay | attempts]) do
-    execute(state, fn session ->
+    execute("refute_has", state, fn session ->
       :timer.sleep(delay)
 
       visible_text = session |> Browser.text()
@@ -339,7 +339,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def assert_page(state, path) do
-    execute(state, fn session ->
+    execute("assert_page", state, fn session ->
       require ExUnit.Assertions
 
       wait_for_page_to_load(state, path)
@@ -351,31 +351,31 @@ defmodule Operately.Support.Features.UI do
   end
 
   def visit(state, path) do
-    execute(state, fn session ->
+    execute("visit", state, fn session ->
       session |> Browser.visit(path)
     end)
   end
 
   def scroll_to(state, testid: id) do
-    execute(state, fn session ->
+    execute("scrollto", state, fn session ->
       session |> Browser.execute_script("document.querySelector('[data-test-id=#{id}]').scrollIntoView()")
     end)
   end
 
   def find(state, testid: id) do
-    execute(state, fn session ->
+    execute("find", state, fn session ->
       session |> Browser.find(query(testid: id))
     end)
   end
 
   def find(state, %Wallaby.Query{} = query) do
-    execute(state, fn session ->
+    execute("find", state, fn session ->
       session |> Browser.find(query)
     end)
   end
 
   def find(state, %Wallaby.Query{} = query, callback) do
-    execute(state, fn session ->
+    execute("find", state, fn session ->
       session
       |> Browser.find(query, fn element ->
         callback.(%{state | session: element})
@@ -388,7 +388,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def wait_for_page_to_load(state, path) do
-    execute(state, fn session ->
+    execute("wait_for_page_load", state, fn session ->
       Wallaby.Browser.retry(fn ->
         if Wallaby.Browser.current_path(session) == path do
           {:ok, session}
@@ -420,13 +420,24 @@ defmodule Operately.Support.Features.UI do
   def upload_file(state, testid: id, path: path) do
     query = Query.css("[data-test-id=\"#{id}\"]", visible: false)
 
-    execute(state, fn session ->
+    execute("upload_file", state, fn session ->
       session |> Browser.attach_file(query, path: path)
     end)
   end
 
-  defp execute(state, callback) do
-    Map.update!(state, :session, callback)
+  defp execute(action, state, callback) do
+    if state[:trace] do
+      start_time = System.monotonic_time(:microsecond)
+      result = Map.update!(state, :session, callback)
+      end_time = System.monotonic_time(:microsecond)
+
+      diff = ((end_time - start_time) / 1000) |> round()
+      duration = String.pad_leading(to_string(diff), 6, " ") <> " ms"
+      IO.puts("      -> #{duration} - #{action}")
+      result
+    else
+      Map.update!(state, :session, callback)
+    end
   end
 
   defp compose_css_query([]), do: ""
@@ -442,7 +453,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def take_screenshot(state) do
-    execute(state, fn session ->
+    execute("take_screenshot", state, fn session ->
       session |> Browser.take_screenshot()
     end)
   end
