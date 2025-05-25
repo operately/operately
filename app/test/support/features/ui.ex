@@ -306,7 +306,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_text(state, text, testid: id, attempts: [delay | attempts]) do
-    execute("refute_has", state, fn session ->
+    execute("refute_text", state, fn session ->
       :timer.sleep(delay)
 
       session
@@ -324,7 +324,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def refute_text(state, text, attempts: [delay | attempts]) do
-    execute("refute_has", state, fn session ->
+    execute("refute_text", state, fn session ->
       :timer.sleep(delay)
 
       visible_text = session |> Browser.text()

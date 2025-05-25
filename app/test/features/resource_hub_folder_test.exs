@@ -15,7 +15,6 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.assert_zero_state()
     end
 
-    @tag :trace
     feature "create folders at the root of resource hub", ctx do
       folder1 = "First Folder"
       folder2 = "Second Folder"
