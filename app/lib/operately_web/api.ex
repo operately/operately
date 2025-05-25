@@ -3,13 +3,13 @@ defmodule OperatelyWeb.Api do
 
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
-      {:query, :get_invitation},
-      {:mutation, :add_first_company},
-      {:mutation, :join_company},
-      {:mutation, :create_email_activation_code},
-      {:mutation, :create_account},
-      {:mutation, :request_password_reset},
-      {:mutation, :reset_password}
+      {:query, "get_invitation"},
+      {:mutation, "add_first_company"},
+      {:mutation, "join_company"},
+      {:mutation, "create_email_activation_code"},
+      {:mutation, "create_account"},
+      {:mutation, "request_password_reset"},
+      {:mutation, "reset_password"}
     ]
 
   use_types(OperatelyWeb.Api.Types)
@@ -18,16 +18,16 @@ defmodule OperatelyWeb.Api do
   alias OperatelyWeb.Api.Mutations, as: M
   alias OperatelyWeb.Api.Subscriptions, as: S
 
-  # namespace(:goals) do
-  #   mutation(:update_name, M.UpdateGoalName)
-  #   mutation(:update_description, M.UpdateGoalDescription)
-  #   mutation(:update_due_date, M.UpdateGoalDueDate)
+  namespace(:goals) do
+    mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
+    mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
+    mutation(:update_due_date, OperatelyWeb.Api.Goals.UpdateDueDate)
 
-  #   mutation(:delete_target, M.DeleteGoalTarget)
-  #   mutation(:update_target, M.UpdateGoalTarget)
-  #   mutation(:update_target_value, M.UpdateGoalTargetValue)
-  #   mutation(:add_target, M.AddGoalTarget)
-  # end
+    # mutation(:delete_target, M.DeleteGoalTarget)
+    # mutation(:update_target, M.UpdateGoalTarget)
+    # mutation(:update_target_value, M.UpdateGoalTargetValue)
+    # mutation(:add_target, M.AddGoalTarget)
+  end
 
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)

@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount do
 
     action = conn.assigns.turbo_req_name
     type = conn.assigns.turbo_req_type
-    tuple = {type, String.to_existing_atom(action)}
+    tuple = {type, action}
 
     cond do
       tuple in except ->
