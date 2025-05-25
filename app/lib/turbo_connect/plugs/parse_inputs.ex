@@ -51,6 +51,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def parse_input(:boolean, _types, "false", false), do: {:ok, false}
 
   def parse_input(:integer, _types, value, true) when is_integer(value), do: {:ok, value}
+
   def parse_input(:integer, _types, value, false) do
     case Integer.parse(value) do
       {int, ""} -> {:ok, int}
@@ -60,6 +61,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def parse_input(:float, _types, value, true) when is_float(value), do: {:ok, value}
   def parse_input(:float, _types, value, true) when is_number(value), do: {:ok, value}
+
   def parse_input(:float, _types, value, false) do
     case Float.parse(value) do
       {float, ""} -> {:ok, float}
@@ -76,7 +78,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def parse_input(:datetime, _types, value, _strict) when is_binary(value) do
     case DateTime.from_iso8601(value) do
-      {:ok, datetime} -> {:ok, datetime}
+      {:ok, datetime, _} -> {:ok, datetime}
       _ -> {:error, 422, "Invalid datetime: #{value}"}
     end
   end
@@ -109,7 +111,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
     end
   end
 
-  def parse_input(_field , _types, nil, _strict) do
+  def parse_input(_field, _types, nil, _strict) do
     {:ok, nil}
   end
 
@@ -124,8 +126,10 @@ defmodule TurboConnect.Plugs.ParseInputs do
         decode_with = Keyword.get(primitive_type, :decode_with)
 
         case decode_with do
-          nil -> {:error, 500, "Unknown decoder for primitive type: #{type}"}
-          _ -> 
+          nil ->
+            {:error, 500, "Unknown decoder for primitive type: #{type}"}
+
+          _ ->
             case decode_with.(value) do
               {:ok, decoded} -> {:ok, decoded}
               {:error, reason} -> {:error, 422, reason}
@@ -158,5 +162,4 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
   def atomize_keys({key, val}), do: {key, atomize_keys(val)}
   def atomize_keys(term), do: term
-
 end
