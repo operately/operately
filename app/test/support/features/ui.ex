@@ -108,7 +108,7 @@ defmodule Operately.Support.Features.UI do
   end
 
   def assert_has(state, testid: id) do
-    execute(state, fn session -> assert_has(session, query(testid: id)) end)
+    assert_has(state, query(testid: id))
   rescue
     _e in Wallaby.QueryError ->
       raise """
@@ -123,15 +123,25 @@ defmodule Operately.Support.Features.UI do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
-    execute(state, fn session ->
-      session |> assert_has(Query.css(css_query))
-    end)
+    assert_has(state, Query.css(css_query))
   end
 
   def assert_has(state, %Wallaby.Query{} = query) do
     execute(state, fn session ->
-      require Wallaby.Browser
-      assert_has(session, query)
+      case Browser.execute_query(session, query) do
+        {:ok, _query_result} ->
+          session
+
+        error ->
+          case error do
+            {:error, {:not_found, results}} ->
+              query = %Query{query | result: results}
+              raise Wallaby.ExpectationNotMetError, Query.ErrorMessage.message(query, :not_found)
+
+            {:error, e} ->
+              raise Wallaby.QueryError, Query.ErrorMessage.message(query, e)
+          end
+      end
     end)
   end
 
@@ -258,8 +268,11 @@ defmodule Operately.Support.Features.UI do
 
   def refute_has(state, %Wallaby.Query{} = query) do
     execute(state, fn session ->
-      require Wallaby.Browser
-      refute_has(session, query)
+      case Browser.execute_query(session, query) do
+        {:error, :invalid_selector} -> raise Wallaby.QueryError, Query.ErrorMessage.message(query, :invalid_selector)
+        {:error, _not_found} -> session
+        {:ok, query} -> raise Wallaby.ExpectationNotMetError, Query.ErrorMessage.message(query, :found)
+      end
     end)
   end
 
