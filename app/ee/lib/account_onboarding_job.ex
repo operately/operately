@@ -45,7 +45,7 @@ defmodule OperatelyEE.AccountOnboardingJob do
       ]
     }
 
-    case Req.put!(url, headers: headers, json: body) do
+    case Req.put(url, headers: headers, json: body) do
       {:ok, res} -> verify_response(res)
       {:error, _} -> {:error, "Failed to add contact to SendGrid list"}
     end

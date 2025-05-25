@@ -16,7 +16,6 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
       {:ok, serialize(company)}
     else
       {:error, :not_found} -> {:error, :not_found}
-      {:error, :forbidden} -> {:error, :forbidden}
       _e -> {:error, :internal_server_error}
     end
   end

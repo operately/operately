@@ -20,7 +20,6 @@ defmodule OperatelyEE.AdminApi.Queries.GetActivities do
       {:ok, serialize(activities)}
     else
       {:error, :not_found} -> {:error, :not_found}
-      {:error, :forbidden} -> {:error, :forbidden}
       _e -> {:error, :internal_server_error}
     end
   end

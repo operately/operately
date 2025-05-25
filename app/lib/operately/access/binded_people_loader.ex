@@ -10,10 +10,7 @@ defmodule Operately.Access.BindedPeopleLoader do
   @type context_id :: binary()
   @type access_level :: :any | :view_access | :comment_access | :edit_access | :full_access
 
-  @spec load(context_id) :: [Operately.People.Person.t()]
   def load(access_content_id), do: load(access_content_id, :any)
-
-  @spec load(context_id, access_level()) :: [Operately.People.Person.t()]
   def load(access_context_id, level)
 
   def load(access_context_id, :any) do
@@ -27,8 +24,8 @@ defmodule Operately.Access.BindedPeopleLoader do
       select: %{person: p, access_level: max(b.access_level)}
     )
     |> Operately.Repo.all()
-    |> Enum.map(fn %{person: p, access_level: level} -> 
-      %{p | access_level: level} 
+    |> Enum.map(fn %{person: p, access_level: level} ->
+      %{p | access_level: level}
     end)
   end
 
@@ -45,9 +42,8 @@ defmodule Operately.Access.BindedPeopleLoader do
       select: %{person: p, access_level: max(b.access_level)}
     )
     |> Operately.Repo.all()
-    |> Enum.map(fn %{person: p, access_level: level} -> 
-      %{p | access_level: level} 
+    |> Enum.map(fn %{person: p, access_level: level} ->
+      %{p | access_level: level}
     end)
   end
-
 end
