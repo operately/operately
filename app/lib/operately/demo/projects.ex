@@ -29,7 +29,7 @@ defmodule Operately.Demo.Projects do
       goal_id: goal && goal.id,
       anonymous_access_level: 0,
       company_access_level: 70,
-      space_access_level: 70,
+      space_access_level: 70
     }
 
     {:ok, project} = Operately.Operations.ProjectCreation.run(params)
@@ -65,13 +65,20 @@ defmodule Operately.Demo.Projects do
   end
 
   def create_project_check_in(champion, project, data) do
-    Operately.Operations.ProjectCheckIn.run(champion, project, Map.merge(%{
-      content: Operately.Demo.RichText.from_string(data.content),
-      status: data.status,
-    }, %{
-      subscription_parent_type: :project_check_in,
-      subscriber_ids: []
-    }))
+    Operately.Operations.ProjectCheckIn.run(
+      champion,
+      project,
+      Map.merge(
+        %{
+          content: Operately.Demo.RichText.from_string(data.content),
+          status: data.status
+        },
+        %{
+          subscription_parent_type: :project_check_in,
+          subscriber_ids: []
+        }
+      )
+    )
   end
 
   def yesterday do
@@ -79,19 +86,21 @@ defmodule Operately.Demo.Projects do
   end
 
   def create_project_milestones(champion, project, milestones) do
-    {:ok, _} = Operately.Projects.EditTimelineOperation.run(champion, project, %{
-      project_start_date: project.started_at,
-      project_due_date: project.deadline,
-      milestone_updates: [],
-      new_milestones: Enum.map(milestones, fn m ->
-        %{
-          title: m.title,
-          due_time: yesterday(),
-          description: Operately.Demo.RichText.from_string(""),
-          tasks_kanban_state: %{}
-        }
-      end)
-    })
+    {:ok, _} =
+      Operately.Projects.EditTimelineOperation.run(champion, project, %{
+        project_start_date: project.started_at,
+        project_due_date: project.deadline,
+        milestone_updates: [],
+        new_milestones:
+          Enum.map(milestones, fn m ->
+            %{
+              title: m.title,
+              due_time: yesterday(),
+              description: Operately.Demo.RichText.from_string(""),
+              tasks_kanban_state: %{}
+            }
+          end)
+      })
 
     Enum.each(milestones, fn m ->
       {:ok, milestone} = Milestone.get(:system, project_id: project.id, title: m.title)
@@ -112,18 +121,14 @@ defmodule Operately.Demo.Projects do
     contribs
     |> Enum.filter(fn c -> c.id != champion_id && c.id != reviewer_id end)
     |> Enum.each(fn c ->
-      {:ok, _} = Operately.Operations.ProjectContributorAddition.run(champion, %{
-        person_id: c.id,
-        project_id: project.id,
-        permissions: 70,
-        responsibility: "Build and Launch the Website",
-        role: :contributor
-      })
+      {:ok, _} =
+        Operately.Operations.ProjectContributorAddition.run(champion, %{
+          person_id: c.id,
+          project_id: project.id,
+          permissions: 70,
+          responsibility: "Build and Launch the Website",
+          role: :contributor
+        })
     end)
   end
-
-  def set_milestone_title(milestone, title) do
-    Operately.Repo.update(milestone, %{title: title})
-  end
-
 end

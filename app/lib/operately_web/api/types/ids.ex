@@ -15,5 +15,4 @@ defmodule OperatelyWeb.Api.Types.Id do
 
   defp handle_error({:ok, id}), do: {:ok, id}
   defp handle_error({:error, _}), do: {:error, "Invalid id format"}
-  defp handle_error(:error), do: {:error, "Invalid id format"}
 end
