@@ -201,6 +201,9 @@ test.license.check:
 test.js.dead.code:
 	./devenv bash -c "cd app && npm --no-update-notifier run knip"
 
+test.dialyzer:
+	./devenv bash -c "cd app && MIX_ENV=test mix dialyzer"
+
 test.tsc.lint:
 	./devenv bash -c "cd app && npx tsc --noEmit -p tsconfig.lint.json"
 
