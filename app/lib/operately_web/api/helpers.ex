@@ -69,20 +69,24 @@ defmodule OperatelyWeb.Api.Helpers do
   @max_comment_length 25
 
   def id_with_comments(comments, id) when is_binary(comments) do
-    comments = comments
+    comments =
+      comments
       |> String.downcase()
       |> String.replace(~r/[^a-zA-Z0-9]/, "-")
       |> String.trim_leading("-")
       |> String.trim_trailing("-")
       |> String.replace(~r/-+/, "-")
 
-    parts = comments |> String.split("-") |> Enum.reduce("", fn part, acc ->
-      cond do
-        acc == "" -> part
-        String.length(acc) + String.length(part) + 1 > @max_comment_length -> acc
-        true -> acc <> "-" <> part
-      end
-    end)
+    parts =
+      comments
+      |> String.split("-")
+      |> Enum.reduce("", fn part, acc ->
+        cond do
+          acc == "" -> part
+          String.length(acc) + String.length(part) + 1 > @max_comment_length -> acc
+          true -> acc <> "-" <> part
+        end
+      end)
 
     parts <> "-" <> id
   end
@@ -104,12 +108,12 @@ defmodule OperatelyWeb.Api.Helpers do
     else
       case Ecto.UUID.cast(id) do
         {:ok, id} -> {:ok, id}
-        _ -> OperatelyWeb.Api.Ids.decode_id(id)
+        _ -> OperatelyWeb.Api.Types.Id.decode(id)
       end
     end
   end
 
-  defdelegate decode_company_id(id), to: OperatelyWeb.Api.Ids
+  defdelegate decode_company_id(id), to: OperatelyWeb.Api.Types.CompanyId, as: :decode
 
   defmodule Inputs do
     def parse_includes(inputs, includes) do
