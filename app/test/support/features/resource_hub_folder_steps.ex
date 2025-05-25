@@ -56,7 +56,7 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
     |> UI.click(testid: "new-folder")
     |> UI.fill(testid: "new-folder-name", with: folder_name)
     |> UI.click(testid: "submit")
-    |> UI.refute_has(testid: "submit")
+    |> UI.refute_text("New folder")
   end
 
   step :rename_folder, ctx, attrs do
