@@ -4,6 +4,13 @@ defmodule Operately.RichContent do
   text is formatted as a ProseMirror JSON document.
   """
 
+  def parse(document) do
+    case Jason.decode(document) do
+      {:ok, decoded} -> {:ok, decoded}
+      {:error, _} -> {:error, "Invalid JSON"}
+    end
+  end
+
   def lookup_mentioned_people(document) do
     document
     |> find_mentioned_ids()

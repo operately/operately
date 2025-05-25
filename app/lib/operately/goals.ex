@@ -19,6 +19,9 @@ defmodule Operately.Goals do
     "goal_reopening",
     "goal_timeframe_editing",
     "goal_reparent",
+    "goal_name_changed",
+    "goal_description_changed",
+    "goal_due_date_changed"
   ]
 
   def goal_actions, do: @goal_actions
@@ -103,7 +106,8 @@ defmodule Operately.Goals do
     current = target.value
 
     cond do
-      from == to -> 100
+      from == to ->
+        100
 
       from < to ->
         cond do
@@ -166,7 +170,8 @@ defmodule Operately.Goals do
 
   def list_goal_discussions(goal_id) do
     from(t in Operately.Comments.CommentThread,
-      join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
+      join: a in Operately.Activities.Activity,
+      on: a.comment_thread_id == t.id,
       where: a.action in ^@goal_actions,
       where: a.content["goal_id"] == ^goal_id,
       select: t
@@ -176,7 +181,8 @@ defmodule Operately.Goals do
 
   def delete_goal_discussions(goal_id) do
     from(t in Operately.Comments.CommentThread,
-      join: a in Operately.Activities.Activity, on: a.comment_thread_id == t.id,
+      join: a in Operately.Activities.Activity,
+      on: a.comment_thread_id == t.id,
       where: a.action in ^@goal_actions,
       where: a.content["goal_id"] == ^goal_id,
       select: t.id
