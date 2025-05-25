@@ -4,13 +4,19 @@ defmodule OperatelyWeb.Api.Types do
   primitive(:id,
     encoded_type: :string,
     decoded_type: :string,
-    decode_with: &OperatelyWeb.Api.Ids.decode_id/1
+    decode_with: &OperatelyWeb.Api.Types.Id.decode/1
   )
 
   primitive(:company_id,
     encoded_type: :string,
     decoded_type: :number,
-    decode_with: &OperatelyWeb.Api.Ids.decode_company_id/1
+    decode_with: &OperatelyWeb.Api.Types.CompanyId.decode/1
+  )
+
+  primitive(:json,
+    encoded_type: :string,
+    decoded_type: :map,
+    decode_with: &OperatelyWeb.Api.Types.Json.decode/1
   )
 
   object :account do

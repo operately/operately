@@ -470,7 +470,7 @@ defmodule Operately.Assignments.LoaderTest do
     extra_days =
       cond do
         day_of_week == 6 -> 1
-        day_of_week == 7 -> 2
+        day_of_week == 7 -> 1
         true -> 0
       end
 
