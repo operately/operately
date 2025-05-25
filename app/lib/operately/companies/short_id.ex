@@ -4,10 +4,11 @@ defmodule Operately.Companies.ShortId do
   in the database, but is represented as a base32 string in the API.
   """
 
-  @min_short_id 1024 # values below this are less than 3 characters in base32
+  # values below this are less than 3 characters in base32
+  @min_short_id 1024
   @max_increment 317
   @min_increment 23
-  @max_64_bit 18446744073709551615
+  @max_64_bit 18_446_744_073_709_551_615
 
   alias Operately.Repo
   alias Operately.Companies.Company
@@ -20,7 +21,7 @@ defmodule Operately.Companies.ShortId do
   @spec encode!(any) :: String.t()
   def encode!(int), do: encode(int) |> elem(1)
 
-  @spec encode(Number.t()) :: {:ok, String.t()} | :error
+  @spec encode(number()) :: {:ok, String.t()} | :error
   def encode(int), do: {:ok, "0" <> __MODULE__.Base32.encode(int)}
 
   def decode(str) do
