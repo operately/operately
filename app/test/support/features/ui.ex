@@ -3,8 +3,6 @@ defmodule Operately.Support.Features.UI do
   alias Wallaby.Query
 
   alias Wallaby.{Browser, Element}
-  require Wallaby.Browser
-  import Wallaby.Browser, only: [execute_query: 2]
 
   def init_ctx(ctx, state \\ %{}) do
     Map.merge(ctx, state)
@@ -14,10 +12,10 @@ defmodule Operately.Support.Features.UI do
 
   def login_based_on_tag(state) do
     field = state[:login_as]
-    if !field, do: raise "No :login_as tag found on the test"
+    if !field, do: raise("No :login_as tag found on the test")
 
     person = state[field]
-    if !person, do: raise "The :login_as tag on the test points to a field that does not exist on the context"
+    if !person, do: raise("The :login_as tag on the test points to a field that does not exist on the context")
 
     login_as(state, person)
   end
@@ -41,7 +39,7 @@ defmodule Operately.Support.Features.UI do
   def new_session(state) do
     execute(state, fn _ ->
       metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Operately.Repo, self())
-      {:ok, session} = Wallaby.start_session([metadata: metadata, window_size: [width: 1920, height: 2000]])
+      {:ok, session} = Wallaby.start_session(metadata: metadata, window_size: [width: 1920, height: 2000])
       session
     end)
   end
@@ -109,16 +107,8 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
-  def assert_has(state, %Wallaby.Query{} = query) do
-    execute(state, fn session ->
-      session |> Browser.assert_has(query)
-    end)
-  end
-
   def assert_has(state, testid: id) do
-    execute(state, fn session ->
-      session |> Browser.assert_has(query(testid: id))
-    end)
+    assert_has(state, query(testid: id))
   rescue
     _e in Wallaby.QueryError ->
       raise """
@@ -129,12 +119,29 @@ defmodule Operately.Support.Features.UI do
       """
   end
 
-  def assert_has(state, opts) do
+  def assert_has(state, opts) when is_list(opts) do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)
 
+    assert_has(state, Query.css(css_query))
+  end
+
+  def assert_has(state, %Wallaby.Query{} = query) do
     execute(state, fn session ->
-      session |> Browser.assert_has(Query.css(css_query))
+      case Browser.execute_query(session, query) do
+        {:ok, _query_result} ->
+          session
+
+        error ->
+          case error do
+            {:error, {:not_found, results}} ->
+              query = %Query{query | result: results}
+              raise Wallaby.ExpectationNotMetError, Query.ErrorMessage.message(query, :not_found)
+
+            {:error, e} ->
+              raise Wallaby.QueryError, Query.ErrorMessage.message(query, e)
+          end
+      end
     end)
   end
 
@@ -261,7 +268,11 @@ defmodule Operately.Support.Features.UI do
 
   def refute_has(state, %Wallaby.Query{} = query) do
     execute(state, fn session ->
-      session |> Browser.refute_has(query)
+      case Browser.execute_query(session, query) do
+        {:error, :invalid_selector} -> raise Wallaby.QueryError, Query.ErrorMessage.message(query, :invalid_selector)
+        {:error, _not_found} -> session
+        {:ok, query} -> raise Wallaby.ExpectationNotMetError, Query.ErrorMessage.message(query, :found)
+      end
     end)
   end
 
@@ -333,7 +344,7 @@ defmodule Operately.Support.Features.UI do
 
       wait_for_page_to_load(state, path)
 
-      ExUnit.Assertions.assert Browser.current_path(session) == path
+      ExUnit.Assertions.assert(Browser.current_path(session) == path)
 
       session
     end)
@@ -463,11 +474,12 @@ defmodule Operately.Support.Features.UI do
     is_last_month = date.month == get_last_month()
     is_next_month = date.month == get_next_month()
 
-    day = if date.day < 10 do
-      "00#{date.day}"
-    else
-      "0#{date.day}"
-    end
+    day =
+      if date.day < 10 do
+        "00#{date.day}"
+      else
+        "0#{date.day}"
+      end
 
     ctx
     |> click(testid: testid)

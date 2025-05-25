@@ -23,7 +23,7 @@ defmodule Operately.Support.Features.UI.UserSession do
     |> UI.visit(login_url(person))
     |> UI.assert_has(testid: "company-home")
   rescue
-    e -> 
+    e ->
       IO.inspect(e)
       IO.puts("\nFailed to login as #{person.email}, retrying in 1000ms...")
       :timer.sleep(1000)
@@ -50,7 +50,7 @@ defmodule Operately.Support.Features.UI.UserSession do
   end
 
   defp login_url(person) do
-    "/accounts/auth/test_login?" <> URI.encode_query(%{ id: person.account_id })
+    "/accounts/auth/test_login?" <> URI.encode_query(%{id: person.account_id})
   end
 
   defp default_login_attempts() do
@@ -60,5 +60,4 @@ defmodule Operately.Support.Features.UI.UserSession do
       2
     end
   end
-
 end

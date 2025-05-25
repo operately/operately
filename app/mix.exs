@@ -9,7 +9,8 @@ defmodule Operately.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       start_permanent: Mix.env() == :prod,
       aliases: aliases(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: dialyzer()
     ]
   end
 
@@ -70,7 +71,17 @@ defmodule Operately.MixProject do
       {:wallaby, "~> 0.30.9", runtime: false, only: :test},
       {:junit_formatter, "~> 3.1", only: [:test]},
       {:floki, ">= 0.36.0", only: :test},
-      {:mock, "~> 0.3.0", only: :test}
+      {:mock, "~> 0.3.0", only: :test},
+
+      # only in dev/test
+      {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false}
+    ]
+  end
+
+  defp dialyzer do
+    [
+      plt_file: {:no_warn, "priv/plts/project.plt"},
+      plt_add_apps: [:mix, :ex_unit, :wallaby]
     ]
   end
 
