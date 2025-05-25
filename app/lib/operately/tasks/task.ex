@@ -1,6 +1,22 @@
 defmodule Operately.Tasks.Task do
   use Operately.Schema
 
+  @type t :: %__MODULE__{
+          id: Ecto.UUID.t() | nil,
+          name: String.t() | nil,
+          priority: String.t() | nil,
+          size: String.t() | nil,
+          description: map() | nil,
+          due_date: NaiveDateTime.t() | nil,
+          status: String.t(),
+          closed_at: NaiveDateTime.t() | nil,
+          reopened_at: NaiveDateTime.t() | nil,
+          creator_id: Ecto.UUID.t() | nil,
+          milestone_id: Ecto.UUID.t() | nil,
+          inserted_at: NaiveDateTime.t() | nil,
+          updated_at: NaiveDateTime.t() | nil
+        }
+
   schema "tasks" do
     belongs_to :creator, Operately.People.Person
     belongs_to :milestone, Operately.Projects.Milestone

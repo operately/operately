@@ -1,6 +1,16 @@
 defmodule Operately.Access.Binding do
   use Operately.Schema
 
+  @type t :: %__MODULE__{
+          id: integer() | nil,
+          group_id: integer(),
+          context_id: integer(),
+          access_level: integer(),
+          tag: :champion | :reviewer | nil,
+          inserted_at: NaiveDateTime.t() | nil,
+          updated_at: NaiveDateTime.t() | nil
+        }
+
   schema "access_bindings" do
     belongs_to :group, Operately.Access.Group
     belongs_to :context, Operately.Access.Context
