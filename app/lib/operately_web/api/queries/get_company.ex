@@ -21,24 +21,26 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   end
 
   def call(conn, inputs) do
-    Company.get(me(conn), short_id: inputs.id, opts: [
-      after_load: after_load_hooks(inputs)
-    ])
+    Company.get(me(conn),
+      short_id: inputs.id,
+      opts: [
+        after_load: after_load_hooks(inputs)
+      ]
+    )
     |> case do
       {:ok, company} -> {:ok, serialize(company)}
       {:error, :not_found} -> {:error, :not_found}
-      {:error, :forbidden} -> {:error, :forbidden}
       e -> internal_server_error(e)
     end
   end
 
   def after_load_hooks(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_people: &Company.load_people/1,
       include_admins: &Company.load_admins/1,
       include_owners: &Company.load_owners/1,
       include_permissions: &Company.load_permissions/1
-    ])
+    )
   end
 
   defp internal_server_error(e) do

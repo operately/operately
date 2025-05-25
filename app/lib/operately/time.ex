@@ -1,5 +1,4 @@
 defmodule Operately.Time do
-
   def utc_datetime_now() do
     DateTime.truncate(DateTime.utc_now(), :second)
   end
@@ -34,19 +33,23 @@ defmodule Operately.Time do
   def first_friday_from_today do
     today = Date.utc_today()
 
-    date = cond do
-      Date.day_of_week(today) == 5  ->
-        Date.add(today, 7)
-      Date.day_of_week(today) < 5 ->
-        Date.add(today, 5 - Date.day_of_week(today))
-      true ->
-        Date.add(today, 12 - Date.day_of_week(today))
-    end
+    date =
+      cond do
+        Date.day_of_week(today) == 5 ->
+          Date.add(today, 7)
+
+        Date.day_of_week(today) < 5 ->
+          Date.add(today, 5 - Date.day_of_week(today))
+
+        true ->
+          Date.add(today, 12 - Date.day_of_week(today))
+      end
 
     as_datetime(date)
   end
 
-  @montly_delta 7 # how many days before the due date is considered on time
+  # how many days before the due date is considered on time
+  @montly_delta 7
 
   def calculate_next_monthly_check_in(due, check_in_date) do
     due = as_date(due || check_in_date)
@@ -76,7 +79,8 @@ defmodule Operately.Time do
     end
   end
 
-  @weekly_delta 1 # how many days before the due date is considered on time
+  # how many days before the due date is considered on time
+  @weekly_delta 1
 
   def calculate_next_weekly_check_in(due, check_in_date) do
     due = as_date(due || check_in_date)
@@ -119,23 +123,27 @@ defmodule Operately.Time do
   defp next_week_friday(date) do
     day = Date.day_of_week(date)
 
-    result = cond do
-      day == 5 ->
-        Date.add(date, 7)
-      day < 5 ->
-        Date.add(date, 5 - day)
-      day > 5 ->
-        Date.add(date, 12 - day)
-      true ->
-        raise "Invalid day of week: #{day}"
-    end
+    result =
+      cond do
+        day == 5 ->
+          Date.add(date, 7)
+
+        day < 5 ->
+          Date.add(date, 5 - day)
+
+        day > 5 ->
+          Date.add(date, 12 - day)
+
+        true ->
+          raise "Invalid day of week: #{day}"
+      end
 
     as_datetime(result)
   end
 
   def as_date(%Date{} = date), do: date
   def as_date(%DateTime{} = date), do: DateTime.to_date(date)
-  def as_date(%NaiveDateTime{} = date), do: DateTime.to_date(date)
+  def as_date(%NaiveDateTime{} = date), do: NaiveDateTime.to_date(date)
 
   def as_datetime(%DateTime{} = date), do: date
   def as_datetime(%Date{} = date), do: DateTime.new!(date, ~T[00:00:00], "Etc/UTC")
@@ -158,9 +166,9 @@ defmodule Operately.Time do
         days_ago = Date.diff(today, due)
 
         "was due #{days_ago} days ago"
+
       :eq ->
         "is due today"
     end
   end
-
 end

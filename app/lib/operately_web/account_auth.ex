@@ -37,8 +37,7 @@ defmodule OperatelyWeb.AccountAuth do
     conn
   end
 
-  @spec after_login_path(Operately.Account.t) :: String.t
-  defp after_login_path(account) do
+  defp after_login_path(account = %Operately.People.Account{}) do
     companies = Operately.Companies.list_companies(account)
 
     if length(companies) == 1 do
