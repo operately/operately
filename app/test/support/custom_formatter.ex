@@ -59,7 +59,7 @@ defmodule CustomFormatter do
   end
 
   defp display_test_started(%ExUnit.Test{name: _} = test, state) do
-    IO.write("\n  #{blue(test_type(test))}: #{test_name(test)} (#{file_and_line(test)})")
+    IO.write("  #{blue(test_type(test))}: #{test_name(test)} (#{file_and_line(test)})\n")
     {:noreply, state}
   end
 
@@ -88,7 +88,7 @@ defmodule CustomFormatter do
   end
 
   defp format_failure(test, failures) do
-    formatter_cb = fn key, value -> 
+    formatter_cb = fn key, value ->
       case key do
         :test_info -> "FAILED"
         :location_info -> ""
@@ -131,5 +131,4 @@ defmodule CustomFormatter do
     |> tl()
     |> Enum.join(" ")
   end
-
 end
