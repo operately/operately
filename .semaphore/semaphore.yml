@@ -87,6 +87,10 @@ blocks:
             - make test.elixir.warnings
             - make test.pr.name
 
+        - name: Dialyzer
+          commands:
+            - make test.dialyzer
+
         - name: Unit Tests
           commands:
             - make test.mix.unit
