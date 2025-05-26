@@ -91,6 +91,21 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.assert_has(testid: "project-timeline-page")
   end
 
+  step :add_a_milestone_without_due_date, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "manage-timeline")
+    |> UI.click(testid: "edit-timeline")
+    |> UI.click(testid: "add-milestone")
+    |> UI.fill(testid: "new-milestone-title", with: "Website Published")
+    |> UI.click(testid: "save-milestone-button")
+  end
+
+  step :assert_milestone_without_due_date_error, ctx do
+    ctx
+    |> UI.assert_text("Due date is required")
+  end
+
   step :assert_the_milestone_is_visible_on_the_project_page, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
