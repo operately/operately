@@ -65,7 +65,7 @@ function AddMilestoneButton({ onClick }) {
 
 function AddMilestoneForm({ form, close }) {
   const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date, description: any) => {
-    await form.milestoneList.add({
+    form.milestoneList.add({
       id: id,
       title,
       description: description,
@@ -261,6 +261,11 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
           testId="new-milestone-due"
           error={errors.includes("dueDate")}
         />
+        {errors.includes("dueDate") && (
+          <div className="text-red-500 text-xs mt-1" data-test-id="due-date-error">
+            Due date is required
+          </div>
+        )}
       </div>
 
       <div className="mt-4 flex items-center gap-2 justify-end border-t border-stroke-base pt-2">
