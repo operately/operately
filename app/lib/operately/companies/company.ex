@@ -56,11 +56,12 @@ defmodule Operately.Companies.Company do
   def load_member_count(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> c.id end)
 
-    query = from c in __MODULE__,
-      join: p in assoc(c, :people),
-      group_by: c.id,
-      where: c.id in ^ids,
-      select: {c.id, count(p.id)}
+    query =
+      from c in __MODULE__,
+        join: p in assoc(c, :people),
+        group_by: c.id,
+        where: c.id in ^ids,
+        select: {c.id, count(p.id)}
 
     member_counts = Operately.Repo.all(query)
 
@@ -85,14 +86,15 @@ defmodule Operately.Companies.Company do
   def load_owners(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> c.id end)
 
-    query = from c in __MODULE__,
-      join: p in assoc(c, :people),
-      join: m in assoc(p, :access_group_memberships),
-      join: g in assoc(m, :group),
-      join: b in assoc(g, :bindings),
-      join: ctx in assoc(b, :context),
-      where: c.id in ^ids and ctx.company_id == c.id and b.access_level == ^Operately.Access.Binding.full_access(),
-      select: {c.id, p}
+    query =
+      from c in __MODULE__,
+        join: p in assoc(c, :people),
+        join: m in assoc(p, :access_group_memberships),
+        join: g in assoc(m, :group),
+        join: b in assoc(g, :bindings),
+        join: ctx in assoc(b, :context),
+        where: c.id in ^ids and ctx.company_id == c.id and b.access_level == ^Operately.Access.Binding.full_access(),
+        select: {c.id, p}
 
     results = Operately.Repo.all(query)
 
@@ -114,12 +116,13 @@ defmodule Operately.Companies.Company do
   end
 
   def load_people_count(companies) when is_list(companies) do
-    query = from(c in __MODULE__, 
-      join: p in assoc(c, :people),
-      where: c.id in ^ids(companies),
-      group_by: c.id, 
-      select: {c.id, count(p.id)}
-    )
+    query =
+      from(c in __MODULE__,
+        join: p in assoc(c, :people),
+        where: c.id in ^ids(companies),
+        group_by: c.id,
+        select: {c.id, count(p.id)}
+      )
 
     load_aggregate(companies, query, :people_count)
   end
@@ -129,12 +132,13 @@ defmodule Operately.Companies.Company do
   end
 
   def load_goals_count(companies) when is_list(companies) do
-    query = from(c in __MODULE__, 
-      join: g in assoc(c, :goals), 
-      where: c.id in ^ids(companies),
-      group_by: c.id, 
-      select: {c.id, count(g.id)}
-    )
+    query =
+      from(c in __MODULE__,
+        join: g in assoc(c, :goals),
+        where: c.id in ^ids(companies),
+        group_by: c.id,
+        select: {c.id, count(g.id)}
+      )
 
     load_aggregate(companies, query, :goals_count)
   end
@@ -144,12 +148,13 @@ defmodule Operately.Companies.Company do
   end
 
   def load_spaces_count(companies) when is_list(companies) do
-    query = from(c in __MODULE__, 
-      join: s in assoc(c, :spaces), 
-      where: c.id in ^ids(companies),
-      group_by: c.id, 
-      select: {c.id, count(s.id)}
-    )
+    query =
+      from(c in __MODULE__,
+        join: s in assoc(c, :spaces),
+        where: c.id in ^ids(companies),
+        group_by: c.id,
+        select: {c.id, count(s.id)}
+      )
 
     load_aggregate(companies, query, :spaces_count)
   end
@@ -159,12 +164,13 @@ defmodule Operately.Companies.Company do
   end
 
   def load_projects_count(companies) when is_list(companies) do
-    query = from(c in __MODULE__, 
-      join: p in assoc(c, :projects), 
-      where: c.id in ^ids(companies),
-      group_by: c.id, 
-      select: {c.id, count(p.id)}
-    )
+    query =
+      from(c in __MODULE__,
+        join: p in assoc(c, :projects),
+        where: c.id in ^ids(companies),
+        group_by: c.id,
+        select: {c.id, count(p.id)}
+      )
 
     load_aggregate(companies, query, :projects_count)
   end
@@ -176,10 +182,11 @@ defmodule Operately.Companies.Company do
   def load_last_activity_event(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> to_string(c.id) end)
 
-    query = from a in Operately.Activities.Activity,
-      where: fragment("(?->>?)", a.content, "company_id") in ^ids,
-      group_by: fragment("?->> ?", a.content, "company_id"),
-      select: {fragment("?->>?", a.content, "company_id"), max(a.inserted_at)}
+    query =
+      from a in Operately.Activities.Activity,
+        where: fragment("(?->>?)", a.content, "company_id") in ^ids,
+        group_by: fragment("?->> ?", a.content, "company_id"),
+        select: {fragment("?->>?", a.content, "company_id"), max(a.inserted_at)}
 
     load_aggregate(companies, query, :last_activity_at, nil)
   end
@@ -190,7 +197,7 @@ defmodule Operately.Companies.Company do
 
   defp load_aggregate(companies, query, key, default \\ 0) do
     results = Operately.Repo.all(query)
-    
+
     Enum.map(companies, fn company ->
       case Enum.find(results, fn {id, _} -> id == company.id end) do
         {_, count} -> Map.put(company, key, count)
@@ -202,5 +209,4 @@ defmodule Operately.Companies.Company do
   defp ids(companies) do
     Enum.map(companies, fn c -> c.id end)
   end
-
 end

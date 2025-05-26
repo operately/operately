@@ -96,6 +96,11 @@ dev.db.reset:
 dev.db.seed:
 	./devenv bash -c "cd app && mix run priv/repo/seeds.exs"
 
+dev.db.export.schema:
+	./devenv bash -c "./scripts/db_export_schema.sh"
+	cat tmp/schema.sql | pbcopy
+	echo "Database schema exported to tmp/schema.sql and copied to clipboard."
+
 dev.run.script:
 	cp -f $(FILE) tmp/
 	./devenv bash -c "cd app && mix run tmp/$$(basename $(FILE))"
