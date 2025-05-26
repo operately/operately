@@ -283,7 +283,7 @@ defmodule TurboConnect.TsGen do
 
         """
             #{fnName}: #{fnCall},
-            #{hookName}: (_input: #{input_type}) => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
+            #{hookName}: (input: #{input_type}) => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
         """
       end)
       |> Enum.join("\n")
