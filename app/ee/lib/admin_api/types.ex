@@ -17,6 +17,10 @@ defmodule OperatelyEE.AdminApi.Types do
     field :projects_count, :integer
     field :last_activity_at, :datetime
     field :inserted_at, :datetime
+
+    field :uuid, :string
+    field :short_id, :string
+    field :enabled_features, list_of(:string)
   end
 
   object :person do
