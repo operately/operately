@@ -224,7 +224,6 @@ function ParentGoal({ form }: { form: FormState }) {
         selected={form.fields.parentGoal}
         goals={form.config.parentGoalOptions!}
         onSelect={form.fields.setParentGoal}
-        error={!!form.errors.find((e) => e.field === "parentGoal")}
       />
     </div>
   );
