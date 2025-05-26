@@ -120,6 +120,8 @@ export type CompanyId = string;
 
 export type Id = string;
 
+export type Json = string;
+
 export interface AccessLevels {
   public?: number | null;
   company?: number | null;
@@ -2799,6 +2801,33 @@ export interface EditSubscriptionsListInput {
 
 export interface EditSubscriptionsListResult {}
 
+export interface GoalsUpdateDescriptionInput {
+  goalId?: Id | null;
+  description?: Json | null;
+}
+
+export interface GoalsUpdateDescriptionResult {
+  success?: boolean | null;
+}
+
+export interface GoalsUpdateDueDateInput {
+  goalId?: Id | null;
+  dueDate?: string | null;
+}
+
+export interface GoalsUpdateDueDateResult {
+  success?: boolean | null;
+}
+
+export interface GoalsUpdateNameInput {
+  goalId?: Id | null;
+  name?: string | null;
+}
+
+export interface GoalsUpdateNameResult {
+  success?: boolean | null;
+}
+
 export interface JoinCompanyInput {
   token?: string | null;
   password?: string | null;
@@ -3724,13 +3753,31 @@ class ApiNamespaceRoot {
   }
 }
 
+class ApiNamespaceGoals {
+  constructor(private client: ApiClient) {}
+
+  async updateDescription(input: GoalsUpdateDescriptionInput): Promise<GoalsUpdateDescriptionResult> {
+    return this.client.post("/goals/update_description", input);
+  }
+
+  async updateDueDate(input: GoalsUpdateDueDateInput): Promise<GoalsUpdateDueDateResult> {
+    return this.client.post("/goals/update_due_date", input);
+  }
+
+  async updateName(input: GoalsUpdateNameInput): Promise<GoalsUpdateNameResult> {
+    return this.client.post("/goals/update_name", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
   private apiNamespaceRoot: ApiNamespaceRoot;
+  private apiNamespaceGoals: ApiNamespaceGoals;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceGoals = new ApiNamespaceGoals(this);
   }
 
   setBasePath(basePath: string) {
@@ -6049,4 +6096,20 @@ export default {
   useUpdateTask,
   updateTaskStatus,
   useUpdateTaskStatus,
+
+  goals: {
+    updateName: defaultApiClient.apiNamespaceGoals.updateName,
+    useUpdateName: (input: GoalsUpdateNameInput) =>
+      useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
+
+    updateDueDate: defaultApiClient.apiNamespaceGoals.updateDueDate,
+    useUpdateDueDate: (input: GoalsUpdateDueDateInput) =>
+      useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
+
+    updateDescription: defaultApiClient.apiNamespaceGoals.updateDescription,
+    useUpdateDescription: (input: GoalsUpdateDescriptionInput) =>
+      useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
+        defaultApiClient.apiNamespaceGoals.updateDescription,
+      ),
+  },
 };
