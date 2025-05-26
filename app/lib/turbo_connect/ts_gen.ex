@@ -112,7 +112,7 @@ defmodule TurboConnect.TsGen do
     api_module.__namespaces__()
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
-      "  private apiNamespace#{ns}: ApiNamespace#{ns};"
+      "  public apiNamespace#{ns}: ApiNamespace#{ns};"
     end)
     |> Enum.join("\n")
   end
@@ -260,7 +260,7 @@ defmodule TurboConnect.TsGen do
       |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
         fnName = ts_function_name(name)
         hookName = ts_function_name("use_#{name}")
-        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}"
+        fnCall = "() => defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}(input)"
         input_type = ts_type(fullname) <> "Input"
         result_type = ts_type(fullname) <> "Result"
 
@@ -283,7 +283,7 @@ defmodule TurboConnect.TsGen do
 
         """
             #{fnName}: #{fnCall},
-            #{hookName}: (input: #{input_type}) => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
+            #{hookName}: () => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
         """
       end)
       |> Enum.join("\n")
