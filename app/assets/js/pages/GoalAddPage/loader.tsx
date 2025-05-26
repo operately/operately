@@ -45,7 +45,6 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   }
 
   loadedData.goals = await Goals.getGoals({
-    includeTargets: true,
     includeProjects: true,
     includeLastCheckIn: true,
     includeChampion: true,

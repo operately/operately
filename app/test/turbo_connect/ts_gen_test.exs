@@ -189,8 +189,8 @@ defmodule TurboConnect.TsGenTest do
   export class ApiClient {
     private basePath: string;
     private headers: any;
-    private apiNamespaceUsers: ApiNamespaceUsers;
-    private apiNamespaceRoot: ApiNamespaceRoot;
+    public apiNamespaceUsers: ApiNamespaceUsers;
+    public apiNamespaceRoot: ApiNamespaceRoot;
 
     constructor() {
       this.apiNamespaceUsers = new ApiNamespaceUsers(this);
