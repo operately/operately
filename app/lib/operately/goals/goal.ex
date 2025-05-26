@@ -4,7 +4,7 @@ defmodule Operately.Goals.Goal do
 
   alias Operately.WorkMaps.WorkMapItem
   alias Operately.Access.AccessLevels
-  alias Operately.Goals.{Permissions, Update}
+  alias Operately.Goals.{Permissions, Update, Target}
 
   schema "goals" do
     field :name, :string
@@ -113,18 +113,12 @@ defmodule Operately.Goals.Goal do
         ""
 
       %Ecto.Association.NotLoaded{} ->
-        ""
+        raise "Targets not loaded. Preload the targets before calling next_step/1."
 
       targets ->
         target =
           targets
-          |> Enum.filter(fn target ->
-            cond do
-              target.from < target.to -> target.value < target.to
-              target.from > target.to -> target.value > target.to
-              true -> false
-            end
-          end)
+          |> Enum.filter(&Target.done?/1)
           |> Enum.sort_by(fn target -> target.index end)
           |> List.first()
 
@@ -134,40 +128,21 @@ defmodule Operately.Goals.Goal do
 
   @impl WorkMapItem
   def progress_percentage(goal = %__MODULE__{}) do
-    targets = case goal.targets do
-      %Ecto.Association.NotLoaded{} -> Repo.preload(goal, :targets).targets
-      loaded_targets -> loaded_targets
-    end
-    target_progresses = Enum.map(targets, &target_progress_percentage/1)
+    target_progresses =
+      goal.targets
+      |> case do
+        %Ecto.Association.NotLoaded{} ->
+          raise "Targets not loaded. Preload the targets before calling progress_percentage/1."
+
+        loaded_targets ->
+          loaded_targets
+      end
+      |> Enum.map(&Target.target_progress_percentage/1)
 
     if Enum.empty?(target_progresses) do
       0
     else
       Enum.sum(target_progresses) / length(target_progresses)
-    end
-  end
-
-  defp target_progress_percentage(target) do
-    from = target.from
-    to = target.to
-    current = target.value
-
-    cond do
-      from == to -> 100
-
-      from < to ->
-        cond do
-          current > to -> 100
-          current < from -> 0
-          true -> (from - current) / (from - to) * 100
-        end
-
-      from > to ->
-        cond do
-          current < to -> 100
-          current > from -> 0
-          true -> (to - current) / (to - from) * 100
-        end
     end
   end
 
