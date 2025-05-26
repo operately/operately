@@ -338,10 +338,6 @@ function validateForm(fields: Fields, config: FormConfig): Error[] {
   if (fields.timeframe === null) errors.push({ field: "timeframe", message: "Timeframe is required" });
   if (fields.space === null && mode === "create") errors.push({ field: "space", message: "Space is required" });
 
-  if (fields.parentGoal === null && !config.isCompanyWide && mode === "create") {
-    errors.push({ field: "parentGoal", message: "Parent goal is required" });
-  }
-
   fields.targets.forEach((target, index) => {
     let { name, from, to, unit } = target;
 
