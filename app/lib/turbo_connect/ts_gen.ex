@@ -112,7 +112,7 @@ defmodule TurboConnect.TsGen do
     api_module.__namespaces__()
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
-      "  private apiNamespace#{ns}: ApiNamespace#{ns};"
+      "  public apiNamespace#{ns}: ApiNamespace#{ns};"
     end)
     |> Enum.join("\n")
   end
@@ -266,7 +266,7 @@ defmodule TurboConnect.TsGen do
 
         """
             #{fnName}: #{fnCall},
-            #{hookName}: (input: #{input_type}) => useQuery<#{input_type}, #{result_type}>(#{fnCall}),
+            #{hookName}: (input: #{input_type}) => useQuery<#{input_type}, #{result_type}>(() => #{fnCall}(input)),
         """
       end)
       |> Enum.join("\n")
@@ -283,7 +283,7 @@ defmodule TurboConnect.TsGen do
 
         """
             #{fnName}: #{fnCall},
-            #{hookName}: (input: #{input_type}) => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
+            #{hookName}: () => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
         """
       end)
       |> Enum.join("\n")
