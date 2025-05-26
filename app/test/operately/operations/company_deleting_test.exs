@@ -15,6 +15,6 @@ defmodule Operately.Operations.CompanyDeletingTest do
 
   test "it deletes a company", ctx do
     assert {:ok, _} = Operately.Operations.CompanyDeleting.run(ctx.company.id)
-    assert Operately.Companies.get_company!(ctx.company.id) == nil
+    assert Repo.get_by(Operately.Companies.Company, id: ctx.company.id) == nil
   end
 end
