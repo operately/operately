@@ -112,7 +112,7 @@ defmodule TurboConnect.TsGen do
     api_module.__namespaces__()
     |> Enum.map(fn namespace ->
       ns = Macro.camelize(if namespace == nil, do: "root", else: to_string(namespace))
-      "  private apiNamespace#{ns}: ApiNamespace#{ns};"
+      "  public apiNamespace#{ns}: ApiNamespace#{ns};"
     end)
     |> Enum.join("\n")
   end

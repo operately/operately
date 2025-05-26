@@ -13,7 +13,6 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   const goalPromise = Goals.getGoal({
     id: params.goalId,
-    includeTargets: true,
     includeChampion: true,
     includeReviewer: true,
     includeSpace: true,

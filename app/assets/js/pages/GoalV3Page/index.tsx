@@ -27,7 +27,6 @@ async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapI
           includeSpace: true,
           includeChampion: true,
           includeReviewer: true,
-          includeTargets: true,
           includePermissions: true,
           includeUnreadNotifications: true,
           includeLastCheckIn: true,
