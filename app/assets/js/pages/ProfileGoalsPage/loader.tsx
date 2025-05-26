@@ -13,7 +13,6 @@ export async function loader({ params }): Promise<LoaderResult> {
   const personPromise = People.getPerson({ id: params.id }).then((data) => data.person!);
 
   const goalsPromise = Goals.getGoals({
-    includeTargets: true,
     includeSpace: true,
     includeLastCheckIn: true,
     includeChampion: true,

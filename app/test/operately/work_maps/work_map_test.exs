@@ -17,6 +17,7 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:root_goal, :space)
       |> Factory.preload(:root_goal, :last_update)
+      |> Factory.preload(:root_goal, :targets)
     end
 
     test "returns single root item unchanged", %{root_goal: root_goal} = ctx do
@@ -36,6 +37,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
       |> Factory.preload(:parent_goal, :last_update)
       |> Factory.preload(:child_goal, :last_update)
+      |> Factory.preload(:parent_goal, :targets)
+      |> Factory.preload(:child_goal, :targets)
     end
 
     test "builds simple parent-child hierarchy", %{parent_goal: parent_goal, child_goal: child_goal} = ctx do
@@ -59,6 +62,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
+      |> Factory.preload(:parent_goal, :targets)
+      |> Factory.preload(:child_goal, :targets)
       |> Factory.preload(:parent_goal, :last_update)
       |> Factory.preload(:child_goal, :last_update)
       |> Factory.add_project(:goal_project, :space, goal: :parent_goal)
@@ -108,6 +113,9 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.preload(:level1, :last_update)
       |> Factory.preload(:level2, :last_update)
       |> Factory.preload(:level3, :last_update)
+      |> Factory.preload(:level1, :targets)
+      |> Factory.preload(:level2, :targets)
+      |> Factory.preload(:level3, :targets)
       |> Factory.add_project(:level3_project, :space, goal: :level3)
       |> Factory.preload(:level3_project, :milestones)
       |> Factory.preload(:level3_project, :last_check_in)
@@ -145,6 +153,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
       |> Factory.preload(:parent_goal, :last_update)
       |> Factory.preload(:child_goal, :last_update)
+      |> Factory.preload(:parent_goal, :targets)
+      |> Factory.preload(:child_goal, :targets)
     end
 
     test "handles orphaned items (parent not in list)", %{child_goal: child_goal, parent_goal: parent_goal} do
@@ -168,6 +178,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_goal(:goal2, :space)
       |> Factory.preload(:goal1, :last_update)
       |> Factory.preload(:goal2, :last_update)
+      |> Factory.preload(:goal1, :targets)
+      |> Factory.preload(:goal2, :targets)
       |> Factory.add_project(:project1, :space)
       |> Factory.add_project(:project2, :space)
       |> Factory.preload(:project1, :milestones)

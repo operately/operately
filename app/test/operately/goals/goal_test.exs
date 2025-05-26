@@ -16,7 +16,7 @@ defmodule Operately.Goals.GoalTest do
         |> Factory.close_goal(:goal, success: "yes")
         |> Factory.preload(:goal, :last_update)
 
-      assert Goal.status(ctx.goal) == "achieved"
+      assert Goal.status(ctx.goal) == :achieved
     end
 
     test "a closed goal with success 'no' should have status 'missed'", ctx do
@@ -25,7 +25,7 @@ defmodule Operately.Goals.GoalTest do
         |> Factory.add_goal(:goal, :space)
         |> Factory.close_goal(:goal, success: "no")
 
-      assert Goal.status(ctx.goal) == "missed"
+      assert Goal.status(ctx.goal) == :missed
     end
 
     @status [:pending, :on_track, :concern, :issue]
@@ -38,7 +38,7 @@ defmodule Operately.Goals.GoalTest do
           |> Factory.add_goal_update(:update, :goal, :creator, status: @test)
           |> Factory.reload(:goal)
 
-        assert Goal.status(ctx.goal) == Atom.to_string(@test)
+        assert Goal.status(ctx.goal) == @test
       end
     end
 
@@ -48,7 +48,7 @@ defmodule Operately.Goals.GoalTest do
         |> Factory.add_goal(:goal, :space)
         |> Factory.preload(:goal, :last_update)
 
-      assert Goal.status(ctx.goal) == "on_track"
+      assert Goal.status(ctx.goal) == :on_track
     end
   end
 end

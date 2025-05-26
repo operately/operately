@@ -11,7 +11,6 @@ export async function loader({ params }): Promise<LoaderResult> {
   const projectPromise = Projects.getProject({ id: params.projectID, includeGoal: true }).then((data) => data.project!);
   const goalsPromise = Goals.getGoals({
     includeSpace: true,
-    includeTargets: true,
   }).then((data) => data.goals!);
 
   return {

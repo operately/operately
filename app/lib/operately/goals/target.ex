@@ -42,4 +42,36 @@ defmodule Operately.Goals.Target do
 
     if unit == "%", do: "#{formatted_value}%", else: "#{formatted_value} #{unit}"
   end
+
+  def done?(target = %__MODULE__{}) do
+    cond do
+      target.from < target.to -> target.value < target.to
+      target.from > target.to -> target.value > target.to
+      true -> false
+    end
+  end
+
+  def target_progress_percentage(target = %__MODULE__{}) do
+    from = target.from
+    to = target.to
+    current = target.value
+
+    cond do
+      from == to -> 100
+
+      from < to ->
+        cond do
+          current > to -> 100
+          current < from -> 0
+          true -> (from - current) / (from - to) * 100
+        end
+
+      from > to ->
+        cond do
+          current < to -> 100
+          current > from -> 0
+          true -> (to - current) / (to - from) * 100
+        end
+    end
+  end
 end

@@ -10,7 +10,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   inputs do
     field :space_id, :string
 
-    field :include_targets, :boolean
     field :include_projects, :boolean
     field :include_space, :boolean
     field :include_last_check_in, :boolean
@@ -36,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   defp load(person, inputs) do
     include_filters = extract_include_filters(inputs)
 
-    (from p in Goal, as: :goal, preload: [:parent_goal])
+    (from p in Goal, as: :goal, preload: [:parent_goal, :targets])
     |> Goal.scope_space(inputs[:space_id])
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)
@@ -47,7 +46,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   defp include_requested(query, requested) do
     Enum.reduce(requested, query, fn include, q ->
       case include do
-        :include_targets -> from p in q, preload: [:targets]
         :include_projects -> from p in q, preload: [projects: [:champion, :reviewer]]
         :include_space -> from p in q, preload: [:group]
         :include_champion -> from p in q, preload: [:champion]
