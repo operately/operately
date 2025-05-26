@@ -7,7 +7,7 @@ defmodule Operately.Companies.Company do
     has_many :access_groups, Operately.Access.Group, foreign_key: :company_id
 
     has_many :goals, Operately.Goals.Goal, foreign_key: :company_id
-    has_many :people, Operately.People.Person, foreign_key: :company_id
+    has_many :people, Operately.People.Person, foreign_key: :company_id, where: [suspended_at: nil]
     has_many :spaces, Operately.Groups.Group, foreign_key: :company_id
     has_many :projects, Operately.Projects.Project, foreign_key: :company_id
 
