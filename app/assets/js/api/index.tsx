@@ -3770,8 +3770,8 @@ class ApiNamespaceGoals {
 export class ApiClient {
   private basePath: string;
   private headers: any;
-  private apiNamespaceRoot: ApiNamespaceRoot;
-  private apiNamespaceGoals: ApiNamespaceGoals;
+  public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceGoals: ApiNamespaceGoals;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
@@ -6097,15 +6097,15 @@ export default {
 
   goals: {
     updateName: defaultApiClient.apiNamespaceGoals.updateName,
-    useUpdateName: (input: GoalsUpdateNameInput) =>
+    useUpdateName: (_input: GoalsUpdateNameInput) =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
 
     updateDueDate: defaultApiClient.apiNamespaceGoals.updateDueDate,
-    useUpdateDueDate: (input: GoalsUpdateDueDateInput) =>
+    useUpdateDueDate: (_input: GoalsUpdateDueDateInput) =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
 
     updateDescription: defaultApiClient.apiNamespaceGoals.updateDescription,
-    useUpdateDescription: (input: GoalsUpdateDescriptionInput) =>
+    useUpdateDescription: (_input: GoalsUpdateDescriptionInput) =>
       useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceGoals.updateDescription,
       ),
