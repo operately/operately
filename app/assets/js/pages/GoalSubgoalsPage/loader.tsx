@@ -11,7 +11,6 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   const goalPromise = Goals.getGoal({
     id: params.id,
-    includeTargets: true,
     includeProjects: true,
     includeLastCheckIn: true,
     includePermissions: true,

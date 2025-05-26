@@ -17,7 +17,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field :include_reviewer, :boolean
     field :include_space, :boolean
     field :include_space_members, :boolean
-    field :include_targets, :boolean
     field :include_access_levels, :boolean
     field :include_privacy, :boolean
     field :include_potential_subscribers, :boolean
@@ -67,9 +66,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_reviewer: :reviewer,
       include_space: :group,
       include_space_members: [group: [:members, :company]],
-      include_targets: [targets: from(t in Target, order_by: t.index)],
       include_potential_subscribers: [:reviewer, :champion, group: :members],
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
+      always_include: [targets: from(t in Target, order_by: t.index)],
       always_include: :parent_goal,
     ])
   end

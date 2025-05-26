@@ -36,7 +36,6 @@ async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal({
       id: params.id,
       includeSpace: true,
-      includeTargets: true,
       includeProjects: true,
       includeLastCheckIn: true,
       includePermissions: true,
