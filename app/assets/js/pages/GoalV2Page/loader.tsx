@@ -21,7 +21,6 @@ export async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includeChampion: true,
       includeReviewer: true,
-      includeTargets: true,
       includePermissions: true,
       includeUnreadNotifications: true,
       includeLastCheckIn: true,

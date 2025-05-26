@@ -23,7 +23,6 @@ async function loader({ params }): Promise<LoaderResult> {
     goal: await Goals.getGoal({
       id: params.goalId,
       includeSpace: true,
-      includeTargets: true,
       includeReviewer: true,
       includePotentialSubscribers: true,
     }).then((data) => data.goal!),

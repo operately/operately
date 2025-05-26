@@ -2,9 +2,9 @@ defmodule Operately.Goals.Goal do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  alias Operately.WorkMaps.WorkMapItem
   alias Operately.Access.AccessLevels
-  alias Operately.Goals.Permissions
-  alias Operately.Goals.Update
+  alias Operately.Goals.{Permissions, Update, Target}
 
   schema "goals" do
     field :name, :string
@@ -83,14 +83,66 @@ defmodule Operately.Goals.Goal do
     ])
   end
 
+  @behaviour WorkMapItem
+
+  @impl WorkMapItem
   def status(goal = %__MODULE__{}) do
     cond do
-      goal.success == "yes" -> "achieved"
-      goal.success == "no" -> "missed"
-      goal.closed_at -> "completed"
-      Operately.Goals.outdated?(goal) -> "outdated"
-      goal.last_update_status -> Atom.to_string(goal.last_update_status)
-      true -> "on_track"
+      goal.success == "yes" -> :achieved
+      goal.success == "no" -> :missed
+      goal.closed_at -> :completed
+      Operately.Goals.outdated?(goal) -> :outdated
+      goal.last_update_status -> goal.last_update_status
+      true -> :on_track
+    end
+  end
+
+  @impl WorkMapItem
+  def state(goal = %__MODULE__{}) do
+    if goal.closed_at do
+      :closed
+    else
+      :active
+    end
+  end
+
+  @impl WorkMapItem
+  def next_step(goal = %__MODULE__{}) do
+    case goal.targets do
+      [] ->
+        ""
+
+      %Ecto.Association.NotLoaded{} ->
+        raise "Targets not loaded. Preload the targets before calling next_step/1."
+
+      targets ->
+        target =
+          targets
+          |> Enum.filter(&Target.done?/1)
+          |> Enum.sort_by(fn target -> target.index end)
+          |> List.first()
+
+        if target, do: target.name, else: ""
+    end
+  end
+
+  @impl WorkMapItem
+  def progress_percentage(goal = %__MODULE__{}) do
+    target_progresses =
+      goal.targets
+      |> case do
+        %Ecto.Association.NotLoaded{} ->
+          raise "Targets not loaded. Preload the targets before calling progress_percentage/1."
+
+        loaded_targets ->
+          loaded_targets
+      end
+      |> Enum.map(&Target.target_progress_percentage/1)
+
+    if Enum.empty?(target_progresses) do
+      0
+    else
+      Enum.sum(target_progresses) / length(target_progresses)
     end
   end
 

@@ -89,42 +89,6 @@ defmodule Operately.Goals do
     |> Repo.insert()
   end
 
-  def progress_percentage(goal) do
-    targets = Repo.preload(goal, :targets).targets
-    target_progresses = Enum.map(targets, &target_progress_percentage/1)
-
-    if Enum.empty?(target_progresses) do
-      0
-    else
-      Enum.sum(target_progresses) / length(target_progresses)
-    end
-  end
-
-  def target_progress_percentage(target) do
-    from = target.from
-    to = target.to
-    current = target.value
-
-    cond do
-      from == to ->
-        100
-
-      from < to ->
-        cond do
-          current > to -> 100
-          current < from -> 0
-          true -> (from - current) / (from - to) * 100
-        end
-
-      from > to ->
-        cond do
-          current < to -> 100
-          current > from -> 0
-          true -> (to - current) / (to - from) * 100
-        end
-    end
-  end
-
   def outdated?(goal) do
     if goal.next_update_scheduled_at do
       today = Date.utc_today()
