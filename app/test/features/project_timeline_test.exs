@@ -36,6 +36,13 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_addition()
   end
 
+  feature "adding a project milestone without due date raises error", ctx do
+    ctx
+    |> Steps.given_a_project_with_a_defined_timeline_exists()
+    |> Steps.add_a_milestone_without_due_date()
+    |> Steps.assert_milestone_without_due_date_error()
+  end
+
   feature "viewing project progress for an ongoing project", ctx do
     ctx
     |> Steps.given_a_project_with_a_defined_timeline_exists()
