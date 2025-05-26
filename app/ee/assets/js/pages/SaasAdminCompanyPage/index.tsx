@@ -1,16 +1,16 @@
-import * as React from "react";
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Pages from "@/components/Pages";
 import * as AdminApi from "@/ee/admin_api";
+import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
 
-import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import { IconFlare } from "@tabler/icons-react";
+import { Avatar } from "turboui";
 
-import { useLoadedData } from "./loader";
 import { useBoolState } from "@/hooks/useBoolState";
+import { useLoadedData } from "./loader";
 
 export { loader } from "./loader";
 
@@ -27,7 +27,14 @@ export function Page() {
 
           <div className="text-3xl font-semibold">{company.name}</div>
           <OwnersSection company={company} />
+
+          <h2 className="mt-8 font-bold">Stats</h2>
           <StatsSection company={company} />
+
+          <h2 className="mt-8 font-bold">Information</h2>
+          <Info company={company} />
+
+          <h2 className="mt-8 font-bold">Activity</h2>
           <ActivitySection company={company} />
         </Paper.Body>
       </Paper.Root>
@@ -35,9 +42,36 @@ export function Page() {
   );
 }
 
+function Info({ company }: { company: AdminApi.Company }) {
+  return (
+    <div className="border-y border-stroke-base py-3 px-1 mt-2 text-sm flex flex-col gap-2">
+      <div className="flex items-center gap-3">
+        <div className="font-medium w-40">Short ID</div>
+        <div className="text-blue-500">
+          <code>{company.shortId!}</code>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="font-medium w-40">Database ID</div>
+        <div className="text-blue-500">
+          <code>{company.uuid!}</code>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <div className="font-medium w-40">Enabled Features</div>
+        <div className="text-blue-500">
+          <code>{company.enabledFeatures!.join(", ") || "None"}</code>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function StatsSection({ company }: { company: AdminApi.Company }) {
   return (
-    <div className="border-y border-stroke-base py-3 mt-8">
+    <div className="border-y border-stroke-base py-3 mt-2">
       <div className="grid grid-cols-4 gap-4 w-full">
         <Stat title="People" value={company.peopleCount!} />
         <Stat title="Spaces" value={company.spacesCount!} />
@@ -82,7 +116,7 @@ function ActivitySection({ company }: { company: AdminApi.Company }) {
   const activities = data.activities;
 
   return (
-    <div className="mt-8">
+    <div className="mt-3">
       <div className="border-y border-stroke-base py-2 flex items-center gap-4 bg-surface-dimmed uppercase text-xs font-bold">
         <div className="px-4 w-32">Time</div>
         <div className="px-4">Activity Description</div>

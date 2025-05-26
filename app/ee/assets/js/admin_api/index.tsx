@@ -134,6 +134,9 @@ export interface Company {
   projectsCount?: number | null;
   lastActivityAt?: string | null;
   insertedAt?: string | null;
+  uuid?: string | null;
+  shortId?: string | null;
+  enabledFeatures?: string[] | null;
 }
 
 export interface Person {
@@ -197,7 +200,7 @@ class ApiNamespaceRoot {
 export class ApiClient {
   private basePath: string;
   private headers: any;
-  private apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceRoot: ApiNamespaceRoot;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
