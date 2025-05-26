@@ -10,7 +10,6 @@ interface LoaderResult {
 export async function loader(): Promise<LoaderResult> {
   const [goals, projects] = await Promise.all([
     Goals.getGoals({
-      includeTargets: true,
       includeSpace: true,
       includeLastCheckIn: true,
       includeChampion: true,

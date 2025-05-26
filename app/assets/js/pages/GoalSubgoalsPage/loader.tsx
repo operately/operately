@@ -19,7 +19,6 @@ export async function loader({ params }): Promise<LoaderResult> {
   }).then((data) => data.goal!);
 
   const goalsPromise = Goals.getGoals({
-    includeTargets: true,
     includeSpace: true,
     includeLastCheckIn: true,
     includeChampion: true,

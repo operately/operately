@@ -1782,7 +1782,6 @@ export interface GetGoalProgressUpdatesResult {
 
 export interface GetGoalsInput {
   spaceId?: string | null;
-  includeTargets?: boolean | null;
   includeProjects?: boolean | null;
   includeSpace?: boolean | null;
   includeLastCheckIn?: boolean | null;
