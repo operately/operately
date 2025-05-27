@@ -7,6 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframeTest do
   import Operately.GoalsFixtures
 
   alias Operately.Access.Binding
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -137,20 +138,97 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframeTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup :register_and_log_in_account
+    setup ctx do
+      goal = create_goal(ctx)
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+
+      Map.merge(ctx, %{goal: goal, people: people})
+    end
+
+    test "creates subscription list for goal timeframe editing", ctx do
+      assert {200, _} = request(ctx.conn, ctx.goal, %{
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
+      })
+
+      thread = fetch_thread(ctx.goal)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: thread.id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.any?(list.subscriptions, &(&1.person_id == p.id))
+      end)
+
+      assert thread.subscription_list_id == list.id
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      people = ctx.people
+      content = rich_text(mentioned_people: people)
+
+      assert {200, _} = mutation(ctx.conn, :edit_goal_timeframe, %{
+        id: Paths.goal_id(ctx.goal),
+        timeframe: %{
+          type: "days",
+          start_date: Date.to_string(~D{2024-08-20}),
+          end_date: Date.to_string(~D{2024-08-25}),
+        },
+        comment: content,
+        send_notifications_to_everyone: false,
+        subscriber_ids: []
+      })
+
+      thread = fetch_thread(ctx.goal)
+      subscriptions = fetch_subscriptions(thread.id)
+
+      assert length(subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.any?(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      content = rich_text(mentioned_people: people)
+
+      assert {200, _} = request(ctx.conn, ctx.goal, %{
+        comment: content,
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1)))
+      })
+
+      thread = fetch_thread(ctx.goal)
+      subscriptions = fetch_subscriptions(thread.id)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.any?(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
   #
   # Steps
   #
 
-  defp request(conn, goal) do
-    mutation(conn, :edit_goal_timeframe, %{
+  defp request(conn, goal, attrs \\ %{}) do
+    mutation(conn, :edit_goal_timeframe, Map.merge(attrs, %{
       id: Paths.goal_id(goal),
       timeframe: %{
         type: "days",
         start_date: Date.to_string(~D{2024-08-20}),
         end_date: Date.to_string(~D{2024-08-25}),
       },
-      comment: rich_text("Some comment") |> Jason.encode!(),
-    })
+      comment: rich_text("Some comment", :as_string),
+    }))
   end
 
   defp assert_timeframe_edited(goal) do
@@ -187,5 +265,24 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframeTest do
       id: ctx.person.id,
       access_level: Binding.full_access(),
     }])
+  end
+
+  defp fetch_thread(goal) do
+    import Ecto.Query, only: [from: 2]
+
+    activity = from(a in Operately.Activities.Activity,
+      where: a.action == "goal_timeframe_editing" and a.content["goal_id"] == ^goal.id,
+      order_by: [desc: a.inserted_at],
+      limit: 1,
+      preload: [:comment_thread]
+    )
+    |> Repo.one()
+
+    activity.comment_thread
+  end
+
+  defp fetch_subscriptions(thread_id) do
+    {:ok, list} = SubscriptionList.get(:system, parent_id: thread_id, opts: [preload: :subscriptions])
+    list.subscriptions
   end
 end

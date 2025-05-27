@@ -43,7 +43,7 @@ defmodule Operately.Support.Notifications do
     |> Repo.all()
   end
 
-  def notification_message(%Person{id: id, full_name: full_name}) do
+  def notification_message(%Person{id: id, full_name: full_name}, opts \\ []) do
     %{
       type: :doc,
       content: [
@@ -61,6 +61,12 @@ defmodule Operately.Support.Notifications do
         }
       ]
     }
-    |> Jason.encode!()
+    |> then(fn msg ->
+      if Keyword.get(opts, :encoded, true) do
+        Jason.encode!(msg)
+      else
+        msg
+      end
+    end)
   end
 end

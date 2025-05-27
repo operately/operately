@@ -4,57 +4,100 @@ defmodule Operately.Operations.GoalClosingTest do
 
   import Ecto.Query, only: [from: 2]
 
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-  import Operately.GoalsFixtures
-  import Operately.GroupsFixtures
-
   alias Operately.Repo
-  alias Operately.Goals
-  alias Operately.Activities.Activity
+  alias Operately.Support.RichText
+  alias Operately.Operations.GoalClosing
 
-  setup do
-    company = company_fixture()
-    author = person_fixture_with_account(%{company_id: company.id})
-    champion = person_fixture_with_account(%{company_id: company.id})
-    group = group_fixture(author)
+  setup ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+    |> Factory.add_space_member(:champion, :space)
+    |> Factory.add_space_member(:reviewer, :space)
+    |> Factory.add_space_member(:member1, :space)
+    |> Factory.add_space_member(:member2, :space)
+    |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+  end
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      goal_fixture(author, %{space_id: group.id, champion_id: champion.id, targets: []})
-    end)
+  describe "notifications" do
+    test "Closing goal notifies everyone", ctx do
+      Oban.Testing.with_testing_mode(:manual, fn -> close_goal(ctx, true, []) end)
 
-    goal = Goals.list_goals() |> hd()
+      action = "goal_closing"
+      activity = get_activity(ctx.goal, action)
 
-    {:ok, author: author, goal: goal}
+      assert notifications_count(action: action) == 0
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+      notified_people_ids = Enum.map(notifications, & &1.person_id)
+
+      assert notifications_count(action: action) == 4
+
+      [ctx.member1, ctx.member2, ctx.reviewer, ctx.champion]
+      |> Enum.each(fn person ->
+        assert Enum.member?(notified_people_ids, person.id)
+      end)
+    end
+
+    test "Closing goal notifies selected people", ctx do
+      Oban.Testing.with_testing_mode(:manual, fn -> close_goal(ctx, false, [ctx.reviewer.id, ctx.champion.id]) end)
+
+      action = "goal_closing"
+      activity = get_activity(ctx.goal, action)
+
+      assert notifications_count(action: action) == 0
+
+      perform_job(activity.id)
+      notifications = fetch_notifications(activity.id, action: action)
+      notified_people_ids = Enum.map(notifications, & &1.person_id)
+
+      # reviewer + champion
+      assert notifications_count(action: action) == 2
+      assert ctx.reviewer.id in notified_people_ids
+      assert ctx.champion.id in notified_people_ids
+    end
+
+    test "person without permissions is not notified", ctx do
+      ctx = Factory.add_space(ctx, :other_space)
+      ctx = Factory.add_space_member(ctx, :non_space_member, :other_space)
+
+      close_goal(ctx, true, [])
+
+      action = "goal_closing"
+      activity = get_activity(ctx.goal, action)
+
+      notifications = fetch_notifications(activity.id, action: action)
+      notified_people_ids = Enum.map(notifications, & &1.person_id)
+
+      refute ctx.non_space_member.id in notified_people_ids
+    end
   end
 
   test "GoalClosing operation updates goal", ctx do
     assert ctx.goal.closed_at == nil
     assert ctx.goal.closed_by_id == nil
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalClosing.run(ctx.author, ctx.goal, "success", "{}")
-    end)
-
-    goal = Repo.reload(ctx.goal)
+    {:ok, goal} = close_goal(ctx, false, [])
 
     assert goal.closed_at != nil
-    assert goal.closed_by_id == ctx.author.id
+    assert goal.closed_by_id == ctx.creator.id
   end
 
-  test "GoalClosing operation creates activity, thread and notification", ctx do
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalClosing.run(ctx.author, ctx.goal, "success", "{}")
-    end)
+  defp close_goal(ctx, send_to_everyone, subscriber_ids) do
+    GoalClosing.run(ctx.creator, ctx.goal, %{
+      success: "success",
+      content: RichText.rich_text("Closing comments"),
+      subscription_parent_type: :comment_thread,
+      send_to_everyone: send_to_everyone,
+      subscriber_ids: subscriber_ids
+    })
+  end
 
-    activity = from(a in Activity, where: a.action == "goal_closing" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()
-
-    assert activity.comment_thread_id != nil
-    assert 0 == notifications_count()
-
-    perform_job(activity.id)
-
-    assert 1 == notifications_count()
-    assert nil != fetch_notification(activity.id)
+  defp get_activity(goal, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["goal_id"] == ^goal.id
+    )
+    |> Repo.one()
   end
 end

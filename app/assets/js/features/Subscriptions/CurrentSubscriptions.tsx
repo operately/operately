@@ -19,7 +19,8 @@ interface CurrentSubscriptionsProps {
     | "project_retrospective"
     | "resource_hub_document"
     | "resource_hub_file"
-    | "resource_hub_link";
+    | "resource_hub_link"
+    | "comment_thread";
   callback: () => void;
 }
 
