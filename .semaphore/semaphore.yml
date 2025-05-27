@@ -48,11 +48,11 @@ blocks:
           - make test.build
 
       jobs:
-        - name: Lint
+        - name: Turbo Lint
           commands:
             - make turboui.build
 
-        - name: Test
+        - name: Turbo Test
           commands:
             - make turboui.test
 
