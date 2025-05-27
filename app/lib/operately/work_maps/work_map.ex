@@ -99,7 +99,8 @@ defmodule Operately.WorkMaps.WorkMap do
       parent_goal_id = Map.get(filters, :parent_goal_id)
       other_filters = Map.drop(filters, [:parent_goal_id])
 
-      filtered_items =
+      # First, get items that match the other filters
+      directly_matched_items =
         if Enum.empty?(other_filters) do
           flat_items
         else
@@ -109,29 +110,37 @@ defmodule Operately.WorkMaps.WorkMap do
         end
 
       if parent_goal_id do
-        # For parent_goal_id filter, we need all direct children of the parent_goal and their entire subtree
+        # For parent_goal_id filter, we need all direct children of the parent_goal that match the other filters
         direct_children =
-          Enum.filter(filtered_items, fn item ->
+          Enum.filter(directly_matched_items, fn item ->
             item.parent_id == parent_goal_id
           end)
 
+        # When parent_goal_id is specified, we only want direct children and their descendants
+        # that match the other filters
         direct_children_ids = MapSet.new(direct_children, fn item -> item.id end)
-        descendants = collect_subtree_items(direct_children_ids, filtered_items)
+        descendants = collect_subtree_items(direct_children_ids, directly_matched_items)
 
         Enum.concat(direct_children, descendants)
       else
-        filtered_item_ids = MapSet.new(filtered_items, fn item -> item.id end)
+        parent_ids = collect_all_parent_ids(directly_matched_items, all_items_map)
 
-        # Fix parent relationships
+        parent_items = Enum.filter(flat_items, fn item ->
+          MapSet.member?(parent_ids, item.id)
+        end)
+
+        # Combine matched items with their parents
+        filtered_items = Enum.concat(directly_matched_items, parent_items)
+        filtered_items = Enum.uniq_by(filtered_items, fn item -> item.id end)
+
+        # Reset children so they can be rebuilt correctly
         Enum.map(filtered_items, fn item ->
-          new_parent_id = find_nearest_matching_parent(item, item.parent_id, all_items_map, filtered_item_ids)
-          %{item | parent_id: new_parent_id, children: []}
+          %{item | children: []}
         end)
       end
     end
   end
 
-  # Checks if an item matches all the provided filters
   defp matches_filters?(item, filters) do
     Enum.all?(filters, fn {filter_key, filter_value} ->
       if is_nil(filter_value) do
@@ -151,24 +160,24 @@ defmodule Operately.WorkMaps.WorkMap do
     end)
   end
 
-  # Finds the nearest parent that passes the filter, or returns nil if none exists
-  defp find_nearest_matching_parent(_item, nil, _all_items_map, _filtered_item_ids) do
-    nil
+  defp collect_all_parent_ids(items, all_items_map) do
+    parent_ids = MapSet.new()
+
+    Enum.reduce(items, parent_ids, fn item, acc ->
+      collect_parent_ids_for_item(item, all_items_map, acc)
+    end)
   end
 
-  defp find_nearest_matching_parent(item, parent_id, all_items_map, filtered_item_ids) do
-    # If this parent is in the filtered items, use it
-    if MapSet.member?(filtered_item_ids, parent_id) do
-      parent_id
-    else
-      # Otherwise, look for this parent's parent
-      parent = Map.get(all_items_map, parent_id)
+  defp collect_parent_ids_for_item(%{parent_id: nil}, _all_items_map, acc), do: acc
+  defp collect_parent_ids_for_item(%{parent_id: parent_id}, all_items_map, acc) do
+    acc = MapSet.put(acc, parent_id)
 
-      if parent do
-        find_nearest_matching_parent(item, parent.parent_id, all_items_map, filtered_item_ids)
-      else
-        nil
-      end
+    parent = Map.get(all_items_map, parent_id)
+
+    if parent do
+      collect_parent_ids_for_item(parent, all_items_map, acc)
+    else
+      acc
     end
   end
 
@@ -183,10 +192,8 @@ defmodule Operately.WorkMaps.WorkMap do
     else
       child_ids = MapSet.new(direct_children, fn item -> item.id end)
 
-      # Recursively get all their descendants
       descendants = collect_subtree_items(child_ids, all_items)
 
-      # Return the direct children plus all their descendants
       Enum.concat(direct_children, descendants)
     end
   end

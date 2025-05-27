@@ -165,7 +165,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       })
     end
 
-    test "given parent and greatgrandchild have the same space, but child and grandchild have another space, returns only parent and greatgrandchild", ctx do
+    test "given parent and greatgrandchild have the same space, but child and grandchild have another space, returns full hierarchy with parent, child, grandchild and greatgrandchild", ctx do
       ctx =
         ctx
         |> Factory.add_goal(:child, :space2, parent_goal: :goal1)
@@ -178,13 +178,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert_work_map_structure(work_map, ctx, %{
         project1: [],
         goal1: %{
-          great_grand_child: [],
-          grand_child_project: []
+          child: %{
+            grand_child: %{
+              great_grand_child: []
+            },
+            grand_child_project: []
+          }
         }
       })
     end
 
-    test "given parent and child have different spaces, returns child as root", ctx do
+    test "given parent and child have different spaces, returns full hierarchy including parent", ctx do
       ctx = Factory.add_goal(ctx, :child, :space1, parent_goal: :root_goal)
 
       {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, space_id: ctx.space1.id})
@@ -192,7 +196,9 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert_work_map_structure(work_map, ctx, %{
         goal1: [],
         project1: [],
-        child: []
+        root_goal: %{
+          child: []
+        }
       })
     end
   end
@@ -258,7 +264,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       })
     end
 
-    test "given parent and greatgrandchild have the same owner, but child and grandchild have another owner, returns only parent and greatgrandchild", ctx do
+    test "given parent and greatgrandchild have the same owner, but child and grandchild have another owner, returns full hierarchy with parent, child, grandchild and greatgrandchild", ctx do
       ctx =
         ctx
         |> Factory.add_goal(:child, :space, parent_goal: :goal1, champion: :member)
@@ -271,13 +277,17 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert_work_map_structure(work_map, ctx, %{
         project1: [],
         goal1: %{
-          great_grand_child: [],
-          grand_child_project: []
+          child: %{
+            grand_child: %{
+              great_grand_child: []
+            },
+            grand_child_project: []
+          }
         }
       })
     end
 
-    test "given parent and child have different owners, returns child as root", ctx do
+    test "given parent and child have different owners, returns full hierarchy including parent", ctx do
       ctx = Factory.add_goal(ctx, :child, :space, parent_goal: :goal2, champion: :creator)
 
       {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
@@ -285,7 +295,9 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       assert_work_map_structure(work_map, ctx, %{
         goal1: [],
         project1: [],
-        child: []
+        goal2: %{
+          child: []
+        }
       })
     end
   end
