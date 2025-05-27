@@ -1,17 +1,17 @@
 import * as Api from "@/api";
-import * as React from "react";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink, Link } from "turboui";
 
-import classnames from "classnames";
 import { Paths } from "@/routes/paths";
-import plurarize from "@/utils/plurarize";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
+import plurarize from "@/utils/plurarize";
+import classnames from "classnames";
 
 export default { name: "LobbyPage", loader, Page } as PageModule;
 
@@ -42,19 +42,16 @@ function Page() {
         <div className="font-medium mt-4 sm:mt-8">Hey there, {firstName}! How's it going?</div>
         <div className="font-medium hidden sm:block">Select one of your organizations below to get started:</div>
         <CompanyCards companies={companies} />
-        <AdminsAndDevLinks />
+        <AdminsLink />
       </div>
     </Pages.Page>
   );
 }
 
-function AdminsAndDevLinks() {
+function AdminsLink() {
   const { account } = Pages.useLoadedData<LoaderResult>();
 
-  const isAdmin = account.siteAdmin;
-  const isDev = window.appConfig.showDevBar;
-
-  if (!isAdmin && !isDev) return null;
+  if (!account.siteAdmin) return null;
 
   const adminLink = (
     <Link to="/admin" className="font-medium">
@@ -62,29 +59,7 @@ function AdminsAndDevLinks() {
     </Link>
   );
 
-  const designLink = (
-    <Link to="/__design__" className="font-medium">
-      Design System
-    </Link>
-  );
-
-  if (isAdmin && isDev) {
-    return (
-      <div className="font-medium mt-8">
-        Or, visit the {adminLink} or the {designLink}.
-      </div>
-    );
-  }
-
-  if (isAdmin) {
-    return <div className="font-medium mt-8">Or, visit the {adminLink}.</div>;
-  }
-
-  if (isDev) {
-    return <div className="font-medium mt-8">Or, visit the {designLink}.</div>;
-  }
-
-  throw new Error("This should never happen");
+  return <div className="font-medium mt-8">Or, visit the {adminLink}.</div>;
 }
 
 function CompanyCards({ companies }: { companies: Api.Company[] }) {
