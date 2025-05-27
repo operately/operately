@@ -6096,15 +6096,16 @@ export default {
   useUpdateTaskStatus,
 
   goals: {
-    updateName: defaultApiClient.apiNamespaceGoals.updateName,
+    updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
 
-    updateDueDate: defaultApiClient.apiNamespaceGoals.updateDueDate,
+    updateDueDate: (input: GoalsUpdateDueDateInput) => defaultApiClient.apiNamespaceGoals.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
 
-    updateDescription: defaultApiClient.apiNamespaceGoals.updateDescription,
+    updateDescription: (input: GoalsUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceGoals.updateDescription(input),
     useUpdateDescription: () =>
       useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceGoals.updateDescription,

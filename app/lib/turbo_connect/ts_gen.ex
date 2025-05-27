@@ -260,13 +260,13 @@ defmodule TurboConnect.TsGen do
       |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
         fnName = ts_function_name(name)
         hookName = ts_function_name("use_#{name}")
-        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}"
+        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}(input)"
         input_type = ts_type(fullname) <> "Input"
         result_type = ts_type(fullname) <> "Result"
 
         """
-            #{fnName}: #{fnCall},
-            #{hookName}: (input: #{input_type}) => useQuery<#{input_type}, #{result_type}>(() => #{fnCall}(input)),
+            #{fnName}: (input: #{input_type}) => #{fnCall},
+            #{hookName}: (input: #{input_type}) => useQuery<#{input_type}, #{result_type}>(() => #{fnCall}),
         """
       end)
       |> Enum.join("\n")
@@ -282,7 +282,7 @@ defmodule TurboConnect.TsGen do
         result_type = ts_type(fullname) <> "Result"
 
         """
-            #{fnName}: #{fnCall},
+            #{fnName}: (input: #{input_type}) => #{fnCall}(input),
             #{hookName}: () => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
         """
       end)
