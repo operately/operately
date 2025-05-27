@@ -17,9 +17,13 @@ import { assertDefined, assertPresent } from "../../utils/assertions";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
+function pageCacheKey(id: string): string {
+  return `v7-GoalPage.goal-${id}`;
+}
+
 async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[], Activities.Activity[]]> {
   return await PageCache.fetch({
-    cacheKey: `v7-GoalPage.goal-${params.id}`,
+    cacheKey: pageCacheKey(params.id),
     refreshCache,
     fetchFn: () =>
       Promise.all([
@@ -93,9 +97,25 @@ function Page() {
       throw new Error("Function not implemented.");
     },
 
+    updateGoalName: function (name: string): Promise<boolean> {
+      if (name.trim() === "") {
+        return Promise.resolve(false);
+      } else {
+        return Api.goals
+          .updateName({ goalId: goal.id!, name })
+          .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
+          .then(() => true)
+          .catch((e) => {
+            console.error("Failed to update goal name", e);
+            return false;
+          });
+      }
+    },
+
     updateDescription: function (description: any | null): Promise<boolean> {
       return Api.goals
         .updateDescription({ goalId: goal.id!, description: JSON.stringify(description) })
+        .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
         .then(() => true)
         .catch((e) => {
           console.error("Failed to update goal description", e);

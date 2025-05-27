@@ -1,6 +1,7 @@
 import { IconChevronRight } from "@tabler/icons-react";
 import React from "react";
 import { GoalPage } from ".";
+import EditableText from "../EditableText";
 import { IconGoal } from "../icons";
 import { BlackLink } from "../Link";
 import { PrivacyIndicator } from "../PrivacyIndicator";
@@ -20,7 +21,13 @@ export function PageHeader(props: GoalPage.Props) {
         <Breadcrumbs navigation={navigation} />
 
         <div className="flex items-center gap-2">
-          <div className="font-semibold text-lg">{props.goalName}</div>
+          <EditableText
+            className="font-semibold text-lg"
+            text={props.goalName}
+            onSave={props.updateGoalName}
+            readonly={!props.canEdit}
+            trimBeforeSave
+          />
 
           <PrivacyIndicator
             resourceType="goal"
@@ -52,47 +59,3 @@ function Breadcrumbs({ navigation }: { navigation: { to: string; label: string }
     </div>
   );
 }
-
-// export function PageHeader(props: GoalPage.Props) {
-//   return (
-//     <div className="border-b border-stroke-base sm:pt-6 pb-4">
-//       <ParentGoal {...props} />
-
-//       <div className="sm:flex sm:items-center justify-between gap-4">
-//         <div>
-//           <h1 className="text-3xl font-bold inline">{props.goalName}</h1>
-
-//           <PrivacyIndicator
-//             resourceType="goal"
-//             privacyLevel={props.privacyLevel}
-//             spaceName={props.spaceName}
-//             className="inline-block ml-3 align-[-2px]"
-//           />
-
-//           <StatusBadge status={props.status} hideIcon className="inline-block shrink-0 ml-3 align-[5px]" />
-//         </div>
-
-//         <Buttons {...props} />
-//       </div>
-//     </div>
-//   );
-// }
-
-// function Buttons(props: GoalPage.Props) {
-//   return (
-//     <div className="flex items-center gap-2 mt-4 sm:mt-0">
-//       {props.canEdit && (
-//         <SecondaryButton size="sm" linkTo={props.editGoalLink}>
-//           <div className="flex items-center gap-1.5">
-//             <IconPencil size="16" /> Edit
-//           </div>
-//         </SecondaryButton>
-//       )}
-//       {props.canEdit && (
-//         <PrimaryButton size="sm" linkTo={props.newCheckInLink}>
-//           Check-In
-//         </PrimaryButton>
-//       )}
-//     </div>
-//   );
-// }
