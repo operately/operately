@@ -8,7 +8,8 @@
     "assets/js/api/index.tsx",
     "ee/assets/js/admin_api/index.tsx",
     "**/__tests__/**",
-    "assets/js/models/companies/hasFeature.tsx"
+    "assets/js/models/companies/hasFeature.tsx",
+    "assets/js/components/Callouts/index.tsx"
   ],
   "ignoreDependencies": ["@types/jest", "turboui"],
 
