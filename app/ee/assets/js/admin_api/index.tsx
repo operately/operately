@@ -134,6 +134,9 @@ export interface Company {
   projectsCount?: number | null;
   lastActivityAt?: string | null;
   insertedAt?: string | null;
+  uuid?: string | null;
+  shortId?: string | null;
+  enabledFeatures?: string[] | null;
 }
 
 export interface Person {

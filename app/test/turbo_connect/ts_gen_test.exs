@@ -294,10 +294,10 @@ defmodule TurboConnect.TsGenTest do
 
     users: {
       getUser: defaultApiClient.apiNamespaceUsers.getUser,
-      useGetUser: (input: UsersGetUserInput) => useQuery<UsersGetUserInput, UsersGetUserResult>(defaultApiClient.apiNamespaceUsers.getUser),
+      useGetUser: (input: UsersGetUserInput) => useQuery<UsersGetUserInput, UsersGetUserResult>(() => defaultApiClient.apiNamespaceUsers.getUser(input)),
 
       createUser: defaultApiClient.apiNamespaceUsers.createUser,
-      useCreateUser: (input: UsersCreateUserInput) => useMutation<UsersCreateUserInput, UsersCreateUserResult>(defaultApiClient.apiNamespaceUsers.createUser),
+      useCreateUser: () => useMutation<UsersCreateUserInput, UsersCreateUserResult>(defaultApiClient.apiNamespaceUsers.createUser),
 
     },
 
