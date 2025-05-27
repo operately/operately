@@ -2431,7 +2431,7 @@ export interface CreateGoalDiscussionInput {
   title?: string | null;
   message?: string | null;
   sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface CreateGoalDiscussionResult {
@@ -2660,9 +2660,11 @@ export interface EditGoalProgressUpdateResult {
 }
 
 export interface EditGoalTimeframeInput {
-  id?: string | null;
+  id?: Id | null;
   timeframe?: Timeframe | null;
   comment?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface EditGoalTimeframeResult {
