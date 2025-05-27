@@ -8,6 +8,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
 
   alias Operately.Repo
   alias Operately.Access.Binding
+  alias Operately.Activities.Activity
+  alias Operately.Support.RichText
+  alias Operately.Notifications.SubscriptionList
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -146,16 +149,88 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup :register_and_log_in_account
+    setup ctx do
+      goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+
+      Map.merge(ctx, %{goal: goal, people: people})
+    end
+
+    test "creates subscription list for goal discussion", ctx do
+      assert {200, res} = request(ctx.conn, ctx.goal, %{
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
+      })
+
+      discussion = fetch_discussion(res.id)
+
+      {:ok, list} = SubscriptionList.get(:system, parent_id: discussion.id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(list.subscriptions, &(&1.person_id == p.id))
+      end)
+
+      assert discussion.subscription_list_id
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      people = ctx.people ++ ctx.people ++ ctx.people
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = request(ctx.conn, ctx.goal, %{
+        message: content,
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+      })
+
+      discussion = fetch_discussion(res.id)
+      subscriptions = fetch_subscriptions(discussion.id)
+
+      assert length(subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      content = RichText.rich_text(mentioned_people: people)
+
+      assert {200, res} = request(ctx.conn, ctx.goal, %{
+        message: content,
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      discussion = fetch_discussion(res.id)
+      subscriptions = fetch_subscriptions(discussion.id)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
   #
   # Steps
   #
 
-  defp request(conn, goal) do
-    mutation(conn, :create_goal_discussion, %{
+  defp request(conn, goal, attrs \\ %{}) do
+    mutation(conn, :create_goal_discussion, Map.merge(%{
       goal_id: Paths.goal_id(goal),
       title: "Some title",
       message: rich_text("Hello World") |> Jason.encode!()
-    })
+    }, attrs))
   end
 
   defp assert_discussion_created(res) do
@@ -164,6 +239,18 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussionTest do
 
     assert activity.comment_thread_id
     assert activity.comment_thread.title == "Some title"
+  end
+
+  defp fetch_discussion(activity_id) do
+    {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(activity_id)
+    {:ok, activity} = Activity.get(:system, id: id, opts: [preload: :comment_thread])
+    activity.comment_thread
+  end
+
+  defp fetch_subscriptions(parent_id) do
+    {:ok, list} = SubscriptionList.get(:system, parent_id: parent_id, opts: [preload: :subscriptions])
+
+    list.subscriptions
   end
 
   #

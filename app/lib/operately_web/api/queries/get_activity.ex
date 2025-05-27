@@ -4,11 +4,14 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
 
   alias Operately.Activities
   alias Operately.Activities.{Activity, Preloader, Permissions}
+  alias Operately.Comments.CommentThread
 
   inputs do
     field :id, :string
     field :include_unread_goal_notifications, :boolean
     field :include_permissions, :boolean
+    field :include_subscriptions_list, :boolean
+    field :include_potential_subscribers, :boolean
   end
 
   outputs do
@@ -37,8 +40,15 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
 
   defp load(ctx, inputs) do
     Activity.get(ctx.me, id: ctx.id, opts: [
-      preload: [:author, comment_thread: [reactions: :person]],
+      preload: preload(inputs),
       after_load: after_load(inputs, ctx.me),
+    ])
+  end
+
+  defp preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      always_include: [:author, comment_thread: [reactions: :person]],
+      include_subscriptions_list: [comment_thread: :subscription_list],
     ])
   end
 
@@ -48,6 +58,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
       always_include: &Preloader.preload/1,
       include_unread_goal_notifications: load_unread_goal_notifications(person),
       include_permissions: &Activity.set_permissions/1,
+      include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
     ])
   end
 
