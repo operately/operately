@@ -135,29 +135,37 @@ function LastCheckIn(props: GoalPage.Props) {
 
     const className = classNames(
       "flex gap-1 flex-col",
-      "cursor-pointer hover:bg-surface-highlight text-sm shadow-sm p-4 border",
-      "border-l-8",
-      "mb-12",
+      "cursor-pointer text-sm py-3 pl-3 pr-4",
+      "border-l-4",
+      "bg-zinc-50 dark:bg-zinc-800",
+      "hover:bg-zinc-100 dark:hover:bg-zinc-700",
       borderColor,
     );
 
     return (
-      <div className="text-sm">
-        <DivLink to={checkIn.link} className={className}>
-          <div className="flex items-center gap-2 justify-between mb-1">
-            <div className="font-bold text-sm">Last Check-In</div>
-            <StatusBadge status={checkIn.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
-          </div>
+      <div className="space-y-2">
+        <div className="font-bold text-sm">Last Check-In</div>
+        <div className="text-sm">
+          <DivLink to={checkIn.link} className={className}>
+            <div className="flex items-center font-semibold">
+              <FormattedTime time={checkIn.date} format="short-date" />
+            </div>
 
-          <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
+            <Summary
+              content={checkIn.content}
+              characterCount={130}
+              mentionedPersonLookup={props.mentionedPersonLookup}
+            />
 
-          <div className="mt-1.5 flex items-center">
-            <Avatar person={checkIn.author} size={18} />
-            <span className="text-sm text-text-tertiary inline-flex items-center gap-1 ml-2">
-              {checkIn.author.fullName.split(" ")[0]} &bull; <FormattedTime time={checkIn.date} format="short-date" />{" "}
-            </span>
-          </div>
-        </DivLink>
+            <div className="mt-1.5 flex items-center justify-between">
+              <div className="flex items-center gap-1.5">
+                <Avatar person={checkIn.author} size={20} />
+                {checkIn.author.fullName.split(" ")[0]}
+              </div>
+              <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
+            </div>
+          </DivLink>
+        </div>
       </div>
     );
   }
