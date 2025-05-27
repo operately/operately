@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
     field :title, :string
     field :message, :string
     field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:string)
+    field :subscriber_ids, list_of(:id)
   end
 
   outputs do
@@ -40,14 +40,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
-
     {:ok, %{
       title: inputs.title,
       content: Jason.decode!(inputs.message),
       subscription_parent_type: :comment_thread,
       send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscriber_ids: subscriber_ids || []
+      subscriber_ids: inputs[:subscriber_ids] || []
     }}
   end
 end

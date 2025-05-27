@@ -19,6 +19,7 @@ async function loader({ params }): Promise<LoaderResult> {
       id: params.goalId,
       includeChampion: true,
       includeReviewer: true,
+      includeSpace: true,
       includePotentialSubscribers: true,
     }).then((data) => data.goal!),
   };
