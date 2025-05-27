@@ -107,6 +107,10 @@ function useDescriptionState(props: GoalPage.Props): State {
   const [description, setDescription] = React.useState<string | null>(props.description || null);
   const [mode, setMode] = React.useState<"view" | "edit" | "zero">(initialMode);
 
+  React.useEffect(() => {
+    setDescription(props.description || null);
+  }, [props.description]);
+
   const editor = useEditor({
     content: props.description,
     autoFocus: true,
@@ -129,8 +133,12 @@ function useDescriptionState(props: GoalPage.Props): State {
   }, [editor, setDescription, setMode]);
 
   const cancel = React.useCallback(() => {
-    setMode("view");
-  }, [setMode]);
+    if (isContentEmpty(description)) {
+      setMode("zero");
+    } else {
+      setMode("view");
+    }
+  }, [setMode, description]);
 
   const startEdit = React.useCallback(() => {
     editor.setContent(props.description);
