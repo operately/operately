@@ -3,11 +3,14 @@ defmodule Operately.Operations.GoalDiscussionCreation do
   alias Operately.Repo
   alias Operately.Activities
   alias Operately.Comments.CommentThread
+  alias Operately.Operations.Notifications.{Subscription, SubscriptionList}
 
   @action :goal_discussion_creation
 
-  def run(author, goal, title, message) do
+  def run(author, goal, attrs) do
     Multi.new()
+    |> SubscriptionList.insert(attrs)
+    |> Subscription.insert(author, attrs)
     |> Activities.insert_sync(author.id, @action, fn _changes ->
       %{
         company_id: goal.company_id,
@@ -18,15 +21,18 @@ defmodule Operately.Operations.GoalDiscussionCreation do
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
       parent_id: changes.activity.id,
       parent_type: "activity",
-      message: Jason.decode!(message),
-      title: title,
+      message: attrs.content,
+      title: attrs.title,
       has_title: true,
+      subscription_list_id: changes.subscription_list.id,
     }) end)
-    |> Multi.update(:activity_with_thread, fn changes ->
-      Activities.Activity.changeset(changes.activity, %{
+    |> Multi.run(:activity_with_thread, fn _, changes ->
+      {:ok, activity} = Activities.update_activity(changes.activity, %{
         comment_thread_id: changes.thread.id
       })
+      {:ok, Map.put(activity, :comment_thread, changes.thread)}
     end)
+    |> SubscriptionList.update(:thread)
     |> Activities.dispatch_notification()
     |> Repo.transaction()
     |> Repo.extract_result(:activity_with_thread)
