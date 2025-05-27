@@ -174,8 +174,14 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
       assert res.goal.closed_by == nil
 
-      retrospective = Jason.encode!(RichText.rich_text("Writing a retrospective"))
-      {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.person, goal, "success", retrospective)
+      retrospective = RichText.rich_text("Writing a retrospective")
+      {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.person, goal, %{
+        success: "success",
+        content: retrospective,
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
       assert res.goal.closed_by == Serializer.serialize(ctx.person, level: :essential)

@@ -58,9 +58,15 @@ defmodule Operately.Support.Factory.Goals do
   def add_goal_discussion(ctx, testid, goal_name, opts \\ []) do
     goal = Map.fetch!(ctx, goal_name)
     title = Keyword.get(opts, :title, "some title")
-    message = Keyword.get(opts, :message, RichText.rich_text("content", :as_string))
+    message = Keyword.get(opts, :message, RichText.rich_text("content"))
 
-    {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, title, message)
+    {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(ctx.creator, goal, %{
+      title: title,
+      content: message,
+      send_notifications_to_everyone: false,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
     discussion = Operately.Repo.preload(activity, :comment_thread).comment_thread
 
     Map.put(ctx, testid, discussion)
@@ -69,18 +75,29 @@ defmodule Operately.Support.Factory.Goals do
   def close_goal(ctx, testid, opts \\ []) do
     goal = Map.fetch!(ctx, testid)
     success = Keyword.get(opts, :success, "success")
-    retrospective = Keyword.get(opts, :retrospective, RichText.rich_text("content", :as_string))
+    retrospective = Keyword.get(opts, :retrospective, RichText.rich_text("content"))
 
-    {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.creator, goal, success, retrospective)
+    {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.creator, goal, %{
+      success: success,
+      content: retrospective,
+      send_notifications_to_everyone: true,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
 
     Map.put(ctx, testid, goal)
   end
 
   def reopen_goal(ctx, testid, opts \\ []) do
     goal = Map.fetch!(ctx, testid)
-    message = Keyword.get(opts, :message, RichText.rich_text("content", :as_string))
+    message = Keyword.get(opts, :message, RichText.rich_text("content"))
 
-    {:ok, goal} = Operately.Operations.GoalReopening.run(ctx.creator, goal, message)
+    {:ok, goal} = Operately.Operations.GoalReopening.run(ctx.creator, goal, %{
+      content: message,
+      send_notifications_to_everyone: true,
+      subscriber_ids: [],
+      subscription_parent_type: :comment_thread
+    })
 
     Map.put(ctx, testid, goal)
   end
