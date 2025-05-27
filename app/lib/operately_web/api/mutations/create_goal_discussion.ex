@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
       title: inputs.title,
       content: Jason.decode!(inputs.message),
       subscription_parent_type: :comment_thread,
-      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || []
     }}
   end
