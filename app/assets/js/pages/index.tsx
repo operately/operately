@@ -17,14 +17,6 @@ import CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomai
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
-import DesignButtonsPage from "./DesignButtonsPage";
-import DesignCalloutsPage from "./DesignCalloutsPage";
-import DesignColorsPage from "./DesignColorsPage";
-import DesignFormsPage from "./DesignFormsPage";
-import DesignMenusPage from "./DesignMenusPage";
-import DesignPage from "./DesignPage";
-import DesignProgressPage from "./DesignProgressPage";
-import DesignTooltipsPage from "./DesignTooltipsPage";
 import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
 import DiscussionNewPage from "./DiscussionNewPage";
@@ -135,14 +127,6 @@ export default {
   CompanyPermissionsPage,
   CompanyRenamePage,
   CompanyWorkMapPage,
-  DesignButtonsPage,
-  DesignCalloutsPage,
-  DesignColorsPage,
-  DesignFormsPage,
-  DesignMenusPage,
-  DesignPage,
-  DesignProgressPage,
-  DesignTooltipsPage,
   DiscussionDraftsPage,
   DiscussionEditPage,
   DiscussionNewPage,
