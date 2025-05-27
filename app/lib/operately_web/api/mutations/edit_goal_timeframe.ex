@@ -2,12 +2,15 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+  alias Operately.Goals.{Goal, Permissions}
+  alias Operately.Operations.GoalTimeframeEditing
 
   inputs do
-    field :id, :string
+    field :id, :id
     field :timeframe, :timeframe
     field :comment, :string
+    field :send_notifications_to_everyone, :boolean
+    field :subscriber_ids, list_of(:id)
   end
 
   outputs do
@@ -15,27 +18,34 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
   end
 
   def call(conn, inputs) do
-    author = me(conn)
-    {:ok, goal_id} = decode_id(inputs.id)
+    Action.new()
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:goal, fn ctx -> Goal.get(ctx.me, id: inputs.id) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_edit) end)
+    |> run(:attrs, fn -> parse_inputs(inputs) end)
+    |> run(:operation, fn ctx -> GoalTimeframeEditing.run(ctx.me, ctx.goal, ctx.attrs) end)
+    |> run(:serialized, fn ctx -> {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(ctx.operation)}} end)
+    |> respond()
+  end
 
-    case load_goal(author, goal_id) do
-      nil ->
-        query(goal_id)
-        |> forbidden_or_not_found(author.id)
-
-      goal ->
-        {:ok, goal} = Operately.Operations.GoalTimeframeEditing.run(author, goal, inputs)
-        {:ok, %{goal: OperatelyWeb.Api.Serializer.serialize(goal)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :goal, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load_goal(author, goal_id) do
-    query(goal_id)
-    |> filter_by_edit_access(author.id)
-    |> Repo.one()
-  end
-
-  defp query(goal_id) do
-    from(g in Operately.Goals.Goal, where: g.id == ^goal_id)
+  defp parse_inputs(inputs) do
+    {:ok, %{
+      timeframe: inputs.timeframe,
+      content: Jason.decode!(inputs.comment),
+      subscription_parent_type: :comment_thread,
+      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      subscriber_ids: inputs[:subscriber_ids] || []
+    }}
   end
 end
