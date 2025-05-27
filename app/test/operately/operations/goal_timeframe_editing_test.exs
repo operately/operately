@@ -25,13 +25,16 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
   test "GoalTimeframeEditing operation updates goal", ctx do
     assert ctx.goal.timeframe.type == "quarter"
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
+    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalTimeframeEditing.run(
         ctx.author,
         ctx.goal,
         %{
           timeframe: %{ type: "days", start_date: ~D[2024-04-15], end_date: ~D[2024-08-30]},
-          comment: "{}"
+          content: %{},
+          subscription_parent_type: :comment_thread,
+          send_notifications_to_everyone: false,
+          subscriber_ids: []
         }
       )
     end)
@@ -44,13 +47,16 @@ defmodule Operately.Operations.GoalTimeframeEditingTest do
   end
 
   test "GoalTimeframeEditing operation creates activity and thread", ctx do
-    Oban.Testing.with_testing_mode(:manual, fn ->
+    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.GoalTimeframeEditing.run(
         ctx.author,
         ctx.goal,
         %{
           timeframe: %{type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 5)},
-          comment: notification_message(ctx.reader)
+          content: notification_message(ctx.reader, encoded: false),
+          subscription_parent_type: :comment_thread,
+          send_notifications_to_everyone: false,
+          subscriber_ids: []
         }
       )
     end)

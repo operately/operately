@@ -359,7 +359,10 @@ defmodule Operately.AccessActivityContextAssignerTest do
             start_date: Date.utc_today(),
             end_date: Date.add(Date.utc_today(), 5)
           },
-          comment: "{}"
+          content: %{},
+          subscription_parent_type: :comment_thread,
+          send_notifications_to_everyone: false,
+          subscriber_ids: []
         }
       )
 

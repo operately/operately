@@ -17,8 +17,10 @@ defmodule Operately.CommentsFixtures do
   end
 
   def comment_thread_fixture(attrs) do
+    attrs_keyword = if is_map(attrs), do: Keyword.new(attrs), else: attrs
+
     # add person_ids to attrs with a list of person ids to create subscriptions
-    subscription_list = Operately.NotificationsFixtures.subscriptions_list_fixture(attrs)
+    subscription_list = Operately.NotificationsFixtures.subscriptions_list_fixture(attrs_keyword)
 
     {:ok, thread} =
       attrs
