@@ -43,7 +43,10 @@ defmodule OperatelyEE.AdminApi.Queries.GetCompany do
         spaces_count: company.spaces_count,
         projects_count: company.projects_count,
         owners: OperatelyWeb.Api.Serializer.serialize(company.owners, level: :full),
-        last_activity_at: OperatelyWeb.Api.Serializer.serialize(company.last_activity_at, level: :essential)
+        last_activity_at: OperatelyWeb.Api.Serializer.serialize(company.last_activity_at, level: :essential),
+        uuid: company.id,
+        short_id: company.short_id,
+        enabled_features: company.enabled_experimental_features
       }
     }
   end

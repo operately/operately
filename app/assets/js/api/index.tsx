@@ -6097,15 +6097,15 @@ export default {
 
   goals: {
     updateName: defaultApiClient.apiNamespaceGoals.updateName,
-    useUpdateName: (_input: GoalsUpdateNameInput) =>
+    useUpdateName: () =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
 
     updateDueDate: defaultApiClient.apiNamespaceGoals.updateDueDate,
-    useUpdateDueDate: (_input: GoalsUpdateDueDateInput) =>
+    useUpdateDueDate: () =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
 
     updateDescription: defaultApiClient.apiNamespaceGoals.updateDescription,
-    useUpdateDescription: (_input: GoalsUpdateDescriptionInput) =>
+    useUpdateDescription: () =>
       useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceGoals.updateDescription,
       ),
