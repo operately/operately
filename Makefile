@@ -59,9 +59,6 @@ dev.build:
 dev.server:
 	./devenv bash -c "cd app && iex -S mix phx.server"
 
-design.server:
-	./devenv bash -c "cd design && npm install && npm run dev"
-
 turboui.storybook:
 	./devenv bash -c "cd turboui && npm run storybook"
 
