@@ -9,7 +9,7 @@ import { SectionHeader } from "./SectionHeader";
 export function Description(props: GoalPage.Props) {
   const state = useDescriptionState(props);
 
-  if (!props.description && !props.canEdit) return null;
+  if (state.mode == "zero" && !props.canEdit) return null;
 
   const editButton = (
     <SecondaryButton size="xxs" onClick={state.startEdit}>
@@ -102,7 +102,7 @@ interface State {
 }
 
 function useDescriptionState(props: GoalPage.Props): State {
-  const initialMode = !props.description && !props.canEdit ? "zero" : "view";
+  const initialMode = isContentEmpty(props.description) ? "zero" : "view";
 
   const [description, setDescription] = React.useState<string | null>(props.description || null);
   const [mode, setMode] = React.useState<"view" | "edit" | "zero">(initialMode);
