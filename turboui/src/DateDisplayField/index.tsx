@@ -1,10 +1,8 @@
-import React, { useState } from "react";
-import ReactDatePicker from "react-datepicker";
 import * as Popover from "@radix-ui/react-popover";
 import { IconCalendarEvent, IconCalendarPlus, IconX } from "@tabler/icons-react";
+import React, { useState } from "react";
+import ReactDatePicker from "react-datepicker";
 import { SecondaryButton } from "../Button";
-
-import "react-datepicker/dist/react-datepicker.css";
 
 // Helper function to format date (matches DueDateDisplay format)
 const formatDate = (date: Date) => {
@@ -15,7 +13,7 @@ interface DateDisplayFieldProps {
   date?: Date | null;
   onChange?: (date: Date | null) => void;
   placeholder?: string;
-  isEditable?: boolean;
+  readonly?: boolean;
   size?: "xxs" | "xs" | "sm" | "base" | "lg";
   showOverdueWarning?: boolean;
   className?: string;
@@ -25,22 +23,23 @@ export function DateDisplayField({
   date,
   onChange,
   placeholder = "Set date",
-  isEditable = true,
+  readonly = false,
   size = "xs",
   showOverdueWarning = false,
   className = "",
 }: DateDisplayFieldProps) {
-  // Use the same overdue check logic as DueDateDisplay
   const isDateOverdue = date ? date < new Date() : false;
-  // Only apply red color if showOverdueWarning is true AND the date is actually overdue
-  const textColorClass = showOverdueWarning && isDateOverdue ? "text-content-error" : "text-content-dimmed";
+
+  const textColorClass = showOverdueWarning && isDateOverdue ? "text-content-error" : "text-content-base";
   const [isOpen, setIsOpen] = useState(false);
 
-  // If not editable, render a simple read-only display
-  if (!isEditable) {
+  const iconSize = 18;
+  const textSize = "text-sm";
+
+  if (readonly) {
     return date ? (
-      <span className={`text-xs flex items-center gap-1 ${textColorClass} ${className}`}>
-        <IconCalendarEvent size={14} />
+      <span className={`flex items-center gap-1.5 ${textColorClass} ${textSize} ${className}`}>
+        <IconCalendarEvent size={iconSize} />
         <span>{formatDate(date)}</span>
       </span>
     ) : null;
@@ -50,28 +49,12 @@ export function DateDisplayField({
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
       <Popover.Trigger asChild>
-        <div className={`inline-block ${className}`}>
-          {date ? (
-            // Show the set date with calendar icon
-            <div className={`flex items-center gap-1 ${textColorClass}`}>
-              <button className="flex items-center gap-1 hover:underline focus:outline-none text-xs">
-                <IconCalendarEvent size={14} />
-                <span>{formatDate(date)}</span>
-              </button>
-            </div>
-          ) : (
-            // Show the "Set date" placeholder
-            <div className="text-content-subtle">
-              <SecondaryButton size={size} icon={IconCalendarPlus}>
-                {placeholder}
-              </SecondaryButton>
-            </div>
-          )}
-        </div>
+        <Trigger date={date} className={className} />
       </Popover.Trigger>
+
       <Popover.Portal>
         <Popover.Content
-          className="bg-surface-default shadow-lg border border-surface-outline rounded-md p-2 z-50"
+          className="bg-surface-base shadow-lg border border-surface-outline rounded-md p-2 z-50"
           sideOffset={5}
         >
           <div className="flex justify-between items-center mb-2">
@@ -94,6 +77,38 @@ export function DateDisplayField({
         </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
+  );
+}
+
+function Trigger({
+  date,
+  className,
+  placeholder,
+  buttonSize,
+}: {
+  date?: Date | null;
+  className?: string;
+  placeholder?: string;
+  buttonSize?: "sm" | "md";
+}) {
+  return (
+    <div className={`inline-block ${className}`}>
+      {date ? (
+        <div className={`flex items-center gap-1 ${textColorClass} ${textSize}`}>
+          <button className="flex items-center gap-1.5 focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded">
+            <IconCalendarEvent size={iconSize} className="-mt-[2px]" />
+            <span>{formatDate(date)}</span>
+          </button>
+        </div>
+      ) : (
+        // Show the "Set date" placeholder
+        <div className="text-content-subtle">
+          <SecondaryButton size={buttonSize} icon={IconCalendarPlus}>
+            {placeholder}
+          </SecondaryButton>
+        </div>
+      )}
+    </div>
   );
 }
 

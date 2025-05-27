@@ -1,11 +1,13 @@
-import { IconBuilding, IconCalendar, IconQuestionMark, IconTarget } from "@tabler/icons-react";
+import { IconBuilding, IconQuestionMark, IconTarget } from "@tabler/icons-react";
 import React from "react";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
-import FormattedTime from "../FormattedTime";
 import { BlackLink, DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
+
+import DateDisplayField from "../DateDisplayField";
+import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
 
 export function Sidebar(props: GoalPage.Props) {
@@ -20,12 +22,7 @@ export function Sidebar(props: GoalPage.Props) {
 
       <div className="space-y-2">
         <div className="font-bold text-sm">Due Date</div>
-        <div className="flex items-center gap-2">
-          <IconCalendar size={18} />
-          <div className="text-sm font-medium mt-0.5">
-            {props.timeframe?.endDate && <FormattedTime time={props.timeframe!.endDate!} format="short-date" />}
-          </div>
-        </div>
+        <DateDisplayField date={props.timeframe?.endDate ?? null} readonly={!props.canEdit} />
       </div>
 
       <div className="space-y-2">
