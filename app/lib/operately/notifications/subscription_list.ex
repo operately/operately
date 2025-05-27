@@ -12,6 +12,7 @@ defmodule Operately.Notifications.SubscriptionList do
       :resource_hub_document,
       :resource_hub_file,
       :resource_hub_link,
+      :comment_thread,
     ]
     field :send_to_everyone, :boolean, default: false
 

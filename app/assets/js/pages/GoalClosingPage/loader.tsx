@@ -17,7 +17,12 @@ export interface ActiveSubitem {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [goal, goals, projects] = await Promise.all([
-    Goals.getGoal({ id: params.goalId }).then((data) => data.goal!),
+    Goals.getGoal({ 
+      id: params.goalId,
+      includeChampion: true,
+      includeReviewer: true,
+      includePotentialSubscribers: true,
+  }).then((data) => data.goal!),
     Goals.getGoals({}).then((data) => data.goals!),
     Projects.getProjects({}).then((data) => data.projects!),
   ]);

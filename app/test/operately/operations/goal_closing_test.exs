@@ -32,8 +32,14 @@ defmodule Operately.Operations.GoalClosingTest do
     assert ctx.goal.closed_at == nil
     assert ctx.goal.closed_by_id == nil
 
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalClosing.run(ctx.author, ctx.goal, "success", "{}")
+    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+      Operately.Operations.GoalClosing.run(ctx.author, ctx.goal, %{
+        success: "success",
+        content: %{},
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
     end)
 
     goal = Repo.reload(ctx.goal)
@@ -43,8 +49,14 @@ defmodule Operately.Operations.GoalClosingTest do
   end
 
   test "GoalClosing operation creates activity, thread and notification", ctx do
-    Oban.Testing.with_testing_mode(:manual, fn ->
-      Operately.Operations.GoalClosing.run(ctx.author, ctx.goal, "success", "{}")
+    {:ok, _} = Oban.Testing.with_testing_mode(:manual, fn ->
+      Operately.Operations.GoalClosing.run(ctx.author, ctx.goal, %{
+        success: "success",
+        content: %{},
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
     end)
 
     activity = from(a in Activity, where: a.action == "goal_closing" and a.content["goal_id"] == ^ctx.goal.id) |> Repo.one()

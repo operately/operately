@@ -4,18 +4,17 @@ import * as Goals from "@/models/goals";
 import * as Paper from "@/components/PaperContainer";
 import * as Timeframes from "@/utils/timeframes";
 import * as TipTapEditor from "@/components/Editor";
-import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { PrimaryButton } from "turboui";
-import { InlinePeopleList } from "@/components/InlinePeopleList";
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { Paths } from "@/routes/paths";
 import { DimmedLink } from "turboui";
 import { Datepicker } from "@/components/Datepicker";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
+import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
+import { assertPresent } from "@/utils/assertions";
+import { Form, useForm } from "./useForm";
 
 export default { name: "GoalEditTimeframePage", loader, Page } as PageModule;
 
@@ -29,12 +28,13 @@ async function loader({ params }): Promise<LoaderResult> {
       id: params.goalId,
       includeChampion: true,
       includeReviewer: true,
+      includeSpace: true,
+      includePotentialSubscribers: true,
     }).then((data) => data.goal!),
   };
 }
 
 function Page() {
-  const me = useMe()!;
   const { goal } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ goal });
 
@@ -48,7 +48,7 @@ function Page() {
           <Subtitle goal={goal} />
           <TimeframeInputs form={form} />
           <Comments form={form} />
-          <WhoWillBeNotified goal={goal} me={me} />
+          <Subscribers goal={goal} subscriptionsState={form.subscriptionsState} />
           <Submit goal={goal} form={form} />
         </Paper.Body>
       </Paper.Root>
@@ -211,15 +211,12 @@ function Error({ form }: { form: Form }) {
   return <div className="mb-2 text-content-error font-medium">{form.error.message}</div>;
 }
 
-function WhoWillBeNotified({ goal, me }: { goal: Goals.Goal; me: People.Person }) {
-  const people = [goal.champion!, goal.reviewer!].filter((person) => person.id !== me.id);
+function Subscribers({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
+  assertPresent(goal.space, "space must be present in goal");
 
   return (
-    <div className="mt-8 font-medium">
-      <p className="font-bold">When you submit:</p>
-      <div className="inline-flex gap-1 flex-wrap mt-1">
-        <InlinePeopleList people={people} /> will be notified.
-      </div>
+    <div className="my-10">
+      <SubscribersSelector state={subscriptionsState} spaceName={goal.space.name} />
     </div>
   );
 }
@@ -236,68 +233,4 @@ function Editor({ editor }: { editor: TipTapEditor.Editor }) {
       </TipTapEditor.Root>
     </div>
   );
-}
-
-interface Error {
-  message: string;
-}
-
-interface Form {
-  submit: () => Promise<boolean>;
-  submitting: boolean;
-  timeframe: Timeframes.Timeframe;
-  setTimeframe: (timeframe: Timeframes.Timeframe) => void;
-
-  commentEditor: TipTapEditor.EditorState;
-  error: Error | null;
-}
-
-function useForm({ goal }): Form {
-  const originalTimeframe = Timeframes.parse(goal.timeframe);
-  const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(originalTimeframe);
-
-  const navigateToGoalPage = useNavigateTo(Paths.goalPath(goal.id));
-  const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframe();
-
-  const commentEditor = TipTapEditor.useEditor({
-    placeholder: "Explain the reason for the change here...",
-    mentionSearchScope: { type: "goal", id: goal.id! },
-  });
-
-  const [error, setError] = React.useState<{ message: string } | null>(null);
-
-  function validate() {
-    if (Timeframes.equalDates(timeframe, originalTimeframe)) {
-      return { message: "The timeframe has not changed" };
-    }
-
-    return null;
-  }
-
-  async function submit() {
-    const error = validate();
-    if (error) {
-      setError(error);
-      return false;
-    }
-
-    await editTimeframe({
-      id: goal.id,
-      timeframe: Timeframes.serialize(timeframe),
-      comment: JSON.stringify(commentEditor.editor.getJSON()),
-    });
-
-    navigateToGoalPage();
-
-    return true;
-  }
-
-  return {
-    submit,
-    submitting,
-    timeframe,
-    setTimeframe,
-    commentEditor,
-    error,
-  };
 }
