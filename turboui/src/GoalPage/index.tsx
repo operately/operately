@@ -86,8 +86,9 @@ export namespace GoalPage {
 
     neglectedGoal?: boolean;
 
-    updateTimeframe: (timeframe: Timeframe) => Promise<void>;
+    updateGoalName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
+    updateTimeframe: (timeframe: Timeframe) => Promise<void>;
 
     activityFeed: React.ReactNode;
   }

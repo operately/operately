@@ -35,6 +35,7 @@ export const PageCache = {
 
     return data;
   },
+
   useData: function <T>(loader: PageLoaderFn<T>): T {
     const params = useParams();
     const loadedData = useLoadedData<T>();
@@ -60,5 +61,9 @@ export const PageCache = {
     }, [params]);
 
     return data;
+  },
+
+  invalidate: function invalidateCache(cacheKey: string): void {
+    localStorage.removeItem(cacheKey);
   },
 };

@@ -323,6 +323,7 @@ const defaultArgs: GoalPage.Props = {
   peopleSearch: searchFn,
   activityFeed: <div></div>,
 
+  updateGoalName: async (_name: string) => true,
   updateTimeframe: fn(),
   updateDescription: fn(),
 };
