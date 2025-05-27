@@ -1,3 +1,4 @@
+import Api from "@/api";
 import * as Activities from "@/models/activities";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
@@ -92,9 +93,14 @@ function Page() {
       throw new Error("Function not implemented.");
     },
 
-    updateDescription: function (description: string | null): Promise<void> {
-      console.log("updateDescription", description);
-      throw new Error("Function not implemented.");
+    updateDescription: function (description: any | null): Promise<boolean> {
+      return Api.goals
+        .updateDescription({ goalId: goal.id!, description: JSON.stringify(description) })
+        .then(() => true)
+        .catch((e) => {
+          console.error("Failed to update goal description", e);
+          return false;
+        });
     },
 
     activityFeed: <GoalFeedItems goalId={goal.id!} />,
