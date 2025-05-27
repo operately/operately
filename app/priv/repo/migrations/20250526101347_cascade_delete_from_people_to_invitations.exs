@@ -12,7 +12,7 @@ defmodule Operately.Repo.Migrations.CascadeDeleteFromPeopleToInvitations do
   def down do
     drop constraint(:invitations, :invitations_admin_id_fkey)
 
-    alter table(:activities) do
+    alter table(:invitations) do
       modify :admin_id, references(:people, on_delete: :nothing, type: :binary_id)
     end
   end

@@ -13,7 +13,7 @@ defmodule Operately.Repo.Migrations.CascadeDeleteFromPeopleToActivities do
     drop constraint(:activities, :activities_author_id_fkey)
 
     alter table(:activities) do
-      modify :person_id, references(:people, on_delete: :nothing, type: :binary_id)
+      modify :author_id, references(:people, on_delete: :nothing, type: :binary_id)
     end
   end
 end

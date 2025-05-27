@@ -15,7 +15,7 @@ defmodule Operately.Repo.Migrations.CascadeDeleteFromCompaniesToProjects do
     # Revert back to the original constraint
     drop constraint(:projects, :projects_company_id_fkey)
 
-    alter table(:people) do
+    alter table(:projects) do
       modify :company_id, references(:companies, on_delete: :nothing, type: :binary_id)
     end
   end
