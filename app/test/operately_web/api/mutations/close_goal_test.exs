@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
   alias Operately.Repo
   alias Operately.Access.Binding
   alias OperatelyWeb.Paths
+  alias Operately.Notifications.SubscriptionList
+  alias Operately.Activities.Activity
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -151,6 +153,84 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
     end
   end
 
+  describe "subscriptions to notifications" do
+    setup :register_and_log_in_account
+    setup ctx do
+      goal = create_goal(ctx)
+      people = Enum.map(1..3, fn _ ->
+        person_fixture(%{company_id: ctx.company.id})
+      end)
+
+      Map.merge(ctx, %{goal: goal, people: people})
+    end
+
+    test "creates subscription list for goal closing", ctx do
+      assert {200, _} = mutation(ctx.conn, :close_goal, %{
+        goal_id: Paths.goal_id(ctx.goal),
+        success: "yes",
+        retrospective: rich_text("Closing retrospective") |> Jason.encode!(),
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
+      })
+
+      thread = fetch_thread(ctx.goal)
+      {:ok, list} = SubscriptionList.get(:system, parent_id: thread.id, opts: [preload: :subscriptions])
+
+      assert list.send_to_everyone
+      assert length(list.subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.any?(list.subscriptions, &(&1.person_id == p.id))
+      end)
+
+      assert thread.subscription_list_id == list.id
+    end
+
+    test "adds mentioned people to subscription list", ctx do
+      people = ctx.people ++ ctx.people ++ ctx.people
+      content = rich_text(mentioned_people: people)
+
+      assert {200, _} = mutation(ctx.conn, :close_goal, %{
+        goal_id: Paths.goal_id(ctx.goal),
+        success: "yes",
+        retrospective: content,
+        send_notifications_to_everyone: false,
+        subscriber_ids: []
+      })
+
+      thread = fetch_thread(ctx.goal)
+      subscriptions = fetch_subscriptions(thread.id)
+
+      assert length(subscriptions) == 4
+
+      Enum.each([ctx.person | ctx.people], fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+
+    test "doesn't create repeated subscription", ctx do
+      people = [ctx.person | ctx.people]
+      content = rich_text(mentioned_people: people)
+
+      assert {200, _} = mutation(ctx.conn, :close_goal, %{
+        goal_id: Paths.goal_id(ctx.goal),
+        success: "yes",
+        retrospective: content,
+        send_notifications_to_everyone: true,
+        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
+      })
+
+      thread = fetch_thread(ctx.goal)
+      subscriptions = fetch_subscriptions(thread.id)
+
+      assert length(subscriptions) == 4
+
+      Enum.each(people, fn p ->
+        assert Enum.filter(subscriptions, &(&1.person_id == p.id))
+      end)
+    end
+  end
+
   #
   # Steps
   #
@@ -203,5 +283,25 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       id: ctx.person.id,
       access_level: Binding.full_access(),
     }])
+  end
+
+  defp fetch_subscriptions(parent_id) do
+    {:ok, list} = SubscriptionList.get(:system, parent_id: parent_id, opts: [preload: :subscriptions])
+
+    list.subscriptions
+  end
+
+  defp fetch_thread(goal) do
+    import Ecto.Query, only: [from: 2]
+
+    activity = from(a in Activity,
+      where: a.action == "goal_closing" and a.content["goal_id"] == ^goal.id,
+      order_by: [desc: a.inserted_at],
+      limit: 1,
+      preload: [:comment_thread]
+    )
+    |> Repo.one()
+
+    activity.comment_thread
   end
 end

@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
     {:ok, %{
       success: inputs.success,
       content: Jason.decode!(inputs.retrospective),
-      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
       subscription_parent_type: :comment_thread
     }}
