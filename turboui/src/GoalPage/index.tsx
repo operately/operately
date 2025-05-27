@@ -153,8 +153,8 @@ function ActivityFeed(props: GoalPage.Props) {
 
 function Overview(props: GoalPage.Props) {
   return (
-    <div className="p-4 max-w-5xl mx-auto my-6">
-      <div className="sm:grid sm:grid-cols-11">
+    <div className="p-4 max-w-6xl mx-auto my-6">
+      <div className="sm:grid sm:grid-cols-12">
         <MainContent {...props} />
         <Sidebar {...props} />
       </div>
@@ -164,7 +164,7 @@ function Overview(props: GoalPage.Props) {
 
 function MainContent(props: GoalPage.Props) {
   return (
-    <div className="space-y-12 sm:col-span-7 sm:pr-8">
+    <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <Warnings {...props} />
       <Description {...props} />
       <Targets {...props} />
