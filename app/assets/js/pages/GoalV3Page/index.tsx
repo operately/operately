@@ -93,9 +93,9 @@ function Page() {
       throw new Error("Function not implemented.");
     },
 
-    updateDescription: function (description: string | null): Promise<boolean> {
+    updateDescription: function (description: any | null): Promise<boolean> {
       return Api.goals
-        .updateDescription({ goalId: goal.id!, description: description })
+        .updateDescription({ goalId: goal.id!, description: JSON.stringify(description) })
         .then(() => true)
         .catch((e) => {
           console.error("Failed to update goal description", e);
