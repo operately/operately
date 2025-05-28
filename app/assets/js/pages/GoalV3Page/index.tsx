@@ -9,7 +9,6 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
 import { GoalPage } from "turboui";
-import { Timeframe } from "turboui/src/utils/timeframes";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
@@ -92,11 +91,6 @@ function Page() {
     mentionedPersonLookup,
     peopleSearch,
 
-    updateTimeframe: function (timeframe: Timeframe): Promise<void> {
-      console.log("updateTimeframe", timeframe);
-      throw new Error("Function not implemented.");
-    },
-
     updateGoalName: function (name: string): Promise<boolean> {
       if (name.trim() === "") {
         return Promise.resolve(false);
@@ -119,6 +113,19 @@ function Page() {
         .then(() => true)
         .catch((e) => {
           console.error("Failed to update goal description", e);
+          return false;
+        });
+    },
+
+    updateDueDate: function (date: Date | null): Promise<boolean> {
+      const dueDate = date && Time.toDateWithoutTime(date);
+
+      return Api.goals
+        .updateDueDate({ goalId: goal.id!, dueDate: dueDate })
+        .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
+        .then(() => true)
+        .catch((e) => {
+          console.error("Failed to update goal due date", e);
           return false;
         });
     },

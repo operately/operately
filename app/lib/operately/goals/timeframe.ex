@@ -31,7 +31,6 @@ defmodule Operately.Goals.Timeframe do
     |> cast(attrs, [:type, :start_date, :end_date])
     |> validate_required([:type, :start_date, :end_date])
     |> validate_inclusion(:type, ["year", "quarter", "month", "days"])
-    |> validate_start_is_before_end()
     |> validate_year_dates()
     |> validate_quarter_dates()
     |> validate_month_dates()
@@ -78,17 +77,6 @@ defmodule Operately.Goals.Timeframe do
       today.month in 4..6 -> quarter(year, "07-01", "09-30")
       today.month in 7..9 -> quarter(year, "10-01", "12-31")
       today.month in 10..12 -> quarter(year + 1, "01-01", "03-31")
-    end
-  end
-
-  def validate_start_is_before_end(changeset) do
-    start_date = get_field(changeset, :start_date)
-    end_date = get_field(changeset, :end_date)
-
-    if Date.compare(start_date, end_date) != :lt do
-      add_error(changeset, :end_date, "End date must be after start date")
-    else
-      changeset
     end
   end
 
