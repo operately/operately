@@ -2,38 +2,45 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussion do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Ecto.Query, only: [from: 2, preload: 2]
-  import Operately.Access.Filters, only: [filter_by_edit_access: 2, forbidden_or_not_found: 2]
+  alias Operately.Activities.Activity
+  alias Operately.Goals.Permissions
+  alias Operately.Operations.GoalDiscussionEditing
 
   inputs do
-    field :activity_id, :string
+    field :activity_id, :id
     field :title, :string
     field :message, :string
   end
 
   def call(conn, inputs) do
-    author = me(conn)
-    {:ok, activity_id} = decode_id(inputs.activity_id)
+    Action.new()
+    |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
+    |> Action.run(:me, fn -> find_me(conn) end)
+    |> Action.run(:activity, fn ctx -> load_activity(ctx.me, inputs.activity_id) end)
+    |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.activity.request_info.access_level, :can_edit) end)
+    |> Action.run(:operation, fn ctx -> GoalDiscussionEditing.run(ctx.me, ctx.activity, ctx.attrs) end)
+    |> Action.run(:result, fn -> {:ok, %{}} end)
+    |> respond()
+  end
 
-    case load_activity(author, activity_id) do
-      nil ->
-        query(activity_id)
-        |> forbidden_or_not_found(author.id)
-
-      activity ->
-        {:ok, _} = Operately.Operations.GoalDiscussionEditing.run(author, activity, inputs)
-        {:ok, %{}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.result}
+      {:error, :attrs, _} -> {:error, :bad_request}
+      {:error, :activity, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 
   defp load_activity(author, activity_id) do
-    query(activity_id)
-    |> preload(:comment_thread)
-    |> filter_by_edit_access(author.id)
-    |> Repo.one()
+    Activity.get(author, id: activity_id, opts: [
+      preload: [:comment_thread]
+    ])
   end
 
-  defp query(activity_id) do
-    from(a in Operately.Activities.Activity, where: a.id == ^activity_id)
+  defp parse_inputs(inputs) do
+    {:ok, Map.put(inputs, :message, Jason.decode!(inputs.message))}
   end
 end
