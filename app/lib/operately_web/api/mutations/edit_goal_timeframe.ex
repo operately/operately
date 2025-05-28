@@ -44,7 +44,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
       timeframe: inputs.timeframe,
       content: Jason.decode!(inputs.comment),
       subscription_parent_type: :comment_thread,
-      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || []
     }}
   end
