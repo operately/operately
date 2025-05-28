@@ -134,6 +134,112 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule DeleteTarget do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :target_id, :id, required: true
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_target(inputs.target_id)
+      |> Steps.check_target_permissions(:can_edit)
+      |> Steps.delete_target()
+      |> Steps.save_activity(:goal_target_deleted, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_id: changes.target.id,
+          target_name: changes.target.name
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
+    end
+  end
+
+  defmodule UpdateTarget do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :target_id, :id, required: true
+      field :name, :string
+      field :start_value, :number
+      field :target_value, :number
+      field :unit, :string
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_target(inputs.target_id)
+      |> Steps.check_target_permissions(:can_edit)
+      |> Steps.update_target(inputs)
+      |> Steps.save_activity(:goal_target_updated, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_id: changes.target.id,
+          old_name: changes.target.name,
+          new_name: changes.updated_target.name,
+          old_start_value: changes.target.start_value,
+          new_start_value: changes.updated_target.start_value,
+          old_target_value: changes.target.target_value,
+          new_target_value: changes.updated_target.target_value,
+          old_unit: changes.target.unit,
+          new_unit: changes.updated_target.unit
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
+    end
+  end
+
+  defmodule UpdateTargetValue do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :target_id, :id, required: true
+      field :value, :number, required: true
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_target(inputs.target_id)
+      |> Steps.check_target_permissions(:can_check_in)
+      |> Steps.update_target_value(inputs.value)
+      |> Steps.save_activity(:goal_target_value_updated, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_id: changes.target.id,
+          old_value: changes.target.value,
+          new_value: changes.updated_target.value
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -203,6 +309,51 @@ defmodule OperatelyWeb.Api.Goals do
     def add_target(multi, name, start_value, target_value) do
       Ecto.Multi.run(multi, :updated_target, fn _repo, %{goal: goal} ->
         Operately.Goals.Target.add(goal, %{name: name, start_value: start_value, target_value: target_value})
+      end)
+    end
+
+    def find_target(multi, target_id) do
+      Ecto.Multi.run(multi, :target, fn _repo, %{me: me} ->
+        case Operately.Goals.Target.get(me, id: target_id) do
+          {:ok, target} -> {:ok, target}
+          {:error, :not_found} -> {:error, :not_found}
+        end
+      end)
+      |> Ecto.Multi.run(:goal, fn _repo, %{target: target, me: me} ->
+        Operately.Goals.Goal.get(me, id: target.goal_id)
+      end)
+    end
+
+    def check_target_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal} ->
+        Operately.Goals.Permissions.check(goal.request_info.access_level, permission)
+      end)
+    end
+
+    def delete_target(multi) do
+      Ecto.Multi.run(multi, :deleted_target, fn _repo, %{target: target} ->
+        case Operately.Goals.Target.delete(target) do
+          {:ok, deleted} -> {:ok, deleted}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end)
+    end
+
+    def update_target(multi, attrs) do
+      Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
+        update_attrs = %{}
+        update_attrs = if attrs.name, do: Map.put(update_attrs, :name, attrs.name), else: update_attrs
+        update_attrs = if attrs.start_value, do: Map.put(update_attrs, :start_value, attrs.start_value), else: update_attrs
+        update_attrs = if attrs.target_value, do: Map.put(update_attrs, :target_value, attrs.target_value), else: update_attrs
+        update_attrs = if attrs.unit, do: Map.put(update_attrs, :unit, attrs.unit), else: update_attrs
+
+        Operately.Goals.Target.changeset(target, update_attrs)
+      end)
+    end
+
+    def update_target_value(multi, value) do
+      Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
+        Operately.Goals.Target.changeset(target, %{value: value})
       end)
     end
 
