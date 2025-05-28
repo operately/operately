@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)
-      assert ctx.goal.timeframe.end_date == nil
+      assert ctx.goal.timeframe == nil
     end
   end
 end
