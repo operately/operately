@@ -165,13 +165,15 @@ export const CompletedTab: Story = {
     items: mockItems,
   },
   play: async ({ canvasElement, step }) => {
-    await Steps.assertRowsNumber(canvasElement, step, 15);
+    await Steps.assertRowsNumber(canvasElement, step, 14);
 
     await Steps.selectTab(canvasElement, step, "completed");
 
-    await Steps.assertRowsNumber(canvasElement, step, 1);
+    await Steps.assertRowsNumber(canvasElement, step, 3);
 
     await Steps.assertItemName(canvasElement, step, "Document features in Help Center");
+    await Steps.assertItemName(canvasElement, step, "Legacy database migration");
+    await Steps.assertItemName(canvasElement, step, "Legacy system migration to cloud infrastructure");
   },
 };
 
