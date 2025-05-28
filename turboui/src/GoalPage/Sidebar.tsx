@@ -1,32 +1,21 @@
-import { IconBuilding, IconCalendar, IconQuestionMark, IconTarget } from "@tabler/icons-react";
+import { IconBuilding, IconQuestionMark, IconTarget } from "@tabler/icons-react";
 import React from "react";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
-import FormattedTime from "../FormattedTime";
 import { BlackLink, DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
+
+import DateDisplayField from "../DateDisplayField";
+import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
 
 export function Sidebar(props: GoalPage.Props) {
   return (
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
       <LastCheckIn {...props} />
-
-      <div className="space-y-2">
-        <div className="font-bold text-sm">Parent Goal</div>
-        <ParentGoal {...props} />
-      </div>
-
-      <div className="space-y-2">
-        <div className="font-bold text-sm">Due Date</div>
-        <div className="flex items-center gap-2">
-          <IconCalendar size={18} />
-          <div className="text-sm font-medium mt-0.5">
-            {props.timeframe?.endDate && <FormattedTime time={props.timeframe!.endDate!} format="short-date" />}
-          </div>
-        </div>
-      </div>
+      <ParentGoal {...props} />
+      <DueDate {...props} />
 
       <div className="space-y-2">
         <div className="font-bold text-sm">Champion</div>
@@ -41,12 +30,40 @@ export function Sidebar(props: GoalPage.Props) {
   );
 }
 
+function DueDate(props: GoalPage.Props) {
+  const [date, setDate] = React.useState<Date | null>(props.timeframe?.endDate ?? null);
+
+  React.useEffect(() => {
+    setDate(props.timeframe?.endDate ?? null);
+  }, [props.timeframe?.endDate]);
+
+  const saveDate = (newDate: Date | null) => {
+    if (date?.getTime() === newDate?.getTime()) return; // No change
+
+    const previousDate = date;
+    setDate(newDate);
+
+    props.updateDueDate(newDate).then((success) => {
+      if (!success) {
+        // If the update fails, revert to the previous date
+        setDate(previousDate);
+      }
+    });
+  };
+
+  return (
+    <SidebarSection title="Due Date">
+      <DateDisplayField date={date} readonly={!props.canEdit} onChange={saveDate} />
+    </SidebarSection>
+  );
+}
+
 function ParentGoal(props: GoalPage.Props) {
-  if (!props.parentGoal) {
-    return <CompanyWideGoal />;
-  } else {
-    return <ParentGoalLink {...props} />;
-  }
+  return (
+    <SidebarSection title="Parent Goal">
+      {!props.parentGoal ? <CompanyWideGoal /> : <ParentGoalLink {...props} />}
+    </SidebarSection>
+  );
 }
 
 function CompanyWideGoal() {
@@ -143,8 +160,7 @@ function LastCheckIn(props: GoalPage.Props) {
     );
 
     return (
-      <div className="space-y-2">
-        <div className="font-bold text-sm">Last Check-In</div>
+      <SidebarSection title="Last Check-In">
         <div className="text-sm">
           <DivLink to={checkIn.link} className={className}>
             <div className="flex items-center font-semibold">
@@ -166,7 +182,16 @@ function LastCheckIn(props: GoalPage.Props) {
             </div>
           </DivLink>
         </div>
-      </div>
+      </SidebarSection>
     );
   }
+}
+
+function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <div className="font-bold text-sm">{title}</div>
+      {children}
+    </div>
+  );
 }

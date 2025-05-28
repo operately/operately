@@ -83,13 +83,6 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert res.message == "Missing required fields: goal_id"
     end
 
-    test "it requires a due_date", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {400, res} = mutation(ctx.conn, [:goals, :update_due_date], %{goal_id: "test"})
-      assert res.message == "Missing required fields: due_date"
-    end
-
     test "it updates the due date", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
@@ -98,6 +91,16 @@ defmodule OperatelyWeb.Api.GoalsTest do
 
       ctx = Factory.reload(ctx, :goal)
       assert ctx.goal.timeframe.end_date == ~D[2026-01-01]
+    end
+
+    test "it can update the due date to nil", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_due_date], %{goal_id: Paths.goal_id(ctx.goal), due_date: nil})
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.timeframe == nil
     end
   end
 end

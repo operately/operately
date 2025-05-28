@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { fn } from "@storybook/test";
 import React from "react";
 import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
@@ -324,8 +323,8 @@ const defaultArgs: GoalPage.Props = {
   activityFeed: <div></div>,
 
   updateGoalName: async (_name: string) => true,
-  updateTimeframe: fn(),
-  updateDescription: fn(),
+  updateDueDate: async (_date: Date | null) => true,
+  updateDescription: async (_description: string | null) => true,
 };
 
 export default meta;
