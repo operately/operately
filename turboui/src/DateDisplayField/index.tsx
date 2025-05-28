@@ -17,7 +17,7 @@ interface DateDisplayFieldProps {
 
   showOverdueWarning?: boolean;
   showEmptyStateAsButton?: boolean;
-  emtpyStateText?: string;
+  emptyStateText?: string;
   emptyStateReadonlyText?: string;
 }
 
@@ -30,7 +30,7 @@ export function DateDisplayField({
   className = "",
   showOverdueWarning = true,
   showEmptyStateAsButton = false,
-  emtpyStateText = "Set date",
+  emptyStateText = "Set date",
   emptyStateReadonlyText = "No date set",
 }: DateDisplayFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -53,7 +53,7 @@ export function DateDisplayField({
       readonly={readonly}
       showOverdueWarning={showOverdueWarning}
       showEmptyStateAsButton={showEmptyStateAsButton}
-      emptyStateText={emtpyStateText}
+      emptyStateText={emptyStateText}
       emptyStateReadonlyText={emptyStateReadonlyText}
       iconSize={iconSize}
       textSize={textSize}
