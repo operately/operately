@@ -141,7 +141,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
         success: "success",
         content: RichText.rich_text("content"),
         send_notifications_to_everyone: false,
-        subscriber_ids: [],
+        subscriber_ids: [ctx.creator.id],
         subscription_parent_type: :comment_thread
       })
       activity = fetch_activity("goal_closing")
