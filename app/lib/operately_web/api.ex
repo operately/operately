@@ -23,10 +23,10 @@ defmodule OperatelyWeb.Api do
     mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
     mutation(:update_due_date, OperatelyWeb.Api.Goals.UpdateDueDate)
 
+    mutation(:add_target, OperatelyWeb.Api.Goals.AddTarget)
     # mutation(:delete_target, M.DeleteGoalTarget)
     # mutation(:update_target, M.UpdateGoalTarget)
     # mutation(:update_target_value, M.UpdateGoalTargetValue)
-    # mutation(:add_target, M.AddGoalTarget)
   end
 
   query(:get_account, Q.GetAccount)
