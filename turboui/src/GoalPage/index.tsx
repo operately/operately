@@ -60,6 +60,9 @@ export namespace GoalPage {
     deleteLink: string;
     editGoalLink: string;
     newCheckInLink: string;
+    addSubgoalLink: string;
+    addSubprojectLink: string;
+
     mentionedPersonLookup: MentionedPersonLookupFn;
     peopleSearch: SearchFn;
 

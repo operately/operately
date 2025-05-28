@@ -1,7 +1,7 @@
 import React from "react";
+import { GoalPage } from ".";
 import { SecondaryButton } from "../Button";
 import { MiniWorkMap } from "../MiniWorkMap";
-import { GoalPage } from ".";
 import { SectionHeader } from "./SectionHeader";
 
 export function RelatedWork(props: GoalPage.Props) {
@@ -13,10 +13,10 @@ export function RelatedWork(props: GoalPage.Props) {
         title="Subgoals & Projects"
         buttons={
           <div className="flex items-center gap-2">
-            <SecondaryButton size="xxs" onClick={() => {}}>
+            <SecondaryButton size="xxs" linkTo={props.addSubgoalLink}>
               Add goal
             </SecondaryButton>
-            <SecondaryButton size="xxs" onClick={() => {}}>
+            <SecondaryButton size="xxs" linkTo={props.addSubprojectLink}>
               Add project
             </SecondaryButton>
           </div>
