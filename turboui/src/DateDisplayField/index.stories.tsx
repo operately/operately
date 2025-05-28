@@ -25,6 +25,8 @@ export const AllStates: Story = {
   render: () => {
     const today = new Date();
     const twoWeeksAgo = new Date(+new Date() - 14 * 24 * 60 * 60 * 1000);
+    const lastYear = new Date(+new Date() - 365 * 24 * 60 * 60 * 1000);
+    const nextYear = new Date(+new Date() + 365 * 24 * 60 * 60 * 1000);
 
     return (
       <Page title="DateDisplayField All States" size="medium">
@@ -37,6 +39,16 @@ export const AllStates: Story = {
           <div>
             <h3 className="text-sm font-bold mb-2">Overdue</h3>
             <DateDisplayField date={twoWeeksAgo} showOverdueWarning />
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold mb-2">Last Year</h3>
+            <DateDisplayField date={lastYear} showOverdueWarning />
+          </div>
+
+          <div>
+            <h3 className="text-sm font-bold mb-2">Next Year</h3>
+            <DateDisplayField date={nextYear} showOverdueWarning />
           </div>
 
           <div>
