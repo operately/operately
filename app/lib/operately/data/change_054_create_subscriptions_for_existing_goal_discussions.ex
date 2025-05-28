@@ -11,7 +11,7 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
         join: a in assoc(t, :activity),
         preload: [activity: a],
         where: is_nil(t.subscription_list_id),
-        where: a.action in ["goal_discussion_creation", "goal_closing", "goal_reopening"]
+        where: a.action in ["goal_discussion_creation", "goal_closing", "goal_reopening", "goal_timeframe_editing"]
       )
       |> Repo.all()
       |> create_lists()
