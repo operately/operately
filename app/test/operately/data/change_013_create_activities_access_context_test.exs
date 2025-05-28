@@ -861,7 +861,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       }
 
       parent_activity = activity_fixture(attrs)
-      thread = comment_thread_fixture(%{parent_id: parent_activity.id})
+      thread = comment_thread_fixture(parent_id: parent_activity.id)
 
       # Then, create comment with thread as entity
       comment = comment_fixture(ctx.author, %{entity_id: thread.id, entity_type: :comment_thread})
