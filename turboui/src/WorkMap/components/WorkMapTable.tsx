@@ -2,6 +2,8 @@ import React from "react";
 import { WorkMap } from "..";
 import { TableRow } from "./TableRow";
 import classNames from "../../utils/classnames";
+import { Tooltip } from "../../Tooltip";
+import { IconInfoCircle } from "@tabler/icons-react";
 
 interface Props {
   items: WorkMap.Item[];
@@ -47,9 +49,7 @@ export function TableHeader({ tab, columnOptions = {} }: HeaderProps) {
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideSpace} className="hidden lg:table-cell max-w-[100px] w-auto md:px-4">Space</HeaderCell>
         <HeaderCell hide={columnOptions.hideOwner} className="hidden xl:table-cell w-[120px] md:px-4">Champion</HeaderCell>
-        <HeaderCell hide={isCompletedPage || columnOptions.hideNextStep} className="hidden xl:table-cell xl:w-[200px] 2xl:w-[300px] md:px-4">
-          Next step
-        </HeaderCell>
+        <NextStepHeaderCell hide={isCompletedPage || columnOptions.hideNextStep} />
       </tr>
     </thead>
   );
@@ -64,5 +64,31 @@ interface HeaderCellProps {
 function HeaderCell({ className, hide, children }: HeaderCellProps) {
   if (hide) return null;
 
-  return <th className={classNames("text-left py-2 md:py-3.5 px-2 font-semibold whitespace-nowrap", className)}>{children}</th>;
+  return (
+    <th className={classNames("text-left py-2 md:py-3.5 px-2 font-semibold whitespace-nowrap", className)}>
+      {children}
+    </th>
+  );
+}
+
+function NextStepHeaderCell({ hide }: { hide?: boolean }) {
+  const tooltipContent = (
+    <div className="text-xs">
+      <p className="mb-2">Shows what needs to happen next for this work to progress.</p>
+      <p>For goals: The first target that hasn't been completed yet</p>
+      <p className="mb-2">For projects: The upcoming milestone (by due date)</p>
+      <p>Empty when all targets/milestones are complete or none are defined.</p>
+    </div>
+  );
+
+  return (
+    <HeaderCell hide={hide} className="hidden xl:table-cell xl:w-[200px] 2xl:w-[300px] md:px-4">
+      <div className="flex items-center gap-1">
+        Next step
+        <Tooltip content={tooltipContent} className="z-50">
+          <IconInfoCircle size={12} className="text-content-dimmed" />
+        </Tooltip>
+      </div>
+    </HeaderCell>
+  );
 }
