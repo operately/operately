@@ -119,7 +119,13 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     end
 
     test "with no includes", ctx do
-      {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx.goal, "success", RichText.rich_text("content", :as_string))
+      {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx.goal, %{
+        success: "success",
+        content: RichText.rich_text("content"),
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
       activity = fetch_activity("goal_closing")
 
       assert {200, res} = query(ctx.conn, :get_activity, %{id: Paths.activity_id(activity)})
@@ -131,7 +137,13 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     end
 
     test "include_unread_goal_notifications", ctx do
-      {:ok, _} = Operately.Operations.GoalClosing.run(ctx.reviewer, ctx.goal, "success", RichText.rich_text("content", :as_string))
+      {:ok, _} = Operately.Operations.GoalClosing.run(ctx.reviewer, ctx.goal,  %{
+        success: "success",
+        content: RichText.rich_text("content"),
+        send_notifications_to_everyone: false,
+        subscriber_ids: [ctx.creator.id],
+        subscription_parent_type: :comment_thread
+      })
       activity = fetch_activity("goal_closing")
 
       assert {200, res} = query(ctx.conn, :get_activity, %{id: Paths.activity_id(activity)})

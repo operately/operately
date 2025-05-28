@@ -182,8 +182,13 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussionTest do
   end
 
   defp create_discussion(ctx, goal) do
-    content = rich_text("Content") |> Jason.encode!()
-    {:ok, discussion} = Operately.Operations.GoalDiscussionCreation.run(ctx[:creator] || ctx.person, goal, "Title", content)
+    {:ok, discussion} = Operately.Operations.GoalDiscussionCreation.run(ctx[:creator] || ctx.person, goal, %{
+      title: "Title",
+      content: rich_text("Content"),
+      subscription_parent_type: :comment_thread,
+      send_notifications_to_everyone: false,
+      subscriber_ids: []
+    })
     discussion
   end
 

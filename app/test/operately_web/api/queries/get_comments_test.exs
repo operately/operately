@@ -498,7 +498,7 @@ defmodule OperatelyWeb.Api.Queries.GetCommentsTest do
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
     activity = from(a in Activity, where: a.content["goal_id"] == ^goal.id) |> Repo.one!()
-    comment_thread_fixture(%{parent_id: activity.id})
+    comment_thread_fixture(parent_id: activity.id)
   end
 
   defp add_comment(ctx, entity, entity_type, content \\ "Hello World") do

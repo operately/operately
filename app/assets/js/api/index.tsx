@@ -776,6 +776,8 @@ export interface CommentThread {
   comments?: Comment[] | null;
   commentsCount?: number | null;
   author?: Person | null;
+  subscriptionList?: SubscriptionList | null;
+  potentialSubscribers?: Subscriber[] | null;
 }
 
 export interface Company {
@@ -1647,6 +1649,8 @@ export interface GetActivityInput {
   id?: string | null;
   includeUnreadGoalNotifications?: boolean | null;
   includePermissions?: boolean | null;
+  includeSubscriptionsList?: boolean | null;
+  includePotentialSubscribers?: boolean | null;
 }
 
 export interface GetActivityResult {
@@ -2329,9 +2333,11 @@ export interface ChangeTaskDescriptionResult {
 }
 
 export interface CloseGoalInput {
-  goalId?: string | null;
+  goalId?: Id | null;
   success?: string | null;
   retrospective?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface CloseGoalResult {
@@ -2421,9 +2427,11 @@ export interface CreateGoalResult {
 }
 
 export interface CreateGoalDiscussionInput {
-  goalId?: string | null;
+  goalId?: Id | null;
   title?: string | null;
   message?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface CreateGoalDiscussionResult {
@@ -2632,7 +2640,7 @@ export interface EditGoalResult {
 }
 
 export interface EditGoalDiscussionInput {
-  activityId?: string | null;
+  activityId?: Id | null;
   title?: string | null;
   message?: string | null;
 }
@@ -2652,9 +2660,11 @@ export interface EditGoalProgressUpdateResult {
 }
 
 export interface EditGoalTimeframeInput {
-  id?: string | null;
+  id?: Id | null;
   timeframe?: Timeframe | null;
   comment?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface EditGoalTimeframeResult {
@@ -3020,8 +3030,10 @@ export interface RenameResourceHubFolderResult {
 }
 
 export interface ReopenGoalInput {
-  id?: string | null;
+  id?: Id | null;
   message?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface ReopenGoalResult {
