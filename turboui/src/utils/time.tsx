@@ -12,6 +12,14 @@ export function daysAgo(days: number) {
   return datefsn.subDays(today(), days);
 }
 
+export function isOverdue(date: Date) {
+  const today = new Date();
+  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  return dateOnly < todayOnly;
+}
+
 export function isThisWeek(date: Date) {
   return datefsn.isThisWeek(date);
 }

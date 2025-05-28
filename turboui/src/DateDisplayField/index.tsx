@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { SecondaryButton } from "../Button";
 import classNames from "../utils/classnames";
+import { isCurrentYear, isOverdue } from "../utils/time";
 
 interface DateDisplayFieldProps {
   date?: Date | null;
@@ -173,15 +174,11 @@ function EmptyStateButton({ readonly, emptyStateText }: { readonly: boolean; emp
 }
 
 const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-};
-
-const isOverdue = (date: Date) => {
-  const today = new Date();
-  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-  return dateOnly < todayOnly;
+  if (isCurrentYear(date)) {
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  } else {
+    return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  }
 };
 
 export default DateDisplayField;
