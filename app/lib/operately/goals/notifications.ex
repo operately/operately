@@ -1,5 +1,5 @@
 defmodule Operately.Goals.Notifications do
-  import Ecto.Query, only: [from: 2]
+  import Ecto.Query, only: [from: 2, where: 3]
 
   alias Operately.Repo
   alias Operately.Notifications.SubscribersLoader
@@ -23,15 +23,22 @@ defmodule Operately.Goals.Notifications do
 
   def get_goal_thread_subscribers(activity_id, goal_id, opts \\ []) do
     ignore = Keyword.get(opts, :ignore, [])
+    comment_thread_id = Keyword.get(opts, :comment_thread_id)
 
     thread = Repo.one(
       from(t in Operately.Comments.CommentThread,
-        join: a in assoc(t, :activity),
+        join: a in assoc(t, :activity), as: :activity,
         join: c in assoc(t, :access_context),
         preload: [access_context: c],
-        where: a.id == ^activity_id,
         select: t
       )
+      |> then(fn query ->
+        if comment_thread_id do
+          where(query, [t], t.id == ^comment_thread_id)
+        else
+          where(query, [activity: a], a.id == ^activity_id)
+        end
+      end)
     )
 
     goal = Repo.one(

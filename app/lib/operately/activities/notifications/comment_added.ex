@@ -1,49 +1,18 @@
 defmodule Operately.Activities.Notifications.CommentAdded do
+  alias Operately.Goals.Notifications
+
   def dispatch(activity) do
-    author_id = activity.author_id
+    goal_id = activity.content["goal_id"]
+    comment_thread_id = activity.content["comment_thread_id"]
 
-    people_from_comment_thread = get_people_from_comment_thread(activity.content["comment_thread_id"])
-    people_from_main_resource = get_people_from_main_resource(activity.content)
-    people = people_from_comment_thread ++ people_from_main_resource
-
-    people = 
-      people
-      |> List.flatten()
-      |> Enum.reject(fn person -> person.id == author_id end)
-      |> Enum.uniq_by(& &1.id)
-
-    notifications = Enum.map(people, fn person ->
+    Notifications.get_goal_thread_subscribers(nil, goal_id, ignore: [activity.author_id], comment_thread_id: comment_thread_id)
+    |> Enum.map(fn person_id ->
       %{
-        person_id: person.id,
+        person_id: person_id,
         activity_id: activity.id,
         should_send_email: true,
       }
     end)
-
-    Operately.Notifications.bulk_create(notifications)
-  end
-
-  def get_people_from_main_resource(content) do
-    case content do
-      %{"goal_id" => goal_id} ->
-        goal = Operately.Goals.get_goal!(goal_id)
-
-        [Operately.People.get_person!(goal.champion_id), Operately.People.get_person!(goal.reviewer_id)]
-
-      _ ->
-        raise "Unsupported main resource"
-    end
-  end
-
-  def get_people_from_comment_thread(comment_thread_id) do
-    comment_thread = Operately.Comments.get_thread!(comment_thread_id)
-    comments = Operately.Updates.list_comments(comment_thread.id, "comment_thread")
-
-    people = Operately.RichContent.lookup_mentioned_people(comment_thread.message)
-    people_from_comments = Enum.map(comments, fn comment -> 
-      Operately.RichContent.lookup_mentioned_people(comment.content)
-    end)
-
-    people ++ people_from_comments
+    |> Operately.Notifications.bulk_create()
   end
 end
