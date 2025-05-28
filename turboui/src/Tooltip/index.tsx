@@ -39,10 +39,12 @@ export function Tooltip(props: Tooltip.Props) {
           {props.children}
         </ReactTooltip.Trigger>
 
-        <ReactTooltip.Content sideOffset={5} className={tooltipClassName}>
-          {props.content}
-          <ReactTooltip.Arrow />
-        </ReactTooltip.Content>
+        <ReactTooltip.Portal>
+          <ReactTooltip.Content sideOffset={5} className={tooltipClassName}>
+            {props.content}
+            <ReactTooltip.Arrow />
+          </ReactTooltip.Content>
+        </ReactTooltip.Portal>
       </ReactTooltip.Root>
     </ReactTooltip.Provider>
   );
