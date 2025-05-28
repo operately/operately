@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Page } from "../Page";
 import { PieChart } from "../PieChart";
-import { TaskList } from "../TaskBoard/components/TaskList";
 import { calculateMilestoneStats } from "../TaskBoard/components/MilestoneCard";
+import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
+import { TaskList } from "../TaskBoard/components/TaskList";
+import { reorderTasksInList } from "../TaskBoard/utils/taskReorderingUtils";
+import { DragAndDropProvider } from "../utils/DragAndDrop";
 
 // Calculate completion percentage for a milestone, excluding canceled tasks
 function calculateCompletionPercentage(stats: {
@@ -21,13 +24,10 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-import { DragAndDropProvider } from "../utils/DragAndDrop";
-import { reorderTasksInList } from "../TaskBoard/utils/taskReorderingUtils";
-import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 // Using DateDisplayField instead of DueDateDisplay
-import { IconPlus, IconMessageCircle } from "@tabler/icons-react";
-import { DateDisplayField } from "../DateDisplayField";
+import { IconMessageCircle, IconPlus } from "@tabler/icons-react";
 import { GhostButton } from "../Button";
+import { DateDisplayField } from "../DateDisplayField";
 import * as Types from "../TaskBoard/types";
 
 interface MilestonePageProps {
@@ -146,9 +146,9 @@ export function MilestonePage({
                   }
                 }}
                 placeholder="Set target date"
-                size="xxs"
-                isEditable={!!onDueDateChange}
-                showOverdueWarning={true}
+                readonly={!!onDueDateChange}
+                showOverdueWarning
+                showEmptyStateAsButton
               />
             </div>
           </div>
