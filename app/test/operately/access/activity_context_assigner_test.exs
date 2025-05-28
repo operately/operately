@@ -298,12 +298,13 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "goal_discussion_creation action", ctx do
-      {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(
-        ctx.author,
-        ctx.goal,
-        "some title",
-        "{}"
-      )
+      {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, %{
+        title: "some title",
+        content: %{},
+        subscription_parent_type: :comment_thread,
+        send_notifications_to_everyone: false,
+        subscriber_ids: []
+      })
 
       activity = Repo.reload(activity)
 
@@ -333,11 +334,12 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "goal_reopening action", ctx do
-      Operately.Operations.GoalReopening.run(
-        ctx.author,
-        ctx.goal,
-        "{}"
-      )
+      {:ok, _} = Operately.Operations.GoalReopening.run(ctx.author, ctx.goal, %{
+        content: %{},
+        send_notifications_to_everyone: false,
+        subscriber_ids: [],
+        subscription_parent_type: :comment_thread
+      })
 
       activity = from(a in Activities.Activity,
         where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_reopening"
@@ -357,7 +359,10 @@ defmodule Operately.AccessActivityContextAssignerTest do
             start_date: Date.utc_today(),
             end_date: Date.add(Date.utc_today(), 5)
           },
-          comment: "{}"
+          content: %{},
+          subscription_parent_type: :comment_thread,
+          send_notifications_to_everyone: false,
+          subscriber_ids: []
         }
       )
 

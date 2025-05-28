@@ -363,7 +363,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
   defp create_comment_thread(goal) do
     activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one!()
-    comment_thread_fixture(%{parent_id: activity.id})
+    comment_thread_fixture([parent_id: activity.id])
   end
 
   defp create_goal_update(ctx, goal) do
