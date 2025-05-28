@@ -1,12 +1,9 @@
-import React from "react";
 import type { Preview } from "@storybook/react";
 
 import { withThemeByClassName } from "@storybook/addon-themes";
 import { RouterDecorator } from "./router";
 
 import "./global.css";
-import "./reactdatepicker.css";
-import "./reactdatepicker-custom.css";
 
 window.STORYBOOK_ENV = true;
 
