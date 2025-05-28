@@ -17,7 +17,7 @@ export function WorkMapPage(props: WorkMap.Props) {
 }
 
 export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
-  const { filteredItems, tab, setTab } = useWorkMapTab(items, { tabOptions });
+  const { filteredItems, tabsState, tab } = useWorkMapTab(items, { tabOptions });
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -27,7 +27,7 @@ export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: W
         </div>
       </header>
       <div className="flex-1 overflow-auto">
-        <WorkMapNavigation activeTab={tab} setTab={setTab} tabOptions={tabOptions} />
+        <WorkMapNavigation tabsState={tabsState} />
         <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} />
       </div>
     </div>

@@ -1,199 +1,104 @@
-import { useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useMemo } from "react";
+import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconCalendarPause } from "@tabler/icons-react";
 
 import * as sort from "../utils/sort";
-
+import { processItems } from "../utils/itemProcessor";
+import { useTabs } from "../../Tabs";
 import { WorkMap } from "../components";
-import { isStorybook } from "../../utils/storybook/isStorybook";
 
 export interface WorkMapFilterOptions {
   tabOptions?: WorkMap.TabOptions;
 }
 
-export function useWorkMapTab(rawItems: WorkMap.Item[], options: WorkMapFilterOptions = {}) {
-  const [tab, setTab] = useWorkMapUrlTab(options.tabOptions);
+interface Props {
+  filteredItems: WorkMap.Item[];
+  tabsState: ReturnType<typeof useTabs>;
+  tab: WorkMap.Filter;
+}
 
-  const filteredItems = useMemo(() => {
-    if (tab === "all") {
-      const goals = extractOngoingItems(rawItems);
-      return sort.sortItemsByDuration(goals);
-    }
-    if (tab === "projects") {
-      const projects = extractAllProjects(rawItems);
-      return sort.sortItemsByDueDate(projects);
-    }
-    if (tab === "completed") {
-      const completedItems = extractCompletedItems(rawItems);
-      return sort.sortItemsByClosedDate(completedItems);
-    }
-    if (tab === "paused") {
-      const pausedItems = extractPausedItems(rawItems);
-      return sort.sortItemsByDueDate(pausedItems);
-    }
+export function useWorkMapTab(rawItems: WorkMap.Item[], options: WorkMapFilterOptions = {}): Props {
+  const allFilteredItems = useMemo(() => {
+    const processedData = processItems(rawItems);
 
-    const goals = extractAllGoals(rawItems);
-    return sort.sortItemsByDuration(goals);
-  }, [rawItems, tab]);
+    return {
+      all: sort.sortItemsByDuration(processedData.ongoingItems),
+      goals: sort.sortItemsByDuration(processedData.goals),
+      projects: sort.sortItemsByDueDate(processedData.projects),
+      completed: sort.sortItemsByClosedDate(processedData.completedItems),
+      paused: sort.sortItemsByDueDate(processedData.pausedItems),
+    };
+  }, [rawItems]);
+
+  const allowedTabs = getAllowedTabs(options.tabOptions);
+  const defaultTab = getDefaultTab(allowedTabs, options.tabOptions);
+
+  const tabOptions = getTabOptions(options.tabOptions, allFilteredItems);
+  const tabsState = useTabs(defaultTab, tabOptions);
+  const tab = tabsState.active as WorkMap.Filter;
+
+  const filteredItems = allFilteredItems[tab];
 
   return {
     filteredItems,
+    tabsState,
     tab,
-    setTab,
   };
 }
 
-const CLOSED_STATUSES = ["completed", "dropped", "achieved", "partial", "missed"];
-
 /**
- * Helper to extract all goals while maintaining hierarchy
+ * Converts WorkMap tab options to the format expected by the Tabs component
  */
-function extractAllGoals(items: WorkMap.Item[]): WorkMap.Item[] {
-  const processItem = (item: WorkMap.Item): WorkMap.Item | null => {
-    if (item.type === "project") return null;
-
-    let filteredChildren: WorkMap.Item[] = [];
-
-    if (item.children && item.children.length > 0) {
-      filteredChildren = item.children
-        .map((child) => processItem(child))
-        .filter((child): child is WorkMap.Item => child !== null);
-    }
-
-    // Include if item is ongoing or has ongoing children
-    const isItemClosed = CLOSED_STATUSES.includes(item.status);
-
-    if (isItemClosed && filteredChildren.length === 0) {
-      return null;
-    }
-
-    // Include the item with its filtered children
-    return { ...item, children: filteredChildren };
-  };
-
-  return items.map((item) => processItem(item)).filter((item): item is WorkMap.Item => item !== null);
-}
-
-/**
- * Helper to extract all projects from the hierarchy, flattening them
- */
-function extractAllProjects(data: WorkMap.Item[]): WorkMap.Item[] {
-  let allProjects: WorkMap.Item[] = [];
-
-  const extract = (items: WorkMap.Item[]): void => {
-    items.forEach((item) => {
-      if (item.type === "project") {
-        allProjects.push({ ...item, children: [] });
-      }
-      if (item.children && item.children.length > 0) {
-        extract(item.children);
-      }
-    });
-  };
-
-  extract(data);
-
-  // Filter out closed and paused projects before returning
-  return allProjects.filter((project) => !CLOSED_STATUSES.includes(project.status) && project.status !== "paused");
-}
-
-/**
- * Helper to extract all completed items (achieved, partial, missed, dropped, etc.)
- * Returns a flat list of all completed items with completedOn dates
- */
-function extractCompletedItems(data: WorkMap.Item[]): WorkMap.Item[] {
-  let completedItems: WorkMap.Item[] = [];
-
-  const extractItems = (items: WorkMap.Item[]): void => {
-    items.forEach((item) => {
-      if (CLOSED_STATUSES.includes(item.status)) {
-        completedItems.push({ ...item, children: [] });
-      }
-      if (item.children && item.children.length > 0) {
-        extractItems(item.children);
-      }
-    });
-  };
-
-  extractItems(data);
-  return completedItems;
-}
-
-/**
- * Helper to extract all ongoing items (not completed, achieved, partial, missed, or dropped)
- */
-function extractOngoingItems(data: WorkMap.Item[]): WorkMap.Item[] {
-  const filterOngoingItems = (item: WorkMap.Item): WorkMap.Item | null => {
-    let filteredChildren: WorkMap.Item[] = [];
-
-    if (item.children && item.children.length > 0) {
-      filteredChildren = item.children.map(filterOngoingItems).filter((child): child is WorkMap.Item => child !== null);
-    }
-
-    const isOngoing = !CLOSED_STATUSES.includes(item.status) && item.status !== "paused";
-
-    // Include if item is ongoing or has ongoing children
-    if (!isOngoing && filteredChildren.length === 0) {
-      return null;
-    }
-
-    return { ...item, children: filteredChildren };
-  };
-
-  return data.map(filterOngoingItems).filter((item): item is WorkMap.Item => item !== null);
-}
-
-/**
- * Helper function to extract all items with "paused" status
- * Returns a flat list of all paused items without hierarchy
- */
-function extractPausedItems(data: WorkMap.Item[]): WorkMap.Item[] {
-  const result: WorkMap.Item[] = [];
-
-  const findPausedItems = (items: WorkMap.Item[]) => {
-    for (const item of items) {
-      if (item.status === "paused") {
-        result.push(item);
-      }
-
-      if (item.children && item.children.length > 0) {
-        findPausedItems(item.children);
-      }
-    }
-  };
-
-  findPausedItems(data);
-  return result;
-}
-
-/**
- * Reads the filter from URL search params
- * Falls back to Storybook-compatible state in non-browser environments
- */
-function useWorkMapUrlTab(tabOptions?: WorkMap.TabOptions) {
-  if (isStorybook()) {
-    return useLocalFilter(tabOptions);
-  }
-
-  const [searchParams, _] = useSearchParams();
-
-  const rawTab = searchParams.get("tab") as WorkMap.Filter;
+function getTabOptions(tabOptions?: WorkMap.TabOptions, filteredItems?: Record<WorkMap.Filter, WorkMap.Item[]>) {
   const allowedTabs = getAllowedTabs(tabOptions);
-  const defaultTab = getDefaultTab(allowedTabs, tabOptions);
 
-  const tab = rawTab && allowedTabs.includes(rawTab) ? rawTab : defaultTab;
-
-  return [tab as WorkMap.Filter, _] as const;
+  return [
+    {
+      id: "all",
+      label: "All work",
+      icon: React.createElement(IconLayoutGrid, { size: 16 }),
+      count: countAllItems(filteredItems?.all),
+    },
+    {
+      id: "goals",
+      label: "Goals",
+      icon: React.createElement(IconTarget, { size: 16 }),
+      count: countAllItems(filteredItems?.goals),
+    },
+    {
+      id: "projects",
+      label: "Projects",
+      icon: React.createElement(IconChecklist, { size: 16 }),
+      count: countAllItems(filteredItems?.projects),
+    },
+    {
+      id: "paused",
+      label: "Paused",
+      icon: React.createElement(IconCalendarPause, { size: 16 }),
+      count: countAllItems(filteredItems?.paused),
+    },
+    {
+      id: "completed",
+      label: "Completed",
+      icon: React.createElement(IconCircleCheck, { size: 16 }),
+      count: countAllItems(filteredItems?.completed),
+    },
+  ].filter((tab) => allowedTabs.includes(tab.id as WorkMap.Filter));
 }
 
-/**
- * Hook that maintains the filter state locally without touching URL params
- * (used in Storybook)
- */
-function useLocalFilter(tabOptions?: WorkMap.TabOptions): [WorkMap.Filter, (newFilter: WorkMap.Filter) => void] {
-  const allowedTabs = getAllowedTabs(tabOptions);
-  const defaultTab = getDefaultTab(allowedTabs, tabOptions);
+function countAllItems(items: WorkMap.Item[] | undefined): number {
+  if (!items || items.length === 0) return 0;
 
-  return useState<WorkMap.Filter>(defaultTab);
+  return items.reduce((total, item) => {
+    // Count this item
+    let count = 1;
+
+    // Add all its children recursively
+    if (item.children && item.children.length > 0) {
+      count += countAllItems(item.children);
+    }
+
+    return total + count;
+  }, 0);
 }
 
 function getAllowedTabs(tabOptions?: WorkMap.TabOptions): WorkMap.Filter[] {
