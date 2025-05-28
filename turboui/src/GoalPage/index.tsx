@@ -88,7 +88,7 @@ export namespace GoalPage {
 
     updateGoalName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
-    updateTimeframe: (timeframe: Timeframe) => Promise<void>;
+    updateDueDate: (date: Date | null) => Promise<boolean>;
 
     activityFeed: React.ReactNode;
   }

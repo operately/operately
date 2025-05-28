@@ -13,7 +13,7 @@ defmodule Operately.Activities.Content.GoalDueDateChanged do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required(__schema__(:fields) -- [:old_due_date, :new_due_date])
   end
 
   def build(params) do
