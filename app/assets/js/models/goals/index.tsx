@@ -20,6 +20,7 @@ export {
   useChangeGoalParent,
   useReopenGoal,
   useDeleteGoal,
+  createGoalDiscussion,
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
