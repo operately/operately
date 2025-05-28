@@ -302,6 +302,8 @@ const defaultArgs: GoalPage.Props = {
   deleteLink: storyPath("Pages/GoalDeletePage", "Default"),
   editGoalLink: storyPath("Pages/GoalEditPage", "Default"),
   newCheckInLink: storyPath("Pages/GoalCheckInPage", "Default"),
+  addSubgoalLink: "#",
+  addSubprojectLink: "#",
 
   goalName: "Launch AI Platform",
   spaceName: "Product",

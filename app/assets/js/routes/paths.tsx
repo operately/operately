@@ -1,4 +1,5 @@
 import { LinkOptions } from "@/features/ResourceHub";
+import * as GoalAddPage from "@/pages/GoalAddPage";
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
@@ -321,8 +322,8 @@ export class Paths {
     return createCompanyPath(["goals", goalId, "v3"]);
   }
 
-  static newGoalPath(params?: { companyWide: boolean }) {
-    return createCompanyPath(["goals", "new"]) + (params?.companyWide ? "?company-wide=true" : "");
+  static newGoalPath(params?: GoalAddPage.UrlParams) {
+    return createCompanyPath(["goals", "new"]) + encodeUrlParams(params);
   }
 
   static spaceNewGoalPath(spaceId: string) {
