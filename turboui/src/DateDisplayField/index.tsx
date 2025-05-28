@@ -1,100 +1,187 @@
-import React, { useState } from "react";
-import ReactDatePicker from "react-datepicker";
 import * as Popover from "@radix-ui/react-popover";
 import { IconCalendarEvent, IconCalendarPlus, IconX } from "@tabler/icons-react";
+import React, { useState } from "react";
+import ReactDatePicker from "react-datepicker";
 import { SecondaryButton } from "../Button";
-
-import "react-datepicker/dist/react-datepicker.css";
-
-// Helper function to format date (matches DueDateDisplay format)
-const formatDate = (date: Date) => {
-  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-};
+import classNames from "../utils/classnames";
 
 interface DateDisplayFieldProps {
   date?: Date | null;
   onChange?: (date: Date | null) => void;
+
   placeholder?: string;
-  isEditable?: boolean;
-  size?: "xxs" | "xs" | "sm" | "base" | "lg";
-  showOverdueWarning?: boolean;
+  readonly?: boolean;
   className?: string;
+  iconSize?: number;
+  textSize?: string;
+
+  showOverdueWarning?: boolean;
+  showEmptyStateAsButton?: boolean;
+  emtpyStateText?: string;
+  emptyStateReadonlyText?: string;
 }
 
 export function DateDisplayField({
   date,
-  onChange,
-  placeholder = "Set date",
-  isEditable = true,
-  size = "xs",
-  showOverdueWarning = false,
+  onChange = () => {},
+  readonly = false,
+  iconSize = 18,
+  textSize = "text-sm",
   className = "",
+  showOverdueWarning = true,
+  showEmptyStateAsButton = false,
+  emtpyStateText = "Set date",
+  emptyStateReadonlyText = "No date set",
 }: DateDisplayFieldProps) {
-  // Use the same overdue check logic as DueDateDisplay
-  const isDateOverdue = date ? date < new Date() : false;
-  // Only apply red color if showOverdueWarning is true AND the date is actually overdue
-  const textColorClass = showOverdueWarning && isDateOverdue ? "text-content-error" : "text-content-dimmed";
   const [isOpen, setIsOpen] = useState(false);
 
-  // If not editable, render a simple read-only display
-  if (!isEditable) {
-    return date ? (
-      <span className={`text-xs flex items-center gap-1 ${textColorClass} ${className}`}>
-        <IconCalendarEvent size={14} />
-        <span>{formatDate(date)}</span>
-      </span>
-    ) : null;
+  const clearDate = () => {
+    onChange(null);
+    setIsOpen(false);
+  };
+
+  const setNewDate = (newDate: Date | null) => {
+    if (date?.getTime() !== newDate?.getTime()) {
+      onChange(newDate);
+    }
+  };
+
+  const display = (
+    <DateDisplay
+      date={date}
+      className={className}
+      readonly={readonly}
+      showOverdueWarning={showOverdueWarning}
+      showEmptyStateAsButton={showEmptyStateAsButton}
+      emptyStateText={emtpyStateText}
+      emptyStateReadonlyText={emptyStateReadonlyText}
+      iconSize={iconSize}
+      textSize={textSize}
+    />
+  );
+
+  if (readonly) {
+    return display;
+  } else {
+    return (
+      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+        <Popover.Trigger className={`inline-block ${className}`}>{display}</Popover.Trigger>
+        <Popover.Portal>
+          <DatePickerPopover date={date} setNewDate={setNewDate} clearDate={clearDate} />
+        </Popover.Portal>
+      </Popover.Root>
+    );
+  }
+}
+
+const DatePickerPopover = ({
+  date,
+  clearDate,
+  setNewDate,
+}: {
+  date?: Date | null;
+  clearDate: () => void;
+  setNewDate: (date: Date | null) => void;
+}) => (
+  <Popover.Content className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50" sideOffset={5}>
+    <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
+      <div className="text-sm font-medium">Select date</div>
+      {date && (
+        <button
+          onClick={clearDate}
+          className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-dimmed"
+        >
+          <IconX size={14} className="mr-1" />
+          Clear
+        </button>
+      )}
+    </div>
+
+    <div className="p-2 pt-1">
+      <ReactDatePicker selected={date || undefined} onChange={setNewDate} inline />
+    </div>
+
+    <Popover.Arrow />
+  </Popover.Content>
+);
+
+interface DateDisplayProps {
+  date: Date | null | undefined;
+  className: string;
+  readonly: boolean;
+
+  iconSize: number;
+  textSize: string;
+
+  showOverdueWarning: boolean;
+  showEmptyStateAsButton: boolean;
+
+  emptyStateText: string;
+  emptyStateReadonlyText: string;
+}
+
+function DateDisplay(props: DateDisplayProps) {
+  if (!props.date && props.showEmptyStateAsButton) {
+    return <EmptyStateButton emptyStateText={props.emptyStateText} readonly={props.readonly} />;
   }
 
-  // If editable, render as a popover with the date picker
+  const iconSize = props.iconSize;
+  const textSize = props.textSize;
+  const Elem = props.readonly ? "span" : "button";
+  const isDateOverdue = props.date && isOverdue(props.date);
+
+  const elemClass = classNames(
+    {
+      "flex items-center gap-1.5": true,
+      "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !props.readonly,
+      "text-content-error": isDateOverdue && props.showOverdueWarning,
+      "text-content-dimmed": !props.date,
+    },
+    textSize,
+    props.className,
+  );
+
+  let text = "";
+  if (props.date) {
+    text = formatDate(props.date);
+  } else if (props.readonly) {
+    text = props.emptyStateReadonlyText;
+  } else {
+    text = props.emptyStateText;
+  }
+
   return (
-    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger asChild>
-        <div className={`inline-block ${className}`}>
-          {date ? (
-            // Show the set date with calendar icon
-            <div className={`flex items-center gap-1 ${textColorClass}`}>
-              <button className="flex items-center gap-1 hover:underline focus:outline-none text-xs">
-                <IconCalendarEvent size={14} />
-                <span>{formatDate(date)}</span>
-              </button>
-            </div>
-          ) : (
-            // Show the "Set date" placeholder
-            <div className="text-content-subtle">
-              <SecondaryButton size={size} icon={IconCalendarPlus}>
-                {placeholder}
-              </SecondaryButton>
-            </div>
-          )}
-        </div>
-      </Popover.Trigger>
-      <Popover.Portal>
-        <Popover.Content
-          className="bg-surface-default shadow-lg border border-surface-outline rounded-md p-2 z-50"
-          sideOffset={5}
-        >
-          <div className="flex justify-between items-center mb-2">
-            <div className="text-sm font-medium">Select date</div>
-            {date && (
-              <button
-                onClick={() => {
-                  onChange && onChange(null);
-                  setIsOpen(false);
-                }}
-                className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-hover"
-              >
-                <IconX size={14} className="mr-1" />
-                Clear
-              </button>
-            )}
-          </div>
-          <ReactDatePicker selected={date || undefined} onChange={(date) => onChange && onChange(date)} inline />
-          <Popover.Arrow className="fill-surface-default" />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <Elem className={elemClass}>
+      <IconCalendarEvent size={iconSize} className="-mt-[1px]" />
+      <span>{text}</span>
+    </Elem>
   );
 }
+
+function EmptyStateButton({ readonly, emptyStateText }: { readonly: boolean; emptyStateText: string }) {
+  if (readonly) {
+    return null;
+  } else {
+    return (
+      <div className="text-content-subtle">
+        <SecondaryButton size="xs" icon={IconCalendarPlus}>
+          {emptyStateText}
+        </SecondaryButton>
+      </div>
+    );
+  }
+}
+
+const formatDate = (date: Date) => {
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+};
+
+const isOverdue = (date: Date) => {
+  const today = new Date();
+  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+  return dateOnly < todayOnly;
+};
 
 export default DateDisplayField;

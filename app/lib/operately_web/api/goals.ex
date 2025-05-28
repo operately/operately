@@ -70,7 +70,7 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, required: true
-      field :due_date, :date, required: true
+      field :due_date, :date
     end
 
     outputs do
@@ -88,8 +88,8 @@ defmodule OperatelyWeb.Api.Goals do
           company_id: changes.goal.company_id,
           space_id: changes.goal.group_id,
           goal_id: changes.goal.id,
-          old_due_date: changes.goal.timeframe.end_date,
-          new_due_date: changes.updated_goal.timeframe.end_date
+          old_due_date: changes.goal.timeframe && changes.goal.timeframe.end_date,
+          new_due_date: changes.updated_goal.timeframe && changes.updated_goal.timeframe.end_date
         }
       end)
       |> Steps.commit()
@@ -138,9 +138,28 @@ defmodule OperatelyWeb.Api.Goals do
 
     def update_goal_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
-        new_timeframe = Map.put(goal.timeframe, :end_date, new_due_date)
-        new_timeframe = Map.put(new_timeframe, :type, "days")
-        Operately.Goals.Goal.changeset(goal, %{timeframe: new_timeframe})
+        cond do
+          new_due_date == nil ->
+            Operately.Goals.Goal.changeset(goal, %{timeframe: nil})
+
+          goal.timeframe == nil ->
+            Operately.Goals.Goal.changeset(goal, %{
+              timeframe: %{
+                type: "days",
+                start_date: goal.inserted_at,
+                end_date: new_due_date
+              }
+            })
+
+          true ->
+            Operately.Goals.Goal.changeset(goal, %{
+              timeframe: %{
+                type: "days",
+                start_date: goal.timeframe.start_date,
+                end_date: new_due_date
+              }
+            })
+        end
       end)
     end
 
