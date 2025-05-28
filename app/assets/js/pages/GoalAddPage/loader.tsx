@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
-import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
+import * as Spaces from "@/models/spaces";
 
 interface LoaderResult {
   company: Companies.Company;
@@ -26,9 +26,9 @@ export async function loader({ request, params }): Promise<LoaderResult> {
   const searchParams = new URL(request.url).searchParams;
 
   const parentGoalId = searchParams.get("parentGoalId") || undefined;
-  const isCompanyWide = searchParams.get("company-wide") === "true";
+  const isCompanyWide = searchParams.get("companyWide") === "true";
 
-  const spaceID = params.id;
+  const spaceID = params.id || searchParams.get("spaceId") || undefined;
   const company = await Companies.getCompany({ id: params.companyId }).then((data) => data.company!);
   const allowSpaceSelection = !spaceID;
 

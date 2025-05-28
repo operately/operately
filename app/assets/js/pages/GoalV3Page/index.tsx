@@ -73,6 +73,9 @@ function Page() {
     closeLink: Paths.goalClosePath(goal.id),
     editGoalLink: Paths.goalEditPath(goal.id),
     newCheckInLink: Paths.goalCheckInNewPath(goal.id),
+    addSubprojectLink: Paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
+    addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
+
     privacyLevel: goal.privacy,
     timeframe: Timeframes.parse(goal.timeframe),
     parentGoal: prepareParentGoal(goal.parentGoal),
