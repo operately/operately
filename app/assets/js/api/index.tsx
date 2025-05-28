@@ -2640,7 +2640,7 @@ export interface EditGoalResult {
 }
 
 export interface EditGoalDiscussionInput {
-  activityId?: string | null;
+  activityId?: Id | null;
   title?: string | null;
   message?: string | null;
 }
