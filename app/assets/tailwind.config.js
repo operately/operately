@@ -1,16 +1,13 @@
-// See the Tailwind configuration guide for advanced usage
-// https://tailwindcss.com/docs/configuration
-
 const plugin = require("tailwindcss/plugin");
 
 module.exports = {
   darkMode: "class",
   content: [
-    "./js/**/*.js", 
-    "./js/**/*.tsx", 
+    "./js/**/*.js",
+    "./js/**/*.tsx",
     "../ee/assets/js/**/*.js",
     "../ee/assets/js/**/*.tsx",
-    "../lib/*_web.ex", 
+    "../lib/*_web.ex",
     "../lib/*_web/**/*.*ex",
     "../../turboui/src/**/*.{js,ts,jsx,tsx}",
   ],
@@ -113,11 +110,11 @@ module.exports = {
       });
     },
     plugin(function ({ addVariant, e }) {
-      addVariant('not-first', ({ modifySelectors, separator }) => {
+      addVariant("not-first", ({ modifySelectors, separator }) => {
         modifySelectors(({ className }) => {
-          return `.${e(`not-first${separator}${className}`)}:not(:first-child)`
-        })
-      })
+          return `.${e(`not-first${separator}${className}`)}:not(:first-child)`;
+        });
+      });
     }),
   ],
   safelist: [
