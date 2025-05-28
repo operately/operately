@@ -25,7 +25,7 @@ interface Tab {
   count?: number;
 }
 
-interface TabsState {
+export interface TabsState {
   active: string;
   tabs: Tab[];
 }

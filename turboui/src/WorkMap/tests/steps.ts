@@ -4,8 +4,34 @@ export const selectTab = async (canvasElement, step, tab) => {
   const canvas = within(canvasElement);
 
   await step("Select the " + tab + " tab", async () => {
-    const tabElement = canvas.getByTestId("work-map-tab-" + tab);
-    await tabElement.click();
+    // Find the tab by its label text, which corresponds to the tab ID in most cases
+    // For example, "all" tab has label "All work", "goals" tab has label "Goals"
+    let tabLabel: string;
+
+    // Map the tab ID to its display label
+    switch (tab) {
+      case "all":
+        tabLabel = "All work";
+        break;
+      case "goals":
+        tabLabel = "Goals";
+        break;
+      case "projects":
+        tabLabel = "Projects";
+        break;
+      case "completed":
+        tabLabel = "Completed";
+        break;
+      case "paused":
+        tabLabel = "Paused";
+        break;
+      default:
+        tabLabel = tab; // Fallback to using the ID directly
+    }
+
+    // Use role=link because DivLink renders as an anchor tag
+    const tabElement = canvas.getByRole("link", { name: new RegExp(tabLabel, "i") });
+    await userEvent.click(tabElement);
   });
 };
 
@@ -15,7 +41,7 @@ export const assertRowsNumber = async (canvasElement, step, count) => {
   await step(`Verify there are ${count} rows`, async () => {
     const rowgroups = canvas.getAllByRole("rowgroup");
     expect(rowgroups.length).toBeGreaterThan(1); // Ensure we have at least 2 rowgroups
-    
+
     const tableBody = rowgroups[1]!; // Second rowgroup is tbody
     const tableRows = within(tableBody).queryAllByRole("row");
 
