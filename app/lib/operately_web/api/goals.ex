@@ -70,7 +70,7 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, required: true
-      field :due_date, :date, required: true
+      field :due_date, :date
     end
 
     outputs do
