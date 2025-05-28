@@ -83,16 +83,13 @@ const DatePickerPopover = ({
   clearDate: () => void;
   setNewDate: (date: Date | null) => void;
 }) => (
-  <Popover.Content
-    className="bg-surface-base shadow-lg border border-surface-outline rounded-md p-2 z-50"
-    sideOffset={5}
-  >
-    <div className="flex justify-between items-center mb-2">
+  <Popover.Content className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50" sideOffset={5}>
+    <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
       <div className="text-sm font-medium">Select date</div>
       {date && (
         <button
           onClick={clearDate}
-          className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-hover"
+          className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-dimmed"
         >
           <IconX size={14} className="mr-1" />
           Clear
@@ -100,8 +97,11 @@ const DatePickerPopover = ({
       )}
     </div>
 
-    <ReactDatePicker selected={date || undefined} onChange={setNewDate} inline />
-    <Popover.Arrow className="fill-surface-default" />
+    <div className="p-2 pt-1">
+      <ReactDatePicker selected={date || undefined} onChange={setNewDate} inline />
+    </div>
+
+    <Popover.Arrow />
   </Popover.Content>
 );
 
