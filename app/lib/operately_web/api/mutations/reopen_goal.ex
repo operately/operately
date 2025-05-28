@@ -41,7 +41,7 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoal do
   defp parse_inputs(inputs) do
     {:ok, %{
       content: Jason.decode!(inputs.message),
-      send_notifications_to_everyone: inputs[:send_notifications_to_everyone] || false,
+      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],
       subscription_parent_type: :comment_thread
     }}
