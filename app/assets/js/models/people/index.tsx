@@ -70,7 +70,7 @@ function lastNameInitial(person: Pick<Person, "fullName">): string {
   return person.fullName!.split(" ").slice(-1)[0]![0]!;
 }
 
-export type NameFormat = "first" | "short" | "full";
+type NameFormat = "first" | "short" | "full";
 
 export function formattedName(person: Pick<Person, "fullName">, nameFormat: NameFormat): string {
   if (nameFormat === "first") {
