@@ -1017,6 +1017,7 @@ defmodule OperatelyWeb.Api.Types do
     field :status, :goal_status, optional: false, nullable: false
     field :closed_at, :date
     field :timeframe, :timeframe
+    field :due_date, :date, optional: false, nullable: true
     field :description, :string
     field :champion, :person
     field :reviewer, :person
