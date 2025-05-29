@@ -332,7 +332,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :target do
-    field :id, :string
+    field :id, :id
     field :index, :integer
     field :name, :string
     field :from, :float
