@@ -17,7 +17,7 @@ import { assertDefined, assertPresent } from "../../utils/assertions";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v7-GoalPage.goal-${id}`;
+  return `v8-GoalPage.goal-${id}`;
 }
 
 async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[], Activities.Activity[]]> {
@@ -93,6 +93,73 @@ function Page() {
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
     peopleSearch,
+
+    addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
+      return Api.goals
+        .addTarget({ ...inputs, goalId: goal.id! })
+        .then((data) => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+
+          return { id: data.targetId!, success: true };
+        })
+        .catch((e) => {
+          console.error("Failed to add target", e);
+
+          return { id: "", success: false };
+        });
+    },
+
+    deleteTarget: function (id: string): Promise<boolean> {
+      return Api.goals
+        .deleteTarget({ goalId: goal.id!, targetId: id })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to delete target", e);
+          return false;
+        });
+    },
+
+    updateTarget: function (inputs): Promise<boolean> {
+      return Api.goals
+        .updateTarget({ ...inputs, goalId: goal.id! })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to update target", e);
+          return false;
+        });
+    },
+
+    updateTargetValue: function (id: string, value: number): Promise<boolean> {
+      return Api.goals
+        .updateTargetValue({ goalId: goal.id!, targetId: id, value })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to update target value", e);
+          return false;
+        });
+    },
+
+    updateTargetIndex: function (id: string, index: number): Promise<boolean> {
+      return Api.goals
+        .updateTargetIndex({ goalId: goal.id!, targetId: id, index })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to update target index", e);
+          return false;
+        });
+    },
 
     updateGoalName: function (name: string): Promise<boolean> {
       if (name.trim() === "") {
