@@ -1102,7 +1102,7 @@ defmodule OperatelyWeb.Api.Types do
     field :title, :string, optional: false, nullable: false
     field :avatar_url, :string, optional: false, nullable: true
     field :timezone, :string
-    field :email, :string
+    field :email, :string, optional: false, nullable: false
     field :send_daily_summary, :boolean
     field :notify_on_mention, :boolean
     field :notify_about_assignments, :boolean

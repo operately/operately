@@ -15,3 +15,4 @@ export * from "./WorkMap";
 
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
+export { ProfilePage } from "./ProfilePage";
