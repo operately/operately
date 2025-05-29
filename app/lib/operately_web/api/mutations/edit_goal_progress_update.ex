@@ -43,17 +43,26 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, %{
-      status: inputs.status,
-      content: Jason.decode!(inputs.content),
-      new_target_values: Jason.decode!(inputs.new_target_values),
-      timeframe: inputs[:timeframe],
-    }}
+    {:ok,
+     %{
+       status: inputs.status,
+       content: Jason.decode!(inputs.content),
+       new_target_values:
+         Jason.decode!(inputs.new_target_values)
+         |> Enum.map(fn t ->
+           {:ok, id} = decode_id(t["id"])
+           %{"id" => id, "value" => t["value"]}
+         end),
+       timeframe: inputs[:timeframe]
+     }}
   end
 
   defp load(ctx) do
-    Update.get(ctx.me, id: ctx.id, opts: [
-      preload: [goal: :targets]
-    ])
+    Update.get(ctx.me,
+      id: ctx.id,
+      opts: [
+        preload: [goal: :targets]
+      ]
+    )
   end
 end

@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import type { Meta, StoryObj } from "@storybook/react";
-import { GoalTargetList } from "./index";
 import { Page } from "../Page";
+import { GoalTargetList } from "./index";
 
 const meta = {
   title: "Components/GoalTargetList",
@@ -63,8 +63,21 @@ const mockTargets = [
   },
 ];
 
+const randId = () => crypto.randomUUID() as string;
+
+const defaultArgs = {
+  addTarget: (): Promise<{ success: boolean; id: string }> =>
+    new Promise((resolve) => resolve({ success: true, id: randId() })),
+
+  deleteTarget: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+  updateTarget: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+  updateTargetValue: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+  updateTargetIndex: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+};
+
 export const Default: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets,
     showEditButton: true,
     showUpdateButton: true,
@@ -74,6 +87,7 @@ export const Default: Story = {
 
 export const UpdateMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "update" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
@@ -82,6 +96,7 @@ export const UpdateMode: Story = {
 
 export const EditMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "edit" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
@@ -90,6 +105,7 @@ export const EditMode: Story = {
 
 export const DeleteMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "delete" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
@@ -98,12 +114,14 @@ export const DeleteMode: Story = {
 
 export const ReadOnly: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t) => ({ ...t, showEditValueButton: false })),
   },
 };
 
 export const AddMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets,
     addActive: true,
     showUpdateButton: true,
