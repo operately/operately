@@ -221,6 +221,14 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(name, id)
   end
 
+  def target_id(target = %Operately.Goals.Target{}) do
+    Operately.ShortUuid.encode!(target.id)
+  end
+
+  def target_id(target_id) when is_binary(target_id) do
+    Operately.ShortUuid.encode!(target_id)
+  end
+
   def project_id(project) do
     id = Operately.ShortUuid.encode!(project.id)
     OperatelyWeb.Api.Helpers.id_with_comments(project.name, id)
@@ -287,10 +295,11 @@ defmodule OperatelyWeb.Paths do
   def activity_id(activity) do
     id = Operately.ShortUuid.encode!(activity.id)
 
-    comment = case activity.action do
-      "goal_discussion_creation" -> activity.comment_thread.title
-      _ -> activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
-    end
+    comment =
+      case activity.action do
+        "goal_discussion_creation" -> activity.comment_thread.title
+        _ -> activity.action |> String.replace("_", "-") |> String.replace("goal-", "")
+      end
 
     OperatelyWeb.Api.Helpers.id_with_comments(comment, id)
   end
@@ -364,5 +373,4 @@ defmodule OperatelyWeb.Paths do
 
     "/" <> Enum.join(parts, "/")
   end
-
 end
