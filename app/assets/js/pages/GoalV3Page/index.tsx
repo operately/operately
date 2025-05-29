@@ -17,7 +17,7 @@ import { assertDefined, assertPresent } from "../../utils/assertions";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v7-GoalPage.goal-${id}`;
+  return `v8-GoalPage.goal-${id}`;
 }
 
 async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[], Activities.Activity[]]> {

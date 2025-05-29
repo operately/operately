@@ -113,18 +113,20 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
     saveEdit: (id: string, values: { name: string; from: number; to: number; unit: string }) => {
       update(id, (t) => ({ ...t, ...values, mode: "view" as const }));
 
-      props.updateTarget({
-        targetId: id,
-        name: values.name,
-        startValue: values.from,
-        targetValue: values.to,
-        unit: values.unit,
-      }).catch((e) => {
-        console.error("Failed to update target", e);
+      props
+        .updateTarget({
+          targetId: id,
+          name: values.name,
+          startValue: values.from,
+          targetValue: values.to,
+          unit: values.unit,
+        })
+        .catch((e) => {
+          console.error("Failed to update target", e);
 
-        // Revert the changes if the update fails
-        update(id, (t) => ({ ...t, mode: "view" as const }));
-      });
+          // Revert the changes if the update fails
+          update(id, (t) => ({ ...t, mode: "view" as const }));
+        });
     },
 
     // Deleting
@@ -138,7 +140,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
         if (!success) {
           append(target!);
         }
-      }
+      });
     },
     cancelDelete: (id: string) => {
       update(id, (t) => ({ ...t, mode: "view" as const }));
@@ -157,8 +159,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
         if (!success) {
           reorder(id, oldIndex); // Revert if the update fails
         }
-      }
-
+      });
     },
   };
 
