@@ -267,8 +267,8 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
-      |> Steps.find_target(inputs.target_id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_target(inputs.target_id)
       |> Steps.update_target_index(inputs.index)
       # |> Steps.save_activity(:goal_target_index_updated, fn changes ->
       #   %{
@@ -380,18 +380,17 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_target_index(multi, index) do
-      Ecto.Multi.run(multi, :updated_target, fn _, %{goal: goal, target: target} ->
-        targets = Operately.Repo.preload(goal, :targets).targets
-
-        targets
+      Ecto.Multi.merge(multi, fn %{goal: goal, target: target} ->
+        goal
+        |> Operately.Repo.preload(:targets)
+        |> Map.get(:targets, [])
         |> Enum.sort_by(& &1.index)
         |> Enum.reject(&(&1.id == target.id))
         |> List.insert_at(index, target)
         |> Enum.with_index(1)
-        |> Enum.map(fn {t, idx} -> Target.changeset(t, %{index: idx}) end)
-        |> Enum.each(fn changeset -> {:ok, _} = Operately.Repo.update(changeset) end)
-
-        {:ok, target}
+        |> Enum.reduce(Ecto.Multi.new(), fn {t, idx}, m ->
+          Ecto.Multi.update(m, {:update_target_index, t.id}, Target.changeset(t, %{index: idx}))
+        end)
       end)
     end
 
