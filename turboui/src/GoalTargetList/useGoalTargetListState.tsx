@@ -112,7 +112,13 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
       update(id, (t) => ({ ...t, mode: "delete" as const }));
     },
     deleteTarget: (id: string) => {
-      remove(id);
+      const target = remove(id);
+
+      props.deleteTarget(id).then((success) => {
+        if (!success) {
+          append(target!);
+        }
+      }
     },
     cancelDelete: (id: string) => {
       update(id, (t) => ({ ...t, mode: "view" as const }));

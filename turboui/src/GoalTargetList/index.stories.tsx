@@ -63,58 +63,64 @@ const mockTargets = [
   },
 ];
 
-const addTarget = (): Promise<{ id: string; success: boolean }> =>
-  new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
+const randId = () => crypto.randomUUID() as string;
+
+const defaultArgs = {
+  addTarget: (): Promise<{ success: boolean; id: string }> =>
+    new Promise((resolve) => resolve({ success: true, id: randId() })),
+
+  deleteTarget: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+};
 
 export const Default: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets,
     showEditButton: true,
     showUpdateButton: true,
     addActive: false,
-    addTarget,
   },
 };
 
 export const UpdateMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "update" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
-    addTarget,
   },
 };
 
 export const EditMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "edit" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
-    addTarget,
   },
 };
 
 export const DeleteMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "delete" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
-    addTarget,
   },
 };
 
 export const ReadOnly: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets.map((t) => ({ ...t, showEditValueButton: false })),
-    addTarget,
   },
 };
 
 export const AddMode: Story = {
   args: {
+    ...defaultArgs,
     targets: mockTargets,
     addActive: true,
     showUpdateButton: true,
-    addTarget,
   },
 };

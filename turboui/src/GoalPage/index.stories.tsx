@@ -298,6 +298,8 @@ const searchFn = async ({ query }: { query: string }) => {
 const addTarget = (): Promise<{ id: string; success: boolean }> =>
   new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
 
+const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
+
 const defaultArgs: GoalPage.Props = {
   spaceLink: "/spaces/1",
   workmapLink: "/spaces/1/workmaps/1",
@@ -328,6 +330,7 @@ const defaultArgs: GoalPage.Props = {
   activityFeed: <div></div>,
 
   addTarget,
+  deleteTarget,
   updateGoalName: async (_name: string) => true,
   updateDueDate: async (_date: Date | null) => true,
   updateDescription: async (_description: string | null) => true,

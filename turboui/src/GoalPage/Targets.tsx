@@ -37,6 +37,7 @@ export function Targets(props: GoalPage.Props) {
             addActive={addActive}
             onAddActiveChange={(active) => setAddActive(active)}
             addTarget={props.addTarget}
+            deleteTarget={props.deleteTarget}
           />
         </div>
       )}

@@ -109,6 +109,19 @@ function Page() {
         });
     },
 
+    deleteTarget: function (id: string): Promise<boolean> {
+      return Api.goals
+        .deleteTarget({ goalId: goal.id!, targetId: id })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to delete target", e);
+          return false;
+        });
+    },
+
     updateGoalName: function (name: string): Promise<boolean> {
       if (name.trim() === "") {
         return Promise.resolve(false);

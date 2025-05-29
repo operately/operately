@@ -2,7 +2,7 @@ import * as React from "react";
 
 interface ListActions<T> {
   update: (id: string, updater: (item: T) => T) => void;
-  remove: (id: string) => void;
+  remove: (id: string) => T | null;
   reorder: (id: string, newIndex: number) => void;
   append: (item: T) => void;
 
@@ -18,7 +18,11 @@ export function useListState<T extends { id: string; index: number }>(initialSta
     },
 
     remove: (id: string) => {
+      const item = list.find((item) => item.id === id);
+
       setList((prev) => prev.filter((item) => item.id !== id));
+
+      return item || null;
     },
 
     updateAll: (items: T[]) => {
