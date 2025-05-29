@@ -402,6 +402,10 @@ export class Paths {
     return createCompanyPath(["goals", goalId, "edit"]);
   }
 
+  static profileV2Path(personId: string) {
+    return createCompanyPath(["people", personId, "v2"]);
+  }
+
   static profilePath(personId: string) {
     return createCompanyPath(["people", personId]);
   }

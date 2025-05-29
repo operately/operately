@@ -1,11 +1,18 @@
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
+import { Paths } from "@/routes/paths";
+import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
   person: People.Person;
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  await redirectIfFeatureEnabled(params, {
+    feature: "new_profile_page",
+    path: Paths.profileV2Path(params.id),
+  });
+
   return {
     person: await People.getPerson({
       id: params.id,
