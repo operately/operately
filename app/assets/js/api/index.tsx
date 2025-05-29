@@ -995,7 +995,7 @@ export interface Person {
   title: string;
   avatarUrl: string | null;
   timezone?: string | null;
-  email?: string | null;
+  email: string;
   sendDailySummary?: boolean | null;
   notifyOnMention?: boolean | null;
   notifyAboutAssignments?: boolean | null;

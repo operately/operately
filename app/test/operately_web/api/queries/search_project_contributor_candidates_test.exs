@@ -182,6 +182,7 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidatesTest do
       assert res.people == [%{
         id: Paths.person_id(person),
         full_name: person.full_name,
+        email: person.email,
         title: person.title,
         avatar_url: person.avatar_url,
         has_open_invitation: false
