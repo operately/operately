@@ -30,6 +30,29 @@ export namespace GoalTargetList {
     mode: "view" | "update" | "edit" | "delete";
   };
 
+  export type AddTargetFn = (inputs: {
+    name: string;
+    startValue: number;
+    targetValue: number;
+    unit: string;
+  }) => Promise<{
+    success: boolean;
+    id: string;
+  }>;
+
+  export type DeleteTargetFn = (id: string) => Promise<boolean>;
+
+  export type UpdateTargetFn = (inputs: {
+    targetId: string;
+    name: string;
+    startValue: number;
+    targetValue: number;
+    unit: string;
+  }) => Promise<boolean>;
+
+  export type UpdateTargetValueFn = (id: string, value: number) => Promise<boolean>;
+  export type UpdateTargetIndexFn = (id: string, index: number) => Promise<boolean>;
+
   export interface Props {
     targets: Target[];
 
@@ -38,6 +61,12 @@ export namespace GoalTargetList {
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
+
+    addTarget: AddTargetFn;
+    deleteTarget: DeleteTargetFn;
+    updateTarget: UpdateTargetFn;
+    updateTargetValue: UpdateTargetValueFn;
+    updateTargetIndex: UpdateTargetIndexFn;
   }
 }
 
@@ -123,6 +152,7 @@ function TargetAdd({ state }: { state: State }) {
       to: parseFloat(data.to),
       unit: data.unit,
     });
+
     reset();
   };
 
@@ -452,8 +482,10 @@ function calculateProgress(target: GoalTargetList.Target, clamped = true): numbe
   let percentage: number;
   if (from < to) {
     percentage = ((value - from) / (to - from)) * 100;
-  } else {
+  } else if (from > to) {
     percentage = ((from - value) / (from - to)) * 100;
+  } else {
+    percentage = 100; // If from and to are equal, progress is 100%
   }
 
   if (clamped) {
