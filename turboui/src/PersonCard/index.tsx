@@ -91,7 +91,7 @@ function ConnectionLines(props: PersonCard.Props) {
       {props.connectUp && (
         <div
           className={classNames(
-            "absolute border-b-2 border-l-2 rounded-bl-lg botom-10",
+            "absolute border-b-2 border-l-2 rounded-bl-lg",
             "transform -translate-y-1/2",
             connectColor,
           )}

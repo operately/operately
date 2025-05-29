@@ -62,7 +62,7 @@ export function Colleagues(props: ProfilePage.Props) {
             <div className="text-xs font-medium text-content-dimmed mb-2">Reports</div>
 
             <div className="flex flex-col gap-2">
-              {props.reports.map((person, index) => (
+              {visibleReports.map((person, index) => (
                 <PersonCard
                   key={person.id}
                   person={person}
