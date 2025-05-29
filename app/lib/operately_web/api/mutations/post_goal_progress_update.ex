@@ -46,14 +46,20 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
   defp parse_inputs(ctx, inputs) do
     {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
 
-    {:ok, %{
-      target_values: Jason.decode!(inputs.new_target_values),
-      content: Jason.decode!(inputs.content),
-      status: inputs.status,
-      timeframe: inputs[:timeframe] || ctx.goal.timeframe,
-      send_to_everyone: inputs[:send_notifications_to_everyone] || false,
-      subscription_parent_type: :goal_update,
-      subscriber_ids: subscriber_ids || []
-    }}
+    {:ok,
+     %{
+       target_values:
+         Jason.decode!(inputs.new_target_values)
+         |> Enum.map(fn t ->
+           {:ok, id} = decode_id(t["id"])
+           %{"id" => id, "value" => t["value"]}
+         end),
+       content: Jason.decode!(inputs.content),
+       status: inputs.status,
+       timeframe: inputs[:timeframe] || ctx.goal.timeframe,
+       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
+       subscription_parent_type: :goal_update,
+       subscriber_ids: subscriber_ids || []
+     }}
   end
 end

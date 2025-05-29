@@ -20,40 +20,46 @@ defmodule Operately.Operations.GoalEditing do
   end
 
   defp update_goal(multi, goal, attrs) do
-    changeset = Goal.changeset(goal, %{
-      name: attrs.name,
-      parent_goal_id: attrs.parent_goal_id,
-      champion_id: attrs.champion_id,
-      reviewer_id: attrs.reviewer_id,
-      timeframe: attrs.timeframe,
-      description: attrs[:description] && Jason.decode!(attrs.description),
-    })
+    changeset =
+      Goal.changeset(goal, %{
+        name: attrs.name,
+        parent_goal_id: attrs.parent_goal_id,
+        champion_id: attrs.champion_id,
+        reviewer_id: attrs.reviewer_id,
+        timeframe: attrs.timeframe,
+        description: attrs[:description] && Jason.decode!(attrs.description)
+      })
 
     Multi.update(multi, :goal, changeset)
   end
 
   defp update_targets(multi, goal, targets, attrs) do
-    multi = Enum.reduce(attrs.updated_targets, multi, fn target_attrs, multi ->
-      target = Enum.find(targets, fn target -> target.id == target_attrs.id end)
-      changeset = Target.changeset(target, target_attrs)
+    multi =
+      Enum.reduce(attrs.updated_targets, multi, fn target_attrs, multi ->
+        {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(target_attrs.id)
 
-      Multi.update(multi, "updated_target_#{target.id}", changeset)
-    end)
+        target = Enum.find(targets, fn target -> target.id == id end)
+        changeset = Target.changeset(target, target_attrs)
 
-    multi = Enum.reduce(attrs.added_targets, multi, fn target_attrs, multi ->
-      attrs = Map.merge(target_attrs, %{goal_id: goal.id, value: target_attrs.from})
-      changeset = Target.changeset(%Target{}, attrs)
+        Multi.update(multi, "updated_target_#{target.id}", changeset)
+      end)
 
-      Multi.insert(multi, "added_target_#{target_attrs.index}", changeset)
-    end)
+    multi =
+      Enum.reduce(attrs.added_targets, multi, fn target_attrs, multi ->
+        attrs = Map.merge(target_attrs, %{goal_id: goal.id, value: target_attrs.from})
+        changeset = Target.changeset(%Target{}, attrs)
 
-    multi = Enum.reduce(targets, multi, fn target, multi ->
-      if Enum.find(attrs.updated_targets, fn t -> target.id == t.id end) do
-        multi
-      else
-        Multi.delete(multi, "deleted_target_#{target.id}", target)
-      end
-    end)
+        Multi.insert(multi, "added_target_#{target_attrs.index}", changeset)
+      end)
+
+    multi =
+      Enum.reduce(targets, multi, fn target, multi ->
+        if Enum.find(attrs.updated_targets, fn t -> target.id == t.id end) do
+          multi
+        else
+          Multi.delete(multi, "deleted_target_#{target.id}", target)
+        end
+      end)
 
     multi
   end
@@ -78,6 +84,7 @@ defmodule Operately.Operations.GoalEditing do
   end
 
   defp maybe_update_binding_to_person(multi, previous, current, _tag) when previous == current, do: multi
+
   defp maybe_update_binding_to_person(multi, previous, current, tag) when previous != current do
     current_group = Access.get_group!(person_id: current)
     previous_group = Access.get_group!(person_id: previous)
@@ -109,7 +116,7 @@ defmodule Operately.Operations.GoalEditing do
         current_timeframe: Map.from_struct(changes.goal.timeframe),
         added_targets: serialize_added_targets(changes),
         updated_targets: serialize_updated_targets(targets, changes),
-        deleted_targets: serialize_deleted_targets(changes),
+        deleted_targets: serialize_deleted_targets(changes)
       }
     end)
   end
@@ -121,14 +128,16 @@ defmodule Operately.Operations.GoalEditing do
   defp serialize_added_targets(changes) do
     changes
     |> Enum.filter(fn {key, _} -> is_binary(key) && String.starts_with?(key, "added_target_") end)
-    |> Enum.map(fn {_, target} -> %{
-      id: target.id,
-      name: target.name,
-      from: target.from,
-      to: target.to,
-      unit: target.unit,
-      index: target.index,
-    } end)
+    |> Enum.map(fn {_, target} ->
+      %{
+        id: target.id,
+        name: target.name,
+        from: target.from,
+        to: target.to,
+        unit: target.unit,
+        index: target.index
+      }
+    end)
   end
 
   defp serialize_updated_targets(targets, changes) do
@@ -148,7 +157,7 @@ defmodule Operately.Operations.GoalEditing do
         old_unit: old.unit,
         new_unit: target.unit,
         old_index: old.index,
-        new_index: target.index,
+        new_index: target.index
       }
     end)
   end
@@ -163,7 +172,7 @@ defmodule Operately.Operations.GoalEditing do
         from: target.from,
         to: target.to,
         unit: target.unit,
-        index: target.index,
+        index: target.index
       }
     end)
   end
@@ -183,5 +192,6 @@ defmodule Operately.Operations.GoalEditing do
       binding -> binding
     end
   end
+
   defp get_binding(context, group), do: Access.get_binding!(context_id: context.id, group_id: group.id)
 end
