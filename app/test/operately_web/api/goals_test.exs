@@ -140,4 +140,59 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.value == inputs.start_value
     end
   end
+
+  describe "delete target" do
+    setup ctx do
+      Factory.add_goal_target(ctx, :target, :goal)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :delete_target], %{})
+    end
+
+    test "it fails if required fields are missing", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :delete_target], %{})
+      assert res.message == "Missing required fields: goal_id, target_id"
+    end
+
+    test "it deletes the target", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        target_id: Paths.target_id(ctx.target)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :delete_target], inputs)
+      assert res.success == true
+
+      assert Repo.get(Operately.Goals.Target, ctx.target.id) == nil
+    end
+
+    test "it returns 404 if target does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        target_id: Ecto.UUID.generate() |> Paths.target_id()
+      }
+
+      assert {404, res} = mutation(ctx.conn, [:goals, :delete_target], inputs)
+      assert res.message == "Target not found"
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(Ecto.UUID.generate()),
+        target_id: Paths.target_id(ctx.target)
+      }
+
+      assert {404, res} = mutation(ctx.conn, [:goals, :delete_target], inputs)
+      assert res.message == "Goal not found"
+    end
+  end
 end

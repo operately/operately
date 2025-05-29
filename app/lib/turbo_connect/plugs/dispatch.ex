@@ -35,6 +35,9 @@ defmodule TurboConnect.Plugs.Dispatch do
       {:error, :forbidden, message} ->
         forbidden(conn, message)
 
+      {:error, :internal_server_error} ->
+        internal_server_error(conn, "An unexpected error occurred")
+
       {:error, message} ->
         Logger.error("\n")
         Logger.error("Unexpected result from #{conn.assigns.turbo_req_name}: {:error, #{inspect(message)}}")

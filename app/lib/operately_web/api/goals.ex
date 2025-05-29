@@ -142,6 +142,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
+      field :goal_id, :id, required: true
       field :target_id, :id, required: true
     end
 
@@ -152,20 +153,21 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.find_target(inputs.target_id)
-      |> Steps.check_target_permissions(:can_edit)
       |> Steps.delete_target()
-      |> Steps.save_activity(:goal_target_deleted, fn changes ->
-        %{
-          company_id: changes.goal.company_id,
-          space_id: changes.goal.group_id,
-          goal_id: changes.goal.id,
-          target_id: changes.target.id,
-          target_name: changes.target.name
-        }
-      end)
+      # |> Steps.save_activity(:goal_target_deleted, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     target_id: changes.target.id,
+      #     target_name: changes.target.name
+      #   }
+      # end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -173,6 +175,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
+      field :goal_id, :id, required: true
       field :target_id, :id, required: true
       field :name, :string
       field :start_value, :number
@@ -187,8 +190,9 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.find_target(inputs.target_id)
-      |> Steps.check_target_permissions(:can_edit)
       |> Steps.update_target(inputs)
       |> Steps.save_activity(:goal_target_updated, fn changes ->
         %{
@@ -207,7 +211,7 @@ defmodule OperatelyWeb.Api.Goals do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -226,8 +230,8 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_target(inputs.target_id)
-      |> Steps.check_target_permissions(:can_check_in)
+      |> Steps.find_goal(inputs.target_id)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_target_value(inputs.value)
       |> Steps.save_activity(:goal_target_value_updated, fn changes ->
         %{
@@ -240,7 +244,7 @@ defmodule OperatelyWeb.Api.Goals do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -248,6 +252,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
+      field :goal_id, :id, required: true
       field :target_id, :id, required: true
       field :index, :integer, required: true
     end
@@ -259,8 +264,8 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_target(inputs.target_id)
-      |> Steps.check_target_permissions(:can_edit)
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
       |> Steps.update_target_index(inputs.index)
       |> Steps.save_activity(:goal_target_index_updated, fn changes ->
         %{
@@ -273,7 +278,7 @@ defmodule OperatelyWeb.Api.Goals do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -289,7 +294,12 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def find_goal(multi, goal_id) do
-      Ecto.Multi.run(multi, :goal, fn _repo, %{me: me} -> Operately.Goals.Goal.get(me, id: goal_id) end)
+      Ecto.Multi.run(multi, :goal, fn _repo, %{me: me} ->
+        case Operately.Goals.Goal.get(me, id: goal_id) do
+          {:ok, goal} -> {:ok, goal}
+          {:error, _} -> {:error, {:not_found, "Goal not found"}}
+        end
+      end)
     end
 
     def check_permissions(multi, permission) do
@@ -358,20 +368,11 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def find_target(multi, target_id) do
-      Ecto.Multi.run(multi, :target, fn _repo, %{me: me} ->
-        case Operately.Goals.Target.get(me, id: target_id) do
-          {:ok, target} -> {:ok, target}
-          {:error, :not_found} -> {:error, :not_found}
+      Ecto.Multi.run(multi, :target, fn _, _ ->
+        case Operately.Repo.get(Target, target_id) do
+          nil -> {:error, {:not_found, "Target not found"}}
+          target -> {:ok, target}
         end
-      end)
-      |> Ecto.Multi.run(:goal, fn _repo, %{target: target, me: me} ->
-        Operately.Goals.Goal.get(me, id: target.goal_id)
-      end)
-    end
-
-    def check_target_permissions(multi, permission) do
-      Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal} ->
-        Operately.Goals.Permissions.check(goal.request_info.access_level, permission)
       end)
     end
 
@@ -382,12 +383,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def delete_target(multi) do
-      Ecto.Multi.run(multi, :deleted_target, fn _repo, %{target: target} ->
-        case Operately.Goals.Target.delete(target) do
-          {:ok, deleted} -> {:ok, deleted}
-          {:error, changeset} -> {:error, changeset}
-        end
-      end)
+      Ecto.Multi.delete(multi, :deleted_target, fn %{target: target} -> target end)
     end
 
     def update_target(multi, attrs) do
@@ -417,13 +413,16 @@ defmodule OperatelyWeb.Api.Goals do
         {:ok, changes} ->
           {:ok, ok_callback.(changes)}
 
-        {:error, _failed_operation, reason, _changes} ->
-          error_callback.(reason)
+        e ->
+          error_callback.(e)
       end
     end
 
     defp handle_error(reason) do
       case reason do
+        {:error, _failed_operation, {:not_found, message}, _changes} ->
+          {:error, :not_found, message}
+
         {:error, _failed_operation, :not_found, _changes} ->
           {:error, :not_found}
 
@@ -432,6 +431,10 @@ defmodule OperatelyWeb.Api.Goals do
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
+          {:error, :internal_server_error}
+
+        e ->
+          Logger.error("Unexpected error: #{inspect(e)}")
           {:error, :internal_server_error}
       end
     end
