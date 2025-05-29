@@ -219,8 +219,9 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
+      field :goal_id, :id, required: true
       field :target_id, :id, required: true
-      field :value, :number, required: true
+      field :value, :float, required: true
     end
 
     outputs do
@@ -230,19 +231,20 @@ defmodule OperatelyWeb.Api.Goals do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_goal(inputs.target_id)
+      |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
+      |> Steps.find_target(inputs.target_id)
       |> Steps.update_target_value(inputs.value)
-      |> Steps.save_activity(:goal_target_value_updated, fn changes ->
-        %{
-          company_id: changes.goal.company_id,
-          space_id: changes.goal.group_id,
-          goal_id: changes.goal.id,
-          target_id: changes.target.id,
-          old_value: changes.target.value,
-          new_value: changes.updated_target.value
-        }
-      end)
+      # |> Steps.save_activity(:goal_target_value_updated, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     target_id: changes.target.id,
+      #     old_value: changes.target.value,
+      #     new_value: changes.updated_target.value
+      #   }
+      # end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
