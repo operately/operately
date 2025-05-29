@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Goals do
   alias __MODULE__.SharedMultiSteps, as: Steps
+  alias Operately.Goals.{Goal, Target}
 
   defmodule UpdateName do
     use TurboConnect.Mutation
@@ -29,7 +30,7 @@ defmodule OperatelyWeb.Api.Goals do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -61,7 +62,7 @@ defmodule OperatelyWeb.Api.Goals do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -93,7 +94,7 @@ defmodule OperatelyWeb.Api.Goals do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -103,8 +104,9 @@ defmodule OperatelyWeb.Api.Goals do
     inputs do
       field :goal_id, :id, required: true
       field :name, :string, required: true
-      field :start_value, :number, required: true
-      field :target_value, :number, required: true
+      field :start_value, :float, required: true
+      field :target_value, :float, required: true
+      field :unit, :string, required: true
     end
 
     outputs do
@@ -117,20 +119,22 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
-      |> Steps.add_target(inputs.name, inputs.start_value, inputs.target_value)
-      |> Steps.save_activity(:goal_target_added, fn changes ->
-        %{
-          company_id: changes.goal.company_id,
-          space_id: changes.goal.group_id,
-          goal_id: changes.goal.id,
-          target_id: changes.updated_target.id,
-          target_name: changes.updated_target.name,
-          start_value: changes.updated_target.start_value,
-          target_value: changes.updated_target.target_value
-        }
-      end)
+      |> Steps.add_target(inputs.name, inputs.start_value, inputs.target_value, inputs.unit)
+      # |> Steps.save_activity(:goal_target_added, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     target_id: changes.added_target.id,
+      #     target_name: changes.added_target.name,
+      #     start_value: changes.added_target.start_value,
+      #     target_value: changes.added_target.target_value
+      #   }
+      # end)
       |> Steps.commit()
-      |> Steps.respond_with_success_or_error()
+      |> Steps.respond(fn changes ->
+        %{success: true, target_id: changes.added_target.id}
+      end)
     end
   end
 
@@ -240,6 +244,39 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule UpdateTargetIndex do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :target_id, :id, required: true
+      field :index, :integer, required: true
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_target(inputs.target_id)
+      |> Steps.check_target_permissions(:can_edit)
+      |> Steps.update_target_index(inputs.index)
+      |> Steps.save_activity(:goal_target_index_updated, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_id: changes.target.id,
+          old_index: changes.target.index,
+          new_index: changes.updated_target.index
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond_with_success_or_error()
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -306,9 +343,17 @@ defmodule OperatelyWeb.Api.Goals do
       end)
     end
 
-    def add_target(multi, name, start_value, target_value) do
-      Ecto.Multi.run(multi, :updated_target, fn _repo, %{goal: goal} ->
-        Operately.Goals.Target.add(goal, %{name: name, start_value: start_value, target_value: target_value})
+    def add_target(multi, name, start_value, target_value, unit) do
+      Ecto.Multi.insert(multi, :added_target, fn %{goal: goal} ->
+        Target.changeset(%{
+          goal_id: goal.id,
+          name: name,
+          value: start_value,
+          from: start_value,
+          to: target_value,
+          unit: unit,
+          index: Goal.target_count(goal) + 1
+        })
       end)
     end
 
@@ -327,6 +372,12 @@ defmodule OperatelyWeb.Api.Goals do
     def check_target_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{goal: goal} ->
         Operately.Goals.Permissions.check(goal.request_info.access_level, permission)
+      end)
+    end
+
+    def update_target_index(multi, index) do
+      Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
+        Operately.Goals.Target.changeset(target, %{index: index})
       end)
     end
 
@@ -361,12 +412,18 @@ defmodule OperatelyWeb.Api.Goals do
       Operately.Repo.transaction(multi)
     end
 
-    def respond_with_success_or_error(result) do
-      result
-      |> case do
-        {:ok, _val} ->
-          {:ok, %{success: true}}
+    def respond(multi, ok_callback, error_callback \\ &handle_error/1) do
+      case multi do
+        {:ok, changes} ->
+          {:ok, ok_callback.(changes)}
 
+        {:error, _failed_operation, reason, _changes} ->
+          error_callback.(reason)
+      end
+    end
+
+    defp handle_error(reason) do
+      case reason do
         {:error, _failed_operation, :not_found, _changes} ->
           {:error, :not_found}
 
@@ -375,7 +432,7 @@ defmodule OperatelyWeb.Api.Goals do
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
-          {:error, :bad_request}
+          {:error, :internal_server_error}
       end
     end
   end

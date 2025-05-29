@@ -1,9 +1,6 @@
 defmodule Operately.Goals.Target do
-  use Ecto.Schema
-  import Ecto.Changeset
+  use Operately.Schema
 
-  @primary_key {:id, :binary_id, autogenerate: true}
-  @foreign_key_type :binary_id
   schema "targets" do
     belongs_to(:goal, Operately.Goals.Goal)
 
@@ -57,7 +54,8 @@ defmodule Operately.Goals.Target do
     current = target.value
 
     cond do
-      from == to -> 100
+      from == to ->
+        100
 
       from < to ->
         cond do

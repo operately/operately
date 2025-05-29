@@ -109,29 +109,35 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert {401, _} = mutation(ctx.conn, [:goals, :add_target], %{})
     end
 
-    test "it requires a goal_id", ctx do
+    test "it fails if required fields are missing", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goals, :add_target], %{name: "Test Target"})
-      assert res.message == "Missing required fields: goal_id"
-    end
-
-    test "it requires a name", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {400, res} = mutation(ctx.conn, [:goals, :add_target], %{goal_id: Paths.goal_id(ctx.goal)})
-      assert res.message == "Missing required fields: name"
+      assert {400, res} = mutation(ctx.conn, [:goals, :add_target], %{})
+      assert res.message == "Missing required fields: goal_id, name, start_value, target_value, unit"
     end
 
     test "it adds a target to the goal", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:goals, :add_target], %{goal_id: Paths.goal_id(ctx.goal), name: "New Target"})
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        name: "New Target",
+        start_value: 0,
+        target_value: 100,
+        unit: "USD"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :add_target], inputs)
       assert res.success == true
 
-      ctx = Factory.reload(ctx, :goal)
-      assert length(ctx.goal.targets) == 1
-      assert hd(ctx.goal.targets).name == "New Target"
+      target = Repo.get(Operately.Goals.Target, res.target_id)
+
+      assert target.name == inputs.name
+      assert target.from == inputs.start_value
+      assert target.to == inputs.target_value
+      assert target.unit == inputs.unit
+      assert target.goal_id == ctx.goal.id
+      assert target.value == inputs.start_value
     end
   end
 end

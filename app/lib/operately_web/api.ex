@@ -27,6 +27,7 @@ defmodule OperatelyWeb.Api do
     mutation(:delete_target, OperatelyWeb.Api.Goals.DeleteTarget)
     mutation(:update_target, OperatelyWeb.Api.Goals.UpdateTarget)
     mutation(:update_target_value, OperatelyWeb.Api.Goals.UpdateTargetValue)
+    mutation(:update_target_index, OperatelyWeb.Api.Goals.UpdateTargetIndex)
   end
 
   query(:get_account, Q.GetAccount)
