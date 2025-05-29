@@ -207,4 +207,11 @@ defmodule Operately.Goals.Goal do
       goal
     end
   end
+
+  def target_count(goal = %__MODULE__{}) do
+    goal
+    |> Repo.preload(:targets)
+    |> Map.get(:targets, [])
+    |> Enum.count()
+  end
 end
