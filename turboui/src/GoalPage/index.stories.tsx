@@ -295,6 +295,9 @@ const searchFn = async ({ query }: { query: string }) => {
   return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
+const addTarget = (): Promise<{ id: string; success: boolean }> =>
+  new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
+
 const defaultArgs: GoalPage.Props = {
   spaceLink: "/spaces/1",
   workmapLink: "/spaces/1/workmaps/1",
@@ -324,6 +327,7 @@ const defaultArgs: GoalPage.Props = {
   peopleSearch: searchFn,
   activityFeed: <div></div>,
 
+  addTarget,
   updateGoalName: async (_name: string) => true,
   updateDueDate: async (_date: Date | null) => true,
   updateDescription: async (_description: string | null) => true,

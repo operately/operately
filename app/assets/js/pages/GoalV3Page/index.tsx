@@ -94,6 +94,21 @@ function Page() {
     mentionedPersonLookup,
     peopleSearch,
 
+    addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
+      return Api.goals
+        .addTarget({ ...inputs, goalId: goal.id! })
+        .then((data) => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+
+          return { id: data.targetId!, success: true };
+        })
+        .catch((e) => {
+          console.error("Failed to add target", e);
+
+          return { id: "", success: false };
+        });
+    },
+
     updateGoalName: function (name: string): Promise<boolean> {
       if (name.trim() === "") {
         return Promise.resolve(false);

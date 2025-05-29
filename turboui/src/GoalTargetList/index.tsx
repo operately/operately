@@ -30,6 +30,16 @@ export namespace GoalTargetList {
     mode: "view" | "update" | "edit" | "delete";
   };
 
+  export type AddTargetFn = (inputs: {
+    name: string;
+    startValue: number;
+    targetValue: number;
+    unit: string;
+  }) => Promise<{
+    success: boolean;
+    id: string;
+  }>;
+
   export interface Props {
     targets: Target[];
 
@@ -38,6 +48,7 @@ export namespace GoalTargetList {
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
+    addTarget: AddTargetFn;
   }
 }
 
@@ -123,6 +134,7 @@ function TargetAdd({ state }: { state: State }) {
       to: parseFloat(data.to),
       unit: data.unit,
     });
+
     reset();
   };
 

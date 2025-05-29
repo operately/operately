@@ -59,6 +59,21 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
 
       props.onAddActiveChange?.(false);
       append(target);
+
+      props
+        .addTarget({
+          name: target.name,
+          startValue: target.from,
+          targetValue: target.to,
+          unit: target.unit,
+        })
+        .then((res) => {
+          if (!res.success) {
+            remove(target.id);
+          } else {
+            update(target.id, (t) => ({ ...t, id: res.id }));
+          }
+        });
     },
 
     toggleExpand: (id: string) => {

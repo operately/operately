@@ -1,8 +1,8 @@
 import * as React from "react";
 
 import type { Meta, StoryObj } from "@storybook/react";
-import { GoalTargetList } from "./index";
 import { Page } from "../Page";
+import { GoalTargetList } from "./index";
 
 const meta = {
   title: "Components/GoalTargetList",
@@ -63,12 +63,16 @@ const mockTargets = [
   },
 ];
 
+const addTarget = (): Promise<{ id: string; success: boolean }> =>
+  new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
+
 export const Default: Story = {
   args: {
     targets: mockTargets,
     showEditButton: true,
     showUpdateButton: true,
     addActive: false,
+    addTarget,
   },
 };
 
@@ -77,6 +81,7 @@ export const UpdateMode: Story = {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "update" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
+    addTarget,
   },
 };
 
@@ -85,6 +90,7 @@ export const EditMode: Story = {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "edit" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
+    addTarget,
   },
 };
 
@@ -93,12 +99,14 @@ export const DeleteMode: Story = {
     targets: mockTargets.map((t, i) => ({ ...t, mode: i === 1 ? "delete" : "view" })),
     showEditButton: true,
     showUpdateButton: true,
+    addTarget,
   },
 };
 
 export const ReadOnly: Story = {
   args: {
     targets: mockTargets.map((t) => ({ ...t, showEditValueButton: false })),
+    addTarget,
   },
 };
 
@@ -107,5 +115,6 @@ export const AddMode: Story = {
     targets: mockTargets,
     addActive: true,
     showUpdateButton: true,
+    addTarget,
   },
 };
