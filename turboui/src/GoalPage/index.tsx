@@ -94,6 +94,9 @@ export namespace GoalPage {
     updateDueDate: (date: Date | null) => Promise<boolean>;
     addTarget: GoalTargetList.AddTargetFn;
     deleteTarget: GoalTargetList.DeleteTargetFn;
+    updateTarget: GoalTargetList.UpdateTargetFn;
+    updateTargetValue: GoalTargetList.UpdateTargetValueFn;
+    updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
 
     activityFeed: React.ReactNode;
   }

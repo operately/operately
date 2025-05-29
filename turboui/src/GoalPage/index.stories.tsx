@@ -329,11 +329,15 @@ const defaultArgs: GoalPage.Props = {
   peopleSearch: searchFn,
   activityFeed: <div></div>,
 
-  addTarget,
-  deleteTarget,
   updateGoalName: async (_name: string) => true,
   updateDueDate: async (_date: Date | null) => true,
   updateDescription: async (_description: string | null) => true,
+
+  addTarget,
+  deleteTarget,
+  updateTarget: async (_inputs) => true,
+  updateTargetValue: async (_id, _value) => true,
+  updateTargetIndex: async (_id, _index) => true,
 };
 
 export default meta;

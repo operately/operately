@@ -42,6 +42,17 @@ export namespace GoalTargetList {
 
   export type DeleteTargetFn = (id: string) => Promise<boolean>;
 
+  export type UpdateTargetFn = (inputs: {
+    targetId: string;
+    name: string;
+    startValue: number;
+    targetValue: number;
+    unit: string;
+  }) => Promise<boolean>;
+
+  export type UpdateTargetValueFn = (id: string, value: number) => Promise<boolean>;
+  export type UpdateTargetIndexFn = (id: string, index: number) => Promise<boolean>;
+
   export interface Props {
     targets: Target[];
 
@@ -50,8 +61,12 @@ export namespace GoalTargetList {
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
+
     addTarget: AddTargetFn;
     deleteTarget: DeleteTargetFn;
+    updateTarget: UpdateTargetFn;
+    updateTargetValue: UpdateTargetValueFn;
+    updateTargetIndex: UpdateTargetIndexFn;
   }
 }
 

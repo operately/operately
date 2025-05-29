@@ -70,6 +70,9 @@ const defaultArgs = {
     new Promise((resolve) => resolve({ success: true, id: randId() })),
 
   deleteTarget: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+  updateTarget: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+  updateTargetValue: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
+  updateTargetIndex: (): Promise<boolean> => new Promise((resolve) => resolve(true)),
 };
 
 export const Default: Story = {

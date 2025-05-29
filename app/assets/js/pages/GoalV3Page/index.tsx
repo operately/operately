@@ -122,6 +122,45 @@ function Page() {
         });
     },
 
+    updateTarget: function (inputs): Promise<boolean> {
+      return Api.goals
+        .updateTarget({ ...inputs, goalId: goal.id! })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to update target", e);
+          return false;
+        });
+    },
+
+    updateTargetValue: function (id: string, value: number): Promise<boolean> {
+      return Api.goals
+        .updateTargetValue({ goalId: goal.id!, targetId: id, value })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to update target value", e);
+          return false;
+        });
+    },
+
+    updateTargetIndex: function (id: string, index: number): Promise<boolean> {
+      return Api.goals
+        .updateTargetIndex({ goalId: goal.id!, targetId: id, index })
+        .then(() => {
+          PageCache.invalidate(pageCacheKey(goal.id!));
+          return true;
+        })
+        .catch((e) => {
+          console.error("Failed to update target index", e);
+          return false;
+        });
+    },
+
     updateGoalName: function (name: string): Promise<boolean> {
       if (name.trim() === "") {
         return Promise.resolve(false);
