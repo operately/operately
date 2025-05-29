@@ -178,8 +178,8 @@ defmodule OperatelyWeb.Api.Goals do
       field :goal_id, :id, required: true
       field :target_id, :id, required: true
       field :name, :string
-      field :start_value, :number
-      field :target_value, :number
+      field :start_value, :float
+      field :target_value, :float
       field :unit, :string
     end
 
@@ -194,22 +194,22 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.check_permissions(:can_edit)
       |> Steps.find_target(inputs.target_id)
       |> Steps.update_target(inputs)
-      |> Steps.save_activity(:goal_target_updated, fn changes ->
-        %{
-          company_id: changes.goal.company_id,
-          space_id: changes.goal.group_id,
-          goal_id: changes.goal.id,
-          target_id: changes.target.id,
-          old_name: changes.target.name,
-          new_name: changes.updated_target.name,
-          old_start_value: changes.target.start_value,
-          new_start_value: changes.updated_target.start_value,
-          old_target_value: changes.target.target_value,
-          new_target_value: changes.updated_target.target_value,
-          old_unit: changes.target.unit,
-          new_unit: changes.updated_target.unit
-        }
-      end)
+      # |> Steps.save_activity(:goal_target_updated, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     target_id: changes.target.id,
+      #     old_name: changes.target.name,
+      #     new_name: changes.updated_target.name,
+      #     old_start_value: changes.target.start_value,
+      #     new_start_value: changes.updated_target.start_value,
+      #     old_target_value: changes.target.target_value,
+      #     new_target_value: changes.updated_target.target_value,
+      #     old_unit: changes.target.unit,
+      #     new_unit: changes.updated_target.unit
+      #   }
+      # end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
@@ -267,18 +267,19 @@ defmodule OperatelyWeb.Api.Goals do
       conn
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
+      |> Steps.find_target(inputs.target_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_target_index(inputs.index)
-      |> Steps.save_activity(:goal_target_index_updated, fn changes ->
-        %{
-          company_id: changes.goal.company_id,
-          space_id: changes.goal.group_id,
-          goal_id: changes.goal.id,
-          target_id: changes.target.id,
-          old_index: changes.target.index,
-          new_index: changes.updated_target.index
-        }
-      end)
+      # |> Steps.save_activity(:goal_target_index_updated, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     target_id: changes.target.id,
+      #     old_index: changes.target.index,
+      #     new_index: changes.updated_target.index
+      #   }
+      # end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
@@ -379,8 +380,18 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_target_index(multi, index) do
-      Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
-        Operately.Goals.Target.changeset(target, %{index: index})
+      Ecto.Multi.run(multi, :updated_target, fn _, %{goal: goal, target: target} ->
+        targets = Operately.Repo.preload(goal, :targets).targets
+
+        targets
+        |> Enum.sort_by(& &1.index)
+        |> Enum.reject(&(&1.id == target.id))
+        |> List.insert_at(index, target)
+        |> Enum.with_index(1)
+        |> Enum.map(fn {t, idx} -> Target.changeset(t, %{index: idx}) end)
+        |> Enum.each(fn changeset -> {:ok, _} = Operately.Repo.update(changeset) end)
+
+        {:ok, target}
       end)
     end
 
@@ -392,8 +403,8 @@ defmodule OperatelyWeb.Api.Goals do
       Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
         update_attrs = %{}
         update_attrs = if attrs.name, do: Map.put(update_attrs, :name, attrs.name), else: update_attrs
-        update_attrs = if attrs.start_value, do: Map.put(update_attrs, :start_value, attrs.start_value), else: update_attrs
-        update_attrs = if attrs.target_value, do: Map.put(update_attrs, :target_value, attrs.target_value), else: update_attrs
+        update_attrs = if attrs.start_value, do: Map.put(update_attrs, :from, attrs.start_value), else: update_attrs
+        update_attrs = if attrs.target_value, do: Map.put(update_attrs, :to, attrs.target_value), else: update_attrs
         update_attrs = if attrs.unit, do: Map.put(update_attrs, :unit, attrs.unit), else: update_attrs
 
         Operately.Goals.Target.changeset(target, update_attrs)
@@ -401,7 +412,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_target_value(multi, value) do
-      Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
+      Ecto.Multi.update(multi, :updated_targets, fn %{target: target} ->
         Operately.Goals.Target.changeset(target, %{value: value})
       end)
     end

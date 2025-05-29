@@ -254,4 +254,152 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert target.value == 55
     end
   end
+
+  describe "update target" do
+    setup ctx do
+      Factory.add_goal_target(ctx, :target, :goal)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_target], %{})
+    end
+
+    test "it fails if required fields are missing", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_target], %{})
+      assert res.message == "Missing required fields: goal_id, target_id"
+    end
+
+    test "it returns 404 if target does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        target_id: Ecto.UUID.generate() |> Paths.target_id(),
+        name: "Updated Target",
+        start_value: 10,
+        target_value: 200,
+        unit: "EUR"
+      }
+
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      assert res.message == "Target not found"
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(Ecto.UUID.generate()),
+        target_id: Paths.target_id(ctx.target),
+        name: "Updated Target",
+        start_value: 10,
+        target_value: 200,
+        unit: "EUR"
+      }
+
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      assert res.message == "Goal not found"
+    end
+
+    test "it updates the target", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        target_id: Paths.target_id(ctx.target),
+        name: "Updated Target",
+        start_value: 10,
+        target_value: 200,
+        unit: "EUR"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_target], inputs)
+      assert res.success == true
+
+      target = Repo.get(Operately.Goals.Target, ctx.target.id)
+      assert target.name == "Updated Target"
+      assert target.from == 10
+      assert target.to == 200
+      assert target.unit == "EUR"
+    end
+  end
+
+  describe "update target index" do
+    setup ctx do
+      targets = Operately.Repo.preload(ctx.goal, :targets).targets |> Enum.sort_by(& &1.index)
+
+      ctx
+      |> Map.put(:target1, Enum.at(targets, 0))
+      |> Map.put(:target2, Enum.at(targets, 1))
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_target_index], %{})
+    end
+
+    test "it fails if required fields are missing", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_target_index], %{})
+      assert res.message == "Missing required fields: goal_id, target_id, index"
+    end
+
+    test "it returns 404 if target does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        target_id: Ecto.UUID.generate() |> Paths.target_id(),
+        index: 1
+      }
+
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_target_index], inputs)
+      assert res.message == "Target not found"
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(Ecto.UUID.generate()),
+        target_id: Paths.target_id(ctx.target1),
+        index: 1
+      }
+
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_target_index], inputs)
+      assert res.message == "Goal not found"
+    end
+
+    test "it updates the target index", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_goal_target(ctx, :target3, :goal)
+      ctx = Factory.reload(ctx, :goal)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), target_id: Paths.target_id(ctx.target3)}
+
+      # moving target3 to the first position
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_target_index], Map.put(inputs, :index, 0))
+      assert res.success == true
+      assert target_order(ctx.goal.id) == [ctx.target3.id, ctx.target1.id, ctx.target2.id]
+
+      # moving target3 to the second position
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_target_index], Map.put(inputs, :index, 1))
+      assert res.success == true
+      assert target_order(ctx.goal.id) == [ctx.target1.id, ctx.target3.id, ctx.target2.id]
+
+      # moving target3 to the last position
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_target_index], Map.put(inputs, :index, 2))
+      assert res.success == true
+      assert target_order(ctx.goal.id) == [ctx.target1.id, ctx.target2.id, ctx.target3.id]
+    end
+
+    defp target_order(goal_id) do
+      Operately.Goals.Target
+      |> Operately.Repo.all(where: [goal_id: goal_id])
+      |> Enum.sort_by(& &1.index)
+      |> Enum.map(& &1.id)
+    end
+  end
 end
