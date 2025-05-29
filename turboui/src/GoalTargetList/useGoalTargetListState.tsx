@@ -93,12 +93,13 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
       update(id, (t) => ({ ...t, mode: "view" as const }));
     },
     updateTarget: (id: string, newValue: number) => {
+      const oldValue = targets.find((t) => t.id === id)?.value;
       update(id, (t) => ({ ...t, value: newValue, mode: "view" as const }));
 
       props.updateTargetValue(id, newValue).then((success) => {
         if (!success) {
           // If the update failed, revert the value
-          update(id, (t) => ({ ...t, value: t.from }));
+          update(id, (t) => ({ ...t, value: oldValue! }));
         }
       });
     },
