@@ -4,8 +4,8 @@ import { WorkMapPage } from "turboui";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { workMap } = useLoadedData();
-  const title = "Company Work Map";
+  const { company, workMap } = useLoadedData();
+  const title = `${company.name} Work Map`;
 
   return <WorkMapPage title={title} items={workMap} />;
 }
