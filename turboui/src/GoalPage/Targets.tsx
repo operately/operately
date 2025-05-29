@@ -1,8 +1,8 @@
 import * as React from "react";
 
+import { GoalPage } from ".";
 import { SecondaryButton } from "../Button";
 import { GoalTargetList } from "../GoalTargetList";
-import { GoalPage } from ".";
 import { SectionHeader } from "./SectionHeader";
 
 export function Targets(props: GoalPage.Props) {
@@ -36,6 +36,11 @@ export function Targets(props: GoalPage.Props) {
             showUpdateButton={props.canEdit}
             addActive={addActive}
             onAddActiveChange={(active) => setAddActive(active)}
+            addTarget={props.addTarget}
+            deleteTarget={props.deleteTarget}
+            updateTarget={props.updateTarget}
+            updateTargetValue={props.updateTargetValue}
+            updateTargetIndex={props.updateTargetIndex}
           />
         </div>
       )}

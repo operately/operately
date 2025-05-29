@@ -295,6 +295,11 @@ const searchFn = async ({ query }: { query: string }) => {
   return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
+const addTarget = (): Promise<{ id: string; success: boolean }> =>
+  new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
+
+const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
+
 const defaultArgs: GoalPage.Props = {
   spaceLink: "/spaces/1",
   workmapLink: "/spaces/1/workmaps/1",
@@ -327,6 +332,12 @@ const defaultArgs: GoalPage.Props = {
   updateGoalName: async (_name: string) => true,
   updateDueDate: async (_date: Date | null) => true,
   updateDescription: async (_description: string | null) => true,
+
+  addTarget,
+  deleteTarget,
+  updateTarget: async (_inputs) => true,
+  updateTargetValue: async (_id, _value) => true,
+  updateTargetIndex: async (_id, _index) => true,
 };
 
 export default meta;

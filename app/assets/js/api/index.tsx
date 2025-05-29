@@ -2809,6 +2809,28 @@ export interface EditSubscriptionsListInput {
 
 export interface EditSubscriptionsListResult {}
 
+export interface GoalsAddTargetInput {
+  goalId?: Id | null;
+  name?: string | null;
+  startValue?: number | null;
+  targetValue?: number | null;
+  unit?: string | null;
+}
+
+export interface GoalsAddTargetResult {
+  targetId?: Id | null;
+  success?: boolean | null;
+}
+
+export interface GoalsDeleteTargetInput {
+  goalId?: Id | null;
+  targetId?: Id | null;
+}
+
+export interface GoalsDeleteTargetResult {
+  success?: boolean | null;
+}
+
 export interface GoalsUpdateDescriptionInput {
   goalId?: Id | null;
   description?: Json | null;
@@ -2833,6 +2855,39 @@ export interface GoalsUpdateNameInput {
 }
 
 export interface GoalsUpdateNameResult {
+  success?: boolean | null;
+}
+
+export interface GoalsUpdateTargetInput {
+  goalId?: Id | null;
+  targetId?: Id | null;
+  name?: string | null;
+  startValue?: number | null;
+  targetValue?: number | null;
+  unit?: string | null;
+}
+
+export interface GoalsUpdateTargetResult {
+  success?: boolean | null;
+}
+
+export interface GoalsUpdateTargetIndexInput {
+  goalId?: Id | null;
+  targetId?: Id | null;
+  index?: number | null;
+}
+
+export interface GoalsUpdateTargetIndexResult {
+  success?: boolean | null;
+}
+
+export interface GoalsUpdateTargetValueInput {
+  goalId?: Id | null;
+  targetId?: Id | null;
+  value?: number | null;
+}
+
+export interface GoalsUpdateTargetValueResult {
   success?: boolean | null;
 }
 
@@ -3766,6 +3821,14 @@ class ApiNamespaceRoot {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
+  async addTarget(input: GoalsAddTargetInput): Promise<GoalsAddTargetResult> {
+    return this.client.post("/goals/add_target", input);
+  }
+
+  async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
+    return this.client.post("/goals/delete_target", input);
+  }
+
   async updateDescription(input: GoalsUpdateDescriptionInput): Promise<GoalsUpdateDescriptionResult> {
     return this.client.post("/goals/update_description", input);
   }
@@ -3776,6 +3839,18 @@ class ApiNamespaceGoals {
 
   async updateName(input: GoalsUpdateNameInput): Promise<GoalsUpdateNameResult> {
     return this.client.post("/goals/update_name", input);
+  }
+
+  async updateTarget(input: GoalsUpdateTargetInput): Promise<GoalsUpdateTargetResult> {
+    return this.client.post("/goals/update_target", input);
+  }
+
+  async updateTargetIndex(input: GoalsUpdateTargetIndexInput): Promise<GoalsUpdateTargetIndexResult> {
+    return this.client.post("/goals/update_target_index", input);
+  }
+
+  async updateTargetValue(input: GoalsUpdateTargetValueInput): Promise<GoalsUpdateTargetValueResult> {
+    return this.client.post("/goals/update_target_value", input);
   }
 }
 
@@ -6112,6 +6187,25 @@ export default {
     useUpdateName: () =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
 
+    updateTargetIndex: (input: GoalsUpdateTargetIndexInput) =>
+      defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
+    useUpdateTargetIndex: () =>
+      useMutation<GoalsUpdateTargetIndexInput, GoalsUpdateTargetIndexResult>(
+        defaultApiClient.apiNamespaceGoals.updateTargetIndex,
+      ),
+
+    addTarget: (input: GoalsAddTargetInput) => defaultApiClient.apiNamespaceGoals.addTarget(input),
+    useAddTarget: () =>
+      useMutation<GoalsAddTargetInput, GoalsAddTargetResult>(defaultApiClient.apiNamespaceGoals.addTarget),
+
+    updateTarget: (input: GoalsUpdateTargetInput) => defaultApiClient.apiNamespaceGoals.updateTarget(input),
+    useUpdateTarget: () =>
+      useMutation<GoalsUpdateTargetInput, GoalsUpdateTargetResult>(defaultApiClient.apiNamespaceGoals.updateTarget),
+
+    deleteTarget: (input: GoalsDeleteTargetInput) => defaultApiClient.apiNamespaceGoals.deleteTarget(input),
+    useDeleteTarget: () =>
+      useMutation<GoalsDeleteTargetInput, GoalsDeleteTargetResult>(defaultApiClient.apiNamespaceGoals.deleteTarget),
+
     updateDueDate: (input: GoalsUpdateDueDateInput) => defaultApiClient.apiNamespaceGoals.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
@@ -6121,6 +6215,13 @@ export default {
     useUpdateDescription: () =>
       useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceGoals.updateDescription,
+      ),
+
+    updateTargetValue: (input: GoalsUpdateTargetValueInput) =>
+      defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
+    useUpdateTargetValue: () =>
+      useMutation<GoalsUpdateTargetValueInput, GoalsUpdateTargetValueResult>(
+        defaultApiClient.apiNamespaceGoals.updateTargetValue,
       ),
   },
 };
