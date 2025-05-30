@@ -11,7 +11,7 @@ import { DateDisplayField } from "./index";
  * - Provides visual indicators for overdue dates
  */
 const meta: Meta<typeof DateDisplayField> = {
-  title: "Components/DateDisplayField",
+  title: "Components/Fields/DateDisplayField",
   component: DateDisplayField,
   parameters: {
     layout: "fullscreen",
