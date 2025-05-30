@@ -17,12 +17,17 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
     {:ok, id} = decode_id(inputs.id)
     person = me(conn)
 
-    case load_check_in(person.id, id) do
-      nil ->
+    check_in = load_check_in(person.id, id)
+
+    cond do
+      check_in == nil ->
         from(c in Operately.Projects.CheckIn)
         |> forbidden_or_not_found(person.id, join_parent: :project)
 
-      check_in ->
+      check_in.acknowledged_at != nil ->
+        {:ok, %{check_in: Serializer.serialize(check_in, level: :essential)}}
+
+      check_in.acknowledged_by_id == nil ->
         {:ok, check_in} = Operately.Operations.ProjectCheckInAcknowledgement.run(person, check_in)
         {:ok, %{check_in: Serializer.serialize(check_in, level: :essential)}}
     end
