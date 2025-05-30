@@ -86,6 +86,19 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
       assert {200, res} = request(ctx.conn, check_in)
       assert_response(res, check_in)
     end
+
+    test "idempontency: acknowledging the same check-in multiple times does not change the state", ctx do
+      check_in = create_project_and_check_ins(ctx, reviewer_id: ctx.person.id)
+
+      assert {200, res} = request(ctx.conn, check_in)
+      assert_response(res, check_in)
+      assert acknowledge_activity_count() == 1
+
+      # no new activity created
+      assert {200, res} = request(ctx.conn, check_in)
+      assert_response(res, check_in)
+      assert acknowledge_activity_count() == 1
+    end
   end
 
   #
@@ -109,20 +122,33 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   #
 
   defp create_project_and_check_ins(ctx, opts) do
-    project = project_fixture(Enum.into(opts, %{
-      company_id: ctx.company.id,
-      group_id: ctx[:space_id] || ctx.company.company_space_id,
-      creator_id: ctx.creator.id,
-      company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
-      space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access()),
-    }))
+    project =
+      project_fixture(
+        Enum.into(opts, %{
+          company_id: ctx.company.id,
+          group_id: ctx[:space_id] || ctx.company.company_space_id,
+          creator_id: ctx.creator.id,
+          company_access_level: Keyword.get(opts, :company_access_level, Binding.no_access()),
+          space_access_level: Keyword.get(opts, :space_access_level, Binding.no_access())
+        })
+      )
+
     check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
+  end
+
+  defp acknowledge_activity_count do
+    import Ecto.Query, only: [from: 2]
+    query = from(a in Operately.Activities.Activity, where: a.action == "project_check_in_acknowledged")
+
+    Operately.Repo.aggregate(query, :count)
   end
 end
