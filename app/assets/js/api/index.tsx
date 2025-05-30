@@ -859,6 +859,7 @@ export interface Goal {
   status: GoalStatus;
   closedAt?: string | null;
   timeframe?: Timeframe | null;
+  dueDate: string | null;
   description?: string | null;
   champion?: Person | null;
   reviewer?: Person | null;

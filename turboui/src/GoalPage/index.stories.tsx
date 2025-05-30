@@ -4,7 +4,7 @@ import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { genPeople } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
-import { currentQuarter, lastYear } from "../utils/timeframes";
+import { endOfCurrentYear, startOfCurrentYear } from "../utils/time";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -316,7 +316,7 @@ const defaultArgs: GoalPage.Props = {
   reviewer: reviewer,
   targets: mockTargets,
   relatedWorkItems: relatedWorkItems,
-  timeframe: currentQuarter(),
+  dueDate: endOfCurrentYear(),
   contributors: contributors,
   canEdit: true,
   description,
@@ -366,10 +366,7 @@ export const ZeroStateForChampions: Story = {
     description: null,
     reviewer: null,
     status: "pending",
-    timeframe: {
-      startDate: new Date(2025, 3, 1), // Apr 1st, 2025
-      endDate: null,
-    },
+    dueDate: null,
   },
 };
 
@@ -385,10 +382,7 @@ export const ZeroStateReadOnly: Story = {
     description: null,
     reviewer: null,
     status: "pending",
-    timeframe: {
-      startDate: new Date(2025, 3, 1), // Apr 1st, 2025
-      endDate: null,
-    },
+    dueDate: null,
   },
 };
 
@@ -431,7 +425,7 @@ export const ClosedGoal: Story = {
     status: "achieved",
     closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
     retrospectiveLink: "/retrospective/1",
-    timeframe: lastYear(),
+    dueDate: startOfCurrentYear(),
   },
 };
 
@@ -460,7 +454,7 @@ export const NeglectedGoalReadOnly: Story = {
 export const OverdueGoal: Story = {
   args: {
     ...defaultArgs,
-    timeframe: lastYear(),
+    dueDate: startOfCurrentYear(),
   },
 };
 

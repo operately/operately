@@ -12,7 +12,7 @@ import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
-import { isOverdue, Timeframe } from "../utils/timeframes";
+import { isOverdue } from "../utils/time";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
@@ -74,7 +74,7 @@ export namespace GoalPage {
     reviewer: Person | null;
     contributors: Contributor[];
 
-    timeframe: Timeframe;
+    dueDate: Date | null;
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
@@ -198,7 +198,7 @@ function ClosedBanner(props: GoalPage.Props) {
 }
 
 function Warnings(props: GoalPage.Props) {
-  if (isOverdue(props.timeframe)) {
+  if (props.dueDate && isOverdue(props.dueDate)) {
     return <OverdueWarning {...props} />;
   }
 
@@ -237,7 +237,7 @@ function OverdueWarning(props: GoalPage.Props) {
     return (
       <WarningCallout
         message="Overdue goal"
-        description={<div>This goal is overdue. Close it or update the timeline.</div>}
+        description={<div>This goal is overdue. Close it or update the due date.</div>}
       />
     );
   } else {
@@ -246,8 +246,7 @@ function OverdueWarning(props: GoalPage.Props) {
         message="Overdue goal"
         description={
           <div>
-            This goal is overdue. The information may be outdated. Please ping the champion to check-in or update the
-            timeline.
+            This goal is overdue. The information may be outdated. Please ping the champion to check-in or update.
           </div>
         }
       />
