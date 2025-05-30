@@ -3,7 +3,6 @@ import * as Activities from "@/models/activities";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
-import * as Timeframes from "../../utils/timeframes";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
@@ -59,7 +58,6 @@ function Page() {
   assertPresent(goal.permissions?.canEdit);
   assertDefined(goal.champion);
   assertDefined(goal.reviewer);
-  assertPresent(goal.timeframe);
 
   const peopleSearch = () => {
     throw new Error("peopleSearch function is not implemented");
@@ -77,7 +75,7 @@ function Page() {
     addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
 
     privacyLevel: goal.privacy,
-    timeframe: Timeframes.parse(goal.timeframe),
+    dueDate: Time.parse(goal.dueDate) || null,
     parentGoal: prepareParentGoal(goal.parentGoal),
     canEdit: goal.permissions.canEdit,
     champion: goal.champion,

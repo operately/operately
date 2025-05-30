@@ -11,6 +11,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       champion: OperatelyWeb.Api.Serializer.serialize(goal.champion),
       reviewer: OperatelyWeb.Api.Serializer.serialize(goal.reviewer),
       timeframe: OperatelyWeb.Api.Serializer.serialize(goal.timeframe),
+      due_date: goal.timeframe && OperatelyWeb.Api.Serializer.serialize(goal.timeframe.end_date),
       success: goal.success == "yes",
       status: Goal.status(goal) |> Atom.to_string(),
       last_check_in_id: goal.last_check_in_id && OperatelyWeb.Paths.goal_update_id(goal.last_check_in_id),
