@@ -12,7 +12,7 @@ interface LoaderResult {
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   await redirectIfFeatureNotEnabled(params, {
     feature: "space_work_map",
-    path: Paths.spacePath(params.id),
+    path: Paths.spaceGoalsPath(params.id),
   });
 
   const [workMap, space] = await PageCache.fetch({
