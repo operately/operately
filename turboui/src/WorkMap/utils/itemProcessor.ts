@@ -76,6 +76,53 @@ export function processItems(items: WorkMap.Item[]): ProcessedItems {
   };
 }
 
+export function processPersonalItems(items: WorkMap.Item[]): ProcessedItems {
+  const ongoingItems: WorkMap.Item[] = [];
+  const allGoals: WorkMap.Item[] = [];
+  const allProjects: WorkMap.Item[] = [];
+  const completedItems: WorkMap.Item[] = [];
+
+  const processItem = (item: WorkMap.Item) => {
+    const isItemCompleted = CLOSED_STATUSES.includes(item.status);
+    const isItemActive = !isItemCompleted && item.status !== "paused";
+
+    if (isItemCompleted) {
+      completedItems.push({ ...item, children: [] });
+    } else {
+      if (item.type === "goal") {
+        allGoals.push({ ...item, children: [] });
+        if (isItemActive) {
+          ongoingItems.push({ ...item, children: [] });
+        }
+      } else if (item.type === "project") {
+        allProjects.push({ ...item, children: [] });
+        if (isItemActive) {
+          ongoingItems.push({ ...item, children: [] });
+        }
+      }
+    }
+
+    // Process children recursively
+    if (item.children && item.children.length > 0) {
+      for (const child of item.children) {
+        processItem(child);
+      }
+    }
+  };
+
+  for (const rootItem of items) {
+    processItem(rootItem);
+  }
+
+  return {
+    ongoingItems,
+    goals: allGoals,
+    projects: allProjects,
+    completedItems,
+    pausedItems: [],
+  };
+}
+
 const buildGoalsTree = (item: WorkMap.Item): WorkMap.Item | null => {
   if (item.type !== "goal") return null;
 

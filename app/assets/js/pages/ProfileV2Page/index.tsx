@@ -2,6 +2,8 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
+import * as WorkMap from "@/models/workMap";
+import { convertToWorkMapItem } from "@/models/workMap";
 import { toPersonWithLink } from "@/models/people";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -13,10 +15,8 @@ import { assertPresent } from "@/utils/assertions";
 import { ProfilePage } from "turboui";
 
 interface LoaderResult {
-  data: {
-    person: People.PersonWithLink;
-  };
-  cacheVersion: number;
+  person: People.PersonWithLink;
+  workMap: ReturnType<typeof convertToWorkMapItem>[];
 }
 
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
@@ -31,24 +31,29 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
     cacheKey: `v2-PersonalWorkMap.person-${params.id}`,
     refreshCache,
     fetchFn: async () => {
-      const [person] = await Promise.all([
+      const [person, workMapData] = await Promise.all([
         People.getPerson({
           id: params.id,
           includeManager: true,
           includeReports: true,
           includePeers: true,
         }).then((data) => data.person!),
+        WorkMap.getWorkMap({
+          championId: params.id,
+          contributorId: params.id,
+        }),
       ]);
 
-      return { person };
+      return {
+        person,
+        workMap: workMapData.workMap ? workMapData.workMap.map(convertToWorkMapItem) : [],
+      };
     },
   });
 }
 
 function Page() {
-  const {
-    data: { person },
-  } = Pages.useLoadedData<LoaderResult>();
+  const { person, workMap } = Pages.useLoadedData<LoaderResult>();
 
   assertPresent(person.peers);
   assertPresent(person.reports);
@@ -60,6 +65,8 @@ function Page() {
     peers: toPersonWithLink(People.sortByName(person.peers), true),
     reports: toPersonWithLink(People.sortByName(person.reports), true),
     manager: person.manager ? toPersonWithLink(person.manager, true) : null,
+
+    workMap: workMap,
 
     activityFeed: <ActivityFeed personId={person.id!} />,
   };

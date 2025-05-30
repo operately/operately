@@ -4,6 +4,7 @@ import { IconLogs, IconEye, IconClipboardCheck, IconUserCircle } from "@tabler/i
 
 import { Page } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
+import { WorkMap } from "../WorkMap";
 import { Colleagues, PageHeader, Contact } from "./components";
 
 export namespace ProfilePage {
@@ -24,6 +25,8 @@ export namespace ProfilePage {
     peers: Person[];
     reports: Person[];
 
+    workMap: WorkMap.Item[];
+
     activityFeed: React.ReactNode;
   }
 }
@@ -41,6 +44,7 @@ export function ProfilePage(props: ProfilePage.Props) {
       <PageHeader person={props.person} />
       <Tabs tabs={tabs} />
 
+      {tabs.active === "assigned" && <WorkMap title="Assigned work" items={props.workMap} type="personal" />}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
       {tabs.active === "about" && <About {...props} />}
     </Page>
