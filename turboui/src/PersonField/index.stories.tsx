@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { IconUserCheck } from "@tabler/icons-react";
 import React from "react";
 import { Page } from "../Page";
-import { genPerson } from "../utils/storybook/genPeople";
+import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { PersonField } from "./index";
 
 /**
@@ -31,7 +32,22 @@ const meta: Meta<typeof PersonField> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const person = genPerson();
+const person = {
+  ...genPerson(),
+  profileLink: `#`,
+};
+
+const potentialPeople = genPeople(10).map((p) => ({
+  ...p,
+  profileLink: `#`,
+}));
+
+const searchPeople = async (query: string) => {
+  if (!query) {
+    return potentialPeople;
+  }
+  return potentialPeople.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+};
 
 export const AllStates: Story = {
   render: () => {
@@ -39,42 +55,64 @@ export const AllStates: Story = {
       <Page title="PersonField All States" size="medium">
         <div className="grid grid-cols-2 gap-8 p-12">
           <div>
-            <div className="font-bold text-content-dimmed mb-6 border-b border-stroken-base pb-2">Editable</div>
+            <div className="font-bold text-content-dimmed mb-6 pb-2">Editable</div>
             <div className="space-y-8">
               <div>
                 <Label>Default</Label>
-                <PersonField person={person} />
+                <PersonField person={person} searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State</Label>
-                <PersonField person={null} />
+                <PersonField person={null} searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State Custom Message</Label>
-                <PersonField person={null} emptyStateMessage="Select champion" />
+                <PersonField person={null} emptyStateMessage="Set champion" searchPeople={searchPeople} />
+              </div>
+
+              <div>
+                <Label>Dialog Open</Label>
+                <PersonField
+                  person={person}
+                  emptyStateMessage="Set champion"
+                  searchPeople={searchPeople}
+                  isOpen
+                  extraDialogMenuOptions={[
+                    {
+                      label: "Assign as reviewer",
+                      onClick: () => alert("Custom option clicked"),
+                      icon: IconUserCheck,
+                    },
+                  ]}
+                />
               </div>
             </div>
           </div>
 
           <div>
-            <div className="font-bold text-content-dimmed mb-6 border-b border-stroken-base pb-2">Read Only</div>
+            <div className="font-bold text-content-dimmed mb-6 pb-2">Read Only</div>
 
             <div className="space-y-8">
               <div>
                 <Label>Default</Label>
-                <PersonField person={person} readonly />
+                <PersonField person={person} readonly searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State</Label>
-                <PersonField person={null} readonly emptyStateMessage="Select champion" />
+                <PersonField person={null} readonly emptyStateMessage="Select champion" searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State Custom Message</Label>
-                <PersonField person={null} readonly emptyStateReadOnlyMessage="No champion" />
+                <PersonField
+                  person={null}
+                  readonly
+                  emptyStateReadOnlyMessage="No champion"
+                  searchPeople={searchPeople}
+                />
               </div>
             </div>
           </div>
