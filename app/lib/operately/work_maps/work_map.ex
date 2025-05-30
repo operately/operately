@@ -80,7 +80,9 @@ defmodule Operately.WorkMaps.WorkMap do
   Supported filters:
   - :space_id - Filters items by space ID
   - :parent_goal_id - Filters items by parent goal ID (includes entire subtree of items)
-  - :owner_id - Filters items by owner ID
+  - :champion_id - Filters items by champion ID
+  - :reviewer_id - Filters items by reviewer ID
+  - :contributor_id - Filters items by contributor ID
 
   If a parent item is filtered out but its children would remain, the children will be
   reparented to the nearest ancestor that passes the filter, or become root items
@@ -88,76 +90,124 @@ defmodule Operately.WorkMaps.WorkMap do
 
   Returns a flat list of filtered items that can be passed to build_hierarchy.
   """
-  @spec filter_flat_list(list(WorkMapItem.t()), map()) :: list(WorkMapItem.t())
+  def filter_flat_list(flat_items, filters) when filters == %{}, do: flat_items
+
   def filter_flat_list(flat_items, filters) when is_list(flat_items) and is_map(filters) do
-    if Enum.empty?(filters) do
-      flat_items
+    parent_goal_id = Map.get(filters, :parent_goal_id)
+    other_filters = Map.drop(filters, [:parent_goal_id])
+
+    if parent_goal_id do
+      filter_by_parent_goal(flat_items, parent_goal_id, other_filters)
     else
-      all_items_map = Map.new(flat_items, fn item -> {item.id, item} end)
-
-      # Parent goal is filtered differently
-      parent_goal_id = Map.get(filters, :parent_goal_id)
-      other_filters = Map.drop(filters, [:parent_goal_id])
-
-      # First, get items that match the other filters
-      directly_matched_items =
-        if Enum.empty?(other_filters) do
-          flat_items
-        else
-          Enum.filter(flat_items, fn item ->
-            matches_filters?(item, other_filters)
-          end)
-        end
-
-      if parent_goal_id do
-        # For parent_goal_id filter, we need all direct children of the parent_goal that match the other filters
-        direct_children =
-          Enum.filter(directly_matched_items, fn item ->
-            item.parent_id == parent_goal_id
-          end)
-
-        # When parent_goal_id is specified, we only want direct children and their descendants
-        # that match the other filters
-        direct_children_ids = MapSet.new(direct_children, fn item -> item.id end)
-        descendants = collect_subtree_items(direct_children_ids, directly_matched_items)
-
-        Enum.concat(direct_children, descendants)
-      else
-        parent_ids = collect_all_parent_ids(directly_matched_items, all_items_map)
-
-        parent_items = Enum.filter(flat_items, fn item ->
-          MapSet.member?(parent_ids, item.id)
-        end)
-
-        # Combine matched items with their parents
-        filtered_items = Enum.concat(directly_matched_items, parent_items)
-        filtered_items = Enum.uniq_by(filtered_items, fn item -> item.id end)
-
-        # Reset children so they can be rebuilt correctly
-        Enum.map(filtered_items, fn item ->
-          %{item | children: []}
-        end)
-      end
+      directly_matched_items = find_direct_matches(flat_items, other_filters)
+      filter_without_parent_goal(flat_items, directly_matched_items)
     end
   end
 
-  defp matches_filters?(item, filters) do
-    Enum.all?(filters, fn {filter_key, filter_value} ->
-      if is_nil(filter_value) do
-        true
-      else
-        case filter_key do
-          :space_id ->
-            item.space && item.space.id == filter_value
-          :parent_goal_id ->
-            item.parent_id == filter_value
-          :owner_id ->
-            item.owner && item.owner.id == filter_value
-          _ ->
-            true # Unknown filter keys are ignored
+  defp filter_by_parent_goal(flat_items, parent_goal_id, other_filters) do
+    direct_children = Enum.filter(flat_items, &(&1.parent_id == parent_goal_id))
+    all_descendants = Enum.flat_map(direct_children, &get_full_subtree(&1.id, flat_items))
+    subtree_items = direct_children ++ all_descendants
+
+    if Enum.empty?(other_filters) do
+      subtree_items
+    else
+      matching_direct_children = Enum.filter(direct_children, &matches_filter?(&1, other_filters))
+
+      children_with_matching_descendants =
+        Enum.filter(direct_children, fn direct_child ->
+          child_descendants = get_full_subtree(direct_child.id, flat_items)
+          Enum.any?(child_descendants, &matches_filter?(&1, other_filters))
+        end)
+
+      all_qualifying_children =
+        (matching_direct_children ++ children_with_matching_descendants)
+        |> Enum.uniq_by(&(&1.id))
+
+      matching_descendants =
+        Enum.flat_map(all_qualifying_children, fn direct_child ->
+          descendants = get_full_subtree(direct_child.id, flat_items)
+          Enum.filter(descendants, &matches_filter?(&1, other_filters))
+        end)
+
+      (all_qualifying_children ++ matching_descendants)
+      |> Enum.uniq_by(&(&1.id))
+    end
+  end
+
+  defp filter_without_parent_goal(flat_items, matched_items) do
+    all_items_map = Map.new(flat_items, &{&1.id, &1})
+
+    parent_ids = collect_all_parent_ids(matched_items, all_items_map)
+    parent_items = Enum.filter(flat_items, &MapSet.member?(parent_ids, &1.id))
+
+    filtered_items = Enum.concat(matched_items, parent_items)
+    unique_items = Enum.uniq_by(filtered_items, &(&1.id))
+
+    Enum.map(unique_items, &%{&1 | children: []})
+  end
+
+  #
+  # Filters
+  #
+
+  defp find_direct_matches(flat_items, filters) when filters == %{}, do: flat_items
+  defp find_direct_matches(flat_items, filters) do
+    Enum.filter(flat_items, fn item -> matches_filter?(item, filters) end)
+  end
+
+  # Match filters with the following logic:
+  # - Space and parent filters use AND logic
+  # - Person-related filters (champion, reviewer, contributor) use OR logic between them
+  # - Both groups use AND logic between them
+  defp matches_filter?(item, filters) do
+    matches_person_filter?(item, filters) && matches_standard_filters?(item, filters)
+  end
+
+  defp matches_standard_filters?(item, filters) do
+    standard_filters = Map.drop(filters, [:champion_id, :reviewer_id, :contributor_id])
+
+    if Enum.empty?(standard_filters) do
+      true
+    else
+      # Standard filters use AND logic
+      Enum.all?(standard_filters, fn {filter_key, filter_value} ->
+        if is_nil(filter_value) do
+          true
+        else
+          case filter_key do
+            :space_id ->
+              item.space && item.space.id == filter_value
+            :parent_goal_id ->
+              item.parent_id == filter_value
+            _ ->
+              true  # Unknown filter keys are ignored
+          end
         end
-      end
-    end)
+      end)
+    end
+  end
+
+  defp matches_person_filter?(item, filters) do
+    person_filters = filters
+      |> Map.reject(fn {_, v} -> is_nil(v) end)
+      |> Map.take([:champion_id, :reviewer_id, :contributor_id])
+
+    if Enum.empty?(person_filters) do
+      true
+    else
+      # Person filters use OR logic between them
+      Enum.any?(person_filters, fn {filter_key, filter_value} ->
+        case filter_key do
+          :champion_id ->
+            item.champion && item.champion.id == filter_value
+          :reviewer_id ->
+            item.reviewer && item.reviewer.id == filter_value
+          :contributor_id ->
+            item.contributor && item.contributor.id == filter_value
+        end
+      end)
+    end
   end
 
   defp collect_all_parent_ids(items, all_items_map) do
@@ -182,19 +232,23 @@ defmodule Operately.WorkMaps.WorkMap do
   end
 
   # Recursively collects all items in the subtrees of the given parent IDs
-  defp collect_subtree_items(parent_ids, all_items) do
-    direct_children = Enum.filter(all_items, fn item ->
-      item.parent_id && MapSet.member?(parent_ids, item.parent_id)
+  # Returns all items in the subtree of the given parent_id (excluding the parent itself)
+  defp get_full_subtree(parent_id, all_items) do
+    # Find immediate children
+    children = Enum.filter(all_items, fn item ->
+      item.parent_id == parent_id
     end)
 
-    if Enum.empty?(direct_children) do
+    if Enum.empty?(children) do
       []
     else
-      child_ids = MapSet.new(direct_children, fn item -> item.id end)
+      # For each child, recursively get its subtree
+      descendants = Enum.flat_map(children, fn child ->
+        get_full_subtree(child.id, all_items)
+      end)
 
-      descendants = collect_subtree_items(child_ids, all_items)
-
-      Enum.concat(direct_children, descendants)
+      # Return children and all their descendants
+      children ++ descendants
     end
   end
 end

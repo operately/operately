@@ -239,7 +239,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
-  describe "functionality - execute/1 with company_id and owner_id parameters" do
+  describe "functionality - execute/1 with company_id and champion_id parameters" do
     setup ctx do
       ctx
       |> Factory.setup()
@@ -255,8 +255,8 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_project(:project2, :space, champion: :member)
     end
 
-    test "returns only goals and projects owned by the specified person", ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
+    test "returns only goals and projects championed by the specified person", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, champion_id: ctx.creator.id})
 
       assert_work_map_structure(work_map, ctx, %{
         goal1: [],
@@ -264,7 +264,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       })
     end
 
-    test "given parent and greatgrandchild have the same owner, but child and grandchild have another owner, returns full hierarchy with parent, child, grandchild and greatgrandchild", ctx do
+    test "given parent and greatgrandchild have the same champion, but child and grandchild have another champion, returns full hierarchy with parent, child, grandchild and greatgrandchild", ctx do
       ctx =
         ctx
         |> Factory.add_goal(:child, :space, parent_goal: :goal1, champion: :member)
@@ -272,7 +272,7 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         |> Factory.add_goal(:great_grand_child, :space, parent_goal: :grand_child, champion: :creator)
         |> Factory.add_project(:grand_child_project, :space, goal: :child, champion: :creator)
 
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, champion_id: ctx.creator.id})
 
       assert_work_map_structure(work_map, ctx, %{
         project1: [],
@@ -287,16 +287,143 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       })
     end
 
-    test "given parent and child have different owners, returns full hierarchy including parent", ctx do
+    test "given parent and child have different champion, returns full hierarchy including parent", ctx do
       ctx = Factory.add_goal(ctx, :child, :space, parent_goal: :goal2, champion: :creator)
 
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, owner_id: ctx.creator.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, champion_id: ctx.creator.id})
 
       assert_work_map_structure(work_map, ctx, %{
         goal1: [],
         project1: [],
         goal2: %{
           child: []
+        }
+      })
+    end
+  end
+
+  describe "functionality - execute/1 with company_id and reviewer_id parameters" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:member)
+      |> Factory.add_company_member(:reviewer1)
+      |> Factory.add_company_member(:reviewer2)
+
+      # Create goals with different reviewers
+      |> Factory.add_goal(:goal1, :space, reviewer: :reviewer1)
+      |> Factory.add_goal(:goal2, :space, reviewer: :reviewer2)
+
+      # Create projects with different reviewers
+      |> Factory.add_project(:project1, :space, reviewer: :reviewer1)
+      |> Factory.add_project(:project2, :space, reviewer: :reviewer2)
+    end
+
+    test "returns only goals and projects with the specified reviewer", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        goal1: [],
+        project1: []
+      })
+    end
+
+    test "given parent and greatgrandchild have the same reviewer, but child and grandchild have another reviewer, returns full hierarchy", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:child, :space, parent_goal: :goal1, reviewer: :reviewer2)
+        |> Factory.add_goal(:grand_child, :space, parent_goal: :child, reviewer: :reviewer2)
+        |> Factory.add_goal(:great_grand_child, :space, parent_goal: :grand_child, reviewer: :reviewer1)
+        |> Factory.add_project(:grand_child_project, :space, goal: :child, reviewer: :reviewer1)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: [],
+        goal1: %{
+          child: %{
+            grand_child: %{
+              great_grand_child: []
+            },
+            grand_child_project: []
+          }
+        }
+      })
+    end
+
+    test "given parent and child have different reviewer, returns full hierarchy including parent", ctx do
+      ctx = Factory.add_goal(ctx, :child, :space, parent_goal: :goal2, reviewer: :reviewer1)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        goal1: [],
+        project1: [],
+        goal2: %{
+          child: []
+        }
+      })
+    end
+  end
+
+  describe "functionality - execute/1 with company_id and contributor_id parameters" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_company_member(:member)
+
+      # Create projects with different contributors
+      |> Factory.add_project(:project1, :space)
+      |> Factory.add_project(:project2, :space)
+      |> Factory.add_project_contributor(:contributor1, :project1, :as_person)
+      |> Factory.add_project_contributor(:contributor2, :project2, :as_person)
+
+      |> Factory.add_goal(:parent_goal, :space)
+    end
+
+    test "returns only projects with the specified contributor", ctx do
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, contributor_id: ctx.contributor1.id})
+
+      assert_work_map_structure(work_map, ctx, %{
+        project1: []
+      })
+    end
+
+    test "given parent goal with child projects having different contributors, returns full hierarchy", ctx do
+      # Create projects under the goal with different contributors
+      ctx = ctx
+        |> Factory.add_project(:child_project1, :space, goal: :parent_goal)
+        |> Factory.add_project(:child_project2, :space, goal: :parent_goal)
+        |> Factory.add_project_contributor(:goal_contributor1, :child_project1, :as_person)
+        |> Factory.add_project_contributor(:goal_contributor2, :child_project2, :as_person)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, contributor_id: ctx.goal_contributor1.id})
+
+      # When filtering by contributor_id, we should only see projects with that contributor (and their parent goals)
+      assert_work_map_structure(work_map, ctx, %{
+        parent_goal: %{
+          child_project1: []
+        }
+      })
+    end
+
+    test "with nested hierarchy, maintains parent path to matching items", ctx do
+      # Create a more complex hierarchy with nested goals and projects
+      ctx = ctx
+        |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
+        |> Factory.add_project(:nested_project, :space, goal: :child_goal)
+        |> Factory.add_project_contributor(:nested_contributor, :nested_project, :as_person)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, contributor_id: ctx.nested_contributor.id})
+
+      # When filtering by contributor_id, we should only see projects with that contributor (and their parent goals)
+      assert_work_map_structure(work_map, ctx, %{
+        parent_goal: %{
+          child_goal: %{
+            nested_project: []
+          }
         }
       })
     end
@@ -356,6 +483,11 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.add_goal(:child_goal1, :space1, parent_goal: :parent_goal1, champion: :creator)
       |> Factory.add_goal(:child_goal2, :space1, parent_goal: :parent_goal1, champion: :member)
 
+      # child_goal1 has 2 projects, but :creator contributes to only one of them
+      |> Factory.add_project(:child_project1, :space1, goal: :child_goal1, champion: :member)
+      |> Factory.add_project(:child_project2, :space1, goal: :child_goal1, champion: :member)
+      |> Factory.add_project_contributor(:creator, :child_project1, :as_person)
+
       # Create goals in space2
       |> Factory.add_goal(:parent_goal2, :space2, champion: :creator)
       |> Factory.add_goal(:child_goal3, :space2, parent_goal: :parent_goal2, champion: :creator)
@@ -371,11 +503,14 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
           company_id: ctx.company.id,
           space_id: ctx.space1.id,
           parent_goal_id: ctx.parent_goal1.id,
-          owner_id: ctx.creator.id
+          champion_id: ctx.creator.id,
+          contributor_id: ctx.creator.id
         })
 
       assert_work_map_structure(work_map, ctx, %{
-        child_goal1: [],
+        child_goal1: %{
+          child_project1: []
+        },
         project1: []
       })
     end
