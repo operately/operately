@@ -10,6 +10,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { DateSelector } from "./DateSelector";
 import { Summary } from "@/components/RichContent";
+import { FormState } from "./useForm";
 
 export function MilestoneList({ form }) {
   const milestones = Milestones.sortByDeadline(form.milestoneList.milestones);
@@ -185,7 +186,25 @@ function milestoneTestID(milestone: Milestones.Milestone) {
   return "milestone-" + milestone.title!.toLowerCase().replace(/\s+/g, "-");
 }
 
-function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescription, onSubmit, onCancel }) {
+interface MilestoneFormProps {
+  form: FormState;
+  id: string;
+  initialTitle: string;
+  initialDueDate: Date | null;
+  initialDescription: any;
+  onSubmit: (id: string, title: string, dueDate: Date, description: any) => void;
+  onCancel: () => void;
+}
+
+function MilestoneForm({
+  form,
+  id,
+  initialTitle,
+  initialDueDate,
+  initialDescription,
+  onSubmit,
+  onCancel,
+}: MilestoneFormProps) {
   const [title, setTitle] = React.useState(initialTitle);
   const [dueDate, setDueDate] = React.useState<Date | null>(initialDueDate);
 
@@ -194,7 +213,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
     placeholder: "Write here...",
     className: "min-h-[150px] p-2 py-1 text-sm",
     content: initialDescription,
-    mentionSearchScope: { type: "project", id: form.projectID },
+    mentionSearchScope: { type: "project", id: form.projectId },
   });
 
   const [errors, setErrors] = React.useState<string[]>([]);
@@ -217,7 +236,7 @@ function MilestoneForm({ form, id, initialTitle, initialDueDate, initialDescript
       return false;
     }
 
-    await onSubmit(id, title, dueDate, JSON.stringify(editor.getJSON()));
+    await onSubmit(id, title, dueDate!, JSON.stringify(editor.getJSON()));
     return true;
   }, [editor, title, dueDate]);
 
