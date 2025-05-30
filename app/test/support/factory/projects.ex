@@ -75,10 +75,16 @@ defmodule Operately.Support.Factory.Projects do
     level = Keyword.get(opts, :permissions, :edit_access)
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
 
-    person  = Operately.PeopleFixtures.person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: name
-    })
+    person  =
+      case Keyword.get(opts, testid) do
+        nil ->
+          Operately.PeopleFixtures.person_fixture_with_account(%{
+            company_id: ctx.company.id,
+            full_name: name
+          })
+
+        person -> person
+      end
 
     contributor = Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
       project_id: project.id,

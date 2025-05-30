@@ -7,7 +7,9 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMap do
   inputs do
     field :space_id, :id
     field :parent_goal_id, :id
-    field :owner_id, :id
+    field :champion_id, :id
+    field :reviewer_id, :id
+    field :contributor_id, :id
     field :include_assignees, :boolean
   end
 
@@ -24,7 +26,9 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMap do
         company_id: company.id,
         space_id: inputs[:space_id],
         parent_goal_id: inputs[:parent_goal_id],
-        owner_id: inputs[:owner_id],
+        champion_id: inputs[:champion_id],
+        reviewer_id: inputs[:reviewer_id],
+        contributor_id: inputs[:contributor_id],
         include_assignees: inputs[:include_assignees] || false
       })
 
