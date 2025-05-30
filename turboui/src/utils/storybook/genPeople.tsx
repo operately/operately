@@ -9,6 +9,10 @@ interface Opts {
   random?: boolean;
 }
 
+export function genPerson(): Person {
+  return genPeople(1)[0]!;
+}
+
 export function genPeople(count: number, opts?: Opts): Person[] {
   const people: Person[] = [];
 

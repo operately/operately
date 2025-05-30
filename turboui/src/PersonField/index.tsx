@@ -1,7 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { IconQuestionMark } from "@tabler/icons-react";
+import { IconUser, IconUserPlus } from "@tabler/icons-react";
 import { Avatar } from "../Avatar";
 
 interface Person {
@@ -16,6 +16,8 @@ export interface PersonFieldProps {
   avatarSize?: number;
   readonly?: boolean;
   showTitle?: boolean;
+  emptyStateMessage?: string;
+  emptyStateReadOnlyMessage?: string;
 }
 
 export interface State {
@@ -28,6 +30,8 @@ export interface State {
   readonly: boolean;
   avatarSize: number;
   showTitle: boolean;
+  emptyStateMessage: string;
+  emptyStateReadOnlyMessage: string;
 }
 
 export function PersonField(props: PersonFieldProps) {
@@ -48,6 +52,8 @@ export function useState(props: PersonFieldProps): State {
   const readonly = props.readonly ?? false;
   const avatarSize = props.avatarSize ?? 32;
   const showTitle = props.showTitle ?? true;
+  const emptyStateMessage = props.emptyStateMessage ?? "Select person";
+  const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
 
   React.useEffect(() => {
     setPerson(props.person ?? null);
@@ -61,6 +67,8 @@ export function useState(props: PersonFieldProps): State {
     readonly,
     avatarSize,
     showTitle,
+    emptyStateMessage,
+    emptyStateReadOnlyMessage,
   };
 }
 
@@ -79,16 +87,25 @@ function Trigger({ state }: { state: State }) {
       </Popover.Trigger>
     );
   } else {
+    const Icon = state.readonly ? IconUser : IconUserPlus;
+
     return (
       <Popover.Trigger asChild>
-        <div className="flex items-start gap-2 truncate">
-          <div className="bg-yellow-500/10 rounded-full h-[32px] w-[32px] flex items-center justify-center">
-            <IconQuestionMark className="text-yellow-800" size={20} />
+        <div className="flex items-center gap-2 truncate">
+          <div
+            className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
+            style={{
+              width: state.avatarSize,
+              height: state.avatarSize,
+            }}
+          >
+            <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
           </div>
 
-          <div className="-mt-0.5 truncate">
-            <div className="text-sm font-medium">{role}</div>
-            <div className="text-xs truncate">{description}</div>
+          <div className="truncate">
+            <div className="text-sm font-medium text-content-dimmed">
+              {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
+            </div>
           </div>
         </div>
       </Popover.Trigger>
@@ -96,7 +113,7 @@ function Trigger({ state }: { state: State }) {
   }
 }
 
-function Dialog({ state }: { state: State }) {
+function Dialog({ state: _ }: { state: State }) {
   return null;
 }
 
