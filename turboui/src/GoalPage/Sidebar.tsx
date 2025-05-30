@@ -8,7 +8,6 @@ import { StatusBadge } from "../StatusBadge";
 
 import DateDisplayField from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
-import { PersonField } from "../PersonField";
 import classNames from "../utils/classnames";
 
 export function Sidebar(props: GoalPage.Props) {
@@ -88,7 +87,13 @@ function ParentGoalLink(props: GoalPage.Props) {
 }
 
 function Champion(props: GoalPage.Props) {
-  return <PersonField person={props.champion} />;
+  if (!props.champion) {
+    const message = props.canEdit ? "Assign a champion to get started" : "No champion assigned";
+
+    return <MissingContributor role="No Champion" description={message} />;
+  } else {
+    return <Contributor person={props.champion} />;
+  }
 }
 
 function Reviewer(props: GoalPage.Props) {
