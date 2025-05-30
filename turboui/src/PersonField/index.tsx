@@ -197,8 +197,14 @@ function DialogMenu({ state }: { state: State }) {
       <DialogMenuOption icon={IconExternalLink} label="See profile" linkTo={state.person?.profileLink || "#"} />
       <DialogMenuOption icon={IconSearch} label="Choose someone else" onClick={() => state.setDialogMode("search")} />
 
-      {state.extraDialogMenuOptions.map((option) => (
-        <DialogMenuOption icon={option.icon} label={option.label} onClick={option.onClick} linkTo={option.linkTo} />
+      {state.extraDialogMenuOptions.map((option, index) => (
+        <DialogMenuOption
+          key={index}
+          icon={option.icon}
+          label={option.label}
+          onClick={option.onClick}
+          linkTo={option.linkTo}
+        />
       ))}
 
       <DialogMenuOption
