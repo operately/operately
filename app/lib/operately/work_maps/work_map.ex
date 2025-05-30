@@ -137,6 +137,7 @@ defmodule Operately.WorkMaps.WorkMap do
 
   defp filter_without_parent_goal(flat_items, matched_items) do
     all_items_map = Map.new(flat_items, &{&1.id, &1})
+
     parent_ids = collect_all_parent_ids(matched_items, all_items_map)
     parent_items = Enum.filter(flat_items, &MapSet.member?(parent_ids, &1.id))
 
@@ -188,7 +189,9 @@ defmodule Operately.WorkMaps.WorkMap do
   end
 
   defp matches_person_filter?(item, filters) do
-    person_filters = Map.take(filters, [:champion_id, :reviewer_id, :contributor_id])
+    person_filters = filters
+      |> Map.reject(fn {_, v} -> is_nil(v) end)
+      |> Map.take([:champion_id, :reviewer_id, :contributor_id])
 
     if Enum.empty?(person_filters) do
       true
