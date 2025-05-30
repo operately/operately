@@ -9,7 +9,8 @@
     "ee/assets/js/admin_api/index.tsx",
     "**/__tests__/**",
     "assets/js/models/companies/hasFeature.tsx",
-    "assets/js/components/Callouts/index.tsx"
+    "assets/js/components/Callouts/index.tsx",
+    "assets/js/routes/redirectIfFeatureEnabled.tsx"
   ],
   "ignoreDependencies": ["@types/jest", "turboui"],
 
