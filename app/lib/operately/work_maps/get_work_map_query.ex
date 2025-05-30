@@ -24,10 +24,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - include_assignees (optional): A boolean indicating whether to include assignees in the result. Defaults to false
   """
   def execute(person, args) do
-    company_id = Map.get(args, :company_id)
-
-    goals_task = Task.async(fn -> get_goals(person, company_id, args) end)
-    projects_task = Task.async(fn -> get_projects(person, company_id, args) end)
+    goals_task = Task.async(fn -> get_goals(person, args) end)
+    projects_task = Task.async(fn -> get_projects(person, args) end)
 
     goals = Task.await(goals_task)
     projects = Task.await(projects_task)
@@ -37,10 +35,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     {:ok, work_map}
   end
 
-  defp get_projects(person, company_id, args) do
+  defp get_projects(person, args) do
     project_ids =
       from(Project, as: :projects)
-      |> where([p], p.company_id == ^company_id)
+      |> where([p], p.company_id == ^args.company_id)
       |> filter_by_view_access(person, :projects)
       |> select([projects: p], p.id)
       |> Repo.all()
@@ -50,10 +48,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> Repo.all()
   end
 
-  defp get_goals(person, company_id, args) do
+  defp get_goals(person, args) do
     goal_ids =
       from(Goal, as: :goal)
-      |> where([g], g.company_id == ^company_id)
+      |> where([g], g.company_id == ^args.company_id)
       |> filter_by_view_access(person, :goal)
       |> select([goal: g], g.id)
       |> Repo.all()

@@ -293,7 +293,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMapTest do
         |> Factory.log_in_person(:creator)
 
       # Query for items owned by other_member
-      assert {200, res} = query(ctx.conn, :get_work_map, %{owner_id: Paths.person_id(ctx.other_member)})
+      assert {200, res} = query(ctx.conn, :get_work_map, %{champion_id: Paths.person_id(ctx.other_member)})
 
       # Should return only the owned goal
       assert length(res.work_map) == 1
