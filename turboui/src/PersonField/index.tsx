@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { IconUser, IconUserPlus } from "@tabler/icons-react";
 import { Avatar } from "../Avatar";
+import classNames from "../utils/classnames";
 
 interface Person {
   id: string;
@@ -73,16 +74,21 @@ export function useState(props: PersonFieldProps): State {
 }
 
 function Trigger({ state }: { state: State }) {
+  const triggerClass = classNames({
+    "flex items-center gap-2 truncate text-left": true,
+    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+    "cursor-pointer": !state.readonly,
+    "cursor-default": state.readonly,
+  });
+
   if (state.person) {
     return (
-      <Popover.Trigger asChild>
-        <div className="flex items-start gap-2 truncate">
-          <Avatar person={state.person} size={state.avatarSize} />
+      <Popover.Trigger className={triggerClass}>
+        <Avatar person={state.person} size={state.avatarSize} />
 
-          <div className="-mt-0.5 truncate">
-            <div className="text-sm font-medium">{state.person.fullName}</div>
-            {state.showTitle && <div className="text-xs truncate">{state.person.title}</div>}
-          </div>
+        <div className="-mt-0.5 truncate">
+          <div className="text-sm font-medium">{state.person.fullName}</div>
+          {state.showTitle && <div className="text-xs truncate">{state.person.title}</div>}
         </div>
       </Popover.Trigger>
     );
@@ -90,22 +96,20 @@ function Trigger({ state }: { state: State }) {
     const Icon = state.readonly ? IconUser : IconUserPlus;
 
     return (
-      <Popover.Trigger asChild>
-        <div className="flex items-center gap-2 truncate">
-          <div
-            className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
-            style={{
-              width: state.avatarSize,
-              height: state.avatarSize,
-            }}
-          >
-            <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
-          </div>
+      <Popover.Trigger className={triggerClass}>
+        <div
+          className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
+          style={{
+            width: state.avatarSize,
+            height: state.avatarSize,
+          }}
+        >
+          <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
+        </div>
 
-          <div className="truncate">
-            <div className="text-sm font-medium text-content-dimmed">
-              {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
-            </div>
+        <div className="truncate">
+          <div className="text-sm font-medium text-content-dimmed">
+            {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
           </div>
         </div>
       </Popover.Trigger>
