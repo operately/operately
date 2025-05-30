@@ -59,6 +59,21 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
 
       props.onAddActiveChange?.(false);
       append(target);
+
+      props
+        .addTarget({
+          name: target.name,
+          startValue: target.from,
+          targetValue: target.to,
+          unit: target.unit,
+        })
+        .then((res) => {
+          if (!res.success) {
+            remove(target.id);
+          } else {
+            update(target.id, (t) => ({ ...t, id: res.id }));
+          }
+        });
     },
 
     toggleExpand: (id: string) => {
@@ -78,7 +93,15 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
       update(id, (t) => ({ ...t, mode: "view" as const }));
     },
     updateTarget: (id: string, newValue: number) => {
+      const oldValue = targets.find((t) => t.id === id)?.value;
       update(id, (t) => ({ ...t, value: newValue, mode: "view" as const }));
+
+      props.updateTargetValue(id, newValue).then((success) => {
+        if (!success) {
+          // If the update failed, revert the value
+          update(id, (t) => ({ ...t, value: oldValue! }));
+        }
+      });
     },
 
     // Editing
@@ -90,6 +113,21 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
     },
     saveEdit: (id: string, values: { name: string; from: number; to: number; unit: string }) => {
       update(id, (t) => ({ ...t, ...values, mode: "view" as const }));
+
+      props
+        .updateTarget({
+          targetId: id,
+          name: values.name,
+          startValue: values.from,
+          targetValue: values.to,
+          unit: values.unit,
+        })
+        .catch((e) => {
+          console.error("Failed to update target", e);
+
+          // Revert the changes if the update fails
+          update(id, (t) => ({ ...t, mode: "view" as const }));
+        });
     },
 
     // Deleting
@@ -97,7 +135,13 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
       update(id, (t) => ({ ...t, mode: "delete" as const }));
     },
     deleteTarget: (id: string) => {
-      remove(id);
+      const target = remove(id);
+
+      props.deleteTarget(id).then((success) => {
+        if (!success) {
+          append(target!);
+        }
+      });
     },
     cancelDelete: (id: string) => {
       update(id, (t) => ({ ...t, mode: "view" as const }));
@@ -105,7 +149,18 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
 
     // Drag and drop
     reorder: (_: any, id: string, newIndex: number) => {
+      const oldIndex = targets.find((t) => t.id === id)?.index;
+      if (!oldIndex || oldIndex === newIndex) {
+        return; // No change needed
+      }
+
       reorder(id, newIndex);
+
+      props.updateTargetIndex(id, newIndex).then((success) => {
+        if (!success) {
+          reorder(id, oldIndex); // Revert if the update fails
+        }
+      });
     },
   };
 

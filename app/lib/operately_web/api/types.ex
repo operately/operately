@@ -332,7 +332,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :target do
-    field :id, :string
+    field :id, :id
     field :index, :integer
     field :name, :string
     field :from, :float
@@ -1442,7 +1442,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :update_target_input do
-    field :id, :string
+    field :id, :id
     field :name, :string
     field :from, :float
     field :to, :float

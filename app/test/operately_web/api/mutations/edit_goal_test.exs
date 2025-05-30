@@ -162,8 +162,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
 
     test "edits a goal timeframe", ctx do
       timeframe = %{
-        type: "days", start_date: ~D{2024-08-20}, end_date: ~D{2024-08-25},
+        type: "days",
+        start_date: ~D{2024-08-20},
+        end_date: ~D{2024-08-25}
       }
+
       goal = create_goal(ctx)
 
       assert {200, _} = request(ctx.conn, goal, timeframe: timeframe)
@@ -181,10 +184,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
         %{name: "One", from: 0, to: 30, unit: "minutes", index: 0},
         %{name: "Two", from: 5, to: 40, unit: "minutes", index: 1}
       ]
+
       goal = create_goal(ctx, targets: targets)
 
-      added_targets = [%{ name: "Three", from: 25, to: 60, unit: "minutes", index: 2 }]
-      updated_targets = Goals.list_targets(goal.id) |> Enum.map(&(%{&1 | from: 25}))
+      added_targets = [%{name: "Three", from: 25, to: 60, unit: "minutes", index: 2}]
+      updated_targets = Goals.list_targets(goal.id) |> Enum.map(&%{&1 | from: 25})
 
       assert {200, _} = request(ctx.conn, goal, added_targets: added_targets, updated_targets: updated_targets)
       assert_goal_edited(goal)
@@ -192,6 +196,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
       targets = Goals.list_targets(goal.id)
 
       assert length(targets) == 3
+
       Enum.each(targets, fn t ->
         assert t.from == 25
       end)
@@ -201,12 +206,15 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
       alias Operately.Access
 
       space = group_fixture(ctx.person, %{company_id: ctx.company.id})
-      goal = create_goal(ctx, [
-        space_id: space.id,
-        company_access_level: Binding.comment_access(),
-        space_access_level: Binding.edit_access(),
-        anonymous_access_level: Binding.view_access(),
-      ])
+
+      goal =
+        create_goal(ctx,
+          space_id: space.id,
+          company_access_level: Binding.comment_access(),
+          space_access_level: Binding.edit_access(),
+          anonymous_access_level: Binding.view_access()
+        )
+
       context_id = Access.get_context!(goal_id: goal.id).id
       anonymous_group_id = Access.get_group!(company_id: ctx.company.id, tag: :anonymous).id
       company_group_id = Access.get_group!(company_id: ctx.company.id, tag: :standard).id
@@ -259,7 +267,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
       description: attrs[:description] || goal.description,
       anonymous_access_level: Binding.no_access(),
       company_access_level: Binding.full_access(),
-      space_access_level: Binding.full_access(),
+      space_access_level: Binding.full_access()
     })
   end
 
@@ -273,6 +281,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
     Enum.each(unchanged, fn field ->
       assert get_in(goal, [Access.key(field)]) == get_in(updated_goal, [Access.key(field)])
     end)
+
     Enum.each(changed, fn {key, value} ->
       assert get_in(updated_goal, [Access.key(key)]) == value
     end)
@@ -283,32 +292,39 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
   #
 
   defp create_goal(ctx, attrs \\ []) do
-    goal_fixture(ctx[:creator] || ctx.person, Enum.into(attrs, %{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }))
+    goal_fixture(
+      ctx[:creator] || ctx.person,
+      Enum.into(attrs, %{
+        space_id: ctx[:space_id] || ctx.company.company_space_id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access()
+      })
+    )
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 
   defp add_manager_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.full_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.full_access()
+      }
+    ])
   end
 
   defp format_timeframe(timeframe) do
     %{
       type: timeframe.type,
       start_date: Date.to_string(timeframe.start_date),
-      end_date: Date.to_string(timeframe.end_date),
+      end_date: Date.to_string(timeframe.end_date)
     }
   end
 
@@ -319,11 +335,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTest do
         unit: t.unit,
         to: t.to,
         from: t.from,
-        name: t.name,
+        name: t.name
       }
 
       if Map.has_key?(t, :id) do
-        Map.put(result, :id, t.id)
+        Map.put(result, :id, OperatelyWeb.Paths.target_id(t.id))
       else
         result
       end
