@@ -31,11 +31,11 @@ export function Sidebar(props: GoalPage.Props) {
 }
 
 function DueDate(props: GoalPage.Props) {
-  const [date, setDate] = React.useState<Date | null>(props.timeframe?.endDate ?? null);
+  const [date, setDate] = React.useState<Date | null>(props.dueDate);
 
   React.useEffect(() => {
-    setDate(props.timeframe?.endDate ?? null);
-  }, [props.timeframe?.endDate]);
+    setDate(props.dueDate);
+  }, [props.dueDate]);
 
   const saveDate = (newDate: Date | null) => {
     if (date?.getTime() === newDate?.getTime()) return; // No change
