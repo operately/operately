@@ -2089,7 +2089,9 @@ export interface GetUnreadNotificationCountResult {
 export interface GetWorkMapInput {
   spaceId?: Id | null;
   parentGoalId?: Id | null;
-  ownerId?: Id | null;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  contributorId?: Id | null;
   includeAssignees?: boolean | null;
 }
 
