@@ -11,7 +11,6 @@ interface Person {
   fullName: string;
   avatarUrl: string | null;
   title: string;
-
   profileLink: string;
 }
 
@@ -23,7 +22,7 @@ export interface PersonFieldProps {
   showTitle?: boolean;
   emptyStateMessage?: string;
   emptyStateReadOnlyMessage?: string;
-  searchPeople: (query: string) => Promise<Person[]>;
+  searchPeople: (params: { query: string }) => Promise<Person[]>;
   extraDialogMenuOptions?: DialogMenuOptionProps[];
 }
 
