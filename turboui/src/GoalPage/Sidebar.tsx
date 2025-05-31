@@ -91,7 +91,7 @@ function Champion(props: GoalPage.Props) {
         extraDialogMenuOptions={[
           {
             label: "Assign as reviewer",
-            onClick: () => props.updateReviewer(props.champion),
+            onClick: () => props.updateReviewer(props.champion!.id),
             icon: IconTarget,
           },
         ]}
@@ -112,7 +112,7 @@ function Reviewer(props: GoalPage.Props) {
         extraDialogMenuOptions={[
           {
             label: "Assign as reviewer",
-            onClick: () => props.updateChampion(props.champion),
+            onClick: () => props.updateChampion(props.reviewer!.id),
             icon: IconUserCheck,
           },
         ]}

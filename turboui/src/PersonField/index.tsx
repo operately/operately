@@ -88,7 +88,7 @@ export function useState(props: PersonFieldProps): State {
   React.useEffect(() => {
     let active = true;
 
-    props.searchPeople(searchQuery).then((people: Person[]) => {
+    props.searchPeople({ query: searchQuery }).then((people: Person[]) => {
       if (active) {
         setSearchResults(people);
       }
