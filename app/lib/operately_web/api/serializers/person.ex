@@ -6,7 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      access_level: find_access_level(bindings),
+      access_level: find_access_level(bindings)
     }
   end
 
@@ -17,7 +17,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       email: data.email,
       avatar_url: data.avatar_url,
       title: data.title,
-      has_open_invitation: data.has_open_invitation,
+      has_open_invitation: data.has_open_invitation
     }
     |> then(fn map ->
       case data.access_level do
@@ -40,11 +40,11 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers),
       has_open_invitation: data.has_open_invitation,
-      invitation: data.invitation && OperatelyWeb.Api.Serializer.serialize(data.invitation),
+      invitation: data.invitation && OperatelyWeb.Api.Serializer.serialize(data.invitation)
     }
   end
 
   defp find_access_level(bindings) do
-    Enum.max_by(bindings, &(&1.access_level)).access_level
+    Enum.max_by(bindings, & &1.access_level).access_level
   end
 end

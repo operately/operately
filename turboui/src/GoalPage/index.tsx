@@ -95,8 +95,8 @@ export namespace GoalPage {
     updateGoalName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
     updateDueDate: (date: Date | null) => Promise<boolean>;
-    updateChampion: (champion: Person | null) => Promise<boolean>;
-    updateReviewer: (reviewer: Person | null) => Promise<boolean>;
+    updateChampion: (personId: string | null) => Promise<boolean>;
+    updateReviewer: (personId: string | null) => Promise<boolean>;
     addTarget: GoalTargetList.AddTargetFn;
     deleteTarget: GoalTargetList.DeleteTargetFn;
     updateTarget: GoalTargetList.UpdateTargetFn;
