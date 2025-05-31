@@ -325,13 +325,19 @@ const defaultArgs: GoalPage.Props = {
   parentGoal,
   status: "on_track",
   privacyLevel: "internal" as const,
+
   mentionedPersonLookup: async (_id: string) => null,
   peopleSearch: searchFn,
+  championSearch: searchFn,
+  reviewerSearch: searchFn,
+
   activityFeed: <div></div>,
 
   updateGoalName: async (_name: string) => true,
   updateDueDate: async (_date: Date | null) => true,
   updateDescription: async (_description: string | null) => true,
+  updateChampion: async (_personId: string | null) => true,
+  updateReviewer: async (_personId: string | null) => true,
 
   addTarget,
   deleteTarget,
