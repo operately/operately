@@ -10,6 +10,8 @@ interface Person {
   id: string;
   fullName: string;
   avatarUrl: string | null;
+  title: string;
+  profileLink: string;
 }
 
 export type SearchFn = ({ query }: { query: string }) => Promise<Person[]>;

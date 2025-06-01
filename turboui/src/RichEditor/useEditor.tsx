@@ -14,6 +14,8 @@ export interface Person {
   id: string;
   fullName: string;
   avatarUrl: string | null;
+  title: string;
+  profileLink: string;
 }
 
 interface OnSaveData {
