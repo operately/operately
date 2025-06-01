@@ -402,4 +402,92 @@ defmodule OperatelyWeb.Api.GoalsTest do
       |> Enum.map(& &1.id)
     end
   end
+
+  describe "update_champion" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_champion], %{})
+    end
+
+    test "it requires a goal_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_champion], %{champion_id: "test"})
+      assert res.message == "Missing required fields: goal_id"
+    end
+
+    test "it updates the champion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_company_member(ctx, :new_champion)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        champion_id: Paths.person_id(ctx.new_champion)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_champion], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.champion_id == ctx.new_champion.id
+    end
+
+    test "it can remove the champion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        champion_id: nil
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_champion], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.champion_id == nil
+    end
+  end
+
+  describe "update_reviewer" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_reviewer], %{})
+    end
+
+    test "it requires a goal_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_reviewer], %{reviewer_id: "test"})
+      assert res.message == "Missing required fields: goal_id"
+    end
+
+    test "it updates the reviewer", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_company_member(ctx, :new_reviewer)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        reviewer_id: Paths.person_id(ctx.new_reviewer)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_reviewer], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.reviewer_id == ctx.new_reviewer.id
+    end
+
+    test "it can remove the reviewer", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        reviewer_id: nil
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_reviewer], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.reviewer_id == nil
+    end
+  end
 end
