@@ -1,4 +1,4 @@
-import { IconBuilding, IconTarget, IconUserCheck } from "@tabler/icons-react";
+import { IconBuilding, IconTarget, IconUserCheck, IconUserStar } from "@tabler/icons-react";
 import React from "react";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
@@ -92,7 +92,7 @@ function Champion(props: GoalPage.Props) {
           {
             label: "Assign as reviewer",
             onClick: () => props.updateReviewer(props.champion!.id),
-            icon: IconTarget,
+            icon: IconUserCheck,
           },
         ]}
       />
@@ -102,18 +102,18 @@ function Champion(props: GoalPage.Props) {
 
 function Reviewer(props: GoalPage.Props) {
   return (
-    <SidebarSection title="Champion">
+    <SidebarSection title="Reviewer">
       <PersonField
-        person={props.champion}
+        person={props.reviewer}
         readonly={!props.canEdit}
         searchPeople={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
-        emptyStateReadOnlyMessage="No champion"
+        emptyStateReadOnlyMessage="No reviewer"
         extraDialogMenuOptions={[
           {
             label: "Assign as reviewer",
             onClick: () => props.updateChampion(props.reviewer!.id),
-            icon: IconUserCheck,
+            icon: IconUserStar,
           },
         ]}
       />
