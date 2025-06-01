@@ -285,6 +285,74 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule UpdateChampion do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, required: true
+      field :champion_id, :id
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
+        Operately.Goals.Goal.changeset(goal, %{champion_id: inputs.champion_id})
+      end)
+      # |> Steps.save_activity(:goal_champion_updated, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     old_champion_id: changes.goal.champion_id,
+      #     new_champion_id: inputs.champion_id
+      #   }
+      # end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule UpdateReviewer do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, required: true
+      field :reviewer_id, :id
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
+        Operately.Goals.Goal.changeset(goal, %{reviewer_id: inputs.reviewer_id})
+      end)
+      # |> Steps.save_activity(:goal_reviewer_updated, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     old_reviewer_id: changes.goal.reviewer_id,
+      #     new_reviewer_id: inputs.reviewer_id
+      #   }
+      # end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
