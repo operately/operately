@@ -42,7 +42,7 @@ const potentialPeople = genPeople(10).map((p) => ({
   profileLink: `#`,
 }));
 
-const searchPeople = async (query: string) => {
+const searchPeople = async ({ query }) => {
   if (!query) {
     return potentialPeople;
   }

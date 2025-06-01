@@ -1,6 +1,6 @@
 /**
  * TaskBoard component types
- * 
+ *
  * This file contains all the shared types and interfaces for the TaskBoard component.
  * Moving these to a dedicated file helps prevent circular dependencies and improves code organization.
  */
@@ -17,7 +17,7 @@ export type Status = "pending" | "in_progress" | "done" | "canceled";
 export interface Person {
   id: string;
   fullName: string;
-  avatarUrl?: string;
+  avatarUrl: string | null;
 }
 
 /**
@@ -33,7 +33,7 @@ export interface Milestone {
 }
 
 /**
- * Task interface 
+ * Task interface
  */
 export interface Task {
   id: string;
@@ -90,12 +90,12 @@ export interface TaskBoardCallbacks {
    * Callback for when a task status changes
    */
   onStatusChange?: (taskId: string, newStatus: Status) => void;
-  
+
   /**
    * Callback for when a task is created
    */
   onTaskCreate?: (task: Omit<Task, "id">) => void;
-  
+
   /**
    * Callback for when a milestone is created
    */
