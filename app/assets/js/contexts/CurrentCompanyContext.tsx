@@ -4,6 +4,7 @@ import * as React from "react";
 import { useProfileUpdatedSignal } from "@/signals";
 import { assertPresent } from "@/utils/assertions";
 import { throttle } from "@/utils/throttle";
+import { Paths } from "../routes/paths";
 
 interface CurrentCompanyContextProps {
   me: People.Person | null;
@@ -45,7 +46,9 @@ export function useMe(): People.Person | null {
   return ctx.me;
 }
 
-export function useMentionedPersonLookupFn(): (id: string) => Promise<People.Person | null> {
+export function useMentionedPersonLookupFn(): (
+  id: string,
+) => Promise<(People.Person & { profileLink: string }) | null> {
   const ctx = React.useContext(CurrentCompanyContext);
   if (!ctx) {
     return async () => null;
@@ -58,7 +61,7 @@ export function useMentionedPersonLookupFn(): (id: string) => Promise<People.Per
   return async (id: string) => {
     const person = ctx.people?.find((p) => p.id === id);
     if (person) {
-      return person;
+      return { ...person, profileLink: Paths.profilePath(person.id) };
     }
     ctx.peopleRefetch();
     return null;

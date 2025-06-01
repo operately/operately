@@ -1,5 +1,6 @@
 import Api from "@/api";
 import * as Activities from "@/models/activities";
+import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
@@ -78,8 +79,8 @@ function Page() {
     dueDate: Time.parse(goal.dueDate) || null,
     parentGoal: prepareParentGoal(goal.parentGoal),
     canEdit: goal.permissions.canEdit,
-    champion: goal.champion,
-    reviewer: goal.reviewer,
+    champion: preparePerson(goal.champion),
+    reviewer: preparePerson(goal.reviewer),
 
     description: goal.description && JSON.parse(goal.description),
     deleteLink: "",
@@ -91,6 +92,37 @@ function Page() {
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
     peopleSearch,
+
+    championSearch: peopleSearch,
+    reviewerSearch: peopleSearch,
+
+    updateChampion: function (_personId: string | null): Promise<boolean> {
+      throw new Error("updateChampion function is not implemented");
+
+      // return Api.goals
+      //   .updateChampion({ goalId: goal.id!, personId: person.id! })
+      //   .then(() => {
+      //     PageCache.invalidate(pageCacheKey(goal.id!));
+      //     return true;
+      //   })
+      //   .catch((e) => {
+      //     console.error("Failed to update champion", e);
+      //     return false;
+      //   });
+    },
+    updateReviewer: function (_personId: string | null): Promise<boolean> {
+      throw new Error("updateReviewer function is not implemented");
+      // return Api.goals
+      //   .updateReviewer({ goalId: goal.id!, personId: person.id! })
+      //   .then(() => {
+      //     PageCache.invalidate(pageCacheKey(goal.id!));
+      //     return true;
+      //   })
+      //   .catch((e) => {
+      //     console.error("Failed to update reviewer", e);
+      //     return false;
+      //   });
+    },
 
     addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
       return Api.goals
@@ -204,6 +236,20 @@ function Page() {
   return <GoalPage {...props} />;
 }
 
+function preparePerson(person: People.Person | null | undefined) {
+  if (!person) {
+    return null;
+  } else {
+    return {
+      id: person.id!,
+      fullName: person.fullName!,
+      title: person.title || "",
+      avatarUrl: person.avatarUrl || "",
+      profileLink: Paths.profilePath(person.id!),
+    };
+  }
+}
+
 function prepareCheckIns(checkIns: Activities.Activity[]): GoalPage.Props["checkIns"] {
   return checkIns.map((activity) => {
     const content = activity.content as Activities.ActivityContentGoalCheckIn;
@@ -214,7 +260,7 @@ function prepareCheckIns(checkIns: Activities.Activity[]): GoalPage.Props["check
 
     return {
       id: content.update.id,
-      author: activity.author,
+      author: preparePerson(activity.author)!,
       date: Time.parse(content.update.insertedAt!)!,
       link: Paths.goalCheckInPath(content.update.id!),
       content: JSON.parse(content.update.message!),
