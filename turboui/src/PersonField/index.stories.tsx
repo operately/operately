@@ -3,7 +3,7 @@ import { IconUserCheck } from "@tabler/icons-react";
 import React from "react";
 import { Page } from "../Page";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";
-import { PersonField } from "./index";
+import { PersonField, PersonFieldProps } from "./index";
 
 /**
  * PersonField is a component for displaying and selecting a person within a popover interface.
@@ -49,6 +49,18 @@ const searchPeople = async ({ query }) => {
   return potentialPeople.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
+const Component = (args: Partial<PersonFieldProps>) => {
+  const [person, setPerson] = React.useState<PersonFieldProps["person"]>(args.person || null);
+
+  return (
+    <Page title="PersonField" size="medium">
+      <div className="p-12">
+        <PersonField {...args} person={person} setPerson={setPerson} searchPeople={searchPeople} />
+      </div>
+    </Page>
+  );
+};
+
 export const AllStates: Story = {
   render: () => {
     return (
@@ -59,22 +71,22 @@ export const AllStates: Story = {
             <div className="space-y-8">
               <div>
                 <Label>Default</Label>
-                <PersonField person={person} searchPeople={searchPeople} />
+                <Component person={person} searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State</Label>
-                <PersonField person={null} searchPeople={searchPeople} />
+                <Component person={null} searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State Custom Message</Label>
-                <PersonField person={null} emptyStateMessage="Set champion" searchPeople={searchPeople} />
+                <Component person={null} emptyStateMessage="Set champion" searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Dialog Open</Label>
-                <PersonField
+                <Component
                   person={person}
                   emptyStateMessage="Set champion"
                   searchPeople={searchPeople}
@@ -97,22 +109,17 @@ export const AllStates: Story = {
             <div className="space-y-8">
               <div>
                 <Label>Default</Label>
-                <PersonField person={person} readonly searchPeople={searchPeople} />
+                <Component person={person} readonly searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State</Label>
-                <PersonField person={null} readonly emptyStateMessage="Select champion" searchPeople={searchPeople} />
+                <Component person={null} readonly emptyStateMessage="Select champion" searchPeople={searchPeople} />
               </div>
 
               <div>
                 <Label>Empty State Custom Message</Label>
-                <PersonField
-                  person={null}
-                  readonly
-                  emptyStateReadOnlyMessage="No champion"
-                  searchPeople={searchPeople}
-                />
+                <Component person={null} readonly emptyStateReadOnlyMessage="No champion" searchPeople={searchPeople} />
               </div>
             </div>
           </div>

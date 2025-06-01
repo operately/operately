@@ -12,7 +12,7 @@ import { GoalPage } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
-import { assertDefined, assertPresent } from "../../utils/assertions";
+import { assertPresent } from "../../utils/assertions";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
@@ -57,12 +57,20 @@ function Page() {
   assertPresent(goal.space);
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
-  assertDefined(goal.champion);
-  assertDefined(goal.reviewer);
 
-  const peopleSearch = () => {
-    throw new Error("peopleSearch function is not implemented");
-  };
+  const resetCache = () => PageCache.invalidate(pageCacheKey(goal.id!));
+
+  const [champion, setChampion] = useApiSyncedState<GoalPage.Props["champion"]>({
+    value: preparePerson(goal.champion),
+    apiCall: (val) => Api.goals.updateChampion({ goalId: goal.id!, championId: val?.id }).then((r) => r.success),
+    onSuccess: resetCache,
+  });
+
+  const [reviewer, setReviewer] = useApiSyncedState<GoalPage.Props["reviewer"]>({
+    value: preparePerson(goal.reviewer),
+    apiCall: (val) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: val?.id }).then((r) => r.success),
+    onSuccess: resetCache,
+  });
 
   const props: GoalPage.Props = {
     goalName: goal.name,
@@ -79,8 +87,14 @@ function Page() {
     dueDate: Time.parse(goal.dueDate) || null,
     parentGoal: prepareParentGoal(goal.parentGoal),
     canEdit: goal.permissions.canEdit,
-    champion: preparePerson(goal.champion),
-    reviewer: preparePerson(goal.reviewer),
+
+    champion,
+    championSearch: peopleSearch,
+    setChampion,
+
+    reviewer,
+    reviewerSearch: peopleSearch,
+    setReviewer,
 
     description: goal.description && JSON.parse(goal.description),
     deleteLink: "",
@@ -92,37 +106,6 @@ function Page() {
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
     peopleSearch,
-
-    championSearch: peopleSearch,
-    reviewerSearch: peopleSearch,
-
-    updateChampion: function (_personId: string | null): Promise<boolean> {
-      throw new Error("updateChampion function is not implemented");
-
-      // return Api.goals
-      //   .updateChampion({ goalId: goal.id!, personId: person.id! })
-      //   .then(() => {
-      //     PageCache.invalidate(pageCacheKey(goal.id!));
-      //     return true;
-      //   })
-      //   .catch((e) => {
-      //     console.error("Failed to update champion", e);
-      //     return false;
-      //   });
-    },
-    updateReviewer: function (_personId: string | null): Promise<boolean> {
-      throw new Error("updateReviewer function is not implemented");
-      // return Api.goals
-      //   .updateReviewer({ goalId: goal.id!, personId: person.id! })
-      //   .then(() => {
-      //     PageCache.invalidate(pageCacheKey(goal.id!));
-      //     return true;
-      //   })
-      //   .catch((e) => {
-      //     console.error("Failed to update reviewer", e);
-      //     return false;
-      //   });
-    },
 
     addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
       return Api.goals
@@ -318,4 +301,51 @@ function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["t
       mode: "view" as const,
     };
   });
+}
+
+const peopleSearch = () => {
+  throw new Error("peopleSearch function is not implemented");
+};
+
+interface useApiSyncedStateProps<T> {
+  value: T;
+  apiCall: (newValue: T) => Promise<boolean | null | undefined>;
+  onSuccess?: (value: T) => void;
+}
+
+function useApiSyncedState<T>({ value, apiCall, onSuccess }: useApiSyncedStateProps<T>): [T, (value: T) => void] {
+  const [state, setState] = React.useState<T>(value);
+
+  React.useEffect(() => {
+    setState(value);
+  }, [value]);
+
+  const updateState = (newVal: T) => {
+    const oldVal = state;
+
+    const revert = () => {
+      console.error("Reverting state to initial value due to API failure");
+      setState(oldVal);
+    };
+
+    setState(newVal);
+
+    apiCall(newVal)
+      .then((res) => {
+        if (res === true) {
+          if (onSuccess) {
+            onSuccess(value);
+          }
+        } else {
+          console.error("API call failed, reverting state");
+          revert();
+        }
+      })
+      .catch((e) => {
+        console.error("Failed to update state via API", e);
+        revert();
+      });
+  };
+
+  return [state, updateState];
 }

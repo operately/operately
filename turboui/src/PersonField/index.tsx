@@ -16,6 +16,8 @@ interface Person {
 
 export interface PersonFieldProps {
   person: Person | null;
+  setPerson: (person: Person | null) => void;
+
   isOpen?: boolean;
   avatarSize?: number;
   readonly?: boolean;
@@ -61,7 +63,6 @@ export function PersonField(props: PersonFieldProps) {
 
 export function useState(props: PersonFieldProps): State {
   const [isOpen, changeOpen] = React.useState(!!props.isOpen);
-  const [person, setPerson] = React.useState<Person | null>(props.person ?? null);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -75,15 +76,11 @@ export function useState(props: PersonFieldProps): State {
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
 
   React.useEffect(() => {
-    setPerson(props.person ?? null);
-  }, [props.person]);
-
-  React.useEffect(() => {
     if (!isOpen) {
       setIsOpen(false);
-      setDialogMode(person ? "menu" : "search");
+      setDialogMode(props.person ? "menu" : "search");
     }
-  }, [isOpen, person]);
+  }, [isOpen, props.person]);
 
   React.useEffect(() => {
     let active = true;
@@ -108,12 +105,13 @@ export function useState(props: PersonFieldProps): State {
   };
 
   return {
+    person: props.person,
+    setPerson: props.setPerson,
+
     isOpen,
     setIsOpen,
     dialogMode,
     setDialogMode,
-    person,
-    setPerson,
     readonly,
     avatarSize,
     showTitle,

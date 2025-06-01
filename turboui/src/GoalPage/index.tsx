@@ -68,8 +68,13 @@ export namespace GoalPage {
     goalName: string;
     description?: string;
     spaceName: string;
+
     champion: Person | null;
+    setChampion: (person: Person | null) => void;
+
     reviewer: Person | null;
+    setReviewer: (person: Person | null) => void;
+
     contributors: Contributor[];
 
     dueDate: Date | null;
@@ -95,8 +100,7 @@ export namespace GoalPage {
     updateGoalName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
     updateDueDate: (date: Date | null) => Promise<boolean>;
-    updateChampion: (personId: string | null) => Promise<boolean>;
-    updateReviewer: (personId: string | null) => Promise<boolean>;
+
     addTarget: GoalTargetList.AddTargetFn;
     deleteTarget: GoalTargetList.DeleteTargetFn;
     updateTarget: GoalTargetList.UpdateTargetFn;
