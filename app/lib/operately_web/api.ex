@@ -28,6 +28,8 @@ defmodule OperatelyWeb.Api do
     mutation(:update_target, OperatelyWeb.Api.Goals.UpdateTarget)
     mutation(:update_target_value, OperatelyWeb.Api.Goals.UpdateTargetValue)
     mutation(:update_target_index, OperatelyWeb.Api.Goals.UpdateTargetIndex)
+    mutation(:update_champion, OperatelyWeb.Api.Goals.UpdateChampion)
+    mutation(:update_reviewer, OperatelyWeb.Api.Goals.UpdateReviewer)
   end
 
   query(:get_account, Q.GetAccount)
