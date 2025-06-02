@@ -17,4 +17,4 @@ export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { ProfilePage } from "./ProfilePage";
 
-export { showErrorToast } from "./Toasts";
+export { showErrorToast, ToasterBar } from "./Toasts";

@@ -20,8 +20,8 @@ import "./i18n";
 import { setupTestErrorLogger } from "@/utils/errorLogger";
 
 import "@/api/socket";
-import { Toaster } from "react-hot-toast";
 import ReactModal from "react-modal";
+import { ToasterBar } from "turboui";
 
 setupTestErrorLogger();
 
@@ -53,7 +53,7 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <Toaster position="bottom-right" reverseOrder={true} />
+    <ToasterBar />
     <RouterProvider router={routes} />
   </React.StrictMode>
 );

@@ -73,13 +73,13 @@ function Page() {
   const [champion, setChampion] = usePageField({
     value: (data) => preparePerson(data.goal.champion),
     update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }).then((r) => r.success),
-    onError: () => showErrorToast("Failed to update the champion", "Returning to previous value."),
+    onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => preparePerson(data.goal.reviewer),
     update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }).then((r) => r.success),
-    onError: () => showErrorToast("`Failed to update the reviewer", "Returning to previous value."),
+    onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
   const championSearch = usePeopleSearch({

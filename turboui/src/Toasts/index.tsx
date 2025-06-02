@@ -1,11 +1,21 @@
+import { IconExclamationCircleFilled } from "@tabler/icons-react";
 import React from "react";
-import toast from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
+
+export function ToasterBar() {
+  return <Toaster position="bottom-right" reverseOrder={true} />;
+}
 
 export const showErrorToast = (title: string, description: string) => {
-  toast.error(
-    <div>
-      <div className="font-semibold text-sm">{title}</div>
-      <div className="text-xs text-content-dimmed mt-1">{description}</div>
+  toast.custom(
+    <div className="bg-surface-base p-2 rounded-lg shadow text-xs">
+      <div className="flex gap-2">
+        <IconExclamationCircleFilled className="text-red-500 mt-0.5" size={18} />
+        <div>
+          <div className="font-semibold">{title}</div>
+          <div className="text-content-dimmed">{description}</div>
+        </div>
+      </div>
     </div>,
   );
 };
