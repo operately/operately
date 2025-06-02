@@ -4,10 +4,9 @@ import { WorkMapPage } from "turboui";
 import { useLoadedData } from "./loader";
 
 export function Page() {
-  const { workMap, space } = useLoadedData();
+  const { data } = useLoadedData();
+  const { workMap, space } = data;
   const title = `${space.name} Work Map`;
 
-  return (
-    <WorkMapPage title={title} items={workMap} columnOptions={{ hideSpace: true }} />
-  );
+  return <WorkMapPage title={title} items={workMap} columnOptions={{ hideSpace: true }} />;
 }

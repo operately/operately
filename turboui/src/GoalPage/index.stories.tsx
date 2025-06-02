@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
-import { genPeople } from "../utils/storybook/genPeople";
+import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
 import { endOfCurrentYear, startOfCurrentYear } from "../utils/time";
 
@@ -12,11 +12,109 @@ const meta: Meta<typeof GoalPage> = {
   parameters: {
     layout: "fullscreen",
   },
+  render: (args) => <Component {...args} />,
 } satisfies Meta<typeof GoalPage>;
 
-const people = genPeople(2);
-const champion = people[0]!;
-const reviewer = people[1]!;
+function Component(props: Partial<GoalPage.Props>) {
+  const people = genPeople(2);
+
+  const [champion, setChampion] = React.useState<any>(props.champion);
+  const [reviewer, setReviewer] = React.useState<any>(props.reviewer);
+
+  const searchFn = async ({ query }: { query: string }) => {
+    if (!query) return people;
+    return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+  };
+
+  const addTarget = (): Promise<{ id: string; success: boolean }> =>
+    new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
+
+  const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
+
+  return (
+    <GoalPage
+      spaceLink="/spaces/1"
+      workmapLink="/spaces/1/workmaps/1"
+      closeLink={storyPath("Pages/GoalClosePage", "Default")}
+      deleteLink={storyPath("Pages/GoalDeletePage", "Default")}
+      editGoalLink={storyPath("Pages/GoalEditPage", "Default")}
+      newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
+      addSubgoalLink="#"
+      addSubprojectLink="#"
+      goalName="Launch AI Platform"
+      spaceName="Product"
+      champion={champion}
+      setChampion={setChampion}
+      reviewer={reviewer}
+      setReviewer={setReviewer}
+      targets={props.targets || []}
+      relatedWorkItems={props.relatedWorkItems || []}
+      dueDate={endOfCurrentYear()}
+      contributors={props.contributors || []}
+      canEdit={true}
+      description={description}
+      checkIns={props.checkIns || []}
+      messages={props.messages || []}
+      parentGoal={parentGoal}
+      status="on_track"
+      privacyLevel={"internal" as const}
+      mentionedPersonLookup={async (_id: string) => null}
+      peopleSearch={searchFn}
+      championSearch={searchFn}
+      reviewerSearch={searchFn}
+      activityFeed={<div></div>}
+      updateGoalName={async (_name: string) => true}
+      updateDueDate={async (_date: Date | null) => true}
+      updateDescription={async (_description: string | null) => true}
+      addTarget={addTarget}
+      deleteTarget={deleteTarget}
+      updateTarget={async (_inputs) => true}
+      updateTargetValue={async (_id, _value) => true}
+      updateTargetIndex={async (_id, _index) => true}
+    />
+  );
+}
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// Mock Data
+
+const mockCheckIns = [
+  {
+    link: "/checkins/1",
+    id: "1",
+    author: genPerson(),
+    date: new Date(2025, 3, 17), // Apr 17th, 2025
+    content: asRichText(
+      "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
+    ),
+    commentCount: 48,
+    status: "on_track",
+  },
+  {
+    link: "/checkins/1",
+    id: "2",
+    author: genPerson(),
+    date: new Date(2025, 3, 24), // Apr 24th, 2025
+    content: asRichText(
+      "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
+    ),
+    commentCount: 2,
+    status: "on_track",
+  },
+  {
+    link: "/checkins/1",
+    id: "3",
+    author: genPerson(),
+    date: new Date(2025, 3, 30), // Apr 30th, 2025
+    content: asRichText(
+      "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
+    ),
+    commentCount: 0,
+    status: "on_track",
+  },
+];
 
 const mockTargets = [
   {
@@ -51,88 +149,52 @@ const mockTargets = [
   },
 ];
 
-const checkIns = [
-  {
-    link: "/checkins/1",
-    id: "1",
-    author: champion,
-    date: new Date(2025, 3, 17), // Apr 17th, 2025
-    content: asRichText(
-      "Kickoff meeting held. Team is excited and we have outlined the initial roadmap. Next steps: finalize requirements and assign tasks.",
-    ),
-    commentCount: 48,
-    status: "on_track",
-  },
-  {
-    link: "/checkins/1",
-    id: "2",
-    author: reviewer,
-    date: new Date(2025, 3, 24), // Apr 24th, 2025
-    content: asRichText(
-      "Reviewed the first sprint deliverables. Progress is on track, but we need to improve test coverage and documentation.",
-    ),
-    commentCount: 2,
-    status: "on_track",
-  },
-  {
-    link: "/checkins/1",
-    id: "3",
-    author: champion,
-    date: new Date(2025, 3, 30), // Apr 30th, 2025
-    content: asRichText(
-      "Completed integration with the new data pipeline. Encountered some issues with API rate limits, but workaround is in place.",
-    ),
-    commentCount: 0,
-    status: "on_track",
-  },
-];
-
-const messages = [
+const mockMessages = [
   {
     id: "1",
     title: "Kick-Off",
-    author: champion,
+    author: genPerson(),
     content: "We have officially started the project! The team is aligned and ready to move forward.",
     link: "/messages/1",
   },
   {
     id: "2",
     title: "Execution plan for the German team",
-    author: reviewer,
+    author: genPerson(),
     content: "Outlined the execution plan for the German team. Please review and provide feedback by Friday.",
     link: "/messages/2",
   },
   {
     id: "3",
     title: "Preview of what is coming next week",
-    author: champion,
+    author: genPerson(),
     content: "Next week we will focus on integrating the authentication module and preparing the first demo.",
     link: "/messages/3",
   },
   {
     id: "4",
     title: "Sprint 1 Retrospective",
-    author: reviewer,
+    author: genPerson(),
     content: "Sprint 1 went well overall, but we identified some bottlenecks in the review process.",
     link: "/messages/4",
   },
   {
     id: "5",
     title: "Security Review Notes",
-    author: champion,
+    author: genPerson(),
     content: "Security review completed. No major issues found, but a few recommendations were made.",
     link: "/messages/5",
   },
   {
     id: "6",
     title: "Customer Feedback Roundup",
-    author: reviewer,
+    author: genPerson(),
     content: "Collected initial feedback from customers. Most are excited about the new features!",
     link: "/messages/6",
   },
 ];
 
-const relatedWorkItems: MiniWorkMap.WorkItem[] = [
+const mockRelatedWorkItems: MiniWorkMap.WorkItem[] = [
   {
     id: "1",
     type: "goal" as const,
@@ -290,84 +352,36 @@ const parentGoal = {
   link: "/goals/1",
 };
 
-const searchFn = async ({ query }: { query: string }) => {
-  if (!query) return people;
-  return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
-};
-
-const addTarget = (): Promise<{ id: string; success: boolean }> =>
-  new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
-
-const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
-
-const defaultArgs: GoalPage.Props = {
-  spaceLink: "/spaces/1",
-  workmapLink: "/spaces/1/workmaps/1",
-  closeLink: storyPath("Pages/GoalClosePage", "Default"),
-  deleteLink: storyPath("Pages/GoalDeletePage", "Default"),
-  editGoalLink: storyPath("Pages/GoalEditPage", "Default"),
-  newCheckInLink: storyPath("Pages/GoalCheckInPage", "Default"),
-  addSubgoalLink: "#",
-  addSubprojectLink: "#",
-
-  goalName: "Launch AI Platform",
-  spaceName: "Product",
-  champion: champion,
-  reviewer: reviewer,
-  targets: mockTargets,
-  relatedWorkItems: relatedWorkItems,
-  dueDate: endOfCurrentYear(),
-  contributors: contributors,
-  canEdit: true,
-  description,
-  checkIns,
-  messages,
-  parentGoal,
-  status: "on_track",
-  privacyLevel: "internal" as const,
-
-  mentionedPersonLookup: async (_id: string) => null,
-  peopleSearch: searchFn,
-  championSearch: searchFn,
-  reviewerSearch: searchFn,
-
-  activityFeed: <div></div>,
-
-  updateGoalName: async (_name: string) => true,
-  updateDueDate: async (_date: Date | null) => true,
-  updateDescription: async (_description: string | null) => true,
-  updateChampion: async (_personId: string | null) => true,
-  updateReviewer: async (_personId: string | null) => true,
-
-  addTarget,
-  deleteTarget,
-  updateTarget: async (_inputs) => true,
-  updateTargetValue: async (_id, _value) => true,
-  updateTargetIndex: async (_id, _index) => true,
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
 export const Default: Story = {
-  args: defaultArgs,
+  args: {
+    description: description,
+    champion: genPerson(),
+    reviewer: genPerson(),
+    checkIns: mockCheckIns,
+    targets: mockTargets,
+    messages: mockMessages,
+    contributors: contributors,
+    relatedWorkItems: mockRelatedWorkItems,
+    canEdit: true,
+  },
 };
 
 export const DefaultReadOnly: Story = {
   args: {
-    ...defaultArgs,
+    description: description,
+    champion: genPerson(),
+    reviewer: genPerson(),
+    checkIns: mockCheckIns,
+    targets: mockTargets,
+    messages: mockMessages,
+    contributors: contributors,
+    relatedWorkItems: mockRelatedWorkItems,
     canEdit: false,
   },
 };
 
 export const ZeroStateForChampions: Story = {
   args: {
-    ...defaultArgs,
-    targets: [],
-    checkIns: [],
-    messages: [],
-    contributors: [],
-    relatedWorkItems: [],
     canEdit: true,
     description: null,
     reviewer: null,
@@ -378,9 +392,7 @@ export const ZeroStateForChampions: Story = {
 
 export const ZeroStateReadOnly: Story = {
   args: {
-    ...defaultArgs,
     targets: [],
-    checkIns: [],
     messages: [],
     contributors: [],
     relatedWorkItems: [],
@@ -393,7 +405,6 @@ export const ZeroStateReadOnly: Story = {
 };
 
 export const Mobile: Story = {
-  args: defaultArgs,
   parameters: {
     viewport: {
       defaultViewport: "mobile2",
@@ -403,21 +414,18 @@ export const Mobile: Story = {
 
 export const CompanyWideGoal: Story = {
   args: {
-    ...defaultArgs,
     parentGoal: null,
   },
 };
 
 export const LongName: Story = {
   args: {
-    ...defaultArgs,
     goalName: "Enchance the AI Platform with Advanced Features and Integrations",
   },
 };
 
 export const LongParentName: Story = {
   args: {
-    ...defaultArgs,
     parentGoal: {
       id: "1",
       name: "Enchance the AI Platform with Advanced Features and Integrations",
@@ -427,7 +435,6 @@ export const LongParentName: Story = {
 
 export const ClosedGoal: Story = {
   args: {
-    ...defaultArgs,
     status: "achieved",
     closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
     retrospectiveLink: "/retrospective/1",
@@ -437,21 +444,18 @@ export const ClosedGoal: Story = {
 
 export const PrivateGoal: Story = {
   args: {
-    ...defaultArgs,
     privacyLevel: "confidential",
   },
 };
 
 export const NeglectedGoal: Story = {
   args: {
-    ...defaultArgs,
     neglectedGoal: true,
   },
 };
 
 export const NeglectedGoalReadOnly: Story = {
   args: {
-    ...defaultArgs,
     neglectedGoal: true,
     canEdit: false,
   },
@@ -459,7 +463,6 @@ export const NeglectedGoalReadOnly: Story = {
 
 export const OverdueGoal: Story = {
   args: {
-    ...defaultArgs,
     dueDate: startOfCurrentYear(),
   },
 };

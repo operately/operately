@@ -11,7 +11,8 @@ interface Opts {
 }
 
 export function genPerson(): Person {
-  return genPeople(1)[0]!;
+  const randomIndex = Math.floor(Math.random() * EXAMPLE_PEOPLE.length);
+  return genPeople(randomIndex + 1)[randomIndex]!;
 }
 
 export function genPeople(count: number, opts?: Opts): Person[] {
