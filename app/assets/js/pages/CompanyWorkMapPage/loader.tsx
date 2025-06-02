@@ -1,12 +1,15 @@
+import { Company, getCompany } from "@/models/companies";
 import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { getCompany, Company } from "@/models/companies";
 
 interface LoaderResult {
-  workMap: ReturnType<typeof convertToWorkMapItem>[];
-  company: Company;
+  data: {
+    workMap: ReturnType<typeof convertToWorkMapItem>[];
+    company: Company;
+  };
+  cacheVersion: number;
 }
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
@@ -16,7 +19,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
   });
 
   return await PageCache.fetch({
-    cacheKey: `v2-CompanyWorkMap.company-${params.companyId}`,
+    cacheKey: `v3-CompanyWorkMap.company-${params.companyId}`,
     refreshCache,
     fetchFn: async () => {
       const [workMapData, companyData] = await Promise.all([getWorkMap({}), getCompany({ id: params.companyId })]);

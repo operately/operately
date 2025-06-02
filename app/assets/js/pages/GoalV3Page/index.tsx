@@ -12,21 +12,32 @@ import { GoalPage } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
-import { assertDefined, assertPresent } from "../../utils/assertions";
+import { assertPresent } from "../../utils/assertions";
+import { fetchAll } from "../../utils/async";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v8-GoalPage.goal-${id}`;
+  return `v13-GoalPage.goal-${id}`;
 }
 
-async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[], Activities.Activity[]]> {
+type LoaderResult = {
+  data: {
+    goal: Goal;
+    workMap: WorkMapItem[];
+    checkIns: Activities.Activity[];
+  };
+
+  cacheVersion: number;
+};
+
+async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
     fetchFn: () =>
-      Promise.all([
-        getGoal({
+      fetchAll({
+        goal: getGoal({
           id: params.id,
           includeSpace: true,
           includeChampion: true,
@@ -37,32 +48,37 @@ async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapI
           includeAccessLevels: true,
           includePrivacy: true,
         }).then((d) => d.goal!),
-        getWorkMap({
+        workMap: getWorkMap({
           parentGoalId: params.id,
           includeAssignees: true,
         }).then((d) => d.workMap!),
-        Activities.getActivities({
+        checkIns: Activities.getActivities({
           scopeType: "goal",
           scopeId: params.id,
           actions: ["goal_check_in"],
         }),
-      ]),
+      }),
   });
 }
 
 function Page() {
-  const [goal, workMap, checkIns] = PageCache.useData(loader);
+  const { goal, workMap, checkIns } = PageCache.useData(loader).data;
+
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
-  assertDefined(goal.champion);
-  assertDefined(goal.reviewer);
 
-  const peopleSearch = () => {
-    throw new Error("peopleSearch function is not implemented");
-  };
+  const [champion, setChampion] = usePageField({
+    value: (data) => preparePerson(data.goal.champion),
+    update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }).then((r) => r.success),
+  });
+
+  const [reviewer, setReviewer] = usePageField({
+    value: (data) => preparePerson(data.goal.reviewer),
+    update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }).then((r) => r.success),
+  });
 
   const props: GoalPage.Props = {
     goalName: goal.name,
@@ -79,8 +95,14 @@ function Page() {
     dueDate: Time.parse(goal.dueDate) || null,
     parentGoal: prepareParentGoal(goal.parentGoal),
     canEdit: goal.permissions.canEdit,
-    champion: preparePerson(goal.champion),
-    reviewer: preparePerson(goal.reviewer),
+
+    champion,
+    setChampion,
+    championSearch: peopleSearch,
+
+    reviewer,
+    setReviewer,
+    reviewerSearch: peopleSearch,
 
     description: goal.description && JSON.parse(goal.description),
     deleteLink: "",
@@ -92,37 +114,6 @@ function Page() {
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
     peopleSearch,
-
-    championSearch: peopleSearch,
-    reviewerSearch: peopleSearch,
-
-    updateChampion: function (_personId: string | null): Promise<boolean> {
-      throw new Error("updateChampion function is not implemented");
-
-      // return Api.goals
-      //   .updateChampion({ goalId: goal.id!, personId: person.id! })
-      //   .then(() => {
-      //     PageCache.invalidate(pageCacheKey(goal.id!));
-      //     return true;
-      //   })
-      //   .catch((e) => {
-      //     console.error("Failed to update champion", e);
-      //     return false;
-      //   });
-    },
-    updateReviewer: function (_personId: string | null): Promise<boolean> {
-      throw new Error("updateReviewer function is not implemented");
-      // return Api.goals
-      //   .updateReviewer({ goalId: goal.id!, personId: person.id! })
-      //   .then(() => {
-      //     PageCache.invalidate(pageCacheKey(goal.id!));
-      //     return true;
-      //   })
-      //   .catch((e) => {
-      //     console.error("Failed to update reviewer", e);
-      //     return false;
-      //   });
-    },
 
     addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
       return Api.goals
@@ -318,4 +309,54 @@ function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["t
       mode: "view" as const,
     };
   });
+}
+
+const peopleSearch = async () => {
+  return [];
+};
+
+interface usePageFieldProps<T> {
+  value: (LoaderResult) => T;
+  update: (newValue: T) => Promise<boolean | null | undefined>;
+}
+
+function usePageField<T>({ value, update }: usePageFieldProps<T>): [T, (v: T) => void] {
+  const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
+
+  const [state, setState] = React.useState<T>(() => value(data));
+  const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
+
+  React.useEffect(() => {
+    if (cacheVersion !== stateVersion) {
+      setState(() => value(data));
+      setStateVersion(cacheVersion);
+    }
+  }, [value, cacheVersion, stateVersion]);
+
+  const updateState = (newVal: T): void => {
+    const oldVal = state;
+
+    const successHandler = () => {
+      PageCache.invalidate(pageCacheKey(data.goal.id!));
+    };
+
+    const errorHandler = (error: any) => {
+      console.error("API update failed", error);
+      setState(oldVal);
+    };
+
+    setState(newVal);
+
+    update(newVal)
+      .then((res) => {
+        if (res === true) {
+          successHandler();
+        } else {
+          errorHandler("API call returned false, reverting state");
+        }
+      })
+      .catch(errorHandler);
+  };
+
+  return [state, updateState];
 }
