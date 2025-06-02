@@ -13,11 +13,12 @@ import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
+import { fetchAll } from "../../utils/async";
 
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v12-GoalPage.goal-${id}`;
+  return `v13-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {

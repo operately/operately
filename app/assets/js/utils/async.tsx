@@ -11,7 +11,7 @@
 //   posts: fetch('/api/posts'),
 // });
 //
-async function fetchAll(map: Record<string, Promise<any>>): Promise<Record<string, any>> {
+export async function fetchAll(map: Record<string, Promise<any>>): Promise<Record<string, any>> {
   const pairs = Object.entries(map);
   const results = await Promise.all(pairs.map(([_, promise]) => promise));
   const data: Record<string, any> = {};
