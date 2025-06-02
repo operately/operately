@@ -3,7 +3,7 @@ import { showErrorToast, ToasterBar } from ".";
 import { SecondaryButton } from "../Button";
 
 export default {
-  title: "Components/Tosts",
+  title: "Components/Toasts",
   component: ToasterBar,
   decorators: [
     (Story) => (
