@@ -1354,7 +1354,7 @@ export interface SubscriptionList {
 }
 
 export interface Target {
-  id?: string | null;
+  id?: Id | null;
   index?: number | null;
   name?: string | null;
   from?: number | null;
@@ -1483,7 +1483,7 @@ export interface UpdateContentStatusUpdate {
 }
 
 export interface UpdateTargetInput {
-  id?: string | null;
+  id?: Id | null;
   name?: string | null;
   from?: number | null;
   to?: number | null;
@@ -2834,6 +2834,15 @@ export interface GoalsDeleteTargetResult {
   success?: boolean | null;
 }
 
+export interface GoalsUpdateChampionInput {
+  goalId?: Id | null;
+  championId?: Id | null;
+}
+
+export interface GoalsUpdateChampionResult {
+  success?: boolean | null;
+}
+
 export interface GoalsUpdateDescriptionInput {
   goalId?: Id | null;
   description?: Json | null;
@@ -2858,6 +2867,15 @@ export interface GoalsUpdateNameInput {
 }
 
 export interface GoalsUpdateNameResult {
+  success?: boolean | null;
+}
+
+export interface GoalsUpdateReviewerInput {
+  goalId?: Id | null;
+  reviewerId?: Id | null;
+}
+
+export interface GoalsUpdateReviewerResult {
   success?: boolean | null;
 }
 
@@ -3832,6 +3850,10 @@ class ApiNamespaceGoals {
     return this.client.post("/goals/delete_target", input);
   }
 
+  async updateChampion(input: GoalsUpdateChampionInput): Promise<GoalsUpdateChampionResult> {
+    return this.client.post("/goals/update_champion", input);
+  }
+
   async updateDescription(input: GoalsUpdateDescriptionInput): Promise<GoalsUpdateDescriptionResult> {
     return this.client.post("/goals/update_description", input);
   }
@@ -3842,6 +3864,10 @@ class ApiNamespaceGoals {
 
   async updateName(input: GoalsUpdateNameInput): Promise<GoalsUpdateNameResult> {
     return this.client.post("/goals/update_name", input);
+  }
+
+  async updateReviewer(input: GoalsUpdateReviewerInput): Promise<GoalsUpdateReviewerResult> {
+    return this.client.post("/goals/update_reviewer", input);
   }
 
   async updateTarget(input: GoalsUpdateTargetInput): Promise<GoalsUpdateTargetResult> {
@@ -6225,6 +6251,18 @@ export default {
     useUpdateTargetValue: () =>
       useMutation<GoalsUpdateTargetValueInput, GoalsUpdateTargetValueResult>(
         defaultApiClient.apiNamespaceGoals.updateTargetValue,
+      ),
+
+    updateChampion: (input: GoalsUpdateChampionInput) => defaultApiClient.apiNamespaceGoals.updateChampion(input),
+    useUpdateChampion: () =>
+      useMutation<GoalsUpdateChampionInput, GoalsUpdateChampionResult>(
+        defaultApiClient.apiNamespaceGoals.updateChampion,
+      ),
+
+    updateReviewer: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),
+    useUpdateReviewer: () =>
+      useMutation<GoalsUpdateReviewerInput, GoalsUpdateReviewerResult>(
+        defaultApiClient.apiNamespaceGoals.updateReviewer,
       ),
   },
 };
