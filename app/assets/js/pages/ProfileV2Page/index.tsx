@@ -4,16 +4,19 @@ import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 import { toPersonWithLink } from "@/models/people";
 
-import { PageModule } from "@/routes/types";
-import { PageCache } from "@/routes/PageCache";
-import { ProfilePage } from "turboui";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { assertPresent } from "@/utils/assertions";
+import { PageCache } from "@/routes/PageCache";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { PageModule } from "@/routes/types";
+import { assertPresent } from "@/utils/assertions";
+import { ProfilePage } from "turboui";
 
 interface LoaderResult {
-  person: People.PersonWithLink;
+  data: {
+    person: People.PersonWithLink;
+  };
+  cacheVersion: number;
 }
 
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
@@ -25,7 +28,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 
   return await PageCache.fetch({
-    cacheKey: `v1-PersonalWorkMap.person-${params.id}`,
+    cacheKey: `v2-PersonalWorkMap.person-${params.id}`,
     refreshCache,
     fetchFn: async () => {
       const [person] = await Promise.all([
@@ -43,11 +46,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function Page() {
-  const { person } = Pages.useLoadedData<LoaderResult>();
+  const {
+    data: { person },
+  } = Pages.useLoadedData<LoaderResult>();
 
   assertPresent(person.peers);
   assertPresent(person.reports);
- 
+
   const props = {
     title: [person.fullName!, "Profile"],
 
