@@ -8,6 +8,8 @@ import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 
+export { WorkMapTable };
+
 export function WorkMapPage(props: WorkMap.Props) {
   return (
     <Page title={props.title} size="fullwidth">
