@@ -17,16 +17,26 @@ import { assertPresent } from "../../utils/assertions";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v8-GoalPage.goal-${id}`;
+  return `v12-GoalPage.goal-${id}`;
 }
 
-async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapItem[], Activities.Activity[]]> {
+type LoaderResult = {
+  data: {
+    goal: Goal;
+    workMap: WorkMapItem[];
+    checkIns: Activities.Activity[];
+  };
+
+  cacheVersion: number;
+};
+
+async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
     fetchFn: () =>
-      Promise.all([
-        getGoal({
+      fetchAll({
+        goal: getGoal({
           id: params.id,
           includeSpace: true,
           includeChampion: true,
@@ -37,39 +47,36 @@ async function loader({ params, refreshCache = false }): Promise<[Goal, WorkMapI
           includeAccessLevels: true,
           includePrivacy: true,
         }).then((d) => d.goal!),
-        getWorkMap({
+        workMap: getWorkMap({
           parentGoalId: params.id,
           includeAssignees: true,
         }).then((d) => d.workMap!),
-        Activities.getActivities({
+        checkIns: Activities.getActivities({
           scopeType: "goal",
           scopeId: params.id,
           actions: ["goal_check_in"],
         }),
-      ]),
+      }),
   });
 }
 
 function Page() {
-  const [goal, workMap, checkIns] = PageCache.useData(loader);
+  const { goal, workMap, checkIns } = PageCache.useData(loader).data;
+
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
 
-  const resetCache = () => PageCache.invalidate(pageCacheKey(goal.id!));
-
-  const [champion, setChampion] = useApiSyncedState<GoalPage.Props["champion"]>({
-    value: preparePerson(goal.champion),
-    apiCall: (val) => Api.goals.updateChampion({ goalId: goal.id!, championId: val?.id }).then((r) => r.success),
-    onSuccess: resetCache,
+  const [champion, setChampion] = usePageField({
+    value: (data) => preparePerson(data.goal.champion),
+    update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }).then((r) => r.success),
   });
 
-  const [reviewer, setReviewer] = useApiSyncedState<GoalPage.Props["reviewer"]>({
-    value: preparePerson(goal.reviewer),
-    apiCall: (val) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: val?.id }).then((r) => r.success),
-    onSuccess: resetCache,
+  const [reviewer, setReviewer] = usePageField({
+    value: (data) => preparePerson(data.goal.reviewer),
+    update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }).then((r) => r.success),
   });
 
   const props: GoalPage.Props = {
@@ -89,12 +96,12 @@ function Page() {
     canEdit: goal.permissions.canEdit,
 
     champion,
-    championSearch: peopleSearch,
     setChampion,
+    championSearch: peopleSearch,
 
     reviewer,
-    reviewerSearch: peopleSearch,
     setReviewer,
+    reviewerSearch: peopleSearch,
 
     description: goal.description && JSON.parse(goal.description),
     deleteLink: "",
@@ -303,48 +310,51 @@ function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["t
   });
 }
 
-const peopleSearch = () => {
-  throw new Error("peopleSearch function is not implemented");
+const peopleSearch = async () => {
+  return [];
 };
 
-interface useApiSyncedStateProps<T> {
-  value: T;
-  apiCall: (newValue: T) => Promise<boolean | null | undefined>;
-  onSuccess?: (value: T) => void;
+interface usePageFieldProps<T> {
+  value: (LoaderResult) => T;
+  update: (newValue: T) => Promise<boolean | null | undefined>;
 }
 
-function useApiSyncedState<T>({ value, apiCall, onSuccess }: useApiSyncedStateProps<T>): [T, (value: T) => void] {
-  const [state, setState] = React.useState<T>(value);
+function usePageField<T>({ value, update }: usePageFieldProps<T>): [T, (v: T) => void] {
+  const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
+
+  const [state, setState] = React.useState<T>(() => value(data));
+  const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
 
   React.useEffect(() => {
-    setState(value);
-  }, [value]);
+    if (cacheVersion !== stateVersion) {
+      setState(() => value(data));
+      setStateVersion(cacheVersion);
+    }
+  }, [value, cacheVersion, stateVersion]);
 
-  const updateState = (newVal: T) => {
+  const updateState = (newVal: T): void => {
     const oldVal = state;
 
-    const revert = () => {
-      console.error("Reverting state to initial value due to API failure");
+    const successHandler = () => {
+      PageCache.invalidate(pageCacheKey(data.goal.id!));
+    };
+
+    const errorHandler = (error: any) => {
+      console.error("API update failed", error);
       setState(oldVal);
     };
 
     setState(newVal);
 
-    apiCall(newVal)
+    update(newVal)
       .then((res) => {
         if (res === true) {
-          if (onSuccess) {
-            onSuccess(value);
-          }
+          successHandler();
         } else {
-          console.error("API call failed, reverting state");
-          revert();
+          errorHandler("API call returned false, reverting state");
         }
       })
-      .catch((e) => {
-        console.error("Failed to update state via API", e);
-        revert();
-      });
+      .catch(errorHandler);
   };
 
   return [state, updateState];

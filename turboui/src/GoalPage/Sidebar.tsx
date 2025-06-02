@@ -92,7 +92,10 @@ function Champion(props: GoalPage.Props) {
         extraDialogMenuOptions={[
           {
             label: "Assign as reviewer",
-            onClick: () => props.setReviewer(props.champion!),
+            onClick: () => {
+              props.setReviewer(props.champion!);
+              props.setChampion(null);
+            },
             icon: IconUserCheck,
           },
         ]}
@@ -107,14 +110,17 @@ function Reviewer(props: GoalPage.Props) {
       <PersonField
         person={props.reviewer}
         setPerson={props.setReviewer}
-        readonly={props.canEdit}
+        readonly={!props.canEdit}
         searchPeople={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
         emptyStateReadOnlyMessage="No reviewer"
         extraDialogMenuOptions={[
           {
-            label: "Assign as reviewer",
-            onClick: () => props.setChampion(props.reviewer!),
+            label: "Assign as champion",
+            onClick: () => {
+              props.setReviewer(null);
+              props.setChampion(props.reviewer!);
+            },
             icon: IconUserStar,
           },
         ]}

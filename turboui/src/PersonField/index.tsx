@@ -199,7 +199,10 @@ function DialogMenu({ state }: { state: State }) {
           key={index}
           icon={option.icon}
           label={option.label}
-          onClick={option.onClick}
+          onClick={() => {
+            option.onClick && option.onClick();
+            state.setIsOpen(false);
+          }}
           linkTo={option.linkTo}
         />
       ))}
