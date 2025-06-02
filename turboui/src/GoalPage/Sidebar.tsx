@@ -107,7 +107,7 @@ function Reviewer(props: GoalPage.Props) {
       <PersonField
         person={props.reviewer}
         setPerson={props.setReviewer}
-        readonly={!props.canEdit}
+        readonly={props.canEdit}
         searchPeople={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
         emptyStateReadOnlyMessage="No reviewer"
