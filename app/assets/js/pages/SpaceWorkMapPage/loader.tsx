@@ -3,6 +3,7 @@ import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { fetchAll } from "../../utils/async";
 
 interface LoaderResult {
   data: {
@@ -18,17 +19,15 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     path: Paths.spaceGoalsPath(params.id),
   });
 
-  const { data, cacheVersion } = await PageCache.fetch({
-    cacheKey: `v1-SpaceWorkMap.space-${params.id}`,
+  return PageCache.fetch({
+    cacheKey: `v2-SpaceWorkMap.space-${params.id}`,
     refreshCache,
     fetchFn: () =>
-      Promise.all([
-        getWorkMap({ spaceId: params.id }).then((data) => (data.workMap ? data.workMap.map(convertToWorkMapItem) : [])),
-        getSpace({ id: params.id }),
-      ]),
+      fetchAll({
+        workMap: getWorkMap({ spaceId: params.id }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
+        space: getSpace({ id: params.id }),
+      }),
   });
-
-  return { data, cacheVersion };
 }
 
 export function useLoadedData(): LoaderResult {
