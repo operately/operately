@@ -4,11 +4,11 @@ import { createRoot } from "react-dom/client";
 import * as Signals from "@/signals";
 import * as Sentry from "@sentry/react";
 import {
-  useLocation,
-  useNavigationType,
   createRoutesFromChildren,
   matchRoutes,
   RouterProvider,
+  useLocation,
+  useNavigationType,
 } from "react-router-dom";
 
 import { createAppRoutes } from "./routes";
@@ -20,6 +20,7 @@ import "./i18n";
 import { setupTestErrorLogger } from "@/utils/errorLogger";
 
 import "@/api/socket";
+import { Toaster } from "react-hot-toast";
 import ReactModal from "react-modal";
 
 setupTestErrorLogger();
@@ -52,6 +53,7 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
+    <Toaster position="bottom-right" reverseOrder={true} />
     <RouterProvider router={routes} />
   </React.StrictMode>
 );
