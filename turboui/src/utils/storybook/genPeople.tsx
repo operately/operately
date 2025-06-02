@@ -102,7 +102,7 @@ const EXAMPLE_PEOPLE = [
   },
   {
     id: "karen_martinez",
-    fullName: "Karen Martinez",
+    fullName: "Karen Martinez Huerta Torres",
     title: "VP of Human Resources",
     avatarUrl: genAvatar("photo-1534528741775-53994a69daeb"),
     profileLink: "#",

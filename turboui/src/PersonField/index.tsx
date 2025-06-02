@@ -2,7 +2,7 @@ import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
 import { IconCircleX, IconExternalLink, IconSearch, IconUser, IconUserPlus } from "@tabler/icons-react";
-import { Avatar, AvatarWithName } from "../Avatar";
+import { Avatar } from "../Avatar";
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
 
@@ -259,7 +259,7 @@ function DialogSearch({ state }: { state: State }) {
         />
       </div>
 
-      <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 300 }}>
+      <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
         {state.searchResults.map((person) => (
           <div
             key={person.id}
@@ -269,7 +269,10 @@ function DialogSearch({ state }: { state: State }) {
               state.setIsOpen(false);
             }}
           >
-            <AvatarWithName person={person} size={18} className="text-sm" />
+            <div className="flex items-center gap-1.5 truncate">
+              <Avatar person={person} size={18} />
+              <div className="text-sm truncate">{person.fullName}</div>
+            </div>
           </div>
         ))}
       </div>

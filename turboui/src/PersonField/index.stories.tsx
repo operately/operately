@@ -32,15 +32,8 @@ const meta: Meta<typeof PersonField> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const person = {
-  ...genPerson(),
-  profileLink: `#`,
-};
-
-const potentialPeople = genPeople(10).map((p) => ({
-  ...p,
-  profileLink: `#`,
-}));
+const person = genPerson();
+const potentialPeople = genPeople(10);
 
 const searchPeople = async ({ query }) => {
   if (!query) {
@@ -52,13 +45,7 @@ const searchPeople = async ({ query }) => {
 const Component = (args: Partial<PersonFieldProps>) => {
   const [person, setPerson] = React.useState<PersonFieldProps["person"]>(args.person || null);
 
-  return (
-    <Page title="PersonField" size="medium">
-      <div className="p-12">
-        <PersonField {...args} person={person} setPerson={setPerson} searchPeople={searchPeople} />
-      </div>
-    </Page>
-  );
+  return <PersonField {...args} person={person} setPerson={setPerson} searchPeople={searchPeople} />;
 };
 
 export const AllStates: Story = {
