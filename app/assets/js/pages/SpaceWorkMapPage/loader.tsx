@@ -24,9 +24,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     refreshCache,
     fetchFn: () =>
       fetchAll({
-        workMap: getWorkMap({ spaceId: params.id }).then((data) =>
-          data.workMap ? data.workMap.map(convertToWorkMapItem) : [],
-        ),
+        workMap: getWorkMap({ spaceId: params.id }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
         space: getSpace({ id: params.id }),
       }),
   });
