@@ -64,7 +64,9 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
   end
 
   defp get_binded_people(goal_id) do
-    {:ok, goal} = Operately.Goals.Goal.get(:system, id: goal_id, opts: [preload: :access_context])
-    Operately.Access.BindedPeopleLoader.load(goal.access_context.id)
+    case Operately.Goals.Goal.get(:system, id: goal_id, opts: [with_deleted: true, preload: :access_context]) do
+      {:ok, goal} -> Operately.Access.BindedPeopleLoader.load(goal.access_context.id)
+      {:error, _} -> []
+    end
   end
 end
