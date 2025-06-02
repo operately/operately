@@ -1,11 +1,22 @@
-import type { Preview } from "@storybook/react";
+import type { Decorator, Preview } from "@storybook/react";
+import React from "react";
 
 import { withThemeByClassName } from "@storybook/addon-themes";
+import { ToasterBar } from "../src/Toasts";
 import { RouterDecorator } from "./router";
 
 import "./global.css";
 
 window.STORYBOOK_ENV = true;
+
+const App: Decorator = (Story, _): React.ReactElement => {
+  return (
+    <div>
+      <ToasterBar />
+      <Story />
+    </div>
+  );
+};
 
 const preview: Preview = {
   parameters: {
@@ -34,6 +45,7 @@ const preview: Preview = {
       defaultTheme: "light",
       parentSelector: "body",
     }),
+    App,
   ],
 };
 

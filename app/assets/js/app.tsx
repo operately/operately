@@ -4,11 +4,11 @@ import { createRoot } from "react-dom/client";
 import * as Signals from "@/signals";
 import * as Sentry from "@sentry/react";
 import {
-  useLocation,
-  useNavigationType,
   createRoutesFromChildren,
   matchRoutes,
   RouterProvider,
+  useLocation,
+  useNavigationType,
 } from "react-router-dom";
 
 import { createAppRoutes } from "./routes";
@@ -21,6 +21,7 @@ import { setupTestErrorLogger } from "@/utils/errorLogger";
 
 import "@/api/socket";
 import ReactModal from "react-modal";
+import { ToasterBar } from "turboui";
 
 setupTestErrorLogger();
 
@@ -52,6 +53,7 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
+    <ToasterBar />
     <RouterProvider router={routes} />
   </React.StrictMode>
 );
