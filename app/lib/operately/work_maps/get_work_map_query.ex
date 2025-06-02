@@ -78,11 +78,8 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> WorkMap.build_hierarchy()
   end
 
-  defp maybe_add_contributor(item = %{type: :project, assignees: assignees}, contributor_id)
-    when not is_nil(contributor_id) and not is_nil(assignees) do
-      contributor = Enum.find(assignees, fn person ->
-      person && person.id == contributor_id
-    end)
+  defp maybe_add_contributor(item = %{type: :project, assignees: assignees}, contributor_id) when not is_nil(contributor_id) and not is_nil(assignees) do
+    contributor = Enum.find(assignees, fn person -> person && person.id == contributor_id end)
 
     Map.put(item, :contributor, contributor)
   end

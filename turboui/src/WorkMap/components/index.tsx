@@ -8,6 +8,8 @@ import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 
+export { WorkMapTable };
+
 export function WorkMapPage(props: WorkMap.Props) {
   return (
     <Page title={props.title} size="fullwidth">
@@ -16,8 +18,8 @@ export function WorkMapPage(props: WorkMap.Props) {
   );
 }
 
-export function WorkMap({ title, items, columnOptions = {}, tabOptions = {} }: WorkMap.Props) {
-  const { filteredItems, tabsState, tab } = useWorkMapTab(items, { tabOptions });
+export function WorkMap({ title, items, columnOptions = {}, tabOptions = {}, type = "company" }: WorkMap.Props) {
+  const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
@@ -92,6 +94,7 @@ export namespace WorkMap {
     privacy: PrivacyIndicator.PrivacyLevels;
   }
 
+  export type WorkMapType = "company" | "personal";
   export type Filter = "all" | "goals" | "projects" | "completed" | "paused";
 
   export interface TabOptions {
@@ -116,5 +119,6 @@ export namespace WorkMap {
     items: Item[];
     columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;
+    type?: WorkMapType;
   }
 }

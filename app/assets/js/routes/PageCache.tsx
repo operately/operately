@@ -1,7 +1,8 @@
 import { useLoadedData } from "@/components/Pages";
 import React from "react";
 import { useParams } from "react-router-dom";
-type PageLoaderFn<T> = ({ params, refreshCache }) => Promise<T>;
+
+type PageLoaderFn<T> = ({ params, request, refreshCache }: { params: any; request?: Request; refreshCache?: boolean }) => Promise<T>;
 
 const DEFAULT_MAX_AGE_MS = 1000 * 60 * 5; // 5 minutes
 

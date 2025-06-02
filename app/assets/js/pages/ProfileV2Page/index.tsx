@@ -1,54 +1,20 @@
 import React from "react";
 
-import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 import { toPersonWithLink } from "@/models/people";
 
-import { Feed, useItemsQuery } from "@/features/Feed";
-import { PageCache } from "@/routes/PageCache";
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageModule } from "@/routes/types";
-import { assertPresent } from "@/utils/assertions";
 import { ProfilePage } from "turboui";
+import { Feed, useItemsQuery } from "@/features/Feed";
+import { assertPresent } from "@/utils/assertions";
 
-interface LoaderResult {
-  data: {
-    person: People.PersonWithLink;
-  };
-  cacheVersion: number;
-}
+import { loader, useLoadedData } from "./loader";
+
 
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
 
-async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "new_profile_page",
-    path: Paths.profilePath(params.id),
-  });
-
-  return await PageCache.fetch({
-    cacheKey: `v2-PersonalWorkMap.person-${params.id}`,
-    refreshCache,
-    fetchFn: async () => {
-      const [person] = await Promise.all([
-        People.getPerson({
-          id: params.id,
-          includeManager: true,
-          includeReports: true,
-          includePeers: true,
-        }).then((data) => data.person!),
-      ]);
-
-      return { person };
-    },
-  });
-}
-
 function Page() {
-  const {
-    data: { person },
-  } = Pages.useLoadedData<LoaderResult>();
+  const { person, workMap } = useLoadedData();
 
   assertPresent(person.peers);
   assertPresent(person.reports);
@@ -60,6 +26,8 @@ function Page() {
     peers: toPersonWithLink(People.sortByName(person.peers), true),
     reports: toPersonWithLink(People.sortByName(person.reports), true),
     manager: person.manager ? toPersonWithLink(person.manager, true) : null,
+
+    workMap: workMap,
 
     activityFeed: <ActivityFeed personId={person.id!} />,
   };

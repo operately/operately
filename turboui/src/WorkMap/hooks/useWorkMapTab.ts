@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconCalendarPause } from "@tabler/icons-react";
 
 import * as sort from "../utils/sort";
-import { processItems } from "../utils/itemProcessor";
+import { processItems, processPersonalItems } from "../utils/itemProcessor";
 import { useTabs } from "../../Tabs";
 import { WorkMap } from "../components";
 
@@ -10,15 +10,15 @@ export interface WorkMapFilterOptions {
   tabOptions?: WorkMap.TabOptions;
 }
 
-interface Props {
-  filteredItems: WorkMap.Item[];
-  tabsState: ReturnType<typeof useTabs>;
-  tab: WorkMap.Filter;
+interface Params {
+  rawItems: WorkMap.Item[];
+  type: WorkMap.WorkMapType;
+  opts: WorkMapFilterOptions;
 }
 
-export function useWorkMapTab(rawItems: WorkMap.Item[], options: WorkMapFilterOptions = {}): Props {
+export function useWorkMapTab({ rawItems, type, opts = {} }: Params) {
   const allFilteredItems = useMemo(() => {
-    const processedData = processItems(rawItems);
+    const processedData = type === "personal" ? processPersonalItems(rawItems) : processItems(rawItems);
 
     return {
       all: sort.sortItemsByDuration(processedData.ongoingItems),
@@ -29,11 +29,13 @@ export function useWorkMapTab(rawItems: WorkMap.Item[], options: WorkMapFilterOp
     };
   }, [rawItems]);
 
-  const allowedTabs = getAllowedTabs(options.tabOptions);
-  const defaultTab = getDefaultTab(allowedTabs, options.tabOptions);
+  const tabOptions = type === "personal" ? {...opts.tabOptions, hidePaused: true} : opts.tabOptions;
 
-  const tabOptions = getTabOptions(options.tabOptions, allFilteredItems);
-  const tabsState = useTabs(defaultTab, tabOptions);
+  const allowedTabs = getAllowedTabs(tabOptions);
+  const defaultTab = getDefaultTab(allowedTabs, tabOptions);
+
+  const tabsAvailable = getTabOptions(tabOptions, allFilteredItems);
+  const tabsState = useTabs(defaultTab, tabsAvailable);
   const tab = tabsState.active as WorkMap.Filter;
 
   const filteredItems = allFilteredItems[tab];
