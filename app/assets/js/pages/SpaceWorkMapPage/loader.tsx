@@ -19,7 +19,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     path: Paths.spaceGoalsPath(params.id),
   });
 
-  return await PageCache.fetch({
+  return PageCache.fetch({
     cacheKey: `v2-SpaceWorkMap.space-${params.id}`,
     refreshCache,
     fetchFn: () =>
