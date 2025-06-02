@@ -80,6 +80,18 @@ function Page() {
     update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }).then((r) => r.success),
   });
 
+  const championSearch = usePeopleSearch({
+    scope: { type: "space", id: goal.space.id! },
+    ignoredIds: [goal.champion?.id!, goal.reviewer?.id!],
+    transformResult: (p) => preparePerson(p)!,
+  });
+
+  const reviewerSearch = usePeopleSearch({
+    scope: { type: "space", id: goal.space.id! },
+    ignoredIds: [goal.champion?.id!, goal.reviewer?.id!],
+    transformResult: (p) => preparePerson(p)!,
+  });
+
   const props: GoalPage.Props = {
     goalName: goal.name,
     spaceName: goal.space.name,
@@ -98,11 +110,11 @@ function Page() {
 
     champion,
     setChampion,
-    championSearch: peopleSearch,
+    championSearch,
 
     reviewer,
     setReviewer,
-    reviewerSearch: peopleSearch,
+    reviewerSearch,
 
     description: goal.description && JSON.parse(goal.description),
     deleteLink: "",
@@ -359,4 +371,35 @@ function usePageField<T>({ value, update }: usePageFieldProps<T>): [T, (v: T) =>
   };
 
   return [state, updateState];
+}
+
+interface UsePeopleSearch<T> {
+  ignoredIds?: string[];
+  scope: People.SearchScope;
+  transformResult?: (people: People.Person) => T;
+}
+
+interface PeopleSearchParams {
+  query: string;
+  ignoredIds?: string[];
+}
+
+type PeopleSearchFn<T> = (callParams: PeopleSearchParams) => Promise<T[]>;
+
+function usePeopleSearch<T>(hookParams: UsePeopleSearch<T>): PeopleSearchFn<T> {
+  const transform = hookParams.transformResult || ((person) => person as unknown as T);
+
+  return async (callParams: PeopleSearchParams): Promise<T[]> => {
+    const params = { ...hookParams, ...callParams };
+
+    const result = await Api.searchPeople({
+      query: params.query,
+      ignoredIds: params.ignoredIds || [],
+      searchScopeType: params.scope.type,
+      searchScopeId: params.scope.id,
+    });
+
+    const people = result.people || [];
+    return people.map((person) => transform(person!)) as T[];
+  };
 }
