@@ -6,10 +6,14 @@ import { ProfilePage } from "turboui";
 import { PageCache } from "@/routes/PageCache";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
-  person: People.PersonWithLink;
-  workMap: ReturnType<typeof convertToWorkMapItem>[];
+  data: {
+    person: People.PersonWithLink;
+    workMap: ReturnType<typeof convertToWorkMapItem>[];
+  };
+  cacheVersion: number;
 }
 
 export async function loader({ params, request, refreshCache = false }): Promise<LoaderResult> {
@@ -22,28 +26,21 @@ export async function loader({ params, request, refreshCache = false }): Promise
   const searchParams = url.searchParams;
   const tab = searchParams.get("tab") as ProfilePage.TabOptions;
 
+  if (!tab) return fetchAssignedTab(params.id, refreshCache);
+
   switch (tab) {
     case "assigned":
-      const [champion, championWorkMap] = await Promise.all([
-        fetchPerson(params.id, refreshCache),
-        fetchChampionWorkMap(params.id, refreshCache),
-      ]);
-      return { person: champion, workMap: championWorkMap };
+      return fetchAssignedTab(params.id, refreshCache);
 
     case "reviewing":
-      const [reviewer, reviewerWorkMap] = await Promise.all([
-        fetchPerson(params.id, refreshCache),
-        fetchReviewerWorkMap(params.id, refreshCache),
-      ]);
-      return { person: reviewer, workMap: reviewerWorkMap };
+      return fetchRaviewingTab(params.id, refreshCache);
 
     default:
-      const person = await fetchPerson(params.id, refreshCache);
-      return { person, workMap: [] };
+      return fetchAboutTab(params.id, refreshCache);
   }
 }
 
-export function useLoadedData(): LoaderResult {
+export function useLoadedData() {
   const wrappedLoader = (attrs: { params: any; request?: Request; refreshCache?: boolean }): Promise<LoaderResult> => {
     if (!attrs.request) {
       const mockRequest = { url: window.location.href } as Request;
@@ -53,53 +50,55 @@ export function useLoadedData(): LoaderResult {
     return loader({ ...attrs, request: attrs.request });
   };
 
-  return PageCache.useData(wrappedLoader);
+  return PageCache.useData(wrappedLoader).data;
 }
 
-async function fetchPerson(personId: string, refreshCache: boolean): Promise<People.PersonWithLink> {
-  return await PageCache.fetch({
-    cacheKey: `v1-PersonalWorkMap.person-${personId}`,
+function fetchAboutTab(personId: string, refreshCache: boolean) {
+  return PageCache.fetch({
+    cacheKey: `v1-PersonalWorkMap.aboutTab-${personId}`,
     refreshCache,
-    fetchFn: async () => {
-      return await People.getPerson({
-        id: personId,
-        includeManager: true,
-        includeReports: true,
-        includePeers: true,
-      }).then((data) => data.person!);
-    },
+    fetchFn: async () =>
+      fetchAll({
+        person: fetchPerson(personId),
+        workMap: Promise.resolve([]),
+      }),
   });
 }
 
-async function fetchChampionWorkMap(
-  championId: string,
-  refreshCache: boolean,
-): Promise<ReturnType<typeof convertToWorkMapItem>[]> {
-  return await PageCache.fetch({
-    cacheKey: `v1-PersonalWorkMap.championWorkMap-${championId}`,
+function fetchAssignedTab(championId: string, refreshCache: boolean) {
+  return PageCache.fetch({
+    cacheKey: `v1-PersonalWorkMap.assignedTab-${championId}`,
     refreshCache,
-    fetchFn: async () => {
-      const workMapData = await WorkMap.getWorkMap({
-        championId,
-        contributorId: championId,
-      });
-
-      return workMapData.workMap ? workMapData.workMap.map(convertToWorkMapItem) : [];
-    },
+    fetchFn: async () =>
+      fetchAll({
+        person: fetchPerson(championId),
+        workMap: WorkMap.getWorkMap({
+          championId,
+          contributorId: championId,
+        }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
+      }),
   });
 }
 
-async function fetchReviewerWorkMap(
-  reviewerId: string,
-  refreshCache: boolean,
-): Promise<ReturnType<typeof convertToWorkMapItem>[]> {
-  return await PageCache.fetch({
-    cacheKey: `v1-PersonalWorkMap.reviewerWorkMap-${reviewerId}`,
+function fetchRaviewingTab(reviewerId: string, refreshCache: boolean) {
+  return PageCache.fetch({
+    cacheKey: `v1-PersonalWorkMap.reviewingTab-${reviewerId}`,
     refreshCache,
-    fetchFn: async () => {
-      const workMapData = await WorkMap.getWorkMap({ reviewerId });
-
-      return workMapData.workMap ? workMapData.workMap.map(convertToWorkMapItem) : [];
-    },
+    fetchFn: async () =>
+      fetchAll({
+        person: fetchPerson(reviewerId),
+        workMap: WorkMap.getWorkMap({
+          reviewerId,
+        }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
+      }),
   });
+}
+
+function fetchPerson(personId: string) {
+  return People.getPerson({
+    id: personId,
+    includeManager: true,
+    includeReports: true,
+    includePeers: true,
+  }).then((data) => data.person!);
 }
