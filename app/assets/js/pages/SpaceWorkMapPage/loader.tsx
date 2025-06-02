@@ -1,12 +1,15 @@
-import { getWorkMap, convertToWorkMapItem } from "@/models/workMap";
 import { Space, getSpace } from "@/models/spaces";
+import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
+import { PageCache } from "@/routes/PageCache";
 import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { PageCache } from "@/routes/PageCache";
 
 interface LoaderResult {
-  workMap: ReturnType<typeof convertToWorkMapItem>[];
-  space: Space;
+  data: {
+    workMap: ReturnType<typeof convertToWorkMapItem>[];
+    space: Space;
+  };
+  cacheVersion: number;
 }
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
@@ -15,7 +18,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
     path: Paths.spaceGoalsPath(params.id),
   });
 
-  const [workMap, space] = await PageCache.fetch({
+  const { data, cacheVersion } = await PageCache.fetch({
     cacheKey: `v1-SpaceWorkMap.space-${params.id}`,
     refreshCache,
     fetchFn: () =>
@@ -25,7 +28,7 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
       ]),
   });
 
-  return { workMap, space };
+  return { data, cacheVersion };
 }
 
 export function useLoadedData(): LoaderResult {
