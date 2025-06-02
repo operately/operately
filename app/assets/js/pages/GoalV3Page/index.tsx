@@ -8,8 +8,7 @@ import * as React from "react";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
-import toast from "react-hot-toast";
-import { GoalPage } from "turboui";
+import { GoalPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { Paths } from "../../routes/paths";
@@ -74,13 +73,13 @@ function Page() {
   const [champion, setChampion] = usePageField({
     value: (data) => preparePerson(data.goal.champion),
     update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }).then((r) => r.success),
-    onError: () => toast.error(`Failed to update the champion. Returning to previous value.`),
+    onError: () => showErrorToast("Failed to update the champion", "Returning to previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => preparePerson(data.goal.reviewer),
     update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }).then((r) => r.success),
-    onError: () => toast.error(`Failed to update the reviewer. Returning to previous value.`),
+    onError: () => showErrorToast("`Failed to update the reviewer", "Returning to previous value."),
   });
 
   const championSearch = usePeopleSearch({
