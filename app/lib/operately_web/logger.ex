@@ -1,9 +1,4 @@
 defmodule OperatelyWeb.Logger do
-  @moduledoc """
-  A custom logger plug that logs HTTP requests in the format:
-  user=[id] [method] [path] -> HTTP [code] [duration]ms
-  """
-
   require Logger
   import Plug.Conn
 
