@@ -142,7 +142,7 @@ export function GoalPage(props: GoalPage.Props) {
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkIns.length },
-    { id: "activity", label: "Activity Feed", icon: <IconLogs size={14} /> },
+    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
 
   return (
@@ -154,16 +154,16 @@ export function GoalPage(props: GoalPage.Props) {
       <div className="flex-1 overflow-scroll">
         {tabs.active === "overview" && <Overview {...props} />}
         {tabs.active === "check-ins" && <CheckIns {...props} />}
-        {tabs.active === "activity" && <ActivityFeed {...props} />}
+        {tabs.active === "activity" && <Activity {...props} />}
       </div>
     </PageNew>
   );
 }
 
-function ActivityFeed(props: GoalPage.Props) {
+function Activity(props: GoalPage.Props) {
   return (
     <div className="p-4 max-w-5xl mx-auto my-6">
-      <div className="font-bold text-lg mb-4">Activity Feed</div>
+      <div className="font-bold text-lg mb-4">Activity</div>
       {props.activityFeed}
     </div>
   );
