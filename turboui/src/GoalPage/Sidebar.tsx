@@ -24,29 +24,9 @@ export function Sidebar(props: GoalPage.Props) {
 }
 
 function DueDate(props: GoalPage.Props) {
-  const [date, setDate] = React.useState<Date | null>(props.dueDate);
-
-  React.useEffect(() => {
-    setDate(props.dueDate);
-  }, [props.dueDate]);
-
-  const saveDate = (newDate: Date | null) => {
-    if (date?.getTime() === newDate?.getTime()) return; // No change
-
-    const previousDate = date;
-    setDate(newDate);
-
-    props.updateDueDate(newDate).then((success) => {
-      if (!success) {
-        // If the update fails, revert to the previous date
-        setDate(previousDate);
-      }
-    });
-  };
-
   return (
     <SidebarSection title="Due Date">
-      <DateDisplayField date={date} readonly={!props.canEdit} onChange={saveDate} />
+      <DateDisplayField date={props.dueDate} readonly={!props.canEdit} onChange={props.setDueDate} />
     </SidebarSection>
   );
 }
