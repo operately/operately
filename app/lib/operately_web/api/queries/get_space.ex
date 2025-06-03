@@ -39,30 +39,34 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   defp load(ctx, inputs) do
-    Group.get(ctx.me, id: inputs.id, company_id: ctx.me.company_id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(ctx.me, inputs),
-    ])
+    Group.get(ctx.me,
+      id: inputs.id,
+      company_id: ctx.me.company_id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(ctx.me, inputs)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_members: :members,
       include_potential_subscribers: :members,
-      always_include: :company,
-    ])
+      always_include: :company
+    )
   end
 
   defp after_load(me, inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_permissions: &Group.preload_permissions/1,
       include_access_levels: &Group.preload_access_levels/1,
       include_members_access_levels: &Group.preload_members_access_level/1,
       include_potential_subscribers: &Group.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
       always_include: preload_is_member(me),
-      always_include: &sort_members/1,
-    ])
+      always_include: &sort_members/1
+    )
   end
 
   defp preload_is_member(person) do
@@ -72,7 +76,8 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   end
 
   defp sort_members(group) when is_list(group.members) do
-    %{group | members: Enum.sort_by(group.members, & &1.full_name) }
+    %{group | members: Enum.sort_by(group.members, & &1.full_name)}
   end
+
   defp sort_members(group), do: group
 end
