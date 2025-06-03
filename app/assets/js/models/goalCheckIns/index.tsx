@@ -5,13 +5,12 @@ export type Update = api.GoalProgressUpdate;
 export type Target = api.GoalTargetUpdates;
 
 export {
-  getGoalProgressUpdate,
-  getGoalProgressUpdates,
-  postGoalProgressUpdate,
   editGoalProgressUpdate,
-  usePostGoalProgressUpdate,
-  useEditGoalProgressUpdate,
+  getGoalProgressUpdate,
+  postGoalProgressUpdate,
   useAcknowledgeGoalProgressUpdate,
+  useEditGoalProgressUpdate,
+  usePostGoalProgressUpdate,
 } from "@/api";
 
 export function targetChangeSentiment(target: Target): "positive" | "negative" | "neutral" {

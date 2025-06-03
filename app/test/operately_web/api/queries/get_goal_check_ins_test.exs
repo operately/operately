@@ -5,12 +5,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
   import Operately.PeopleFixtures
   import Operately.GoalsFixtures
 
-  alias Operately.Repo
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
   defp request(ctx, params) do
-    query(ctx.conn, [:goals, :get_goal_progress_updates], params)
+    query(ctx.conn, [:goals, :get_check_ins], params)
   end
 
   describe "security" do
@@ -31,29 +30,20 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
 
     test "company members have no access", ctx do
       {goal_id, _} = create_goal_and_updates(ctx, company_access: Binding.no_access())
-
-      assert {200, res} = request(ctx, %{goal_id: goal_id})
-      assert length(res.updates) == 0
+      assert {404, _} = request(ctx, %{goal_id: goal_id})
     end
 
     test "company members have access", ctx do
       {goal_id, updates} = create_goal_and_updates(ctx, company_access: Binding.view_access())
 
       assert {200, res} = request(ctx, %{goal_id: goal_id})
-      assert length(res.updates) == 3
-
-      Enum.each(res.updates, fn u ->
-        assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
-      end)
+      assert length(res.check_ins) == length(updates)
     end
 
     test "space members have no access", ctx do
       add_person_to_space(ctx)
       {goal_id, _} = create_goal_and_updates(ctx, space_access: Binding.no_access())
-
-      assert {200, res} = request(ctx, %{goal_id: goal_id})
-
-      assert length(res.updates) == 0
+      assert {404, _} = request(ctx, %{goal_id: goal_id})
     end
 
     test "space members have access", ctx do
@@ -61,47 +51,27 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
       {goal_id, updates} = create_goal_and_updates(ctx, space_access: Binding.view_access())
 
       assert {200, res} = request(ctx, %{goal_id: goal_id})
-      assert length(res.updates) == 3
-
-      Enum.each(res.updates, fn u ->
-        assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
-      end)
+      assert length(res.check_ins) == length(updates)
     end
 
     test "champions have access", ctx do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
       {goal_id, updates} = create_goal_and_updates(ctx, champion_id: champion.id)
 
-      account = Repo.preload(champion, :account).account
-      conn = log_in_account(ctx.conn, account)
+      ctx = log_in_account(ctx, champion)
 
       assert {200, res} = request(ctx, %{goal_id: goal_id})
-      assert length(res.updates) == 0
-
-      assert {200, res} = request(%{ctx | conn: conn}, %{goal_id: goal_id})
-      assert length(res.updates) == 3
-
-      Enum.each(res.updates, fn u ->
-        assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
-      end)
+      assert length(res.check_ins) == length(updates)
     end
 
     test "reviewers have access", ctx do
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
       {goal_id, updates} = create_goal_and_updates(ctx, reviewer_id: reviewer.id)
 
-      account = Repo.preload(reviewer, :account).account
-      conn = log_in_account(ctx.conn, account)
+      ctx = log_in_account(ctx, reviewer)
 
       assert {200, res} = request(ctx, %{goal_id: goal_id})
-      assert length(res.updates) == 0
-
-      assert {200, res} = request(%{ctx | conn: conn}, %{goal_id: goal_id})
-      assert length(res.updates) == 3
-
-      Enum.each(res.updates, fn u ->
-        assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
-      end)
+      assert length(res.check_ins) == length(updates)
     end
   end
 

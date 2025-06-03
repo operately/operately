@@ -89,16 +89,12 @@ defmodule Operately.Goals.Update do
   end
 
   def preload_comment_count(check_ins) when is_list(check_ins) do
-    goal_ids = Enum.map(check_ins, & &1.goal_id) |> Enum.uniq()
-
-    if length(goal_ids) > 1 do
-      raise ArgumentError, "Check-ins must belong to the same goal"
-    end
+    ids = Enum.map(check_ins, & &1.id)
 
     comment_counts =
       Repo.all(
         from c in Operately.Updates.Comment,
-          where: c.entity_type == :goal_update and c.entity_id == ^goal_ids,
+          where: c.entity_type == :goal_update and c.entity_id in ^ids,
           group_by: c.entity_id,
           select: {c.entity_id, count(c.id)}
       )

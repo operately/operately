@@ -6,7 +6,6 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
 
   inputs do
     field :goal_id, :id, required: true
-    field :include_comment_count, :boolean
   end
 
   outputs do
@@ -15,11 +14,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
 
   def call(conn, inputs) do
     with {:ok, _} <- get_goal(conn, inputs.goal_id) do
-      check_ins = load(inputs.goal_id, inputs.include_comment_count)
+      check_ins = load(inputs.goal_id)
       {:ok, %{check_ins: Serializer.serialize(check_ins, level: :full)}}
     else
       {:error, :not_found} -> {:error, :not_found, "Goal not found"}
-      {:error, :unauthorized} -> {:error, :unauthorized}
+      {:error, :invalid_requester} -> {:error, :unauthorized}
     end
   end
 
@@ -27,15 +26,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
     Goal.get(me(conn), id: goal_id)
   end
 
-  defp load(goal_id, include_comment_count) do
-    from(u in Update, where: u.goal_id == ^goal_id, order_by: [desc: u.inserted_at])
+  defp load(goal_id) do
+    from(u in Update, where: u.goal_id == ^goal_id, order_by: [desc: u.inserted_at], preload: [:author])
     |> Repo.all()
-    |> then(fn check_ins ->
-      if include_comment_count do
-        Update.preload_comment_count(check_ins)
-      else
-        check_ins
-      end
-    end)
+    |> Update.preload_comment_count()
   end
 end

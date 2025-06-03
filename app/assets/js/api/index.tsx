@@ -1777,14 +1777,6 @@ export interface GetGoalProgressUpdateResult {
   update?: GoalProgressUpdate | null;
 }
 
-export interface GetGoalProgressUpdatesInput {
-  goalId?: string | null;
-}
-
-export interface GetGoalProgressUpdatesResult {
-  updates?: GoalProgressUpdate | null;
-}
-
 export interface GetGoalsInput {
   spaceId?: string | null;
   includeProjects?: boolean | null;
@@ -2097,6 +2089,15 @@ export interface GetWorkMapInput {
 
 export interface GetWorkMapResult {
   workMap?: WorkMapItem[] | null;
+}
+
+export interface GoalsGetCheckInsInput {
+  goalId?: Id | null;
+  includeCommentCount?: boolean | null;
+}
+
+export interface GoalsGetCheckInsResult {
+  checkIns?: GoalProgressUpdate | null;
 }
 
 export interface ListGoalContributorsInput {
@@ -3286,10 +3287,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_goal_progress_update", input);
   }
 
-  async getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
-    return this.client.get("/get_goal_progress_updates", input);
-  }
-
   async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
     return this.client.get("/get_goals", input);
   }
@@ -3842,6 +3839,10 @@ class ApiNamespaceRoot {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
+  async getCheckIns(input: GoalsGetCheckInsInput): Promise<GoalsGetCheckInsResult> {
+    return this.client.get("/goals/get_check_ins", input);
+  }
+
   async addTarget(input: GoalsAddTargetInput): Promise<GoalsAddTargetResult> {
     return this.client.post("/goals/add_target", input);
   }
@@ -3976,10 +3977,6 @@ export class ApiClient {
 
   getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
     return this.apiNamespaceRoot.getGoalProgressUpdate(input);
-  }
-
-  getGoalProgressUpdates(input: GetGoalProgressUpdatesInput): Promise<GetGoalProgressUpdatesResult> {
-    return this.apiNamespaceRoot.getGoalProgressUpdates(input);
   }
 
   getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
@@ -4564,11 +4561,6 @@ export async function getGoal(input: GetGoalInput): Promise<GetGoalResult> {
 export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
   return defaultApiClient.getGoalProgressUpdate(input);
 }
-export async function getGoalProgressUpdates(
-  input: GetGoalProgressUpdatesInput,
-): Promise<GetGoalProgressUpdatesResult> {
-  return defaultApiClient.getGoalProgressUpdates(input);
-}
 export async function getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
   return defaultApiClient.getGoals(input);
 }
@@ -5091,12 +5083,6 @@ export function useGetGoalProgressUpdate(
   input: GetGoalProgressUpdateInput,
 ): UseQueryHookResult<GetGoalProgressUpdateResult> {
   return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input));
-}
-
-export function useGetGoalProgressUpdates(
-  input: GetGoalProgressUpdatesInput,
-): UseQueryHookResult<GetGoalProgressUpdatesResult> {
-  return useQuery<GetGoalProgressUpdatesResult>(() => defaultApiClient.getGoalProgressUpdates(input));
 }
 
 export function useGetGoals(input: GetGoalsInput): UseQueryHookResult<GetGoalsResult> {
@@ -5942,8 +5928,6 @@ export default {
   useGetGoal,
   getGoalProgressUpdate,
   useGetGoalProgressUpdate,
-  getGoalProgressUpdates,
-  useGetGoalProgressUpdates,
   getGoals,
   useGetGoals,
   getInvitation,
@@ -6212,6 +6196,12 @@ export default {
   useUpdateTaskStatus,
 
   goals: {
+    getCheckIns: (input: GoalsGetCheckInsInput) => defaultApiClient.apiNamespaceGoals.getCheckIns(input),
+    useGetCheckIns: (input: GoalsGetCheckInsInput) =>
+      useQuery<GoalsGetCheckInsInput, GoalsGetCheckInsResult>(() =>
+        defaultApiClient.apiNamespaceGoals.getCheckIns(input),
+      ),
+
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
       useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
