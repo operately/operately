@@ -230,19 +230,6 @@ function Page() {
         });
     },
 
-    updateDueDate: function (date: Date | null): Promise<boolean> {
-      const dueDate = date && Time.toDateWithoutTime(date);
-
-      return Api.goals
-        .updateDueDate({ goalId: goal.id!, dueDate: dueDate })
-        .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
-        .then(() => true)
-        .catch((e) => {
-          console.error("Failed to update goal due date", e);
-          return false;
-        });
-    },
-
     activityFeed: <GoalFeedItems goalId={goal.id!} />,
   };
 
