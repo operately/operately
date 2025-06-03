@@ -23,11 +23,13 @@ defmodule Operately.Updates do
     alias Operately.Projects.Contributor
 
     if update.updatable_type == :project do
-      query = from p in Person,
-        join: c in Contributor, on: c.person_id == p.id,
-        where: c.project_id == ^update.updatable_id,
-        where: p.id != ^update.author_id,
-        where: not is_nil(p.email) and p.notify_about_assignments
+      query =
+        from p in Person,
+          join: c in Contributor,
+          on: c.person_id == p.id,
+          where: c.project_id == ^update.updatable_id,
+          where: p.id != ^update.author_id,
+          where: not is_nil(p.email) and p.notify_about_assignments
 
       Repo.all(query)
     else
@@ -36,15 +38,17 @@ defmodule Operately.Updates do
   end
 
   def list_updates(updatable_id, updatable_type, update_type \\ nil) do
-    query = from u in Update,
-      where: u.updatable_id == ^updatable_id,
-      where: u.updatable_type == ^updatable_type,
-      order_by: [desc: u.inserted_at]
+    query =
+      from u in Update,
+        where: u.updatable_id == ^updatable_id,
+        where: u.updatable_type == ^updatable_type,
+        order_by: [desc: u.inserted_at]
 
-    query = case update_type do
-      nil -> query
-      _ -> from u in query, where: u.type == ^update_type
-    end
+    query =
+      case update_type do
+        nil -> query
+        _ -> from u in query, where: u.type == ^update_type
+      end
 
     Repo.all(query)
   end
@@ -52,12 +56,9 @@ defmodule Operately.Updates do
   def get_update!(id), do: Repo.get!(Update, id)
 
   def get_update_with_goal_and_access_level(id, person_id) do
-    query = from(u in Update, as: :update,
-        join: g in Operately.Goals.Goal, on: g.id == u.updatable_id, as: :resource,
-        where: u.id == ^id
-      )
+    query =
+      from(u in Update, as: :update, join: g in Operately.Goals.Goal, on: g.id == u.updatable_id, as: :resource, where: u.id == ^id)
       |> Fetch.join_access_level(person_id)
-
 
     from([update: u, resource: g, binding: b] in query,
       where: b.access_level >= ^Binding.view_access(),
@@ -66,7 +67,9 @@ defmodule Operately.Updates do
     )
     |> Repo.one()
     |> case do
-      nil -> {:error, :not_found}
+      nil ->
+        {:error, :not_found}
+
       {update, goal, level} ->
         goal = apply(goal.__struct__, :set_requester_access_level, [goal, level])
         {:ok, Map.put(update, :goal, goal)}
@@ -74,12 +77,9 @@ defmodule Operately.Updates do
   end
 
   def get_update_with_space_and_access_level(id, person_id) do
-    query = from(u in Update, as: :update,
-        join: s in Operately.Groups.Group, on: s.id == u.updatable_id, as: :resource,
-        where: u.id == ^id
-      )
+    query =
+      from(u in Update, as: :update, join: s in Operately.Groups.Group, on: s.id == u.updatable_id, as: :resource, where: u.id == ^id)
       |> Fetch.join_access_level(person_id)
-
 
     from([update: u, resource: s, binding: b] in query,
       where: b.access_level >= ^Binding.view_access(),
@@ -88,7 +88,9 @@ defmodule Operately.Updates do
     )
     |> Repo.one()
     |> case do
-      nil -> {:error, :not_found}
+      nil ->
+        {:error, :not_found}
+
       {update, space, level} ->
         space = apply(space.__struct__, :set_requester_access_level, [space, level])
         {:ok, Map.put(update, :space, space)}
@@ -100,23 +102,25 @@ defmodule Operately.Updates do
   end
 
   def get_last_check_in(updatable_id) do
-    query = from u in Update,
-      where: u.updatable_id == ^updatable_id,
-      where: u.updatable_type == :project,
-      where: u.type == :status_update,
-      order_by: [desc: u.inserted_at],
-      limit: 1
+    query =
+      from u in Update,
+        where: u.updatable_id == ^updatable_id,
+        where: u.updatable_type == :project,
+        where: u.type == :status_update,
+        order_by: [desc: u.inserted_at],
+        limit: 1
 
     Repo.one(query)
   end
 
   def get_last_goal_check_in(updatable_id) do
-    query = from u in Update,
-      where: u.updatable_id == ^updatable_id,
-      where: u.updatable_type == :goal,
-      where: u.type == :goal_check_in,
-      order_by: [desc: u.inserted_at],
-      limit: 1
+    query =
+      from u in Update,
+        where: u.updatable_id == ^updatable_id,
+        where: u.updatable_type == :goal,
+        where: u.type == :goal_check_in,
+        order_by: [desc: u.inserted_at],
+        limit: 1
 
     Repo.one(query)
   end
@@ -124,19 +128,21 @@ defmodule Operately.Updates do
   def record_review(author, project, new_phase, content, review_request_id) do
     previous_phase = Atom.to_string(project.phase)
 
-    changeset = Update.changeset(%{
-      updatable_type: :project,
-      updatable_id: project.id,
-      author_id: author.id,
-      title: "",
-      type: :review,
-      content: Operately.Updates.Types.Review.build(
-        content["survey"],
-        content["previousPhase"],
-        content["newPhase"],
-        review_request_id
-      )
-    })
+    changeset =
+      Update.changeset(%{
+        updatable_type: :project,
+        updatable_id: project.id,
+        author_id: author.id,
+        title: "",
+        type: :review,
+        content:
+          Operately.Updates.Types.Review.build(
+            content["survey"],
+            content["previousPhase"],
+            content["newPhase"],
+            review_request_id
+          )
+      })
 
     Multi.new()
     |> Multi.insert(:update, changeset)
@@ -144,7 +150,8 @@ defmodule Operately.Updates do
       if review_request_id do
         request = Operately.Projects.get_review_request!(review_request_id)
 
-        multi |> Multi.update(:review_request, fn changes ->
+        multi
+        |> Multi.update(:review_request, fn changes ->
           ReviewRequest.changeset(request, %{status: :completed, update_id: changes.update.id})
         end)
       else
@@ -174,14 +181,15 @@ defmodule Operately.Updates do
   def record_project_discussion(author, project, title, body) do
     action = :project_discussion_submitted
 
-    changeset = Update.changeset(%{
-      updatable_type: :project,
-      updatable_id: project.id,
-      author_id: author.id,
-      title: "",
-      type: :project_discussion,
-      content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
-    })
+    changeset =
+      Update.changeset(%{
+        updatable_type: :project,
+        updatable_id: project.id,
+        author_id: author.id,
+        title: "",
+        type: :project_discussion,
+        content: Operately.Updates.Types.ProjectDiscussion.build(title, body)
+      })
 
     Multi.new()
     |> Multi.insert(:update, changeset)
@@ -263,7 +271,7 @@ defmodule Operately.Updates do
       updatable_id: milestone.project_id,
       updatable_type: :project,
       content: %{
-        milestone_id: milestone.id,
+        milestone_id: milestone.id
       }
     })
   end
@@ -313,25 +321,21 @@ defmodule Operately.Updates do
   alias Operately.Updates.Comment
 
   def list_comments(update_id) do
-    query = from c in Comment,
-      where: c.update_id == ^update_id,
-      order_by: [asc: c.inserted_at]
+    query =
+      from c in Comment,
+        where: c.update_id == ^update_id,
+        order_by: [asc: c.inserted_at]
 
     Repo.all(query)
   end
 
   def list_comments(entity_id, entity_type) do
-    query = from c in Comment,
-      where: c.entity_id == ^entity_id and c.entity_type == ^entity_type,
-      order_by: [asc: c.inserted_at]
+    query =
+      from c in Comment,
+        where: c.entity_id == ^entity_id and c.entity_type == ^entity_type,
+        order_by: [asc: c.inserted_at]
 
     Repo.all(query)
-  end
-
-  def count_comments(entity_id, entity_type) do
-    query = (from c in Comment, where: c.entity_id == ^entity_id and c.entity_type == ^entity_type)
-
-    Repo.aggregate(query, :count, :id)
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)
@@ -339,55 +343,60 @@ defmodule Operately.Updates do
   def get_comment_with_access_level(id, person_id, type) do
     case type do
       :project_check_in ->
-        from(comment in Comment, as: :comment,
-          join: check_in in Operately.Projects.CheckIn, on: check_in.id == comment.entity_id,
-          join: project in assoc(check_in, :project), as: :resource,
+        from(comment in Comment,
+          as: :comment,
+          join: check_in in Operately.Projects.CheckIn,
+          on: check_in.id == comment.entity_id,
+          join: project in assoc(check_in, :project),
+          as: :resource,
           where: comment.id == ^id
         )
+
       :project_retrospective ->
-        from(comment in Comment, as: :comment,
-          join: retrospective in Operately.Projects.Retrospective, on: retrospective.id == comment.entity_id,
-          join: project in assoc(retrospective, :project), as: :resource,
+        from(comment in Comment,
+          as: :comment,
+          join: retrospective in Operately.Projects.Retrospective,
+          on: retrospective.id == comment.entity_id,
+          join: project in assoc(retrospective, :project),
+          as: :resource,
           where: comment.id == ^id
         )
+
       :comment_thread ->
-        from(c in Comment, as: :comment,
-          join: t in Operately.Comments.CommentThread, on: t.id == c.entity_id,
-          join: a in Activities.Activity, on: t.parent_id == a.id, as: :resource,
+        from(c in Comment,
+          as: :comment,
+          join: t in Operately.Comments.CommentThread,
+          on: t.id == c.entity_id,
+          join: a in Activities.Activity,
+          on: t.parent_id == a.id,
+          as: :resource,
           where: c.id == ^id
         )
+
       :goal_update ->
-        from(c in Comment, as: :comment,
-          join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource,
-          where: c.id == ^id
-        )
+        from(c in Comment, as: :comment, join: u in Operately.Goals.Update, on: u.id == c.entity_id, as: :resource, where: c.id == ^id)
+
       :message ->
-        from(c in Comment, as: :comment,
-          join: m in Operately.Messages.Message, on: m.id == c.entity_id, as: :resource,
-          where: c.id == ^id
-        )
+        from(c in Comment, as: :comment, join: m in Operately.Messages.Message, on: m.id == c.entity_id, as: :resource, where: c.id == ^id)
+
       :milestone ->
         from(mc in Operately.Comments.MilestoneComment,
-          join: c in assoc(mc, :comment), as: :comment,
+          join: c in assoc(mc, :comment),
+          as: :comment,
           join: m in assoc(mc, :milestone),
-          join: p in assoc(m, :project), as: :resource,
+          join: p in assoc(m, :project),
+          as: :resource,
           where: c.id == ^id
         )
+
       :resource_hub_document ->
-        from(c in Comment, as: :comment,
-          join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :resource,
-          where: c.id == ^id
-        )
+        from(c in Comment, as: :comment, join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :resource, where: c.id == ^id)
+
       :resource_hub_file ->
-        from(c in Comment, as: :comment,
-          join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :resource,
-          where: c.id == ^id
-        )
+        from(c in Comment, as: :comment, join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :resource, where: c.id == ^id)
+
       :resource_hub_link ->
-        from(c in Comment, as: :comment,
-          join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :resource,
-          where: c.id == ^id
-        )
+        from(c in Comment, as: :comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :resource, where: c.id == ^id)
     end
     |> Fetch.get_resource_with_access_level(person_id, selected_resource: :comment)
   end
@@ -408,30 +417,37 @@ defmodule Operately.Updates do
   end
 
   def create_comment(author, update, content) do
-    changeset = Comment.changeset(%{
-      author_id: author.id,
-      update_id: update.id,
-      content: %{"message" => content}
-    })
+    changeset =
+      Comment.changeset(%{
+        author_id: author.id,
+        update_id: update.id,
+        content: %{"message" => content}
+      })
 
     Multi.new()
     |> Multi.insert(:comment, changeset)
     |> then(fn multi ->
       case update.type do
         :project_discussion ->
-          Activities.insert_sync(multi, author.id, :discussion_comment_submitted, fn changes -> %{
-            company_id: author.company_id,
-            space_id: update.updatable_id,
-            discussion_id: update.id,
-            comment_id: changes.comment.id
-          } end)
+          Activities.insert_sync(multi, author.id, :discussion_comment_submitted, fn changes ->
+            %{
+              company_id: author.company_id,
+              space_id: update.updatable_id,
+              discussion_id: update.id,
+              comment_id: changes.comment.id
+            }
+          end)
+
         :status_update ->
-          Activities.insert_sync(multi, author.id, :project_status_update_commented, fn changes -> %{
-            company_id: author.company_id,
-            project_id: update.updatable_id,
-            update_id: update.id,
-            comment_id: changes.comment.id
-          } end)
+          Activities.insert_sync(multi, author.id, :project_status_update_commented, fn changes ->
+            %{
+              company_id: author.company_id,
+              project_id: update.updatable_id,
+              update_id: update.id,
+              comment_id: changes.comment.id
+            }
+          end)
+
         _ ->
           raise "Unknown update type"
       end
@@ -457,11 +473,10 @@ defmodule Operately.Updates do
   alias Operately.Updates.Reaction
 
   def list_reactions(entity_id, entity_type) do
-    query = (
+    query =
       from r in Reaction,
-       where: r.entity_id == ^entity_id and r.entity_type == ^entity_type,
-       order_by: r.inserted_at
-    )
+        where: r.entity_id == ^entity_id and r.entity_type == ^entity_type,
+        order_by: r.inserted_at
 
     Repo.all(query)
   end

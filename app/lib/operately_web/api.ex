@@ -19,6 +19,8 @@ defmodule OperatelyWeb.Api do
   alias OperatelyWeb.Api.Subscriptions, as: S
 
   namespace(:goals) do
+    query(:get_check_ins, Q.GetGoalCheckIns)
+
     mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
     mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
     mutation(:update_due_date, OperatelyWeb.Api.Goals.UpdateDueDate)
@@ -44,7 +46,6 @@ defmodule OperatelyWeb.Api do
   query(:get_discussions, Q.GetDiscussions)
   query(:get_goal, Q.GetGoal)
   query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
-  query(:get_goal_progress_updates, Q.GetGoalProgressUpdates)
   query(:get_goals, Q.GetGoals)
   query(:get_invitation, Q.GetInvitation)
   query(:get_key_resource, Q.GetKeyResource)

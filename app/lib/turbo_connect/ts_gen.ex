@@ -266,7 +266,7 @@ defmodule TurboConnect.TsGen do
 
         """
             #{fnName}: (input: #{input_type}) => #{fnCall},
-            #{hookName}: (input: #{input_type}) => useQuery<#{input_type}, #{result_type}>(() => #{fnCall}),
+            #{hookName}: (input: #{input_type}) => useQuery<#{result_type}>(() => #{fnCall}),
         """
       end)
       |> Enum.join("\n")
