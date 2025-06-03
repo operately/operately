@@ -1,5 +1,4 @@
-import Api from "@/api";
-import * as Activities from "@/models/activities";
+import Api, { GoalProgressUpdate } from "@/api";
 import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
@@ -18,14 +17,14 @@ import { fetchAll } from "../../utils/async";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v13-GoalPage.goal-${id}`;
+  return `v17-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
   data: {
     goal: Goal;
     workMap: WorkMapItem[];
-    checkIns: Activities.Activity[];
+    checkIns: GoalProgressUpdate[];
   };
 
   cacheVersion: number;
@@ -52,11 +51,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           parentGoalId: params.id,
           includeAssignees: true,
         }).then((d) => d.workMap!),
-        checkIns: Activities.getActivities({
-          scopeType: "goal",
-          scopeId: params.id,
-          actions: ["goal_check_in"],
-        }),
+        checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
       }),
   });
 }
@@ -250,22 +245,18 @@ function preparePerson(person: People.Person | null | undefined) {
   }
 }
 
-function prepareCheckIns(checkIns: Activities.Activity[]): GoalPage.Props["checkIns"] {
-  return checkIns.map((activity) => {
-    const content = activity.content as Activities.ActivityContentGoalCheckIn;
-
-    assertPresent(activity.author, "author must be present in activity");
-    assertPresent(content.update, "update must be present in activity content");
-    assertPresent(content.update.id, "update.id must be present in activity content");
+function prepareCheckIns(checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
+  return checkIns.map((checkIn) => {
+    assertPresent(checkIn.author, "author must be present in check-in");
 
     return {
-      id: content.update.id,
-      author: preparePerson(activity.author)!,
-      date: Time.parse(content.update.insertedAt!)!,
-      link: Paths.goalCheckInPath(content.update.id!),
-      content: JSON.parse(content.update.message!),
-      commentCount: 4,
-      status: content.update.status!,
+      id: checkIn.id!,
+      author: preparePerson(checkIn.author)!,
+      date: Time.parse(checkIn.insertedAt!)!,
+      link: Paths.goalCheckInPath(checkIn.id!),
+      content: JSON.parse(checkIn.message!),
+      commentCount: checkIn.commentsCount!,
+      status: checkIn.status!,
     };
   });
 }
