@@ -2093,11 +2093,10 @@ export interface GetWorkMapResult {
 
 export interface GoalsGetCheckInsInput {
   goalId?: Id | null;
-  includeCommentCount?: boolean | null;
 }
 
 export interface GoalsGetCheckInsResult {
-  checkIns?: GoalProgressUpdate | null;
+  checkIns?: GoalProgressUpdate[] | null;
 }
 
 export interface ListGoalContributorsInput {
@@ -6198,9 +6197,7 @@ export default {
   goals: {
     getCheckIns: (input: GoalsGetCheckInsInput) => defaultApiClient.apiNamespaceGoals.getCheckIns(input),
     useGetCheckIns: (input: GoalsGetCheckInsInput) =>
-      useQuery<GoalsGetCheckInsInput, GoalsGetCheckInsResult>(() =>
-        defaultApiClient.apiNamespaceGoals.getCheckIns(input),
-      ),
+      useQuery<GoalsGetCheckInsResult>(() => defaultApiClient.apiNamespaceGoals.getCheckIns(input)),
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
