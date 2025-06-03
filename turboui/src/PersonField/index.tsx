@@ -19,6 +19,7 @@ export interface PersonFieldProps {
   setPerson: (person: Person | null) => void;
 
   isOpen?: boolean;
+  nameFormat?: "fullName" | "firstName" | "firstNameLastInitial";
   avatarSize?: number;
   readonly?: boolean;
   showTitle?: boolean;
@@ -39,6 +40,7 @@ export interface State {
   setPerson: (person: Person | null) => void;
 
   readonly: boolean;
+  nameFormat: "fullName" | "firstName" | "firstNameLastInitial";
   avatarSize: number;
   showTitle: boolean;
   emptyStateMessage: string;
@@ -70,6 +72,7 @@ export function useState(props: PersonFieldProps): State {
 
   const readonly = props.readonly ?? false;
   const avatarSize = props.avatarSize ?? 32;
+  const nameFormat = props.nameFormat ?? "fullName";
   const showTitle = props.showTitle ?? true;
   const emptyStateMessage = props.emptyStateMessage ?? "Select person";
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
@@ -114,6 +117,7 @@ export function useState(props: PersonFieldProps): State {
     setDialogMode,
     readonly,
     avatarSize,
+    nameFormat,
     showTitle,
     emptyStateMessage,
     emptyStateReadOnlyMessage,
@@ -139,7 +143,7 @@ function Trigger({ state }: { state: State }) {
         <Avatar person={state.person} size={state.avatarSize} />
 
         <div className="-mt-0.5 truncate">
-          <div className="text-sm font-medium">{state.person.fullName}</div>
+          <div className="text-sm font-medium">{formattedName(state.person, state.nameFormat)}</div>
           {state.showTitle && <div className="text-xs truncate">{state.person.title}</div>}
         </div>
       </Popover.Trigger>
@@ -278,4 +282,18 @@ function DialogSearch({ state }: { state: State }) {
       </div>
     </div>
   );
+}
+
+function formattedName(person: Person, format: "fullName" | "firstName" | "firstNameLastInitial"): string {
+  switch (format) {
+    case "fullName":
+      return person.fullName;
+    case "firstName":
+      return person.fullName.split(" ")[0]!;
+    case "firstNameLastInitial":
+      const names = person.fullName.split(" ");
+      return `${names[0]} ${names.length > 1 && names[names.length - 1] ? names[names.length - 1]![0] + "." : ""}`;
+    default:
+      return person.fullName;
+  }
 }
