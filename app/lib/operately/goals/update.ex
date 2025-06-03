@@ -26,6 +26,7 @@ defmodule Operately.Goals.Update do
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
     field :permissions, :any, virtual: true
+    field :comment_count, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -45,7 +46,7 @@ defmodule Operately.Goals.Update do
       :status,
       :acknowledged_at,
       :acknowledged_by_id,
-      :subscription_list_id,
+      :subscription_list_id
     ])
     |> cast_embed(:targets)
     |> cast_embed(:timeframe)
@@ -85,5 +86,24 @@ defmodule Operately.Goals.Update do
 
     permissions = Permissions.calculate(access_level, update, user_id)
     Map.put(update, :permissions, permissions)
+  end
+
+  def preload_comment_count(check_ins) when is_list(check_ins) do
+    ids = Enum.map(check_ins, & &1.id)
+
+    comment_counts =
+      Repo.all(
+        from c in Operately.Updates.Comment,
+          where: c.entity_type == :goal_update and c.entity_id in ^ids,
+          group_by: c.entity_id,
+          select: {c.entity_id, count(c.id)}
+      )
+
+    comment_counts_map = Map.new(comment_counts)
+
+    Enum.map(check_ins, fn check_in ->
+      comment_count = Map.get(comment_counts_map, check_in.id, 0)
+      Map.put(check_in, :comment_count, comment_count)
+    end)
   end
 end
