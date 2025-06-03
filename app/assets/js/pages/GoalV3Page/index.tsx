@@ -52,11 +52,12 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           parentGoalId: params.id,
           includeAssignees: true,
         }).then((d) => d.workMap!),
-        checkIns: Activities.getActivities({
-          scopeType: "goal",
-          scopeId: params.id,
-          actions: ["goal_check_in"],
-        }),
+        checkIns: Api.goals
+          .getCheckIns({
+            goalId: params.id,
+            includeCommentCount: true,
+          })
+          .then((d) => d.checkIns!),
       }),
   });
 }

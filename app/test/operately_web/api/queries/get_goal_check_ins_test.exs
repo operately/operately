@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
+defmodule OperatelyWeb.Api.Queries.GetGoalCheckInsTest do
   use OperatelyWeb.TurboCase
 
   import Operately.GroupsFixtures
@@ -9,9 +9,13 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
+  defp request(ctx, params) do
+    query(ctx.conn, [:goals, :get_goal_progress_updates], params)
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
-      assert {401, _} = query(ctx.conn, :get_goal_progress_updates, %{})
+      assert {401, _} = request(ctx, %{})
     end
   end
 
@@ -28,15 +32,16 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
     test "company members have no access", ctx do
       {goal_id, _} = create_goal_and_updates(ctx, company_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
       assert length(res.updates) == 0
     end
 
     test "company members have access", ctx do
       {goal_id, updates} = create_goal_and_updates(ctx, company_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
       assert length(res.updates) == 3
+
       Enum.each(res.updates, fn u ->
         assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
       end)
@@ -46,7 +51,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
       add_person_to_space(ctx)
       {goal_id, _} = create_goal_and_updates(ctx, space_access: Binding.no_access())
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
 
       assert length(res.updates) == 0
     end
@@ -55,8 +60,9 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
       add_person_to_space(ctx)
       {goal_id, updates} = create_goal_and_updates(ctx, space_access: Binding.view_access())
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
       assert length(res.updates) == 3
+
       Enum.each(res.updates, fn u ->
         assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
       end)
@@ -69,11 +75,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
       account = Repo.preload(champion, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
       assert length(res.updates) == 0
 
-      assert {200, res} = query(conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(%{ctx | conn: conn}, %{goal_id: goal_id})
       assert length(res.updates) == 3
+
       Enum.each(res.updates, fn u ->
         assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
       end)
@@ -86,11 +93,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
       account = Repo.preload(reviewer, :account).account
       conn = log_in_account(ctx.conn, account)
 
-      assert {200, res} = query(ctx.conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(ctx, %{goal_id: goal_id})
       assert length(res.updates) == 0
 
-      assert {200, res} = query(conn, :get_goal_progress_updates, %{goal_id: goal_id})
+      assert {200, res} = request(%{ctx | conn: conn}, %{goal_id: goal_id})
       assert length(res.updates) == 3
+
       Enum.each(res.updates, fn u ->
         assert Enum.find(updates, &(Paths.goal_update_id(&1) == u.id))
       end)
@@ -107,16 +115,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
     champion_id = Keyword.get(opts, :champion_id, ctx.creator.id)
     reviewer_id = Keyword.get(opts, :reviewer_id, ctx.creator.id)
 
-    goal = goal_fixture(ctx.creator, %{
-      space_id: ctx.space.id,
-      champion_id: champion_id,
-      reviewer_id: reviewer_id,
-      company_access_level: company_access,
-      space_access_level: space_access,
-    })
-    updates = Enum.map(1..3, fn _ ->
-      goal_update_fixture(ctx.creator, goal)
-    end)
+    goal =
+      goal_fixture(ctx.creator, %{
+        space_id: ctx.space.id,
+        champion_id: champion_id,
+        reviewer_id: reviewer_id,
+        company_access_level: company_access,
+        space_access_level: space_access
+      })
+
+    updates =
+      Enum.map(1..3, fn _ ->
+        goal_update_fixture(ctx.creator, goal)
+      end)
 
     goal_id = Paths.goal_id(goal)
 
@@ -124,9 +135,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdatesTest do
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end
