@@ -4,7 +4,7 @@ import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
-import { endOfCurrentYear, startOfCurrentYear } from "../utils/time";
+import { startOfCurrentYear } from "../utils/time";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -20,6 +20,7 @@ function Component(props: Partial<GoalPage.Props>) {
 
   const [champion, setChampion] = React.useState<any>(props.champion);
   const [reviewer, setReviewer] = React.useState<any>(props.reviewer);
+  const [dueDate, setDueDate] = React.useState<Date | null>(props.dueDate || null);
 
   const searchFn = async ({ query }: { query: string }) => {
     if (!query) return people;
@@ -49,7 +50,8 @@ function Component(props: Partial<GoalPage.Props>) {
       setReviewer={setReviewer}
       targets={props.targets || []}
       relatedWorkItems={props.relatedWorkItems || []}
-      dueDate={endOfCurrentYear()}
+      dueDate={dueDate}
+      setDueDate={setDueDate}
       contributors={props.contributors || []}
       canEdit={true}
       description={description}
@@ -64,7 +66,6 @@ function Component(props: Partial<GoalPage.Props>) {
       reviewerSearch={searchFn}
       activityFeed={<div></div>}
       updateGoalName={async (_name: string) => true}
-      updateDueDate={async (_date: Date | null) => true}
       updateDescription={async (_description: string | null) => true}
       addTarget={addTarget}
       deleteTarget={deleteTarget}
