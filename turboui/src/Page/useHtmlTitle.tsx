@@ -15,7 +15,9 @@ export function useHtmlTitle(title: string | string[]) {
     throw new Error("Page title cannot contain null or undefined");
   }
 
+  titleArray.push("Operately");
+
   React.useEffect(() => {
-    document.title = titleArray.join(" / ");
+    document.title = titleArray.join(" · ");
   }, [titleArray]);
 }
