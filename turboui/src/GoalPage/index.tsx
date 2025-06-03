@@ -75,9 +75,10 @@ export namespace GoalPage {
     reviewer: Person | null;
     setReviewer: (person: Person | null) => void;
 
-    contributors: Contributor[];
-
     dueDate: Date | null;
+    setDueDate: (date: Date | null) => void;
+
+    contributors: Contributor[];
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
