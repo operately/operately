@@ -70,15 +70,21 @@ function Page() {
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
 
+  const [dueDate, setDueDate] = usePageField({
+    value: (data) => Time.parse(data.goal.dueDate),
+    update: (v) => Api.goals.updateDueDate({ goalId: goal.id!, dueDate: v && Time.toDateWithoutTime(v) }),
+    onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
+  });
+
   const [champion, setChampion] = usePageField({
     value: (data) => preparePerson(data.goal.champion),
-    update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }).then((r) => r.success),
+    update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => preparePerson(data.goal.reviewer),
-    update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }).then((r) => r.success),
+    update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
@@ -106,9 +112,11 @@ function Page() {
     addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
 
     privacyLevel: goal.privacy,
-    dueDate: Time.parse(goal.dueDate) || null,
     parentGoal: prepareParentGoal(goal.parentGoal),
     canEdit: goal.permissions.canEdit,
+
+    dueDate,
+    setDueDate,
 
     champion,
     setChampion,
@@ -222,19 +230,6 @@ function Page() {
         });
     },
 
-    updateDueDate: function (date: Date | null): Promise<boolean> {
-      const dueDate = date && Time.toDateWithoutTime(date);
-
-      return Api.goals
-        .updateDueDate({ goalId: goal.id!, dueDate: dueDate })
-        .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
-        .then(() => true)
-        .catch((e) => {
-          console.error("Failed to update goal due date", e);
-          return false;
-        });
-    },
-
     activityFeed: <GoalFeedItems goalId={goal.id!} />,
   };
 
@@ -331,7 +326,7 @@ const peopleSearch = async () => {
 
 interface usePageFieldProps<T> {
   value: (LoaderResult) => T;
-  update: (newValue: T) => Promise<boolean | null | undefined>;
+  update: (newValue: T) => Promise<{ success?: boolean | null } | boolean | null | undefined>;
   onError?: (error: any) => void;
 }
 
@@ -366,7 +361,7 @@ function usePageField<T>({ value, update, onError }: usePageFieldProps<T>): [T, 
 
     update(newVal)
       .then((res) => {
-        if (res === true) {
+        if (res === true || (typeof res === "object" && res?.success)) {
           successHandler();
         } else {
           errorHandler("API call returned false, reverting state");
