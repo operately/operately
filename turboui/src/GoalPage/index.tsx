@@ -75,9 +75,10 @@ export namespace GoalPage {
     reviewer: Person | null;
     setReviewer: (person: Person | null) => void;
 
-    contributors: Contributor[];
-
     dueDate: Date | null;
+    setDueDate: (date: Date | null) => void;
+
+    contributors: Contributor[];
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
@@ -99,7 +100,6 @@ export namespace GoalPage {
 
     updateGoalName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
-    updateDueDate: (date: Date | null) => Promise<boolean>;
 
     addTarget: GoalTargetList.AddTargetFn;
     deleteTarget: GoalTargetList.DeleteTargetFn;
