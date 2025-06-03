@@ -47,15 +47,20 @@ config :logger, :console,
   format: "$time $metadata[$level] $message\n",
   metadata: [:request_id]
 
+# disable Phoenix logger, as we use our own logger
+config :phoenix, :logger, false
+
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
 config :ueberauth, Ueberauth,
   base_path: "/accounts/auth",
   providers: [
-    google: {Ueberauth.Strategy.Google, [
-      default_scope: "email profile"
-    ]}
+    google:
+      {Ueberauth.Strategy.Google,
+       [
+         default_scope: "email profile"
+       ]}
   ]
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
@@ -78,8 +83,7 @@ config :operately, Oban,
     mailer: 10
   ]
 
-config :operately, OperatelyEmail.Mailer,
-  adapter: Bamboo.LocalAdapter
+config :operately, OperatelyEmail.Mailer, adapter: Bamboo.LocalAdapter
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
