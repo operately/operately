@@ -52,6 +52,8 @@ defmodule OperatelyWeb.Endpoint do
   plug Plug.Head
   plug Plug.Session, @session_options
 
+  plug OperatelyWeb.Logger
+
   if Application.compile_env(:operately, :dev_routes) do
     plug :debug
 
