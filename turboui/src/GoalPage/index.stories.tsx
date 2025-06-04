@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
-import { genPeople, genPerson } from "../utils/storybook/genPeople";
+import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
 
@@ -15,25 +15,36 @@ const meta: Meta<typeof GoalPage> = {
   render: (args) => <Component {...args} />,
 } satisfies Meta<typeof GoalPage>;
 
-function Component(props: Partial<GoalPage.Props>) {
-  const people = genPeople(2);
+const addTarget = (): Promise<{ id: string; success: boolean }> =>
+  new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
 
+const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
+
+function Component(props: Partial<GoalPage.Props>) {
   const [champion, setChampion] = React.useState<any>(props.champion);
   const [reviewer, setReviewer] = React.useState<any>(props.reviewer);
   const [dueDate, setDueDate] = React.useState<Date | null>(props.dueDate || null);
 
-  const searchFn = async ({ query }: { query: string }) => {
-    if (!query) return people;
-    return people.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+  const defaults = {
+    parentGoal,
+    description,
+    privacyLevel: "internal" as const,
+    status: "on_track" as const,
+    goalName: "Launch AI Platform",
+    spaceName: "Product",
+    targets: [],
+    relatedWorkItems: [],
+    checkIns: [],
+    messages: [],
+    contributors: [],
+    closedAt: null,
+    neglectedGoal: false,
   };
-
-  const addTarget = (): Promise<{ id: string; success: boolean }> =>
-    new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
-
-  const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
 
   return (
     <GoalPage
+      {...defaults}
+      {...props}
       spaceLink="/spaces/1"
       workmapLink="/spaces/1/workmaps/1"
       closeLink={storyPath("Pages/GoalClosePage", "Default")}
@@ -42,28 +53,17 @@ function Component(props: Partial<GoalPage.Props>) {
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
       addSubgoalLink="#"
       addSubprojectLink="#"
-      goalName="Launch AI Platform"
-      spaceName="Product"
       champion={champion}
       setChampion={setChampion}
       reviewer={reviewer}
       setReviewer={setReviewer}
-      targets={props.targets || []}
-      relatedWorkItems={props.relatedWorkItems || []}
       dueDate={dueDate}
       setDueDate={setDueDate}
-      contributors={props.contributors || []}
       canEdit={true}
-      description={description}
-      checkIns={props.checkIns || []}
-      messages={props.messages || []}
-      parentGoal={parentGoal}
-      status="on_track"
-      privacyLevel={"internal" as const}
       mentionedPersonLookup={async (_id: string) => null}
-      peopleSearch={searchFn}
-      championSearch={searchFn}
-      reviewerSearch={searchFn}
+      peopleSearch={searchPeopleFn}
+      championSearch={searchPeopleFn}
+      reviewerSearch={searchPeopleFn}
       activityFeed={<div></div>}
       updateGoalName={async (_name: string) => true}
       updateDescription={async (_description: string | null) => true}

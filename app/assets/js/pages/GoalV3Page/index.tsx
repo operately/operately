@@ -105,6 +105,8 @@ function Page() {
     newCheckInLink: Paths.goalCheckInNewPath(goal.id),
     addSubprojectLink: Paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
+    closedAt: goal.closedAt ? Time.parse(goal.closedAt) : null,
+    neglectedGoal: false,
 
     privacyLevel: goal.privacy,
     parentGoal: prepareParentGoal(goal.parentGoal),
