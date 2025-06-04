@@ -2,53 +2,53 @@ import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
 import { IconCircleX, IconExternalLink, IconSearch } from "@tabler/icons-react";
+import { IconGoal } from "../icons";
 import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
 
-interface Goal {
-  id: string;
-  name: string;
-  goalLink: string;
+export namespace GoalField {
+  export interface Goal {
+    id: string;
+    name: string;
+    goalLink: string;
+  }
+
+  export interface Props {
+    goal: Goal | null;
+    setGoal: (person: Goal | null) => void;
+
+    isOpen?: boolean;
+    iconSize?: number;
+    readonly?: boolean;
+
+    emptyStateMessage?: string;
+    emptyStateReadOnlyMessage?: string;
+    searchGoals: (params: { query: string }) => Promise<Goal[]>;
+    extraDialogMenuOptions?: DialogMenuOptionProps[];
+  }
+
+  //
+  // The state interface is used to manage the internal state of the GoalField component.
+  // It includes all the properties from Props, along with additional state management functions.
+  //
+  export interface State extends Required<Props> {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+
+    dialogMode: "menu" | "search";
+    setDialogMode: (mode: "menu" | "search") => void;
+
+    goal: Goal | null;
+    setGoal: (goal: Goal | null) => void;
+
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
+    searchResults: Goal[];
+  }
 }
 
-export interface PersonFieldProps {
-  goal: Goal | null;
-  setGoal: (person: Goal | null) => void;
-
-  isOpen?: boolean;
-  avatarSize?: number;
-  readonly?: boolean;
-  showTitle?: boolean;
-  emptyStateMessage?: string;
-  emptyStateReadOnlyMessage?: string;
-  searchGoals: (params: { query: string }) => Promise<Goal[]>;
-  extraDialogMenuOptions?: DialogMenuOptionProps[];
-}
-
-export interface State {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-
-  dialogMode: "menu" | "search";
-  setDialogMode: (mode: "menu" | "search") => void;
-
-  goal: Goal | null;
-  setGoal: (goal: Goal | null) => void;
-
-  readonly: boolean;
-  avatarSize: number;
-  showTitle: boolean;
-  emptyStateMessage: string;
-  emptyStateReadOnlyMessage: string;
-  extraDialogMenuOptions: DialogMenuOptionProps[];
-
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  searchResults: Goal[];
-}
-
-export function GoalField(props: PersonFieldProps) {
-  const state = useState(props);
+export function GoalField(props: GoalField.Props) {
+  const state = useGoalFieldState(props);
 
   return (
     <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
@@ -58,19 +58,23 @@ export function GoalField(props: PersonFieldProps) {
   );
 }
 
-export function useState(props: PersonFieldProps): State {
+const DefaultProps = {
+  isOpen: false,
+  iconSize: 20,
+  readonly: false,
+  emptyStateMessage: "Select a goal",
+  emptyStateReadOnlyMessage: "No goal selected",
+  extraDialogMenuOptions: [],
+};
+
+export function useGoalFieldState(p: GoalField.Props): GoalField.State {
+  const props = { ...DefaultProps, ...p };
+
   const [isOpen, changeOpen] = React.useState(!!props.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<Goal[]>([]);
-
-  const readonly = props.readonly ?? false;
-  const avatarSize = props.avatarSize ?? 32;
-  const showTitle = props.showTitle ?? true;
-  const emptyStateMessage = props.emptyStateMessage ?? "Select goal";
-  const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "No goal assigned";
-  const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
+  const [searchResults, setSearchResults] = React.useState<GoalField.Goal[]>([]);
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -82,7 +86,7 @@ export function useState(props: PersonFieldProps): State {
   React.useEffect(() => {
     let active = true;
 
-    props.searchGoals({ query: searchQuery }).then((goals: Goal[]) => {
+    props.searchGoals({ query: searchQuery }).then((goals: GoalField.Goal[]) => {
       if (active) {
         setSearchResults(goals);
       }
@@ -94,7 +98,7 @@ export function useState(props: PersonFieldProps): State {
   }, [searchQuery, props.searchGoals]);
 
   const setIsOpen = (open: boolean) => {
-    if (readonly) {
+    if (props.readonly) {
       changeOpen(false);
     } else {
       changeOpen(open);
@@ -102,26 +106,19 @@ export function useState(props: PersonFieldProps): State {
   };
 
   return {
-    goal: props.goal,
-    setGoal: props.setGoal,
+    ...props,
 
     isOpen,
     setIsOpen,
     dialogMode,
     setDialogMode,
-    readonly,
-    avatarSize,
-    showTitle,
-    emptyStateMessage,
-    emptyStateReadOnlyMessage,
-    extraDialogMenuOptions,
     searchQuery,
     setSearchQuery,
     searchResults,
   };
 }
 
-function Trigger({ state }: { state: State }) {
+function Trigger({ state }: { state: GoalField.State }) {
   const triggerClass = classNames({
     "flex items-center gap-2 truncate text-left": true,
     "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
@@ -133,21 +130,8 @@ function Trigger({ state }: { state: State }) {
   if (state.goal) {
     return (
       <Popover.Trigger className={triggerClass}>
-        {/* Replace Avatar with a goal icon or similar if needed */}
-        <div
-          className="border border-content-subtle rounded-full flex items-center justify-center bg-surface-dimmed"
-          style={{
-            width: state.avatarSize,
-            height: state.avatarSize,
-          }}
-        >
-          <IconExternalLink size={state.avatarSize * 0.5} />
-        </div>
-
-        <div className="-mt-0.5 truncate">
-          <div className="text-sm font-medium">{state.goal.name}</div>
-          {state.showTitle && <div className="text-xs truncate">{state.goal.goalLink}</div>}
-        </div>
+        <IconGoal size={state.iconSize} />
+        <div className="text-sm font-medium">{state.goal.name}</div>
       </Popover.Trigger>
     );
   } else {
@@ -156,11 +140,11 @@ function Trigger({ state }: { state: State }) {
         <div
           className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
           style={{
-            width: state.avatarSize,
-            height: state.avatarSize,
+            width: state.iconSize,
+            height: state.iconSize,
           }}
         >
-          <IconSearch className="text-content-dimmed" size={state.avatarSize * 0.5} />
+          <IconSearch className="text-content-dimmed" size={state.iconSize * 0.5} />
         </div>
 
         <div className="truncate">
@@ -173,7 +157,7 @@ function Trigger({ state }: { state: State }) {
   }
 }
 
-function Dialog({ state }: { state: State }) {
+function Dialog({ state }: { state: GoalField.State }) {
   if (state.readonly) return null;
 
   return (
@@ -192,7 +176,7 @@ function Dialog({ state }: { state: State }) {
   );
 }
 
-function DialogMenu({ state }: { state: State }) {
+function DialogMenu({ state }: { state: GoalField.State }) {
   return (
     <div className="p-1">
       <DialogMenuOption icon={IconExternalLink} label="See goal" linkTo={state.goal?.goalLink || "#"} />
@@ -250,7 +234,7 @@ function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProp
   }
 }
 
-function DialogSearch({ state }: { state: State }) {
+function DialogSearch({ state }: { state: GoalField.State }) {
   return (
     <div className="p-1">
       <div className="p-1 pb-0.5">

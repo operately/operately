@@ -1,88 +1,92 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { IconUserCheck } from "@tabler/icons-react";
+import { IconTarget } from "@tabler/icons-react";
 import React from "react";
 import { Page } from "../Page";
-import { genPeople, genPerson } from "../utils/storybook/genPeople";
-import { PersonField, PersonFieldProps } from "./index";
+import { GoalField } from "./index";
 
 /**
- * PersonField is a component for displaying and selecting a person within a popover interface.
+ * GoalField is a component for displaying and selecting a goal within a popover interface.
  * Key features:
- * - Displays person avatar, name, and title when assigned
- * - Shows placeholder state with question mark icon when no person is assigned
- * - Supports different avatar sizes
- * - Can show or hide person title
+ * - Displays goal icon, name, and description when assigned
+ * - Shows placeholder state with target icon when no goal is assigned
+ * - Supports different icon sizes
+ * - Can show or hide goal description
  * - Supports readonly mode to disable interactions
  * - Uses Radix UI Popover for potential future selection functionality
  */
-const meta: Meta<typeof PersonField> = {
-  title: "Components/Fields/PersonField",
-  component: PersonField,
+const meta: Meta<typeof GoalField> = {
+  title: "Components/Fields/GoalField",
+  component: GoalField,
   parameters: {
     layout: "fullscreen",
   },
   argTypes: {
-    person: { control: "object" },
-    avatarSize: { control: "number" },
+    goal: { control: "object" },
+    iconSize: { control: "number" },
     readonly: { control: "boolean" },
-    showTitle: { control: "boolean" },
   },
-} satisfies Meta<typeof PersonField>;
+} satisfies Meta<typeof GoalField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const person = genPerson();
-const potentialPeople = genPeople(10);
+const goal = { id: "1", name: "Improve team collaboration", goalLink: "#" };
+const potentialGoals = [
+  { id: "1", name: "Improve team collaboration", goalLink: "#" },
+  { id: "2", name: "Increase customer satisfaction", goalLink: "#" },
+  { id: "3", name: "Boost sales performance", goalLink: "#" },
+  { id: "4", name: "Enhance product quality", goalLink: "#" },
+  { id: "5", name: "Expand market reach", goalLink: "#" },
+];
 
-const searchPeople = async ({ query }) => {
+const searchGoals = async ({ query }) => {
   if (!query) {
-    return potentialPeople;
+    return potentialGoals;
   }
-  return potentialPeople.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+  return potentialGoals.filter((g) => g.name.toLowerCase().includes(query.toLowerCase()));
 };
 
-const Component = (args: Partial<PersonFieldProps>) => {
-  const [person, setPerson] = React.useState<PersonFieldProps["person"]>(args.person || null);
+const Component = (args: Partial<GoalField.Props>) => {
+  const [goal, setGoal] = React.useState<GoalField.Goal | null>(args.goal || null);
 
-  return <PersonField {...args} person={person} setPerson={setPerson} searchPeople={searchPeople} />;
+  return <GoalField {...args} goal={goal} setGoal={setGoal} searchGoals={searchGoals} />;
 };
 
 export const AllStates: Story = {
   render: () => {
     return (
-      <Page title="PersonField All States" size="medium">
+      <Page title="GoalField All States" size="medium">
         <div className="grid grid-cols-2 gap-8 p-12">
           <div>
             <div className="font-bold text-content-dimmed mb-6 pb-2">Editable</div>
             <div className="space-y-8">
               <div>
                 <Label>Default</Label>
-                <Component person={person} searchPeople={searchPeople} />
+                <Component goal={goal} searchGoals={searchGoals} />
               </div>
 
               <div>
                 <Label>Empty State</Label>
-                <Component person={null} searchPeople={searchPeople} />
+                <Component goal={null} searchGoals={searchGoals} />
               </div>
 
               <div>
                 <Label>Empty State Custom Message</Label>
-                <Component person={null} emptyStateMessage="Set champion" searchPeople={searchPeople} />
+                <Component goal={null} emptyStateMessage="Set goal" searchGoals={searchGoals} />
               </div>
 
               <div>
                 <Label>Dialog Open</Label>
                 <Component
-                  person={person}
-                  emptyStateMessage="Set champion"
-                  searchPeople={searchPeople}
+                  goal={goal}
+                  emptyStateMessage="Set goal"
+                  searchGoals={searchGoals}
                   isOpen
                   extraDialogMenuOptions={[
                     {
-                      label: "Assign as reviewer",
+                      label: "Mark as priority",
                       onClick: () => alert("Custom option clicked"),
-                      icon: IconUserCheck,
+                      icon: IconTarget,
                     },
                   ]}
                 />
@@ -96,17 +100,17 @@ export const AllStates: Story = {
             <div className="space-y-8">
               <div>
                 <Label>Default</Label>
-                <Component person={person} readonly searchPeople={searchPeople} />
+                <Component goal={goal} readonly searchGoals={searchGoals} />
               </div>
 
               <div>
                 <Label>Empty State</Label>
-                <Component person={null} readonly emptyStateMessage="Select champion" searchPeople={searchPeople} />
+                <Component goal={null} readonly emptyStateMessage="Select goal" searchGoals={searchGoals} />
               </div>
 
               <div>
                 <Label>Empty State Custom Message</Label>
-                <Component person={null} readonly emptyStateReadOnlyMessage="No champion" searchPeople={searchPeople} />
+                <Component goal={null} readonly emptyStateReadOnlyMessage="No goal" searchGoals={searchGoals} />
               </div>
             </div>
           </div>
