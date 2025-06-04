@@ -308,20 +308,20 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
       |> Factory.setup()
       |> Factory.add_space(:space)
       |> Factory.add_company_member(:member)
-      |> Factory.add_company_member(:reviewer1)
-      |> Factory.add_company_member(:reviewer2)
+      |> Factory.add_company_member(:reviewer)
+      |> Factory.add_company_member(:person)
 
       # Create goals with different reviewers
-      |> Factory.add_goal(:goal1, :space, reviewer: :reviewer1)
-      |> Factory.add_goal(:goal2, :space, reviewer: :reviewer2)
+      |> Factory.add_goal(:goal1, :space, reviewer: :reviewer, champion: :person)
+      |> Factory.add_goal(:goal2, :space, reviewer: :person, champion: :reviewer)
 
       # Create projects with different reviewers
-      |> Factory.add_project(:project1, :space, reviewer: :reviewer1)
-      |> Factory.add_project(:project2, :space, reviewer: :reviewer2)
+      |> Factory.add_project(:project1, :space, reviewer: :reviewer)
+      |> Factory.add_project(:project2, :space, reviewer: :person)
     end
 
     test "returns only goals and projects with the specified reviewer", ctx do
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer1.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer.id})
 
       assert_work_map_structure(work_map, ctx, %{
         goal1: [],
@@ -332,12 +332,12 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     test "given parent and greatgrandchild have the same reviewer, but child and grandchild have another reviewer, returns full hierarchy", ctx do
       ctx =
         ctx
-        |> Factory.add_goal(:child, :space, parent_goal: :goal1, reviewer: :reviewer2)
-        |> Factory.add_goal(:grand_child, :space, parent_goal: :child, reviewer: :reviewer2)
-        |> Factory.add_goal(:great_grand_child, :space, parent_goal: :grand_child, reviewer: :reviewer1)
-        |> Factory.add_project(:grand_child_project, :space, goal: :child, reviewer: :reviewer1)
+        |> Factory.add_goal(:child, :space, parent_goal: :goal1, reviewer: :person, champion: :reviewer)
+        |> Factory.add_goal(:grand_child, :space, parent_goal: :child, reviewer: :person, champion: :reviewer)
+        |> Factory.add_goal(:great_grand_child, :space, parent_goal: :grand_child, reviewer: :reviewer, champion: :person)
+        |> Factory.add_project(:grand_child_project, :space, goal: :child, reviewer: :reviewer, champion: :person)
 
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer1.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer.id})
 
       assert_work_map_structure(work_map, ctx, %{
         project1: [],
@@ -353,9 +353,9 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
 
     test "given parent and child have different reviewer, returns full hierarchy including parent", ctx do
-      ctx = Factory.add_goal(ctx, :child, :space, parent_goal: :goal2, reviewer: :reviewer1)
+      ctx = Factory.add_goal(ctx, :child, :space, parent_goal: :goal2, reviewer: :reviewer)
 
-      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer1.id})
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, reviewer_id: ctx.reviewer.id})
 
       assert_work_map_structure(work_map, ctx, %{
         goal1: [],
