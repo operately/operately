@@ -2,12 +2,10 @@ import React from "react";
 import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
 
-import { Link } from "../Link";
 import { PageNew } from "../Page";
 
 import { IconCircleCheck, IconClipboardText, IconLogs, IconMessage, IconTrash } from "@tabler/icons-react";
 import { WarningCallout } from "../Callouts";
-import { PageBanner } from "../PageBanner";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
@@ -85,13 +83,12 @@ export namespace GoalPage {
     messages: Message[];
     status: BadgeStatus;
 
-    closedOn?: Date;
+    closedAt: Date | null;
     retrospectiveLink?: string;
 
     canEdit: boolean;
     privacyLevel: "public" | "internal" | "confidential" | "secret";
-
-    neglectedGoal?: boolean;
+    neglectedGoal: boolean;
 
     mentionedPersonLookup: MentionedPersonLookupFn;
     peopleSearch: SearchFn;
@@ -128,7 +125,7 @@ export function GoalPage(props: GoalPage.Props) {
       label: "Close",
       link: props.closeLink,
       icon: IconCircleCheck,
-      hidden: !!props.closedOn || !props.canEdit,
+      hidden: !!props.closedAt || !props.canEdit,
     },
     {
       type: "link" as const,
@@ -149,7 +146,6 @@ export function GoalPage(props: GoalPage.Props) {
     <PageNew title={[props.goalName]} options={options} size="fullwidth">
       <PageHeader {...props} />
       <Tabs tabs={tabs} />
-      {props.closedOn && <ClosedBanner {...props} />}
 
       <div className="flex-1 overflow-scroll">
         {tabs.active === "overview" && <Overview {...props} />}
@@ -192,21 +188,9 @@ function MainContent(props: GoalPage.Props) {
   );
 }
 
-function ClosedBanner(props: GoalPage.Props) {
-  return (
-    <PageBanner>
-      This goal was closed on{" "}
-      {props.closedOn?.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "2-digit",
-      })}
-      . <Link to={props.retrospectiveLink!}>View Retrospective</Link>
-    </PageBanner>
-  );
-}
-
 function Warnings(props: GoalPage.Props) {
+  if (props.closedAt) return null;
+
   if (props.dueDate && isOverdue(props.dueDate)) {
     return <OverdueWarning {...props} />;
   }

@@ -72,6 +72,8 @@ function Component(props: Partial<GoalPage.Props>) {
       updateTarget={async (_inputs) => true}
       updateTargetValue={async (_id, _value) => true}
       updateTargetIndex={async (_id, _index) => true}
+      closedOn={props.closedOn || null}
+      neglectedGoal={props.neglectedGoal || false}
     />
   );
 }
