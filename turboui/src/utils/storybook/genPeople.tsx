@@ -10,6 +10,11 @@ interface Opts {
   random?: boolean;
 }
 
+export const searchPeopleFn = async ({ query }: { query: string }) => {
+  if (!query) return EXAMPLE_PEOPLE;
+  return EXAMPLE_PEOPLE.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
+};
+
 export function genPerson(): Person {
   const randomIndex = Math.floor(Math.random() * EXAMPLE_PEOPLE.length);
   return genPeople(randomIndex + 1)[randomIndex]!;
