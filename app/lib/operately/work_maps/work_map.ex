@@ -66,12 +66,12 @@ defmodule Operately.WorkMaps.WorkMap do
 
   Returns a flat list of filtered items with empty children lists.
   """
-  def filter_direct_matches(flat_items, filters) when filters == %{}, do: flat_items
+  def filter_direct_matches(flat_items, filters) when filters == %{} do
+    Enum.map(flat_items, &%{&1 | children: []})
+  end
 
   def filter_direct_matches(flat_items, filters) when is_list(flat_items) and is_map(filters) do
-    # Simply filter items by all criteria directly without preserving hierarchy
     find_direct_matches(flat_items, filters)
-    # Clear the children field for consistency
     |> Enum.map(&%{&1 | children: []})
   end
 
