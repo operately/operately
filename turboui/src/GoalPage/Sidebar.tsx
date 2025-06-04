@@ -17,6 +17,7 @@ export function Sidebar(props: GoalPage.Props) {
       <LastCheckIn {...props} />
       <ParentGoal {...props} />
       <DueDate {...props} />
+      <CompletedOn {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
     </div>
@@ -24,9 +25,26 @@ export function Sidebar(props: GoalPage.Props) {
 }
 
 function DueDate(props: GoalPage.Props) {
+  const isReadonly = !props.canEdit || !!props.closedAt;
+
   return (
     <SidebarSection title="Due Date">
-      <DateDisplayField date={props.dueDate} readonly={!props.canEdit} onChange={props.setDueDate} />
+      <DateDisplayField
+        date={props.dueDate}
+        readonly={isReadonly}
+        onChange={props.setDueDate}
+        showOverdueWarning={!props.closedAt}
+      />
+    </SidebarSection>
+  );
+}
+
+function CompletedOn(props: GoalPage.Props) {
+  if (!props.closedAt) return null;
+
+  return (
+    <SidebarSection title="Completed On">
+      <DateDisplayField date={props.closedAt} readonly />
     </SidebarSection>
   );
 }
