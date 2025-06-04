@@ -78,6 +78,7 @@ defmodule OperatelyWeb.Api do
   query(:search_potential_space_members, Q.SearchPotentialSpaceMembers)
   query(:search_project_contributor_candidates, Q.SearchProjectContributorCandidates)
   query(:get_work_map, Q.GetWorkMap)
+  query(:get_flat_work_map, Q.GetFlatWorkMap)
   query(:run_ai_prompt, Q.RunAiPrompt)
 
   mutation(:archive_message, M.ArchiveMessage)

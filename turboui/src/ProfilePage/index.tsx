@@ -48,7 +48,7 @@ export function ProfilePage(props: ProfilePage.Props) {
   const items = React.useMemo(() => {
     const data = processPersonalItems(props.workMap);
     return sortItemsByDueDate(data.ongoingItems);
-  }, [props.workMap]);
+  }, [props.workMap, tabs.active]);
 
   return (
     <Page title={props.title} size="fullwidth">

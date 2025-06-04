@@ -1,4 +1,4 @@
-import { WorkMapItem, getWorkMap } from "@/api";
+import { WorkMapItem, getWorkMap, getFlatWorkMap } from "@/api";
 import { WorkMap, TimeframeSelector } from "turboui";
 
 /**
@@ -24,5 +24,5 @@ export function convertToWorkMapItem(item: WorkMapItem): WorkMap.Item {
   };
 }
 
-export { getWorkMap };
+export { getWorkMap, getFlatWorkMap };
 export type { WorkMapItem };
