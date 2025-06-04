@@ -72,7 +72,7 @@ function fetchAssignedTab(championId: string, refreshCache: boolean) {
     fetchFn: async () =>
       fetchAll({
         person: fetchPerson(championId),
-        workMap: WorkMap.getWorkMap({
+        workMap: WorkMap.getFlatWorkMap({
           championId,
           contributorId: championId,
         }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
@@ -87,7 +87,7 @@ function fetchRaviewingTab(reviewerId: string, refreshCache: boolean) {
     fetchFn: async () =>
       fetchAll({
         person: fetchPerson(reviewerId),
-        workMap: WorkMap.getWorkMap({
+        workMap: WorkMap.getFlatWorkMap({
           reviewerId,
         }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
       }),

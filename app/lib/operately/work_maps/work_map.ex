@@ -1,34 +1,13 @@
 defmodule Operately.WorkMaps.WorkMap do
-  @moduledoc """
-  Functions for working with work maps (hierarchical structures of goals and projects)
-  """
-
   alias Operately.WorkMaps.WorkMapItem
 
   @doc """
   Builds a hierarchical structure from a flat list of WorkMapItem structs.
 
   This function:
-  1. Identifies all items whose parent_id is nil or not present in the list (root items)
+  1. Identifies all items whose parent_id is nil or not in the list (root items)
   2. For each item with a parent in the list, adds it as a child of that parent
   3. Returns a list of root items with their children properly nested
-
-  ## Examples
-
-      iex> items = [
-      ...>   %WorkMapItem{id: 1, parent_id: nil, name: "Root 1", children: []},
-      ...>   %WorkMapItem{id: 2, parent_id: 1, name: "Child 1", children: []},
-      ...>   %WorkMapItem{id: 3, parent_id: 1, name: "Child 2", children: []},
-      ...>   %WorkMapItem{id: 4, parent_id: nil, name: "Root 2", children: []}
-      ...> ]
-      iex> build_hierarchy(items)
-      [
-        %WorkMapItem{id: 1, parent_id: nil, name: "Root 1", children: [
-          %WorkMapItem{id: 2, parent_id: 1, name: "Child 1", children: []},
-          %WorkMapItem{id: 3, parent_id: 1, name: "Child 2", children: []}
-        ]},
-        %WorkMapItem{id: 4, parent_id: nil, name: "Root 2", children: []}
-      ]
   """
   @spec build_hierarchy(list(WorkMapItem.t())) :: list(WorkMapItem.t())
   def build_hierarchy(items) when is_list(items) do
@@ -75,7 +54,29 @@ defmodule Operately.WorkMaps.WorkMap do
   end
 
   @doc """
-  Filters a flat list of WorkMapItem structs based on provided filters.
+  Filters items directly, only keeping items that match the filter criteria.
+  Does NOT preserve parent hierarchy - only direct matches are kept.
+
+  Supported filters:
+  - :space_id - Filters items by space ID
+  - :parent_goal_id - Filters items by parent goal ID
+  - :champion_id - Filters items by champion ID
+  - :reviewer_id - Filters items by reviewer ID
+  - :contributor_id - Filters items by contributor ID
+
+  Returns a flat list of filtered items with empty children lists.
+  """
+  def filter_direct_matches(flat_items, filters) when filters == %{} do
+    Enum.map(flat_items, &%{&1 | children: []})
+  end
+
+  def filter_direct_matches(flat_items, filters) when is_list(flat_items) and is_map(filters) do
+    find_direct_matches(flat_items, filters)
+    |> Enum.map(&%{&1 | children: []})
+  end
+
+  @doc """
+  Filters a flat list of work map items based on filters, preserving parent hierarchy.
 
   Supported filters:
   - :space_id - Filters items by space ID
@@ -84,9 +85,8 @@ defmodule Operately.WorkMaps.WorkMap do
   - :reviewer_id - Filters items by reviewer ID
   - :contributor_id - Filters items by contributor ID
 
-  If a parent item is filtered out but its children would remain, the children will be
-  reparented to the nearest ancestor that passes the filter, or become root items
-  if no suitable ancestor exists.
+  If a parent item is filtered out but its children would remain, the hierarchy is preserved
+  by including all parent items needed to maintain the relationships.
 
   Returns a flat list of filtered items that can be passed to build_hierarchy.
   """
