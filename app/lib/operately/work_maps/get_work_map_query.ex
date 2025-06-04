@@ -35,6 +35,42 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     {:ok, work_map}
   end
 
+  @doc """
+  Similar to execute/2 but returns a flat list of work map items instead of a hierarchical structure.
+  This provides the same filtering capabilities as execute/2 but skips the hierarchy building.
+
+  Unlike the hierarchical version, this implementation only returns items that directly match
+  the filter criteria without preserving parent-child relationships in the results.
+  Parent IDs are still included in each item, but parent items themselves are not included unless
+  they match the filter criteria directly.
+  """
+  def execute(person, args, :flat) do
+    goals_task = Task.async(fn -> get_goals(person, args) end)
+    projects_task = Task.async(fn -> get_projects(person, args) end)
+
+    goals = Task.await(goals_task)
+    projects = Task.await(projects_task)
+
+    flat_items = build_flat_work_map(goals, projects, args)
+
+    {:ok, flat_items}
+  end
+
+  defp build_flat_work_map(goals, projects, args) do
+    filters = extract_filters(args)
+    contributor_id = Map.get(filters, :contributor_id)
+
+    items =
+      (goals ++ projects)
+      |> Enum.map(fn item ->
+        item
+        |> WorkMapItem.build_item([], include_assignees?(args) || needs_contributor?(args))
+        |> maybe_add_contributor(contributor_id)
+      end)
+
+    WorkMap.filter_direct_matches(items, filters)
+  end
+
   defp get_projects(person, args) do
     project_ids =
       from(Project, as: :projects)

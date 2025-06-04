@@ -1736,6 +1736,19 @@ export interface GetDiscussionsResult {
   myDrafts?: Discussion[] | null;
 }
 
+export interface GetFlatWorkMapInput {
+  spaceId?: Id | null;
+  parentGoalId?: Id | null;
+  championId?: Id | null;
+  reviewerId?: Id | null;
+  contributorId?: Id | null;
+  includeAssignees?: boolean | null;
+}
+
+export interface GetFlatWorkMapResult {
+  workMap?: WorkMapItem[] | null;
+}
+
 export interface GetGoalInput {
   id?: Id | null;
   includeChampion?: boolean | null;
@@ -3278,6 +3291,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_discussions", input);
   }
 
+  async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
+    return this.client.get("/get_flat_work_map", input);
+  }
+
   async getGoal(input: GetGoalInput): Promise<GetGoalResult> {
     return this.client.get("/get_goal", input);
   }
@@ -3970,6 +3987,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getDiscussions(input);
   }
 
+  getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
+    return this.apiNamespaceRoot.getFlatWorkMap(input);
+  }
+
   getGoal(input: GetGoalInput): Promise<GetGoalResult> {
     return this.apiNamespaceRoot.getGoal(input);
   }
@@ -4554,6 +4575,9 @@ export async function getDiscussion(input: GetDiscussionInput): Promise<GetDiscu
 export async function getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
   return defaultApiClient.getDiscussions(input);
 }
+export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
+  return defaultApiClient.getFlatWorkMap(input);
+}
 export async function getGoal(input: GetGoalInput): Promise<GetGoalResult> {
   return defaultApiClient.getGoal(input);
 }
@@ -5072,6 +5096,10 @@ export function useGetDiscussion(input: GetDiscussionInput): UseQueryHookResult<
 
 export function useGetDiscussions(input: GetDiscussionsInput): UseQueryHookResult<GetDiscussionsResult> {
   return useQuery<GetDiscussionsResult>(() => defaultApiClient.getDiscussions(input));
+}
+
+export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
+  return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
 }
 
 export function useGetGoal(input: GetGoalInput): UseQueryHookResult<GetGoalResult> {
@@ -5923,6 +5951,8 @@ export default {
   useGetDiscussion,
   getDiscussions,
   useGetDiscussions,
+  getFlatWorkMap,
+  useGetFlatWorkMap,
   getGoal,
   useGetGoal,
   getGoalProgressUpdate,
