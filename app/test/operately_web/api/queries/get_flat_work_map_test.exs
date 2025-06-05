@@ -188,6 +188,20 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMapTest do
       assert Enum.at(res.work_map, 0).id == Paths.goal_id(ctx.owned_goal)
     end
 
+    test "filters by only_completed", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{only_completed: true})
+      assert length(res.work_map) == 0
+
+      ctx
+      |> Factory.close_goal(:goal1)
+      |> Factory.close_project(:project1)
+
+      assert {200, res} = query(ctx.conn, :get_flat_work_map, %{only_completed: true})
+      assert length(res.work_map) == 2
+    end
+
     test "returns flat list with parent relationships preserved", ctx do
       ctx =
         ctx

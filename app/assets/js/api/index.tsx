@@ -1742,6 +1742,7 @@ export interface GetFlatWorkMapInput {
   championId?: Id | null;
   reviewerId?: Id | null;
   contributorId?: Id | null;
+  onlyCompleted?: boolean | null;
   includeAssignees?: boolean | null;
 }
 
@@ -2097,6 +2098,7 @@ export interface GetWorkMapInput {
   championId?: Id | null;
   reviewerId?: Id | null;
   contributorId?: Id | null;
+  onlyCompleted?: boolean | null;
   includeAssignees?: boolean | null;
 }
 

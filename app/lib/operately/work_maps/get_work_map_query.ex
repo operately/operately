@@ -22,6 +22,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - reviewer_id (optional): The ID of the reviewer
     - contributor_id (optional): The ID of a contributor
     - include_assignees (optional): A boolean indicating whether to include assignees in the result. Defaults to false
+    - only_completed (optional): A boolean indicating whether to return only completed items. Defaults to false
   """
   def execute(person, args) do
     goals_task = Task.async(fn -> get_goals(person, args) end)
@@ -132,7 +133,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp needs_contributor?(args), do: Map.get(args, :contributor_id) != nil
 
   defp extract_filters(args) do
-    Map.take(args, [:space_id, :parent_goal_id, :champion_id, :reviewer_id, :contributor_id])
+    Map.take(args, [:space_id, :parent_goal_id, :champion_id, :reviewer_id, :contributor_id, :only_completed])
   end
 
   #

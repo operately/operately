@@ -8,7 +8,7 @@ import { Colleagues, PageHeader, Contact } from "./components";
 
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
-import { sortItemsByDueDate } from "../WorkMap/utils/sort";
+import { sortItemsByClosedDate, sortItemsByDueDate } from "../WorkMap/utils/sort";
 
 export namespace ProfilePage {
   export interface Person {
@@ -47,7 +47,12 @@ export function ProfilePage(props: ProfilePage.Props) {
 
   const items = React.useMemo(() => {
     const data = processPersonalItems(props.workMap);
-    return sortItemsByDueDate(data.ongoingItems);
+
+    if (tabs.active === "completed") {
+      return sortItemsByClosedDate(data.completedItems);
+    } else {
+      return sortItemsByDueDate(data.ongoingItems);
+    }
   }, [props.workMap, tabs.active]);
 
   return (
