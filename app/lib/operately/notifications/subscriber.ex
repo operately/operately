@@ -93,14 +93,14 @@ defmodule Operately.Notifications.Subscriber do
     |> Enum.into(%{}, fn p -> {p.id, from_person(p)} end)
     |> then(fn members ->
       if goal.champion_id != nil do
-        Map.put(members, goal.champion, from_goal_champion(goal.champion))
+        Map.put(members, goal.champion_id, from_goal_champion(goal.champion))
       else
         members
       end
     end)
     |> then(fn members ->
       if goal.reviewer_id != nil do
-        Map.put(members, goal.reviewer, from_goal_reviewer(goal.reviewer))
+        Map.put(members, goal.reviewer_id, from_goal_reviewer(goal.reviewer))
       else
         members
       end
