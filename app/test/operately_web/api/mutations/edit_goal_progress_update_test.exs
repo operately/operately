@@ -41,10 +41,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
     end
 
     test "member without edit access can't edit goal update", ctx do
-      update = create_goal_update(ctx, [
-        company_access_level: Binding.comment_access(),
-        space_access_level: Binding.no_access(),
-      ])
+      update =
+        create_goal_update(ctx,
+          company_access_level: Binding.comment_access(),
+          space_access_level: Binding.no_access()
+        )
 
       assert {403, res} = request(ctx.conn, update)
       assert res.message == "You don't have permission to perform this action"
@@ -82,26 +83,34 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
     test "mentioned people are added to subscriptions list", ctx do
       update = create_goal_update(ctx)
 
-      assert {200, _} = mutation(ctx.conn, :edit_goal_progress_update, %{
-        id: Paths.goal_update_id(update),
-        status: "issue",
-        content: RichText.rich_text("content", :as_string),
-        new_target_values: Jason.encode!([]),
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_goal_progress_update, %{
+                 id: Paths.goal_update_id(update),
+                 status: "issue",
+                 content: RichText.rich_text("content", :as_string),
+                 new_target_values: Jason.encode!([]),
+                 due_date: nil
+               })
 
-      {:ok, list} = SubscriptionList.get(:system, parent_id: update.id, opts: [
-        preload: :subscriptions
-      ])
+      {:ok, list} =
+        SubscriptionList.get(:system,
+          parent_id: update.id,
+          opts: [
+            preload: :subscriptions
+          ]
+        )
 
       subscriptions = Enum.filter(list.subscriptions, &(&1.person_id != ctx.person.id))
       assert subscriptions == []
 
-      assert {200, _} = mutation(ctx.conn, :edit_goal_progress_update, %{
-        id: Paths.goal_update_id(update),
-        status: "issue",
-        content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
-        new_target_values: Jason.encode!([]),
-      })
+      assert {200, _} =
+               mutation(ctx.conn, :edit_goal_progress_update, %{
+                 id: Paths.goal_update_id(update),
+                 status: "issue",
+                 content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
+                 new_target_values: Jason.encode!([]),
+                 due_date: nil
+               })
 
       subscriptions =
         Notifications.list_subscriptions(list)
@@ -113,15 +122,18 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
   end
 
   defp request(conn, update) do
-    targets = Enum.map(Goals.list_targets(update.goal_id), fn t ->
-      %{"id" => t.id, "value" => 75}
-    end) |> Jason.encode!()
+    targets =
+      Enum.map(Goals.list_targets(update.goal_id), fn t ->
+        %{"id" => t.id, "value" => 75}
+      end)
+      |> Jason.encode!()
 
     mutation(conn, :edit_goal_progress_update, %{
       id: Paths.goal_update_id(update),
       status: "on_track",
       content: RichText.rich_text("Edited content", :as_string),
       new_target_values: targets,
+      due_date: nil
     })
   end
 
@@ -135,6 +147,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
     update = Repo.reload(update)
 
     assert update.message == RichText.rich_text("Edited content")
+
     Enum.each(update.targets, fn t ->
       assert t.value == 75
     end)
@@ -145,28 +158,36 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
   #
 
   defp create_goal_update(ctx, attrs \\ []) do
-    goal = goal_fixture(ctx[:creator] || ctx.person, Enum.into(attrs, %{
-      space_id: ctx[:space_id] || ctx.company.company_space_id,
-      targets: [
-        %{ name: "One", from: 10, to: 100, unit: "unit", index: 0 },
-        %{ name: "Two", from: 10, to: 100, unit: "unit", index: 1 },
-      ],
-      company_access_level: Binding.no_access(),
-      space_access_level: Binding.no_access(),
-    }))
+    goal =
+      goal_fixture(
+        ctx[:creator] || ctx.person,
+        Enum.into(attrs, %{
+          space_id: ctx[:space_id] || ctx.company.company_space_id,
+          targets: [
+            %{name: "One", from: 10, to: 100, unit: "unit", index: 0},
+            %{name: "Two", from: 10, to: 100, unit: "unit", index: 1}
+          ],
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
+      )
 
-    target_values = Enum.map(Goals.list_targets(goal.id), fn t ->
-      %{"id" => t.id, "value" => 50}
-    end)
+    target_values =
+      Enum.map(Goals.list_targets(goal.id), fn t ->
+        %{"id" => t.id, "value" => 50}
+      end)
+
     content = RichText.rich_text("Content")
 
     goal_update_fixture(ctx[:creator] || ctx.person, goal, target_values: target_values, content: content)
   end
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space_id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space_id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end

@@ -1,4 +1,4 @@
-defmodule Operately.Features.GoalProgressUpdateTest do
+defmodule Operately.Features.GoalChecksInsTest do
   use Operately.FeatureCase
   alias Operately.Support.Features.GoalCheckInsSteps, as: Steps
 

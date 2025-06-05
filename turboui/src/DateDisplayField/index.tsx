@@ -21,6 +21,8 @@ export namespace DateDisplayField {
     showEmptyStateAsButton?: boolean;
     emptyStateText?: string;
     emptyStateReadonlyText?: string;
+
+    variant?: "inline" | "form-field";
   }
 }
 
@@ -30,6 +32,7 @@ export function DateDisplayField({
   readonly = false,
   iconSize = 18,
   textSize = "text-sm",
+  variant = "inline",
   className = "",
   showOverdueWarning = true,
   showEmptyStateAsButton = false,
@@ -60,15 +63,24 @@ export function DateDisplayField({
       emptyStateReadonlyText={emptyStateReadonlyText}
       iconSize={iconSize}
       textSize={textSize}
+      variant={variant}
     />
   );
 
   if (readonly) {
     return display;
   } else {
+    const triggerClassName = classNames(
+      {
+        "inline-block": variant === "inline",
+        "inline-block border border-surface-outline rounded-lg w-full": variant === "form-field",
+      },
+      className,
+    );
+
     return (
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Popover.Trigger className={`inline-block ${className}`}>{display}</Popover.Trigger>
+        <Popover.Trigger className={triggerClassName}>{display}</Popover.Trigger>
         <Popover.Portal>
           <DatePickerPopover date={date} setNewDate={handleChange} clearDate={clearDate} />
         </Popover.Portal>
@@ -121,24 +133,30 @@ interface DateDisplayProps {
 
   emptyStateText: string;
   emptyStateReadonlyText: string;
+
+  variant?: "inline" | "form-field";
 }
 
 function DateDisplay(props: DateDisplayProps) {
   if (!props.date && props.showEmptyStateAsButton) {
-    return <EmptyStateButton emptyStateText={props.emptyStateText} readonly={props.readonly} />;
+    return <EmptyStateButton emptyStateText={props.emptyStateText} readonly={props.readonly} variant={props.variant} />;
   }
 
   const iconSize = props.iconSize;
   const textSize = props.textSize;
   const Elem = props.readonly ? "span" : "button";
   const isDateOverdue = props.date && isOverdue(props.date);
+  const variant = props.variant || "inline";
 
   const elemClass = classNames(
     {
       "flex items-center gap-1.5": true,
-      "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !props.readonly,
+      "focus:outline-none hover:bg-surface-dimmed rounded-lg": !props.readonly,
+      "px-1.5 py-1 -my-1 -mx-1.5": !props.readonly && variant === "inline",
+      "px-2 py-1.5": variant === "form-field",
       "text-content-error": isDateOverdue && props.showOverdueWarning,
       "text-content-dimmed": !props.date,
+      "w-full": variant === "form-field",
     },
     textSize,
     props.className,
@@ -161,12 +179,28 @@ function DateDisplay(props: DateDisplayProps) {
   );
 }
 
-function EmptyStateButton({ readonly, emptyStateText }: { readonly: boolean; emptyStateText: string }) {
+function EmptyStateButton({
+  readonly,
+  emptyStateText,
+  variant,
+}: {
+  readonly: boolean;
+  emptyStateText: string;
+  variant?: "inline" | "form-field";
+}) {
   if (readonly) {
     return null;
   } else {
+    // If it's a form-field variant, we'll add padding to make it look like a form field
+    const containerClass = classNames({
+      "text-content-subtle": true,
+      "p-1.5": variant === "form-field",
+      "w-full": variant === "form-field",
+    });
+
+    // For form-field variant, wrap the button in a container that takes full width
     return (
-      <div className="text-content-subtle">
+      <div className={containerClass}>
         <SecondaryButton size="xs" icon={IconCalendarPlus}>
           {emptyStateText}
         </SecondaryButton>
