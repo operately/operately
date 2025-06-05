@@ -4,7 +4,6 @@ defmodule Operately.Operations.GoalCheckInTest do
 
   alias Operately.Support.RichText
   alias Operately.Operations.GoalCheckIn
-  alias Operately.Goals.Timeframe
 
   setup ctx do
     ctx
@@ -27,7 +26,7 @@ defmodule Operately.Operations.GoalCheckInTest do
         send_to_everyone: true,
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
-        timeframe: Timeframe.current_year()
+        due_date: ~D[2023-10-01]
       })
 
     ctx = Factory.reload(ctx, :goal)
@@ -47,7 +46,7 @@ defmodule Operately.Operations.GoalCheckInTest do
             send_to_everyone: true,
             subscriber_ids: [],
             subscription_parent_type: :goal_update,
-            timeframe: Timeframe.current_year()
+            due_date: ~D[2023-10-01]
           })
         end)
 
@@ -79,7 +78,7 @@ defmodule Operately.Operations.GoalCheckInTest do
             send_to_everyone: false,
             subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
             subscription_parent_type: :goal_update,
-            timeframe: Timeframe.current_year()
+            due_date: ~D[2023-10-01]
           })
         end)
 
@@ -110,7 +109,7 @@ defmodule Operately.Operations.GoalCheckInTest do
           send_to_everyone: true,
           subscriber_ids: [],
           subscription_parent_type: :goal_update,
-          timeframe: Timeframe.current_year()
+          due_date: nil
         })
 
       action = "goal_check_in"

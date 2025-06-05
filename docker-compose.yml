@@ -85,11 +85,6 @@ services:
     volumes:
       - ./locals3root:/containers3root
 
-  chartdb:
-    image: ghcr.io/chartdb/chartdb:latest
-    ports:
-      - "8080:80"
-
 volumes:
   postgres-data:
     driver: local

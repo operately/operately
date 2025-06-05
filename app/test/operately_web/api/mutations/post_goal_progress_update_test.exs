@@ -10,7 +10,6 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
   alias Operately.Access.Binding
   alias Operately.Goals.Update
   alias Operately.Notifications.SubscriptionList
-  alias Operately.Goals.Timeframe
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -20,17 +19,15 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
 
   describe "permissions" do
     @table [
-      %{company: :no_access,      space: :no_access,      goal: :no_access,  expected: 404},
-      %{company: :no_access,      space: :no_access,      goal: :champion,   expected: 200},
-      %{company: :no_access,      space: :no_access,      goal: :reviewer,   expected: 200},
-
-      %{company: :no_access,      space: :comment_access, goal: :no_access,  expected: 403},
-      %{company: :no_access,      space: :edit_access,    goal: :no_access,  expected: 403},
-      %{company: :no_access,      space: :full_access,    goal: :no_access,  expected: 200},
-
-      %{company: :comment_access, space: :no_access,      goal: :no_access,  expected: 403},
-      %{company: :edit_access,    space: :no_access,      goal: :no_access,  expected: 403},
-      %{company: :full_access,    space: :no_access,      goal: :no_access,  expected: 200},
+      %{company: :no_access, space: :no_access, goal: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, goal: :champion, expected: 200},
+      %{company: :no_access, space: :no_access, goal: :reviewer, expected: 200},
+      %{company: :no_access, space: :comment_access, goal: :no_access, expected: 403},
+      %{company: :no_access, space: :edit_access, goal: :no_access, expected: 403},
+      %{company: :no_access, space: :full_access, goal: :no_access, expected: 200},
+      %{company: :comment_access, space: :no_access, goal: :no_access, expected: 403},
+      %{company: :edit_access, space: :no_access, goal: :no_access, expected: 403},
+      %{company: :full_access, space: :no_access, goal: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -44,13 +41,14 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
         space = create_space(ctx)
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
 
-        assert {code, res} = mutation(ctx.conn, :post_goal_progress_update, %{
-          goal_id: Paths.goal_id(goal),
-          status: "on_track",
-          content: RichText.rich_text("Content", :as_string),
-          new_target_values: new_target_values(goal),
-          timeframe: Serializer.serialize(Timeframe.current_year()),
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :post_goal_progress_update, %{
+                   goal_id: Paths.goal_id(goal),
+                   status: "on_track",
+                   content: RichText.rich_text("Content", :as_string),
+                   new_target_values: new_target_values(goal),
+                   due_date: "2028-12-31"
+                 })
 
         assert code == @test.expected
 
@@ -74,42 +72,63 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
     test "posts goal progress update", ctx do
       assert Goals.list_updates(ctx.goal) == []
 
-      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        status: "caution",
-        content: RichText.rich_text("Content", :as_string),
-        new_target_values: new_target_values(ctx.goal),
-        timeframe: Serializer.serialize(Timeframe.current_year()),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_goal_progress_update, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: "2028-12-31"
+               })
 
       updates = Goals.list_updates(ctx.goal)
 
       assert length(updates) == 1
       assert res.update == Serializer.serialize(hd(updates), level: :full)
     end
+
+    test "clearing the due date", ctx do
+      assert {200, res} =
+               mutation(ctx.conn, :post_goal_progress_update, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 due_date: nil
+               })
+
+      updates = Goals.list_updates(ctx.goal)
+
+      assert length(updates) == 1
+      assert res.update.timeframe == nil
+    end
   end
 
   describe "subscriptions to notifications" do
     setup :register_and_log_in_account
+
     setup ctx do
       goal = goal_fixture(ctx.person, %{space_id: ctx.company.company_space_id})
-      people = Enum.map(1..3, fn _ ->
-        person_fixture(%{company_id: ctx.company.id})
-      end)
+
+      people =
+        Enum.map(1..3, fn _ ->
+          person_fixture(%{company_id: ctx.company.id})
+        end)
 
       Map.merge(ctx, %{goal: goal, people: people})
     end
 
     test "creates subscription list for goal update", ctx do
-      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        status: "issue",
-        content: RichText.rich_text("Content", :as_string),
-        new_target_values: new_target_values(ctx.goal),
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1))),
-        timeframe: Serializer.serialize(Timeframe.current_year()),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_goal_progress_update, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "issue",
+                 content: RichText.rich_text("Content", :as_string),
+                 new_target_values: new_target_values(ctx.goal),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(ctx.people, &Paths.person_id(&1)),
+                 due_date: nil
+               })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
       {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
@@ -130,15 +149,16 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
       people = ctx.people ++ ctx.people ++ ctx.people
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        status: "pending",
-        content: content,
-        new_target_values: new_target_values(ctx.goal),
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-        timeframe: Serializer.serialize(Timeframe.current_year()),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_goal_progress_update, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "pending",
+                 content: content,
+                 new_target_values: new_target_values(ctx.goal),
+                 send_notifications_to_everyone: false,
+                 subscriber_ids: [],
+                 due_date: nil
+               })
 
       subscriptions = fetch_subscriptions(res)
 
@@ -153,15 +173,16 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
       people = [ctx.person | ctx.people]
       content = RichText.rich_text(mentioned_people: people)
 
-      assert {200, res} = mutation(ctx.conn, :post_goal_progress_update, %{
-        goal_id: Paths.goal_id(ctx.goal),
-        status: "caution",
-        content: content,
-        new_target_values: new_target_values(ctx.goal),
-        send_notifications_to_everyone: true,
-        subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
-        timeframe: Serializer.serialize(Timeframe.current_year()),
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :post_goal_progress_update, %{
+                 goal_id: Paths.goal_id(ctx.goal),
+                 status: "caution",
+                 content: content,
+                 new_target_values: new_target_values(ctx.goal),
+                 send_notifications_to_everyone: true,
+                 subscriber_ids: Enum.map(people, &Paths.person_id(&1)),
+                 due_date: nil
+               })
 
       subscriptions = fetch_subscriptions(res)
 
@@ -195,23 +216,31 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
   end
 
   def create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
-    attrs = case goal_member_level do
-      :champion -> [champion_id: ctx.person.id]
-      :reviewer -> [reviewer_id: ctx.person.id]
-      _ -> []
-    end
+    attrs =
+      case goal_member_level do
+        :champion -> [champion_id: ctx.person.id]
+        :reviewer -> [reviewer_id: ctx.person.id]
+        _ -> []
+      end
 
-    goal = goal_fixture(ctx.creator, Enum.into(attrs, %{
-      space_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    }))
+    goal =
+      goal_fixture(
+        ctx.creator,
+        Enum.into(attrs, %{
+          space_id: space.id,
+          company_access_level: Binding.from_atom(company_members_level),
+          space_access_level: Binding.from_atom(space_members_level)
+        })
+      )
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     goal
