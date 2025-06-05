@@ -1,13 +1,13 @@
 import * as Timeframes from "@/utils/timeframes";
 
-import { Person } from "@/models/people";
 import { Goal } from "@/models/goals";
+import { Person } from "@/models/people";
 import { Project } from "@/models/projects";
 
-import { Node } from "./node";
-import { GoalNode } from "./goalNode";
-import { ProjectNode } from "./projectNode";
 import { compareIds } from "@/routes/paths";
+import { GoalNode } from "./goalNode";
+import { Node } from "./node";
+import { ProjectNode } from "./projectNode";
 
 export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
@@ -227,7 +227,10 @@ class TreeFilter {
   private timeframeFilter(node: Node): boolean {
     if (!this.options.timeframe) return true;
 
-    return Timeframes.hasOverlap(this.options.timeframe, node.activeTimeframe());
+    const timeframe = node.activeTimeframe();
+    if (!timeframe) return false;
+
+    return Timeframes.hasOverlap(this.options.timeframe, timeframe);
   }
 
   private myRoleFilter(node: Node): boolean {

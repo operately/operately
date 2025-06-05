@@ -1,9 +1,10 @@
 import * as Pages from "@/components/Pages";
-import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
+import * as Spaces from "@/models/spaces";
+
 import { Paths } from "@/routes/paths";
+import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoadedData {
   space: Spaces.Space;
