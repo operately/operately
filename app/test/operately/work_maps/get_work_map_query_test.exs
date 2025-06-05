@@ -550,6 +550,45 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "functionality - Project progress is calculated correctly" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone1, :project)
+      |> Factory.add_project_milestone(:milestone2, :project)
+      |> Factory.add_project_milestone(:milestone3, :project)
+    end
+
+    test "0% progress", ctx do
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+
+      assert project.progress == 0
+    end
+
+    test "100% progress", ctx do
+      ctx
+      |> Factory.close_project_milestone(:milestone1)
+      |> Factory.close_project_milestone(:milestone2)
+      |> Factory.close_project_milestone(:milestone3)
+
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+
+      assert project.progress == 100
+    end
+
+    test "66% progress", ctx do
+      ctx
+      |> Factory.close_project_milestone(:milestone1)
+      |> Factory.close_project_milestone(:milestone2)
+
+      {:ok, [project]} = GetWorkMapQuery.execute(:system, %{ company_id: ctx.company.id })
+
+      assert floor(project.progress) == 66
+    end
+  end
+
   describe "permissions - query root projects" do
     @table [
       %{person: :company_member, count: 1, expected_projects: [:public_project]},
