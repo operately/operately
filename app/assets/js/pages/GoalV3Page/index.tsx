@@ -126,6 +126,7 @@ function Page() {
     description: goal.description && JSON.parse(goal.description),
     deleteLink: "",
     status: goal.status,
+    state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
     checkIns: prepareCheckIns(checkIns),
     messages: [],

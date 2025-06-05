@@ -82,6 +82,7 @@ export namespace GoalPage {
     checkIns: CheckIn[];
     messages: Message[];
     status: BadgeStatus;
+    state: "active" | "closed";
 
     closedAt: Date | null;
     retrospectiveLink?: string;
@@ -125,7 +126,7 @@ export function GoalPage(props: GoalPage.Props) {
       label: "Close",
       link: props.closeLink,
       icon: IconCircleCheck,
-      hidden: !!props.closedAt || !props.canEdit,
+      hidden: !props.canEdit || props.state === "closed",
     },
     {
       type: "link" as const,
@@ -189,7 +190,7 @@ function MainContent(props: GoalPage.Props) {
 }
 
 function Warnings(props: GoalPage.Props) {
-  if (props.closedAt) return null;
+  if (props.state == "closed") return null;
 
   if (props.dueDate && isOverdue(props.dueDate)) {
     return <OverdueWarning {...props} />;
