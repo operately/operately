@@ -1,24 +1,20 @@
-import * as React from "react";
-import * as People from "@/models/people";
 import * as Goals from "@/models/goals";
-import * as Popover from "@radix-ui/react-popover";
+import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
+import * as React from "react";
 
-import { SecondaryButton } from "turboui";
-import { Chronometer } from "turboui";
-import { CustomRangePicker } from "turboui/TimeframeSelectorDialog";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
 
-import Forms from "@/components/Forms";
-import RichContent from "@/components/RichContent";
-import classNames from "classnames";
-import { match } from "ts-pattern";
-import { durationHumanized } from "@/utils/time";
-import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
-import { StatusSelector } from "./StatusSelector";
-import { useFieldValue } from "@/components/Forms/FormContext";
 import { InfoCallout } from "@/components/Callouts";
+import Forms from "@/components/Forms";
+import { useFieldValue } from "@/components/Forms/FormContext";
+import RichContent from "@/components/RichContent";
+import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
+import { durationHumanized } from "@/utils/time";
+import { match } from "ts-pattern";
+import DateDisplayField from "turboui/src/DateDisplayField";
+import { StatusSelector } from "./StatusSelector";
 
 interface Props {
   form: any;
@@ -38,7 +34,7 @@ export function Form(props: Props) {
     <Forms.Form form={props.form} preventSubmitOnEnter>
       <div className="space-y-8 mt-8">
         <FullEditDisabledMessage {...props} />
-        <StatusAndTimeframe {...props} />
+        <StatusAndDueDate {...props} />
         <Targets {...props} />
         <Description {...props} />
       </div>
@@ -74,9 +70,9 @@ function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
   );
 }
 
-function StatusAndTimeframe(props: Props) {
+function StatusAndDueDate(props: Props) {
   if (props.mode === "new" || (props.mode === "edit" && props.allowFullEdit)) {
-    return <StatusAndTimeframeForm goal={props.goal} />;
+    return <StatusAndDueDateForm goal={props.goal} />;
   } else {
     return <TextualOverview goal={props.goal} />;
   }
@@ -152,12 +148,12 @@ function OverviewTimeframe() {
   }
 }
 
-function StatusAndTimeframeForm({ goal }: { goal: Goals.Goal }) {
+function StatusAndDueDateForm({ goal }: { goal: Goals.Goal }) {
   return (
     <Forms.FieldGroup>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:w-3/4">
         <GoalStatusSelector goal={goal} />
-        <TimeframeSelector />
+        <DueDateSelector />
       </div>
     </Forms.FieldGroup>
   );
@@ -216,52 +212,17 @@ function Label({ text, className = "" }: { text: string; className?: string }) {
   return <div className={"font-bold mb-1.5 " + className}>{text}</div>;
 }
 
-function TimeframeSelector() {
-  const [value, setValue] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
+function DueDateSelector() {
+  const [value, setValue] = Forms.useFieldValue<Date | null>("dueDate");
 
   return (
     <div>
       <div className="flex items-center gap-2 mb-1.5">
         <Label text="Timeframe" className="mb-0" />
-        <TimeframeEditButton value={value} setValue={setValue} />
       </div>
 
-      <Chronometer start={value.startDate!} end={value.endDate!} />
+      <DateDisplayField date={value} setDate={setValue} />
     </div>
-  );
-}
-
-interface TimeframeEditButtonProps {
-  value: Timeframes.Timeframe;
-  setValue: (value: Timeframes.Timeframe) => void;
-}
-
-function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
-  const [open, setOpen] = React.useState(false);
-
-  const contentClassName = classNames(
-    "z-[100] overflow-hidden",
-    "border border-surface-outline",
-    "rounded-lg shadow-xl",
-    "bg-surface-base",
-    "max-w-[100vw]",
-    "p-4",
-  );
-
-  return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger>
-        <SecondaryButton size="xxs" spanButton>
-          Edit
-        </SecondaryButton>
-      </Popover.Trigger>
-
-      <Popover.Portal>
-        <Popover.Content className={contentClassName} align="center" sideOffset={50}>
-          <CustomRangePicker timeframe={value} setTimeframe={setValue} />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
   );
 }
 

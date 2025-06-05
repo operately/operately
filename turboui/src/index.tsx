@@ -13,6 +13,7 @@ export * from "./StatusBadge";
 export * from "./TimeframeSelector";
 export * from "./WorkMap";
 
+export { DateDisplayField } from "./DateDisplayField";
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { ProfilePage } from "./ProfilePage";
