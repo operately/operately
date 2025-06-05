@@ -85,13 +85,13 @@ function Page() {
 
   const championSearch = usePeopleSearch({
     scope: { type: "space", id: goal.space.id! },
-    ignoredIds: [goal.champion?.id!, goal.reviewer?.id!],
+    ignoredIds: [champion?.id!, reviewer?.id!],
     transformResult: (p) => preparePerson(p)!,
   });
 
   const reviewerSearch = usePeopleSearch({
     scope: { type: "space", id: goal.space.id! },
-    ignoredIds: [goal.champion?.id!, goal.reviewer?.id!],
+    ignoredIds: [champion?.id!, reviewer?.id!],
     transformResult: (p) => preparePerson(p)!,
   });
 
@@ -384,13 +384,14 @@ function usePeopleSearch<T>(hookParams: UsePeopleSearch<T>): PeopleSearchFn<T> {
   const transform = hookParams.transformResult || ((person) => person as unknown as T);
 
   return async (callParams: PeopleSearchParams): Promise<T[]> => {
-    const params = { ...hookParams, ...callParams };
+    const query = callParams.query.trim();
+    const ignoredIds = (hookParams.ignoredIds || []).concat(callParams.ignoredIds || []);
 
     const result = await Api.searchPeople({
-      query: params.query,
-      ignoredIds: params.ignoredIds || [],
-      searchScopeType: params.scope.type,
-      searchScopeId: params.scope.id,
+      query,
+      ignoredIds,
+      searchScopeType: hookParams.scope.type,
+      searchScopeId: hookParams.scope.id,
     });
 
     const people = result.people || [];
