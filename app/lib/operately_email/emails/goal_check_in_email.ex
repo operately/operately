@@ -60,7 +60,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
         paragraph(
           status_msg(status) ++
             reviewer_note(status, update.goal.reviewer) ++
-            due_date(update.timeframe.end_date)
+            due_date(update.timeframe && update.timeframe.end_date)
         )
       ])
     end
@@ -91,12 +91,16 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
       do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
 
     defp due_date(date) do
-      days = Date.diff(date, Date.utc_today())
-      duration = human_duration(abs(days))
+      if is_nil(date) do
+        []
+      else
+        days = Date.diff(date, Date.utc_today())
+        duration = human_duration(abs(days))
 
-      cond do
-        days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
-        days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
+        cond do
+          days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
+          days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
+        end
       end
     end
 

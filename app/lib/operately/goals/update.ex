@@ -55,8 +55,7 @@ defmodule Operately.Goals.Update do
       :author_id,
       :message,
       :status,
-      :subscription_list_id,
-      :timeframe
+      :subscription_list_id
     ])
   end
 

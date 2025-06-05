@@ -19,7 +19,7 @@ defmodule Operately.Operations.GoalCheckIn do
         message: attrs.content,
         targets: encoded_new_target_values,
         subscription_list_id: changes.subscription_list.id,
-        timeframe: attrs.timeframe
+        timeframe: to_timeframe(goal, attrs.due_date)
       })
     end)
     |> SubscriptionList.update(:update)
@@ -89,5 +89,17 @@ defmodule Operately.Operations.GoalCheckIn do
 
   defp calc_next_check_in_time(goal) do
     Operately.Time.calculate_next_monthly_check_in(goal.next_update_scheduled_at, DateTime.utc_now())
+  end
+
+  defp to_timeframe(goal, due_date) do
+    if due_date == nil do
+      nil
+    else
+      %{
+        type: "days",
+        start_date: goal.inserted_at,
+        end_date: due_date
+      }
+    end
   end
 end
