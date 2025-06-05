@@ -14,32 +14,35 @@ defmodule Operately.Demo.Goals do
     reviewer = Resources.get(resources, data.reviewer)
     parent = data[:parent] && Resources.get(resources, data.parent)
 
-    targets = Enum.with_index(data.targets) |> Enum.map(fn {target, index} ->
-      %{
-        index: index,
-        name: target.name,
-        from: target.from,
-        to: target.to,
-        unit: target.unit
-      }
-    end)
+    targets =
+      Enum.with_index(data.targets)
+      |> Enum.map(fn {target, index} ->
+        %{
+          index: index,
+          name: target.name,
+          from: target.from,
+          to: target.to,
+          unit: target.unit
+        }
+      end)
 
     if length(targets) == 0 do
       raise ArgumentError, "Must have at least one target"
     end
 
-    {:ok, goal} = Operately.Operations.GoalCreation.run(owner, %{
-      space_id: space.id,
-      name: data.name,
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
-      timeframe: create_timeframe(data[:timeframe] || :current_quarter),
-      targets: targets,
-      parent_goal_id: parent && parent.id,
-      anonymous_access_level: 0,
-      company_access_level: 70,
-      space_access_level: 70,
-    })
+    {:ok, goal} =
+      Operately.Operations.GoalCreation.run(owner, %{
+        space_id: space.id,
+        name: data.name,
+        champion_id: champion.id,
+        reviewer_id: reviewer.id,
+        timeframe: create_timeframe(data[:timeframe] || :current_quarter),
+        targets: targets,
+        parent_goal_id: parent && parent.id,
+        anonymous_access_level: 0,
+        company_access_level: 70,
+        space_access_level: 70
+      })
 
     if data.update do
       submit_update(goal, data.update)
@@ -55,20 +58,23 @@ defmodule Operately.Demo.Goals do
       raise ArgumentError, "Number of target values does not match number of targets"
     end
 
-    target_values = Enum.with_index(data.target_values) |> Enum.map(fn {t, index} ->
-      id = goal.targets |> Enum.find(fn t -> t.index == index end) |> Map.get(:id)
+    target_values =
+      Enum.with_index(data.target_values)
+      |> Enum.map(fn {t, index} ->
+        id = goal.targets |> Enum.find(fn t -> t.index == index end) |> Map.get(:id)
 
-      %{"id" => id, "value" => floor(t)}
-    end)
+        %{"id" => id, "value" => floor(t)}
+      end)
 
-    {:ok, _} = Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
-      status: "on_track",
-      content: Operately.Demo.RichText.from_string(data.content),
-      target_values: target_values,
-      subscription_parent_type: :goal_update,
-      subscriber_ids: [],
-      timeframe: goal.timeframe
-    })
+    {:ok, _} =
+      Operately.Operations.GoalCheckIn.run(goal.champion, goal, %{
+        status: "on_track",
+        content: Operately.Demo.RichText.from_string(data.content),
+        target_values: target_values,
+        subscription_parent_type: :goal_update,
+        subscriber_ids: [],
+        due_date: goal.timeframe.end_date
+      })
   end
 
   defp create_timeframe(:current_year) do
