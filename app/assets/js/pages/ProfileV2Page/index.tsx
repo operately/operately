@@ -14,7 +14,7 @@ import { loader, useLoadedData } from "./loader";
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
 
 function Page() {
-  const { person, workMap } = useLoadedData();
+  const { person, workMap, reviewerWorkMap } = useLoadedData();
 
   assertPresent(person.peers);
   assertPresent(person.reports);
@@ -28,6 +28,7 @@ function Page() {
     manager: person.manager ? toPersonWithLink(person.manager, true) : null,
 
     workMap: workMap,
+    reviewerWorkMap: reviewerWorkMap,
 
     activityFeed: <ActivityFeed personId={person.id!} />,
   };

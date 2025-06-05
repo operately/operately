@@ -29,6 +29,7 @@ export namespace ProfilePage {
     reports: Person[];
 
     workMap: WorkMap.Item[];
+    reviewerWorkMap: WorkMap.Item[];
 
     activityFeed: React.ReactNode;
   }
@@ -37,23 +38,7 @@ export namespace ProfilePage {
 }
 
 export function ProfilePage(props: ProfilePage.Props) {
-  const tabs = useTabs("assigned", [
-    { id: "assigned", label: "Assigned", icon: <IconClipboardCheck size={14} /> },
-    { id: "reviewing", label: "Reviewing", icon: <IconEye size={14} /> },
-    { id: "completed", label: "Completed", icon: <IconCircleCheck size={14} /> },
-    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
-    { id: "about", label: "About", icon: <IconUserCircle size={14} /> },
-  ]);
-
-  const items = React.useMemo(() => {
-    const data = processPersonalItems(props.workMap);
-
-    if (tabs.active === "completed") {
-      return sortItemsByClosedDate(data.completedItems);
-    } else {
-      return sortItemsByDueDate(data.ongoingItems);
-    }
-  }, [props.workMap, tabs.active]);
+  const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
 
   return (
     <Page title={props.title} size="fullwidth">
@@ -61,12 +46,38 @@ export function ProfilePage(props: ProfilePage.Props) {
       <Tabs tabs={tabs} />
 
       {["assigned", "reviewing", "completed"].includes(tabs.active) && (
-        <WorkMapTable items={items} tab={tabs.active === "completed" ? "completed" : "all"} />
+        <WorkMapTable items={items[tabs.active]} tab={tabs.active === "completed" ? "completed" : "all"} />
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
       {tabs.active === "about" && <About {...props} />}
     </Page>
   );
+}
+
+function useTabsWithItems(workMap: WorkMap.Item[], reviewerWorkMap: WorkMap.Item[]) {
+  const { assigned, reviewing, completed } = React.useMemo(() => {
+    const assignedData = processPersonalItems(workMap);
+    const reviewerData = processPersonalItems(reviewerWorkMap);
+
+    return {
+      assigned: sortItemsByDueDate(assignedData.ongoingItems),
+      reviewing: sortItemsByDueDate(reviewerData.ongoingItems),
+      completed: sortItemsByClosedDate(assignedData.completedItems),
+    };
+  }, [workMap, reviewerWorkMap]);
+
+  const tabs = useTabs("assigned", [
+    { id: "assigned", label: "Assigned", icon: <IconClipboardCheck size={14} />, count: assigned.length },
+    { id: "reviewing", label: "Reviewing", icon: <IconEye size={14} />, count: reviewing.length },
+    { id: "completed", label: "Completed", icon: <IconCircleCheck size={14} />, count: completed.length },
+    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
+    { id: "about", label: "About", icon: <IconUserCircle size={14} /> },
+  ]);
+
+  return {
+    tabs,
+    items: { assigned, reviewing, completed },
+  };
 }
 
 function ActivityFeed(props: ProfilePage.Props) {
