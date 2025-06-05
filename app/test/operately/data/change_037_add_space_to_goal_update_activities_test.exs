@@ -4,7 +4,6 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
 
   alias Operately.Repo
   alias Operately.Support.RichText
-  alias Operately.Goals.Timeframe
 
   setup ctx do
     ctx
@@ -21,22 +20,25 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
     end
 
     test "goal_check_in and goal_check_in_acknowledgement", ctx do
-      updates = Enum.map(1..3, fn _ ->
-        {:ok, update} = Operately.Operations.GoalCheckIn.run(ctx.creator, ctx.goal, %{
-          goal_id: ctx.goal.id,
-          status: "on_track",
-          target_values: [],
-          content: RichText.rich_text("content"),
-          send_to_everyone: false,
-          subscription_parent_type: :goal_update,
-          subscriber_ids: [],
-          timeframe: Timeframe.current_year()
-        })
-        update = Repo.preload(update, :goal)
-        {:ok, _} = Operately.Operations.GoalUpdateAcknowledging.run(ctx.creator, update)
+      updates =
+        Enum.map(1..3, fn _ ->
+          {:ok, update} =
+            Operately.Operations.GoalCheckIn.run(ctx.creator, ctx.goal, %{
+              goal_id: ctx.goal.id,
+              status: "on_track",
+              target_values: [],
+              content: RichText.rich_text("content"),
+              send_to_everyone: false,
+              subscription_parent_type: :goal_update,
+              subscriber_ids: [],
+              due_date: nil
+            })
 
-        update
-      end)
+          update = Repo.preload(update, :goal)
+          {:ok, _} = Operately.Operations.GoalUpdateAcknowledging.run(ctx.creator, update)
+
+          update
+        end)
 
       Operately.Data.Change037AddSpaceToGoalUpdateActivities.run()
 
@@ -63,10 +65,11 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
         |> Factory.add_goal_update(:update, :goal, :creator)
         |> Factory.preload(:update, :goal)
 
-      comments = Enum.map(1..3, fn _ ->
-        {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, ctx.update, "goal_update", RichText.rich_text("content"))
-        comment
-      end)
+      comments =
+        Enum.map(1..3, fn _ ->
+          {:ok, comment} = Operately.Operations.CommentAdding.run(ctx.creator, ctx.update, "goal_update", RichText.rich_text("content"))
+          comment
+        end)
 
       Operately.Data.Change037AddSpaceToGoalUpdateActivities.run()
 
@@ -79,7 +82,7 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
         assert Enum.find(comments, &(&1.id == activity.content["comment_id"]))
       end)
     end
- end
+  end
 
   #
   # Helpers
