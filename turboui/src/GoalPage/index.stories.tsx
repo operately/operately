@@ -30,6 +30,7 @@ function Component(props: Partial<GoalPage.Props>) {
     description,
     privacyLevel: "internal" as const,
     status: "on_track" as const,
+    state: "active" as const,
     goalName: "Launch AI Platform",
     spaceName: "Product",
     targets: [],
@@ -437,6 +438,7 @@ export const LongParentName: Story = {
 export const ClosedGoal: Story = {
   args: {
     status: "achieved",
+    state: "closed",
     closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
     retrospectiveLink: "/retrospective/1",
     dueDate: startOfCurrentYear(),

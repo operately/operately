@@ -9,6 +9,8 @@ import { MentionedPersonLookupFn } from "../RichEditor";
 import classNames from "../utils/classnames";
 
 export function CheckIns(props: GoalPage.Props) {
+  const showCheckInButton = props.canEdit && props.state !== "closed";
+
   return (
     <div className="p-4 max-w-3xl mx-auto my-6 overflow-scroll">
       <div className="flex items-center gap-2 justify-between">
@@ -19,7 +21,7 @@ export function CheckIns(props: GoalPage.Props) {
           </div>
         </div>
 
-        {props.canEdit && (
+        {showCheckInButton && (
           <PrimaryButton linkTo={props.newCheckInLink} size="xs">
             Check-In Now
           </PrimaryButton>
