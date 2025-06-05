@@ -10,6 +10,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMap do
     field :champion_id, :id
     field :reviewer_id, :id
     field :contributor_id, :id
+    field :only_completed, :boolean
     field :include_assignees, :boolean
   end
 
@@ -29,6 +30,7 @@ defmodule OperatelyWeb.Api.Queries.GetWorkMap do
         champion_id: inputs[:champion_id],
         reviewer_id: inputs[:reviewer_id],
         contributor_id: inputs[:contributor_id],
+        only_completed: inputs[:only_completed] || false,
         include_assignees: inputs[:include_assignees] || false
       })
 
