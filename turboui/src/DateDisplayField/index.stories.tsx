@@ -21,6 +21,11 @@ const meta: Meta<typeof DateDisplayField> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const Commponent = (args: Partial<DateDisplayField.Props>) => {
+  const [date, setDate] = React.useState<Date | null>(args.date || null);
+  return <DateDisplayField {...args} date={date} setDate={setDate} />;
+};
+
 export const AllStates: Story = {
   render: () => {
     const today = new Date();
@@ -33,52 +38,52 @@ export const AllStates: Story = {
         <div className="grid grid-cols-3 gap-8 p-12">
           <div>
             <h3 className="text-sm font-bold mb-2">Normal</h3>
-            <DateDisplayField date={today} showOverdueWarning />
+            <Commponent date={today} showOverdueWarning />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Overdue</h3>
-            <DateDisplayField date={twoWeeksAgo} showOverdueWarning />
+            <Commponent date={twoWeeksAgo} showOverdueWarning />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Last Year</h3>
-            <DateDisplayField date={lastYear} showOverdueWarning />
+            <Commponent date={lastYear} showOverdueWarning />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Next Year</h3>
-            <DateDisplayField date={nextYear} showOverdueWarning />
+            <Commponent date={nextYear} showOverdueWarning />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Read-Only</h3>
-            <DateDisplayField date={today} showOverdueWarning readonly />
+            <Commponent date={today} showOverdueWarning readonly />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Read-Only + Overdue</h3>
-            <DateDisplayField date={twoWeeksAgo} showOverdueWarning readonly />
+            <Commponent date={twoWeeksAgo} showOverdueWarning readonly />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Empty</h3>
-            <DateDisplayField date={null} showOverdueWarning />
+            <Commponent date={null} showOverdueWarning />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Empty + Read-Only</h3>
-            <DateDisplayField date={null} showOverdueWarning readonly />
+            <Commponent date={null} showOverdueWarning readonly />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Empty + As Button</h3>
-            <DateDisplayField date={null} showOverdueWarning showEmptyStateAsButton />
+            <Commponent date={null} showOverdueWarning showEmptyStateAsButton />
           </div>
 
           <div>
             <h3 className="text-sm font-bold mb-2">Empty + As Button + Read-Only</h3>
-            <DateDisplayField date={null} showOverdueWarning showEmptyStateAsButton readonly />
+            <Commponent date={null} showOverdueWarning showEmptyStateAsButton readonly />
             <span className="text-xs text-content-dimmed">(It is invisible)</span>
           </div>
         </div>

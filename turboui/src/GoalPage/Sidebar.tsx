@@ -6,7 +6,7 @@ import { BlackLink, DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 
-import DateDisplayField from "../DateDisplayField";
+import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
 import { PersonField } from "../PersonField";
 import classNames from "../utils/classnames";
@@ -31,8 +31,8 @@ function DueDate(props: GoalPage.Props) {
     <SidebarSection title="Due Date">
       <DateDisplayField
         date={props.dueDate}
+        setDate={props.setDueDate}
         readonly={isReadonly}
-        onChange={props.setDueDate}
         showOverdueWarning={!props.closedAt}
       />
     </SidebarSection>
