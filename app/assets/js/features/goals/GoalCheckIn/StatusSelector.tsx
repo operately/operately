@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import * as React from "react";
 
-import classNames from "classnames";
-import { IconCheck } from "@tabler/icons-react";
 import { Circle } from "@/components/Circle";
-import { useFieldValue, useFieldError } from "@/components/Forms/FormContext";
-import { useValidation } from "@/components/Forms/validations/hook";
+import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { AddErrorFn } from "@/components/Forms/useForm/errors";
+import { useValidation } from "@/components/Forms/validations/hook";
 import { createTestId } from "@/utils/testid";
+import { IconCheck } from "@tabler/icons-react";
+import classNames from "classnames";
 
 type Status = "pending" | "on_track" | "concern" | "issue";
 type LegacyStatus = "caution";
@@ -146,13 +146,14 @@ function StatusPickerOption({ status, description, color, isSelected, onClick, t
 
 function StatusTrigger({ value, error }: { value: AnyStatus | null; error?: boolean }) {
   const className = classNames(
-    "border shadow-sm rounded-lg",
+    "border rounded-lg",
     "px-2 py-1.5",
-    "bg-surface-dimmed text-sm relative overflow-hidden",
+    "text-sm relative overflow-hidden",
     "group",
     "cursor-pointer",
+    "hover:bg-surface-dimmed",
     {
-      "border-stroke-base": !error,
+      "border-surface-outline": !error,
       "border-red-500": error,
     },
   );
