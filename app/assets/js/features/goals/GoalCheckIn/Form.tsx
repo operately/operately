@@ -24,8 +24,8 @@ interface Props {
   subscriptionsState?: SubscriptionsState;
 
   // Full editing is allowed only for the latest check-in,
-  // and allows editing the status, timeframe, and targets.
-  // Otherwise, only the description can be edited.
+  // and allows editing the status, due date, and targets.
+  // Otherwise, only the description can be due date.
   allowFullEdit: boolean;
 }
 
@@ -64,7 +64,7 @@ function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
     <InfoCallout
       message={"Editing locked after 3 days"}
       description={
-        "You can edit the timeframe, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
+        "You can edit the due date, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
       }
     />
   );
@@ -82,7 +82,7 @@ function TextualOverview({ goal }: { goal: Goals.Goal }) {
   return (
     <div className="ProseMirror">
       <Label text="Overview" />
-      <OverviewStatus goal={goal} /> <OverviewTimeframe />
+      <OverviewStatus goal={goal} /> <OverviewDueDate />
     </div>
   );
 }
@@ -133,8 +133,8 @@ function OverviewIssue({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function OverviewTimeframe() {
-  const [dueDate] = Forms.useFieldValue<Date | null>("timeframe");
+function OverviewDueDate() {
+  const [dueDate] = Forms.useFieldValue<Date | null>("dueDate");
 
   if (dueDate) {
     if (dueDate < new Date()) {
