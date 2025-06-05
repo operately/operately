@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   alias Operately.Operations.GoalCheckInEdit
 
   inputs do
-    field :id, :string
+    field :id, :id, required: true
     field :status, :string
-    field :content, :string
+    field :content, :json
     field :new_target_values, :string
-    field :timeframe, :timeframe
+    field :due_date, :date, optional: false
   end
 
   outputs do
@@ -20,10 +20,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
 
   def call(conn, inputs) do
     Action.new()
-    |> Action.run(:id, fn -> decode_id(inputs.id) end)
-    |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
     |> Action.run(:me, fn -> find_me(conn) end)
-    |> Action.run(:update, fn ctx -> load(ctx) end)
+    |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
+    |> Action.run(:update, fn ctx -> Update.get(ctx.me, id: inputs.id, opts: [preload: [goal: :targets]]) end)
     |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_edit) end)
     |> Action.run(:operation, fn ctx -> GoalCheckInEdit.run(ctx.me, ctx.update.goal, ctx.update, ctx.attrs) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
@@ -46,23 +45,14 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     {:ok,
      %{
        status: inputs.status,
-       content: Jason.decode!(inputs.content),
+       content: inputs.content,
        new_target_values:
          Jason.decode!(inputs.new_target_values)
          |> Enum.map(fn t ->
            {:ok, id} = decode_id(t["id"])
            %{"id" => id, "value" => t["value"]}
          end),
-       timeframe: inputs[:timeframe]
+       due_date: inputs.due_date
      }}
-  end
-
-  defp load(ctx) do
-    Update.get(ctx.me,
-      id: ctx.id,
-      opts: [
-        preload: [goal: :targets]
-      ]
-    )
   end
 end
