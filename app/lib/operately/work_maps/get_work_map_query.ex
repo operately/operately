@@ -172,7 +172,6 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp preload_project_milestones(query) do
     subquery = from(m in Operately.Projects.Milestone,
-      where: m.status == :pending,
       select: %{id: m.id, title: m.title, status: m.status, deadline_at: m.deadline_at}
     )
 

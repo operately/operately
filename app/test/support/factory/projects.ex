@@ -205,6 +205,26 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, project_name, project)
   end
 
+  def close_project_milestone(ctx, milestone_name, creator_name \\ :creator) do
+    creator = Map.fetch!(ctx, creator_name)
+    milestone = Map.fetch!(ctx, milestone_name)
+
+    {:ok, _} = Operately.Comments.create_milestone_comment(
+      creator,
+      milestone,
+      "complete",
+      %{
+        content: %{"message" => RichText.rich_text("some content")},
+        author_id: creator.id,
+        entity_id: milestone.id,
+        entity_type: :project_milestone,
+      }
+    )
+    milestone = Repo.reload(milestone)
+
+    Map.put(ctx, milestone_name, milestone)
+  end
+
   #
   # Helpers
   #
