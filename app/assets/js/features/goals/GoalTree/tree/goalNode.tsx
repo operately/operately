@@ -1,18 +1,19 @@
 import plurarize from "@/utils/plurarize";
 
-import { Node } from "./node";
-import { Goal } from "@/models/goals";
 import { GoalProgressUpdate } from "@/api";
+import { Goal } from "@/models/goals";
 import { Paths } from "@/routes/paths";
+import { Node } from "./node";
 
-import * as Time from "@/utils/time";
-import * as Timeframes from "@/utils/timeframes";
 import * as Spaces from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
+import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
 
 export class GoalNode extends Node {
   public goal: Goal;
   public lastCheckIn: GoalProgressUpdate | null | undefined;
+  private timeframe: Timeframes.Timeframe | null;
 
   constructor(goal: Goal) {
     assertPresent(goal.space, "space must be present in goal");
@@ -42,18 +43,39 @@ export class GoalNode extends Node {
     this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space.id!;
 
-    this.startedAt = Timeframes.parse(goal.timeframe!).startDate!;
+    this.timeframe = this.calcTimeframe();
+    this.startedAt = this.calcStartedAt();
   }
 
-  activeTimeframe(): Timeframes.Timeframe {
-    if (this.isClosed) {
-      return Timeframes.parse(this.goal.timeframe!);
+  calcStartedAt(): Date {
+    if (this.goal.timeframe) {
+      return Timeframes.parse(this.goal.timeframe).startDate!;
     } else {
-      return {
-        startDate: this.startedAt,
-        endDate: new Date(),
-        type: "days",
-      };
+      return Time.parse(this.goal.insertedAt)!;
+    }
+  }
+
+  calcTimeframe(): Timeframes.Timeframe | null {
+    if (this.goal.timeframe) {
+      return Timeframes.parse(this.goal.timeframe);
+    } else {
+      return null;
+    }
+  }
+
+  activeTimeframe(): Timeframes.Timeframe | null {
+    if (this.timeframe) {
+      if (this.isClosed) {
+        return this.timeframe;
+      } else {
+        return {
+          startDate: this.startedAt,
+          endDate: new Date(),
+          type: "days",
+        };
+      }
+    } else {
+      return null;
     }
   }
 
@@ -77,8 +99,12 @@ export class GoalNode extends Node {
   }
 
   compareTimeframe(b: GoalNode): number {
-    const timeframeA = Timeframes.parse(this.goal.timeframe!);
-    const timeframeB = Timeframes.parse(b.goal.timeframe!);
+    const timeframeA = this.timeframe;
+    const timeframeB = b.timeframe;
+
+    if (!timeframeA && !timeframeB) return 0;
+    if (!timeframeA) return -1; // nulls first
+    if (!timeframeB) return 1; // nulls first
 
     return Time.compareAsc(timeframeA.endDate, timeframeB.endDate);
   }

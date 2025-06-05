@@ -1,10 +1,10 @@
-import * as React from "react";
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { useTreeContext } from "../treeContext";
 import { durationHumanized } from "@/utils/time";
 import { GoalNode } from "../tree";
+import { useTreeContext } from "../treeContext";
 
 export function GoalStatusCompact({ node }: { node: GoalNode }) {
   const { density } = useTreeContext();
@@ -13,8 +13,8 @@ export function GoalStatusCompact({ node }: { node: GoalNode }) {
   if (node.type !== "goal") return null;
 
   const goal = node.asGoalNode().goal!;
-  const timeframe = Timeframes.parse(goal.timeframe!);
-  const isOverdue = Timeframes.isOverdue(timeframe) && !goal.isClosed;
+  const timeframe = goal.timeframe && Timeframes.parse(goal.timeframe!);
+  const isOverdue = timeframe && Timeframes.isOverdue(timeframe) && !goal.isClosed;
 
   if (isOverdue) return <OverdueIndicator timeframe={timeframe} />;
   if (goal.isClosed) return <ClosedIndicator goal={goal} />;
