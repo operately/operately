@@ -1,5 +1,7 @@
 defmodule Operately.WorkMaps.WorkMap do
   alias Operately.WorkMaps.WorkMapItem
+  alias Operately.Goals.Goal
+  alias Operately.Projects.Project
 
   @doc """
   Builds a hierarchical structure from a flat list of WorkMapItem structs.
@@ -180,6 +182,8 @@ defmodule Operately.WorkMaps.WorkMap do
               item.space && item.space.id == filter_value
             :parent_goal_id ->
               item.parent_id == filter_value
+            :only_completed ->
+              matches_completion_status?(item, filter_value)
             _ ->
               true  # Unknown filter keys are ignored
           end
@@ -187,6 +191,15 @@ defmodule Operately.WorkMaps.WorkMap do
       end)
     end
   end
+
+  defp matches_completion_status?(item, true) do
+    case item.type do
+      :goal -> Goal.state(item.resource) == :closed
+      :project -> Project.state(item.resource) == :closed
+      _ -> true
+    end
+  end
+  defp matches_completion_status?(_, _), do: true
 
   defp matches_person_filter?(item, filters) do
     person_filters = filters

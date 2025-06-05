@@ -35,6 +35,9 @@ export async function loader({ params, request, refreshCache = false }): Promise
     case "reviewing":
       return fetchRaviewingTab(params.id, refreshCache);
 
+    case "completed":
+      return fetchCompletedTab(params.id, refreshCache);
+
     default:
       return fetchAboutTab(params.id, refreshCache);
   }
@@ -89,6 +92,22 @@ function fetchRaviewingTab(reviewerId: string, refreshCache: boolean) {
         person: fetchPerson(reviewerId),
         workMap: WorkMap.getFlatWorkMap({
           reviewerId,
+        }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
+      }),
+  });
+}
+
+function fetchCompletedTab(championId: string, refreshCache: boolean) {
+  return PageCache.fetch({
+    cacheKey: `v1-PersonalWorkMap.completedTab-${championId}`,
+    refreshCache,
+    fetchFn: async () =>
+      fetchAll({
+        person: fetchPerson(championId),
+        workMap: WorkMap.getFlatWorkMap({
+          championId,
+          contributorId: championId,
+          onlyCompleted: true,
         }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
       }),
   });
