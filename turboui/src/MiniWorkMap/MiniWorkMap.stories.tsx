@@ -14,7 +14,7 @@ const meta = {
   decorators: [
     (Story) => (
       <div className="sm:mt-12">
-        <Page title="Mini Work Map" size="small">
+        <Page title="Mini Work Map" size="medium">
           <div className="p-12">
             <Story />
           </div>
@@ -75,12 +75,38 @@ export const Default: Story = {
           },
         ],
       },
+      {
+        id: "project-a",
+        name: "Project Alp",
+        type: "project",
+        itemPath: "#",
+        state: "active",
+        progress: 50,
+        assignees: genPeople(3, { random: true }),
+        children: [],
+        status: "on_track",
+      },
+      {
+        id: "project-a",
+        name: "Project Bug",
+        type: "project",
+        itemPath: "#",
+        state: "closed",
+        progress: 50,
+        assignees: genPeople(3, { random: true }),
+        children: [],
+        status: "on_track",
+      },
     ],
   },
   decorators: [
     (Story) => (
-      <div className="w-[500px]">
+      <div className="">
         <Story />
+
+        <div className="text-sm mt-8">
+          Note: Items are sorted by their state (active, paused, closed) and then by their type (projects, goals).
+        </div>
       </div>
     ),
   ],
