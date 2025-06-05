@@ -9,7 +9,7 @@ defmodule Operately.Notifications.Subscriber do
     :person,
     :role,
     :priority,
-    :is_subscribed,
+    :is_subscribed
   ]
 
   def from_project_contributor(contributors) when is_list(contributors) do
@@ -32,12 +32,13 @@ defmodule Operately.Notifications.Subscriber do
     subs =
       exclude_canceled_subscriptions(project_child.subscription_list)
       |> Enum.into(%{}, fn s ->
-      {s.person.id, from_subscription(s)}
-    end)
+        {s.person.id, from_subscription(s)}
+      end)
 
-    potential_subs = Enum.into(project_child.project.contributors, %{}, fn c ->
-      {c.person.id, from_project_contributor(c)}
-    end)
+    potential_subs =
+      Enum.into(project_child.project.contributors, %{}, fn c ->
+        {c.person.id, from_project_contributor(c)}
+      end)
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end
@@ -46,12 +47,13 @@ defmodule Operately.Notifications.Subscriber do
     subs =
       exclude_canceled_subscriptions(update.subscription_list)
       |> Enum.into(%{}, fn s ->
-      {s.person.id, from_subscription(s)}
-    end)
+        {s.person.id, from_subscription(s)}
+      end)
 
-    potential_subs = Enum.into(from_goal(update.goal), %{}, fn sub ->
-      {sub.person.id, sub}
-    end)
+    potential_subs =
+      Enum.into(from_goal(update.goal), %{}, fn sub ->
+        {sub.person.id, sub}
+      end)
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end
@@ -60,12 +62,13 @@ defmodule Operately.Notifications.Subscriber do
     subs =
       exclude_canceled_subscriptions(comment_thread.subscription_list)
       |> Enum.into(%{}, fn s ->
-      {s.person.id, from_subscription(s)}
-    end)
+        {s.person.id, from_subscription(s)}
+      end)
 
-    potential_subs = Enum.into(from_goal(goal), %{}, fn sub ->
-      {sub.person.id, sub}
-    end)
+    potential_subs =
+      Enum.into(from_goal(goal), %{}, fn sub ->
+        {sub.person.id, sub}
+      end)
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end
@@ -74,27 +77,34 @@ defmodule Operately.Notifications.Subscriber do
     subs =
       exclude_canceled_subscriptions(message.subscription_list)
       |> Enum.into(%{}, fn s ->
-      {s.person.id, from_subscription(s)}
-    end)
+        {s.person.id, from_subscription(s)}
+      end)
 
-    potential_subs = Enum.into(message.space.members, %{}, fn p ->
-      {p.id, from_person(p)}
-    end)
+    potential_subs =
+      Enum.into(message.space.members, %{}, fn p ->
+        {p.id, from_person(p)}
+      end)
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end
 
   def from_goal(goal = %Goal{}) do
-    members = Enum.into(goal.group.members, %{}, fn p ->
-      {p.id, from_person(p)}
+    goal.group.members
+    |> Enum.into(%{}, fn p -> {p.id, from_person(p)} end)
+    |> then(fn members ->
+      if goal.champion_id != nil do
+        Map.put(members, goal.champion_id, from_goal_champion(goal.champion))
+      else
+        members
+      end
     end)
-
-    contribs = %{
-      goal.champion_id => from_goal_champion(goal.champion),
-      goal.reviewer_id => from_goal_reviewer(goal.reviewer),
-    }
-
-    Map.merge(members, contribs)
+    |> then(fn members ->
+      if goal.reviewer_id != nil do
+        Map.put(members, goal.reviewer_id, from_goal_reviewer(goal.reviewer))
+      else
+        members
+      end
+    end)
     |> Map.values()
   end
 
@@ -102,12 +112,13 @@ defmodule Operately.Notifications.Subscriber do
     subs =
       exclude_canceled_subscriptions(resource_hub_child.subscription_list)
       |> Enum.into(%{}, fn s ->
-      {s.person.id, from_subscription(s)}
-    end)
+        {s.person.id, from_subscription(s)}
+      end)
 
-    potential_subs = Enum.into(resource_hub_child.resource_hub.space.members, %{}, fn p ->
-      {p.id, from_person(p)}
-    end)
+    potential_subs =
+      Enum.into(resource_hub_child.resource_hub.space.members, %{}, fn p ->
+        {p.id, from_person(p)}
+      end)
 
     merge_subs_and_potential_subs(subs, potential_subs)
   end
@@ -154,14 +165,14 @@ defmodule Operately.Notifications.Subscriber do
   end
 
   defp build_struct(person, role, opts \\ []) do
-    priority = Keyword.get(opts, :priority, :false)
+    priority = Keyword.get(opts, :priority, false)
     is_subscribed = Keyword.get(opts, :is_subscribed, false)
 
     %__MODULE__{
       person: person,
       role: role,
       priority: priority,
-      is_subscribed: is_subscribed,
+      is_subscribed: is_subscribed
     }
   end
 end
