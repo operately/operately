@@ -1,9 +1,10 @@
 import * as Pages from "@/components/Pages";
-import * as Spaces from "@/models/spaces";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { Paths } from "@/routes/paths";
+import * as Spaces from "@/models/spaces";
+
+// import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
+// import { Paths } from "@/routes/paths";
 
 interface LoadedData {
   space: Spaces.Space;
@@ -12,10 +13,10 @@ interface LoadedData {
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  await redirectIfFeatureEnabled(params, {
-    feature: "space_work_map",
-    path: Paths.spaceWorkMapPath(params.id),
-  });
+  // await redirectIfFeatureEnabled(params, {
+  //   feature: "space_work_map",
+  //   path: Paths.spaceWorkMapPath(params.id),
+  // });
 
   const spacePromise = Spaces.getSpace({
     id: params.id,

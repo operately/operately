@@ -6,20 +6,19 @@ import * as Icons from "@tabler/icons-react";
 
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 
-import classNames from "classnames";
-import { match } from "ts-pattern";
-import { Paths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
-import { SecondaryButton } from "turboui";
-import { DivLink } from "turboui";
 import { AvatarLink } from "@/components/AvatarLink";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
+import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
+import classNames from "classnames";
+import { match } from "ts-pattern";
+import { DivLink, SecondaryButton } from "turboui";
 
-import { GoalNode, Node } from "../tree";
+import { SmallStatusIndicator } from "@/components/status";
 import { useExpandable } from "../context/Expandable";
+import { GoalNode, Node } from "../tree";
 import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
-import { SmallStatusIndicator } from "@/components/status";
 
 export function GoalDetails({ node }: { node: GoalNode }) {
   const size = useWindowSizeBreakpoints();
@@ -97,6 +96,15 @@ function GoalStatus({ goal }: { goal: GoalNode }) {
 }
 
 function GoalTimeframe({ goal }: { goal: Goals.Goal }) {
+  if (!goal.timeframe) {
+    return (
+      <div className="flex gap-1 items-center text-xs text-content-dimmed">
+        <Icons.IconCalendar size={13} className="text-content-dimmed mb-[1px]" />
+        No timeframe
+      </div>
+    );
+  }
+
   const timeframe = Timeframes.parse(goal.timeframe!);
   const isOverdue = Timeframes.isOverdue(timeframe) && !goal.isClosed;
 
