@@ -58,6 +58,7 @@ export interface EditorState {
   mentionedPersonLookup: MentionedPersonLookupFn;
   uploadFile: UploadFileFn;
   setContent: (content: any) => void;
+  setFocused: (focused: boolean) => void;
   getJson: () => any;
 }
 
@@ -158,6 +159,14 @@ export function useEditor(props: UseEditorProps): EditorState {
     return editor.getJSON();
   }, [editor]);
 
+  React.useEffect(() => {
+    if (!editor) return;
+
+    if (focused) {
+      editor.chain().focus().run();
+    }
+  }, [editor, focused]);
+
   return {
     editor,
     submittable,
@@ -169,6 +178,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     mentionedPersonLookup: props.mentionedPersonLookup,
     uploadFile: props.uploadFile!,
     setContent,
+    setFocused,
     getJson,
   };
 }
