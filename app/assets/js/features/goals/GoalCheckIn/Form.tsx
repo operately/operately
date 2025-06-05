@@ -13,7 +13,7 @@ import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import DateDisplayField from "turboui/src/DateDisplayField";
+import { DateDisplayField } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {
@@ -218,10 +218,10 @@ function DueDateSelector() {
   return (
     <div>
       <div className="flex items-center gap-2 mb-1.5">
-        <Label text="Timeframe" className="mb-0" />
+        <Label text="Due Date" className="mb-0" />
       </div>
 
-      <DateDisplayField date={value} setDate={setValue} />
+      <DateDisplayField date={value} setDate={setValue} variant="form-field" />
     </div>
   );
 }
