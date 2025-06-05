@@ -1,24 +1,20 @@
-import * as React from "react";
-import * as People from "@/models/people";
 import * as Goals from "@/models/goals";
-import * as Popover from "@radix-ui/react-popover";
-import * as Timeframes from "@/utils/timeframes";
+import * as People from "@/models/people";
+import * as React from "react";
 
-import { SecondaryButton } from "turboui";
-import { Chronometer } from "turboui";
-import { CustomRangePicker } from "turboui/TimeframeSelectorDialog";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
 
-import Forms from "@/components/Forms";
-import RichContent from "@/components/RichContent";
-import classNames from "classnames";
-import { match } from "ts-pattern";
-import { durationHumanized } from "@/utils/time";
-import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
-import { StatusSelector } from "./StatusSelector";
-import { useFieldValue } from "@/components/Forms/FormContext";
 import { InfoCallout } from "@/components/Callouts";
+import Forms from "@/components/Forms";
+import { useFieldValue } from "@/components/Forms/FormContext";
+import RichContent from "@/components/RichContent";
+import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
+import { durationHumanized } from "@/utils/time";
+import { IconInfoCircle } from "@tabler/icons-react";
+import { match } from "ts-pattern";
+import { DateDisplayField, Tooltip } from "turboui";
+import { StatusSelector } from "./StatusSelector";
 
 interface Props {
   form: any;
@@ -28,8 +24,8 @@ interface Props {
   subscriptionsState?: SubscriptionsState;
 
   // Full editing is allowed only for the latest check-in,
-  // and allows editing the status, timeframe, and targets.
-  // Otherwise, only the description can be edited.
+  // and allows editing the status, due date, and targets.
+  // Otherwise, only the description can be due date.
   allowFullEdit: boolean;
 }
 
@@ -38,7 +34,7 @@ export function Form(props: Props) {
     <Forms.Form form={props.form} preventSubmitOnEnter>
       <div className="space-y-8 mt-8">
         <FullEditDisabledMessage {...props} />
-        <StatusAndTimeframe {...props} />
+        <StatusAndDueDate {...props} />
         <Targets {...props} />
         <Description {...props} />
       </div>
@@ -68,15 +64,15 @@ function FullEditDisabledMessage({ mode, allowFullEdit }: Props) {
     <InfoCallout
       message={"Editing locked after 3 days"}
       description={
-        "You can edit the timeframe, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
+        "You can edit the due date, status, and target values for up to 3 days after submitting your check-in. After that, they’re locked in to keep the history clear and decisions accountable. Need to make a changes? Leave a comment or create a new check-in."
       }
     />
   );
 }
 
-function StatusAndTimeframe(props: Props) {
+function StatusAndDueDate(props: Props) {
   if (props.mode === "new" || (props.mode === "edit" && props.allowFullEdit)) {
-    return <StatusAndTimeframeForm goal={props.goal} />;
+    return <StatusAndDueDateForm goal={props.goal} />;
   } else {
     return <TextualOverview goal={props.goal} />;
   }
@@ -86,7 +82,7 @@ function TextualOverview({ goal }: { goal: Goals.Goal }) {
   return (
     <div className="ProseMirror">
       <Label text="Overview" />
-      <OverviewStatus goal={goal} /> <OverviewTimeframe />
+      <OverviewStatus goal={goal} /> <OverviewDueDate />
     </div>
   );
 }
@@ -137,27 +133,30 @@ function OverviewIssue({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function OverviewTimeframe() {
-  const [timeframe] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
-  if (!timeframe.endDate) return null;
+function OverviewDueDate() {
+  const [dueDate] = Forms.useFieldValue<Date | null>("dueDate");
 
-  if (timeframe.endDate < new Date()) {
-    return (
-      <span>
-        {durationHumanized(timeframe.endDate, new Date())} <mark data-highlight="bgRed">overdue</mark>.
-      </span>
-    );
+  if (dueDate) {
+    if (dueDate < new Date()) {
+      return (
+        <span>
+          {durationHumanized(dueDate, new Date())} <mark data-highlight="bgRed">overdue</mark>.
+        </span>
+      );
+    } else {
+      return <span>{durationHumanized(new Date(), dueDate)} until the deadline.</span>;
+    }
   } else {
-    return <span>{durationHumanized(new Date(), timeframe.endDate)} until the deadline.</span>;
+    return <span>No due date set.</span>;
   }
 }
 
-function StatusAndTimeframeForm({ goal }: { goal: Goals.Goal }) {
+function StatusAndDueDateForm({ goal }: { goal: Goals.Goal }) {
   return (
     <Forms.FieldGroup>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:w-3/4">
         <GoalStatusSelector goal={goal} />
-        <TimeframeSelector />
+        <DueDateSelector />
       </div>
     </Forms.FieldGroup>
   );
@@ -212,56 +211,28 @@ function DescriptionEdit({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function Label({ text, className = "" }: { text: string; className?: string }) {
-  return <div className={"font-bold mb-1.5 " + className}>{text}</div>;
-}
-
-function TimeframeSelector() {
-  const [value, setValue] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
+function Label({ text, info, className = "" }: { text: string; className?: string; info?: string }) {
+  const infoPopup = info ? (
+    <Tooltip content={info}>
+      <IconInfoCircle size={14} className="inline-block  -mt-0.5 text-content-dimmed hover:text-content-base" />
+    </Tooltip>
+  ) : null;
 
   return (
-    <div>
-      <div className="flex items-center gap-2 mb-1.5">
-        <Label text="Timeframe" className="mb-0" />
-        <TimeframeEditButton value={value} setValue={setValue} />
-      </div>
-
-      <Chronometer start={value.startDate!} end={value.endDate!} />
+    <div className={"font-bold mb-1.5 " + className}>
+      {text} {infoPopup}
     </div>
   );
 }
 
-interface TimeframeEditButtonProps {
-  value: Timeframes.Timeframe;
-  setValue: (value: Timeframes.Timeframe) => void;
-}
-
-function TimeframeEditButton({ value, setValue }: TimeframeEditButtonProps) {
-  const [open, setOpen] = React.useState(false);
-
-  const contentClassName = classNames(
-    "z-[100] overflow-hidden",
-    "border border-surface-outline",
-    "rounded-lg shadow-xl",
-    "bg-surface-base",
-    "max-w-[100vw]",
-    "p-4",
-  );
+function DueDateSelector() {
+  const [value, setValue] = Forms.useFieldValue<Date | null>("dueDate");
 
   return (
-    <Popover.Root open={open} onOpenChange={setOpen}>
-      <Popover.Trigger>
-        <SecondaryButton size="xxs" spanButton>
-          Edit
-        </SecondaryButton>
-      </Popover.Trigger>
-
-      <Popover.Portal>
-        <Popover.Content className={contentClassName} align="center" sideOffset={50}>
-          <CustomRangePicker timeframe={value} setTimeframe={setValue} />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <div>
+      <Label text="Due Date" info="Set a new due date for the goal." />
+      <DateDisplayField date={value} setDate={setValue} variant="form-field" emptyStateText="No due date set" />
+    </div>
   );
 }
 
