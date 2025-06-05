@@ -6,25 +6,27 @@ import { SecondaryButton } from "../Button";
 import classNames from "../utils/classnames";
 import { isCurrentYear, isOverdue } from "../utils/time";
 
-interface DateDisplayFieldProps {
-  date?: Date | null;
-  onChange?: (date: Date | null) => void;
+export namespace DateDisplayField {
+  export interface Props {
+    date: Date | null;
+    setDate?: (date: Date | null) => void;
 
-  placeholder?: string;
-  readonly?: boolean;
-  className?: string;
-  iconSize?: number;
-  textSize?: string;
+    placeholder?: string;
+    readonly?: boolean;
+    className?: string;
+    iconSize?: number;
+    textSize?: string;
 
-  showOverdueWarning?: boolean;
-  showEmptyStateAsButton?: boolean;
-  emptyStateText?: string;
-  emptyStateReadonlyText?: string;
+    showOverdueWarning?: boolean;
+    showEmptyStateAsButton?: boolean;
+    emptyStateText?: string;
+    emptyStateReadonlyText?: string;
+  }
 }
 
 export function DateDisplayField({
   date,
-  onChange = () => {},
+  setDate = () => {},
   readonly = false,
   iconSize = 18,
   textSize = "text-sm",
@@ -33,18 +35,18 @@ export function DateDisplayField({
   showEmptyStateAsButton = false,
   emptyStateText = "Set date",
   emptyStateReadonlyText = "No date set",
-}: DateDisplayFieldProps) {
+}: DateDisplayField.Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const clearDate = () => {
-    onChange(null);
-    setIsOpen(false);
+  const handleChange = (newDate: Date | null) => {
+    if (date?.getTime() !== newDate?.getTime()) {
+      setDate(newDate);
+    }
   };
 
-  const setNewDate = (newDate: Date | null) => {
-    if (date?.getTime() !== newDate?.getTime()) {
-      onChange(newDate);
-    }
+  const clearDate = () => {
+    handleChange(null);
+    setIsOpen(false);
   };
 
   const display = (
@@ -68,7 +70,7 @@ export function DateDisplayField({
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger className={`inline-block ${className}`}>{display}</Popover.Trigger>
         <Popover.Portal>
-          <DatePickerPopover date={date} setNewDate={setNewDate} clearDate={clearDate} />
+          <DatePickerPopover date={date} setNewDate={handleChange} clearDate={clearDate} />
         </Popover.Portal>
       </Popover.Root>
     );
@@ -180,5 +182,3 @@ const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }
 };
-
-export default DateDisplayField;

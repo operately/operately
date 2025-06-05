@@ -139,7 +139,7 @@ export function MilestonePage({
             <div className="ml-4 flex items-center text-content-subtle">
               <DateDisplayField
                 date={milestone.dueDate || null}
-                onChange={(date) => {
+                setDate={(date) => {
                   if (onDueDateChange) {
                     // Handle both setting a date and clearing a date (null)
                     onDueDateChange(milestone.id, date);
