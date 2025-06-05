@@ -514,6 +514,40 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         project1: []
       })
     end
+
+    test "filters correctly with only_completed", ctx do
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          space_id: ctx.space1.id,
+          parent_goal_id: ctx.parent_goal1.id,
+          champion_id: ctx.creator.id,
+          contributor_id: ctx.creator.id,
+          only_completed: true
+        })
+
+      assert_work_map_structure(work_map, ctx, %{})
+
+      ctx
+      |> Factory.close_goal(:child_goal1)
+      |> Factory.close_project(:child_project1)
+
+      {:ok, work_map} =
+        GetWorkMapQuery.execute(:system, %{
+          company_id: ctx.company.id,
+          space_id: ctx.space1.id,
+          parent_goal_id: ctx.parent_goal1.id,
+          champion_id: ctx.creator.id,
+          contributor_id: ctx.creator.id,
+          only_completed: true
+        })
+
+      assert_work_map_structure(work_map, ctx, %{
+        child_goal1: %{
+          child_project1: []
+        }
+      })
+    end
   end
 
   describe "permissions - query root projects" do
