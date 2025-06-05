@@ -37,7 +37,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
           status: attrs.status,
           message: attrs.content,
           targets: encode_new_target_values(attrs.new_target_values, check_in),
-          timeframe: attrs[:timeframe] || check_in.timeframe
+          timeframe: to_timeframe(check_in.goal, attrs[:due_date])
         })
       else
         Update.changeset(check_in, %{
@@ -113,5 +113,17 @@ defmodule Operately.Operations.GoalCheckInEdit do
       |> Map.merge(%{value: target_value["value"]})
       |> Map.from_struct()
     end)
+  end
+
+  defp to_timeframe(goal, due_date) do
+    if due_date == nil do
+      nil
+    else
+      %{
+        type: "days",
+        start_date: goal.inserted_at,
+        end_date: due_date
+      }
+    end
   end
 end

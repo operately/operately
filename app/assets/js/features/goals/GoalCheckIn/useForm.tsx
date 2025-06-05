@@ -1,15 +1,15 @@
-import { useNavigate } from "react-router-dom";
 import { Update, useEditGoalProgressUpdate, usePostGoalProgressUpdate } from "@/models/goalCheckIns";
 import { Goal } from "@/models/goals";
+import { useNavigate } from "react-router-dom";
 
-import * as Timeframes from "@/utils/timeframes";
 import * as Pages from "@/components/Pages";
+import * as Time from "@/utils/time";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
 import { emptyContent } from "@/components/RichContent";
-import { assertPresent } from "@/utils/assertions";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import { Paths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
 interface NewProps {
@@ -32,13 +32,12 @@ export function useForm(props: EditProps | NewProps) {
   const navigate = useNavigate();
   const setPageMode = Pages.useSetPageMode();
 
-  assertPresent(goal?.timeframe, "timeframe must be present in goal");
   assertPresent(goal?.targets, "targets must be present in goal");
 
   const form = Forms.useForm({
     fields: {
       status: mode === "edit" ? props.update.status : null,
-      timeframe: calcTimeframe(props),
+      dueDate: Time.parse(goal.dueDate) || null,
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
@@ -57,7 +56,7 @@ export function useForm(props: EditProps | NewProps) {
         status: form.values.status,
         content: JSON.stringify(form.values.description),
         newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
-        timeframe: Timeframes.serialize(form.values.timeframe),
+        dueDate: form.values.dueDate && Time.toDateWithoutTime(form.values.dueDate),
       };
 
       if (mode === "new") {
@@ -82,12 +81,4 @@ export function useForm(props: EditProps | NewProps) {
   });
 
   return form;
-}
-
-function calcTimeframe(props: NewProps | EditProps): any {
-  if (props.mode == "new") {
-    return Timeframes.parse(props.goal.timeframe!);
-  } else {
-    return Timeframes.parse(props.update.timeframe!);
-  }
 }

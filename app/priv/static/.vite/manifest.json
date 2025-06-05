@@ -1,15 +1,15 @@
 {
-  "_vendor-SGdvjk5e.js": {
-    "file": "assets/vendor-SGdvjk5e.js",
+  "_vendor-D-qpW3NU.js": {
+    "file": "assets/vendor-D-qpW3NU.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-CBDEQYhC.js",
+    "file": "assets/app-Oz_uZJqT.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-SGdvjk5e.js"
+      "_vendor-D-qpW3NU.js"
     ]
   }
 }

@@ -4,31 +4,32 @@ defmodule Operately.GoalsFixtures do
   alias Operately.Goals.Timeframe
 
   def goal_fixture(creator, attrs \\ %{}) do
-    attrs = Enum.into(attrs, %{
-      name: "some name",
-      champion_id: attrs[:champion_id] || creator.id,
-      reviewer_id: attrs[:reviewer_id] || creator.id,
-      timeframe: Timeframe.current_quarter(),
-      targets: [
-        %{
-          name: "First response time",
-          from: 30,
-          to: 15,
-          unit: "minutes",
-          index: 0
-        },
-        %{
-          name: "Increase feedback score to 90%",
-          from: 80,
-          to: 90,
-          unit: "percent",
-          index: 1
-        }
-      ],
-      company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
-      anonymous_access_level: Binding.view_access(),
-    })
+    attrs =
+      Enum.into(attrs, %{
+        name: "some name",
+        champion_id: attrs[:champion_id] || creator.id,
+        reviewer_id: attrs[:reviewer_id] || creator.id,
+        timeframe: Timeframe.current_quarter(),
+        targets: [
+          %{
+            name: "First response time",
+            from: 30,
+            to: 15,
+            unit: "minutes",
+            index: 0
+          },
+          %{
+            name: "Increase feedback score to 90%",
+            from: 80,
+            to: 90,
+            unit: "percent",
+            index: 1
+          }
+        ],
+        company_access_level: Binding.comment_access(),
+        space_access_level: Binding.edit_access(),
+        anonymous_access_level: Binding.view_access()
+      })
 
     {:ok, goal} = Goals.create_goal(creator, attrs)
 
@@ -36,31 +37,34 @@ defmodule Operately.GoalsFixtures do
   end
 
   def goal_update_fixture(author, goal, attrs \\ []) do
-    attrs = Enum.into(attrs, %{
-      goal_id: goal.id,
-      status: "on_track",
-      target_values: [],
-      content: Operately.Support.RichText.rich_text("content"),
-      send_to_everyone: false,
-      subscription_parent_type: :goal_update,
-      subscriber_ids: [],
-      timeframe: Timeframe.current_year()
-    })
+    attrs =
+      Enum.into(attrs, %{
+        goal_id: goal.id,
+        status: "on_track",
+        target_values: [],
+        content: Operately.Support.RichText.rich_text("content"),
+        send_to_everyone: false,
+        subscription_parent_type: :goal_update,
+        subscriber_ids: [],
+        due_date: "2024-12-31"
+      })
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(author, goal, attrs)
     update
   end
 
   def goal_target_fixture(goal, attrs \\ []) do
-    attrs = Enum.into(attrs, %{
-      goal_id: goal.id,
-      name: "Increase total active users",
-      from: 110,
-      to: 900,
-      value: 110,
-      unit: "users",
-      index: 0,
-    })
+    attrs =
+      Enum.into(attrs, %{
+        goal_id: goal.id,
+        name: "Increase total active users",
+        from: 110,
+        to: 900,
+        value: 110,
+        unit: "users",
+        index: 0
+      })
+
     {:ok, target} = Goals.create_target(attrs)
     target
   end
