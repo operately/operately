@@ -113,8 +113,8 @@ function useDescriptionState(props: GoalPage.Props): State {
 
   const editor = useEditor({
     content: props.description,
-    autoFocus: true,
     editable: true,
+    placeholder: "Describe the goal...",
     mentionedPersonLookup: props.mentionedPersonLookup,
     peopleSearch: props.peopleSearch,
   });
@@ -142,6 +142,7 @@ function useDescriptionState(props: GoalPage.Props): State {
 
   const startEdit = React.useCallback(() => {
     editor.setContent(props.description);
+    editor.setFocused(true);
     setMode("edit");
   }, [setMode]);
 
