@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { match } from "ts-pattern";
 import { AvatarList } from "../Avatar";
 import { IconGoal, IconProject } from "../icons";
@@ -6,9 +6,12 @@ import { BlackLink } from "../Link";
 import { StatusBadge } from "../StatusBadge";
 
 export function MiniWorkMap(props: MiniWorkMap.Props) {
+  // Memoize the sorted items to avoid unnecessary recalculations
+  const sortedItems = useMemo(() => sortItems(props.items), [props.items]);
+
   return (
     <div className="flex flex-col">
-      {props.items.map((item) => (
+      {sortedItems.map((item) => (
         <ItemView key={item.id} item={item} depth={0} />
       ))}
     </div>
@@ -72,9 +75,12 @@ function ItemView({ item, depth }: { item: MiniWorkMap.WorkItem; depth: number }
 }
 
 function Subitems({ items, depth }: { items: MiniWorkMap.WorkItem[]; depth: number }) {
+  // Memoize the sorted items to avoid unnecessary recalculations
+  const sortedItems = useMemo(() => sortItems(items), [items]);
+
   return (
     <>
-      {items.map((subitem) => (
+      {sortedItems.map((subitem) => (
         <ItemView key={subitem.id} item={subitem} depth={depth} />
       ))}
     </>
@@ -110,4 +116,19 @@ function ItemName({ item }: { item: MiniWorkMap.WorkItem }) {
   } else {
     return nameElement;
   }
+}
+
+// Helper function to sort items by state and type
+function sortItems(items: MiniWorkMap.WorkItem[]): MiniWorkMap.WorkItem[] {
+  return [...items].sort((a, b) => {
+    // First sort by state: active -> paused -> closed
+    const stateOrder = { active: 0, paused: 1, closed: 2 };
+    if (stateOrder[a.state] !== stateOrder[b.state]) {
+      return stateOrder[a.state] - stateOrder[b.state];
+    }
+
+    // Then sort by type: projects -> goals
+    const typeOrder = { project: 0, goal: 1 };
+    return typeOrder[a.type] - typeOrder[b.type];
+  });
 }
