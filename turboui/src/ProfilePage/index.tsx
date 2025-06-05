@@ -60,7 +60,9 @@ export function ProfilePage(props: ProfilePage.Props) {
       <PageHeader person={props.person} />
       <Tabs tabs={tabs} />
 
-      {["assigned", "reviewing", "completed"].includes(tabs.active) && <WorkMapTable items={items} tab="all" />}
+      {["assigned", "reviewing", "completed"].includes(tabs.active) && (
+        <WorkMapTable items={items} tab={tabs.active === "completed" ? "completed" : "all"} />
+      )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
       {tabs.active === "about" && <About {...props} />}
     </Page>
