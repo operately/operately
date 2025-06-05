@@ -41,8 +41,12 @@ interface DivLinkProps extends Props {
 const baseLinkClass = classNames("cursor-pointer", "transition-colors");
 
 function UnstyledLink({ children, testId, ...rest }: LinkProps) {
+  // Destructure and omit disableColorHoverEffect, underline, before passing to Router.Link
+  // Omit disableColorHoverEffect and underline using object rest syntax
+  const { disableColorHoverEffect, underline, ...linkProps } = rest;
+
   return (
-    <Router.Link data-test-id={testId} {...rest}>
+    <Router.Link data-test-id={testId} {...linkProps}>
       {children}
     </Router.Link>
   );
