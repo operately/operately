@@ -151,7 +151,7 @@ function DateDisplay(props: DateDisplayProps) {
   const elemClass = classNames(
     {
       "flex items-center gap-1.5": true,
-      "focus:outline-none hover:bg-surface-dimmed rounded": !props.readonly,
+      "focus:outline-none hover:bg-surface-dimmed rounded-lg": !props.readonly,
       "px-1.5 py-1 -my-1 -mx-1.5": !props.readonly && variant === "inline",
       "px-2 py-1.5": variant === "form-field",
       "text-content-error": isDateOverdue && props.showOverdueWarning,

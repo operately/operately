@@ -17,5 +17,5 @@ export { DateDisplayField } from "./DateDisplayField";
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { ProfilePage } from "./ProfilePage";
-
 export { showErrorToast, ToasterBar } from "./Toasts";
+export { Tooltip } from "./Tooltip";

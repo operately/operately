@@ -1,6 +1,5 @@
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
-import * as Timeframes from "@/utils/timeframes";
 import * as React from "react";
 
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
@@ -12,8 +11,9 @@ import RichContent from "@/components/RichContent";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
+import { IconInfoCircle } from "@tabler/icons-react";
 import { match } from "ts-pattern";
-import { DateDisplayField } from "turboui";
+import { DateDisplayField, Tooltip } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {
@@ -134,17 +134,20 @@ function OverviewIssue({ goal }: { goal: Goals.Goal }) {
 }
 
 function OverviewTimeframe() {
-  const [timeframe] = Forms.useFieldValue<Timeframes.Timeframe>("timeframe");
-  if (!timeframe.endDate) return null;
+  const [dueDate] = Forms.useFieldValue<Date | null>("timeframe");
 
-  if (timeframe.endDate < new Date()) {
-    return (
-      <span>
-        {durationHumanized(timeframe.endDate, new Date())} <mark data-highlight="bgRed">overdue</mark>.
-      </span>
-    );
+  if (dueDate) {
+    if (dueDate < new Date()) {
+      return (
+        <span>
+          {durationHumanized(dueDate, new Date())} <mark data-highlight="bgRed">overdue</mark>.
+        </span>
+      );
+    } else {
+      return <span>{durationHumanized(new Date(), dueDate)} until the deadline.</span>;
+    }
   } else {
-    return <span>{durationHumanized(new Date(), timeframe.endDate)} until the deadline.</span>;
+    return <span>No due date set.</span>;
   }
 }
 
@@ -208,8 +211,18 @@ function DescriptionEdit({ goal }: { goal: Goals.Goal }) {
   );
 }
 
-function Label({ text, className = "" }: { text: string; className?: string }) {
-  return <div className={"font-bold mb-1.5 " + className}>{text}</div>;
+function Label({ text, info, className = "" }: { text: string; className?: string; info?: string }) {
+  const infoPopup = info ? (
+    <Tooltip content={info}>
+      <IconInfoCircle size={14} className="inline-block  -mt-0.5 text-content-dimmed hover:text-content-base" />
+    </Tooltip>
+  ) : null;
+
+  return (
+    <div className={"font-bold mb-1.5 " + className}>
+      {text} {infoPopup}
+    </div>
+  );
 }
 
 function DueDateSelector() {
@@ -217,11 +230,8 @@ function DueDateSelector() {
 
   return (
     <div>
-      <div className="flex items-center gap-2 mb-1.5">
-        <Label text="Due Date" className="mb-0" />
-      </div>
-
-      <DateDisplayField date={value} setDate={setValue} variant="form-field" />
+      <Label text="Due Date" info="Set a new due date for the goal." />
+      <DateDisplayField date={value} setDate={setValue} variant="form-field" emptyStateText="No due date set" />
     </div>
   );
 }
