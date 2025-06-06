@@ -1,6 +1,9 @@
 defmodule OperatelyWeb.Api.Goals do
   alias __MODULE__.SharedMultiSteps, as: Steps
+
   alias Operately.Goals.{Goal, Target}
+  alias Operately.Access
+  alias Operately.Access.Binding
 
   defmodule UpdateName do
     use TurboConnect.Mutation
@@ -334,9 +337,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
-      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
-        Operately.Goals.Goal.changeset(goal, %{reviewer_id: inputs.reviewer_id})
-      end)
+      |> Steps.update_goal_reviewer(inputs.reviewer_id)
       # |> Steps.save_activity(:goal_reviewer_updated, fn changes ->
       #   %{
       #     company_id: changes.goal.company_id,
@@ -428,17 +429,34 @@ defmodule OperatelyWeb.Api.Goals do
         Goal.changeset(goal, %{champion_id: champion_id})
       end)
       |> Ecto.Multi.run(:remove_previous_access_binding, fn _repo, %{goal: goal} ->
-        if goal.champion_id == nil do
-          {:ok, nil}
-        else
-          Operately.Access.unbind_person(goal.access_context, goal.champion_id)
+        case goal.champion_id do
+          nil -> {:ok, nil}
+          _ -> Operately.Access.unbind_person(goal.access_context, goal.champion_id, :champion)
         end
       end)
       |> Ecto.Multi.run(:add_new_access_binding, fn _repo, %{goal: goal} ->
-        if champion_id == nil do
-          {:ok, nil}
-        else
-          Operately.Access.bind_person(goal.access_context, champion_id, Operately.Access.Binding.full_access())
+        case champion_id do
+          nil -> {:ok, nil}
+          _ -> Access.bind_person(goal.access_context, champion_id, Binding.full_access(), :champion)
+        end
+      end)
+    end
+
+    def update_goal_reviewer(multi, reviewer_id) do
+      multi
+      |> Ecto.Multi.update(:updated_goal, fn %{goal: goal} ->
+        Goal.changeset(goal, %{reviewer_id: reviewer_id})
+      end)
+      |> Ecto.Multi.run(:remove_previous_access_binding, fn _repo, %{goal: goal} ->
+        case goal.reviewer_id do
+          nil -> {:ok, nil}
+          _ -> Access.unbind_person(goal.access_context, goal.reviewer_id, :reviewer)
+        end
+      end)
+      |> Ecto.Multi.run(:add_new_access_binding, fn _repo, %{goal: goal} ->
+        case reviewer_id do
+          nil -> {:ok, nil}
+          _ -> Access.bind_person(goal.access_context, reviewer_id, Binding.full_access(), :reviewer)
         end
       end)
     end
