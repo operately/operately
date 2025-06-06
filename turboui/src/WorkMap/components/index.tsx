@@ -2,6 +2,7 @@ import React from "react";
 
 import { TimeframeSelector } from "../../TimeframeSelector";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
+import { Navigation } from "../../Page/Navigation";
 import { Page } from "../../Page";
 
 import { WorkMapNavigation } from "./WorkMapNavigation";
@@ -12,7 +13,7 @@ export { WorkMapTable };
 
 export function WorkMapPage(props: WorkMap.Props) {
   return (
-    <Page title={props.title} size="fullwidth">
+    <Page title={props.title} size="fullwidth" navigation={props.navigation}>
       <WorkMap {...props} />
     </Page>
   );
@@ -120,5 +121,6 @@ export namespace WorkMap {
     columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;
     type?: WorkMapType;
+    navigation?: Navigation.Item[];
   }
 }
