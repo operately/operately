@@ -403,7 +403,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
-  describe "update_champion" do
+  describe "update champion" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_champion], %{})
     end
