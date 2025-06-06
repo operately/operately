@@ -7,6 +7,7 @@ import { DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import classNames from "../utils/classnames";
+import { CommentCountIndicator } from "./CommentCountIndicator";
 
 export function CheckIns(props: GoalPage.Props) {
   const showCheckInButton = props.canEdit && props.state !== "closed";
@@ -73,29 +74,8 @@ export function CheckIn({ checkIn, mentionedPersonLookup }: CheckInProps) {
         </div>
       </div>
 
-      <CommentsCountIndicator count={checkIn.commentCount} size={28} />
+      <CommentCountIndicator count={checkIn.commentCount} size={28} />
     </DivLink>
-  );
-}
-
-export function CommentsCountIndicator({ count, size }: { count: number; size: number }) {
-  if (count < 1) return <></>;
-
-  const style = {
-    width: size,
-    height: size,
-    fontSize: size * 0.6,
-    fontWeight: size > 20 ? "normal" : "bold",
-  };
-
-  const className = "bg-blue-500 text-white-1 flex items-center justify-center rounded-full";
-
-  return (
-    <div>
-      <div className={className} style={style}>
-        {count}
-      </div>
-    </div>
   );
 }
 
