@@ -2122,6 +2122,14 @@ export interface ListGoalContributorsResult {
   contributors?: Person[] | null;
 }
 
+export interface ListPossibleManagersInput {
+  userId?: Id | null;
+}
+
+export interface ListPossibleManagersResult {
+  people?: Person[] | null;
+}
+
 export interface ListResourceHubNodesInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
@@ -2666,11 +2674,11 @@ export interface EditGoalDiscussionInput {
 export interface EditGoalDiscussionResult {}
 
 export interface EditGoalProgressUpdateInput {
-  id?: string | null;
+  id?: Id | null;
   status?: string | null;
-  content?: string | null;
+  content?: Json | null;
   newTargetValues?: string | null;
-  timeframe?: Timeframe | null;
+  dueDate: string | null;
 }
 
 export interface EditGoalProgressUpdateResult {
@@ -2996,10 +3004,10 @@ export interface PostDiscussionResult {
 }
 
 export interface PostGoalProgressUpdateInput {
+  goalId?: Id | null;
   status?: string | null;
-  content?: string | null;
-  goalId?: string | null;
-  timeframe?: Timeframe | null;
+  dueDate: string | null;
+  content?: Json | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;
   subscriberIds?: string[] | null;
@@ -3407,6 +3415,10 @@ class ApiNamespaceRoot {
 
   async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.client.get("/list_goal_contributors", input);
+  }
+
+  async listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
+    return this.client.get("/list_possible_managers", input);
   }
 
   async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
@@ -4105,6 +4117,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.listGoalContributors(input);
   }
 
+  listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
+    return this.apiNamespaceRoot.listPossibleManagers(input);
+  }
+
   listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
     return this.apiNamespaceRoot.listResourceHubNodes(input);
   }
@@ -4670,6 +4686,9 @@ export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResu
 export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
   return defaultApiClient.listGoalContributors(input);
 }
+export async function listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
+  return defaultApiClient.listPossibleManagers(input);
+}
 export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
   return defaultApiClient.listResourceHubNodes(input);
 }
@@ -5228,6 +5247,12 @@ export function useListGoalContributors(
   input: ListGoalContributorsInput,
 ): UseQueryHookResult<ListGoalContributorsResult> {
   return useQuery<ListGoalContributorsResult>(() => defaultApiClient.listGoalContributors(input));
+}
+
+export function useListPossibleManagers(
+  input: ListPossibleManagersInput,
+): UseQueryHookResult<ListPossibleManagersResult> {
+  return useQuery<ListPossibleManagersResult>(() => defaultApiClient.listPossibleManagers(input));
 }
 
 export function useListResourceHubNodes(
@@ -6011,6 +6036,8 @@ export default {
   useGetWorkMap,
   listGoalContributors,
   useListGoalContributors,
+  listPossibleManagers,
+  useListPossibleManagers,
   listResourceHubNodes,
   useListResourceHubNodes,
   listSpaceTools,
