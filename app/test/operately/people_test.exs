@@ -443,4 +443,58 @@ defmodule Operately.PeopleTest do
     end
   end
 
+  describe "manager relationship cycle prevention" do
+    import Operately.PeopleFixtures
+    import Operately.CompaniesFixtures
+
+    setup do
+      company = company_fixture()
+      alice = person_fixture(%{full_name: "Alice", company_id: company.id})
+      bob = person_fixture(%{full_name: "Bob", company_id: company.id})
+      carol = person_fixture(%{full_name: "Carol", company_id: company.id})
+      dave = person_fixture(%{full_name: "Dave", company_id: company.id})
+
+      {:ok, %{company: company, alice: alice, bob: bob, carol: carol, dave: dave}}
+    end
+
+    test "can set a manager when there is no cycle", %{alice: alice, bob: bob, carol: carol} do
+      # Create a valid management chain: Carol -> Bob -> Alice
+      {:ok, bob_with_manager} = People.update_person(bob, %{manager_id: alice.id})
+      assert bob_with_manager.manager_id == alice.id
+
+      {:ok, carol_with_manager} = People.update_person(carol, %{manager_id: bob.id})
+      assert carol_with_manager.manager_id == bob.id
+    end
+
+    test "cannot set a person as their own manager", %{alice: alice} do
+      assert_raise Postgrex.Error, ~r/Cycle detected: setting this manager would create a circular reference/, fn ->
+        People.update_person(alice, %{manager_id: alice.id})
+      end
+    end
+
+    test "cannot create a cycle in the management chain", %{alice: alice, bob: bob, carol: carol} do
+      # First create a valid chain: Carol -> Bob -> Alice
+      {:ok, _bob_with_manager} = People.update_person(bob, %{manager_id: alice.id})
+      {:ok, _carol_with_manager} = People.update_person(carol, %{manager_id: bob.id})
+
+      # Now try to create a cycle by setting Alice's manager to Carol
+      assert_raise Postgrex.Error, ~r/Cycle detected: setting this manager would create a circular reference/, fn ->
+        People.update_person(alice, %{manager_id: carol.id})
+      end
+    end
+
+    test "can change manager to someone else without creating a cycle", %{alice: alice, bob: bob, carol: carol, dave: dave} do
+      # First create a valid chain: Carol -> Bob -> Alice
+      {:ok, _bob_with_manager} = People.update_person(bob, %{manager_id: alice.id})
+      {:ok, _carol_with_manager} = People.update_person(carol, %{manager_id: bob.id})
+
+      # Now change Carol's manager to Dave (breaking the chain)
+      {:ok, carol_with_new_manager} = People.update_person(carol, %{manager_id: dave.id})
+      assert carol_with_new_manager.manager_id == dave.id
+
+      # And now Alice can have Bob as manager (which was not possible before)
+      {:ok, alice_with_manager} = People.update_person(alice, %{manager_id: dave.id})
+      assert alice_with_manager.manager_id == dave.id
+    end
+  end
 end
