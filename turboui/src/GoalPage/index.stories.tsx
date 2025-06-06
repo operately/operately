@@ -36,7 +36,7 @@ function Component(props: Partial<GoalPage.Props>) {
     targets: [],
     relatedWorkItems: [],
     checkIns: [],
-    messages: [],
+    discussions: [],
     contributors: [],
     closedAt: null,
     neglectedGoal: false,
@@ -52,6 +52,7 @@ function Component(props: Partial<GoalPage.Props>) {
       deleteLink={storyPath("Pages/GoalDeletePage", "Default")}
       editGoalLink={storyPath("Pages/GoalEditPage", "Default")}
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
+      newDiscussionLink="#"
       addSubgoalLink="#"
       addSubprojectLink="#"
       champion={champion}
@@ -151,48 +152,64 @@ const mockTargets = [
   },
 ];
 
-const mockMessages = [
+const mockDiscussions = [
   {
     id: "1",
+    date: new Date(2025, 3, 15), // Apr 15th, 2025
     title: "Kick-Off",
     author: genPerson(),
-    content: "We have officially started the project! The team is aligned and ready to move forward.",
-    link: "/messages/1",
+    content: asRichText("We have officially started the project! The team is aligned and ready to move forward."),
+    link: "/discussions/1",
+    commentCount: 5,
   },
   {
     id: "2",
+    date: new Date(2025, 3, 15), // Apr 15th, 2025
     title: "Execution plan for the German team",
     author: genPerson(),
-    content: "Outlined the execution plan for the German team. Please review and provide feedback by Friday.",
-    link: "/messages/2",
+    content: asRichText(
+      "Outlined the execution plan for the German team. Please review and provide feedback by Friday.",
+    ),
+    link: "/discussions/2",
+    commentCount: 0,
   },
   {
     id: "3",
+    date: new Date(2025, 3, 15), // Apr 15th, 2025
     title: "Preview of what is coming next week",
     author: genPerson(),
-    content: "Next week we will focus on integrating the authentication module and preparing the first demo.",
-    link: "/messages/3",
+    content: asRichText(
+      "Next week we will focus on integrating the authentication module and preparing the first demo.",
+    ),
+    link: "/discussions/3",
+    commentCount: 7,
   },
   {
     id: "4",
+    date: new Date(2025, 3, 15), // Apr 15th, 2025
     title: "Sprint 1 Retrospective",
     author: genPerson(),
-    content: "Sprint 1 went well overall, but we identified some bottlenecks in the review process.",
-    link: "/messages/4",
+    content: asRichText("Sprint 1 went well overall, but we identified some bottlenecks in the review process."),
+    link: "/discussions/4",
+    commentCount: 1,
   },
   {
     id: "5",
+    date: new Date(2025, 3, 15), // Apr 15th, 2025
     title: "Security Review Notes",
     author: genPerson(),
-    content: "Security review completed. No major issues found, but a few recommendations were made.",
-    link: "/messages/5",
+    content: asRichText("Security review completed. No major issues found, but a few recommendations were made."),
+    link: "/discussions/5",
+    commentCount: 1,
   },
   {
     id: "6",
+    date: new Date(2025, 3, 15), // Apr 15th, 2025
     title: "Customer Feedback Roundup",
     author: genPerson(),
-    content: "Collected initial feedback from customers. Most are excited about the new features!",
-    link: "/messages/6",
+    content: asRichText("Collected initial feedback from customers. Most are excited about the new features!"),
+    link: "/discussions/6",
+    commentCount: 1,
   },
 ];
 
@@ -361,7 +378,7 @@ export const Default: Story = {
     reviewer: genPerson(),
     checkIns: mockCheckIns,
     targets: mockTargets,
-    messages: mockMessages,
+    discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
     canEdit: true,
@@ -375,7 +392,7 @@ export const DefaultReadOnly: Story = {
     reviewer: genPerson(),
     checkIns: mockCheckIns,
     targets: mockTargets,
-    messages: mockMessages,
+    discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
     canEdit: false,
@@ -395,7 +412,7 @@ export const ZeroStateForChampions: Story = {
 export const ZeroStateReadOnly: Story = {
   args: {
     targets: [],
-    messages: [],
+    discussions: [],
     contributors: [],
     relatedWorkItems: [],
     canEdit: false,

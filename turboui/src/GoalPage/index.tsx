@@ -4,7 +4,15 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { PageNew } from "../Page";
 
-import { IconCircleCheck, IconClipboardText, IconLogs, IconMessage, IconTrash } from "@tabler/icons-react";
+import {
+  IconCircleCheck,
+  IconClipboardText,
+  IconLogs,
+  IconMessage,
+  IconMessages,
+  IconTrash,
+} from "@tabler/icons-react";
+
 import { WarningCallout } from "../Callouts";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
@@ -14,6 +22,7 @@ import { isOverdue } from "../utils/time";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
+import { Discussions } from "./Discussions";
 import { PageHeader } from "./PageHeader";
 import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
@@ -26,14 +35,6 @@ export namespace GoalPage {
     avatarUrl: string | null;
     title: string;
     profileLink: string;
-  }
-
-  export interface Message {
-    id: string;
-    title: string;
-    author: Person;
-    content: string;
-    link: string;
   }
 
   export interface Contributor {
@@ -52,6 +53,26 @@ export namespace GoalPage {
     link: string;
   }
 
+  export interface CheckIn {
+    id: string;
+    author: Person;
+    date: Date;
+    content: string;
+    link: string;
+    commentCount: number;
+    status: BadgeStatus;
+  }
+
+  export interface Discussion {
+    id: string;
+    title: string;
+    author: Person;
+    date: Date;
+    link: string;
+    content: string;
+    commentCount: number;
+  }
+
   export interface Props {
     spaceLink: string;
     workmapLink: string;
@@ -59,6 +80,7 @@ export namespace GoalPage {
     deleteLink: string;
     editGoalLink: string;
     newCheckInLink: string;
+    newDiscussionLink: string;
     addSubgoalLink: string;
     addSubprojectLink: string;
 
@@ -80,7 +102,7 @@ export namespace GoalPage {
     targets: GoalTargetList.Target[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
-    messages: Message[];
+    discussions: Discussion[];
     status: BadgeStatus;
     state: "active" | "closed";
 
@@ -107,16 +129,6 @@ export namespace GoalPage {
 
     activityFeed: React.ReactNode;
   }
-
-  export interface CheckIn {
-    id: string;
-    author: Person;
-    date: Date;
-    content: string;
-    link: string;
-    commentCount: number;
-    status: BadgeStatus;
-  }
 }
 
 export function GoalPage(props: GoalPage.Props) {
@@ -140,6 +152,7 @@ export function GoalPage(props: GoalPage.Props) {
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
     { id: "check-ins", label: "Check-Ins", icon: <IconMessage size={14} />, count: props.checkIns.length },
+    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} />, count: props.discussions.length },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
 
@@ -151,6 +164,7 @@ export function GoalPage(props: GoalPage.Props) {
       <div className="flex-1 overflow-scroll">
         {tabs.active === "overview" && <Overview {...props} />}
         {tabs.active === "check-ins" && <CheckIns {...props} />}
+        {tabs.active === "discussions" && <Discussions {...props} />}
         {tabs.active === "activity" && <Activity {...props} />}
       </div>
     </PageNew>
