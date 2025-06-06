@@ -9,6 +9,27 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "get discussions" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:goals, :get_discussions], %{})
+    end
+
+    test "it returns discussions for the goal", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:goals, :get_discussions], %{goal_id: Paths.goal_id(ctx.goal)})
+      assert res.success == true
+      assert length(res.discussions) == 0
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, res} = query(ctx.conn, [:goals, :get_discussions], %{goal_id: Ecto.UUID.generate()})
+      assert res.message == "Goal not found"
+    end
+  end
+
   describe "update name" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_name], %{})
