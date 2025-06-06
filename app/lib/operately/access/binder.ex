@@ -7,7 +7,7 @@ defmodule Operately.Access.Binder do
     alias Operately.Access
 
     context = Access.get_context!(project_id: project_id)
-    
+
     Access.bind_person(context, person_id, level)
     Access.unbind_person(context, person_id)
   """
@@ -21,12 +21,24 @@ defmodule Operately.Access.Binder do
     bind(context, person_id: person_id, level: level)
   end
 
+  def bind_person(context, person_id, level, tag) do
+    bind(context, person_id: person_id, level: level, tag: tag)
+  end
+
   def unbind_person(context, person_id) do
     unbind(context, person_id: person_id)
   end
 
+  def unbind_person(context, person_id, tag) do
+    unbind(context, person_id: person_id, tag: tag)
+  end
+
   def bind(context, person_id: person_id, level: level) do
     bind(context, access_group_id: get_group(person_id: person_id).id, level: level)
+  end
+
+  def bind(context, person_id: person_id, level: level, tag: tag) do
+    bind(context, access_group_id: get_group(person_id: person_id).id, level: level, tag: tag)
   end
 
   def bind(%Context{} = context, access_group_id: access_group_id, level: level) do
@@ -36,12 +48,30 @@ defmodule Operately.Access.Binder do
     end
   end
 
+  def bind(%Context{} = context, access_group_id: access_group_id, level: level, tag: tag) do
+    case get_binding(context.id, access_group_id) do
+      nil -> create_binding(context.id, access_group_id, level, tag: tag)
+      binding -> update_binding(binding, level, tag: tag)
+    end
+  end
+
   def unbind(context, person_id: person_id) do
     unbind(context, access_group_id: get_group(person_id: person_id).id)
   end
 
+  def unbind(context, person_id: person_id, tag: tag) do
+    unbind(context, access_group_id: get_group(person_id: person_id).id, tag: tag)
+  end
+
   def unbind(context, access_group_id: access_group_id) do
     case get_binding(context.id, access_group_id) do
+      nil -> {:ok, nil}
+      binding -> {:ok, Access.delete_binding(binding)}
+    end
+  end
+
+  def unbind(context, access_group_id: access_group_id, tag: tag) do
+    case get_binding(context.id, access_group_id, tag: tag) do
       nil -> {:ok, nil}
       binding -> {:ok, Access.delete_binding(binding)}
     end
@@ -52,7 +82,7 @@ defmodule Operately.Access.Binder do
   end
 
   def add_to_group(group_id, person_id: person_id) do
-    Access.get_group_membership(group_id: group_id, person_id: person_id) 
+    Access.get_group_membership(group_id: group_id, person_id: person_id)
     |> case do
       nil -> GroupMembership.changeset(%{group_id: group_id, person_id: person_id}) |> Repo.insert()
       membership -> {:ok, membership}
@@ -64,7 +94,7 @@ defmodule Operately.Access.Binder do
   end
 
   def remove_from_group(group_id, person_id: person_id) do
-    Access.get_group_membership(group_id: group_id, person_id: person_id) 
+    Access.get_group_membership(group_id: group_id, person_id: person_id)
     |> case do
       nil -> {:ok, nil}
       membership -> {:ok, Access.delete_group_membership(membership)}
@@ -79,20 +109,38 @@ defmodule Operately.Access.Binder do
     Access.get_binding(context_id: context_id, group_id: group_id)
   end
 
+  def get_binding(context_id, group_id, tag: tag) do
+    Access.get_binding(context_id: context_id, group_id: group_id, tag: tag)
+  end
+
   def get_group(person_id: person_id) do
     Access.get_group!(person_id: person_id)
   end
 
   def create_binding(context_id, access_group_id, access_level) do
-    {:ok, _} = Access.create_binding(%{
-      context_id: context_id, 
-      group_id: access_group_id, 
-      access_level: access_level
-    })
+    {:ok, _} =
+      Access.create_binding(%{
+        context_id: context_id,
+        group_id: access_group_id,
+        access_level: access_level
+      })
+  end
+
+  def create_binding(context_id, access_group_id, access_level, tag: tag) do
+    {:ok, _} =
+      Access.create_binding(%{
+        context_id: context_id,
+        group_id: access_group_id,
+        access_level: access_level,
+        tag: tag
+      })
   end
 
   def update_binding(binding, access_level) do
     {:ok, _} = Access.update_binding(binding, %{access_level: access_level})
   end
 
+  def update_binding(binding, access_level, tag: tag) do
+    {:ok, _} = Access.update_binding(binding, %{access_level: access_level, tag: tag})
+  end
 end

@@ -9,6 +9,8 @@ defmodule Operately.Access do
     Repo.all(Context)
   end
 
+  defdelegate show_bindings(resource), to: Operately.Access.Debug
+
   def get_context!(id) when is_binary(id), do: Repo.get!(Context, id)
 
   def get_context!(attrs) when is_list(attrs), do: Repo.get_by!(Context, attrs)
@@ -41,8 +43,10 @@ defmodule Operately.Access do
 
   defdelegate bind(context, attrs), to: Binder
   defdelegate bind_person(context, person_id, level), to: Binder
+  defdelegate bind_person(context, person_id, level, tag), to: Binder
   defdelegate unbind(context, attrs), to: Binder
   defdelegate unbind_person(context, person_id), to: Binder
+  defdelegate unbind_person(context, person_id, tag), to: Binder
   defdelegate add_to_group(group_id, attrs), to: Binder
   defdelegate remove_from_group(group_id, attrs), to: Binder
 
@@ -79,7 +83,6 @@ defmodule Operately.Access do
   def change_group(%Group{} = group, attrs \\ %{}) do
     Group.changeset(group, attrs)
   end
-
 
   alias Operately.Access.Binding
 
@@ -127,7 +130,7 @@ defmodule Operately.Access do
         group_id: access_group.id,
         context_id: context.id,
         access_level: access_level,
-        tag: tag,
+        tag: tag
       })
     end)
   end
@@ -142,17 +145,21 @@ defmodule Operately.Access do
       |> case do
         nil ->
           {:ok, binding} = create_binding(%{context_id: context.id, group_id: access_group.id, access_level: access_level, tag: tag})
-          {:ok, %{
-            previous: %{access_level: Binding.no_access()},
-            updated: binding
-          }}
+
+          {:ok,
+           %{
+             previous: %{access_level: Binding.no_access()},
+             updated: binding
+           }}
 
         binding ->
           {:ok, updated} = update_binding(binding, %{access_level: access_level})
-          {:ok, %{
-            previous: binding,
-            updated: updated
-          }}
+
+          {:ok,
+           %{
+             previous: binding,
+             updated: updated
+           }}
       end
     end)
   end
