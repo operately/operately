@@ -5,6 +5,27 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Access
   alias Operately.Access.Binding
 
+  defmodule GetDiscussions do
+    use TurboConnect.Query
+
+    inputs do
+      field :goal_id, :id, required: true
+    end
+
+    outputs do
+      field :discussions, :discussions
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_discussions()
+      |> Steps.respond(fn changes -> %{discussion: changes.discussion} end)
+    end
+  end
+
   defmodule UpdateName do
     use TurboConnect.Mutation
 
@@ -496,6 +517,13 @@ defmodule OperatelyWeb.Api.Goals do
         |> Enum.reduce(Ecto.Multi.new(), fn {t, idx}, m ->
           Ecto.Multi.update(m, {:update_target_index, t.id}, Target.changeset(t, %{index: idx}))
         end)
+      end)
+    end
+
+    def get_discussions(multi) do
+      Ecto.Multi.run(multi, :discussion, fn _repo, %{goal: goal} ->
+        discussions = Operately.Goals.Discussion.list(goal.id) |> Operately.Goals.Discussion.preload_comment_count()
+        {:ok, discussions}
       end)
     end
 
