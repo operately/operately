@@ -50,7 +50,7 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :name, :string, required: true
+      field :name, :string, optional: false, null: false
       field :email, :string
     end
 
@@ -149,7 +149,7 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [required: true]},
+                   {:name, :string, [optional: false, null: false]},
                    {:email, :string, []}
                  ]
                },
@@ -166,7 +166,7 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [required: true]},
+                   {:name, :string, [optional: false, null: false]},
                    {:email, :string, []}
                  ]
                },
