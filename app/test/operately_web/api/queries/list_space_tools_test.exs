@@ -23,8 +23,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
       |> Factory.log_in_person(:person)
     end
 
-    test "it returns 422 invalid id", ctx do
-      assert {422, "Invalid id format"} = query(ctx.conn, :list_space_tools, %{space_id: "a;b;c"})
+    test "it returns 400 invalid id", ctx do
+      assert {400, %{message: "Invalid id format"}} = query(ctx.conn, :list_space_tools, %{space_id: "a;b;c"})
     end
   end
 
@@ -37,36 +37,31 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     end
 
     @space_table [
-      %{company: :no_access,      space: :no_access,      expected: :forbidden},
-
-      %{company: :no_access,      space: :view_access,    expected: :allowed},
-      %{company: :no_access,      space: :comment_access, expected: :allowed},
-      %{company: :no_access,      space: :edit_access,    expected: :allowed},
-      %{company: :no_access,      space: :full_access,    expected: :allowed},
-
-      %{company: :view_access,    space: :no_access,      expected: :allowed},
-      %{company: :comment_access, space: :no_access,      expected: :allowed},
-      %{company: :edit_access,    space: :no_access,      expected: :allowed},
-      %{company: :full_access,    space: :no_access,      expected: :allowed},
+      %{company: :no_access, space: :no_access, expected: :forbidden},
+      %{company: :no_access, space: :view_access, expected: :allowed},
+      %{company: :no_access, space: :comment_access, expected: :allowed},
+      %{company: :no_access, space: :edit_access, expected: :allowed},
+      %{company: :no_access, space: :full_access, expected: :allowed},
+      %{company: :view_access, space: :no_access, expected: :allowed},
+      %{company: :comment_access, space: :no_access, expected: :allowed},
+      %{company: :edit_access, space: :no_access, expected: :allowed},
+      %{company: :full_access, space: :no_access, expected: :allowed}
     ]
 
     @project_table [
-      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: :forbidden},
-
-      %{company: :no_access,      space: :no_access,      project: :view_access,    expected: :allowed},
-      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: :allowed},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: :allowed},
-      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: :allowed},
-
-      %{company: :no_access,      space: :view_access,    project: :no_access,      expected: :allowed},
-      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: :allowed},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: :allowed},
-      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: :allowed},
-
-      %{company: :view_access,    space: :no_access,      project: :no_access,      expected: :allowed},
-      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: :allowed},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: :allowed},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: :allowed},
+      %{company: :no_access, space: :no_access, project: :no_access, expected: :forbidden},
+      %{company: :no_access, space: :no_access, project: :view_access, expected: :allowed},
+      %{company: :no_access, space: :no_access, project: :comment_access, expected: :allowed},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: :allowed},
+      %{company: :no_access, space: :no_access, project: :full_access, expected: :allowed},
+      %{company: :no_access, space: :view_access, project: :no_access, expected: :allowed},
+      %{company: :no_access, space: :comment_access, project: :no_access, expected: :allowed},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: :allowed},
+      %{company: :no_access, space: :full_access, project: :no_access, expected: :allowed},
+      %{company: :view_access, space: :no_access, project: :no_access, expected: :allowed},
+      %{company: :comment_access, space: :no_access, project: :no_access, expected: :allowed},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: :allowed},
+      %{company: :full_access, space: :no_access, project: :no_access, expected: :allowed}
     ]
 
     tabletest @space_table do
@@ -80,6 +75,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         case @test.expected do
           :forbidden ->
             assert length(res.tools.resource_hubs) == 0
+
           :allowed ->
             assert length(res.tools.resource_hubs) == 3
         end
@@ -98,8 +94,10 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         case @test.expected do
           :forbidden ->
             assert length(res.tools.messages_boards) == 0
+
           :allowed ->
-            assert length(res.tools.messages_boards) == 3 # 2 munually created + 1 created with space
+            # 2 munually created + 1 created with space
+            assert length(res.tools.messages_boards) == 3
         end
       end
     end
@@ -115,6 +113,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         case @test.expected do
           :forbidden ->
             assert length(res.tools.projects) == 0
+
           :allowed ->
             assert length(res.tools.projects) == 2
         end
@@ -132,6 +131,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
         case @test.expected do
           :forbidden ->
             assert length(res.tools.goals) == 0
+
           :allowed ->
             assert length(res.tools.goals) == 2
         end
@@ -187,7 +187,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     test "list messages boards", ctx do
       assert {200, res} = query(ctx.conn, :list_space_tools, %{space_id: Paths.space_id(ctx.space)})
 
-      assert length(res.tools.messages_boards) == 3 # 2 munually created + 1 created with space
+      # 2 munually created + 1 created with space
+      assert length(res.tools.messages_boards) == 3
 
       board1 = Enum.find(res.tools.messages_boards, &(&1.id == Paths.messages_board_id(ctx.board1)))
       assert length(board1.messages) == 2
@@ -224,10 +225,13 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
     space = group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.from_atom(company_members_level)})
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space
@@ -238,45 +242,54 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceToolsTest do
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project
   end
 
   def create_goal(ctx, space, company_members_level, space_members_level) do
-    goal = goal_fixture(ctx.creator, %{
-      space_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    goal =
+      goal_fixture(ctx.creator, %{
+        space_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     goal

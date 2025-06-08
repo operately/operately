@@ -4,6 +4,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   """
 
   use Plug.Builder
+  require Logger
 
   def init(_), do: []
 
@@ -18,18 +19,37 @@ defmodule TurboConnect.Plugs.ParseInputs do
     with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing) do
       Plug.Conn.assign(conn, :turbo_inputs, inputs)
     else
-      {:error, status, body} -> send_resp(conn, status, body) |> halt()
+      {:error, 400, message} ->
+        send_resp(conn, 400, Jason.encode!(%{error: "Bad request", message: message})) |> halt()
+
+      {:error, 500, message} ->
+        send_resp(conn, 500, Jason.encode!(%{error: "Internal server error", message: message})) |> halt()
+
+      e ->
+        Logger.error("Unexpected error in ParseInputs plug: #{inspect(e)}")
+        send_resp(conn, 500, Jason.encode!(%{error: "Internal server error"})) |> halt()
     end
   end
 
   def parse_inputs({inputs, types}, values, strict) do
     Enum.reduce(values, {:ok, %{}}, fn {name, value}, res ->
       with {:ok, res} <- res,
-           {:ok, {field_name, type, _opts}} <- find_field(inputs.fields, name),
-           {:ok, parsed} <- parse_input(type, types, value, strict) do
+           {:ok, {field_name, type, opts}} <- find_field(inputs.fields, name),
+           {:ok, parsed} <- parse_input(type, types, value, strict),
+           :ok <- validate_null_constraint(field_name, parsed, opts) do
         {:ok, Map.put(res, field_name, parsed)}
       end
     end)
+  end
+
+  defp validate_null_constraint(field_name, value, opts) do
+    null_allowed = Keyword.get(opts, :null, true)
+
+    if value == nil && !null_allowed do
+      {:error, 400, "Field '#{field_name}' cannot be null"}
+    else
+      :ok
+    end
   end
 
   def find_field(fields, field_name) do
@@ -98,7 +118,13 @@ defmodule TurboConnect.Plugs.ParseInputs do
     {:ok, []}
   end
 
+  def parse_input({:list, _type}, _types, nil, _strict) do
+    # Empty lists can be represented as nil in some contexts
+    {:ok, []}
+  end
+
   def parse_input({:list, type}, types, value, strict) when is_list(value) do
+    # For each item in the list, parse it and check null constraints when relevant
     Enum.reduce(value, {:ok, []}, fn v, res ->
       with {:ok, res} <- res,
            {:ok, parsed} <- parse_input(type, types, v, strict) do
@@ -112,6 +138,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   end
 
   def parse_input(_field, _types, nil, _strict) do
+    # This simply returns nil, the null constraint is checked in validate_null_constraint
     {:ok, nil}
   end
 
@@ -132,7 +159,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
           _ ->
             case decode_with.(value) do
               {:ok, decoded} -> {:ok, decoded}
-              {:error, reason} -> {:error, 422, reason}
+              {:error, reason} -> {:error, 400, reason}
             end
         end
 
@@ -141,14 +168,15 @@ defmodule TurboConnect.Plugs.ParseInputs do
 
         Enum.reduce(value, {:ok, %{}}, fn {name, value}, res ->
           with {:ok, res} <- res,
-               {:ok, {field_name, field_type, _opts}} <- find_field(object_type.fields, name),
-               {:ok, parsed} <- parse_input(field_type, types, value, strict) do
+               {:ok, {field_name, field_type, opts}} <- find_field(object_type.fields, name),
+               {:ok, parsed} <- parse_input(field_type, types, value, strict),
+               :ok <- validate_null_constraint(field_name, parsed, opts) do
             {:ok, Map.put(res, field_name, parsed)}
           end
         end)
 
       true ->
-        {:error, 422, "Unknown input type: #{type}"}
+        {:error, 400, "Unknown input type: #{type}"}
     end
   end
 
