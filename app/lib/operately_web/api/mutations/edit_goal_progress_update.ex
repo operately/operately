@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   alias Operately.Operations.GoalCheckInEdit
 
   inputs do
-    field :id, :id, required: true
+    field :id, :id, optional: false, null: false
     field :status, :string
     field :content, :json
     field :new_target_values, :string
