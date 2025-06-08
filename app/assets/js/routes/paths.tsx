@@ -370,6 +370,10 @@ export class Paths {
     return createCompanyPath(["goals", goalId, "discussions"]);
   }
 
+  static goalDiscussionPath(id: string) {
+    return createCompanyPath(["goal-activities", id]);
+  }
+
   static goalDiscussionEditPath(activityId: string) {
     return createCompanyPath(["goal-activities", activityId, "edit"]);
   }

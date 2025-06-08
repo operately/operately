@@ -4,6 +4,31 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Goals.{Goal, Target}
   alias Operately.Access
   alias Operately.Access.Binding
+  alias OperatelyWeb.Api.Serializer
+
+  defmodule GetDiscussions do
+    use TurboConnect.Query
+
+    inputs do
+      field :goal_id, :id, required: true
+    end
+
+    outputs do
+      field :discussions, list_of(:discussion)
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_discussions()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{discussions: Serializer.serialize(changes.discussions, level: :essential)}
+      end)
+    end
+  end
 
   defmodule UpdateName do
     use TurboConnect.Mutation
@@ -496,6 +521,12 @@ defmodule OperatelyWeb.Api.Goals do
         |> Enum.reduce(Ecto.Multi.new(), fn {t, idx}, m ->
           Ecto.Multi.update(m, {:update_target_index, t.id}, Target.changeset(t, %{index: idx}))
         end)
+      end)
+    end
+
+    def get_discussions(multi) do
+      Ecto.Multi.run(multi, :discussions, fn _repo, %{goal: goal} ->
+        {:ok, Operately.Goals.Discussion.list(goal.id)}
       end)
     end
 

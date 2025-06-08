@@ -221,6 +221,11 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(name, id)
   end
 
+  def goal_discussion_id(%{id: id, title: title}) do
+    id = Operately.ShortUuid.encode!(id)
+    OperatelyWeb.Api.Helpers.id_with_comments(title, id)
+  end
+
   def target_id(target = %Operately.Goals.Target{}) do
     Operately.ShortUuid.encode!(target.id)
   end
