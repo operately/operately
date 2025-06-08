@@ -20,14 +20,14 @@ defmodule Operately.Goals.Discussion do
       where: a.content["goal_id"] == ^goal_id,
       where: a.action == "goal_discussion_creation",
       order_by: [desc: a.inserted_at],
-      preload: [:author]
+      preload: [:activity]
     )
     |> Repo.all()
     |> Enum.map(fn t ->
       %__MODULE__{
         id: t.id,
         title: t.title,
-        author: t.author,
+        author: t.activity.author,
         inserted_at: t.inserted_at
       }
     end)
@@ -38,10 +38,10 @@ defmodule Operately.Goals.Discussion do
 
     counts =
       from(c in Operately.Updates.Comment,
-        where: c.entity_type == "comment_thread",
+        where: c.entity_type == :comment_thread,
         where: c.entity_id in ^thread_ids,
-        group_by: c.thread_id,
-        select: {c.thread_id, count(c.id)}
+        group_by: c.entity_id,
+        select: {c.entity_id, count(c.id)}
       )
       |> Repo.all()
       |> Enum.into(%{})

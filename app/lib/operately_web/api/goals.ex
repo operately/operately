@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Goals do
   alias Operately.Goals.{Goal, Target}
   alias Operately.Access
   alias Operately.Access.Binding
+  alias OperatelyWeb.Api.Serializer
 
   defmodule GetDiscussions do
     use TurboConnect.Query
@@ -22,7 +23,10 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_view)
       |> Steps.get_discussions()
-      |> Steps.respond(fn changes -> %{discussion: changes.discussion} end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{discussions: Serializer.serialize(changes.discussion, level: :essential)}
+      end)
     end
   end
 
