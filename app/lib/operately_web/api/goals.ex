@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :discussions, :discussions
+      field :discussions, list_of(:discussion)
     end
 
     def call(conn, inputs) do

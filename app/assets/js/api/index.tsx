@@ -884,6 +884,14 @@ export interface Goal {
   success?: boolean | null;
 }
 
+export interface GoalDiscussion {
+  id: Id;
+  title: string;
+  insertedAt: string;
+  commentsCount: number;
+  author: Person;
+}
+
 export interface GoalEditingUpdatedTarget {
   id?: string | null;
   oldName?: string | null;
@@ -2119,7 +2127,7 @@ export interface GoalsGetDiscussionsInput {
 }
 
 export interface GoalsGetDiscussionsResult {
-  discussions?: Discussions | null;
+  discussions?: Discussion[] | null;
 }
 
 export interface ListGoalContributorsInput {
