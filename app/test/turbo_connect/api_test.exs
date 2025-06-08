@@ -50,7 +50,7 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :name, :string, required: true
+      field :name, :string, optional: false, null: false
       field :email, :string
     end
 
@@ -149,7 +149,7 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [required: true]},
+                   {:name, :string, [optional: false, null: false]},
                    {:email, :string, []}
                  ]
                },
@@ -166,7 +166,7 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [required: true]},
+                   {:name, :string, [optional: false, null: false]},
                    {:email, :string, []}
                  ]
                },
@@ -239,13 +239,23 @@ defmodule TurboConnect.ApiTest do
     end
   end
 
-  describe "required field validation" do
+  describe "non-optional fields validation" do
     test "return 400 for missing required fields in mutations" do
       conn = conn(:post, "/create_user", %{})
       conn = ExampleApi.call(conn, [])
 
       assert conn.status == 400
       assert conn.resp_body == ~s({"error":"Bad request","message":"Missing required fields: name"})
+    end
+  end
+
+  describe "non-nullable fields" do
+    test "return 400 for null values in non-nullable fields" do
+      conn = conn(:post, "/create_user", %{name: nil})
+      conn = ExampleApi.call(conn, [])
+
+      assert conn.status == 400
+      assert conn.resp_body == ~s({"error":"Bad request","message":"Field 'name' cannot be null"})
     end
   end
 end
