@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.EditKeyResource do
   alias Operately.Projects.{Permissions, KeyResource}
 
   inputs do
-    field :id, :string
-    field :title, :string
-    field :link, :string
+    field? :id, :string
+    field? :title, :string
+    field? :link, :string
   end
 
   outputs do
-    field :key_resource, :project_key_resource
+    field? :key_resource, :project_key_resource
   end
 
   def call(conn, inputs) do

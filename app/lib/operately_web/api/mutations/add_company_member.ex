@@ -7,14 +7,14 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyMember do
   alias Operately.People
 
   inputs do
-    field :full_name, :string
-    field :email, :string
-    field :title, :string
+    field? :full_name, :string
+    field? :email, :string
+    field? :title, :string
   end
 
   outputs do
-    field :invitation, :invitation
-    field :new_account, :boolean
+    field? :invitation, :invitation
+    field? :new_account, :boolean
   end
 
   def call(conn, inputs) do

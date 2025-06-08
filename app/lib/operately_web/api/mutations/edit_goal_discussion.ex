@@ -7,9 +7,9 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalDiscussion do
   alias Operately.Operations.GoalDiscussionEditing
 
   inputs do
-    field :activity_id, :id
-    field :title, :string
-    field :message, :string
+    field? :activity_id, :id
+    field? :title, :string
+    field? :message, :string
   end
 
   def call(conn, inputs) do

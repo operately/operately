@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetAccount do
   end
 
   outputs do
-    field :account, :account
+    field? :account, :account
   end
 
   def call(conn, _inputs) do

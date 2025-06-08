@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussions do
   alias Operately.Access.Filters
 
   inputs do
-    field :space_id, :id
-    field :include_author, :boolean
-    field :include_comments_count, :boolean
-    field :include_my_drafts, :boolean
+    field? :space_id, :id
+    field? :include_author, :boolean
+    field? :include_comments_count, :boolean
+    field? :include_my_drafts, :boolean
   end
 
   outputs do
-    field :discussions, list_of(:discussion)
-    field :my_drafts, list_of(:discussion)
+    field? :discussions, list_of(:discussion)
+    field? :my_drafts, list_of(:discussion)
   end
 
   def call(conn, inputs) do

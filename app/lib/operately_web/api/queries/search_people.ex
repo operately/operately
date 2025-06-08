@@ -11,15 +11,15 @@ defmodule OperatelyWeb.Api.Queries.SearchPeople do
   alias Operately.Access.Binding
 
   inputs do
-    field :query, :string
-    field :ignored_ids, list_of(:string)
+    field? :query, :string
+    field? :ignored_ids, list_of(:string)
 
-    field :search_scope_type, :string
-    field :search_scope_id, :string
+    field? :search_scope_type, :string
+    field? :search_scope_id, :string
   end
 
   outputs do
-    field :people, list_of(:person)
+    field? :people, list_of(:person)
   end
 
   @limit 10

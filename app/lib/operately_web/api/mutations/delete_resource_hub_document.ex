@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubDocument do
   alias Operately.Operations.ResourceHubDocumentDeleting
 
   inputs do
-    field :document_id, :id
+    field? :document_id, :id
   end
 
   outputs do
-    field :document, :document
+    field? :document, :document
   end
 
   def call(conn, inputs) do

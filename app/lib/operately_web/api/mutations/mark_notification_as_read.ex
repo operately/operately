@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.MarkNotificationAsRead do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :id, :string
+    field? :id, :string
   end
 
   def call(conn, inputs) do

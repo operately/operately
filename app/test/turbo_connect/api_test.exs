@@ -8,13 +8,13 @@ defmodule TurboConnect.ApiTest do
     primitive(:id, encoded_type: :string, decode_with: &String.to_integer/1)
 
     object :user do
-      field :full_name, :string
-      field :address, :address
+      field? :full_name, :string
+      field? :address, :address
     end
 
     object :address do
-      field :street, :string
-      field :city, :string
+      field? :street, :string
+      field? :city, :string
     end
 
     union(:resource, types: [:user, :address])
@@ -24,11 +24,11 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :id, :id
+      field? :id, :id
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_, _) do
@@ -50,12 +50,12 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :name, :string, optional: false, null: false
-      field :email, :string
+      field :name, :string, null: false
+      field? :email, :string
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_, _) do
@@ -85,14 +85,14 @@ defmodule TurboConnect.ApiTest do
              objects: %{
                address: %{
                  fields: [
-                   {:street, :string, []},
-                   {:city, :string, []}
+                   {:street, :string, [optional: true]},
+                   {:city, :string, [optional: true]}
                  ]
                },
                user: %{
                  fields: [
-                   {:full_name, :string, []},
-                   {:address, :address, []}
+                   {:full_name, :string, [optional: true]},
+                   {:address, :address, [optional: true]}
                  ]
                }
              },
@@ -112,12 +112,12 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, []}
+                   {:id, :id, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              },
@@ -128,12 +128,12 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, []}
+                   {:id, :id, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              }
@@ -149,13 +149,13 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [optional: false, null: false]},
-                   {:email, :string, []}
+                   {:name, :string, [null: false, optional: false]},
+                   {:email, :string, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              },
@@ -166,13 +166,13 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [optional: false, null: false]},
-                   {:email, :string, []}
+                   {:name, :string, [null: false, optional: false]},
+                   {:email, :string, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              }

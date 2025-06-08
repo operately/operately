@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveProject do
   import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
 
   inputs do
-    field :project_id, :string
+    field? :project_id, :string
   end
 
   outputs do
-    field :project, :project
+    field? :project, :project
   end
 
   def call(conn, inputs) do

@@ -8,15 +8,15 @@ defmodule OperatelyWeb.Api.Queries.GetPeople do
   alias Operately.Companies.Company
 
   inputs do
-    field :only_suspended, :boolean
+    field? :only_suspended, :boolean
 
-    field :include_suspended, :boolean
-    field :include_manager, :boolean
-    field :include_invitations, :boolean
+    field? :include_suspended, :boolean
+    field? :include_manager, :boolean
+    field? :include_invitations, :boolean
   end
 
   outputs do
-    field :people, list_of(:person)
+    field? :people, list_of(:person)
   end
 
   def call(conn, inputs) do

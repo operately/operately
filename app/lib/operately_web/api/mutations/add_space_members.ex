@@ -3,8 +3,8 @@ defmodule OperatelyWeb.Api.Mutations.AddSpaceMembers do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :space_id, :id
-    field :members, list_of(:add_member_input)
+    field? :space_id, :id
+    field? :members, list_of(:add_member_input)
   end
 
   def call(conn, inputs) do

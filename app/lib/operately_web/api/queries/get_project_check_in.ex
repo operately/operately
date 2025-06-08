@@ -6,18 +6,18 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :string
-    field :include_author, :boolean
-    field :include_acknowledged_by, :boolean
-    field :include_project, :boolean
-    field :include_reactions, :boolean
-    field :include_subscriptions_list, :boolean
-    field :include_potential_subscribers, :boolean
-    field :include_unread_notifications, :boolean
+    field? :id, :string
+    field? :include_author, :boolean
+    field? :include_acknowledged_by, :boolean
+    field? :include_project, :boolean
+    field? :include_reactions, :boolean
+    field? :include_subscriptions_list, :boolean
+    field? :include_potential_subscribers, :boolean
+    field? :include_unread_notifications, :boolean
   end
 
   outputs do
-    field :project_check_in, :project_check_in
+    field? :project_check_in, :project_check_in
   end
 
   def call(conn, inputs) do

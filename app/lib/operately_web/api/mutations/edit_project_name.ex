@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectName do
   alias Operately.Projects.Permissions
 
   inputs do
-    field :project_id, :string
-    field :name, :string
+    field? :project_id, :string
+    field? :name, :string
   end
 
   outputs do
-    field :project, :project
+    field? :project, :project
   end
 
   def call(conn, inputs) do
