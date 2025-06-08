@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :discussions, list_of(:discussion)
+      field :discussions, list_of(:discussion)
     end
 
     def call(conn, inputs) do
@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -99,11 +99,11 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, null: false
-      field? :due_date, :date
+      field :due_date, :date
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -138,8 +138,8 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :target_id, :id
-      field? :success, :boolean
+      field :target_id, :id
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -175,7 +175,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -213,7 +213,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -254,7 +254,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -283,13 +283,13 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field? :goal_id, :id, null: false
-      field? :target_id, :id, null: false
-      field? :index, :integer, null: false
+      field :goal_id, :id, null: false
+      field :target_id, :id, null: false
+      field :index, :integer, null: false
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -323,7 +323,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -355,7 +355,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field? :success, :boolean
+      field :success, :boolean
     end
 
     def call(conn, inputs) do

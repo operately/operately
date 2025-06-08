@@ -20,7 +20,7 @@ defmodule TurboConnect.TypesTest do
       field? :content, :event_content
     end
 
-    union :event_content, types: [:user_added_event, :user_removed_event]
+    union(:event_content, types: [:user_added_event, :user_removed_event])
 
     object :user_added_event do
       field? :user_id, :integer
@@ -33,40 +33,39 @@ defmodule TurboConnect.TypesTest do
 
   test "definining objects and their fields" do
     assert TestSpec.__unions__() == %{
-      event_content: [:user_added_event, :user_removed_event]
-    }
+             event_content: [:user_added_event, :user_removed_event]
+           }
 
     assert TestSpec.__objects__() == %{
-      user: %{
-        fields: [
-          {:name, :string, []},
-          {:age, :integer, []},
-          {:posts, {:list, :post}, []}
-        ]
-      },
-      post: %{
-        fields: [
-          {:title, :string, []},
-          {:content, :string, []}
-        ]
-      },
-      event: %{
-        fields: [
-          {:inserted_at, :datetime, []},
-          {:content, :event_content, []}
-        ]
-      },
-      user_added_event: %{
-        fields: [
-          {:user_id, :integer, []}
-        ]
-      },
-      user_removed_event: %{
-        fields: [
-          {:user_id, :integer, []}
-        ]
-      }
-    }
+             user: %{
+               fields: [
+                 {:name, :string, [optional: true]},
+                 {:age, :integer, [optional: true]},
+                 {:posts, {:list, :post}, [optional: true]}
+               ]
+             },
+             post: %{
+               fields: [
+                 {:title, :string, [optional: true]},
+                 {:content, :string, [optional: true]}
+               ]
+             },
+             event: %{
+               fields: [
+                 {:inserted_at, :datetime, [optional: true]},
+                 {:content, :event_content, [optional: true]}
+               ]
+             },
+             user_added_event: %{
+               fields: [
+                 {:user_id, :integer, [optional: true]}
+               ]
+             },
+             user_removed_event: %{
+               fields: [
+                 {:user_id, :integer, [optional: true]}
+               ]
+             }
+           }
   end
-
 end

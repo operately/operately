@@ -16,20 +16,19 @@ defmodule TurboConnect.FieldsTest do
 
   test "defining fields" do
     assert Example.__fields__() == %{
-      user: %{
-        fields: [
-          {:name, :string, []},
-          {:age, :integer, []},
-          {:hobbies, {:list, :string}, []}
-        ]
-      },
-      post: %{
-        fields: [
-          {:title, :string, []},
-          {:content, :string, []}
-        ]
-      }
-    }
+             user: %{
+               fields: [
+                 {:name, :string, [optional: true]},
+                 {:age, :integer, [optional: true]},
+                 {:hobbies, {:list, :string}, [optional: true]}
+               ]
+             },
+             post: %{
+               fields: [
+                 {:title, :string, [optional: true]},
+                 {:content, :string, [optional: true]}
+               ]
+             }
+           }
   end
-
 end
