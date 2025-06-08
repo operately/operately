@@ -1,4 +1,4 @@
-import Api, { GoalProgressUpdate } from "@/api";
+import Api, { GoalDiscussion, GoalProgressUpdate } from "@/api";
 import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
@@ -17,7 +17,7 @@ import { fetchAll } from "../../utils/async";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v17-GoalPage.goal-${id}`;
+  return `v18-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -25,6 +25,7 @@ type LoaderResult = {
     goal: Goal;
     workMap: WorkMapItem[];
     checkIns: GoalProgressUpdate[];
+    discussions: GoalDiscussion[];
   };
 
   cacheVersion: number;
@@ -52,12 +53,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAssignees: true,
         }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
+        discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
       }),
   });
 }
 
 function Page() {
-  const { goal, workMap, checkIns } = PageCache.useData(loader).data;
+  const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -130,7 +132,7 @@ function Page() {
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
     checkIns: prepareCheckIns(checkIns),
-    discussions: [],
+    discussions: prepareDiscussions(discussions, mentionedPersonLookup),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
@@ -398,4 +400,18 @@ function usePeopleSearch<T>(hookParams: UsePeopleSearch<T>): PeopleSearchFn<T> {
     const people = result.people || [];
     return people.map((person) => transform(person!)) as T[];
   };
+}
+
+function prepareDiscussions(discussions: GoalDiscussion[]): GoalPage.Props["discussions"] {
+  return discussions.map((discussion) => {
+    return {
+      id: discussion.id,
+      date: Time.parse(discussion.insertedAt)!,
+      title: discussion.title,
+      author: preparePerson(discussion.author)!,
+      link: Paths.goalDiscussionPath(discussion.id),
+      content: JSON.parse(discussion.content),
+      commentCount: discussion.commentsCount,
+    };
+  });
 }
