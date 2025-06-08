@@ -25,14 +25,19 @@ defmodule TurboConnect.ApiTest do
 
     inputs do
       field? :id, :id
+      field? :include_address, :boolean, default: true
     end
 
     outputs do
       field? :user, :user
+      field? :echod_id, :id
+      field? :echod_include_address, :boolean
     end
 
-    def call(_, _) do
+    def call(_, inputs) do
       res = %{
+        echod_id: inputs[:id],
+        echod_include_address: inputs[:include_address],
         user: %{
           full_name: "John Doe",
           address: %{
@@ -112,12 +117,15 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, [optional: true]}
+                   {:id, :id, [optional: true]},
+                   {:include_address, :boolean, [default: true, optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, [optional: true]}
+                   {:user, :user, [optional: true]},
+                   {:echod_id, :id, [optional: true]},
+                   {:echod_include_address, :boolean, [optional: true]}
                  ]
                }
              },
@@ -128,12 +136,15 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, [optional: true]}
+                   {:id, :id, [optional: true]},
+                   {:include_address, :boolean, [default: true, optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, [optional: true]}
+                   {:user, :user, [optional: true]},
+                   {:echod_id, :id, [optional: true]},
+                   {:echod_include_address, :boolean, [optional: true]}
                  ]
                }
              }
@@ -258,4 +269,22 @@ defmodule TurboConnect.ApiTest do
       assert conn.resp_body == ~s({"error":"Bad request","message":"Field 'name' cannot be null"})
     end
   end
+
+  # describe "default values" do
+  #   test "default values are applied correctly" do
+  #     conn = conn(:get, "/get_user", %{})
+  #     conn = ExampleApi.call(conn, [])
+
+  #     resp = Jason.decode!(conn.resp_body)
+  #     assert resp["echod_include_address"] == true
+  #   end
+
+  #   test "if the value is provided, it overrides the default" do
+  #     conn = conn(:get, "/get_user", %{"include_address" => false})
+  #     conn = ExampleApi.call(conn, [])
+
+  #     resp = Jason.decode!(conn.resp_body)
+  #     assert resp["echod_include_address"] == false
+  #   end
+  # end
 end
