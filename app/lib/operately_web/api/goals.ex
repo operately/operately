@@ -10,11 +10,11 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Query
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
     end
 
     outputs do
-      field :discussions, list_of(:discussion)
+      field? :discussions, list_of(:discussion)
     end
 
     def call(conn, inputs) do
@@ -34,12 +34,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :name, :string, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
+      field? :name, :string, optional: false, null: false
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -66,12 +66,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :description, :json, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
+      field? :description, :json, optional: false, null: false
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -98,12 +98,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :due_date, :date
+      field? :goal_id, :id, optional: false, null: false
+      field? :due_date, :date
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -130,16 +130,16 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :name, :string, optional: false, null: false
-      field :start_value, :float, optional: false, null: false
-      field :target_value, :float, optional: false, null: false
-      field :unit, :string, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
+      field? :name, :string, optional: false, null: false
+      field? :start_value, :float, optional: false, null: false
+      field? :target_value, :float, optional: false, null: false
+      field? :unit, :string, optional: false, null: false
     end
 
     outputs do
-      field :target_id, :id
-      field :success, :boolean
+      field? :target_id, :id
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -170,12 +170,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :target_id, :id, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
+      field? :target_id, :id, optional: false, null: false
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -203,16 +203,16 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :target_id, :id, optional: false, null: false
-      field :name, :string
-      field :start_value, :float
-      field :target_value, :float
-      field :unit, :string
+      field? :goal_id, :id, optional: false, null: false
+      field? :target_id, :id, optional: false, null: false
+      field? :name, :string
+      field? :start_value, :float
+      field? :target_value, :float
+      field? :unit, :string
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -247,13 +247,13 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :target_id, :id, optional: false, null: false
-      field :value, :float, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
+      field? :target_id, :id, optional: false, null: false
+      field? :value, :float, optional: false, null: false
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -282,13 +282,13 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :target_id, :id, optional: false, null: false
-      field :index, :integer, optional: false, null: false
+      field? :goal_id, :id, optional: false, null: false
+      field? :target_id, :id, optional: false, null: false
+      field? :index, :integer, optional: false, null: false
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -317,12 +317,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :champion_id, :id
+      field? :goal_id, :id, optional: false, null: false
+      field? :champion_id, :id
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do
@@ -349,12 +349,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, optional: false, null: false
-      field :reviewer_id, :id
+      field? :goal_id, :id, optional: false, null: false
+      field? :reviewer_id, :id
     end
 
     outputs do
-      field :success, :boolean
+      field? :success, :boolean
     end
 
     def call(conn, inputs) do

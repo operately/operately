@@ -7,37 +7,37 @@ defmodule TurboConnect.TsGenTest do
     primitive(:id, encoded_type: :integer, decode_with: &String.to_integer/1)
 
     object :user do
-      field :full_name, :string, optional: false, null: false
-      field :address, :address, optional: false
-      field :posts, list_of(:post)
+      field? :full_name, :string, optional: false, null: false
+      field? :address, :address, optional: false
+      field? :posts, list_of(:post)
     end
 
     object :address do
-      field :street, :string
-      field :city, :string
+      field? :street, :string
+      field? :city, :string
     end
 
     enum(:post_status, values: [:draft, :published])
 
     object :post do
-      field :title, :string
-      field :content, :string
-      field :status, :post_status
+      field? :title, :string
+      field? :content, :string
+      field? :status, :post_status
     end
 
     object :event do
-      field :inserted_at, :datetime
-      field :content, :event_content
+      field? :inserted_at, :datetime
+      field? :content, :event_content
     end
 
     union(:event_content, types: [:user_added_event, :user_removed_event])
 
     object :user_added_event do
-      field :user_id, :integer
+      field? :user_id, :integer
     end
 
     object :user_removed_event do
-      field :user_id, :integer
+      field? :user_id, :integer
     end
   end
 
@@ -45,11 +45,11 @@ defmodule TurboConnect.TsGenTest do
     use TurboConnect.Query
 
     inputs do
-      field :user_id, :integer
+      field? :user_id, :integer
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(%{user_id: _user_id}) do
@@ -79,12 +79,12 @@ defmodule TurboConnect.TsGenTest do
     use TurboConnect.Mutation
 
     inputs do
-      field :full_name, :string
-      field :address, :address
+      field? :full_name, :string
+      field? :address, :address
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_conn, _inputs) do

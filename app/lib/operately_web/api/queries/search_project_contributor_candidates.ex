@@ -8,12 +8,12 @@ defmodule OperatelyWeb.Api.Queries.SearchProjectContributorCandidates do
   alias Operately.Projects.Project
 
   inputs do
-    field :project_id, :string
-    field :query, :string
+    field? :project_id, :string
+    field? :query, :string
   end
 
   outputs do
-    field :people, list_of(:person)
+    field? :people, list_of(:person)
   end
 
   def call(conn, inputs) do

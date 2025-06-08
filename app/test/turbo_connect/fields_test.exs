@@ -5,13 +5,13 @@ defmodule TurboConnect.FieldsTest do
     use TurboConnect.Fields
 
     @field_scope :user
-    field :name, :string
-    field :age, :integer
-    field :hobbies, list_of(:string)
+    field? :name, :string
+    field? :age, :integer
+    field? :hobbies, list_of(:string)
 
     @field_scope :post
-    field :title, :string
-    field :content, :string
+    field? :title, :string
+    field? :content, :string
   end
 
   test "defining fields" do

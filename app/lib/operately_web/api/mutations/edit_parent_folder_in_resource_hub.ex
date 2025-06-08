@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.EditParentFolderInResourceHub do
   alias Operately.Operations.ResourceHubParentFolderEditing
 
   inputs do
-    field :resource_id, :id
-    field :resource_type, :string
-    field :new_folder_id, :id
+    field? :resource_id, :id
+    field? :resource_type, :string
+    field? :new_folder_id, :id
   end
 
   outputs do
-    field :success, :boolean
+    field? :success, :boolean
   end
 
   def call(conn, inputs) do

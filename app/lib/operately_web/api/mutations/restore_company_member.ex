@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.RestoreCompanyMember do
   alias Operately.People.Person
 
   inputs do
-    field :person_id, :id
+    field? :person_id, :id
   end
 
   def call(conn, inputs) do

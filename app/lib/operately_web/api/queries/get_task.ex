@@ -8,14 +8,14 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   alias Operately.Tasks.Task
 
   inputs do
-    field :id, :string
-    field :include_assignees, :boolean
-    field :include_milestone, :boolean
-    field :include_project, :boolean
+    field? :id, :string
+    field? :include_assignees, :boolean
+    field? :include_milestone, :boolean
+    field? :include_project, :boolean
   end
 
   outputs do
-    field :task, :task
+    field? :task, :task
   end
 
   def call(conn, inputs) do

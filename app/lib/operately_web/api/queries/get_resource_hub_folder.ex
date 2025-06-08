@@ -5,16 +5,16 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFolder do
   alias Operately.ResourceHubs.{Folder, Node}
 
   inputs do
-    field :id, :id
-    field :include_nodes, :boolean
-    field :include_resource_hub, :boolean
-    field :include_path_to_folder, :boolean
-    field :include_permissions, :boolean
-    field :include_potential_subscribers, :boolean
+    field? :id, :id
+    field? :include_nodes, :boolean
+    field? :include_resource_hub, :boolean
+    field? :include_path_to_folder, :boolean
+    field? :include_permissions, :boolean
+    field? :include_potential_subscribers, :boolean
   end
 
   outputs do
-    field :folder, :resource_hub_folder
+    field? :folder, :resource_hub_folder
   end
 
   def call(conn, inputs) do

@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyAdmins do
   alias Operately.Companies.Company
 
   inputs do
-    field :people_ids, list_of(:id)
+    field? :people_ids, list_of(:id)
   end
 
   def call(conn, inputs) do

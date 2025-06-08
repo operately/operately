@@ -5,12 +5,12 @@ defmodule TurboConnect.MutationTest do
     use TurboConnect.Mutation
 
     inputs do
-      field :name, :string
-      field :age, :integer
+      field? :name, :string
+      field? :age, :integer
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_, _) do

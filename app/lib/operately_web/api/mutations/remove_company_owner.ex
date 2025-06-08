@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyOwner do
   alias Operately.Operations.CompanyOwnerRemoving
 
   inputs do
-    field :person_id, :id
+    field? :person_id, :id
   end
 
   def call(conn, inputs) do

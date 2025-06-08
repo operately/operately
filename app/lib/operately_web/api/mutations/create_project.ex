@@ -7,20 +7,20 @@ defmodule OperatelyWeb.Api.Mutations.CreateProject do
   alias Operately.Operations.ProjectCreation
 
   inputs do
-    field :space_id, :string
-    field :name, :string
-    field :champion_id, :string
-    field :reviewer_id, :string
-    field :creator_is_contributor, :string
-    field :creator_role, :string
-    field :goal_id, :string
-    field :anonymous_access_level, :integer
-    field :company_access_level, :integer
-    field :space_access_level, :integer
+    field? :space_id, :string
+    field? :name, :string
+    field? :champion_id, :string
+    field? :reviewer_id, :string
+    field? :creator_is_contributor, :string
+    field? :creator_role, :string
+    field? :goal_id, :string
+    field? :anonymous_access_level, :integer
+    field? :company_access_level, :integer
+    field? :space_access_level, :integer
   end
 
   outputs do
-    field :project, :project
+    field? :project, :project
   end
 
   def call(conn, inputs) do

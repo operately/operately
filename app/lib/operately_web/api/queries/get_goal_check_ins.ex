@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
   alias Operately.Goals.{Goal, Update}
 
   inputs do
-    field :goal_id, :id, optional: false, null: false
+    field? :goal_id, :id, optional: false, null: false
   end
 
   outputs do
-    field :check_ins, list_of(:goal_progress_update)
+    field? :check_ins, list_of(:goal_progress_update)
   end
 
   def call(conn, inputs) do
