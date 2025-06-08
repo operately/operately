@@ -6,16 +6,16 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHub do
   alias Operately.Operations.ResourceHubCreating
 
   inputs do
-    field :space_id, :string
-    field :name, :string
-    field :description, :string
-    field :anonymous_access_level, :integer
-    field :company_access_level, :integer
-    field :space_access_level, :integer
+    field? :space_id, :string
+    field? :name, :string
+    field? :description, :string
+    field? :anonymous_access_level, :integer
+    field? :company_access_level, :integer
+    field? :space_access_level, :integer
   end
 
   outputs do
-    field :resource_hub, :resource_hub
+    field? :resource_hub, :resource_hub
   end
 
   def call(conn, inputs) do

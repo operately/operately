@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFile do
   alias Operately.ResourceHubs.{Permissions, ResourceHub}
 
   inputs do
-    field :resource_hub_id, :id
-    field :folder_id, :id
-    field :files, list_of(:resource_hub_uploaded_file)
-    field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:id)
+    field? :resource_hub_id, :id
+    field? :folder_id, :id
+    field? :files, list_of(:resource_hub_uploaded_file)
+    field? :send_notifications_to_everyone, :boolean
+    field? :subscriber_ids, list_of(:id)
   end
 
   outputs do
-    field :files, list_of(:resource_hub_file)
+    field? :files, list_of(:resource_hub_file)
   end
 
   def call(conn, inputs) do

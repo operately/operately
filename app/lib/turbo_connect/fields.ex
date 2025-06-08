@@ -18,11 +18,19 @@ defmodule TurboConnect.Fields do
 
   defmacro field(name, type, opts \\ []) do
     quote do
-      if is_nil(@field_scope) do
-        raise "field/2 must be called inside an object, inputs or outputs block"
-      end
+      TurboConnect.Fields.validate_field_scope(@field_scope)
+      TurboConnect.Fields.validate_field_opts(unquote(opts))
 
-      @fields {@field_scope, unquote(name), unquote(type), unquote(opts)}
+      @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: false]}
+    end
+  end
+
+  defmacro field?(name, type, opts \\ []) do
+    quote do
+      TurboConnect.Fields.validate_field_scope(@field_scope)
+      TurboConnect.Fields.validate_field_opts(unquote(opts))
+
+      @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: true]}
     end
   end
 
@@ -79,5 +87,20 @@ defmodule TurboConnect.Fields do
     |> Enum.group_by(&elem(&1, 0), &{elem(&1, 1), elem(&1, 2), elem(&1, 3)})
     |> Enum.map(fn {scope, fields} -> {scope, %{fields: fields}} end)
     |> Enum.into(%{})
+  end
+
+  def validate_field_scope(scope) do
+    if is_nil(scope) do
+      raise "field/2 must be called inside an object, inputs or outputs block"
+    end
+  end
+
+  def validate_field_opts(opts) do
+    valid_opts = [:null]
+    invalid_opts = Keyword.keys(opts) -- valid_opts
+
+    if invalid_opts != [] do
+      raise "Invalid options for field: #{inspect(opts)}. Valid options are: #{inspect(valid_opts)}"
+    end
   end
 end

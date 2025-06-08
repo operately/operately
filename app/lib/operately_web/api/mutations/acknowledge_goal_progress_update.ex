@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeGoalProgressUpdate do
   alias Operately.Operations.GoalUpdateAcknowledging
 
   inputs do
-    field :id, :string
+    field? :id, :string
   end
 
   outputs do
-    field :update, :goal_progress_update
+    field? :update, :goal_progress_update
   end
 
   def call(conn, inputs) do

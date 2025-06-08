@@ -7,19 +7,19 @@ defmodule OperatelyWeb.Api.Queries.GetDiscussion do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :string
-    field :include_author, :boolean
-    field :include_reactions, :boolean
-    field :include_space, :boolean
-    field :include_space_members, :boolean
-    field :include_subscriptions_list, :boolean
-    field :include_potential_subscribers, :boolean
-    field :include_unread_notifications, :boolean
-    field :include_permissions, :boolean
+    field? :id, :string
+    field? :include_author, :boolean
+    field? :include_reactions, :boolean
+    field? :include_space, :boolean
+    field? :include_space_members, :boolean
+    field? :include_subscriptions_list, :boolean
+    field? :include_potential_subscribers, :boolean
+    field? :include_unread_notifications, :boolean
+    field? :include_permissions, :boolean
   end
 
   outputs do
-    field :discussion, :discussion
+    field? :discussion, :discussion
   end
 
   def call(conn, inputs) do

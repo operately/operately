@@ -7,15 +7,16 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
   alias Operately.Operations.GoalCheckInEdit
 
   inputs do
-    field :id, :id, optional: false, null: false
-    field :status, :string
-    field :content, :json
-    field :new_target_values, :string
-    field :due_date, :date, optional: false
+    field :id, :id, null: false
+    field :due_date, :date
+
+    field? :status, :string
+    field? :content, :json
+    field? :new_target_values, :string
   end
 
   outputs do
-    field :update, :goal_progress_update
+    field? :update, :goal_progress_update
   end
 
   def call(conn, inputs) do

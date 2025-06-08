@@ -6,21 +6,21 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
   alias Operately.Operations.GoalCreation
 
   inputs do
-    field :space_id, :id
-    field :name, :string
-    field :champion_id, :id
-    field :reviewer_id, :id
-    field :timeframe, :timeframe
-    field :targets, list_of(:create_target_input)
-    field :description, :string
-    field :parent_goal_id, :id
-    field :anonymous_access_level, :integer
-    field :company_access_level, :integer
-    field :space_access_level, :integer
+    field? :space_id, :id
+    field? :name, :string
+    field? :champion_id, :id
+    field? :reviewer_id, :id
+    field? :timeframe, :timeframe
+    field? :targets, list_of(:create_target_input)
+    field? :description, :string
+    field? :parent_goal_id, :id
+    field? :anonymous_access_level, :integer
+    field? :company_access_level, :integer
+    field? :space_access_level, :integer
   end
 
   outputs do
-    field :goal, :goal
+    field? :goal, :goal
   end
 
   def call(conn, inputs) do

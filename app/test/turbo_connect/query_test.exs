@@ -5,13 +5,13 @@ defmodule TurboConnect.QueryTest do
     use TurboConnect.Query
 
     inputs do
-      field :id, :string
+      field? :id, :string
     end
 
     outputs do
-      field :id, :string
-      field :name, :string
-      field :hobbies, list_of(:string)
+      field? :id, :string
+      field? :name, :string
+      field? :hobbies, list_of(:string)
     end
 
     def call(inputs) do
@@ -23,18 +23,17 @@ defmodule TurboConnect.QueryTest do
 
   test "defining a query with inputs and outputs" do
     assert ExampleQuery.__inputs__() == %{
-      fields: [
-        {:id, :string, []}
-      ]
-    }
+             fields: [
+               {:id, :string, [optional: true]}
+             ]
+           }
 
     assert ExampleQuery.__outputs__() == %{
-      fields: [
-        {:id, :string, []},
-        {:name, :string, []},
-        {:hobbies, {:list, :string}, []}
-      ]
-    }
+             fields: [
+               {:id, :string, [optional: true]},
+               {:name, :string, [optional: true]},
+               {:hobbies, {:list, :string}, [optional: true]}
+             ]
+           }
   end
-
 end

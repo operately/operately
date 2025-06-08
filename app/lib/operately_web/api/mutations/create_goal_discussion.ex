@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalDiscussion do
   alias Operately.Operations.GoalDiscussionCreation
 
   inputs do
-    field :goal_id, :id
-    field :title, :string
-    field :message, :string
-    field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:id)
+    field? :goal_id, :id
+    field? :title, :string
+    field? :message, :string
+    field? :send_notifications_to_everyone, :boolean
+    field? :subscriber_ids, list_of(:id)
   end
 
   outputs do
-    field :id, :string
+    field? :id, :string
   end
 
   def call(conn, inputs) do
