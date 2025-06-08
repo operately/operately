@@ -19,7 +19,7 @@ defmodule TurboConnect.Fields do
   defmacro field(name, type, opts \\ []) do
     quote do
       TurboConnect.Fields.validate_field_scope(@field_scope)
-      TurboConnect.Fields.validate_field_opts(unquote(opts))
+      TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
 
       @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: false]}
     end
@@ -28,7 +28,7 @@ defmodule TurboConnect.Fields do
   defmacro field?(name, type, opts \\ []) do
     quote do
       TurboConnect.Fields.validate_field_scope(@field_scope)
-      TurboConnect.Fields.validate_field_opts(unquote(opts))
+      TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
 
       @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: true]}
     end
@@ -95,8 +95,14 @@ defmodule TurboConnect.Fields do
     end
   end
 
-  def validate_field_opts(opts) do
-    valid_opts = [:null]
+  def validate_field_opts(scope, opts) do
+    valid_opts =
+      if scope == :inputs do
+        [:null, :default]
+      else
+        [:null]
+      end
+
     invalid_opts = Keyword.keys(opts) -- valid_opts
 
     if invalid_opts != [] do
