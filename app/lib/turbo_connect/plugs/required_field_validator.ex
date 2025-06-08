@@ -34,15 +34,7 @@ defmodule TurboConnect.Plugs.RequiredFieldValidator do
     |> Enum.map(fn {name, _, _} -> name end)
   end
 
-  defp is_missing?({name, type, opts}, actual_inputs) do
-    if opts[:required] do
-      cond do
-        is_nil(actual_inputs[name]) -> true
-        type == :string && actual_inputs[name] == "" -> true
-        true -> false
-      end
-    else
-      false
-    end
+  defp is_missing?({name, _type, opts}, actual_inputs) do
+    opts[:optional] == false && !Map.has_key?(actual_inputs, name)
   end
 end
