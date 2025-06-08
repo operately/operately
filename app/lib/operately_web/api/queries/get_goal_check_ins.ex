@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
   alias Operately.Goals.{Goal, Update}
 
   inputs do
-    field :goal_id, :id, required: true
+    field :goal_id, :id, optional: false, null: false
   end
 
   outputs do

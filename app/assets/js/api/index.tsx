@@ -2116,7 +2116,7 @@ export interface GetWorkMapResult {
 }
 
 export interface GoalsGetCheckInsInput {
-  goalId?: Id | null;
+  goalId: Id;
 }
 
 export interface GoalsGetCheckInsResult {
@@ -2124,7 +2124,7 @@ export interface GoalsGetCheckInsResult {
 }
 
 export interface GoalsGetDiscussionsInput {
-  goalId?: Id | null;
+  goalId: Id;
 }
 
 export interface GoalsGetDiscussionsResult {
@@ -2683,7 +2683,7 @@ export interface EditGoalDiscussionInput {
 export interface EditGoalDiscussionResult {}
 
 export interface EditGoalProgressUpdateInput {
-  id?: Id | null;
+  id: Id;
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
@@ -2845,11 +2845,11 @@ export interface EditSubscriptionsListInput {
 export interface EditSubscriptionsListResult {}
 
 export interface GoalsAddTargetInput {
-  goalId?: Id | null;
-  name?: string | null;
-  startValue?: number | null;
-  targetValue?: number | null;
-  unit?: string | null;
+  goalId: Id;
+  name: string;
+  startValue: number;
+  targetValue: number;
+  unit: string;
 }
 
 export interface GoalsAddTargetResult {
@@ -2858,8 +2858,8 @@ export interface GoalsAddTargetResult {
 }
 
 export interface GoalsDeleteTargetInput {
-  goalId?: Id | null;
-  targetId?: Id | null;
+  goalId: Id;
+  targetId: Id;
 }
 
 export interface GoalsDeleteTargetResult {
@@ -2867,7 +2867,7 @@ export interface GoalsDeleteTargetResult {
 }
 
 export interface GoalsUpdateChampionInput {
-  goalId?: Id | null;
+  goalId: Id;
   championId?: Id | null;
 }
 
@@ -2876,8 +2876,8 @@ export interface GoalsUpdateChampionResult {
 }
 
 export interface GoalsUpdateDescriptionInput {
-  goalId?: Id | null;
-  description?: Json | null;
+  goalId: Id;
+  description: Json;
 }
 
 export interface GoalsUpdateDescriptionResult {
@@ -2885,7 +2885,7 @@ export interface GoalsUpdateDescriptionResult {
 }
 
 export interface GoalsUpdateDueDateInput {
-  goalId?: Id | null;
+  goalId: Id;
   dueDate?: string | null;
 }
 
@@ -2894,8 +2894,8 @@ export interface GoalsUpdateDueDateResult {
 }
 
 export interface GoalsUpdateNameInput {
-  goalId?: Id | null;
-  name?: string | null;
+  goalId: Id;
+  name: string;
 }
 
 export interface GoalsUpdateNameResult {
@@ -2903,7 +2903,7 @@ export interface GoalsUpdateNameResult {
 }
 
 export interface GoalsUpdateReviewerInput {
-  goalId?: Id | null;
+  goalId: Id;
   reviewerId?: Id | null;
 }
 
@@ -2912,8 +2912,8 @@ export interface GoalsUpdateReviewerResult {
 }
 
 export interface GoalsUpdateTargetInput {
-  goalId?: Id | null;
-  targetId?: Id | null;
+  goalId: Id;
+  targetId: Id;
   name?: string | null;
   startValue?: number | null;
   targetValue?: number | null;
@@ -2925,9 +2925,9 @@ export interface GoalsUpdateTargetResult {
 }
 
 export interface GoalsUpdateTargetIndexInput {
-  goalId?: Id | null;
-  targetId?: Id | null;
-  index?: number | null;
+  goalId: Id;
+  targetId: Id;
+  index: number;
 }
 
 export interface GoalsUpdateTargetIndexResult {
@@ -2935,9 +2935,9 @@ export interface GoalsUpdateTargetIndexResult {
 }
 
 export interface GoalsUpdateTargetValueInput {
-  goalId?: Id | null;
-  targetId?: Id | null;
-  value?: number | null;
+  goalId: Id;
+  targetId: Id;
+  value: number;
 }
 
 export interface GoalsUpdateTargetValueResult {
@@ -3013,8 +3013,8 @@ export interface PostDiscussionResult {
 }
 
 export interface PostGoalProgressUpdateInput {
-  goalId?: Id | null;
-  status?: string | null;
+  goalId: Id;
+  status: string;
   dueDate: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
