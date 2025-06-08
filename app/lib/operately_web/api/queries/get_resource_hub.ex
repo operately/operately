@@ -5,15 +5,15 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHub do
   alias Operately.ResourceHubs.{ResourceHub, Node}
 
   inputs do
-    field :id, :id
-    field :include_space, :boolean
-    field :include_nodes, :boolean
-    field :include_potential_subscribers, :boolean
-    field :include_permissions, :boolean
+    field? :id, :id
+    field? :include_space, :boolean
+    field? :include_nodes, :boolean
+    field? :include_potential_subscribers, :boolean
+    field? :include_permissions, :boolean
   end
 
   outputs do
-    field :resource_hub, :resource_hub
+    field? :resource_hub, :resource_hub
   end
 
   def call(conn, inputs) do

@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.EditComment do
   alias Operately.Operations.CommentEditing
 
   inputs do
-    field :content, :string
-    field :comment_id, :string
-    field :parent_type, :string
+    field? :content, :string
+    field? :comment_id, :string
+    field? :parent_type, :string
   end
 
   outputs do
-    field :comment, :comment
+    field? :comment, :comment
   end
 
   def call(conn, inputs) do

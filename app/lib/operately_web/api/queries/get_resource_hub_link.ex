@@ -6,21 +6,21 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubLink do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :id
-    field :include_author, :boolean
-    field :include_space, :boolean
-    field :include_resource_hub, :boolean
-    field :include_parent_folder, :boolean
-    field :include_reactions, :boolean
-    field :include_permissions, :boolean
-    field :include_subscriptions_list, :boolean
-    field :include_potential_subscribers, :boolean
-    field :include_unread_notifications, :boolean
-    field :include_path_to_link, :boolean
+    field? :id, :id
+    field? :include_author, :boolean
+    field? :include_space, :boolean
+    field? :include_resource_hub, :boolean
+    field? :include_parent_folder, :boolean
+    field? :include_reactions, :boolean
+    field? :include_permissions, :boolean
+    field? :include_subscriptions_list, :boolean
+    field? :include_potential_subscribers, :boolean
+    field? :include_unread_notifications, :boolean
+    field? :include_path_to_link, :boolean
   end
 
   outputs do
-    field :link, :resource_hub_link
+    field? :link, :resource_hub_link
   end
 
   def call(conn, inputs) do

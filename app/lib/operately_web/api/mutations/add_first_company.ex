@@ -2,16 +2,16 @@ defmodule OperatelyWeb.Api.Mutations.AddFirstCompany do
   use TurboConnect.Mutation
 
   inputs do
-    field :company_name, :string
-    field :full_name, :string
-    field :email, :string
-    field :title, :string
-    field :password, :string
-    field :password_confirmation, :string
+    field? :company_name, :string
+    field? :full_name, :string
+    field? :email, :string
+    field? :title, :string
+    field? :password, :string
+    field? :password_confirmation, :string
   end
 
   outputs do
-    field :company, :company
+    field? :company, :company
   end
 
   def call(_conn, inputs) do

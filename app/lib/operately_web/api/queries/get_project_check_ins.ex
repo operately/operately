@@ -7,14 +7,14 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
   alias Operately.Projects.CheckIn
 
   inputs do
-    field :project_id, :string
-    field :include_author, :boolean
-    field :include_project, :boolean
-    field :include_reactions, :boolean
+    field? :project_id, :string
+    field? :include_author, :boolean
+    field? :include_project, :boolean
+    field? :include_reactions, :boolean
   end
 
   outputs do
-    field :project_check_ins, list_of(:project_check_in)
+    field? :project_check_ins, list_of(:project_check_in)
   end
 
   def call(conn, inputs) do

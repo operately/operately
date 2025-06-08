@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.PublishResourceHubDocument do
   alias Operately.Operations.ResourceHubDocumentPublishing
 
   inputs do
-    field :document_id, :id
-    field :name, :string
-    field :content, :string
+    field? :document_id, :id
+    field? :name, :string
+    field? :content, :string
   end
 
   outputs do
-    field :document, :resource_hub_document
+    field? :document, :resource_hub_document
   end
 
   def call(conn, inputs) do

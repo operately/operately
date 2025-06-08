@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.Mutations.AddCompanyTrustedEmailDomain do
   alias Operately.Companies.Permissions
 
   inputs do
-    field :company_id, :string
-    field :domain, :string
+    field? :company_id, :string
+    field? :domain, :string
   end
 
   outputs do
-    field :company, :company
+    field? :company, :company
   end
 
   def call(conn, inputs) do

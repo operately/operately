@@ -8,16 +8,16 @@ defmodule OperatelyWeb.Api.Queries.GetCompany do
   require Logger
 
   inputs do
-    field :id, :company_id
+    field? :id, :company_id
 
-    field :include_permissions, :boolean
-    field :include_people, :boolean
-    field :include_admins, :boolean
-    field :include_owners, :boolean
+    field? :include_permissions, :boolean
+    field? :include_people, :boolean
+    field? :include_admins, :boolean
+    field? :include_owners, :boolean
   end
 
   outputs do
-    field :company, :company
+    field? :company, :company
   end
 
   def call(conn, inputs) do

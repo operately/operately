@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodes do
   alias Operately.Access.Filters
 
   inputs do
-    field :resource_hub_id, :id
-    field :folder_id, :id
-    field :include_comments_count, :boolean
-    field :include_children_count, :boolean
+    field? :resource_hub_id, :id
+    field? :folder_id, :id
+    field? :include_comments_count, :boolean
+    field? :include_children_count, :boolean
   end
 
   outputs do
-    field :nodes, list_of(:resource_hub_node)
-    field :draft_nodes, list_of(:resource_hub_node)
+    field? :nodes, list_of(:resource_hub_node)
+    field? :draft_nodes, list_of(:resource_hub_node)
   end
 
   def call(conn, inputs) do

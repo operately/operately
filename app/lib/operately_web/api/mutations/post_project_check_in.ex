@@ -7,15 +7,15 @@ defmodule OperatelyWeb.Api.Mutations.PostProjectCheckIn do
   alias Operately.Operations.ProjectCheckIn
 
   inputs do
-    field :project_id, :string
-    field :status, :string
-    field :description, :string
-    field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:string)
+    field? :project_id, :string
+    field? :status, :string
+    field? :description, :string
+    field? :send_notifications_to_everyone, :boolean
+    field? :subscriber_ids, list_of(:string)
   end
 
   outputs do
-    field :check_in, :project_check_in
+    field? :check_in, :project_check_in
   end
 
   def call(conn, inputs) do

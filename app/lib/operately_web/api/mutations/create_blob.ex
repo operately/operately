@@ -3,11 +3,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateBlob do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :files, list_of(:blob_creation_input)
+    field? :files, list_of(:blob_creation_input)
   end
 
   outputs do
-    field :blobs, list_of(:blob_creation_output)
+    field? :blobs, list_of(:blob_creation_output)
   end
 
   def call(conn, inputs) do
