@@ -53,7 +53,7 @@ export function useForm(props: EditProps | NewProps) {
     },
     submit: async () => {
       const commonAttrs = {
-        status: form.values.status,
+        status: form.values.status!,
         content: JSON.stringify(form.values.description),
         newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
         dueDate: form.values.dueDate && Time.toDateWithoutTime(form.values.dueDate),
@@ -72,7 +72,7 @@ export function useForm(props: EditProps | NewProps) {
 
         navigate(Paths.goalCheckInPath(res.update!.id));
       } else {
-        const payload = { ...commonAttrs, id: props.update.id };
+        const payload = { ...commonAttrs, id: props.update.id! };
         await edit(payload);
 
         setPageMode("view");
