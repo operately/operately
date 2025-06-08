@@ -3,11 +3,11 @@ defmodule OperatelyWeb.Api.Queries.GetInvitation do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field :token, :string
+    field? :token, :string
   end
 
   outputs do
-    field :invitation, :invitation
+    field? :invitation, :invitation
   end
 
   def call(_conn, inputs) do

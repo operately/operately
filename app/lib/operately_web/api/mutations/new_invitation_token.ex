@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.NewInvitationToken do
   alias Operately.Companies.Permissions
 
   inputs do
-    field :person_id, :string
+    field? :person_id, :string
   end
 
   outputs do
-    field :invitation, :invitation
+    field? :invitation, :invitation
   end
 
   def call(conn, inputs) do

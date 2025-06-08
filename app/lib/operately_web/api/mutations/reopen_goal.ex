@@ -6,14 +6,14 @@ defmodule OperatelyWeb.Api.Mutations.ReopenGoal do
   alias Operately.Operations.GoalReopening
 
   inputs do
-    field :id, :id
-    field :message, :string
-    field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:id)
+    field? :id, :id
+    field? :message, :string
+    field? :send_notifications_to_everyone, :boolean
+    field? :subscriber_ids, list_of(:id)
   end
 
   outputs do
-    field :goal, :goal
+    field? :goal, :goal
   end
 
   def call(conn, inputs) do

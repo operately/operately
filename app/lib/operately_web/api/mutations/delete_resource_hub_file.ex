@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubFile do
   alias Operately.Operations.ResourceHubFileDeleting
 
   inputs do
-    field :file_id, :id
+    field? :file_id, :id
   end
 
   outputs do
-    field :file, :resource_hub_file
+    field? :file, :resource_hub_file
   end
 
   def call(conn, inputs) do

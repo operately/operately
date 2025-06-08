@@ -7,27 +7,27 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field :id, :string
+    field? :id, :string
 
-    field :include_contributors, :boolean
-    field :include_goal, :boolean
-    field :include_key_resources, :boolean
-    field :include_last_check_in, :boolean
-    field :include_milestones, :boolean
-    field :include_permissions, :boolean
-    field :include_champion, :boolean
-    field :include_reviewer, :boolean
-    field :include_space, :boolean
-    field :include_contributors_access_levels, :boolean
-    field :include_access_levels, :boolean
-    field :include_privacy, :boolean
-    field :include_retrospective, :boolean
-    field :include_potential_subscribers, :boolean
-    field :include_unread_notifications, :boolean
+    field? :include_contributors, :boolean
+    field? :include_goal, :boolean
+    field? :include_key_resources, :boolean
+    field? :include_last_check_in, :boolean
+    field? :include_milestones, :boolean
+    field? :include_permissions, :boolean
+    field? :include_champion, :boolean
+    field? :include_reviewer, :boolean
+    field? :include_space, :boolean
+    field? :include_contributors_access_levels, :boolean
+    field? :include_access_levels, :boolean
+    field? :include_privacy, :boolean
+    field? :include_retrospective, :boolean
+    field? :include_potential_subscribers, :boolean
+    field? :include_unread_notifications, :boolean
   end
 
   outputs do
-    field :project, :project
+    field? :project, :project
   end
 
   def call(conn, inputs) do

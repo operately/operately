@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.Mutations.ConnectGoalToProject do
   alias Operately.Goals
 
   inputs do
-    field :project_id, :string
-    field :goal_id, :string
+    field? :project_id, :string
+    field? :goal_id, :string
   end
 
   outputs do
-    field :project, :project
+    field? :project, :project
   end
 
   def call(conn, inputs) do

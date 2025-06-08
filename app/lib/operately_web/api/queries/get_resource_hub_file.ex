@@ -5,20 +5,20 @@ defmodule OperatelyWeb.Api.Queries.GetResourceHubFile do
   alias Operately.ResourceHubs.File
 
   inputs do
-    field :id, :id
-    field :include_author, :boolean
-    field :include_resource_hub, :boolean
-    field :include_space, :boolean
-    field :include_parent_folder, :boolean
-    field :include_reactions, :boolean
-    field :include_permissions, :boolean
-    field :include_subscriptions_list, :boolean
-    field :include_potential_subscribers, :boolean
-    field :include_path_to_file, :boolean
+    field? :id, :id
+    field? :include_author, :boolean
+    field? :include_resource_hub, :boolean
+    field? :include_space, :boolean
+    field? :include_parent_folder, :boolean
+    field? :include_reactions, :boolean
+    field? :include_permissions, :boolean
+    field? :include_subscriptions_list, :boolean
+    field? :include_potential_subscribers, :boolean
+    field? :include_path_to_file, :boolean
   end
 
   outputs do
-    field :file, :resource_hub_file
+    field? :file, :resource_hub_file
   end
 
   def call(conn, inputs) do

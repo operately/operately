@@ -8,13 +8,13 @@ defmodule TurboConnect.ApiTest do
     primitive(:id, encoded_type: :string, decode_with: &String.to_integer/1)
 
     object :user do
-      field :full_name, :string
-      field :address, :address
+      field? :full_name, :string
+      field? :address, :address
     end
 
     object :address do
-      field :street, :string
-      field :city, :string
+      field? :street, :string
+      field? :city, :string
     end
 
     union(:resource, types: [:user, :address])
@@ -24,11 +24,11 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :id, :id
+      field? :id, :id
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_, _) do
@@ -50,12 +50,12 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field :name, :string, optional: false, null: false
-      field :email, :string
+      field :name, :string, null: false
+      field? :email, :string
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_, _) do

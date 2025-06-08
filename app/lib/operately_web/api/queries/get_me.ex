@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
   alias Operately.Repo
 
   inputs do
-    field :include_manager, :boolean
+    field? :include_manager, :boolean
   end
 
   outputs do
-    field :me, :person
+    field? :me, :person
   end
 
   def call(conn, inputs) do

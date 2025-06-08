@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveMessage do
   alias Operately.Messages.Message
 
   inputs do
-    field :message_id, :id
+    field? :message_id, :id
   end
 
   def call(conn, inputs) do
