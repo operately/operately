@@ -85,14 +85,14 @@ defmodule TurboConnect.ApiTest do
              objects: %{
                address: %{
                  fields: [
-                   {:street, :string, []},
-                   {:city, :string, []}
+                   {:street, :string, [optional: true]},
+                   {:city, :string, [optional: true]}
                  ]
                },
                user: %{
                  fields: [
-                   {:full_name, :string, []},
-                   {:address, :address, []}
+                   {:full_name, :string, [optional: true]},
+                   {:address, :address, [optional: true]}
                  ]
                }
              },
@@ -112,12 +112,12 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, []}
+                   {:id, :id, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              },
@@ -128,12 +128,12 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, []}
+                   {:id, :id, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              }
@@ -149,13 +149,13 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [optional: false, null: false]},
-                   {:email, :string, []}
+                   {:name, :string, [null: false, optional: false]},
+                   {:email, :string, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              },
@@ -166,13 +166,13 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [optional: false, null: false]},
-                   {:email, :string, []}
+                   {:name, :string, [null: false, optional: false]},
+                   {:email, :string, [optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, []}
+                   {:user, :user, [optional: true]}
                  ]
                }
              }

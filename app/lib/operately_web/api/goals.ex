@@ -34,8 +34,8 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field(:goal_id, :id, false, null: false)
-      field(:name, :string, false, null: false)
+      field :goal_id, :id, null: false
+      field :name, :string, null: false
     end
 
     outputs do
