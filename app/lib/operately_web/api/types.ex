@@ -348,8 +348,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :space do
-    field :id, :string, optional: false, nullable: false
-    field :name, :string, optional: false, nullable: false
+    field :id, :string, optional: false, null: false
+    field :name, :string, optional: false, null: false
     field :mission, :string
     field :is_member, :boolean
     field :is_company_space, :boolean
@@ -1008,16 +1008,16 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :goal do
-    field :id, :string, optional: false, nullable: false
-    field :name, :string, optional: false, nullable: false
+    field :id, :string, optional: false, null: false
+    field :name, :string, optional: false, null: false
     field :inserted_at, :date
     field :updated_at, :date
     field :next_update_scheduled_at, :date
     field :parent_goal_id, :string
-    field :status, :goal_status, optional: false, nullable: false
+    field :status, :goal_status, optional: false, null: false
     field :closed_at, :date
     field :timeframe, :timeframe
-    field :due_date, :date, optional: false, nullable: true
+    field :due_date, :date, optional: false, null: true
     field :description, :string
     field :champion, :person
     field :reviewer, :person
@@ -1043,12 +1043,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :goal_discussion do
-    field :id, :id, optional: false, nullable: false
-    field :title, :string, optional: false, nullable: false
-    field :inserted_at, :date, optional: false, nullable: false
-    field :comment_count, :integer, optional: false, nullable: false
-    field :author, :person, optional: false, nullable: false
-    field :content, :string, optional: false, nullable: false
+    field :id, :id, optional: false, null: false
+    field :title, :string, optional: false, null: false
+    field :inserted_at, :date, optional: false, null: false
+    field :comment_count, :integer, optional: false, null: false
+    field :author, :person, optional: false, null: false
+    field :content, :string, optional: false, null: false
   end
 
   object :activity_content_project_resuming do
@@ -1107,12 +1107,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :person do
-    field :id, :string, optional: false, nullable: false
-    field :full_name, :string, optional: false, nullable: false
-    field :title, :string, optional: false, nullable: false
-    field :avatar_url, :string, optional: false, nullable: true
+    field :id, :string, optional: false, null: false
+    field :full_name, :string, optional: false, null: false
+    field :title, :string, optional: false, null: false
+    field :avatar_url, :string, optional: false, null: true
     field :timezone, :string
-    field :email, :string, optional: false, nullable: false
+    field :email, :string, optional: false, null: false
     field :send_daily_summary, :boolean
     field :notify_on_mention, :boolean
     field :notify_about_assignments, :boolean
@@ -1555,24 +1555,24 @@ defmodule OperatelyWeb.Api.Types do
   enum(:work_map_item_state, values: [:active, :paused, :closed])
 
   object :work_map_item do
-    field :id, :string, optional: false, nullable: false
-    field :parent_id, :string, optional: false, nullable: true
-    field :name, :string, optional: false, nullable: false
-    field :state, :work_map_item_state, optional: false, nullable: false
-    field :status, :work_map_item_status, optional: false, nullable: false
-    field :progress, :float, optional: false, nullable: false
-    field :space, :space, optional: false, nullable: false
-    field :space_path, :string, optional: false, nullable: false
-    field :owner, :person, optional: false, nullable: true
-    field :owner_path, :string, optional: false, nullable: true
-    field :next_step, :string, optional: false, nullable: false
-    field :is_new, :boolean, optional: false, nullable: false
-    field :completed_on, :date, optional: false, nullable: true
-    field :timeframe, :timeframe, optional: false, nullable: true
-    field :children, list_of(:work_map_item), optional: false, nullable: false
-    field :type, :work_map_item_type, optional: false, nullable: false
-    field :item_path, :string, optional: false, nullable: false
-    field :privacy, :work_map_item_privacy, optional: false, nullable: false
+    field :id, :string, optional: false, null: false
+    field :parent_id, :string, optional: false, null: true
+    field :name, :string, optional: false, null: false
+    field :state, :work_map_item_state, optional: false, null: false
+    field :status, :work_map_item_status, optional: false, null: false
+    field :progress, :float, optional: false, null: false
+    field :space, :space, optional: false, null: false
+    field :space_path, :string, optional: false, null: false
+    field :owner, :person, optional: false, null: true
+    field :owner_path, :string, optional: false, null: true
+    field :next_step, :string, optional: false, null: false
+    field :is_new, :boolean, optional: false, null: false
+    field :completed_on, :date, optional: false, null: true
+    field :timeframe, :timeframe, optional: false, null: true
+    field :children, list_of(:work_map_item), optional: false, null: false
+    field :type, :work_map_item_type, optional: false, null: false
+    field :item_path, :string, optional: false, null: false
+    field :privacy, :work_map_item_privacy, optional: false, null: false
     field :assignees, list_of(:person)
   end
 end

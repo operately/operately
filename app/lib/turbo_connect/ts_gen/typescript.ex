@@ -38,9 +38,9 @@ defmodule TurboConnect.TsGen.Typescript do
 
   def ts_interface_field({name, type, opts}) do
     optional = Keyword.get(opts, :optional, true)
-    nullable = Keyword.get(opts, :nullable, true)
+    null = Keyword.get(opts, :null, true)
 
-    null_option = if nullable, do: " | null", else: ""
+    null_option = if null, do: " | null", else: ""
 
     "  #{ts_field_name(name, optional)}: #{ts_type(type)}#{null_option};"
   end

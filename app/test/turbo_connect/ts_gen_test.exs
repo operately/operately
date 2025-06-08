@@ -7,7 +7,7 @@ defmodule TurboConnect.TsGenTest do
     primitive(:id, encoded_type: :integer, decode_with: &String.to_integer/1)
 
     object :user do
-      field :full_name, :string, optional: false, nullable: false
+      field :full_name, :string, optional: false, null: false
       field :address, :address, optional: false
       field :posts, list_of(:post)
     end
