@@ -888,7 +888,7 @@ export interface GoalDiscussion {
   id: Id;
   title: string;
   insertedAt: string;
-  commentsCount: number;
+  commentCount: number;
   author: Person;
   content: string;
 }

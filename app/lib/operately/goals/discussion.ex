@@ -7,48 +7,29 @@ defmodule Operately.Goals.Discussion do
     :title,
     :author,
     :comment_count,
-    :inserted_at
+    :inserted_at,
+    :content
   ]
 
   import Ecto.Query, only: [from: 2]
   alias Operately.Repo
 
   def list(goal_id) do
-    from(t in Operately.Comments.CommentThread,
-      join: a in Operately.Activities.Activity,
-      on: a.comment_thread_id == t.id,
-      where: a.content["goal_id"] == ^goal_id,
-      where: a.action == "goal_discussion_creation",
-      order_by: [desc: a.inserted_at],
-      preload: [:activity]
+    from(activity in Operately.Activities.Activity,
+      join: thread in assoc(activity, :comment_thread),
+      join: author in assoc(activity, :author),
+      where: activity.action == "goal_discussion_creation",
+      where: activity.content["goal_id"] == ^goal_id,
+      order_by: [desc: activity.inserted_at],
+      select: %__MODULE__{
+        id: activity.id,
+        title: thread.title,
+        author: author,
+        inserted_at: thread.inserted_at,
+        content: thread.message,
+        comment_count: fragment("SELECT COUNT(*) FROM comments WHERE entity_id = ? AND entity_type = 'comment_thread'", thread.id)
+      }
     )
     |> Repo.all()
-    |> Enum.map(fn t ->
-      %__MODULE__{
-        id: t.id,
-        title: t.title,
-        author: t.activity.author,
-        inserted_at: t.inserted_at
-      }
-    end)
-  end
-
-  def preload_comment_count(threads) do
-    thread_ids = Enum.map(threads, & &1.id)
-
-    counts =
-      from(c in Operately.Updates.Comment,
-        where: c.entity_type == :comment_thread,
-        where: c.entity_id in ^thread_ids,
-        group_by: c.entity_id,
-        select: {c.entity_id, count(c.id)}
-      )
-      |> Repo.all()
-      |> Enum.into(%{})
-
-    Enum.map(threads, fn thread ->
-      comments_count = Map.get(counts, thread.id, 0)
-      Map.put(thread, :comment_count, comments_count)
-    end)
   end
 end

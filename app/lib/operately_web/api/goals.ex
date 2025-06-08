@@ -526,8 +526,7 @@ defmodule OperatelyWeb.Api.Goals do
 
     def get_discussions(multi) do
       Ecto.Multi.run(multi, :discussions, fn _repo, %{goal: goal} ->
-        discussions = Operately.Goals.Discussion.list(goal.id) |> Operately.Goals.Discussion.preload_comment_count()
-        {:ok, discussions}
+        {:ok, Operately.Goals.Discussion.list(goal.id)}
       end)
     end
 

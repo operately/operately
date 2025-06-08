@@ -371,7 +371,7 @@ export class Paths {
   }
 
   static goalDiscussionPath(id: string) {
-    return createCompanyPath(["goal-discussions", id]);
+    return createCompanyPath(["goal-activities", id]);
   }
 
   static goalDiscussionEditPath(activityId: string) {

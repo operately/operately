@@ -17,7 +17,7 @@ import { fetchAll } from "../../utils/async";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v18-GoalPage.goal-${id}`;
+  return `v21-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -132,7 +132,7 @@ function Page() {
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
     checkIns: prepareCheckIns(checkIns),
-    discussions: prepareDiscussions(discussions, mentionedPersonLookup),
+    discussions: prepareDiscussions(discussions),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
@@ -411,7 +411,7 @@ function prepareDiscussions(discussions: GoalDiscussion[]): GoalPage.Props["disc
       author: preparePerson(discussion.author)!,
       link: Paths.goalDiscussionPath(discussion.id),
       content: JSON.parse(discussion.content),
-      commentCount: discussion.commentsCount,
+      commentCount: discussion.commentCount,
     };
   });
 }

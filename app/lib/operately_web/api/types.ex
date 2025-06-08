@@ -1046,7 +1046,7 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :id, optional: false, nullable: false
     field :title, :string, optional: false, nullable: false
     field :inserted_at, :date, optional: false, nullable: false
-    field :comments_count, :integer, optional: false, nullable: false
+    field :comment_count, :integer, optional: false, nullable: false
     field :author, :person, optional: false, nullable: false
     field :content, :string, optional: false, nullable: false
   end
