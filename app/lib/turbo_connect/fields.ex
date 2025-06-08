@@ -22,10 +22,6 @@ defmodule TurboConnect.Fields do
         raise "field/2 must be called inside an object, inputs or outputs block"
       end
 
-      if unquote(opts)[:required] && @field_scope != :inputs do
-        raise "required option is only valid for input fields"
-      end
-
       @fields {@field_scope, unquote(name), unquote(type), unquote(opts)}
     end
   end
