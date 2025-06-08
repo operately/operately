@@ -16,13 +16,33 @@ defmodule TurboConnect.Fields do
     end
   end
 
+  @valid_opts ~w(null)
+
   defmacro field(name, type, opts \\ []) do
     quote do
       if is_nil(@field_scope) do
         raise "field/2 must be called inside an object, inputs or outputs block"
       end
 
-      @fields {@field_scope, unquote(name), unquote(type), unquote(opts)}
+      if Keyword.keys(unquote(opts)) -- unquote(@valid_opts) != [] do
+        raise "Invalid options for field: #{inspect(unquote(name))}. Valid options are: #{inspect(@valid_opts)}"
+      end
+
+      @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: false]}
+    end
+  end
+
+  defmacro field?(name, type, opts \\ []) do
+    quote do
+      if is_nil(@field_scope) do
+        raise "field/2 must be called inside an object, inputs or outputs block"
+      end
+
+      if Keyword.keys(unquote(opts)) -- unquote(@valid_opts) != [] do
+        raise "Invalid options for field: #{inspect(unquote(name))}. Valid options are: #{inspect(@valid_opts)}"
+      end
+
+      @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: true]}
     end
   end
 
