@@ -4,6 +4,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   """
 
   use Plug.Builder
+  require Logger
 
   def init(_), do: []
 
@@ -18,7 +19,15 @@ defmodule TurboConnect.Plugs.ParseInputs do
     with {:ok, inputs} <- parse_inputs(specs, params, strict_parsing) do
       Plug.Conn.assign(conn, :turbo_inputs, inputs)
     else
-      {:error, 400, message} -> send_resp(conn, 400, Jason.encode!(%{error: "Bad request", message: message})) |> halt()
+      {:error, 400, message} ->
+        send_resp(conn, 400, Jason.encode!(%{error: "Bad request", message: message})) |> halt()
+
+      {:error, 500, message} ->
+        send_resp(conn, 500, Jason.encode!(%{error: "Internal server error", message: message})) |> halt()
+
+      e ->
+        Logger.error("Unexpected error in ParseInputs plug: #{inspect(e)}")
+        send_resp(conn, 500, Jason.encode!(%{error: "Internal server error"})) |> halt()
     end
   end
 
@@ -150,7 +159,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
           _ ->
             case decode_with.(value) do
               {:ok, decoded} -> {:ok, decoded}
-              {:error, reason} -> {:error, 422, reason}
+              {:error, reason} -> {:error, 400, reason}
             end
         end
 

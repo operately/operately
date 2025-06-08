@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
     end
 
     test "if extra fields are provided, it is an error and won't update the profile", ctx do
-      assert {400, "Unknown input field: password"} = mutation(ctx.conn, :update_profile, %{password: "hack"})
+      assert {400, %{message: "Unknown input field: password"}} = mutation(ctx.conn, :update_profile, %{password: "hack"})
     end
   end
 
@@ -17,13 +17,14 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
     setup :register_and_log_in_account
 
     setup ctx do
-      person = person_fixture(%{
-        company_id: ctx.company.id,
-        full_name: "Jane Doe",
-        title: "Software Engineer",
-        timezone: "America/New_York",
-        theme: "light",
-      })
+      person =
+        person_fixture(%{
+          company_id: ctx.company.id,
+          full_name: "Jane Doe",
+          title: "Software Engineer",
+          timezone: "America/New_York",
+          theme: "light"
+        })
 
       Map.put(ctx, :company_member, person)
     end
@@ -31,12 +32,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
     test "when I'm an admin, it updates the profile", ctx do
       promote_me_to_admin(ctx)
 
-      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{
-        id: Paths.person_id(ctx.company_member),
-        full_name: "John Doe",
-        title: "Software Developer",
-        timezone: "America/New_Jersey",
-      })
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, :update_profile, %{
+                 id: Paths.person_id(ctx.company_member),
+                 full_name: "John Doe",
+                 title: "Software Developer",
+                 timezone: "America/New_Jersey"
+               })
 
       person = Operately.People.get_person!(ctx.company_member.id)
 
@@ -46,12 +48,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
     end
 
     test "when I'm not an admin, it doesn't update the profile", ctx do
-      assert {403, %{}} = mutation(ctx.conn, :update_profile, %{
-        id: Paths.person_id(ctx.company_member),
-        full_name: "John Doe",
-        title: "Software Developer",
-        timezone: "America/New_Jersey",
-      })
+      assert {403, %{}} =
+               mutation(ctx.conn, :update_profile, %{
+                 id: Paths.person_id(ctx.company_member),
+                 full_name: "John Doe",
+                 title: "Software Developer",
+                 timezone: "America/New_Jersey"
+               })
 
       person = Operately.People.get_person!(ctx.company_member.id)
 
@@ -73,12 +76,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
     setup :register_and_log_in_account
 
     test "it updates the profile", ctx do
-      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{
-        id: Paths.person_id(ctx.person),
-        full_name: "John Doe",
-        title: "Software Engineer",
-        timezone: "America/New_York",
-      })
+      assert {200, %{person: %{}}} =
+               mutation(ctx.conn, :update_profile, %{
+                 id: Paths.person_id(ctx.person),
+                 full_name: "John Doe",
+                 title: "Software Engineer",
+                 timezone: "America/New_York"
+               })
 
       person = Operately.People.get_person!(ctx.person.id)
 
@@ -115,4 +119,4 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
     cs = Operately.Access.GroupMembership.changeset(%{group_id: group.id, person_id: ctx.person.id})
     Operately.Repo.insert(cs)
   end
-end 
+end
