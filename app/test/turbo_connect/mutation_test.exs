@@ -5,12 +5,12 @@ defmodule TurboConnect.MutationTest do
     use TurboConnect.Mutation
 
     inputs do
-      field :name, :string
-      field :age, :integer
+      field? :name, :string
+      field? :age, :integer
     end
 
     outputs do
-      field :user, :user
+      field? :user, :user
     end
 
     def call(_, _) do
@@ -22,17 +22,16 @@ defmodule TurboConnect.MutationTest do
 
   test "defining a mutation with inputs and outputs" do
     assert ExampleMutation.__inputs__() == %{
-      fields: [
-        {:name, :string, []},
-        {:age, :integer, []}
-      ]
-    }
+             fields: [
+               {:name, :string, [optional: true]},
+               {:age, :integer, [optional: true]}
+             ]
+           }
 
     assert ExampleMutation.__outputs__() == %{
-      fields: [
-        {:user, :user, []}
-      ]
-    }
+             fields: [
+               {:user, :user, [optional: true]}
+             ]
+           }
   end
-
 end

@@ -10,12 +10,12 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   alias Operately.Activities.Activity
 
   inputs do
-    field :entity_id, :string
-    field :entity_type, :string
+    field? :entity_id, :string
+    field? :entity_type, :string
   end
 
   outputs do
-    field :comments, list_of(:comment)
+    field? :comments, list_of(:comment)
   end
 
   def call(conn, inputs) do

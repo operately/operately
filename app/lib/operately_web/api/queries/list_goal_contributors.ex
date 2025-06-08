@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Queries.ListGoalContributors do
   alias Operately.Goals
 
   inputs do
-    field :goal_id, :id
+    field? :goal_id, :id
   end
 
   outputs do
-    field :contributors, list_of(:person)
+    field? :contributors, list_of(:person)
   end
 
   def call(conn, inputs) do

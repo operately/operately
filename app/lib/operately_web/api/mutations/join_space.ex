@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Mutations.JoinSpace do
   alias Operately.Access.Binding
 
   inputs do
-    field :space_id, :id
+    field? :space_id, :id
   end
 
   def call(conn, inputs) do

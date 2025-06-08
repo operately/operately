@@ -1,8 +1,8 @@
 import React from "react";
 
-import * as AdminApi from "@/ee/admin_api";
-import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
+import Modal from "@/components/Modal";
+import * as AdminApi from "@/ee/admin_api";
 import { useLoadedData } from "./loader";
 
 interface EnableFeatureModalProps {
@@ -21,7 +21,7 @@ export function EnableFeatureModal({ isOpen, onClose }: EnableFeatureModalProps)
     cancel: onClose,
     submit: async () => {
       await enableFeature({
-        companyId: company.id,
+        companyId: company.id!,
         feature: form.values.feature,
       });
 

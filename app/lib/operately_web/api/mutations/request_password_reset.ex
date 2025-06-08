@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.RequestPasswordReset do
   require Logger
 
   inputs do
-    field :email, :string
+    field? :email, :string
   end
 
   def call(_conn, inputs) do

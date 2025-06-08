@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
   import Operately.Access.Filters, only: [forbidden_or_not_found: 3]
 
   inputs do
-    field :id, :string
+    field? :id, :string
   end
 
   outputs do
-    field :check_in, :project_check_in
+    field? :check_in, :project_check_in
   end
 
   def call(conn, inputs) do

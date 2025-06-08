@@ -8,11 +8,11 @@ defmodule OperatelyWeb.Api.Queries.GetKeyResource do
   alias Operately.Repo
 
   inputs do
-    field :id, :string
+    field? :id, :string
   end
 
   outputs do
-    field :key_resource, :project_key_resource
+    field? :key_resource, :project_key_resource
   end
 
   def call(conn, inputs) do

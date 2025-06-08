@@ -8,14 +8,14 @@ defmodule OperatelyWeb.Api.Queries.SearchPotentialSpaceMembers do
   alias Operately.Groups.{Group, Member}
 
   inputs do
-    field :group_id, :string
-    field :query, :string
-    field :exclude_ids, list_of(:string)
-    field :limit, :integer
+    field? :group_id, :string
+    field? :query, :string
+    field? :exclude_ids, list_of(:string)
+    field? :limit, :integer
   end
 
   outputs do
-    field :people, list_of(:person)
+    field? :people, list_of(:person)
   end
 
   def call(conn, inputs) do

@@ -852,14 +852,14 @@ export interface EditProjectTimelineNewMilestoneInput {
 export interface Goal {
   id: string;
   name: string;
+  status: GoalStatus;
+  dueDate: string | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
   nextUpdateScheduledAt?: string | null;
   parentGoalId?: string | null;
-  status: GoalStatus;
   closedAt?: string | null;
   timeframe?: Timeframe | null;
-  dueDate: string | null;
   description?: string | null;
   champion?: Person | null;
   reviewer?: Person | null;
@@ -1004,8 +1004,8 @@ export interface Person {
   fullName: string;
   title: string;
   avatarUrl: string | null;
-  timezone?: string | null;
   email: string;
+  timezone?: string | null;
   sendDailySummary?: boolean | null;
   notifyOnMention?: boolean | null;
   notifyAboutAssignments?: boolean | null;
@@ -2684,10 +2684,10 @@ export interface EditGoalDiscussionResult {}
 
 export interface EditGoalProgressUpdateInput {
   id: Id;
+  dueDate: string | null;
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
-  dueDate: string | null;
 }
 
 export interface EditGoalProgressUpdateResult {
@@ -2868,7 +2868,7 @@ export interface GoalsDeleteTargetResult {
 
 export interface GoalsUpdateChampionInput {
   goalId: Id;
-  championId?: Id | null;
+  championId: Id | null;
 }
 
 export interface GoalsUpdateChampionResult {
@@ -2904,7 +2904,7 @@ export interface GoalsUpdateNameResult {
 
 export interface GoalsUpdateReviewerInput {
   goalId: Id;
-  reviewerId?: Id | null;
+  reviewerId: Id | null;
 }
 
 export interface GoalsUpdateReviewerResult {
@@ -2925,9 +2925,9 @@ export interface GoalsUpdateTargetResult {
 }
 
 export interface GoalsUpdateTargetIndexInput {
-  goalId: Id;
-  targetId: Id;
-  index: number;
+  goalId?: Id;
+  targetId?: Id;
+  index?: number;
 }
 
 export interface GoalsUpdateTargetIndexResult {

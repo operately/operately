@@ -6,16 +6,16 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
   @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id]
 
   inputs do
-    field :id, :string
-    field :full_name, :string
-    field :title, :string
-    field :timezone, :string
-    field :manager_id, :string
-    field :theme, :string
+    field? :id, :string
+    field? :full_name, :string
+    field? :title, :string
+    field? :timezone, :string
+    field? :manager_id, :string
+    field? :theme, :string
   end
 
   outputs do
-    field :person, :person
+    field? :person, :person
   end
 
   def call(conn, inputs) do

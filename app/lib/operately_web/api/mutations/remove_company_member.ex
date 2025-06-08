@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyMember do
   alias Operately.Operations.CompanyMemberRemoving
 
   inputs do
-    field :person_id, :string
+    field? :person_id, :string
   end
 
   outputs do
-    field :person, :person
+    field? :person, :person
   end
 
   def call(conn, inputs) do

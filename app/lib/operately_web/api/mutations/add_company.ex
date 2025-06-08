@@ -2,13 +2,13 @@ defmodule OperatelyWeb.Api.Mutations.AddCompany do
   use TurboConnect.Mutation
 
   inputs do
-    field :company_name, :string
-    field :title, :string
-    field :is_demo, :boolean
+    field? :company_name, :string
+    field? :title, :string
+    field? :is_demo, :boolean
   end
 
   outputs do
-    field :company, :company
+    field? :company, :company
   end
 
   def call(conn, inputs) do

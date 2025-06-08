@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
   alias Operately.Projects.Permissions
 
   inputs do
-    field :milestone_id, :string
-    field :title, :string
-    field :deadline_at, :string
+    field? :milestone_id, :string
+    field? :title, :string
+    field? :deadline_at, :string
   end
 
   outputs do
-    field :milestone, :milestone
+    field? :milestone, :milestone
   end
 
   def call(conn, inputs) do

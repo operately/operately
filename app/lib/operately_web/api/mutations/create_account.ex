@@ -8,10 +8,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
   require Logger
 
   inputs do
-    field :code, :string
-    field :email, :string
-    field :password, :string
-    field :full_name, :string
+    field? :code, :string
+    field? :email, :string
+    field? :password, :string
+    field? :full_name, :string
   end
 
   def call(_conn, inputs) do
