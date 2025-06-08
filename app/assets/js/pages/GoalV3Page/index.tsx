@@ -52,6 +52,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAssignees: true,
         }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
+        discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
       }),
   });
 }
