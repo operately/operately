@@ -1048,6 +1048,7 @@ defmodule OperatelyWeb.Api.Types do
     field :inserted_at, :date, optional: false, nullable: false
     field :comments_count, :integer, optional: false, nullable: false
     field :author, :person, optional: false, nullable: false
+    field :content, :string, optional: false, nullable: false
   end
 
   object :activity_content_project_resuming do

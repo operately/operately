@@ -890,6 +890,7 @@ export interface GoalDiscussion {
   insertedAt: string;
   commentsCount: number;
   author: Person;
+  content: string;
 }
 
 export interface GoalEditingUpdatedTarget {
