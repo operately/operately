@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.get_discussions()
       |> Steps.commit()
       |> Steps.respond(fn changes ->
-        %{discussions: Serializer.serialize(changes.discussion, level: :essential)}
+        %{discussions: Serializer.serialize(changes.discussions, level: :essential)}
       end)
     end
   end
@@ -525,7 +525,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def get_discussions(multi) do
-      Ecto.Multi.run(multi, :discussion, fn _repo, %{goal: goal} ->
+      Ecto.Multi.run(multi, :discussions, fn _repo, %{goal: goal} ->
         discussions = Operately.Goals.Discussion.list(goal.id) |> Operately.Goals.Discussion.preload_comment_count()
         {:ok, discussions}
       end)
