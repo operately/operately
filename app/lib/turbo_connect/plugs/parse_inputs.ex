@@ -32,12 +32,24 @@ defmodule TurboConnect.Plugs.ParseInputs do
   end
 
   def parse_inputs({inputs, types}, values, strict) do
-    Enum.reduce(values, {:ok, %{}}, fn {name, value}, res ->
+    values
+    |> apply_defaults(inputs.fields)
+    |> Enum.reduce({:ok, %{}}, fn {name, value}, res ->
       with {:ok, res} <- res,
            {:ok, {field_name, type, opts}} <- find_field(inputs.fields, name),
            {:ok, parsed} <- parse_input(type, types, value, strict),
            :ok <- validate_null_constraint(field_name, parsed, opts) do
         {:ok, Map.put(res, field_name, parsed)}
+      end
+    end)
+  end
+
+  def apply_defaults(values, fields) do
+    Enum.reduce(fields, values, fn {name, _type, opts}, acc ->
+      if Keyword.get(opts, :default) != nil && Map.get(acc, name) == nil do
+        Map.put(acc, name, Keyword.get(opts, :default))
+      else
+        acc
       end
     end)
   end
@@ -66,7 +78,7 @@ defmodule TurboConnect.Plugs.ParseInputs do
   def parse_input(:string, _types, value, _strict) when is_binary(value), do: {:ok, value}
   def parse_input(:string, _types, value, true) when is_nil(value), do: {:ok, nil}
 
-  def parse_input(:boolean, _types, value, true) when is_boolean(value), do: {:ok, value}
+  def parse_input(:boolean, _types, value, _true) when is_boolean(value), do: {:ok, value}
   def parse_input(:boolean, _types, "true", false), do: {:ok, true}
   def parse_input(:boolean, _types, "false", false), do: {:ok, false}
 
