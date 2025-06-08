@@ -50,7 +50,7 @@ defmodule TurboConnect.ApiTest do
     use TurboConnect.Query
 
     inputs do
-      field? :name, :string, optional: false, null: false
+      field :name, :string, null: false
       field? :email, :string
     end
 
