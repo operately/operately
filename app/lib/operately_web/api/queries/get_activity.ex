@@ -7,15 +7,15 @@ defmodule OperatelyWeb.Api.Queries.GetActivity do
   alias Operately.Comments.CommentThread
 
   inputs do
-    field :id, :string
-    field :include_unread_goal_notifications, :boolean
-    field :include_permissions, :boolean
-    field :include_subscriptions_list, :boolean
-    field :include_potential_subscribers, :boolean
+    field? :id, :string
+    field? :include_unread_goal_notifications, :boolean
+    field? :include_permissions, :boolean
+    field? :include_subscriptions_list, :boolean
+    field? :include_potential_subscribers, :boolean
   end
 
   outputs do
-    field :activity, :activity
+    field? :activity, :activity
   end
 
   def call(conn, inputs) do

@@ -7,17 +7,17 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussion do
   alias Operately.Operations.DiscussionPosting
 
   inputs do
-    field :space_id, :id
-    field :title, :string
-    field :body, :string
-    field :post_as_draft, :boolean
+    field? :space_id, :id
+    field? :title, :string
+    field? :body, :string
+    field? :post_as_draft, :boolean
 
-    field :send_notifications_to_everyone, :boolean
-    field :subscriber_ids, list_of(:id)
+    field? :send_notifications_to_everyone, :boolean
+    field? :subscriber_ids, list_of(:id)
   end
 
   outputs do
-    field :discussion, :discussion
+    field? :discussion, :discussion
   end
 
   def call(conn, inputs) do

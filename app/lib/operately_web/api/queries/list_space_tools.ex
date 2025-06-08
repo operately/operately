@@ -10,11 +10,11 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   alias Operately.Access.Filters
 
   inputs do
-    field :space_id, :id
+    field? :space_id, :id
   end
 
   outputs do
-    field :tools, :space_tools
+    field? :tools, :space_tools
   end
 
   def call(conn, inputs) do

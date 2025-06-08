@@ -7,12 +7,12 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectPermissions do
   alias Operately.Operations.ProjectPermissionsEditing
 
   inputs do
-    field :project_id, :string
-    field :access_levels, :access_levels
+    field? :project_id, :string
+    field? :access_levels, :access_levels
   end
 
   outputs do
-    field :success, :boolean
+    field? :success, :boolean
   end
 
   def call(conn, inputs) do

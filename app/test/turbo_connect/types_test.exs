@@ -5,29 +5,29 @@ defmodule TurboConnect.TypesTest do
     use TurboConnect.Types
 
     object :user do
-      field :name, :string
-      field :age, :integer
-      field :posts, list_of(:post)
+      field? :name, :string
+      field? :age, :integer
+      field? :posts, list_of(:post)
     end
 
     object :post do
-      field :title, :string
-      field :content, :string
+      field? :title, :string
+      field? :content, :string
     end
 
     object :event do
-      field :inserted_at, :datetime
-      field :content, :event_content
+      field? :inserted_at, :datetime
+      field? :content, :event_content
     end
 
     union :event_content, types: [:user_added_event, :user_removed_event]
 
     object :user_added_event do
-      field :user_id, :integer
+      field? :user_id, :integer
     end
 
     object :user_removed_event do
-      field :user_id, :integer
+      field? :user_id, :integer
     end
   end
 

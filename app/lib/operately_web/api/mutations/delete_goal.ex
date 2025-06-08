@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Mutations.DeleteGoal do
   alias Operately.Goals.{Permissions, Goal}
 
   inputs do
-    field :goal_id, :id
+    field? :goal_id, :id
   end
 
   outputs do
-    field :goal, :goal
+    field? :goal, :goal
   end
 
   def call(conn, inputs) do

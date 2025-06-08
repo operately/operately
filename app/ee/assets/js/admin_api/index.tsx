@@ -147,34 +147,34 @@ export interface Person {
 }
 
 export interface GetActivitiesInput {
-  companyId?: CompanyId | null;
+  companyId: CompanyId | null;
 }
 
 export interface GetActivitiesResult {
-  activities?: Activity[] | null;
+  activities: Activity[] | null;
 }
 
 export interface GetCompaniesInput {}
 
 export interface GetCompaniesResult {
-  companies?: Company[] | null;
+  companies: Company[] | null;
 }
 
 export interface GetCompanyInput {
-  id?: CompanyId | null;
+  id: CompanyId | null;
 }
 
 export interface GetCompanyResult {
-  company?: Company | null;
+  company: Company | null;
 }
 
 export interface EnableFeatureInput {
-  companyId?: CompanyId | null;
-  feature?: string | null;
+  companyId: CompanyId | null;
+  feature: string | null;
 }
 
 export interface EnableFeatureResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 class ApiNamespaceRoot {

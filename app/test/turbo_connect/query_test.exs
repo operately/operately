@@ -5,13 +5,13 @@ defmodule TurboConnect.QueryTest do
     use TurboConnect.Query
 
     inputs do
-      field :id, :string
+      field? :id, :string
     end
 
     outputs do
-      field :id, :string
-      field :name, :string
-      field :hobbies, list_of(:string)
+      field? :id, :string
+      field? :name, :string
+      field? :hobbies, list_of(:string)
     end
 
     def call(inputs) do
