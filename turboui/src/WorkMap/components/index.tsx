@@ -110,7 +110,7 @@ export namespace WorkMap {
     hideSpace?: boolean;
     hideStatus?: boolean;
     hideProgress?: boolean;
-    hideDeadline?: boolean;
+    hideDueDate?: boolean;
     hideOwner?: boolean;
     hideNextStep?: boolean;
   }

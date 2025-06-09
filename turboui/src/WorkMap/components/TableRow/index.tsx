@@ -4,7 +4,7 @@ import { useState } from "react";
 import { WorkMap } from "..";
 
 import { ChildRows } from "./ChildRows";
-import { DeadlineCell } from "./DeadlineCell";
+import { DueDateCell } from "./DueDateCell";
 import { ItemNameCell } from "./ItemNameCell";
 import { NextStepCell } from "./NextStepCell";
 import { OwnerCell } from "./OwnerCell";
@@ -35,12 +35,12 @@ export function TableRow(props: Props) {
           status={item.status}
           hide={tab === "completed" || columnOptions?.hideProgress}
         />
-        <DeadlineCell
+        <DueDateCell
           tab={tab}
           completedOn={item.completedOn}
           timeframe={item.timeframe}
           status={item.status}
-          hide={columnOptions?.hideDeadline}
+          hide={columnOptions?.hideDueDate}
         />
         <SpaceCell item={item} hide={columnOptions?.hideSpace} />
         <OwnerCell item={item} hide={columnOptions?.hideOwner} />
