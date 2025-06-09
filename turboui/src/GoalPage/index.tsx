@@ -4,29 +4,19 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { PageNew } from "../Page";
 
-import {
-  IconCircleCheck,
-  IconClipboardText,
-  IconLogs,
-  IconMessage,
-  IconMessages,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "@tabler/icons-react";
 
-import { WarningCallout } from "../Callouts";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
-import { isOverdue } from "../utils/time";
+import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
-import { Contributors } from "./Contributors";
-import { Description } from "./Description";
+import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
+import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
-import { RelatedWork } from "./RelatedWork";
-import { Sidebar } from "./Sidebar";
-import { Targets } from "./Targets";
+import { pageOptions } from "./PageOptions";
 
 export namespace GoalPage {
   export interface Person {
@@ -77,7 +67,6 @@ export namespace GoalPage {
     spaceLink: string;
     workmapLink: string;
     closeLink: string;
-    deleteLink: string;
     editGoalLink: string;
     newCheckInLink: string;
     newDiscussionLink: string;
@@ -126,28 +115,34 @@ export namespace GoalPage {
     updateTarget: GoalTargetList.UpdateTargetFn;
     updateTargetValue: GoalTargetList.UpdateTargetValueFn;
     updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
+    deleteGoal: () => Promise<void>;
 
     activityFeed: React.ReactNode;
+
+    deleteModalOpen?: boolean;
+  }
+
+  export interface State extends Props {
+    isDeleteModalOpen: boolean;
+    openDeleteModal: () => void;
+    closeDeleteModal: () => void;
   }
 }
 
+function useGoalPageState(props: GoalPage.Props): GoalPage.State {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
+
+  return {
+    ...props,
+
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
+  };
+}
+
 export function GoalPage(props: GoalPage.Props) {
-  const options = [
-    {
-      type: "link" as const,
-      label: "Close",
-      link: props.closeLink,
-      icon: IconCircleCheck,
-      hidden: !props.canEdit || props.state === "closed",
-    },
-    {
-      type: "link" as const,
-      label: "Delete",
-      link: props.deleteLink,
-      icon: IconTrash,
-      hidden: !props.canEdit,
-    },
-  ];
+  const state = useGoalPageState(props);
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
@@ -157,107 +152,18 @@ export function GoalPage(props: GoalPage.Props) {
   ]);
 
   return (
-    <PageNew title={[props.goalName]} options={options} size="fullwidth">
-      <PageHeader {...props} />
+    <PageNew title={[state.goalName]} options={pageOptions(state)} size="fullwidth">
+      <PageHeader {...state} />
       <Tabs tabs={tabs} />
 
       <div className="flex-1 overflow-scroll">
-        {tabs.active === "overview" && <Overview {...props} />}
-        {tabs.active === "check-ins" && <CheckIns {...props} />}
-        {tabs.active === "discussions" && <Discussions {...props} />}
-        {tabs.active === "activity" && <Activity {...props} />}
+        {tabs.active === "overview" && <Overview {...state} />}
+        {tabs.active === "check-ins" && <CheckIns {...state} />}
+        {tabs.active === "discussions" && <Discussions {...state} />}
+        {tabs.active === "activity" && <Activity {...state} />}
       </div>
+
+      <DeleteModal {...state} />
     </PageNew>
   );
-}
-
-function Activity(props: GoalPage.Props) {
-  return (
-    <div className="p-4 max-w-5xl mx-auto my-6">
-      <div className="font-bold text-lg mb-4">Activity</div>
-      {props.activityFeed}
-    </div>
-  );
-}
-
-function Overview(props: GoalPage.Props) {
-  return (
-    <div className="p-4 max-w-6xl mx-auto my-6">
-      <div className="sm:grid sm:grid-cols-12">
-        <MainContent {...props} />
-        <Sidebar {...props} />
-      </div>
-    </div>
-  );
-}
-
-function MainContent(props: GoalPage.Props) {
-  return (
-    <div className="space-y-12 sm:col-span-8 sm:pr-8">
-      <Warnings {...props} />
-      <Description {...props} />
-      <Targets {...props} />
-      <RelatedWork {...props} />
-      <Contributors {...props} />
-    </div>
-  );
-}
-
-function Warnings(props: GoalPage.Props) {
-  if (props.state == "closed") return null;
-
-  if (props.dueDate && isOverdue(props.dueDate)) {
-    return <OverdueWarning {...props} />;
-  }
-
-  if (props.neglectedGoal) {
-    return <NeglectedGoalWarning {...props} />;
-  }
-
-  return null;
-}
-
-function NeglectedGoalWarning(props: GoalPage.Props) {
-  if (props.canEdit) {
-    return (
-      <WarningCallout
-        message="Outdated goal"
-        description={<div>The last check-in was more than a month ago. Please check-in or close the goal.</div>}
-      />
-    );
-  } else {
-    return (
-      <WarningCallout
-        message="Outdated goal"
-        description={
-          <div>
-            The last check-in was more than a month ago. The information may be outdated. Please ping the champion
-            check-in or close the goal.
-          </div>
-        }
-      />
-    );
-  }
-}
-
-function OverdueWarning(props: GoalPage.Props) {
-  if (props.canEdit) {
-    return (
-      <WarningCallout
-        message="Overdue goal"
-        description={<div>This goal is overdue. Close it or update the due date.</div>}
-      />
-    );
-  } else {
-    return (
-      <WarningCallout
-        message="Overdue goal"
-        description={
-          <div>
-            This goal is overdue. The information may be outdated. Please ping the champion to check-in or update.
-          </div>
-        }
-      />
-    );
-  }
 }

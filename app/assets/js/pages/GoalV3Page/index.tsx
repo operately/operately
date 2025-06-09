@@ -7,6 +7,7 @@ import * as React from "react";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { getGoal, Goal, Target } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
+import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
@@ -59,6 +60,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const navigate = useNavigate();
   const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -97,6 +99,17 @@ function Page() {
     transformResult: (p) => preparePerson(p)!,
   });
 
+  const deleteGoal = async () => {
+    try {
+      await Api.deleteGoal({ goalId: goal.id! });
+      PageCache.invalidate(pageCacheKey(goal.id!));
+      navigate(Paths.spaceWorkMapPath(goal.space!.id, "goals"));
+    } catch (error) {
+      console.error("Failed to delete goal:", error);
+      showErrorToast("Something went wrong", "Failed to delete the goal. Please try again.");
+    }
+  };
+
   const props: GoalPage.Props = {
     goalName: goal.name,
     spaceName: goal.space.name,
@@ -110,6 +123,7 @@ function Page() {
     addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
     closedAt: goal.closedAt ? Time.parse(goal.closedAt) : null,
     neglectedGoal: false,
+    deleteGoal,
 
     privacyLevel: goal.privacy,
     parentGoal: prepareParentGoal(goal.parentGoal),
@@ -127,7 +141,6 @@ function Page() {
     reviewerSearch,
 
     description: goal.description && JSON.parse(goal.description),
-    deleteLink: "",
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),

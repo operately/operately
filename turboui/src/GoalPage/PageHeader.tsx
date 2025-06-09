@@ -7,7 +7,7 @@ import { BlackLink } from "../Link";
 import { PrivacyIndicator } from "../PrivacyIndicator";
 import { StatusBadge } from "../StatusBadge";
 
-export function PageHeader(props: GoalPage.Props) {
+export function PageHeader(props: GoalPage.State) {
   const navigation = [
     { to: props.spaceLink, label: props.spaceName },
     { to: props.workmapLink, label: "Goals" },
