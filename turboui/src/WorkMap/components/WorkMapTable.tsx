@@ -44,8 +44,8 @@ export function TableHeader({ tab, columnOptions = {} }: HeaderProps) {
         <HeaderCell hide={isCompletedPage || columnOptions.hideProgress} className="w-[75px] md:w-[90px] pr-6 lg:px-4">
           Progress
         </HeaderCell>
-        <HeaderCell hide={columnOptions.hideDeadline} className={isCompletedPage ? "w-[100px] md:w-[120px] md:px-4" : "hidden lg:table-cell max-w-[120px] md:px-4"}>
-          {isCompletedPage ? "Completed On" : "Deadline"}
+        <HeaderCell hide={columnOptions.hideDueDate} className={isCompletedPage ? "w-[100px] md:w-[120px] md:px-4" : "hidden lg:table-cell max-w-[120px] md:px-4"}>
+          {isCompletedPage ? "Completed On" : "Due Date"}
         </HeaderCell>
         <HeaderCell hide={columnOptions.hideSpace} className="hidden lg:table-cell max-w-[100px] w-auto md:px-4">Space</HeaderCell>
         <HeaderCell hide={columnOptions.hideOwner} className="hidden xl:table-cell w-[120px] md:px-4">Champion</HeaderCell>

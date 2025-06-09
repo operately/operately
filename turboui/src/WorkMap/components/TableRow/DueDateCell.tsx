@@ -15,17 +15,17 @@ interface Props {
   hide?: boolean;
 }
 
-export function DeadlineCell({ tab, status, completedOn, timeframe, hide }: Props) {
+export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props) {
   const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
 
   if (hide) return null;
 
   const containerClassName = classNames("py-2 px-2 md:px-4", tab !== "completed" && "hidden lg:table-cell");
-  const isPastDeadline = useMemo(() => isDeadlinePast(timeframe?.endDate), [timeframe]);
+  const isPastDueDate = useMemo(() => isDueDatePast(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
-    "text-content-error": isPastDeadline && !isCompleted && !isFailed && !isDropped && !isPending,
-    "text-content-base": !(isPastDeadline && !isCompleted && !isFailed && !isDropped && !isPending),
+    "text-content-error": isPastDueDate && !isCompleted && !isFailed && !isDropped && !isPending,
+    "text-content-base": !(isPastDueDate && !isCompleted && !isFailed && !isDropped && !isPending),
     "line-through text-content-dimmed": isCompleted || isFailed,
     "line-through opacity-70 text-content-dimmed": isDropped,
     "text-content-dimmed": isPending,
@@ -46,16 +46,16 @@ export function DeadlineCell({ tab, status, completedOn, timeframe, hide }: Prop
   );
 }
 
-function isDeadlinePast(deadline: string | null | undefined): boolean {
-  if (!deadline) return false;
+function isDueDatePast(dueDate: string | null | undefined): boolean {
+  if (!dueDate) return false;
 
   try {
-    const date = parse(deadline);
+    const date = parse(dueDate);
     if (!date) return false;
 
     return isPast(date);
   } catch (error) {
-    console.error("Error checking if deadline is past:", error);
+    console.error("Error checking if due date is past:", error);
     return false;
   }
 }
