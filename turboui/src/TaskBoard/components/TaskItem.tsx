@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { BlackLink } from "../../Link";
-import { Avatar } from "../../Avatar";
+import { PersonField } from "../../PersonField";
 import { IconFileText, IconMessageCircle } from "@tabler/icons-react";
 import { useDraggable } from "../../utils/DragAndDrop";
 import classNames from "../../utils/classnames";
@@ -8,19 +8,50 @@ import { StatusSelector } from "./StatusSelector";
 import { DueDateDisplay } from "./DueDateDisplay";
 
 // Using shared types
-import { TaskWithIndex } from "../types";
+import { TaskWithIndex, Person } from "../types";
 
 interface TaskItemProps {
   task: TaskWithIndex;
   milestoneId: string;
   itemStyle: (id: string) => React.CSSProperties;
+  onTaskUpdate?: (taskId: string, updates: Partial<TaskWithIndex>) => void;
+  searchPeople?: (params: { query: string }) => Promise<Person[]>;
 }
 
-export function TaskItem({ task, milestoneId, itemStyle }: TaskItemProps) {
+export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeople }: TaskItemProps) {
+  // Local state for the assignee
+  const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
+  
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
 
   const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
+
+  // Handle assignee change locally and notify parent
+  const handleAssigneeChange = useCallback((newAssignee: Person | null) => {
+    setCurrentAssignee(newAssignee);
+    
+    // Notify parent component if callback is provided
+    if (onTaskUpdate && task.id) {
+      onTaskUpdate(task.id, { 
+        assignees: newAssignee ? [newAssignee] : [] 
+      });
+    }
+  }, [task.id, onTaskUpdate]);
+
+  // Handle status change
+  const handleStatusChange = useCallback((newStatus: string) => {
+    // Notify parent component if callback is provided
+    if (onTaskUpdate && task.id) {
+      onTaskUpdate(task.id, { status: newStatus as any });
+    }
+    
+    // Also dispatch event for backward compatibility
+    const changeEvent = new CustomEvent("statusChange", {
+      detail: { taskId: task.id, newStatus },
+    });
+    document.dispatchEvent(changeEvent);
+  }, [task.id, onTaskUpdate]);
 
   return (
     <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
@@ -31,16 +62,7 @@ export function TaskItem({ task, milestoneId, itemStyle }: TaskItemProps) {
           <div className="flex-shrink-0 flex items-center">
             <StatusSelector
               task={task}
-              onStatusChange={(newStatus) => {
-                // This will bubble up to the main component's handleStatusChange
-                if (task.id) {
-                  // We need to pass both task ID and the new status up to the parent
-                  const changeEvent = new CustomEvent("statusChange", {
-                    detail: { taskId: task.id, newStatus },
-                  });
-                  document.dispatchEvent(changeEvent);
-                }
-              }}
+              onStatusChange={handleStatusChange}
             />
           </div>
 
@@ -81,11 +103,16 @@ export function TaskItem({ task, milestoneId, itemStyle }: TaskItemProps) {
           )}
 
           {/* Assignee */}
-          {task.assignees && task.assignees.length > 0 && (
-            <div className="flex items-center flex-shrink-0">
-              <Avatar person={task.assignees[0]!} size="tiny" />
-            </div>
-          )}
+          <div className="flex items-center flex-shrink-0 w-6 h-6">
+            <PersonField
+              person={currentAssignee}
+              setPerson={handleAssigneeChange}
+              avatarSize={24}
+              avatarOnly={true}
+              searchPeople={searchPeople || (async () => [])}
+              readonly={!searchPeople}
+            />
+          </div>
         </div>
       </div>
     </li>

@@ -16,6 +16,8 @@ export function TaskBoard({
   onStatusChange,
   onTaskCreate,
   onMilestoneCreate,
+  onTaskUpdate,
+  searchPeople,
 }: {
   tasks: Types.Task[];
   title?: string;
@@ -23,6 +25,8 @@ export function TaskBoard({
   onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
   onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
   onMilestoneCreate?: (milestone: Omit<Types.Milestone, "id">) => void;
+  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
 }) {
   const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
@@ -288,6 +292,8 @@ export function TaskBoard({
                     tasks={groupedTasks[milestoneData.milestone.id] || []}
                     stats={milestoneData.stats}
                     onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
+                    onTaskUpdate={onTaskUpdate}
+                    searchPeople={searchPeople}
                     availableMilestones={milestones.map(m => m.milestone)}
                     availablePeople={internalTasks
                       .flatMap((task) => task.assignees || [])
@@ -317,7 +323,12 @@ export function TaskBoard({
                     </div>
 
                     {/* Tasks with no milestone */}
-                    <TaskList tasks={groupedTasks["no_milestone"] || []} milestoneId="no-milestone" />
+                    <TaskList 
+                      tasks={groupedTasks["no_milestone"] || []} 
+                      milestoneId="no-milestone"
+                      onTaskUpdate={onTaskUpdate}
+                      searchPeople={searchPeople}
+                    />
                   </li>
                 )}
               </ul>

@@ -18,7 +18,11 @@ const meta: Meta<typeof TaskList> = {
   decorators: [
     (_, context) => {
       // Create a wrapper component with state for the story
-      const TaskListWithReordering = ({ initialTasks }: { initialTasks: Types.Task[] }) => {
+      const TaskListWithReordering = ({ initialTasks, onTaskUpdate, searchPeople }: { 
+        initialTasks: Types.Task[];
+        onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+        searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+      }) => {
         const [tasks, setTasks] = useState<Types.Task[]>([]);
         
         // Store the tasks from props when component mounts
@@ -52,21 +56,17 @@ const meta: Meta<typeof TaskList> = {
           };
         }, [tasks]);
         
-        // Define a proper onDrop handler for the DragAndDropProvider
-        const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-          console.log(`Dragged item ${draggedId} was dropped onto ${dropZoneId} at index ${indexInDropZone}`);
+        const handleDrop = (draggedId: string, targetId: string) => {
+          console.log(`Dragged item ${draggedId} was dropped onto ${targetId}`);
           
-          // Use the utility function to reorder tasks within a list
-          const updatedTasks = reorderTasksInList(
-            tasks,
-            draggedId,
-            indexInDropZone
-          );
+          // Find the target task index
+          const targetIndex = tasks.findIndex(task => task.id === targetId);
+          if (targetIndex !== -1) {
+            const updatedTasks = reorderTasksInList(tasks, draggedId, targetIndex);
+            setTasks(updatedTasks);
+          }
           
-          // Update state
-          setTasks(updatedTasks);
-          
-          return true; // Indicate successful drop
+          return true;
         };
         
         return (
@@ -74,6 +74,8 @@ const meta: Meta<typeof TaskList> = {
             <TaskList 
               tasks={tasks} 
               milestoneId="milestone-1" 
+              onTaskUpdate={onTaskUpdate}
+              searchPeople={searchPeople}
             />
           </DragAndDropProvider>
         );
@@ -84,7 +86,11 @@ const meta: Meta<typeof TaskList> = {
       
       return (
         <div className="m-4 w-[500px]">
-          <TaskListWithReordering initialTasks={args.tasks || []} />
+          <TaskListWithReordering 
+            initialTasks={args.tasks || []} 
+            onTaskUpdate={args.onTaskUpdate}
+            searchPeople={args.searchPeople}
+          />
         </div>
       );
     },
@@ -99,7 +105,31 @@ const milestoneId = "milestone-1";
 
 // Event handler for status changes
 const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
-  console.log(`Status changed for task ${taskId} to ${newStatus}`);
+  const event = new CustomEvent("statusChange", {
+    detail: { taskId, newStatus }
+  });
+  document.dispatchEvent(event);
+};
+
+// Event handler for task updates
+const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
+  console.log(`Task ${taskId} updated:`, updates);
+};
+
+// Mock people data for assignee selection
+const mockPeople: Types.Person[] = [
+  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+  { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+];
+
+// Mock search function for people
+const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
+  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter(person => 
+    person.fullName.toLowerCase().includes(query.toLowerCase())
+  );
 };
 
 /**
@@ -110,23 +140,27 @@ export const MultipleTasksList: Story = {
     tasks: [
       {
         id: "task-1",
-        title: "Implement login functionality",
+        title: "Implement user authentication",
         status: "pending" as Types.Status,
+        hasDescription: true,
+        hasComments: true,
+        commentCount: 3,
       },
       {
         id: "task-2",
-        title: "Design user profile page",
+        title: "Design dashboard layout",
         status: "in_progress" as Types.Status,
+        dueDate: new Date(new Date().setDate(new Date().getDate() + 5)), // Due in 5 days
         assignees: [
           { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
         ],
       },
       {
         id: "task-3",
-        title: "Fix navigation bug in sidebar",
+        title: "Write API documentation",
         status: "in_progress" as Types.Status,
         hasComments: true,
-        commentCount: 3,
+        commentCount: 1,
       },
       {
         id: "task-4",
@@ -136,6 +170,8 @@ export const MultipleTasksList: Story = {
       },
     ],
     milestoneId,
+    onTaskUpdate: handleTaskUpdate,
+    searchPeople: mockSearchPeople,
   },
   render: (args) => {
     // Set up status change listener
@@ -153,6 +189,8 @@ export const MultipleTasksList: Story = {
     return <TaskList 
       tasks={args.tasks} 
       milestoneId={args.milestoneId} 
+      onTaskUpdate={args.onTaskUpdate}
+      searchPeople={args.searchPeople}
     />;
   },
 };
@@ -174,6 +212,8 @@ export const SingleTaskList: Story = {
       },
     ],
     milestoneId,
+    onTaskUpdate: handleTaskUpdate,
+    searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
 };
@@ -185,6 +225,8 @@ export const EmptyTaskList: Story = {
   args: {
     tasks: [],
     milestoneId,
+    onTaskUpdate: handleTaskUpdate,
+    searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
 };
@@ -219,6 +261,8 @@ export const MixedStatusTaskList: Story = {
       },
     ],
     milestoneId,
+    onTaskUpdate: handleTaskUpdate,
+    searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
 };

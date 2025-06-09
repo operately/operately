@@ -117,3 +117,62 @@ export const AllStates: Story = {
 };
 
 const Label = ({ children }) => <div className="font-bold text-xs text-content-dimmed mb-3">{children}</div>;
+
+export const AvatarOnlyMode: Story = {
+  render: () => {
+    return (
+      <Page title="PersonField - Avatar Only Mode">
+        <div className="space-y-8 p-8">
+          <div>
+            <Label>Avatar Only - Different Sizes</Label>
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="mb-2 text-sm">Small (20px)</div>
+                <Component avatarOnly={true} avatarSize={20} />
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-sm">Default (24px)</div>
+                <Component avatarOnly={true} avatarSize={24} />
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-sm">Medium (32px)</div>
+                <Component avatarOnly={true} avatarSize={32} />
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-sm">Large (40px)</div>
+                <Component avatarOnly={true} avatarSize={40} />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label>Avatar Only - With Assigned Person</Label>
+            <div className="flex items-center gap-4">
+              <div className="text-center">
+                <div className="mb-2 text-sm">With Avatar</div>
+                <Component person={person} avatarOnly={true} avatarSize={32} />
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-sm">No Avatar</div>
+                <Component person={{...person, avatarUrl: null}} avatarOnly={true} avatarSize={32} />
+              </div>
+              <div className="text-center">
+                <div className="mb-2 text-sm">Read-only</div>
+                <Component person={person} avatarOnly={true} avatarSize={32} readonly={true} />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <Label>Avatar Only - Task Item Context</Label>
+            <div className="flex items-center gap-2 p-4 bg-surface-base border rounded">
+              <span className="text-sm">Task assignee:</span>
+              <Component avatarOnly={true} avatarSize={24} />
+              <span className="text-sm text-content-subtle">← Click to assign</span>
+            </div>
+          </div>
+        </div>
+      </Page>
+    );
+  },
+};

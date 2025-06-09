@@ -10,8 +10,8 @@ interface Person {
   id: string;
   fullName: string;
   avatarUrl: string | null;
-  title: string;
-  profileLink: string;
+  title?: string;
+  profileLink?: string;
 }
 
 export interface PersonFieldProps {
@@ -22,6 +22,7 @@ export interface PersonFieldProps {
   avatarSize?: number;
   readonly?: boolean;
   showTitle?: boolean;
+  avatarOnly?: boolean;
   emptyStateMessage?: string;
   emptyStateReadOnlyMessage?: string;
   searchPeople: (params: { query: string }) => Promise<Person[]>;
@@ -41,6 +42,7 @@ export interface State {
   readonly: boolean;
   avatarSize: number;
   showTitle: boolean;
+  avatarOnly: boolean;
   emptyStateMessage: string;
   emptyStateReadOnlyMessage: string;
   extraDialogMenuOptions: DialogMenuOptionProps[];
@@ -71,6 +73,7 @@ export function useState(props: PersonFieldProps): State {
   const readonly = props.readonly ?? false;
   const avatarSize = props.avatarSize ?? 32;
   const showTitle = props.showTitle ?? true;
+  const avatarOnly = props.avatarOnly ?? false;
   const emptyStateMessage = props.emptyStateMessage ?? "Select person";
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
@@ -115,6 +118,7 @@ export function useState(props: PersonFieldProps): State {
     readonly,
     avatarSize,
     showTitle,
+    avatarOnly,
     emptyStateMessage,
     emptyStateReadOnlyMessage,
     extraDialogMenuOptions,
@@ -126,22 +130,32 @@ export function useState(props: PersonFieldProps): State {
 
 function Trigger({ state }: { state: State }) {
   const triggerClass = classNames({
-    "flex items-center gap-2 truncate text-left": true,
-    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+    "flex items-center gap-2 truncate text-left": !state.avatarOnly,
+    "flex items-center justify-center": state.avatarOnly,
+    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly && !state.avatarOnly,
+    "focus:outline-none rounded-full": !state.readonly && state.avatarOnly,
     "cursor-pointer": !state.readonly,
     "cursor-default": state.readonly,
-    "bg-surface-dimmed": state.isOpen,
+    "bg-surface-dimmed": state.isOpen && !state.avatarOnly,
+    "ring-2 ring-surface-accent": state.isOpen && state.avatarOnly,
   });
 
   if (state.person) {
     return (
       <Popover.Trigger className={triggerClass}>
-        <Avatar person={state.person} size={state.avatarSize} />
-
-        <div className="-mt-0.5 truncate">
-          <div className="text-sm font-medium">{state.person.fullName}</div>
-          {state.showTitle && <div className="text-xs truncate">{state.person.title}</div>}
+        <div className={classNames({
+          "transition-all duration-200": state.avatarOnly && !state.readonly,
+          "hover:scale-105 hover:shadow-md": state.avatarOnly && !state.readonly,
+        })}>
+          <Avatar person={state.person} size={state.avatarSize} />
         </div>
+
+        {!state.avatarOnly && (
+          <div className="-mt-0.5 truncate">
+            <div className="text-sm font-medium">{state.person.fullName}</div>
+            {state.showTitle && state.person.title && <div className="text-xs truncate">{state.person.title}</div>}
+          </div>
+        )}
       </Popover.Trigger>
     );
   } else {
@@ -150,7 +164,11 @@ function Trigger({ state }: { state: State }) {
     return (
       <Popover.Trigger className={triggerClass}>
         <div
-          className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
+          className={classNames({
+            "border border-content-subtle border-dashed rounded-full flex items-center justify-center": true,
+            "hover:border-content-accent transition-all duration-200": state.avatarOnly && !state.readonly,
+            "hover:scale-105": state.avatarOnly && !state.readonly,
+          })}
           style={{
             width: state.avatarSize,
             height: state.avatarSize,
@@ -159,11 +177,13 @@ function Trigger({ state }: { state: State }) {
           <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
         </div>
 
-        <div className="truncate">
-          <div className="text-sm font-medium text-content-dimmed">
-            {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
+        {!state.avatarOnly && (
+          <div className="truncate">
+            <div className="text-sm font-medium text-content-dimmed">
+              {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
+            </div>
           </div>
-        </div>
+        )}
       </Popover.Trigger>
     );
   }
