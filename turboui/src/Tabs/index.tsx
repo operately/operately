@@ -72,8 +72,8 @@ function TabItem({ tab, activeTab }: { tab: Tab; activeTab: string }) {
   return (
     <div className="relative pb-1.5">
       <DivLink className={labelClass} to={tabPath}>
-        {tab.icon}
-        <span className="leading-none">{tab.label}</span>
+        <span className="flex-shrink-0">{tab.icon}</span>
+        <span className="leading-none whitespace-nowrap ml-1">{tab.label}</span>
         <TabCountBadge count={tab.count} />
       </DivLink>
 
