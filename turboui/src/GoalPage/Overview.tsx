@@ -2,7 +2,6 @@ import React from "react";
 
 import { GoalPage } from ".";
 import { WarningCallout } from "../Callouts";
-import { isOverdue } from "../utils/time";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
@@ -35,10 +34,6 @@ function MainContent(props: GoalPage.State) {
 function Warnings(props: GoalPage.State) {
   if (props.state == "closed") return null;
 
-  if (props.dueDate && isOverdue(props.dueDate)) {
-    return <OverdueWarning {...props} />;
-  }
-
   if (props.neglectedGoal) {
     return <NeglectedGoalWarning {...props} />;
   }
@@ -62,28 +57,6 @@ function NeglectedGoalWarning(props: GoalPage.State) {
           <div>
             The last check-in was more than a month ago. The information may be outdated. Please ping the champion
             check-in or close the goal.
-          </div>
-        }
-      />
-    );
-  }
-}
-
-function OverdueWarning(props: GoalPage.State) {
-  if (props.canEdit) {
-    return (
-      <WarningCallout
-        message="Overdue goal"
-        description={<div>This goal is overdue. Close it or update the due date.</div>}
-      />
-    );
-  } else {
-    return (
-      <WarningCallout
-        message="Overdue goal"
-        description={
-          <div>
-            This goal is overdue. The information may be outdated. Please ping the champion to check-in or update.
           </div>
         }
       />
