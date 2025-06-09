@@ -2,15 +2,14 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Operately.Access.Filters, only: [filter_by_view_access: 3]
-
   alias Operately.People.Person
 
   inputs do
-    field? :id, :string
+    field? :id, :id
     field? :include_manager, :boolean
     field? :include_reports, :boolean
     field? :include_peers, :boolean
+    field? :include_permissions, :boolean
   end
 
   outputs do
@@ -18,37 +17,30 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs[:id])
-
-    case load(id, me(conn), inputs) do
-      nil -> {:error, :not_found}
-      person -> {:ok, %{person: Serializer.serialize(person, level: :full)}}
+    with {:ok, me} <- find_me(conn),
+         {:ok, person} <- load(me, inputs[:id], inputs) do
+      {:ok, %{person: Serializer.serialize(person, level: :full)}}
     end
   end
 
-  defp load(id, person, inputs) do
-    requested = extract_include_filters(inputs)
-
-    (from p in Person, where: p.id == ^id)
-    |> Person.scope_company(person.company_id)
-    |> include_requested(requested)
-    |> filter_by_view_access(person.id, join_parent: :company)
-    |> Repo.one()
-    |> preload_peers(inputs[:include_peers])
+  defp load(me, id, inputs) do
+    Person.get(me, id: id, company_id: me.company_id, opts: [
+      preload: preload(inputs),
+      after_load: after_load(inputs),
+    ])
   end
 
-  defp include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_manager -> from p in q, preload: [:manager]
-        :include_reports -> from p in q, preload: [:reports]
-        :include_peers -> q # this is done after the load
-        _ -> raise "Unknown include filter: #{inspect(include)}"
-      end
-    end)
+   def preload(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_manager: [:manager],
+      include_reports: [:reports],
+    ])
   end
 
-  defp preload_peers(nil, _), do: nil
-  defp preload_peers(person, true), do: Person.preload_peers(person)
-  defp preload_peers(person, nil), do: person
+  def after_load(inputs) do
+    Inputs.parse_includes(inputs, [
+      include_peers: &Person.preload_peers/1,
+      include_permissions: &Person.load_permissions/1,
+    ])
+  end
 end
