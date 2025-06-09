@@ -14,6 +14,7 @@ export function DeleteModal(props: GoalPage.State) {
     </Modal>
   );
 }
+
 function CantDeleteHasSubitems(props: GoalPage.State) {
   return (
     <div>
@@ -45,9 +46,6 @@ function DeleteForm(props: GoalPage.State) {
 
     try {
       await props.deleteGoal();
-      props.closeDeleteModal();
-    } catch (error) {
-      console.error("Failed to delete goal:", error);
     } finally {
       setIsDeleting(false);
     }

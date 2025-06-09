@@ -4,30 +4,19 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { PageNew } from "../Page";
 
-import {
-  IconCircleCheck,
-  IconClipboardText,
-  IconLogs,
-  IconMessage,
-  IconMessages,
-  IconTrash,
-} from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "@tabler/icons-react";
 
-import { WarningCallout } from "../Callouts";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
-import { isOverdue } from "../utils/time";
+import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
-import { Contributors } from "./Contributors";
 import { DeleteModal } from "./DeleteModal";
-import { Description } from "./Description";
 import { Discussions } from "./Discussions";
+import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
-import { RelatedWork } from "./RelatedWork";
-import { Sidebar } from "./Sidebar";
-import { Targets } from "./Targets";
+import { pageOptions } from "./PageOptions";
 
 export namespace GoalPage {
   export interface Person {
@@ -135,38 +124,25 @@ export namespace GoalPage {
 
   export interface State extends Props {
     isDeleteModalOpen: boolean;
+    openDeleteModal: () => void;
     closeDeleteModal: () => void;
   }
 }
 
-export function GoalPage(props: GoalPage.Props) {
+function useGoalPageState(props: GoalPage.Props): GoalPage.State {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
 
-  const state = React.useMemo<GoalPage.State>(
-    () => ({
-      ...props,
-      isDeleteModalOpen,
-      closeDeleteModal: () => setIsDeleteModalOpen(false),
-    }),
-    [props, isDeleteModalOpen],
-  );
+  return {
+    ...props,
 
-  const options = [
-    {
-      type: "link" as const,
-      label: "Close",
-      link: props.closeLink,
-      icon: IconCircleCheck,
-      hidden: !props.canEdit || props.state === "closed",
-    },
-    {
-      type: "action" as const,
-      label: "Delete",
-      onClick: () => setIsDeleteModalOpen(true),
-      icon: IconTrash,
-      hidden: !props.canEdit,
-    },
-  ];
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
+  };
+}
+
+export function GoalPage(props: GoalPage.Props) {
+  const state = useGoalPageState(props);
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
@@ -176,7 +152,7 @@ export function GoalPage(props: GoalPage.Props) {
   ]);
 
   return (
-    <PageNew title={[state.goalName]} options={options} size="fullwidth">
+    <PageNew title={[state.goalName]} options={pageOptions(state)} size="fullwidth">
       <PageHeader {...state} />
       <Tabs tabs={tabs} />
 
@@ -190,95 +166,4 @@ export function GoalPage(props: GoalPage.Props) {
       <DeleteModal {...state} />
     </PageNew>
   );
-}
-
-function Activity(props: GoalPage.State) {
-  return (
-    <div className="p-4 max-w-5xl mx-auto my-6">
-      <div className="font-bold text-lg mb-4">Activity</div>
-      {props.activityFeed}
-    </div>
-  );
-}
-
-function Overview(props: GoalPage.State) {
-  return (
-    <div className="p-4 max-w-6xl mx-auto my-6">
-      <div className="sm:grid sm:grid-cols-12">
-        <MainContent {...props} />
-        <Sidebar {...props} />
-      </div>
-    </div>
-  );
-}
-
-function MainContent(props: GoalPage.State) {
-  return (
-    <div className="space-y-12 sm:col-span-8 sm:pr-8">
-      <Warnings {...props} />
-      <Description {...props} />
-      <Targets {...props} />
-      <RelatedWork {...props} />
-      <Contributors {...props} />
-    </div>
-  );
-}
-
-function Warnings(props: GoalPage.State) {
-  if (props.state == "closed") return null;
-
-  if (props.dueDate && isOverdue(props.dueDate)) {
-    return <OverdueWarning {...props} />;
-  }
-
-  if (props.neglectedGoal) {
-    return <NeglectedGoalWarning {...props} />;
-  }
-
-  return null;
-}
-
-function NeglectedGoalWarning(props: GoalPage.State) {
-  if (props.canEdit) {
-    return (
-      <WarningCallout
-        message="Outdated goal"
-        description={<div>The last check-in was more than a month ago. Please check-in or close the goal.</div>}
-      />
-    );
-  } else {
-    return (
-      <WarningCallout
-        message="Outdated goal"
-        description={
-          <div>
-            The last check-in was more than a month ago. The information may be outdated. Please ping the champion
-            check-in or close the goal.
-          </div>
-        }
-      />
-    );
-  }
-}
-
-function OverdueWarning(props: GoalPage.State) {
-  if (props.canEdit) {
-    return (
-      <WarningCallout
-        message="Overdue goal"
-        description={<div>This goal is overdue. Close it or update the due date.</div>}
-      />
-    );
-  } else {
-    return (
-      <WarningCallout
-        message="Overdue goal"
-        description={
-          <div>
-            This goal is overdue. The information may be outdated. Please ping the champion to check-in or update.
-          </div>
-        }
-      />
-    );
-  }
 }
