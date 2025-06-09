@@ -1129,6 +1129,11 @@ defmodule OperatelyWeb.Api.Types do
     field? :has_open_invitation, :boolean
     field? :invitation, :invitation
     field? :show_dev_bar, :boolean
+    field? :permissions, :person_permissions
+  end
+
+  object :person_permissions do
+    field :can_edit_profile, :boolean
   end
 
   object :project_health do

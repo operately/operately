@@ -40,6 +40,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       reports: OperatelyWeb.Api.Serializer.serialize(data.reports),
       peers: OperatelyWeb.Api.Serializer.serialize(data.peers),
       has_open_invitation: data.has_open_invitation,
+      permissions: OperatelyWeb.Api.Serializer.serialize(data.permissions),
       invitation: data.invitation && OperatelyWeb.Api.Serializer.serialize(data.invitation)
     }
   end

@@ -1019,6 +1019,11 @@ export interface Person {
   hasOpenInvitation?: boolean | null;
   invitation?: Invitation | null;
   showDevBar?: boolean | null;
+  permissions?: PersonPermissions | null;
+}
+
+export interface PersonPermissions {
+  canEditProfile: boolean | null;
 }
 
 export interface Project {
@@ -1869,10 +1874,11 @@ export interface GetPeopleResult {
 }
 
 export interface GetPersonInput {
-  id?: string | null;
+  id?: Id | null;
   includeManager?: boolean | null;
   includeReports?: boolean | null;
   includePeers?: boolean | null;
+  includePermissions?: boolean | null;
 }
 
 export interface GetPersonResult {
@@ -2128,7 +2134,7 @@ export interface GoalsGetDiscussionsInput {
 }
 
 export interface GoalsGetDiscussionsResult {
-  discussions?: Discussion[] | null;
+  discussions: Discussion[] | null;
 }
 
 export interface ListGoalContributorsInput {
@@ -2853,8 +2859,8 @@ export interface GoalsAddTargetInput {
 }
 
 export interface GoalsAddTargetResult {
-  targetId?: Id | null;
-  success?: boolean | null;
+  targetId: Id | null;
+  success: boolean | null;
 }
 
 export interface GoalsDeleteTargetInput {
@@ -2863,7 +2869,7 @@ export interface GoalsDeleteTargetInput {
 }
 
 export interface GoalsDeleteTargetResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateChampionInput {
@@ -2872,7 +2878,7 @@ export interface GoalsUpdateChampionInput {
 }
 
 export interface GoalsUpdateChampionResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateDescriptionInput {
@@ -2881,16 +2887,16 @@ export interface GoalsUpdateDescriptionInput {
 }
 
 export interface GoalsUpdateDescriptionResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateDueDateInput {
   goalId: Id;
-  dueDate?: string | null;
+  dueDate: string | null;
 }
 
 export interface GoalsUpdateDueDateResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateNameInput {
@@ -2899,7 +2905,7 @@ export interface GoalsUpdateNameInput {
 }
 
 export interface GoalsUpdateNameResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateReviewerInput {
@@ -2908,7 +2914,7 @@ export interface GoalsUpdateReviewerInput {
 }
 
 export interface GoalsUpdateReviewerResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateTargetInput {
@@ -2921,17 +2927,17 @@ export interface GoalsUpdateTargetInput {
 }
 
 export interface GoalsUpdateTargetResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateTargetIndexInput {
-  goalId?: Id;
-  targetId?: Id;
-  index?: number;
+  goalId: Id;
+  targetId: Id;
+  index: number;
 }
 
 export interface GoalsUpdateTargetIndexResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface GoalsUpdateTargetValueInput {
@@ -2941,7 +2947,7 @@ export interface GoalsUpdateTargetValueInput {
 }
 
 export interface GoalsUpdateTargetValueResult {
-  success?: boolean | null;
+  success: boolean | null;
 }
 
 export interface JoinCompanyInput {

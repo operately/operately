@@ -30,6 +30,7 @@ export namespace ProfilePage {
 
     workMap: WorkMap.Item[];
     reviewerWorkMap: WorkMap.Item[];
+    options: Page.Option[];
 
     activityFeed: React.ReactNode;
   }
@@ -41,7 +42,7 @@ export function ProfilePage(props: ProfilePage.Props) {
   const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
 
   return (
-    <Page title={props.title} size="fullwidth">
+    <Page title={props.title} size="fullwidth" options={props.options}>
       <PageHeader person={props.person} />
       <Tabs tabs={tabs} />
 

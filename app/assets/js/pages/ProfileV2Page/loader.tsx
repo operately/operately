@@ -40,6 +40,7 @@ function fetchData(personId: string, refreshCache: boolean) {
           includeManager: true,
           includeReports: true,
           includePeers: true,
+          includePermissions: true,
         }).then((data) => data.person!),
         workMap: WorkMap.getFlatWorkMap({
           championId: personId,
