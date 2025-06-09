@@ -9,7 +9,7 @@ import { MentionedPersonLookupFn } from "../RichEditor";
 import classNames from "../utils/classnames";
 import { CommentCountIndicator } from "./CommentCountIndicator";
 
-export function CheckIns(props: GoalPage.Props) {
+export function CheckIns(props: GoalPage.State) {
   const showCheckInButton = props.canEdit && props.state !== "closed";
 
   return (
