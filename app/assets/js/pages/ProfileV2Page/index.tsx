@@ -9,7 +9,8 @@ import { Feed, useItemsQuery } from "@/features/Feed";
 import { assertPresent } from "@/utils/assertions";
 
 import { loader, useLoadedData } from "./loader";
-
+import { IconPencil } from "@tabler/icons-react";
+import { Paths } from "@/routes/paths";
 
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
 
@@ -18,6 +19,7 @@ function Page() {
 
   assertPresent(person.peers);
   assertPresent(person.reports);
+  assertPresent(person.permissions);
 
   const props = {
     title: [person.fullName!, "Profile"],
@@ -29,6 +31,15 @@ function Page() {
 
     workMap: workMap,
     reviewerWorkMap: reviewerWorkMap,
+    options: [
+      {
+        type: "link" as const,
+        icon: IconPencil,
+        label: "Edit",
+        link: Paths.profileEditPath(person.id!),
+        hidden: !person.permissions.canEditProfile,
+      },
+    ],
 
     activityFeed: <ActivityFeed personId={person.id!} />,
   };

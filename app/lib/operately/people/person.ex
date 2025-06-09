@@ -36,6 +36,7 @@ defmodule Operately.People.Person do
 
     # if the person is loaded in an access context, this field can be set
     field :access_level, :any, virtual: true
+    field :permissions, :any, virtual: true
 
     timestamps()
     request_info()
@@ -108,5 +109,10 @@ defmodule Operately.People.Person do
 
   def get_by!(:system, field_values) do
     Operately.Repo.get_by!(__MODULE__, field_values)
+  end
+
+  def load_permissions(person = %__MODULE__{}) do
+    perms = Operately.People.Permissions.calculate(person.request_info.access_level)
+    Map.put(person, :permissions, perms)
   end
 end
