@@ -41,6 +41,7 @@ function Component(props: Partial<GoalPage.Props>) {
     contributors: [],
     closedAt: null,
     neglectedGoal: false,
+    retrospective: null,
   };
 
   return (
@@ -457,9 +458,16 @@ export const ClosedGoal: Story = {
   args: {
     status: "achieved",
     state: "closed",
-    closedOn: new Date(2025, 3, 30), // Apr 30th, 2025
-    retrospectiveLink: "/retrospective/1",
+    closedAt: new Date(2025, 3, 30), // Apr 30th, 2025
     dueDate: startOfCurrentYear(),
+    retrospective: {
+      date: new Date(2025, 4, 1), // May 1st, 2025
+      content: asRichText(
+        "The AI Platform project was a success! We achieved all our targets and received positive feedback from users. The team worked exceptionally well together, and we learned valuable lessons about cross-functional collaboration and agile development.",
+      ),
+      link: "/retrospectives/1",
+      author: genPerson(),
+    },
   },
 };
 

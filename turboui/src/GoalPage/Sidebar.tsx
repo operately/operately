@@ -7,6 +7,7 @@ import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 
 import { IconAlertTriangleFilled } from "@tabler/icons-react";
+import { match } from "ts-pattern";
 import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
 import { PersonField } from "../PersonField";
@@ -17,10 +18,10 @@ export function Sidebar(props: GoalPage.State) {
   return (
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
       <Retrospective {...props} />
+      <CompletedOn {...props} />
       <LastCheckIn {...props} />
       <ParentGoal {...props} />
       <DueDate {...props} />
-      <CompletedOn {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
     </div>
@@ -49,7 +50,7 @@ function CompletedOn(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Completed On">
-      <DateDisplayField date={props.closedAt} readonly />
+      <DateDisplayField date={props.closedAt} readonly showOverdueWarning={false} />
     </SidebarSection>
   );
 }
@@ -203,25 +204,21 @@ function Retrospective(props: GoalPage.Props) {
   );
 
   return (
-    <SidebarSection title="Retrospective">
-      <div className="text-sm">
-        <DivLink to={retro.link} className={className}>
-          <div className="flex items-center font-semibold">
-            <FormattedTime time={retro.date} format="short-date" />
-          </div>
+    <div className="text-sm">
+      <DivLink to={retro.link} className={className}>
+        <div className="flex items-center font-semibold">Goal Retrospective</div>
 
-          <Summary content={retro.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
+        <Summary content={retro.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
 
-          <div className="mt-1.5 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Avatar person={retro.author} size={20} />
-              {retro.author.fullName.split(" ")[0]}
-            </div>
-            <StatusBadge status={props.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
+        <div className="mt-1.5 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Avatar person={retro.author} size={20} />
+            {retro.author.fullName.split(" ")[0]}
           </div>
-        </DivLink>
-      </div>
-    </SidebarSection>
+          <StatusBadge status={props.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
+        </div>
+      </DivLink>
+    </div>
   );
 }
 
