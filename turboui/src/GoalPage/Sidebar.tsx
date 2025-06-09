@@ -7,6 +7,7 @@ import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 
 import { IconAlertTriangleFilled } from "@tabler/icons-react";
+import { match } from "ts-pattern";
 import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
 import { PersonField } from "../PersonField";
@@ -16,10 +17,11 @@ import { durationHumanized, isOverdue } from "../utils/time";
 export function Sidebar(props: GoalPage.State) {
   return (
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
+      <Retrospective {...props} />
+      <CompletedOn {...props} />
       <LastCheckIn {...props} />
       <ParentGoal {...props} />
       <DueDate {...props} />
-      <CompletedOn {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
     </div>
@@ -48,7 +50,7 @@ function CompletedOn(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Completed On">
-      <DateDisplayField date={props.closedAt} readonly />
+      <DateDisplayField date={props.closedAt} readonly showOverdueWarning={false} />
     </SidebarSection>
   );
 }
@@ -132,56 +134,92 @@ function Reviewer(props: GoalPage.State) {
 }
 
 function LastCheckIn(props: GoalPage.State) {
-  if (props.checkIns.length === 0) {
-    return null;
-  } else {
-    const checkIn = props.checkIns[0]!;
+  if (props.checkIns.length === 0) return null;
+  if (props.state === "closed") return null;
 
-    let borderColor = "";
+  const checkIn = props.checkIns[0]!;
 
-    if (checkIn.status === "on_track") {
-      borderColor = "border-green-500";
-    } else if (checkIn.status === "caution" || checkIn.status === "concern") {
-      borderColor = "border-yellow-500";
-    } else if (checkIn.status === "issue") {
-      borderColor = "border-red-500";
-    }
+  let borderColor = "";
 
-    const className = classNames(
-      "flex gap-1 flex-col",
-      "cursor-pointer text-sm py-3 pl-3 pr-4",
-      "border-l-4",
-      "bg-zinc-50 dark:bg-zinc-800",
-      "hover:bg-zinc-100 dark:hover:bg-zinc-700",
-      borderColor,
-    );
-
-    return (
-      <SidebarSection title="Last Check-In">
-        <div className="text-sm">
-          <DivLink to={checkIn.link} className={className}>
-            <div className="flex items-center font-semibold">
-              <FormattedTime time={checkIn.date} format="short-date" />
-            </div>
-
-            <Summary
-              content={checkIn.content}
-              characterCount={130}
-              mentionedPersonLookup={props.mentionedPersonLookup}
-            />
-
-            <div className="mt-1.5 flex items-center justify-between">
-              <div className="flex items-center gap-1.5">
-                <Avatar person={checkIn.author} size={20} />
-                {checkIn.author.fullName.split(" ")[0]}
-              </div>
-              <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
-            </div>
-          </DivLink>
-        </div>
-      </SidebarSection>
-    );
+  if (checkIn.status === "on_track") {
+    borderColor = "border-green-500";
+  } else if (checkIn.status === "caution" || checkIn.status === "concern") {
+    borderColor = "border-yellow-500";
+  } else if (checkIn.status === "issue") {
+    borderColor = "border-red-500";
   }
+
+  const className = classNames(
+    "flex gap-1 flex-col",
+    "cursor-pointer text-sm py-3 pl-3 pr-4",
+    "border-l-4",
+    "bg-zinc-50 dark:bg-zinc-800",
+    "hover:bg-zinc-100 dark:hover:bg-zinc-700",
+    borderColor,
+  );
+
+  return (
+    <SidebarSection title="Last Check-In">
+      <div className="text-sm">
+        <DivLink to={checkIn.link} className={className}>
+          <div className="flex items-center font-semibold">
+            <FormattedTime time={checkIn.date} format="short-date" />
+          </div>
+
+          <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
+
+          <div className="mt-1.5 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <Avatar person={checkIn.author} size={20} />
+              {checkIn.author.fullName.split(" ")[0]}
+            </div>
+            <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
+          </div>
+        </DivLink>
+      </div>
+    </SidebarSection>
+  );
+}
+
+function Retrospective(props: GoalPage.Props) {
+  if (props.state !== "closed") return null;
+  if (!props.retrospective) return null;
+
+  const retro = props.retrospective;
+
+  const borderColor = match(props.status)
+    .with("achieved", () => "border-green-500")
+    .with("missed", () => "border-red-500")
+    .with("dropped", () => "border-gray-500")
+    .with("partial", () => "border-yellow-500")
+    .run();
+
+  const className = classNames(
+    "flex gap-1 flex-col",
+    "cursor-pointer text-sm py-3 pl-3 pr-4",
+    "border-l-4",
+    "bg-zinc-50 dark:bg-zinc-800",
+    "hover:bg-zinc-100 dark:hover:bg-zinc-700",
+    borderColor,
+  );
+
+  return (
+    <div className="text-sm">
+      <DivLink to={retro.link} className={className}>
+        <div className="flex items-center font-semibold">Goal Retrospective</div>
+
+        <Summary content={retro.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
+
+        <div className="mt-1.5 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <Avatar person={retro.author} size={20} />
+            {retro.author.fullName.split(" ")[0]}
+          </div>
+          <StatusBadge status={props.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
+        </div>
+      </DivLink>
+    </div>
+  );
 }
 
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {

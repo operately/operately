@@ -19,6 +19,13 @@ import { PageHeader } from "./PageHeader";
 import { pageOptions } from "./PageOptions";
 
 export namespace GoalPage {
+  export interface Retrospective {
+    link: string;
+    content: string;
+    date: Date;
+    author: Person;
+  }
+
   export interface Person {
     id: string;
     fullName: string;
@@ -96,7 +103,7 @@ export namespace GoalPage {
     state: "active" | "closed";
 
     closedAt: Date | null;
-    retrospectiveLink?: string;
+    retrospective: Retrospective | null;
 
     canEdit: boolean;
     privacyLevel: "public" | "internal" | "confidential" | "secret";

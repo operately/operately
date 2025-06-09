@@ -121,7 +121,8 @@ function Page() {
     newDiscussionLink: Paths.newGoalDiscussionPath(goal.id),
     addSubprojectLink: Paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
-    closedAt: goal.closedAt ? Time.parse(goal.closedAt) : null,
+    closedAt: Time.parse(goal.closedAt),
+    retrospective: null,
     neglectedGoal: false,
     deleteGoal,
 
