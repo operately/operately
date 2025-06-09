@@ -21,6 +21,7 @@ import { Tabs, useTabs } from "../Tabs";
 import { isOverdue } from "../utils/time";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
+import { DeleteModal } from "./DeleteModal";
 import { Description } from "./Description";
 import { Discussions } from "./Discussions";
 import { PageHeader } from "./PageHeader";
@@ -128,6 +129,8 @@ export namespace GoalPage {
     updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
 
     activityFeed: React.ReactNode;
+
+    deleteModalOpen?: boolean;
   }
 }
 
@@ -167,6 +170,8 @@ export function GoalPage(props: GoalPage.Props) {
         {tabs.active === "discussions" && <Discussions {...props} />}
         {tabs.active === "activity" && <Activity {...props} />}
       </div>
+
+      <DeleteModal {...props} />
     </PageNew>
   );
 }
