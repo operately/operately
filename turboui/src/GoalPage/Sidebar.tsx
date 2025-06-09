@@ -6,12 +6,14 @@ import { BlackLink, DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 
+import { IconAlertTriangleFilled } from "@tabler/icons-react";
 import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
 import { PersonField } from "../PersonField";
 import classNames from "../utils/classnames";
+import { durationHumanized, isOverdue } from "../utils/time";
 
-export function Sidebar(props: GoalPage.Props) {
+export function Sidebar(props: GoalPage.State) {
   return (
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
       <LastCheckIn {...props} />
@@ -24,7 +26,7 @@ export function Sidebar(props: GoalPage.Props) {
   );
 }
 
-function DueDate(props: GoalPage.Props) {
+function DueDate(props: GoalPage.State) {
   const isReadonly = !props.canEdit || !!props.closedAt;
 
   return (
@@ -35,11 +37,13 @@ function DueDate(props: GoalPage.Props) {
         readonly={isReadonly}
         showOverdueWarning={!props.closedAt}
       />
+
+      <OverdueWarning {...props} />
     </SidebarSection>
   );
 }
 
-function CompletedOn(props: GoalPage.Props) {
+function CompletedOn(props: GoalPage.State) {
   if (!props.closedAt) return null;
 
   return (
@@ -49,7 +53,7 @@ function CompletedOn(props: GoalPage.Props) {
   );
 }
 
-function ParentGoal(props: GoalPage.Props) {
+function ParentGoal(props: GoalPage.State) {
   return (
     <SidebarSection title="Parent Goal">
       {!props.parentGoal ? <CompanyWideGoal /> : <ParentGoalLink {...props} />}
@@ -66,7 +70,7 @@ function CompanyWideGoal() {
   );
 }
 
-function ParentGoalLink(props: GoalPage.Props) {
+function ParentGoalLink(props: GoalPage.State) {
   return (
     <div className="flex items-start gap-1.5 text-sm mb-2">
       <IconTarget size={18} className="text-red-500 shrink-0 mt-px" />
@@ -77,7 +81,7 @@ function ParentGoalLink(props: GoalPage.Props) {
   );
 }
 
-function Champion(props: GoalPage.Props) {
+function Champion(props: GoalPage.State) {
   return (
     <SidebarSection title="Champion">
       <PersonField
@@ -102,7 +106,7 @@ function Champion(props: GoalPage.Props) {
   );
 }
 
-function Reviewer(props: GoalPage.Props) {
+function Reviewer(props: GoalPage.State) {
   return (
     <SidebarSection title="Reviewer">
       <PersonField
@@ -127,7 +131,7 @@ function Reviewer(props: GoalPage.Props) {
   );
 }
 
-function LastCheckIn(props: GoalPage.Props) {
+function LastCheckIn(props: GoalPage.State) {
   if (props.checkIns.length === 0) {
     return null;
   } else {
@@ -185,6 +189,21 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
     <div className="space-y-2">
       <div className="font-bold text-sm">{title}</div>
       {children}
+    </div>
+  );
+}
+
+function OverdueWarning(props: GoalPage.State) {
+  if (props.state === "closed") return null;
+  if (!props.dueDate) return null;
+  if (!isOverdue(props.dueDate)) return null;
+
+  const duration = durationHumanized(props.dueDate, new Date());
+
+  return (
+    <div className="bg-callout-error p-3 text-callout-warning-message rounded mt-2 text-sm flex items-center gap-2">
+      <IconAlertTriangleFilled size={16} className="text-callout-warning-icon" />
+      Overdue by {duration}.
     </div>
   );
 }
