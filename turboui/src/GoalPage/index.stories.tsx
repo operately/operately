@@ -19,7 +19,7 @@ const addTarget = (): Promise<{ id: string; success: boolean }> =>
   new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
 
 const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
-const deleteGoal = (): Promise<boolean> => new Promise((resolve) => resolve(true));
+const deleteGoal = (): Promise<void> => new Promise((resolve) => resolve());
 
 function Component(props: Partial<GoalPage.Props>) {
   const [champion, setChampion] = React.useState<any>(props.champion);
@@ -74,6 +74,7 @@ function Component(props: Partial<GoalPage.Props>) {
       updateTarget={async (_inputs) => true}
       updateTargetValue={async (_id, _value) => true}
       updateTargetIndex={async (_id, _index) => true}
+      deleteGoal={deleteGoal}
     />
   );
 }
