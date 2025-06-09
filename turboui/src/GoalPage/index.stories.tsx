@@ -19,6 +19,7 @@ const addTarget = (): Promise<{ id: string; success: boolean }> =>
   new Promise((resolve) => resolve({ success: true, id: crypto.randomUUID() as string }));
 
 const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
+const deleteGoal = (): Promise<boolean> => new Promise((resolve) => resolve(true));
 
 function Component(props: Partial<GoalPage.Props>) {
   const [champion, setChampion] = React.useState<any>(props.champion);
@@ -49,7 +50,6 @@ function Component(props: Partial<GoalPage.Props>) {
       spaceLink="/spaces/1"
       workmapLink="/spaces/1/workmaps/1"
       closeLink={storyPath("Pages/GoalClosePage", "Default")}
-      deleteLink={storyPath("Pages/GoalDeletePage", "Default")}
       editGoalLink={storyPath("Pages/GoalEditPage", "Default")}
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
       newDiscussionLink="#"
@@ -484,6 +484,19 @@ export const NeglectedGoalReadOnly: Story = {
 export const OverdueGoal: Story = {
   args: {
     dueDate: startOfCurrentYear(),
+  },
+};
+
+export const DeleteGoal: Story = {
+  args: {
+    deleteModalOpen: true,
+  },
+};
+
+export const DeleteGoalWithSubitem: Story = {
+  args: {
+    deleteModalOpen: true,
+    relatedWorkItems: mockRelatedWorkItems,
   },
 };
 
