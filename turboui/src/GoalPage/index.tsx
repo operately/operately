@@ -160,9 +160,9 @@ export function GoalPage(props: GoalPage.Props) {
       hidden: !props.canEdit || props.state === "closed",
     },
     {
-      type: "link" as const,
+      type: "action" as const,
       label: "Delete",
-      action: () => setIsDeleteModalOpen(true),
+      onClick: () => setIsDeleteModalOpen(true),
       icon: IconTrash,
       hidden: !props.canEdit,
     },
