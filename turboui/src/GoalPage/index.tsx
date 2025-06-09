@@ -21,6 +21,7 @@ import { Tabs, useTabs } from "../Tabs";
 import { isOverdue } from "../utils/time";
 import { CheckIns } from "./CheckIns";
 import { Contributors } from "./Contributors";
+import { DeleteModal } from "./DeleteModal";
 import { Description } from "./Description";
 import { Discussions } from "./Discussions";
 import { PageHeader } from "./PageHeader";
@@ -77,7 +78,6 @@ export namespace GoalPage {
     spaceLink: string;
     workmapLink: string;
     closeLink: string;
-    deleteLink: string;
     editGoalLink: string;
     newCheckInLink: string;
     newDiscussionLink: string;
@@ -126,12 +126,31 @@ export namespace GoalPage {
     updateTarget: GoalTargetList.UpdateTargetFn;
     updateTargetValue: GoalTargetList.UpdateTargetValueFn;
     updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
+    deleteGoal: () => Promise<void>;
 
     activityFeed: React.ReactNode;
+
+    deleteModalOpen?: boolean;
+  }
+
+  export interface State extends Props {
+    isDeleteModalOpen: boolean;
+    closeDeleteModal: () => void;
   }
 }
 
 export function GoalPage(props: GoalPage.Props) {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
+
+  const state = React.useMemo<GoalPage.State>(
+    () => ({
+      ...props,
+      isDeleteModalOpen,
+      closeDeleteModal: () => setIsDeleteModalOpen(false),
+    }),
+    [props, isDeleteModalOpen],
+  );
+
   const options = [
     {
       type: "link" as const,
@@ -141,9 +160,9 @@ export function GoalPage(props: GoalPage.Props) {
       hidden: !props.canEdit || props.state === "closed",
     },
     {
-      type: "link" as const,
+      type: "action" as const,
       label: "Delete",
-      link: props.deleteLink,
+      onClick: () => setIsDeleteModalOpen(true),
       icon: IconTrash,
       hidden: !props.canEdit,
     },
@@ -157,21 +176,23 @@ export function GoalPage(props: GoalPage.Props) {
   ]);
 
   return (
-    <PageNew title={[props.goalName]} options={options} size="fullwidth">
-      <PageHeader {...props} />
+    <PageNew title={[state.goalName]} options={options} size="fullwidth">
+      <PageHeader {...state} />
       <Tabs tabs={tabs} />
 
       <div className="flex-1 overflow-scroll">
-        {tabs.active === "overview" && <Overview {...props} />}
-        {tabs.active === "check-ins" && <CheckIns {...props} />}
-        {tabs.active === "discussions" && <Discussions {...props} />}
-        {tabs.active === "activity" && <Activity {...props} />}
+        {tabs.active === "overview" && <Overview {...state} />}
+        {tabs.active === "check-ins" && <CheckIns {...state} />}
+        {tabs.active === "discussions" && <Discussions {...state} />}
+        {tabs.active === "activity" && <Activity {...state} />}
       </div>
+
+      <DeleteModal {...state} />
     </PageNew>
   );
 }
 
-function Activity(props: GoalPage.Props) {
+function Activity(props: GoalPage.State) {
   return (
     <div className="p-4 max-w-5xl mx-auto my-6">
       <div className="font-bold text-lg mb-4">Activity</div>
@@ -180,7 +201,7 @@ function Activity(props: GoalPage.Props) {
   );
 }
 
-function Overview(props: GoalPage.Props) {
+function Overview(props: GoalPage.State) {
   return (
     <div className="p-4 max-w-6xl mx-auto my-6">
       <div className="sm:grid sm:grid-cols-12">
@@ -191,7 +212,7 @@ function Overview(props: GoalPage.Props) {
   );
 }
 
-function MainContent(props: GoalPage.Props) {
+function MainContent(props: GoalPage.State) {
   return (
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <Warnings {...props} />
@@ -203,7 +224,7 @@ function MainContent(props: GoalPage.Props) {
   );
 }
 
-function Warnings(props: GoalPage.Props) {
+function Warnings(props: GoalPage.State) {
   if (props.state == "closed") return null;
 
   if (props.dueDate && isOverdue(props.dueDate)) {
@@ -217,7 +238,7 @@ function Warnings(props: GoalPage.Props) {
   return null;
 }
 
-function NeglectedGoalWarning(props: GoalPage.Props) {
+function NeglectedGoalWarning(props: GoalPage.State) {
   if (props.canEdit) {
     return (
       <WarningCallout
@@ -240,7 +261,7 @@ function NeglectedGoalWarning(props: GoalPage.Props) {
   }
 }
 
-function OverdueWarning(props: GoalPage.Props) {
+function OverdueWarning(props: GoalPage.State) {
   if (props.canEdit) {
     return (
       <WarningCallout
