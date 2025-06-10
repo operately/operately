@@ -160,6 +160,26 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
+    const handleMilestoneDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+      console.log(`Updating milestone ${milestoneId} due date:`, dueDate);
+      
+      // Update all tasks that have this milestone
+      const updatedTasks = tasks.map(task => {
+        if (task.milestone?.id === milestoneId) {
+          return {
+            ...task,
+            milestone: {
+              ...task.milestone,
+              dueDate: dueDate
+            }
+          };
+        }
+        return task;
+      });
+      
+      setTasks(updatedTasks);
+    };
+
     return (
       <TaskBoard
         title="Tasks"
@@ -169,6 +189,7 @@ export const Default: Story = {
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskUpdate={handleTaskUpdate}
+        onMilestoneDueDateChange={handleMilestoneDueDateChange}
         searchPeople={mockSearchPeople}
       />
     );

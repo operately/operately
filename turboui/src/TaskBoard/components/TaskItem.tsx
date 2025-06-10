@@ -118,6 +118,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                 variant="inline"
                 iconSize={14}
                 textSize="text-xs"
+                showIcon={false}
                 showOverdueWarning={true}
                 emptyStateText="Set due date"
                 readonly={!onTaskUpdate}
@@ -131,6 +132,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                   variant="inline"
                   iconSize={14}
                   textSize="text-xs"
+                  showIcon={false}
                   showOverdueWarning={true}
                   emptyStateText="Set due date"
                   readonly={false}
