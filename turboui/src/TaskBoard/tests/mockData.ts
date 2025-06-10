@@ -221,6 +221,16 @@ export const mockTasks: Types.Task[] = [
     hasDescription: true,
     hasComments: false,
   },
+  {
+    id: "task-17",
+    title: "Research new features - milestone has no due date, hover header to set",
+    status: "pending",
+    assignees: [mockPeople.bob!],
+    milestone: mockMilestones.emptyMilestone,
+    points: 3,
+    hasDescription: true,
+    hasComments: false,
+  },
 ];
 
 // Mock empty tasks array

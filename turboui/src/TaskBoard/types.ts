@@ -112,4 +112,7 @@ export interface TaskBoardProps {
   onStatusChange?: (taskId: string, newStatus: Status) => void;
   onTaskCreate?: (task: Omit<Task, "id">) => void;
   onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
+  onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
+  searchPeople?: (params: { query: string }) => Promise<Person[]>;
 }
