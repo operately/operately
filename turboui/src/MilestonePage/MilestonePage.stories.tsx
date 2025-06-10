@@ -23,6 +23,14 @@ type Story = StoryObj<typeof meta>;
 // Generate a set of people for our mock data
 const mockPeople = genPeople(4);
 
+// Mock search function for people
+const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
+  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter(person => 
+    person.fullName.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
 // Create a sample milestone with various properties
 const sampleMilestone: Types.Milestone = {
   id: "milestone-1",
@@ -135,6 +143,17 @@ export const Default: Story = {
       }
     };
     
+    // Handler for task updates
+    const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
+      console.log(`Task ${taskId} updated:`, updates);
+      
+      // Update the task with the provided updates
+      const updatedTasks = tasks.map((task) => 
+        task.id === taskId ? { ...task, ...updates } : task
+      );
+      setTasks(updatedTasks);
+    };
+    
     return (
       <MilestonePage
         milestone={milestone}
@@ -148,6 +167,8 @@ export const Default: Story = {
         onStatusChange={handleStatusChange}
         onCommentCreate={(comment) => console.log("Comment created:", comment)}
         onDueDateChange={handleDueDateChange}
+        onTaskUpdate={handleTaskUpdate}
+        searchPeople={mockSearchPeople}
       />
     );
   },
@@ -189,6 +210,8 @@ export const EmptyMilestone: Story = {
         projectUrl="#project"
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
         onDueDateChange={handleDueDateChange}
+        onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
+        searchPeople={mockSearchPeople}
       />
     );
   }
@@ -256,6 +279,8 @@ export const MostlyCompletedMilestone: Story = {
         spaceUrl="#space"
         projectName="Backend Services"
         projectUrl="#project"
+        onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
+        searchPeople={mockSearchPeople}
       />
     );
   }

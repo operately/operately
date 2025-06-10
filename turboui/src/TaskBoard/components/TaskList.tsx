@@ -9,6 +9,8 @@ import { TaskWithIndex } from "../types";
 export interface TaskListProps {
   tasks: Types.Task[];
   milestoneId: string;
+  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   // The onTaskReorder callback is handled by the DragAndDropProvider in the parent component
 }
 
@@ -17,7 +19,7 @@ export interface TaskListProps {
  * Displays a list of tasks for a specific milestone
  * Drag and drop is handled by the DragAndDropProvider in the parent component
  */
-export function TaskList({ tasks, milestoneId }: TaskListProps) {
+export function TaskList({ tasks, milestoneId, onTaskUpdate, searchPeople }: TaskListProps) {
   // Add drag and drop index to each task
   const tasksWithIndex = useMemo(() => {
     return tasks.map((task, index) => ({ ...task, index }));
@@ -40,6 +42,8 @@ export function TaskList({ tasks, milestoneId }: TaskListProps) {
           task={task as TaskWithIndex}
           milestoneId={milestoneId}
           itemStyle={itemStyle}
+          onTaskUpdate={onTaskUpdate}
+          searchPeople={searchPeople}
         />
       ))}
     </ul>

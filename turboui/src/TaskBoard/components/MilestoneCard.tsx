@@ -29,6 +29,16 @@ export interface MilestoneCardProps {
   onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
   
   /**
+   * Called when a task is updated
+   */
+  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  
+  /**
+   * Function to search for people for assignment
+   */
+  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+  
+  /**
    * Available milestones for task reassignment
    */
   availableMilestones?: Types.Milestone[];
@@ -51,7 +61,9 @@ export interface MilestoneCardProps {
 export function MilestoneCard({ 
   milestone, 
   tasks, 
-  onTaskCreate, 
+  onTaskCreate,
+  onTaskUpdate,
+  searchPeople, 
   stats,
   availableMilestones = [],
   availablePeople = []
@@ -136,7 +148,9 @@ export function MilestoneCard({
         {tasks && tasks.length > 0 ? (
           <TaskList 
             tasks={tasks} 
-            milestoneId={milestone.id} 
+            milestoneId={milestone.id}
+            onTaskUpdate={onTaskUpdate}
+            searchPeople={searchPeople}
           />
         ) : (
           <EmptyMilestoneDropZone 
