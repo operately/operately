@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconCalendarPause } from "@tabler/icons-react";
+import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconPlayerPause } from "@tabler/icons-react";
 
 import * as sort from "../utils/sort";
 import { processItems, processPersonalItems } from "../utils/itemProcessor";
@@ -75,7 +75,7 @@ function getTabOptions(tabOptions?: WorkMap.TabOptions, filteredItems?: Record<W
     {
       id: "paused",
       label: "Paused",
-      icon: React.createElement(IconCalendarPause, { size: 16 }),
+      icon: React.createElement(IconPlayerPause, { size: 16 }),
       count: countAllItems(filteredItems?.paused),
     },
     {
