@@ -6,7 +6,7 @@ import {
 } from "@tabler/icons-react";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
-import { DueDateDisplay } from "./DueDateDisplay";
+import { DateDisplayField } from "../../DateDisplayField";
 import { TaskList } from "./TaskList";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import * as Types from "../types";
@@ -32,6 +32,11 @@ export interface MilestoneCardProps {
    * Called when a task is updated
    */
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  
+  /**
+   * Called when the milestone is updated
+   */
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
   
   /**
    * Function to search for people for assignment
@@ -63,6 +68,7 @@ export function MilestoneCard({
   tasks, 
   onTaskCreate,
   onTaskUpdate,
+  onMilestoneUpdate,
   searchPeople, 
   stats,
   availableMilestones = [],
@@ -81,6 +87,13 @@ export function MilestoneCard({
     }
     // Close modal if not creating multiple tasks
     // (the modal handles this internally)
+  };
+
+  // Handle milestone due date change
+  const handleMilestoneDueDateChange = (newDueDate: Date | null) => {
+    if (onMilestoneUpdate) {
+      onMilestoneUpdate(milestone.id, { dueDate: newDueDate || undefined });
+    }
   };
   
   return (
@@ -129,11 +142,37 @@ export function MilestoneCard({
               )}
 
               {/* Due date indicator */}
-              {milestone.dueDate && (
-                <span className="ml-1">
-                  <DueDateDisplay dueDate={milestone.dueDate} />
-                </span>
-              )}
+              <div className="ml-1 group/milestone-due-date">
+                {/* Show DateDisplayField when there's a date OR on hover when no date */}
+                {(milestone.dueDate || !onMilestoneUpdate) ? (
+                  <DateDisplayField
+                    date={milestone.dueDate || null}
+                    setDate={handleMilestoneDueDateChange}
+                    variant="inline"
+                    iconSize={12}
+                    textSize="text-xs"
+                    showIcon={false}
+                    showOverdueWarning={true}
+                    emptyStateText="Set due date"
+                    readonly={!onMilestoneUpdate}
+                  />
+                ) : (
+                  /* Empty state that appears on hover */
+                  <div className="opacity-0 group-hover/milestone-due-date:opacity-100 transition-opacity">
+                    <DateDisplayField
+                      date={null}
+                      setDate={handleMilestoneDueDateChange}
+                      variant="inline"
+                      iconSize={12}
+                      textSize="text-xs"
+                      showIcon={false}
+                      showOverdueWarning={true}
+                      emptyStateText="Set due date"
+                      readonly={false}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <button

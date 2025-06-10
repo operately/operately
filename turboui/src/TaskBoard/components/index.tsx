@@ -17,17 +17,9 @@ export function TaskBoard({
   onTaskCreate,
   onMilestoneCreate,
   onTaskUpdate,
+  onMilestoneUpdate,
   searchPeople,
-}: {
-  tasks: Types.Task[];
-  title?: string;
-  viewMode?: Types.ViewMode;
-  onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
-  onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
-  onMilestoneCreate?: (milestone: Omit<Types.Milestone, "id">) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
-  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
-}) {
+}: Types.TaskBoardProps) {
   const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
@@ -293,6 +285,7 @@ export function TaskBoard({
                     stats={milestoneData.stats}
                     onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
                     onTaskUpdate={onTaskUpdate}
+                    onMilestoneUpdate={onMilestoneUpdate}
                     searchPeople={searchPeople}
                     availableMilestones={milestones.map(m => m.milestone)}
                     availablePeople={internalTasks
