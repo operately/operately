@@ -34,9 +34,9 @@ export interface MilestoneCardProps {
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
   
   /**
-   * Called when the milestone due date is updated
+   * Called when the milestone is updated
    */
-  onMilestoneDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
   
   /**
    * Function to search for people for assignment
@@ -68,7 +68,7 @@ export function MilestoneCard({
   tasks, 
   onTaskCreate,
   onTaskUpdate,
-  onMilestoneDueDateChange,
+  onMilestoneUpdate,
   searchPeople, 
   stats,
   availableMilestones = [],
@@ -91,8 +91,8 @@ export function MilestoneCard({
 
   // Handle milestone due date change
   const handleMilestoneDueDateChange = (newDueDate: Date | null) => {
-    if (onMilestoneDueDateChange) {
-      onMilestoneDueDateChange(milestone.id, newDueDate);
+    if (onMilestoneUpdate) {
+      onMilestoneUpdate(milestone.id, { dueDate: newDueDate || undefined });
     }
   };
   
@@ -144,7 +144,7 @@ export function MilestoneCard({
               {/* Due date indicator */}
               <div className="ml-1 group/milestone-due-date">
                 {/* Show DateDisplayField when there's a date OR on hover when no date */}
-                {(milestone.dueDate || !onMilestoneDueDateChange) ? (
+                {(milestone.dueDate || !onMilestoneUpdate) ? (
                   <DateDisplayField
                     date={milestone.dueDate || null}
                     setDate={handleMilestoneDueDateChange}
@@ -154,7 +154,7 @@ export function MilestoneCard({
                     showIcon={false}
                     showOverdueWarning={true}
                     emptyStateText="Set due date"
-                    readonly={!onMilestoneDueDateChange}
+                    readonly={!onMilestoneUpdate}
                   />
                 ) : (
                   /* Empty state that appears on hover */

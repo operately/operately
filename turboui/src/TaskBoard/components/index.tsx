@@ -17,7 +17,7 @@ export function TaskBoard({
   onTaskCreate,
   onMilestoneCreate,
   onTaskUpdate,
-  onMilestoneDueDateChange,
+  onMilestoneUpdate,
   searchPeople,
 }: Types.TaskBoardProps) {
   const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
@@ -285,7 +285,7 @@ export function TaskBoard({
                     stats={milestoneData.stats}
                     onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
                     onTaskUpdate={onTaskUpdate}
-                    onMilestoneDueDateChange={onMilestoneDueDateChange}
+                    onMilestoneUpdate={onMilestoneUpdate}
                     searchPeople={searchPeople}
                     availableMilestones={milestones.map(m => m.milestone)}
                     availablePeople={internalTasks

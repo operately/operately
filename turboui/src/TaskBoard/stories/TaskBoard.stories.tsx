@@ -160,8 +160,8 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleMilestoneDueDateChange = (milestoneId: string, dueDate: Date | null) => {
-      console.log(`Updating milestone ${milestoneId} due date:`, dueDate);
+    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<Types.Milestone>) => {
+      console.log(`Updating milestone ${milestoneId}:`, updates);
       
       // Update all tasks that have this milestone
       const updatedTasks = tasks.map(task => {
@@ -170,7 +170,7 @@ export const Default: Story = {
             ...task,
             milestone: {
               ...task.milestone,
-              dueDate: dueDate || undefined // Convert null to undefined for Milestone type compatibility
+              ...updates
             }
           };
         }
@@ -189,7 +189,7 @@ export const Default: Story = {
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskUpdate={handleTaskUpdate}
-        onMilestoneDueDateChange={handleMilestoneDueDateChange}
+        onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
       />
     );

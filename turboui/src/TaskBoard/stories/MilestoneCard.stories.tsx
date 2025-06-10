@@ -107,11 +107,11 @@ const meta: Meta<typeof MilestoneCard> = {
           setTasks(updatedTasks);
         };
 
-        // Handle milestone due date changes
-        const handleMilestoneDueDateChange = (milestoneId: string, dueDate: Date | null) => {
-          console.log(`Updating milestone ${milestoneId} due date:`, dueDate);
+        // Handle milestone updates (including due date changes)
+        const handleMilestoneUpdate = (milestoneId: string, updates: Partial<Types.Milestone>) => {
+          console.log(`Updating milestone ${milestoneId}:`, updates);
           
-          setMilestone(prev => ({ ...prev, dueDate: dueDate || undefined })); // Convert null to undefined
+          setMilestone(prev => ({ ...prev, ...updates }));
         };
 
         // Mock search people function
@@ -143,7 +143,7 @@ const meta: Meta<typeof MilestoneCard> = {
               tasks={tasks}
               onTaskCreate={handleTaskCreate}
               onTaskUpdate={handleTaskUpdate}
-              onMilestoneDueDateChange={handleMilestoneDueDateChange}
+              onMilestoneUpdate={handleMilestoneUpdate}
               searchPeople={searchPeople}
               availableMilestones={[milestone]}
               availablePeople={[

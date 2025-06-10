@@ -113,6 +113,6 @@ export interface TaskBoardProps {
   onTaskCreate?: (task: Omit<Task, "id">) => void;
   onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
-  onMilestoneDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 }
