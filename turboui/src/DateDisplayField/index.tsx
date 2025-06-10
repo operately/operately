@@ -19,6 +19,7 @@ export namespace DateDisplayField {
 
     showOverdueWarning?: boolean;
     showEmptyStateAsButton?: boolean;
+    showIcon?: boolean;
     emptyStateText?: string;
     emptyStateReadonlyText?: string;
 
@@ -36,6 +37,7 @@ export function DateDisplayField({
   className = "",
   showOverdueWarning = true,
   showEmptyStateAsButton = false,
+  showIcon = true,
   emptyStateText = "Set date",
   emptyStateReadonlyText = "No date set",
 }: DateDisplayField.Props) {
@@ -59,6 +61,7 @@ export function DateDisplayField({
       readonly={readonly}
       showOverdueWarning={showOverdueWarning}
       showEmptyStateAsButton={showEmptyStateAsButton}
+      showIcon={showIcon}
       emptyStateText={emptyStateText}
       emptyStateReadonlyText={emptyStateReadonlyText}
       iconSize={iconSize}
@@ -130,6 +133,7 @@ interface DateDisplayProps {
 
   showOverdueWarning: boolean;
   showEmptyStateAsButton: boolean;
+  showIcon: boolean;
 
   emptyStateText: string;
   emptyStateReadonlyText: string;
@@ -150,7 +154,8 @@ function DateDisplay(props: DateDisplayProps) {
 
   const elemClass = classNames(
     {
-      "flex items-center gap-1.5": true,
+      "flex items-center": true,
+      "gap-1.5": props.showIcon,
       "focus:outline-none hover:bg-surface-dimmed rounded-lg": !props.readonly,
       "px-1.5 py-1 -my-1 -mx-1.5": !props.readonly && variant === "inline",
       "px-2 py-1.5": variant === "form-field",
@@ -173,7 +178,7 @@ function DateDisplay(props: DateDisplayProps) {
 
   return (
     <Elem className={elemClass}>
-      <IconCalendarEvent size={iconSize} className="-mt-[1px]" />
+      {props.showIcon && <IconCalendarEvent size={iconSize} className="-mt-[1px]" />}
       <span>{text}</span>
     </Elem>
   );
