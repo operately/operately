@@ -111,7 +111,7 @@ const meta: Meta<typeof MilestoneCard> = {
         const handleMilestoneDueDateChange = (milestoneId: string, dueDate: Date | null) => {
           console.log(`Updating milestone ${milestoneId} due date:`, dueDate);
           
-          setMilestone(prev => ({ ...prev, dueDate }));
+          setMilestone(prev => ({ ...prev, dueDate: dueDate || undefined })); // Convert null to undefined
         };
 
         // Mock search people function

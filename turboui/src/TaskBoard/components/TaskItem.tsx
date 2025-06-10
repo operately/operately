@@ -47,7 +47,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
     // Notify parent component if callback is provided
     if (onTaskUpdate && task.id) {
       onTaskUpdate(task.id, { 
-        dueDate: newDueDate 
+        dueDate: newDueDate || undefined // Convert null to undefined for Task type compatibility
       });
     }
   }, [task.id, onTaskUpdate]);

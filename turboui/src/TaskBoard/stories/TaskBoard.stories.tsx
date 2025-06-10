@@ -170,7 +170,7 @@ export const Default: Story = {
             ...task,
             milestone: {
               ...task.milestone,
-              dueDate: dueDate
+              dueDate: dueDate || undefined // Convert null to undefined for Milestone type compatibility
             }
           };
         }
