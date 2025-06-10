@@ -48,9 +48,9 @@ const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
   console.log(`Status changed for task ${taskId} to ${newStatus}`);
 };
 
-// Event handler for assignee changes
-const handleAssigneeChange = (taskId: string, assignee: Types.Person | null) => {
-  console.log(`Assignee changed for task ${taskId}:`, assignee);
+// Event handler for task updates
+const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
+  console.log(`Task ${taskId} updated:`, updates);
 };
 
 // Mock people data for assignee selection
@@ -116,10 +116,11 @@ export const BasicTask: Story = {
       task={task} // Use the state-managed task instead of args.task
       milestoneId={args.milestoneId} 
       itemStyle={args.itemStyle}
-      onAssigneeChange={(taskId, assignee) => {
-        console.log(`TaskItem: Assignee changed for task ${taskId}:`, assignee);
-        setTask({...task, assignees: assignee ? [assignee] : []});
-        handleAssigneeChange(taskId, assignee);
+      onTaskUpdate={(taskId, updates) => {
+        console.log(`TaskItem: Task ${taskId} updated:`, updates);
+        // Update local state with the updates
+        setTask({...task, ...updates});
+        handleTaskUpdate(taskId, updates);
       }}
       searchPeople={mockSearchPeople}
     />;

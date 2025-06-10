@@ -301,8 +301,9 @@ function DialogSearch({ state }: { state: State }) {
         break;
       case "Enter":
         e.preventDefault();
-        if (state.searchResults[selectedIndex]) {
-          state.setPerson(state.searchResults[selectedIndex]);
+        const selectedPerson = state.searchResults[selectedIndex];
+        if (selectedPerson) {
+          state.setPerson(selectedPerson);
           state.setSearchQuery(""); // Clear search query
           state.setIsOpen(false);
         }
