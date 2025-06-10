@@ -2,7 +2,7 @@ import React from "react";
 import { useLocation } from "react-router-dom";
 
 import classNames from "../utils/classnames";
-import { Avatar } from "../Avatar";
+import { AvatarWithName } from "../Avatar";
 import { DivLink } from "../Link";
 
 export namespace PersonCard {
@@ -40,11 +40,14 @@ export function PersonCard(props: PersonCard.Props) {
 
   const content = (
     <>
-      <Avatar person={person} size={36} />
-      <div className="truncate">
-        <div className="font-semibold">{person.fullName}</div>
-        <div className="text-xs truncate">{person.title}</div>
-      </div>
+      <AvatarWithName
+        person={person}
+        size={36}
+        textSize="small"
+        nameFormat="full"
+        className="font-semibold"
+        title={person.title}
+      />
 
       <ConnectionLines {...props} />
     </>

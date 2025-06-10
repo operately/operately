@@ -1,10 +1,4 @@
-type AvatarSizeString =
-  | "tiny"
-  | "small"
-  | "normal"
-  | "large"
-  | "xlarge"
-  | "xxlarge";
+export type AvatarSizeString = "tiny" | "small" | "normal" | "large" | "xlarge" | "xxlarge";
 
 export type AvatarSize = AvatarSizeString | number;
 
@@ -29,12 +23,6 @@ export interface AvatarListProps {
   showCutOff?: boolean;
   wrap?: boolean;
   stackSpacing?: string;
-}
-
-export interface AvatarWithNameProps extends AvatarProps {
-  nameFormat?: NameFormat;
-  className?: string;
-  link?: string;
 }
 
 export type NameFormat = "first" | "short" | "full";
