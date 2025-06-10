@@ -60,7 +60,7 @@ export function Feed(props: FeedProps) {
 }
 
 function ActivityGroup(props: FeedConfig & { group: Activities.ActivityGroup }) {
-  const className = classNames("w-full border-stroke-base flex items-start gap-2", {
+  const className = classNames("w-full border-stroke-base flex flex-col sm:flex-row items-start gap-2", {
     "border-t": !props.hideTopBorder,
     "not-first:border-t": props.hideTopBorder,
     "p-8": props.paddedGroups,
@@ -77,11 +77,11 @@ function ActivityGroup(props: FeedConfig & { group: Activities.ActivityGroup }) 
 
 function ActivityGroupDate({ group }: { group: Activities.ActivityGroup }) {
   return (
-    <div className="w-1/5 shrink-0">
+    <div className="w-1/5 shrink-0 mb-2">
       <div className="text-sm text-content-accent font-bold">
         <FormattedTime time={group.date} format="long-date" />
       </div>
-      <div className="text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
+      <div className="whitespace-nowrap text-content-dimmed text-sm">{Time.relativeDay(group.date)}</div>
     </div>
   );
 }
@@ -117,7 +117,7 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
         {content && <div className="text-sm w-full mt-0.5">{content}</div>}
       </div>
 
-      <div className="shrink-0 text-xs text-content-dimmed w-16 text-right">
+      <div className="shrink-0 text-xs text-content-dimmed whitespace-nowrap text-right">
         <FormattedTime time={time} format="time-only" />
       </div>
     </div>
