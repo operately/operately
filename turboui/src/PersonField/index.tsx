@@ -82,6 +82,7 @@ export function useState(props: PersonFieldProps): State {
     if (!isOpen) {
       setIsOpen(false);
       setDialogMode(props.person ? "menu" : "search");
+      setSearchQuery(""); // Clear search query when dialog closes
     }
   }, [isOpen, props.person]);
 
@@ -212,7 +213,10 @@ function DialogMenu({ state }: { state: State }) {
   return (
     <div className="p-1">
       <DialogMenuOption icon={IconExternalLink} label="See profile" linkTo={state.person?.profileLink || "#"} />
-      <DialogMenuOption icon={IconSearch} label="Choose someone else" onClick={() => state.setDialogMode("search")} />
+      <DialogMenuOption icon={IconSearch} label="Choose someone else" onClick={() => {
+        state.setSearchQuery(""); // Clear any previous search
+        state.setDialogMode("search");
+      }} />
 
       {state.extraDialogMenuOptions.map((option, index) => (
         <DialogMenuOption
@@ -267,6 +271,49 @@ function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProp
 }
 
 function DialogSearch({ state }: { state: State }) {
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
+  // Reset selected index when search results change
+  React.useEffect(() => {
+    setSelectedIndex(0);
+  }, [state.searchResults]);
+
+  // Scroll selected item into view
+  React.useEffect(() => {
+    const selectedItem = itemRefs.current[selectedIndex];
+    if (selectedItem) {
+      selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [selectedIndex]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex((prev) => 
+          prev < state.searchResults.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        break;
+      case "Enter":
+        e.preventDefault();
+        if (state.searchResults[selectedIndex]) {
+          state.setPerson(state.searchResults[selectedIndex]);
+          state.setSearchQuery(""); // Clear search query
+          state.setIsOpen(false);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        state.setIsOpen(false);
+        break;
+    }
+  };
+
   return (
     <div className="p-1">
       <div className="p-1 pb-0.5">
@@ -276,18 +323,28 @@ function DialogSearch({ state }: { state: State }) {
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </div>
 
       <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
-        {state.searchResults.map((person) => (
+        {state.searchResults.map((person, index) => (
           <div
             key={person.id}
-            className="flex items-center gap-2 px-1.5 py-1 rounded hover:bg-surface-dimmed cursor-pointer"
+            ref={(el) => (itemRefs.current[index] = el)}
+            className={classNames(
+              "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer",
+              {
+                "bg-surface-dimmed": index === selectedIndex,
+                "hover:bg-surface-dimmed": index !== selectedIndex,
+              }
+            )}
             onClick={() => {
               state.setPerson(person);
+              state.setSearchQuery(""); // Clear search query
               state.setIsOpen(false);
             }}
+            onMouseEnter={() => setSelectedIndex(index)}
           >
             <div className="flex items-center gap-1.5 truncate">
               <Avatar person={person} size={18} />
