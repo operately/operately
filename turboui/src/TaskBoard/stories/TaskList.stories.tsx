@@ -56,15 +56,12 @@ const meta: Meta<typeof TaskList> = {
           };
         }, [tasks]);
         
-        const handleDrop = (draggedId: string, targetId: string) => {
-          console.log(`Dragged item ${draggedId} was dropped onto ${targetId}`);
+        const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+          console.log(`Dragged item ${draggedId} was dropped into zone ${dropZoneId} at index ${indexInDropZone}`);
           
-          // Find the target task index
-          const targetIndex = tasks.findIndex(task => task.id === targetId);
-          if (targetIndex !== -1) {
-            const updatedTasks = reorderTasksInList(tasks, draggedId, targetIndex);
-            setTasks(updatedTasks);
-          }
+          // Use the provided index directly for reordering
+          const updatedTasks = reorderTasksInList(tasks, draggedId, indexInDropZone);
+          setTasks(updatedTasks);
           
           return true;
         };
