@@ -10,8 +10,8 @@ interface Person {
   id: string;
   fullName: string;
   avatarUrl: string | null;
-  title: string;
-  profileLink: string;
+  title?: string;
+  profileLink?: string;
 }
 
 export interface PersonFieldProps {
@@ -22,6 +22,7 @@ export interface PersonFieldProps {
   avatarSize?: number;
   readonly?: boolean;
   showTitle?: boolean;
+  avatarOnly?: boolean;
   emptyStateMessage?: string;
   emptyStateReadOnlyMessage?: string;
   searchPeople: (params: { query: string }) => Promise<Person[]>;
@@ -41,6 +42,7 @@ export interface State {
   readonly: boolean;
   avatarSize: number;
   showTitle: boolean;
+  avatarOnly: boolean;
   emptyStateMessage: string;
   emptyStateReadOnlyMessage: string;
   extraDialogMenuOptions: DialogMenuOptionProps[];
@@ -71,6 +73,7 @@ export function useState(props: PersonFieldProps): State {
   const readonly = props.readonly ?? false;
   const avatarSize = props.avatarSize ?? 32;
   const showTitle = props.showTitle ?? true;
+  const avatarOnly = props.avatarOnly ?? false;
   const emptyStateMessage = props.emptyStateMessage ?? "Select person";
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
@@ -79,6 +82,7 @@ export function useState(props: PersonFieldProps): State {
     if (!isOpen) {
       setIsOpen(false);
       setDialogMode(props.person ? "menu" : "search");
+      setSearchQuery(""); // Clear search query when dialog closes
     }
   }, [isOpen, props.person]);
 
@@ -115,6 +119,7 @@ export function useState(props: PersonFieldProps): State {
     readonly,
     avatarSize,
     showTitle,
+    avatarOnly,
     emptyStateMessage,
     emptyStateReadOnlyMessage,
     extraDialogMenuOptions,
@@ -126,22 +131,32 @@ export function useState(props: PersonFieldProps): State {
 
 function Trigger({ state }: { state: State }) {
   const triggerClass = classNames({
-    "flex items-center gap-2 truncate text-left": true,
-    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+    "flex items-center gap-2 truncate text-left": !state.avatarOnly,
+    "flex items-center justify-center": state.avatarOnly,
+    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly && !state.avatarOnly,
+    "focus:outline-none rounded-full": !state.readonly && state.avatarOnly,
     "cursor-pointer": !state.readonly,
     "cursor-default": state.readonly,
-    "bg-surface-dimmed": state.isOpen,
+    "bg-surface-dimmed": state.isOpen && !state.avatarOnly,
+    "ring-2 ring-surface-accent": state.isOpen && state.avatarOnly,
   });
 
   if (state.person) {
     return (
       <Popover.Trigger className={triggerClass}>
-        <Avatar person={state.person} size={state.avatarSize} />
-
-        <div className="-mt-0.5 truncate">
-          <div className="text-sm font-medium">{state.person.fullName}</div>
-          {state.showTitle && <div className="text-xs truncate">{state.person.title}</div>}
+        <div className={classNames({
+          "transition-all duration-200": state.avatarOnly && !state.readonly,
+          "hover:scale-105 hover:shadow-md": state.avatarOnly && !state.readonly,
+        })}>
+          <Avatar person={state.person} size={state.avatarSize} />
         </div>
+
+        {!state.avatarOnly && (
+          <div className="-mt-0.5 truncate">
+            <div className="text-sm font-medium">{state.person.fullName}</div>
+            {state.showTitle && state.person.title && <div className="text-xs truncate">{state.person.title}</div>}
+          </div>
+        )}
       </Popover.Trigger>
     );
   } else {
@@ -150,7 +165,11 @@ function Trigger({ state }: { state: State }) {
     return (
       <Popover.Trigger className={triggerClass}>
         <div
-          className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
+          className={classNames({
+            "border border-content-subtle border-dashed rounded-full flex items-center justify-center": true,
+            "hover:border-content-accent transition-all duration-200": state.avatarOnly && !state.readonly,
+            "hover:scale-105": state.avatarOnly && !state.readonly,
+          })}
           style={{
             width: state.avatarSize,
             height: state.avatarSize,
@@ -159,11 +178,13 @@ function Trigger({ state }: { state: State }) {
           <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
         </div>
 
-        <div className="truncate">
-          <div className="text-sm font-medium text-content-dimmed">
-            {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
+        {!state.avatarOnly && (
+          <div className="truncate">
+            <div className="text-sm font-medium text-content-dimmed">
+              {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
+            </div>
           </div>
-        </div>
+        )}
       </Popover.Trigger>
     );
   }
@@ -192,7 +213,10 @@ function DialogMenu({ state }: { state: State }) {
   return (
     <div className="p-1">
       <DialogMenuOption icon={IconExternalLink} label="See profile" linkTo={state.person?.profileLink || "#"} />
-      <DialogMenuOption icon={IconSearch} label="Choose someone else" onClick={() => state.setDialogMode("search")} />
+      <DialogMenuOption icon={IconSearch} label="Choose someone else" onClick={() => {
+        state.setSearchQuery(""); // Clear any previous search
+        state.setDialogMode("search");
+      }} />
 
       {state.extraDialogMenuOptions.map((option, index) => (
         <DialogMenuOption
@@ -247,6 +271,50 @@ function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProp
 }
 
 function DialogSearch({ state }: { state: State }) {
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
+  // Reset selected index when search results change
+  React.useEffect(() => {
+    setSelectedIndex(0);
+  }, [state.searchResults]);
+
+  // Scroll selected item into view
+  React.useEffect(() => {
+    const selectedItem = itemRefs.current[selectedIndex];
+    if (selectedItem) {
+      selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [selectedIndex]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex((prev) => 
+          prev < state.searchResults.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        break;
+      case "Enter":
+        e.preventDefault();
+        const selectedPerson = state.searchResults[selectedIndex];
+        if (selectedPerson) {
+          state.setPerson(selectedPerson);
+          state.setSearchQuery(""); // Clear search query
+          state.setIsOpen(false);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        state.setIsOpen(false);
+        break;
+    }
+  };
+
   return (
     <div className="p-1">
       <div className="p-1 pb-0.5">
@@ -256,18 +324,28 @@ function DialogSearch({ state }: { state: State }) {
           value={state.searchQuery}
           autoFocus
           onChange={(e) => state.setSearchQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
       </div>
 
       <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
-        {state.searchResults.map((person) => (
+        {state.searchResults.map((person, index) => (
           <div
             key={person.id}
-            className="flex items-center gap-2 px-1.5 py-1 rounded hover:bg-surface-dimmed cursor-pointer"
+            ref={(el) => (itemRefs.current[index] = el)}
+            className={classNames(
+              "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer",
+              {
+                "bg-surface-dimmed": index === selectedIndex,
+                "hover:bg-surface-dimmed": index !== selectedIndex,
+              }
+            )}
             onClick={() => {
               state.setPerson(person);
+              state.setSearchQuery(""); // Clear search query
               state.setIsOpen(false);
             }}
+            onMouseEnter={() => setSelectedIndex(index)}
           >
             <div className="flex items-center gap-1.5 truncate">
               <Avatar person={person} size={18} />

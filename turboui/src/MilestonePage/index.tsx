@@ -49,6 +49,8 @@ interface MilestonePageProps {
   onTaskReorder?: (tasks: Types.Task[]) => void;
   onCommentCreate?: (comment: string) => void;
   onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
 }
 
 export function MilestonePage({
@@ -61,6 +63,8 @@ export function MilestonePage({
   onTaskCreate,
   onTaskReorder,
   onDueDateChange,
+  onTaskUpdate,
+  searchPeople,
 }: MilestonePageProps) {
   // State
   const [showCompleted, setShowCompleted] = useState(false);
@@ -185,7 +189,12 @@ export function MilestonePage({
               }}
             >
               <div className="px-8">
-                <TaskList tasks={filteredTasks} milestoneId={milestone.id} />
+                <TaskList 
+                  tasks={filteredTasks} 
+                  milestoneId={milestone.id}
+                  onTaskUpdate={onTaskUpdate}
+                  searchPeople={searchPeople}
+                />
               </div>
             </DragAndDropProvider>
 

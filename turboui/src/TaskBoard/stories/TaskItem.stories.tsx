@@ -48,6 +48,27 @@ const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
   console.log(`Status changed for task ${taskId} to ${newStatus}`);
 };
 
+// Event handler for task updates
+const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
+  console.log(`Task ${taskId} updated:`, updates);
+};
+
+// Mock people data for assignee selection
+const mockPeople: Types.Person[] = [
+  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+  { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+];
+
+// Mock search function for people
+const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
+  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter(person => 
+    person.fullName.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
 /**
  * Basic task with just a title and status (pending)
  */
@@ -94,7 +115,14 @@ export const BasicTask: Story = {
     return <TaskItem 
       task={task} // Use the state-managed task instead of args.task
       milestoneId={args.milestoneId} 
-      itemStyle={args.itemStyle} 
+      itemStyle={args.itemStyle}
+      onTaskUpdate={(taskId, updates) => {
+        console.log(`TaskItem: Task ${taskId} updated:`, updates);
+        // Update local state with the updates
+        setTask({...task, ...updates});
+        handleTaskUpdate(taskId, updates);
+      }}
+      searchPeople={mockSearchPeople}
     />;
   },
 };
@@ -219,6 +247,22 @@ export const FullFeaturedTask: Story = {
       assignees: [
         { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
       ],
+      index: 0,
+    },
+    ...sharedProps,
+  },
+  render: BasicTask.render,
+};
+
+/**
+ * Task with interactive assignee selection - demonstrates the PersonAvatarField functionality
+ */
+export const InteractiveAssigneeSelection: Story = {
+  args: {
+    task: {
+      id: "task-assignee",
+      title: "Task with interactive assignee selection",
+      status: "pending" as Types.Status,
       index: 0,
     },
     ...sharedProps,

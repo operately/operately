@@ -44,6 +44,22 @@ const standaloneTestMilestone: Types.Milestone = {
 /**
  * Default table view of the TaskBoard with working task creation and milestone creation
  */
+// Mock people data for assignee selection
+const mockPeople: Types.Person[] = [
+  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+  { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+];
+
+// Mock search function for people
+const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
+  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter(person => 
+    person.fullName.toLowerCase().includes(query.toLowerCase())
+  );
+};
+
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
@@ -79,6 +95,16 @@ export const Default: Story = {
 
       // Update the task status locally
       const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
+      setTasks(updatedTasks);
+    };
+
+    const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
+      console.log(`Task ${taskId} updated:`, updates);
+      
+      // Update the task with the provided updates
+      const updatedTasks = tasks.map((task) => 
+        task.id === taskId ? { ...task, ...updates } : task
+      );
       setTasks(updatedTasks);
     };
 
@@ -141,6 +167,8 @@ export const Default: Story = {
         onStatusChange={handleStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
+        onTaskUpdate={handleTaskUpdate}
+        searchPeople={mockSearchPeople}
       />
     );
   },
