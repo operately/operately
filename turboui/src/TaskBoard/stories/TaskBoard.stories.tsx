@@ -60,6 +60,7 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Per
   );
 };
 
+
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
@@ -159,6 +160,26 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
+    const handleMilestoneDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+      console.log(`Updating milestone ${milestoneId} due date:`, dueDate);
+      
+      // Update all tasks that have this milestone
+      const updatedTasks = tasks.map(task => {
+        if (task.milestone?.id === milestoneId) {
+          return {
+            ...task,
+            milestone: {
+              ...task.milestone,
+              dueDate: dueDate || undefined // Convert null to undefined for Milestone type compatibility
+            }
+          };
+        }
+        return task;
+      });
+      
+      setTasks(updatedTasks);
+    };
+
     return (
       <TaskBoard
         title="Tasks"
@@ -168,6 +189,7 @@ export const Default: Story = {
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskUpdate={handleTaskUpdate}
+        onMilestoneDueDateChange={handleMilestoneDueDateChange}
         searchPeople={mockSearchPeople}
       />
     );

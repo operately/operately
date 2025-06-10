@@ -96,6 +96,40 @@ const meta: Meta<typeof MilestoneCard> = {
           // Add the task to the list
           setTasks([...tasks, taskWithId]);
         };
+
+        // Handle task updates (for assignees, due dates, etc.)
+        const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
+          console.log(`Updating task ${taskId}:`, updates);
+          
+          const updatedTasks = tasks.map(task => 
+            task.id === taskId ? { ...task, ...updates } : task
+          );
+          setTasks(updatedTasks);
+        };
+
+        // Handle milestone due date changes
+        const handleMilestoneDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+          console.log(`Updating milestone ${milestoneId} due date:`, dueDate);
+          
+          setMilestone(prev => ({ ...prev, dueDate: dueDate || undefined })); // Convert null to undefined
+        };
+
+        // Mock search people function
+        const searchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
+          const mockPeople: Types.Person[] = [
+            { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+            { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+            { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+            { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+          ];
+          
+          // Simulate API delay
+          await new Promise(resolve => setTimeout(resolve, 300));
+          
+          return mockPeople.filter(person => 
+            person.fullName.toLowerCase().includes(query.toLowerCase())
+          );
+        };
         
         // Return early with loading state if milestone is not yet loaded
         if (!milestone) {
@@ -108,10 +142,15 @@ const meta: Meta<typeof MilestoneCard> = {
               milestone={milestone} 
               tasks={tasks}
               onTaskCreate={handleTaskCreate}
+              onTaskUpdate={handleTaskUpdate}
+              onMilestoneDueDateChange={handleMilestoneDueDateChange}
+              searchPeople={searchPeople}
               availableMilestones={[milestone]}
               availablePeople={[
                 { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-                { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }
+                { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+                { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+                { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
               ]}
             />
           </DragAndDropProvider>
@@ -149,6 +188,8 @@ const sampleTasks: Types.Task[] = [
     title: "Implement login functionality",
     status: "pending" as Types.Status,
     milestone: sampleMilestone,
+    dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+    hasDescription: true,
   },
   {
     id: "task-2",
@@ -158,15 +199,27 @@ const sampleTasks: Types.Task[] = [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
     ],
     milestone: sampleMilestone,
+    dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago (overdue)
     hasDescription: true,
   },
   {
     id: "task-3",
     title: "Fix navigation bug in sidebar",
     status: "done" as Types.Status,
+    assignees: [
+      { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+    ],
     hasComments: true,
     commentCount: 2,
     milestone: sampleMilestone,
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+  },
+  {
+    id: "task-4",
+    title: "Task without due date or assignee - hover to set",
+    status: "pending" as Types.Status,
+    milestone: sampleMilestone,
+    hasComments: false,
   },
 ];
 
@@ -221,6 +274,39 @@ export const EmptyMilestone: Story = {
     },
     tasks: [],
     onTaskCreate: () => console.log("Create first task for empty milestone"),
+  },
+};
+
+/**
+ * Milestone without due date - shows hover-to-set behavior
+ */
+export const MilestoneWithoutDueDate: Story = {
+  args: {
+    milestone: {
+      id: "milestone-no-date",
+      name: "Research Phase - Hover header to set due date",
+      hasDescription: true,
+      hasComments: false,
+      // No dueDate property
+    },
+    tasks: [
+      {
+        id: "task-research-1",
+        title: "Market research analysis",
+        status: "in_progress" as Types.Status,
+        assignees: [
+          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+        ],
+        hasDescription: true,
+      },
+      {
+        id: "task-research-2", 
+        title: "Competitor analysis",
+        status: "pending" as Types.Status,
+        hasComments: false,
+      },
+    ],
+    onTaskCreate: () => console.log("Create new task for milestone without due date"),
   },
 };
 
