@@ -1,11 +1,11 @@
 import React, { useState, useCallback } from "react";
 import { BlackLink } from "../../Link";
 import { PersonField } from "../../PersonField";
+import { DateDisplayField } from "../../DateDisplayField";
 import { IconFileText, IconMessageCircle } from "@tabler/icons-react";
 import { useDraggable } from "../../utils/DragAndDrop";
 import classNames from "../../utils/classnames";
 import { StatusSelector } from "./StatusSelector";
-import { DueDateDisplay } from "./DueDateDisplay";
 
 // Using shared types
 import { TaskWithIndex, Person } from "../types";
@@ -19,8 +19,9 @@ interface TaskItemProps {
 }
 
 export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeople }: TaskItemProps) {
-  // Local state for the assignee
+  // Local state for the assignee and due date
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
+  const [currentDueDate, setCurrentDueDate] = useState<Date | null>(task.dueDate || null);
   
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
@@ -35,6 +36,18 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
     if (onTaskUpdate && task.id) {
       onTaskUpdate(task.id, { 
         assignees: newAssignee ? [newAssignee] : [] 
+      });
+    }
+  }, [task.id, onTaskUpdate]);
+
+  // Handle due date change locally and notify parent
+  const handleDueDateChange = useCallback((newDueDate: Date | null) => {
+    setCurrentDueDate(newDueDate);
+    
+    // Notify parent component if callback is provided
+    if (onTaskUpdate && task.id) {
+      onTaskUpdate(task.id, { 
+        dueDate: newDueDate 
       });
     }
   }, [task.id, onTaskUpdate]);
@@ -96,11 +109,35 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
         {/* Right side: Due date and assignee */}
         <div className="flex items-center gap-3 flex-shrink-0 ml-4">
           {/* Due date */}
-          {task.dueDate && (
-            <span className="text-xs text-content-subtle flex items-center">
-              <DueDateDisplay dueDate={task.dueDate} />
-            </span>
-          )}
+          <div className="flex items-center group/due-date">
+            {/* Show DateDisplayField when there's a date OR on hover when no date */}
+            {(currentDueDate || !onTaskUpdate) ? (
+              <DateDisplayField
+                date={currentDueDate}
+                setDate={handleDueDateChange}
+                variant="inline"
+                iconSize={14}
+                textSize="text-xs"
+                showOverdueWarning={true}
+                emptyStateText="Set due date"
+                readonly={!onTaskUpdate}
+              />
+            ) : (
+              /* Empty state that appears on hover */
+              <div className="opacity-0 group-hover/due-date:opacity-100 transition-opacity">
+                <DateDisplayField
+                  date={null}
+                  setDate={handleDueDateChange}
+                  variant="inline"
+                  iconSize={14}
+                  textSize="text-xs"
+                  showOverdueWarning={true}
+                  emptyStateText="Set due date"
+                  readonly={false}
+                />
+              </div>
+            )}
+          </div>
 
           {/* Assignee */}
           <div className="flex items-center flex-shrink-0 w-6 h-6">

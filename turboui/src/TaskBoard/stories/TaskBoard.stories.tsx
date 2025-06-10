@@ -60,6 +60,7 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Per
   );
 };
 
+
 export const Default: Story = {
   tags: ["autodocs"],
   render: () => {
