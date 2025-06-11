@@ -29,7 +29,7 @@ const taskStatusConfig: Record<Types.Status, { status: string; label: string; ic
 interface StatusSelectorProps {
   status: Types.Status;
   onChange: (newStatus: Types.Status) => void;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   readonly?: boolean;
   showFullBadge?: boolean;
 }
@@ -46,6 +46,8 @@ export function StatusSelector({
     sm: { iconSize: 14, containerSize: 'w-3.5 h-3.5' },
     md: { iconSize: 16, containerSize: 'w-4 h-4' },
     lg: { iconSize: 20, containerSize: 'w-5 h-5' },
+    xl: { iconSize: 24, containerSize: 'w-6 h-6' },
+    '2xl': { iconSize: 28, containerSize: 'w-7 h-7' },
   };
   
   const { iconSize, containerSize } = sizeConfig[size];

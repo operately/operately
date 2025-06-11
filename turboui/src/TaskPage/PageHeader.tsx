@@ -1,4 +1,4 @@
-import { IconChevronRight, IconClipboard } from "@tabler/icons-react";
+import { IconChevronRight } from "@tabler/icons-react";
 import React from "react";
 import { TaskPage } from ".";
 import EditableText from "../EditableText";
@@ -9,9 +9,7 @@ export function PageHeader(props: TaskPage.State) {
   const navigation = buildNavigation(props);
 
   return (
-    <div className="mt-4 px-4 flex items-center gap-3">
-      <IconClipboard size={38} className="rounded-lg bg-blue-50 dark:bg-blue-900 p-2" />
-
+    <div className="mt-4 px-4">
       <div className="flex-1">
         <Breadcrumbs navigation={navigation} />
 
@@ -19,12 +17,12 @@ export function PageHeader(props: TaskPage.State) {
           <StatusSelector
             status={props.status}
             onChange={props.onStatusChange}
-            size="md"
+            size="xl"
             readonly={!props.canEdit}
           />
 
           <EditableText
-            className="font-semibold text-lg"
+            className="font-semibold text-2xl"
             text={props.name}
             onSave={props.onNameChange}
             readonly={!props.canEdit}
