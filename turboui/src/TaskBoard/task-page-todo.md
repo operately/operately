@@ -1,8 +1,9 @@
 # TaskPage Implementation Checklist
 
-## Phase 1: Foundation Components
+## Phase 1: Core Page Structure (Updated Priority)
 
-### StatusSelector Component
+### StatusSelector Component ✅ COMPLETED
+
 - [x] ~~Create `src/StatusSelector/` directory~~ (Kept within TaskBoard components per discussion)
 - [x] Refactor existing `src/TaskBoard/components/StatusSelector.tsx`
   - [x] Define clean StatusSelectorProps interface (status, onChange, size, readonly, showFullBadge)
@@ -26,7 +27,73 @@
   - [x] Run TypeScript checks
 - [x] Update TaskItem integration (uses new props: status, onChange, size="md", readonly)
 
+## Phase 2: Main TaskPage Component
+
+### TaskPage Structure (Following GoalPage Pattern) ✅ COMPLETED
+
+- [x] Create `src/TaskPage/` directory (top-level like GoalPage)
+- [x] Create `src/TaskPage/index.tsx` main component
+  - [x] Define TaskPage.Props interface (following GoalPage namespace pattern)
+  - [x] Define TaskPage.State interface with hooks
+  - [x] Create useTaskPageState hook
+  - [x] Implement main TaskPage component with PageNew
+  - [x] Handle prop drilling to child components
+- [x] Create `src/TaskPage/PageHeader.tsx`
+  - [x] Breadcrumb navigation (Space > Project > [Milestone])
+  - [x] Status badge + editable title (using StatusSelector)
+  - [x] Page options integration
+- [x] Create `src/TaskPage/Overview.tsx`
+  - [x] Main content area with description editing
+  - [x] Comments/activity placeholder
+- [x] Create `src/TaskPage/Sidebar.tsx`
+  - [x] Due date, assignees, milestone sections
+  - [x] Subscription toggle with messaging
+  - [x] Created by metadata display
+- [x] Create `src/TaskPage/PageOptions.tsx`
+  - [x] Copy URL, Delete, Duplicate, Archive actions
+- [x] Add mobile responsive layout following GoalPage pattern
+  - [x] PageNew handles responsive layout
+  - [x] Flex layout with sidebar stacking on mobile
+
+- [x] Create `src/TaskPage/index.stories.tsx`
+  - [x] Follow GoalPage stories pattern
+  - [x] Set up as Pages/TaskPage in Storybook
+  - [x] Create comprehensive mock data
+  - [x] Implement interactive callbacks with state
+  - [x] Test all states (Default, Minimal, NoProject, NoMilestone, Completed, Overdue, LongContent, ReadOnly)
+
+### Component Development Details ✅ COMPLETED
+
+- [x] **PageHeader.tsx**: Editable title with internal state buffering
+  - [x] Status badge + title on same line (using StatusSelector)
+  - [x] Breadcrumb above title with dynamic navigation
+  - [x] Follow GoalPage updateGoalName pattern for updateTaskName
+  - [x] Handle validation, loading, error states (EditableText handles this)
+  - [x] Keyboard shortcuts (Enter to save, Escape to cancel)
+
+- [x] **Overview.tsx**: Description editing following GoalPage pattern  
+  - [x] Use RichEditor component like GoalPage Description.tsx
+  - [x] Implement internal state buffering for rich content
+  - [x] Follow GoalPage updateDescription pattern
+  - [x] Add comments/activity placeholder section
+
+- [x] **Sidebar.tsx**: Task metadata and actions
+  - [x] Due date section using DateDisplayField
+  - [x] Assignees section using PersonField  
+  - [x] Milestone section (if applicable)
+  - [x] Subscription toggle with messaging
+  - [x] Created by metadata with avatar and date
+  - [x] Follow GoalPage Sidebar responsive patterns
+
+- [x] **PageOptions.tsx**: Action menu integration
+  - [x] Copy URL, Delete, Duplicate, Archive actions
+  - [x] Follow GoalPage pageOptions pattern
+  - [x] Integrate with PageNew options prop
+
+## Phase 3: Sidebar Components
+
 ### TaskPageActions Component
+
 - [ ] Create `src/TaskBoard/components/TaskPageActions.tsx`
   - [ ] Define TaskPageActionsProps interface
   - [ ] Implement action menu component
@@ -45,6 +112,7 @@
   - [ ] Confirmation dialogs
 
 ### TaskPageSidebar Component
+
 - [ ] Create `src/TaskBoard/components/TaskPageSidebar.tsx`
   - [ ] Define TaskPageSidebarProps interface
   - [ ] Implement desktop sidebar layout
@@ -62,55 +130,10 @@
   - [ ] Subscription states (subscribed/unsubscribed)
   - [ ] Different milestone states
 
-## Phase 2: Main TaskPage Component
-
-### TaskPage Structure
-- [ ] Create `src/TaskBoard/components/TaskPage.tsx`
-  - [ ] Define complete TaskPageProps interface
-  - [ ] Implement two-column layout with CSS Grid
-  - [ ] Add responsive breakpoints
-  - [ ] Import and use all child components
-  - [ ] Handle prop drilling to child components
-- [ ] Create breadcrumb navigation
-  - [ ] Space > Project > [Milestone] pattern
-  - [ ] Handle missing project gracefully
-  - [ ] Make breadcrumb items clickable links
-  - [ ] Style with proper hierarchy
-- [ ] Add mobile responsive layout
-  - [ ] Single column for mobile
-  - [ ] Reorder content for mobile priority
-  - [ ] Test breakpoint transitions
-
-### Editable Title
-- [ ] Implement inline title editing
-  - [ ] Use EditableText component or create new one
-  - [ ] Implement internal state buffering pattern (prevent API calls on every keystroke)
-  - [ ] Add edit/save/cancel states
-  - [ ] Handle validation (required field)
-  - [ ] Show loading state during save
-  - [ ] Handle error states
-  - [ ] Keyboard shortcuts (Enter to save, Escape to cancel)
-  - [ ] Sync buffer with external props via useEffect
-- [ ] Integrate with status display
-  - [ ] Position status badge next to title
-  - [ ] Maintain visual hierarchy
-  - [ ] Handle long titles gracefully
-
-### Description Editing
-- [ ] Implement description editing following GoalPage pattern
-  - [ ] Import and use RichEditor component
-  - [ ] Implement internal state buffering for rich content
-  - [ ] Add "Edit Description" button
-  - [ ] Handle edit/preview modes
-  - [ ] Save/cancel functionality
-  - [ ] Empty state handling
-  - [ ] Loading states
-  - [ ] Error handling
-  - [ ] Sync buffer with external props via useEffect
-
-## Phase 3: Integration & Polish
+## Phase 4: Integration & Polish
 
 ### Metadata Display
+
 - [ ] Add creation date display
   - [ ] Format using existing time utilities
   - [ ] Position in appropriate location
@@ -121,6 +144,7 @@
   - [ ] Handle missing avatar gracefully
 
 ### Subscription Management
+
 - [ ] Implement subscription toggle
   - [ ] Create toggle component or use existing
   - [ ] Add subscription status messaging
@@ -129,6 +153,7 @@
   - [ ] Handle error states
 
 ### Comments/Activity Placeholder
+
 - [ ] Add placeholder section for comments
   - [ ] Create temporary placeholder component
   - [ ] Style to match expected final layout
@@ -136,6 +161,7 @@
   - [ ] Position correctly in layout
 
 ### Mobile Optimization
+
 - [ ] Test and refine mobile layout
   - [ ] Verify content reordering works
   - [ ] Test touch interactions
@@ -146,6 +172,7 @@
 ## Phase 4: Stories & Documentation
 
 ### TaskPage Stories
+
 - [ ] Create `src/TaskBoard/components/TaskPage.stories.tsx`
   - [ ] Set up story decorator with Page wrapper
   - [ ] Configure fullscreen layout
@@ -179,6 +206,7 @@
   - [ ] Test mobile-specific interactions
 
 ### Component Documentation
+
 - [ ] Add JSDoc comments to TaskPage component
   - [ ] Document all props
   - [ ] Add usage examples
@@ -191,12 +219,14 @@
 ## Quality Assurance
 
 ### TypeScript Compliance
+
 - [ ] Run `npx tsc --noEmit -p app/tsconfig.lint.json`
 - [ ] Fix all TypeScript errors
 - [ ] Ensure strict type checking passes
 - [ ] Verify all interfaces are properly defined
 
 ### Testing
+
 - [ ] Test all stories render without errors
 - [ ] Test all interactive elements work
 - [ ] Test responsive behavior at different breakpoints
@@ -205,12 +235,14 @@
 - [ ] Test all callback functions
 
 ### Integration Testing
+
 - [ ] Verify StatusSelector works in TaskItem
 - [ ] Verify TaskBoard still functions correctly
 - [ ] Test drag & drop functionality not broken
 - [ ] Test all existing stories still work
 
 ### Code Review Checklist
+
 - [ ] Components follow established patterns
 - [ ] Props interfaces are minimal and focused
 - [ ] No unnecessary dependencies
@@ -224,6 +256,7 @@
 ## Future Enhancements (Optional)
 
 ### Advanced Features
+
 - [ ] Add keyboard shortcuts
 - [ ] Implement real-time updates
 - [ ] Add task history/audit trail
@@ -232,12 +265,14 @@
 - [ ] Add bulk operations
 
 ### Performance Optimizations
+
 - [ ] Implement lazy loading for comments section
 - [ ] Add React.memo for performance
 - [ ] Optimize re-render patterns
 - [ ] Add virtual scrolling if needed
 
 ### Additional Actions
+
 - [ ] Move to Milestone action
 - [ ] Convert to Goal action
 - [ ] Export task action
@@ -247,6 +282,7 @@
 ## Completion Criteria
 
 TaskPage implementation is complete when:
+
 - [ ] All Phase 1-4 items are checked off
 - [ ] All TypeScript checks pass
 - [ ] All stories render and function correctly
