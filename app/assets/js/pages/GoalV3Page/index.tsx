@@ -85,6 +85,12 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
+  const [parentGoal, setParentGoal] = usePageField({
+    value: (data) => prepareParentGoal(data.goal.parentGoal),
+    update: () => new Promise((resolve) => resolve({ success: true })),
+    onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
+  });
+
   const championSearch = usePeopleSearch({
     scope: { type: "space", id: goal.space.id! },
     ignoredIds: [champion?.id!, reviewer?.id!],
@@ -96,6 +102,10 @@ function Page() {
     ignoredIds: [champion?.id!, reviewer?.id!],
     transformResult: (p) => preparePerson(p)!,
   });
+
+  const searchParentGoals = async ({}: { query: string }) => {
+    return [];
+  };
 
   const deleteGoal = async () => {
     try {
@@ -125,8 +135,11 @@ function Page() {
     deleteGoal,
 
     privacyLevel: goal.privacy,
-    parentGoal: prepareParentGoal(goal.parentGoal),
     canEdit: goal.permissions.canEdit,
+
+    parentGoal,
+    setParentGoal,
+    searchParentGoals,
 
     dueDate,
     setDueDate,
@@ -283,7 +296,7 @@ function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGo
   if (!g) {
     return null;
   } else {
-    return { link: Paths.goalPath(g!.id!), name: g!.name! };
+    return { id: g!.id!, link: Paths.goalPath(g!.id!), name: g!.name! };
   }
 }
 

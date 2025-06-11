@@ -6,6 +6,7 @@ import { PageNew } from "../Page";
 
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "@tabler/icons-react";
 
+import { GoalField } from "../GoalField";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
@@ -46,6 +47,7 @@ export namespace GoalPage {
   }
 
   interface ParentGoal {
+    id: string;
     name: string;
     link: string;
   }
@@ -80,10 +82,13 @@ export namespace GoalPage {
     addSubgoalLink: string;
     addSubprojectLink: string;
 
-    parentGoal: ParentGoal | null;
     goalName: string;
     description?: string;
     spaceName: string;
+
+    parentGoal: ParentGoal | null;
+    setParentGoal: (goal: ParentGoal | null) => void;
+    searchParentGoals: GoalField.SearchGoalFn;
 
     champion: Person | null;
     setChampion: (person: Person | null) => void;
