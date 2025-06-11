@@ -48,7 +48,7 @@ function buildNavigation(props: TaskPage.State) {
 function Breadcrumbs({ navigation }: { navigation: { to: string; label: string }[] }) {
   return (
     <div>
-      <nav className="flex items-center space-x-0.5 mt-1">
+      <nav className="flex items-center space-x-0.5 mt-1 mb-1">
         {navigation.map((item, index) => (
           <React.Fragment key={index}>
             <BlackLink to={item.to} className="text-xs text-content-dimmed leading-snug" underline="hover">
