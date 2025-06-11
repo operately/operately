@@ -2,6 +2,7 @@ import React from "react";
 import { PageNew } from "../Page";
 import { Status } from "../TaskBoard/types";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
@@ -56,9 +57,12 @@ export namespace TaskPage {
 
     // Search functionality for assignees
     searchPeople?: (params: { query: string }) => Promise<Person[]>;
-    
-    // Search functionality for rich editor mentions  
+
+    // Search functionality for rich editor mentions
     peopleSearch?: SearchFn;
+
+    // Person lookup for rich content mentions
+    mentionedPersonLookup: MentionedPersonLookupFn;
 
     // Permissions
     canEdit: boolean;
@@ -85,7 +89,7 @@ export function TaskPage(props: TaskPage.Props) {
     <PageNew title={[state.name]} options={pageOptions(state)} size="fullwidth">
       <PageHeader {...state} />
       <div className="flex-1 overflow-scroll">
-        <div className="p-4 max-w-6xl mx-auto my-6">
+        <div className="px-12 py-6 max-w-6xl mx-auto">
           <div className="sm:grid sm:grid-cols-12">
             <Overview {...state} />
             <Sidebar {...state} />

@@ -21,13 +21,15 @@ export function Sidebar(props: TaskPage.State) {
 }
 
 function DueDate(props: TaskPage.State) {
+  const isCompleted = props.status === "done" || props.status === "canceled";
+
   return (
     <SidebarSection title="Due Date">
       <DateDisplayField
         date={props.dueDate ?? null}
         setDate={props.onDueDateChange}
         readonly={!props.canEdit}
-        showOverdueWarning={true}
+        showOverdueWarning={!isCompleted}
         emptyStateText="Set due date"
         emptyStateReadonlyText="No due date set"
       />
@@ -119,7 +121,7 @@ function Subscription(props: TaskPage.State) {
           )}
         </button>
 
-        <div className="text-xs text-content-subtle">
+        <div className="text-xs text-content-dimmed">
           {props.isSubscribed
             ? "You're receiving notifications because you're subscribed to this task."
             : "You're not receiving notifications from this task."}
@@ -141,6 +143,7 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
 function OverdueWarning(props: TaskPage.State) {
   if (!props.dueDate) return null;
   if (!isOverdue(props.dueDate)) return null;
+  if (props.status === "done" || props.status === "canceled") return null; // Don't show overdue for completed tasks
 
   const duration = durationHumanized(props.dueDate, new Date());
 

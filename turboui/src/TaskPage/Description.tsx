@@ -19,11 +19,7 @@ export function Description(props: TaskPage.Props) {
 
   return (
     <div>
-      <SectionHeader
-        title="Task Description"
-        buttons={editButton}
-        showButtons={props.canEdit && state.mode !== "edit"}
-      />
+      <SectionHeader title="Notes" buttons={editButton} showButtons={props.canEdit && state.mode !== "edit"} />
 
       {state.mode === "zero" && <DescriptionZeroState />}
       {state.mode === "view" && <DescriptionContent state={state} />}
@@ -51,7 +47,7 @@ function DescriptionContent({ state }: { state: State }) {
 
   return (
     <div className="mt-2">
-      <RichContent content={displayedDescription} />
+      <RichContent content={displayedDescription} mentionedPersonLookup={state.mentionedPersonLookup} />
 
       {length > 200 && (
         <button
@@ -95,6 +91,7 @@ interface State {
   setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
   setDescription: React.Dispatch<React.SetStateAction<string | null>>;
   editor: ReturnType<typeof useEditor>;
+  mentionedPersonLookup: TaskPage.Props["mentionedPersonLookup"];
   startEdit: () => void;
   save: () => void;
   cancel: () => void;
@@ -114,14 +111,15 @@ function useDescriptionState(props: TaskPage.Props): State {
     content: props.description,
     editable: true,
     placeholder: "Describe the task...",
+    mentionedPersonLookup: props.mentionedPersonLookup,
     peopleSearch: props.peopleSearch,
   });
 
   const save = React.useCallback(async () => {
     const content = editor.getJson();
-    
+
     const success = await props.onDescriptionChange(content);
-    
+
     if (success) {
       setDescription(content);
 
@@ -151,6 +149,7 @@ function useDescriptionState(props: TaskPage.Props): State {
     description,
     mode,
     editor,
+    mentionedPersonLookup: props.mentionedPersonLookup,
     startEdit,
     setMode,
     setDescription,

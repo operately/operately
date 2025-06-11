@@ -24,26 +24,46 @@ const mockTaskPeople: TaskPage.Person[] = [
 
 // Mock people data for RichEditor SearchFn (extended Person interface)
 const mockRichEditorPeople = [
-  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice", title: "Senior Developer", profileLink: "/people/alice" },
-  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", title: "Product Manager", profileLink: "/people/bob" },
-  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie", title: "Designer", profileLink: "/people/charlie" },
+  {
+    id: "user-1",
+    fullName: "Alice Johnson",
+    avatarUrl: "https://i.pravatar.cc/150?u=alice",
+    title: "Senior Developer",
+    profileLink: "/people/alice",
+  },
+  {
+    id: "user-2",
+    fullName: "Bob Smith",
+    avatarUrl: "https://i.pravatar.cc/150?u=bob",
+    title: "Product Manager",
+    profileLink: "/people/bob",
+  },
+  {
+    id: "user-3",
+    fullName: "Charlie Brown",
+    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
+    title: "Designer",
+    profileLink: "/people/charlie",
+  },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null, title: "QA Engineer", profileLink: "/people/diana" },
 ];
 
 // Mock search function for TaskPage assignees
 const searchTaskPeople = async ({ query }: { query: string }): Promise<TaskPage.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockTaskPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  return mockTaskPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
 // Mock search function for RichEditor mentions
 const searchRichEditorPeople = async ({ query }: { query: string }) => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockRichEditorPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  return mockRichEditorPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
+};
+
+// Mock mentioned person lookup function
+const mockMentionedPersonLookup = async (id: string) => {
+  await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate API delay
+  return mockRichEditorPeople.find((person) => person.id === id) || null;
 };
 
 // Helper function to convert text to rich content JSON format
@@ -67,32 +87,34 @@ function asRichText(content: string): any {
 // Helper function for complex rich content with lists
 function asRichTextWithList(paragraphs: string[], listItems: string[]): any {
   const content: any[] = [];
-  
+
   // Add paragraphs
-  paragraphs.forEach(text => {
+  paragraphs.forEach((text) => {
     content.push({
       type: "paragraph",
-      content: [{ type: "text", text }]
+      content: [{ type: "text", text }],
     });
   });
-  
+
   // Add bullet list
   if (listItems.length > 0) {
     content.push({
       type: "bulletList",
-      content: listItems.map(item => ({
+      content: listItems.map((item) => ({
         type: "listItem",
-        content: [{
-          type: "paragraph", 
-          content: [{ type: "text", text: item }]
-        }]
-      }))
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: item }],
+          },
+        ],
+      })),
     });
   }
-  
+
   return {
     type: "doc",
-    content
+    content,
   };
 }
 
@@ -103,7 +125,6 @@ function Component(props: Partial<TaskPage.Props>) {
   const [dueDate, setDueDate] = React.useState<Date | undefined>(props.dueDate);
   const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(props.assignees || []);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
-
 
   // Sync state with prop changes
   React.useEffect(() => {
@@ -132,14 +153,14 @@ function Component(props: Partial<TaskPage.Props>) {
 
   const defaults: TaskPage.Props = {
     ...props,
-    
+
     // Navigation
     spaceLink: "/spaces/product",
-    spaceName: "Product Team",
-    projectLink: "/projects/mobile-app",
-    projectName: "Mobile App V2",
-    milestoneLink: "/milestones/beta-release",
-    milestoneName: "Beta Release",
+    spaceName: "Product",
+    projectLink: props.projectLink ?? "/projects/mobile-app",
+    projectName: props.projectName ?? "Mobile App V2",
+    milestoneLink: props.hasOwnProperty('milestoneLink') && props.milestoneLink === undefined ? undefined : (props.milestoneLink ?? "/milestones/beta-release"),
+    milestoneName: props.hasOwnProperty('milestoneName') && props.milestoneName === undefined ? undefined : (props.milestoneName ?? "Beta Release"),
 
     // Core data
     name: name,
@@ -175,7 +196,7 @@ function Component(props: Partial<TaskPage.Props>) {
     },
 
     // Metadata
-    createdAt: new Date(2024, 0, 15), // January 15, 2024
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // One week ago
     createdBy: mockTaskPeople[0]!,
 
     // Subscription
@@ -208,6 +229,7 @@ function Component(props: Partial<TaskPage.Props>) {
     // Search
     searchPeople: searchTaskPeople,
     peopleSearch: searchRichEditorPeople,
+    mentionedPersonLookup: mockMentionedPersonLookup,
 
     // Permissions
     canEdit: true,
@@ -223,18 +245,16 @@ export const Default: Story = {
   args: {
     name: "Implement user authentication flow",
     description: asRichTextWithList(
-      [
-        "We need to implement a complete user authentication flow for the mobile app including:",
-      ],
+      ["We need to implement a complete user authentication flow for the mobile app including:"],
       [
         "Login with email/password",
-        "Social login (Google, Apple)", 
+        "Social login (Google, Apple)",
         "Password reset functionality",
-        "Two-factor authentication"
-      ]
+        "Two-factor authentication",
+      ],
     ),
     status: "in_progress",
-    dueDate: new Date(2024, 2, 15), // March 15, 2024
+    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     assignees: [mockTaskPeople[0]!],
   },
 };
@@ -245,7 +265,7 @@ export const Default: Story = {
 export const MinimalTask: Story = {
   args: {
     name: "Review API documentation",
-    description: "",
+    description: null,
     status: "pending",
     projectLink: undefined,
     projectName: undefined,
@@ -256,44 +276,6 @@ export const MinimalTask: Story = {
   },
 };
 
-/**
- * Task without project but with milestone
- */
-export const NoProject: Story = {
-  args: {
-    name: "Update dependencies to latest versions",
-    description: asRichText("Update all npm dependencies to their latest stable versions and test for compatibility issues."),
-    status: "pending",
-    projectLink: undefined,
-    projectName: undefined,
-    dueDate: new Date(2024, 1, 28), // February 28, 2024
-    assignees: [mockTaskPeople[1]!],
-  },
-};
-
-/**
- * Task without milestone
- */
-export const NoMilestone: Story = {
-  args: {
-    name: "Optimize database queries for better performance",
-    description: asRichTextWithList(
-      [
-        "Several database queries are running slowly in production:",
-      ],
-      [
-        "User profile loading",
-        "Dashboard data aggregation",
-        "Search functionality"
-      ]
-    ),
-    status: "in_progress",
-    milestoneLink: undefined,
-    milestoneName: undefined,
-    dueDate: new Date(2024, 1, 20), // February 20, 2024
-    assignees: [mockTaskPeople[2]!],
-  },
-};
 
 /**
  * Completed task
@@ -302,15 +284,13 @@ export const CompletedTask: Story = {
   args: {
     name: "Set up CI/CD pipeline",
     description: asRichTextWithList(
-      [
-        "✅ Configured automated deployment pipeline with the following stages:",
-      ],
+      ["Configured automated deployment pipeline with the following stages:"],
       [
         "Automated testing on PR creation",
         "Security scanning",
-        "Staging deployment", 
-        "Production deployment with approval"
-      ]
+        "Staging deployment",
+        "Production deployment with approval",
+      ],
     ),
     status: "done",
     dueDate: new Date(2024, 0, 10), // January 10, 2024 (completed before due date)
@@ -345,8 +325,8 @@ export const LongContent: Story = {
       [
         "This is a very long bullet point that contains extensive information about a particular aspect of the task",
         "Another lengthy bullet point with detailed explanations and specifications",
-        "Yet another comprehensive bullet point with thorough documentation"
-      ]
+        "Yet another comprehensive bullet point with thorough documentation",
+      ],
     ),
     status: "pending",
     dueDate: new Date(2024, 3, 1), // April 1, 2024
@@ -354,17 +334,3 @@ export const LongContent: Story = {
   },
 };
 
-/**
- * Read-only task (canEdit: false)
- */
-export const ReadOnlyTask: Story = {
-  args: {
-    name: "Archived task - view only",
-    description: asRichText("This task has been completed and archived. It can only be viewed, not edited."),
-    status: "done",
-    dueDate: new Date(2023, 11, 15), // December 15, 2023
-    assignees: [mockTaskPeople[2]!],
-    canEdit: false,
-    isSubscribed: false,
-  },
-};

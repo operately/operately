@@ -14,12 +14,7 @@ export function PageHeader(props: TaskPage.State) {
         <Breadcrumbs navigation={navigation} />
 
         <div className="flex items-center gap-2">
-          <StatusSelector
-            status={props.status}
-            onChange={props.onStatusChange}
-            size="xl"
-            readonly={!props.canEdit}
-          />
+          <StatusSelector status={props.status} onChange={props.onStatusChange} size="xl" readonly={!props.canEdit} />
 
           <EditableText
             className="font-semibold text-2xl"
@@ -35,9 +30,7 @@ export function PageHeader(props: TaskPage.State) {
 }
 
 function buildNavigation(props: TaskPage.State) {
-  const navigation = [
-    { to: props.spaceLink, label: props.spaceName },
-  ];
+  const navigation = [{ to: props.spaceLink, label: props.spaceName }];
 
   // Add project if available
   if (props.projectLink && props.projectName) {
