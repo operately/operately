@@ -27,16 +27,30 @@ const taskStatusConfig: Record<Types.Status, { status: string; label: string; ic
 };
 
 interface StatusSelectorProps {
-  task: Types.Task;
-  onStatusChange?: (newStatus: Types.Status) => void;
+  status: Types.Status;
+  onChange: (newStatus: Types.Status) => void;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  readonly?: boolean;
   showFullBadge?: boolean;
 }
 
 export function StatusSelector({
-  task,
-  onStatusChange,
+  status,
+  onChange,
+  size = 'md',
+  readonly = false,
   showFullBadge = false,
 }: StatusSelectorProps) {
+  // Define size-based dimensions
+  const sizeConfig = {
+    sm: { iconSize: 14, containerSize: 'w-3.5 h-3.5' },
+    md: { iconSize: 16, containerSize: 'w-4 h-4' },
+    lg: { iconSize: 20, containerSize: 'w-5 h-5' },
+    xl: { iconSize: 24, containerSize: 'w-6 h-6' },
+    '2xl': { iconSize: 28, containerSize: 'w-7 h-7' },
+  };
+  
+  const { iconSize, containerSize } = sizeConfig[size];
   const [searchTerm, setSearchTerm] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -66,8 +80,8 @@ export function StatusSelector({
       const firstOption = filteredStatusOptions[0];
 
       if (firstOption) {
-        const status = firstOption[0];
-        onStatusChange && onStatusChange(status as Types.Status);
+        const newStatus = firstOption[0];
+        onChange(newStatus as Types.Status);
       }
     }
   };
@@ -95,20 +109,41 @@ export function StatusSelector({
     </div>
   );
 
+  // Readonly mode - just show the status without interaction
+  if (readonly) {
+    return (
+      <div className="inline-flex items-center">
+        {showFullBadge ? (
+          <StatusBadge
+            status={taskStatusConfig[status].status}
+            customLabel={taskStatusConfig[status].label}
+          />
+        ) : (
+          <div className={`inline-flex items-center justify-center ${containerSize}`}>
+            {React.createElement(taskStatusConfig[status].icon, {
+              size: iconSize,
+              className: `align-middle ${taskStatusConfig[status].color || ""}`,
+            })}
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <Menu
       customTrigger={
         <div className="cursor-pointer inline-flex items-center">
           {showFullBadge ? (
             <StatusBadge
-              status={taskStatusConfig[task.status].status}
-              customLabel={taskStatusConfig[task.status].label}
+              status={taskStatusConfig[status].status}
+              customLabel={taskStatusConfig[status].label}
             />
           ) : (
-            <div className="inline-flex items-center justify-center w-4 h-4">
-              {React.createElement(taskStatusConfig[task.status].icon, {
-                size: 16,
-                className: `align-middle ${taskStatusConfig[task.status].color || ""}`,
+            <div className={`inline-flex items-center justify-center ${containerSize}`}>
+              {React.createElement(taskStatusConfig[status].icon, {
+                size: iconSize,
+                className: `align-middle ${taskStatusConfig[status].color || ""}`,
               })}
             </div>
           )}
@@ -118,13 +153,13 @@ export function StatusSelector({
       headerContent={searchInput}
       onOpenChange={handleMenuOpenChange}
     >
-      {filteredStatusOptions.map(([status, config]) => {
-        const isCurrentStatus = status === task.status;
+      {filteredStatusOptions.map(([statusOption, config]) => {
+        const isCurrentStatus = statusOption === status;
         return (
           <MenuActionItem
-            key={status}
+            key={statusOption}
             icon={config.icon}
-            onClick={() => onStatusChange && onStatusChange(status as Types.Status)}
+            onClick={() => onChange(statusOption as Types.Status)}
           >
             <div className="flex items-center justify-between w-full">
               {config.label}

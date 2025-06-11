@@ -74,8 +74,10 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
           {/* Status icon */}
           <div className="flex-shrink-0 flex items-center">
             <StatusSelector
-              task={task}
-              onStatusChange={handleStatusChange}
+              status={task.status}
+              onChange={handleStatusChange}
+              size="md"
+              readonly={!onTaskUpdate}
             />
           </div>
 
