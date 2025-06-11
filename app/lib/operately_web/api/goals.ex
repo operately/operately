@@ -30,6 +30,31 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule ParentGoalSearch do
+    use TurboConnect.Query
+
+    inputs do
+      field :query, :string, null: false
+      field :goal_id, :id, null: false
+    end
+
+    outputs do
+      field :goals, list_of(:goal), null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.find_potential_parent_goals(inputs.query)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{goals: Serializer.serialize(changes.goals, level: :essential)}
+      end)
+    end
+  end
+
   defmodule UpdateName do
     use TurboConnect.Mutation
 
@@ -573,6 +598,12 @@ defmodule OperatelyWeb.Api.Goals do
         update_attrs = if attrs.unit, do: Map.put(update_attrs, :unit, attrs.unit), else: update_attrs
 
         Operately.Goals.Target.changeset(target, update_attrs)
+      end)
+    end
+
+    def find_potential_parent_goals(multi, query) do
+      Ecto.Multi.run(multi, :goals, fn _repo, %{goal: goal} ->
+        {:ok, Goal.search_potential_parent_goals(goal, goal.request_info.requester, query)}
       end)
     end
 

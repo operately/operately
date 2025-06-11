@@ -103,9 +103,7 @@ function Page() {
     transformResult: (p) => preparePerson(p)!,
   });
 
-  const searchParentGoals = async ({}: { query: string }) => {
-    return [];
-  };
+  const parentGoalSearch = useParentGoalSearch(goal);
 
   const deleteGoal = async () => {
     try {
@@ -139,7 +137,7 @@ function Page() {
 
     parentGoal,
     setParentGoal,
-    searchParentGoals,
+    parentGoalSearch,
 
     dueDate,
     setDueDate,
@@ -451,5 +449,14 @@ function prepareRetrospective(retrospective: GoalRetrospective | null | undefine
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
     author: preparePerson(retrospective.author)!,
+  };
+}
+
+function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
+  return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
+    const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id! });
+    const goals = data.goals.map(prepareParentGoal);
+
+    return goals.map((g) => g!);
   };
 }

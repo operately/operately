@@ -2148,6 +2148,15 @@ export interface GoalsGetDiscussionsResult {
   discussions: Discussion[] | null;
 }
 
+export interface GoalsParentGoalSearchInput {
+  query: string;
+  goalId: Id;
+}
+
+export interface GoalsParentGoalSearchResult {
+  goals: Goal[];
+}
+
 export interface ListGoalContributorsInput {
   goalId?: Id | null;
 }
@@ -3906,6 +3915,10 @@ class ApiNamespaceGoals {
 
   async getDiscussions(input: GoalsGetDiscussionsInput): Promise<GoalsGetDiscussionsResult> {
     return this.client.get("/goals/get_discussions", input);
+  }
+
+  async parentGoalSearch(input: GoalsParentGoalSearchInput): Promise<GoalsParentGoalSearchResult> {
+    return this.client.get("/goals/parent_goal_search", input);
   }
 
   async addTarget(input: GoalsAddTargetInput): Promise<GoalsAddTargetResult> {
@@ -6278,6 +6291,10 @@ export default {
   useUpdateTaskStatus,
 
   goals: {
+    parentGoalSearch: (input: GoalsParentGoalSearchInput) => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input),
+    useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
+      useQuery<GoalsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input)),
+
     getDiscussions: (input: GoalsGetDiscussionsInput) => defaultApiClient.apiNamespaceGoals.getDiscussions(input),
     useGetDiscussions: (input: GoalsGetDiscussionsInput) =>
       useQuery<GoalsGetDiscussionsResult>(() => defaultApiClient.apiNamespaceGoals.getDiscussions(input)),

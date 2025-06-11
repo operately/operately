@@ -53,6 +53,50 @@ defmodule OperatelyWeb.Api.GoalsTest do
     end
   end
 
+  describe "parent goal search" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:goals, :parent_goal_search], %{query: ""})
+    end
+
+    test "it requires a goal_id and query", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:goals, :parent_goal_search], %{})
+      assert res.message == "Missing required fields: query, goal_id"
+    end
+
+    test "it returns 404 if the goal does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      goal_id = Ecto.UUID.generate() |> Paths.goal_id()
+      assert {404, res} = query(ctx.conn, [:goals, :parent_goal_search], %{goal_id: goal_id, query: ""})
+      assert res.message == "Goal not found"
+    end
+
+    test "it returns potential parent goals", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_goal(ctx, :parent_goal1, :marketing)
+      ctx = Factory.add_goal(ctx, :parent_goal2, :marketing)
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), query: ""}
+
+      assert {200, res} = query(ctx.conn, [:goals, :parent_goal_search], inputs)
+      assert length(res.goals) == 2
+    end
+
+    test "it filters by search term", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_goal(ctx, :parent_goal1, :marketing, name: "goal1")
+      ctx = Factory.add_goal(ctx, :parent_goal2, :marketing, name: "goal2")
+
+      inputs = %{goal_id: Paths.goal_id(ctx.goal), query: "goal1"}
+
+      assert {200, res} = query(ctx.conn, [:goals, :parent_goal_search], inputs)
+      assert length(res.goals) == 1
+      assert hd(res.goals).id == Paths.goal_id(ctx.parent_goal1)
+    end
+  end
+
   describe "get discussions" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:goals, :get_discussions], %{})

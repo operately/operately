@@ -62,7 +62,7 @@ function ParentGoal(props: GoalPage.State) {
       <GoalField
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
-        searchGoals={props.searchParentGoals}
+        searchGoals={props.parentGoalSearch}
         emptyStateMessage="No parent goal"
         emptyStateReadOnlyMessage="No parent goal"
       />

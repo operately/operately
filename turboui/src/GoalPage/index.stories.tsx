@@ -21,7 +21,7 @@ const addTarget = (): Promise<{ id: string; success: boolean }> =>
 const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
 const deleteGoal = (): Promise<void> => new Promise((resolve) => resolve());
 
-const searchParentGoals = async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
+const parentGoalSearch = async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
   return [
     {
       id: "1",
@@ -81,7 +81,7 @@ function Component(props: Partial<GoalPage.Props>) {
       addSubprojectLink="#"
       parentGoal={parentGoal}
       setParentGoal={setParentGoal}
-      searchParentGoals={searchParentGoals}
+      parentGoalSearch={parentGoalSearch}
       champion={champion}
       setChampion={setChampion}
       reviewer={reviewer}
