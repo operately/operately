@@ -1042,9 +1042,19 @@ defmodule OperatelyWeb.Api.Types do
     field? :potential_subscribers, list_of(:subscriber)
     field? :notifications, list_of(:notification)
     field? :success, :boolean
+    field? :retrospective, :goal_retrospective
   end
 
   object :goal_discussion do
+    field :id, :id, null: false
+    field :title, :string, null: false
+    field :inserted_at, :date, null: false
+    field :comment_count, :integer, null: false
+    field :author, :person, null: false
+    field :content, :string, null: false
+  end
+
+  object :goal_retrospective do
     field :id, :id, null: false
     field :title, :string, null: false
     field :inserted_at, :date, null: false
