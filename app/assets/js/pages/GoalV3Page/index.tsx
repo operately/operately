@@ -103,9 +103,7 @@ function Page() {
     transformResult: (p) => preparePerson(p)!,
   });
 
-  const searchParentGoals = async ({}: { query: string }) => {
-    return [];
-  };
+  const searchParentGoals = useParentGoalSearch(goal);
 
   const deleteGoal = async () => {
     try {
@@ -451,5 +449,12 @@ function prepareRetrospective(retrospective: GoalRetrospective | null | undefine
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
     author: preparePerson(retrospective.author)!,
+  };
+}
+
+function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
+  async ({ query }: { query: string }) => {
+    const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id! });
+    return data.goals.map(prepareParentGoal);
   };
 }

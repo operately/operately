@@ -6,7 +6,6 @@ import { PageNew } from "../Page";
 
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "@tabler/icons-react";
 
-import { GoalField } from "../GoalField";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
@@ -88,7 +87,7 @@ export namespace GoalPage {
 
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
-    searchParentGoals: GoalField.SearchGoalFn;
+    parentGoalSearch: (params: { query: string }) => Promise<ParentGoal[]>;
 
     champion: Person | null;
     setChampion: (person: Person | null) => void;

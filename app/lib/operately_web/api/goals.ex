@@ -30,6 +30,31 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule ParentGoalSearch do
+    use TurboConnect.Query
+
+    inputs do
+      field :query, :string, null: false
+      field :goal_id, :id, null: false
+    end
+
+    outputs do
+      field :goals, list_of(:goal)
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.find_parent_goals(inputs.query)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{goals: Serializer.serialize(changes.goals, level: :essential)}
+      end)
+    end
+  end
+
   defmodule UpdateName do
     use TurboConnect.Mutation
 

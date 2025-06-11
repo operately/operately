@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api do
   namespace(:goals) do
     query(:get_check_ins, Q.GetGoalCheckIns)
     query(:get_discussions, OperatelyWeb.Api.Goals.GetDiscussions)
+    query(:parent_goal_search, OperatelyWeb.Api.Goals.ParentGoalSearch)
 
     mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
     mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
