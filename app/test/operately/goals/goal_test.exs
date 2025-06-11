@@ -58,8 +58,8 @@ defmodule Operately.Goals.GoalTest do
       |> Factory.setup()
       |> Factory.add_space(:space)
       |> Factory.add_goal(:goal, :space)
-      |> Factory.add_goal(:parent1, :space, name: "parent option 1")
-      |> Factory.add_goal(:parent2, :space, name: "parent option 2")
+      |> Factory.add_goal(:parent1, :space, name: "Parent option 1")
+      |> Factory.add_goal(:parent2, :space, name: "Parent option 2")
       |> Factory.add_goal(:child_goal, :space, name: "child Goal")
       |> Factory.add_goal(:grandchild_goal, :space, name: "grandchild Goal")
       |> then(fn ctx ->
@@ -73,8 +73,8 @@ defmodule Operately.Goals.GoalTest do
       results = Goal.search_potential_parent_goals(ctx.goal, ctx.creator, "parent")
 
       assert length(results) == 2
-      assert Enum.at(results, 0).name == "parent option 1"
-      assert Enum.at(results, 1).name == "parent option 2"
+      assert Enum.at(results, 0).name == "Parent option 1"
+      assert Enum.at(results, 1).name == "Parent option 2"
     end
 
     test "should not return child goals as potential parents", ctx do

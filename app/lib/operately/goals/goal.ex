@@ -226,7 +226,7 @@ defmodule Operately.Goals.Goal do
 
     from(g in __MODULE__)
     |> where([g], g.company_id == ^goal.company_id)
-    |> where([g], like(g.name, ^"%#{search_term}%"))
+    |> where([g], ilike(g.name, ^"%#{search_term}%"))
     |> filter_by_view_access(requester.id)
     |> where([g], g.id != ^goal.id and g.id not in ^collect_descendant_goal_ids(goal))
     |> order_by([g], asc: g.name)
