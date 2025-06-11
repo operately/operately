@@ -104,7 +104,35 @@ function Component(props: Partial<TaskPage.Props>) {
   const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(props.assignees || []);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
 
+
+  // Sync state with prop changes
+  React.useEffect(() => {
+    if (props.name !== undefined) setName(props.name);
+  }, [props.name]);
+
+  React.useEffect(() => {
+    if (props.description !== undefined) setDescription(props.description);
+  }, [props.description]);
+
+  React.useEffect(() => {
+    if (props.status !== undefined) setStatus(props.status);
+  }, [props.status]);
+
+  React.useEffect(() => {
+    if (props.dueDate !== undefined) setDueDate(props.dueDate);
+  }, [props.dueDate]);
+
+  React.useEffect(() => {
+    if (props.assignees !== undefined) setAssignees(props.assignees);
+  }, [props.assignees]);
+
+  React.useEffect(() => {
+    if (props.isSubscribed !== undefined) setIsSubscribed(props.isSubscribed);
+  }, [props.isSubscribed]);
+
   const defaults: TaskPage.Props = {
+    ...props,
+    
     // Navigation
     spaceLink: "/spaces/product",
     spaceName: "Product Team",
@@ -137,7 +165,7 @@ function Component(props: Partial<TaskPage.Props>) {
     dueDate: dueDate,
     onDueDateChange: (newDate) => {
       console.log("Updating due date:", newDate);
-      setDueDate(newDate || undefined);
+      setDueDate(newDate ?? undefined);
     },
 
     assignees: assignees,
@@ -183,8 +211,6 @@ function Component(props: Partial<TaskPage.Props>) {
 
     // Permissions
     canEdit: true,
-
-    ...props,
   };
 
   return <TaskPage {...defaults} />;

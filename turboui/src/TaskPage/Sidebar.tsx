@@ -24,7 +24,7 @@ function DueDate(props: TaskPage.State) {
   return (
     <SidebarSection title="Due Date">
       <DateDisplayField
-        date={props.dueDate || null}
+        date={props.dueDate ?? null}
         setDate={props.onDueDateChange}
         readonly={!props.canEdit}
         showOverdueWarning={true}
