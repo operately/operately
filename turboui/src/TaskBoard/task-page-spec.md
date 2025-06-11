@@ -258,6 +258,38 @@ Beyond Copy URL and Delete, consider these actions:
 
 ## Technical Considerations
 
+### State Management Pattern
+For editable fields (name, description), use internal buffering to prevent excessive API calls:
+
+```typescript
+// ❌ BAD: Sends data to API on every keypress
+function NameInput({name, onChange}) {
+   return <input value={name} onChange={onChange} />
+}
+
+// ✅ GOOD: Internal buffer, send update once typing is done
+function NameInput({name, onChange}) {
+  const [buffer, setBuffer] = useState(name);
+
+  React.useEffect(() => setBuffer(name), [name]); // update buffer if name changes externally
+
+  return (
+    <input 
+      value={buffer} 
+      onChange={(e) => setBuffer(e.target.value)} 
+      onBlur={() => onChange(buffer)} 
+      onKeyPress={(e) => e.key === 'Enter' && onChange(buffer)} 
+    />
+  );
+}
+```
+
+**Key principles:**
+- Maintain internal state buffer for text inputs
+- Sync buffer with external props via useEffect
+- Trigger callbacks on blur and Enter key
+- Provide immediate visual feedback while typing
+
 ### Performance
 - Lazy load comment/activity section
 - Optimize re-renders with memo/callback patterns

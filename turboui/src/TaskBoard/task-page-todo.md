@@ -84,11 +84,13 @@
 ### Editable Title
 - [ ] Implement inline title editing
   - [ ] Use EditableText component or create new one
+  - [ ] Implement internal state buffering pattern (prevent API calls on every keystroke)
   - [ ] Add edit/save/cancel states
   - [ ] Handle validation (required field)
   - [ ] Show loading state during save
   - [ ] Handle error states
   - [ ] Keyboard shortcuts (Enter to save, Escape to cancel)
+  - [ ] Sync buffer with external props via useEffect
 - [ ] Integrate with status display
   - [ ] Position status badge next to title
   - [ ] Maintain visual hierarchy
@@ -97,12 +99,14 @@
 ### Description Editing
 - [ ] Implement description editing following GoalPage pattern
   - [ ] Import and use RichEditor component
+  - [ ] Implement internal state buffering for rich content
   - [ ] Add "Edit Description" button
   - [ ] Handle edit/preview modes
   - [ ] Save/cancel functionality
   - [ ] Empty state handling
   - [ ] Loading states
   - [ ] Error handling
+  - [ ] Sync buffer with external props via useEffect
 
 ## Phase 3: Integration & Polish
 
