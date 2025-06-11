@@ -40,7 +40,7 @@ interface SubMenuProps {
 
 export function Menu(props: MenuProps) {
   return (
-    <DropdownMenu.Root onOpenChange={props.onOpenChange}>
+    <DropdownMenu.Root onOpenChange={props.onOpenChange} modal={false}>
       <Trigger {...props} />
 
       <DropdownMenu.Portal>
