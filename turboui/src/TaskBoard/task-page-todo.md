@@ -3,28 +3,28 @@
 ## Phase 1: Foundation Components
 
 ### StatusSelector Component
-- [ ] Create `src/StatusSelector/` directory
-- [ ] Create `src/StatusSelector/index.tsx`
-  - [ ] Define StatusSelectorProps interface
-  - [ ] Implement status dropdown/select component
-  - [ ] Add color-coded status badges
-  - [ ] Support size variants (sm, md, lg)
-  - [ ] Add readonly mode
-  - [ ] Handle keyboard navigation
-  - [ ] Add proper accessibility attributes
-- [ ] Create `src/StatusSelector/index.stories.tsx`
-  - [ ] Default story with all status options
-  - [ ] Different size variants
-  - [ ] Readonly state
-  - [ ] Interactive callback demonstration
-  - [ ] Disabled state
-- [ ] Extract status logic from TaskItem
-  - [ ] Update TaskItem to import StatusSelector
-  - [ ] Replace inline status UI with StatusSelector
-  - [ ] Verify TaskItem still works in TaskBoard stories
-  - [ ] Test drag & drop still functions
-  - [ ] Run TypeScript checks
-- [ ] Update TaskItem stories to reflect StatusSelector usage
+- [x] ~~Create `src/StatusSelector/` directory~~ (Kept within TaskBoard components per discussion)
+- [x] Refactor existing `src/TaskBoard/components/StatusSelector.tsx`
+  - [x] Define clean StatusSelectorProps interface (status, onChange, size, readonly, showFullBadge)
+  - [x] Implement status dropdown/select component
+  - [x] Add color-coded status badges
+  - [x] Support size variants (sm, md, lg)
+  - [x] Add readonly mode
+  - [x] Handle keyboard navigation (existing functionality preserved)
+  - [x] Add proper accessibility attributes (existing functionality preserved)
+- [x] Create `src/TaskBoard/stories/StatusSelector.stories.tsx`
+  - [x] Default story with all status options
+  - [x] Different size variants
+  - [x] Readonly state
+  - [x] Interactive callback demonstration
+  - [x] Comprehensive examples (InListContext story)
+- [x] Extract status logic from TaskItem
+  - [x] Update TaskItem to use refactored StatusSelector
+  - [x] Replace task object prop with individual status prop
+  - [x] Verify TaskItem still works in TaskBoard stories
+  - [x] Test drag & drop still functions
+  - [x] Run TypeScript checks
+- [x] Update TaskItem integration (uses new props: status, onChange, size="md", readonly)
 
 ### TaskPageActions Component
 - [ ] Create `src/TaskBoard/components/TaskPageActions.tsx`
