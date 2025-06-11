@@ -12,14 +12,27 @@ interface Props {
 }
 
 export function WorkMapTable({ items, tab, columnOptions = {} }: Props) {
+  const emptyWorkMap = items.length === 0;
+
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
       <table className="min-w-full divide-y divide-surface-outline">
         <TableHeader tab={tab} columnOptions={columnOptions} />
         <tbody>
-          {items.map((item, idx) => (
-            <TableRow key={item.id} item={item} level={0} isLast={idx === items.length - 1} tab={tab} columnOptions={columnOptions} />
-          ))}
+          {emptyWorkMap ? (
+            <ZeroState />
+          ) : (
+            items.map((item, idx) => (
+              <TableRow
+                key={item.id}
+                item={item}
+                level={0}
+                isLast={idx === items.length - 1}
+                tab={tab}
+                columnOptions={columnOptions}
+              />
+            ))
+          )}
         </tbody>
       </table>
     </div>
@@ -90,5 +103,15 @@ function NextStepHeaderCell({ hide }: { hide?: boolean }) {
         </Tooltip>
       </div>
     </HeaderCell>
+  );
+}
+
+function ZeroState() {
+  return (
+    <tr>
+      <td colSpan={7} className="py-32 text-lg text-center text-content-dimmed">
+        🍃 Nothing here
+      </td>
+    </tr>
   );
 }
