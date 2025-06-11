@@ -10,12 +10,14 @@ export namespace GoalField {
   export interface Goal {
     id: string;
     name: string;
-    goalLink: string;
+    link: string;
   }
+
+  export type SearchGoalFn = (params: { query: string }) => Promise<Goal[]>;
 
   export interface Props {
     goal: Goal | null;
-    setGoal: (person: Goal | null) => void;
+    setGoal: (goal: Goal | null) => void;
 
     isOpen?: boolean;
     iconSize?: number;
@@ -137,16 +139,6 @@ function Trigger({ state }: { state: GoalField.State }) {
   } else {
     return (
       <Popover.Trigger className={triggerClass}>
-        <div
-          className="border border-content-subtle border-dashed rounded-full flex items-center justify-center"
-          style={{
-            width: state.iconSize,
-            height: state.iconSize,
-          }}
-        >
-          <IconSearch className="text-content-dimmed" size={state.iconSize * 0.5} />
-        </div>
-
         <div className="truncate">
           <div className="text-sm font-medium text-content-dimmed">
             {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
@@ -179,7 +171,7 @@ function Dialog({ state }: { state: GoalField.State }) {
 function DialogMenu({ state }: { state: GoalField.State }) {
   return (
     <div className="p-1">
-      <DialogMenuOption icon={IconExternalLink} label="See goal" linkTo={state.goal?.goalLink || "#"} />
+      <DialogMenuOption icon={IconExternalLink} label="See goal" linkTo={state.goal?.link || "#"} />
       <DialogMenuOption icon={IconSearch} label="Choose another goal" onClick={() => state.setDialogMode("search")} />
 
       {state.extraDialogMenuOptions.map((option, index) => (
