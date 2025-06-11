@@ -73,13 +73,6 @@ function DescriptionContent({ state }: { state: State }) {
   );
 }
 
-function DescriptionZeroState() {
-  return (
-    <div className="mb-1">
-      <div className="text-content-dimmed text-sm">Describe the task to provide context and clarity.</div>
-    </div>
-  );
-}
 
 function DescriptionEditor({ state }: { state: State }) {
   return (

@@ -1,10 +1,10 @@
-import { IconAlertTriangleFilled, IconFlag, IconBell, IconBellOff } from "@tabler/icons-react";
+import { IconAlertTriangleFilled, IconFlag, IconBell, IconBellOff, IconCalendar } from "@tabler/icons-react";
 import React from "react";
 import { TaskPage } from ".";
 import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
 import { PersonField } from "../PersonField";
-import { Avatar } from "../Avatar";
+import { AvatarWithName } from "../Avatar";
 import { BlackLink } from "../Link";
 import { durationHumanized, isOverdue } from "../utils/time";
 
@@ -83,13 +83,11 @@ function Milestone(props: TaskPage.State) {
 function CreatedBy(props: TaskPage.State) {
   return (
     <SidebarSection title="Created">
-      <div className="flex items-center gap-2 text-sm">
-        <Avatar person={props.createdBy} size={20} />
-        <div>
-          <div className="font-medium">{props.createdBy.fullName}</div>
-          <div className="text-content-dimmed text-xs">
-            <FormattedTime time={props.createdAt} format="short-date" />
-          </div>
+      <div className="space-y-2 text-sm">
+        <AvatarWithName person={props.createdBy} size={"tiny"} nameFormat="short" link={`/people/${props.createdBy.id}`} />
+        <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
+          <IconCalendar size={14} />
+          <FormattedTime time={props.createdAt} format="short-date" />
         </div>
       </div>
     </SidebarSection>
