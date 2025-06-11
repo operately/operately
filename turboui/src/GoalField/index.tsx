@@ -250,8 +250,6 @@ function DialogSearch({ state }: { state: GoalField.State }) {
             }}
           >
             <div className="flex items-center gap-1.5 truncate">
-              {/* Replace Avatar with a goal icon or similar if needed */}
-              <IconExternalLink size={18} />
               <div className="text-sm truncate">{goal.name}</div>
             </div>
           </div>

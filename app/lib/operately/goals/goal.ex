@@ -219,4 +219,33 @@ defmodule Operately.Goals.Goal do
     |> Map.get(:targets, [])
     |> Enum.count()
   end
+
+  def search_potential_parent_goals(goal, requester, search_term) do
+    import Operately.Access.Filters, only: [filter_by_view_access: 2]
+    import Ecto.Query, only: [from: 1, where: 3, limit: 2, order_by: 3]
+
+    from(g in __MODULE__)
+    |> where([g], g.company_id == ^goal.company_id)
+    |> where([g], ilike(g.name, ^"%#{search_term}%"))
+    |> filter_by_view_access(requester.id)
+    |> where([g], g.id != ^goal.id and g.id not in ^collect_descendant_goal_ids(goal))
+    |> order_by([g], asc: g.name)
+    |> limit(10)
+    |> Operately.Repo.all()
+  end
+
+  defp collect_descendant_goal_ids(goal) do
+    sql = """
+    WITH RECURSIVE descendants AS (
+      SELECT id FROM goals WHERE parent_goal_id = $1
+      UNION ALL
+      SELECT g.id FROM goals g
+      INNER JOIN descendants d ON g.parent_goal_id = d.id
+    )
+    SELECT id FROM descendants
+    """
+
+    {:ok, %{rows: rows}} = Operately.Repo.query(sql, [Ecto.UUID.dump!(goal.id)])
+    Enum.map(rows, fn [id] -> Ecto.UUID.load!(id) end)
+  end
 end
