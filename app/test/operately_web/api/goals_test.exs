@@ -9,6 +9,50 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "update parent goal" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{})
+    end
+
+    test "it requires a goal_id and parent_goal_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_parent_goal], %{})
+      assert res.message == "Missing required fields: goal_id, parent_goal_id"
+    end
+
+    test "it updates the parent goal", ctx do
+      ctx = Factory.add_goal(ctx, :parent_goal, :marketing)
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        parent_goal_id: Paths.goal_id(ctx.parent_goal)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_parent_goal], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.parent_goal_id == ctx.parent_goal.id
+    end
+
+    test "it can remove the parent goal", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        parent_goal_id: nil
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_parent_goal], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.parent_goal_id == nil
+    end
+  end
+
   describe "get discussions" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:goals, :get_discussions], %{})
