@@ -259,7 +259,7 @@ function Page() {
     activityFeed: <GoalFeedItems goalId={goal.id!} />,
   };
 
-  return <GoalPage {...props} />;
+  return <GoalPage key={goal.id!} {...props} />;
 }
 
 function preparePerson(person: People.Person | null | undefined) {
