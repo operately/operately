@@ -1788,6 +1788,7 @@ export interface GetGoalInput {
   includePrivacy?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includeRetrospective?: boolean | null;
 }
 
 export interface GetGoalResult {

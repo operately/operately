@@ -4,7 +4,6 @@ defmodule Operately.Goals.Retrospective do
 
   defstruct [
     :id,
-    :title,
     :author,
     :comment_count,
     :inserted_at,
@@ -18,19 +17,18 @@ defmodule Operately.Goals.Retrospective do
     from(activity in Operately.Activities.Activity,
       join: thread in assoc(activity, :comment_thread),
       join: author in assoc(activity, :author),
-      where: activity.action == "goal_closed",
+      where: activity.action == "goal_closing",
       where: activity.content["goal_id"] == ^goal_id,
       order_by: [desc: activity.inserted_at],
       limit: 1,
       select: %__MODULE__{
         id: activity.id,
-        title: thread.title,
         author: author,
         inserted_at: thread.inserted_at,
         content: thread.message,
         comment_count: fragment("SELECT COUNT(*) FROM comments WHERE entity_id = ? AND entity_type = 'comment_thread'", thread.id)
       }
     )
-    |> Repo.all()
+    |> Repo.one()
   end
 end

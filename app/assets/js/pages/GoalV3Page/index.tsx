@@ -1,4 +1,4 @@
-import Api, { GoalDiscussion, GoalProgressUpdate } from "@/api";
+import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
 import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
@@ -48,11 +48,9 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeLastCheckIn: true,
           includeAccessLevels: true,
           includePrivacy: true,
+          includeRetrospective: true,
         }).then((d) => d.goal!),
-        workMap: getWorkMap({
-          parentGoalId: params.id,
-          includeAssignees: true,
-        }).then((d) => d.workMap!),
+        workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
         discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
       }),
@@ -122,7 +120,7 @@ function Page() {
     addSubprojectLink: Paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: Paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
     closedAt: Time.parse(goal.closedAt),
-    retrospective: null,
+    retrospective: prepareRetrospective(goal.retrospective),
     neglectedGoal: false,
     deleteGoal,
 
@@ -428,4 +426,17 @@ function prepareDiscussions(discussions: GoalDiscussion[]): GoalPage.Props["disc
       commentCount: discussion.commentCount,
     };
   });
+}
+
+function prepareRetrospective(retrospective: GoalRetrospective | null | undefined): GoalPage.Props["retrospective"] {
+  if (!retrospective) {
+    return null;
+  }
+
+  return {
+    link: "#", // todo
+    date: Time.parse(retrospective.insertedAt)!,
+    content: JSON.parse(retrospective.content),
+    author: preparePerson(retrospective.author)!,
+  };
 }
