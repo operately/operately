@@ -87,7 +87,7 @@ function Page() {
 
   const [parentGoal, setParentGoal] = usePageField({
     value: (data) => prepareParentGoal(data.goal.parentGoal),
-    update: () => new Promise((resolve) => resolve({ success: true })),
+    update: (v) => Api.goals.updateParentGoal({ goalId: goal.id!, parentGoalId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
   });
 
