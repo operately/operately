@@ -2919,6 +2919,15 @@ export interface GoalsUpdateNameResult {
   success: boolean | null;
 }
 
+export interface GoalsUpdateParentGoalInput {
+  goalId: Id;
+  parentGoalId: Id | null;
+}
+
+export interface GoalsUpdateParentGoalResult {
+  success: boolean | null;
+}
+
 export interface GoalsUpdateReviewerInput {
   goalId: Id;
   reviewerId: Id | null;
@@ -3921,6 +3930,10 @@ class ApiNamespaceGoals {
 
   async updateName(input: GoalsUpdateNameInput): Promise<GoalsUpdateNameResult> {
     return this.client.post("/goals/update_name", input);
+  }
+
+  async updateParentGoal(input: GoalsUpdateParentGoalInput): Promise<GoalsUpdateParentGoalResult> {
+    return this.client.post("/goals/update_parent_goal", input);
   }
 
   async updateReviewer(input: GoalsUpdateReviewerInput): Promise<GoalsUpdateReviewerResult> {
@@ -6287,6 +6300,12 @@ export default {
     addTarget: (input: GoalsAddTargetInput) => defaultApiClient.apiNamespaceGoals.addTarget(input),
     useAddTarget: () =>
       useMutation<GoalsAddTargetInput, GoalsAddTargetResult>(defaultApiClient.apiNamespaceGoals.addTarget),
+
+    updateParentGoal: (input: GoalsUpdateParentGoalInput) => defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
+    useUpdateParentGoal: () =>
+      useMutation<GoalsUpdateParentGoalInput, GoalsUpdateParentGoalResult>(
+        defaultApiClient.apiNamespaceGoals.updateParentGoal,
+      ),
 
     updateTarget: (input: GoalsUpdateTargetInput) => defaultApiClient.apiNamespaceGoals.updateTarget(input),
     useUpdateTarget: () =>
