@@ -11,9 +11,22 @@ export function Description(props: TaskPage.Props) {
 
   if (state.mode == "zero" && !props.canEdit) return null;
 
+  if (state.mode === "zero") {
+    return (
+      <div>
+        <button 
+          onClick={state.startEdit}
+          className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
+        >
+          Add notes...
+        </button>
+      </div>
+    );
+  }
+
   const editButton = (
     <SecondaryButton size="xxs" onClick={state.startEdit}>
-      {props.description ? "Edit" : "Write"}
+      Edit
     </SecondaryButton>
   );
 
@@ -21,7 +34,6 @@ export function Description(props: TaskPage.Props) {
     <div>
       <SectionHeader title="Notes" buttons={editButton} showButtons={props.canEdit && state.mode !== "edit"} />
 
-      {state.mode === "zero" && <DescriptionZeroState />}
       {state.mode === "view" && <DescriptionContent state={state} />}
       {state.mode === "edit" && <DescriptionEditor state={state} />}
     </div>
