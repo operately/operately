@@ -21,6 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field? :include_privacy, :boolean
     field? :include_potential_subscribers, :boolean
     field? :include_unread_notifications, :boolean
+    field? :include_retrospective, :boolean
   end
 
   outputs do
@@ -51,15 +52,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   end
 
   defp load(ctx, inputs) do
-    Goal.get(ctx.me, id: inputs.id, company_id: ctx.me.company_id, opts: [
-      with_deleted: true,
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    Goal.get(ctx.me,
+      id: inputs.id,
+      company_id: ctx.me.company_id,
+      opts: [
+        with_deleted: true,
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_champion: :champion,
       include_closed_by: :closed_by,
       include_projects: [projects: [:champion, :reviewer]],
@@ -69,18 +74,19 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_potential_subscribers: [:reviewer, :champion, group: :members],
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
       always_include: [targets: from(t in Target, order_by: t.index)],
-      always_include: :parent_goal,
-    ])
+      always_include: :parent_goal
+    )
   end
 
   defp after_load(inputs, me) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_permissions: &Goal.preload_permissions/1,
       include_access_levels: &Goal.preload_access_levels/1,
       include_privacy: &Goal.load_privacy/1,
       include_potential_subscribers: &Goal.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_last_check_in: &Goal.load_last_check_in_permissions/1,
-    ])
+      include_retrospective: &Goal.load_retrospective/1
+    )
   end
 end

@@ -43,6 +43,7 @@ defmodule Operately.Goals.Goal do
     field :privacy, :any, virtual: true
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :retrospective, :any, virtual: true
 
     timestamps()
     soft_delete()
@@ -206,6 +207,10 @@ defmodule Operately.Goals.Goal do
     else
       goal
     end
+  end
+
+  def load_retrospective(goal = %__MODULE__{}) do
+    Map.put(goal, :retrospective, Operately.Goals.Retrospective.find(goal.id))
   end
 
   def target_count(goal = %__MODULE__{}) do
