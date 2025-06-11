@@ -18,7 +18,7 @@ import { fetchAll } from "../../utils/async";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v21-GoalPage.goal-${id}`;
+  return `v24-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -434,7 +434,7 @@ function prepareRetrospective(retrospective: GoalRetrospective | null | undefine
   }
 
   return {
-    link: "#", // todo
+    link: Paths.goalRetrospectivePath(retrospective.id),
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
     author: preparePerson(retrospective.author)!,

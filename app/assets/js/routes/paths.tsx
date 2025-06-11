@@ -374,6 +374,10 @@ export class Paths {
     return createCompanyPath(["goal-activities", id]);
   }
 
+  static goalRetrospectivePath(id: string) {
+    return createCompanyPath(["goal-activities", id]);
+  }
+
   static goalDiscussionEditPath(activityId: string) {
     return createCompanyPath(["goal-activities", activityId, "edit"]);
   }
