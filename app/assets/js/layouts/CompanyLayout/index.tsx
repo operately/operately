@@ -33,6 +33,7 @@ function Navigation({ company }: { company: Api.Company }) {
 }
 
 function MobileNavigation({ company }: { company: Api.Company }) {
+  const me = useMe()!;
   const [open, setOpen] = React.useState(false);
 
   const handleLogOut = async () => {
@@ -42,6 +43,32 @@ function MobileNavigation({ company }: { company: Api.Company }) {
       window.location.href = "/";
     }
   };
+
+  const navLinks = React.useMemo(() => {
+    if (hasFeature(company, "new_navigation")) {
+      return (
+        <>
+          <MobileSectionLink to={Paths.goalsPath()} icon={Icons.IconBuildingEstate}>
+            Company
+          </MobileSectionLink>
+          <MobileSectionLink to={Paths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
+            My work
+          </MobileSectionLink>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <MobileSectionLink to={Paths.goalsPath()} icon={Icons.IconTargetArrow}>
+            Goals
+          </MobileSectionLink>
+          <MobileSectionLink to={Paths.projectsPath()} icon={Icons.IconTable}>
+            Projects
+          </MobileSectionLink>
+        </>
+      );
+    }
+  }, [company, me]);
 
   return (
     <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
@@ -67,13 +94,7 @@ function MobileNavigation({ company }: { company: Api.Company }) {
             Home
           </MobileSectionLink>
 
-          <MobileSectionLink to={Paths.goalsPath()} icon={Icons.IconTargetArrow}>
-            Goals
-          </MobileSectionLink>
-
-          <MobileSectionLink to={Paths.projectsPath()} icon={Icons.IconTable}>
-            Projects
-          </MobileSectionLink>
+          {navLinks}
 
           <MobileSectionLink to={Paths.reviewPath()} icon={Icons.IconCoffee}>
             Review
