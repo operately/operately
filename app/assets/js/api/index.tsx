@@ -882,6 +882,7 @@ export interface Goal {
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   success?: boolean | null;
+  retrospective?: GoalRetrospective | null;
 }
 
 export interface GoalDiscussion {
@@ -925,6 +926,15 @@ export interface GoalProgressUpdate {
   notifications?: Notification[] | null;
   timeframe?: Timeframe | null;
   permissions?: GoalUpdatePermissions | null;
+}
+
+export interface GoalRetrospective {
+  id: Id;
+  title: string;
+  insertedAt: string;
+  commentCount: number;
+  author: Person;
+  content: string;
 }
 
 export interface GoalTargetUpdates {
