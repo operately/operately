@@ -1,8 +1,8 @@
-import { IconBuilding, IconTarget, IconUserCheck, IconUserStar } from "@tabler/icons-react";
+import { IconUserCheck, IconUserStar } from "@tabler/icons-react";
 import React from "react";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
-import { BlackLink, DivLink } from "../Link";
+import { DivLink } from "../Link";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 
@@ -10,6 +10,7 @@ import { IconAlertTriangleFilled } from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
+import { GoalField } from "../GoalField";
 import { PersonField } from "../PersonField";
 import classNames from "../utils/classnames";
 import { durationHumanized, isOverdue } from "../utils/time";
@@ -58,28 +59,14 @@ function CompletedOn(props: GoalPage.State) {
 function ParentGoal(props: GoalPage.State) {
   return (
     <SidebarSection title="Parent Goal">
-      {!props.parentGoal ? <CompanyWideGoal /> : <ParentGoalLink {...props} />}
+      <GoalField
+        goal={props.parentGoal}
+        setGoal={props.setParentGoal}
+        searchGoals={props.searchParentGoals}
+        emptyStateMessage="No parent goal"
+        emptyStateReadOnlyMessage="No parent goal"
+      />
     </SidebarSection>
-  );
-}
-
-function CompanyWideGoal() {
-  return (
-    <div className="flex items-center gap-1.5 text-sm mb-2">
-      <IconBuilding size={14} />
-      <span>Company-wide goal</span>
-    </div>
-  );
-}
-
-function ParentGoalLink(props: GoalPage.State) {
-  return (
-    <div className="flex items-start gap-1.5 text-sm mb-2">
-      <IconTarget size={18} className="text-red-500 shrink-0 mt-px" />
-      <BlackLink to={props.parentGoal!.link} underline="hover">
-        {props.parentGoal!.name}
-      </BlackLink>
-    </div>
   );
 }
 
@@ -222,15 +209,6 @@ function Retrospective(props: GoalPage.Props) {
   );
 }
 
-function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-2">
-      <div className="font-bold text-sm">{title}</div>
-      {children}
-    </div>
-  );
-}
-
 function OverdueWarning(props: GoalPage.State) {
   if (props.state === "closed") return null;
   if (!props.dueDate) return null;
@@ -242,6 +220,15 @@ function OverdueWarning(props: GoalPage.State) {
     <div className="bg-callout-error p-3 text-callout-warning-message rounded mt-2 text-sm flex items-center gap-2">
       <IconAlertTriangleFilled size={16} className="text-callout-warning-icon" />
       Overdue by {duration}.
+    </div>
+  );
+}
+
+function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="">
+      <div className="font-bold text-sm mb-1.5">{title}</div>
+      {children}
     </div>
   );
 }

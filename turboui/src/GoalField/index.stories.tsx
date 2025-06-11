@@ -30,13 +30,13 @@ const meta: Meta<typeof GoalField> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const goal = { id: "1", name: "Improve team collaboration", goalLink: "#" };
+const goal = { id: "1", name: "Improve team collaboration", link: "#" };
 const potentialGoals = [
-  { id: "1", name: "Improve team collaboration", goalLink: "#" },
-  { id: "2", name: "Increase customer satisfaction", goalLink: "#" },
-  { id: "3", name: "Boost sales performance", goalLink: "#" },
-  { id: "4", name: "Enhance product quality", goalLink: "#" },
-  { id: "5", name: "Expand market reach", goalLink: "#" },
+  { id: "1", name: "Improve team collaboration", link: "#" },
+  { id: "2", name: "Increase customer satisfaction", link: "#" },
+  { id: "3", name: "Boost sales performance", link: "#" },
+  { id: "4", name: "Enhance product quality", link: "#" },
+  { id: "5", name: "Expand market reach", link: "#" },
 ];
 
 const searchGoals = async ({ query }) => {
