@@ -21,13 +21,36 @@ const addTarget = (): Promise<{ id: string; success: boolean }> =>
 const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
 const deleteGoal = (): Promise<void> => new Promise((resolve) => resolve());
 
+const searchParentGoals = async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
+  return [
+    {
+      id: "1",
+      name: "Accelerate product growth",
+      link: "/goals/1",
+    },
+    {
+      id: "2",
+      name: "Improve customer satisfaction",
+      link: "/goals/2",
+    },
+    {
+      id: "3",
+      name: "Expand market reach",
+      link: "/goals/3",
+    },
+  ].filter((goal) => goal.name.toLowerCase().includes(query.toLowerCase()));
+};
+
 function Component(props: Partial<GoalPage.Props>) {
+  const [parentGoal, setParentGoal] = React.useState<any>(
+    props.parentGoal || { name: "Accelerate product growth", link: "/goals/1", id: "1" },
+  );
+
   const [champion, setChampion] = React.useState<any>(props.champion);
   const [reviewer, setReviewer] = React.useState<any>(props.reviewer);
   const [dueDate, setDueDate] = React.useState<Date | null>(props.dueDate || null);
 
   const defaults = {
-    parentGoal,
     description,
     privacyLevel: "internal" as const,
     status: "on_track" as const,
@@ -56,6 +79,9 @@ function Component(props: Partial<GoalPage.Props>) {
       newDiscussionLink="#"
       addSubgoalLink="#"
       addSubprojectLink="#"
+      parentGoal={parentGoal}
+      setParentGoal={setParentGoal}
+      searchParentGoals={searchParentGoals}
       champion={champion}
       setChampion={setChampion}
       reviewer={reviewer}
@@ -368,11 +394,6 @@ const description: any = {
   ],
 };
 
-const parentGoal = {
-  name: "Accelerate product growth",
-  link: "/goals/1",
-};
-
 export const Default: Story = {
   args: {
     description: description,
@@ -450,6 +471,7 @@ export const LongParentName: Story = {
     parentGoal: {
       id: "1",
       name: "Enchance the AI Platform with Advanced Features and Integrations",
+      link: "/goals/1",
     },
   },
 };
