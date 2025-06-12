@@ -1,4 +1,4 @@
-import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
+import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
 import * as People from "@/models/people";
 import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
@@ -67,6 +67,12 @@ function Page() {
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
 
+  const [space, setSpace] = usePageField({
+    value: (data) => prepareSpace(data.goal.space),
+    update: async () => false, // should be Api.goals.updateSpace({ goalId: goal.id!, spaceId: v && v.id }),
+    onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
+  });
+
   const [dueDate, setDueDate] = usePageField({
     value: (data) => Time.parse(data.goal.dueDate),
     update: (v) => Api.goals.updateDueDate({ goalId: goal.id!, dueDate: v && Time.toDateWithoutTime(v) }),
@@ -104,6 +110,7 @@ function Page() {
   });
 
   const parentGoalSearch = useParentGoalSearch(goal);
+  const spaceSearch = useSpaceSearch();
 
   const deleteGoal = async () => {
     try {
@@ -118,9 +125,7 @@ function Page() {
 
   const props: GoalPage.Props = {
     goalName: goal.name,
-    spaceName: goal.space.name,
     workmapLink: Paths.spaceWorkMapPath(goal.space.id, "goals"),
-    spaceLink: Paths.spacePath(goal.space.id),
     closeLink: Paths.goalClosePath(goal.id),
     editGoalLink: Paths.goalEditPath(goal.id),
     newCheckInLink: Paths.goalCheckInNewPath(goal.id),
@@ -134,6 +139,10 @@ function Page() {
 
     privacyLevel: goal.privacy,
     canEdit: goal.permissions.canEdit,
+
+    space,
+    setSpace,
+    spaceSearch,
 
     parentGoal,
     setParentGoal,
@@ -458,5 +467,25 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
     const goals = data.goals.map(prepareParentGoal);
 
     return goals.map((g) => g!);
+  };
+}
+
+function prepareSpace(space: Space): GoalPage.Space {
+  return {
+    id: space.id!,
+    name: space.name!,
+    link: Paths.spacePath(space.id!),
+  };
+}
+
+function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
+  return async ({}: { query: string }): Promise<GoalPage.Space[]> => {
+    const data = await { spaces: [] as Space[] }; // Api.spaces.search({ query: query.trim() });
+
+    return data.spaces.map((space) => ({
+      id: space.id!,
+      name: space.name!,
+      link: Paths.spacePath(space.id!),
+    }));
   };
 }
