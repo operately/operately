@@ -10,6 +10,7 @@ interface Props {
   selectedItemId?: string;
   onRowClick?: (item: WorkMap.Item) => void;
   expanded: boolean;
+  showIndentation: boolean;
 }
 
 export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {
