@@ -3,8 +3,6 @@ import * as WorkMap from "@/models/workMap";
 import { convertToWorkMapItem } from "@/models/workMap";
 
 import { PageCache } from "@/routes/PageCache";
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
@@ -17,19 +15,8 @@ interface LoaderResult {
 }
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  await redirectIfFeatureNotEnabled(params, {
-    feature: "new_profile_page",
-    path: Paths.profilePath(params.id),
-  });
+  const personId = params.id;
 
-  return fetchData(params.id, refreshCache);
-}
-
-export function useLoadedData() {
-  return PageCache.useData(loader).data;
-}
-
-function fetchData(personId: string, refreshCache: boolean) {
   return PageCache.fetch({
     cacheKey: `v2-PersonalWorkMap-${personId}`,
     refreshCache,
@@ -51,4 +38,8 @@ function fetchData(personId: string, refreshCache: boolean) {
         }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
       }),
   });
+}
+
+export function useLoadedData() {
+  return PageCache.useData(loader).data;
 }

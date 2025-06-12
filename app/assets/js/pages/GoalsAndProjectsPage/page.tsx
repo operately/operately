@@ -34,7 +34,7 @@ export function Page() {
 function Header() {
   const newGoalPath = Paths.newGoalPath({ companyWide: true });
   const newProjectPath = Paths.newProjectPath({
-    backPath: Paths.goalsPath(),
+    backPath: Paths.workMapPath(),
     backPathName: "Back to Goal Map",
   });
 
