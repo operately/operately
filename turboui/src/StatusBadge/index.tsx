@@ -8,7 +8,7 @@ export function StatusBadge({ status, hideIcon = false, className = "", style, c
 
   return (
     <span
-      className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium ${bgColor} ${textColor} border ${borderColor} shadow-sm ${className}`}
+      className={`inline-flex items-center px-2 sm:px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap ${bgColor} ${textColor} border ${borderColor} shadow-sm ${className}`}
       style={style}
     >
       {icon}
