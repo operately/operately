@@ -1,14 +1,37 @@
 import React from "react";
 import { TaskPage } from ".";
 import { Description } from "./Description";
+import { Timeline } from "../Timeline";
 
 export function Overview(props: TaskPage.State) {
   return (
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <Description {...props} />
-      <CommentsPlaceholder />
+      <ActivitySection {...props} />
     </div>
   );
+}
+
+function ActivitySection(props: TaskPage.State) {
+  // Use timeline data if provided, otherwise show placeholder
+  if (props.timelineItems && props.currentUser) {
+    return (
+      <div>
+        <h3 className="text-lg font-semibold mb-4">Activity & Discussion</h3>
+        <Timeline
+          items={props.timelineItems}
+          currentUser={props.currentUser}
+          canComment={props.canComment ?? true}
+          commentParentType="task"
+          onAddComment={props.onAddComment}
+          onEditComment={props.onEditComment}
+          filters={props.timelineFilters}
+        />
+      </div>
+    );
+  }
+
+  return <CommentsPlaceholder />;
 }
 
 function CommentsPlaceholder() {

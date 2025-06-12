@@ -3,6 +3,8 @@ import { PageNew } from "../Page";
 import { Status } from "../TaskBoard/types";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import { TimelineItem, TimelineFilters } from "../Timeline/types";
+import { Person as TimelinePerson } from "../CommentSection/types";
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
@@ -83,8 +85,13 @@ export namespace TaskPage {
     // Permissions
     canEdit: boolean;
 
-    // Activity/Comments placeholder
-    activityFeed?: React.ReactNode;
+    // Timeline/Activity feed
+    timelineItems?: TimelineItem[];
+    currentUser?: TimelinePerson;
+    canComment?: boolean;
+    onAddComment?: (content: any) => void;
+    onEditComment?: (id: string, content: any) => void;
+    timelineFilters?: TimelineFilters;
   }
 
   export interface State extends Props {

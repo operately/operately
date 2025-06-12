@@ -3,6 +3,7 @@ export * from "./TestableElement";
 export * from "./Avatar";
 export * from "./Button";
 export * from "./Chronometer";
+export * from "./CommentSection";
 export * from "./FormattedTime";
 export * from "./Link";
 export * from "./Menu";
@@ -11,6 +12,7 @@ export * from "./PieChart";
 export * from "./ProgressBar";
 export * from "./StatusBadge";
 export * from "./TimeframeSelector";
+export * from "./Timeline";
 export * from "./WorkMap";
 
 export { DateDisplayField } from "./DateDisplayField";
