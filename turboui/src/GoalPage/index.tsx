@@ -14,11 +14,18 @@ import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
+import { MoveModal } from "./MoveModal";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 import { pageOptions } from "./PageOptions";
 
 export namespace GoalPage {
+  export interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
   export interface Retrospective {
     link: string;
     content: string;
@@ -72,7 +79,6 @@ export namespace GoalPage {
   }
 
   export interface Props {
-    spaceLink: string;
     workmapLink: string;
     closeLink: string;
     editGoalLink: string;
@@ -83,7 +89,10 @@ export namespace GoalPage {
 
     goalName: string;
     description?: string;
-    spaceName: string;
+
+    space: Space;
+    setSpace: (space: Space) => void;
+    spaceSearch: (params: { query: string }) => Promise<Space[]>;
 
     parentGoal: ParentGoal | null;
     setParentGoal: (goal: ParentGoal | null) => void;
@@ -131,17 +140,23 @@ export namespace GoalPage {
     activityFeed: React.ReactNode;
 
     deleteModalOpen?: boolean;
+    moveModealOpen?: boolean;
   }
 
   export interface State extends Props {
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
+
+    isMoveModalOpen: boolean;
+    openMoveModal: () => void;
+    closeMoveModal: () => void;
   }
 }
 
 function useGoalPageState(props: GoalPage.Props): GoalPage.State {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModealOpen || false);
 
   return {
     ...props,
@@ -149,6 +164,10 @@ function useGoalPageState(props: GoalPage.Props): GoalPage.State {
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
+
+    isMoveModalOpen,
+    openMoveModal: () => setIsMoveModalOpen(true),
+    closeMoveModal: () => setIsMoveModalOpen(false),
   };
 }
 
@@ -175,6 +194,7 @@ export function GoalPage(props: GoalPage.Props) {
       </div>
 
       <DeleteModal {...state} />
+      <MoveModal {...state} />
     </PageNew>
   );
 }
