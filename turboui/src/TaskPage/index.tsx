@@ -90,7 +90,7 @@ export function TaskPage(props: TaskPage.Props) {
       <div className="px-4 py-4">
         <PageHeader {...state} />
         <div className="flex-1 overflow-scroll">
-          <div className="px-4 py-6 max-w-6xl mx-auto">
+          <div className="px-4 py-6">
             <div className="sm:grid sm:grid-cols-12">
               <Overview {...state} />
               <Sidebar {...state} />
