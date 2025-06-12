@@ -126,7 +126,6 @@ function Page() {
   const props: GoalPage.Props = {
     goalName: goal.name,
     workmapLink: Paths.spaceWorkMapPath(goal.space.id, "goals"),
-    spaceLink: Paths.spacePath(goal.space.id),
     closeLink: Paths.goalClosePath(goal.id),
     editGoalLink: Paths.goalEditPath(goal.id),
     newCheckInLink: Paths.goalCheckInNewPath(goal.id),
