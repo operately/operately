@@ -1,8 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { IconBuildingSkyscraper, IconCircleX, IconSearch } from "@tabler/icons-react";
-import { SecondaryButton } from "../Button";
+import { IconChevronDown, IconCircleX, IconSearch, IconTent } from "@tabler/icons-react";
 import classNames from "../utils/classnames";
 
 export namespace SpaceField {
@@ -17,6 +16,7 @@ export namespace SpaceField {
   export interface Props {
     space: Space | null;
     setSpace: (space: Space | null) => void;
+    search: SearchSpaceFn;
 
     isOpen?: boolean;
     iconSize?: number;
@@ -24,7 +24,6 @@ export namespace SpaceField {
 
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
-    searchSpaces: SearchSpaceFn;
     variant?: "inline" | "form-field";
   }
 
@@ -34,6 +33,7 @@ export namespace SpaceField {
 
     dialogMode: "menu" | "search";
     setDialogMode: (mode: "menu" | "search") => void;
+    closeDialog: () => void;
 
     space: Space | null;
     setSpace: (space: Space | null) => void;
@@ -65,16 +65,24 @@ export function SpaceField(props: SpaceField.Props) {
 }
 
 export function useSpaceFieldState(p: SpaceField.Props): SpaceField.State {
+  const initialMode = p.variant === "form-field" ? "search" : "menu";
+
   const [isOpen, setIsOpen] = React.useState(p.isOpen ?? DefaultProps.isOpen);
-  const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
+  const [dialogMode, setDialogMode] = React.useState<"menu" | "search">(initialMode);
   const [searchQuery, setSearchQuery] = React.useState("");
   const [searchResults, setSearchResults] = React.useState<SpaceField.Space[]>([]);
 
   React.useEffect(() => {
-    if (dialogMode === "search" && searchQuery) {
-      p.searchSpaces({ query: searchQuery }).then(setSearchResults);
+    if (dialogMode === "search") {
+      p.search({ query: searchQuery }).then(setSearchResults);
     }
-  }, [dialogMode, searchQuery]);
+  }, [dialogMode, searchQuery, p.searchSpaces]);
+
+  const closeDialog = React.useCallback(() => {
+    setIsOpen(false);
+    setDialogMode(initialMode);
+    setSearchQuery("");
+  }, [initialMode]);
 
   return {
     ...DefaultProps,
@@ -82,6 +90,7 @@ export function useSpaceFieldState(p: SpaceField.Props): SpaceField.State {
     isOpen,
     setIsOpen,
     dialogMode,
+    closeDialog,
     setDialogMode,
     searchQuery,
     setSearchQuery,
@@ -90,60 +99,68 @@ export function useSpaceFieldState(p: SpaceField.Props): SpaceField.State {
 }
 
 function Trigger({ state }: { state: SpaceField.State }) {
-  if (!state.space && state.showEmptyStateAsButton) {
-    return (
-      <EmptyStateButton emptyStateText={state.emptyStateMessage} readonly={state.readonly} variant={state.variant} />
-    );
-  }
-
   const iconSize = state.iconSize;
-  const Elem = state.readonly ? "span" : "button";
 
   const elemClass = classNames(
     {
-      "flex items-center": true,
+      "flex items-center justify-between": true, // Added justify-between for chevron alignment
       "gap-1.5": true,
       "focus:outline-none hover:bg-surface-dimmed rounded-lg": !state.readonly,
       "px-1.5 py-1 -my-1 -mx-1.5": !state.readonly && state.variant === "inline",
-      "px-2 py-1.5": state.variant === "form-field",
+      "px-2 py-1.5 border border-surface-outline rounded-lg": state.variant === "form-field", // Added border for form-field
       "text-content-dimmed": !state.space,
       "w-full": state.variant === "form-field",
+      "cursor-pointer": !state.readonly, // Added cursor-pointer when not readonly
     },
     "text-sm",
   );
 
-  const text = state.space
-    ? state.space.name
-    : state.readonly
-    ? state.emptyStateReadonlyMessage
-    : state.emptyStateMessage;
+  const text = getSpaceFieldText(state);
 
   return (
-    <Elem className={elemClass}>
-      <IconBuildingSkyscraper size={iconSize} className="-mt-[1px]" />
-      <span>{text}</span>
-    </Elem>
+    <Popover.Trigger asChild disabled={state.readonly}>
+      <button type="button" className={elemClass} aria-label={text}>
+        <div className="flex items-center gap-1.5 flex-grow">
+          <IconTent size={iconSize} className="-mt-[1px]" />
+          <span>{text}</span>
+        </div>
+        {state.variant === "form-field" && <IconChevronDown size={16} className="text-content-subtle" />}
+      </button>
+    </Popover.Trigger>
   );
 }
 
-function Dialog({ state }: { state: SpaceField.State }) {
-  const content = (
-    <div className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50 w-[300px]">
-      <DialogMenu state={state} />
-    </div>
-  );
+function getSpaceFieldText(state: SpaceField.State) {
+  if (state.space) return state.space.name;
+  if (state.readonly) return state.emptyStateReadOnlyMessage;
 
+  return state.emptyStateMessage;
+}
+
+function Dialog({ state }: { state: SpaceField.State }) {
   return (
     <Popover.Portal>
-      <Popover.Content className="z-50" sideOffset={5}>
-        {content}
-        <Popover.Arrow />
+      <Popover.Content
+        className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-50"
+        style={{ width: "220px" }}
+        sideOffset={4}
+        align="start"
+        alignOffset={2}
+      >
+        <DialogMenu state={state} />
+        <Popover.Arrow className="fill-surface-base stroke-1 stroke-surface-outline" />
       </Popover.Content>
     </Popover.Portal>
   );
 }
 
 function DialogMenu({ state }: { state: SpaceField.State }) {
+  // If variant is form-field, always show SearchMode.
+  if (state.variant === "form-field") {
+    return <SearchMode state={state} />;
+  }
+
+  // For inline variant, behavior depends on dialogMode.
   if (state.dialogMode === "search") {
     return <SearchMode state={state} />;
   }
@@ -152,98 +169,72 @@ function DialogMenu({ state }: { state: SpaceField.State }) {
 }
 
 function MenuMode({ state }: { state: SpaceField.State }) {
+  const commonButtonClass =
+    "flex items-center gap-2 text-sm w-full text-left px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
+
   return (
-    <>
-      <div className="flex justify-between items-center border-b border-surface-outline p-2 pb-1.5">
-        <div className="text-sm font-medium">Space</div>
-        {state.space && (
-          <button
-            onClick={() => state.setSpace(null)}
-            className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-dimmed"
-          >
-            <IconCircleX size={14} className="mr-1" />
-            Clear
-          </button>
-        )}
-      </div>
-      <div className="p-2">
+    <div className="p-1">
+      {state.space && (
         <button
-          onClick={() => state.setDialogMode("search")}
-          className="text-left w-full text-sm px-2 py-1.5 rounded hover:bg-surface-dimmed flex items-center gap-2"
+          onClick={() => {
+            state.setSpace(null);
+            state.setIsOpen(false); // Close dialog after clearing
+          }}
+          className={classNames(commonButtonClass)}
         >
-          <IconSearch size={16} />
-          <span>Search spaces...</span>
+          <IconCircleX size={14} />
+          <span>Clear space</span>
         </button>
-      </div>
-    </>
+      )}
+      <button
+        onClick={() => state.setDialogMode("search")}
+        className={classNames(commonButtonClass, state.space ? "mt-1" : "")} // Add margin if clear button is present
+      >
+        <IconSearch size={14} />
+        <span>Choose another space</span>
+      </button>
+    </div>
   );
 }
 
 function SearchMode({ state }: { state: SpaceField.State }) {
   return (
-    <>
-      <div className="p-2 border-b border-surface-outline">
+    <div className="p-1">
+      <div className="p-1 pb-0.5">
         <input
           type="text"
           placeholder="Search spaces..."
-          className="w-full px-2 py-1.5 bg-transparent border-none focus:outline-none text-sm"
+          className="w-full border border-stroke-base rounded px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
           value={state.searchQuery}
           onChange={(e) => state.setSearchQuery(e.target.value)}
           autoFocus
         />
       </div>
-      <div className="max-h-[300px] overflow-y-auto">
+      <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: "210px" }}>
+        {state.searchResults.length === 0 && state.searchQuery && (
+          <div className="px-1.5 py-1 text-sm text-content-dimmed">No spaces found.</div>
+        )}
         {state.searchResults.map((space) => (
           <SearchResult key={space.id} space={space} state={state} />
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
 function SearchResult({ space, state }: { space: SpaceField.Space; state: SpaceField.State }) {
   const handleSelect = () => {
     state.setSpace(space);
-    state.setIsOpen(false);
-    state.setDialogMode("menu");
-    state.setSearchQuery("");
+    state.closeDialog();
   };
 
   return (
     <button
       onClick={handleSelect}
-      className="text-left w-full text-sm px-4 py-2 hover:bg-surface-dimmed flex items-center gap-2"
+      className="text-left w-full text-sm px-1.5 py-1 rounded hover:bg-surface-dimmed flex items-center gap-2 cursor-pointer"
     >
-      <IconBuildingSkyscraper size={16} />
+      <IconTent size={14} />
       <span>{space.name}</span>
     </button>
   );
-}
-
-function EmptyStateButton({
-  readonly,
-  emptyStateText,
-  variant,
-}: {
-  readonly: boolean;
-  emptyStateText: string;
-  variant?: "inline" | "form-field";
-}) {
-  if (readonly) {
-    return null;
-  } else {
-    const containerClass = classNames({
-      "text-content-subtle": true,
-      "p-1.5": variant === "form-field",
-      "w-full": variant === "form-field",
-    });
-
-    return (
-      <div className={containerClass}>
-        <SecondaryButton size="xs" icon={IconBuildingSkyscraper}>
-          {emptyStateText}
-        </SecondaryButton>
-      </div>
-    );
-  }
 }

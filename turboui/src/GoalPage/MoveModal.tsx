@@ -7,7 +7,7 @@ import { SpaceField } from "../SpaceField";
 
 export function MoveModal(props: GoalPage.State) {
   const [isMoving, setIsMoving] = React.useState(false);
-  const [selectedSpace, setSelectedSpace] = React.useState(props.space);
+  const [selectedSpace, setSelectedSpace] = React.useState<GoalPage.Space | null>(props.space);
 
   React.useEffect(() => setSelectedSpace(props.space), [props.space]);
 
