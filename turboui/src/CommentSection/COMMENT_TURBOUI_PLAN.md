@@ -72,38 +72,32 @@ This plan outlines the creation of turboui components for displaying comment fee
 
 ### 2.1 Activity Types for TaskPage Timeline
 
-- [ ] **TaskAssignmentActivity** - Person assigned to task
-- [ ] **TaskStatusChangeActivity** - Status updates (todo, in progress, done)
-- [ ] **TaskMilestoneActivity** - Task attached/detached from milestone
-- [ ] **TaskPriorityActivity** - Priority changes
-- [ ] **TaskDueDateActivity** - Due date changes
-- [ ] **TaskDescriptionActivity** - Description updates
-- [ ] **TaskTitleActivity** - Title changes
+- [x] **TaskAssignmentActivity** - Person assigned to task
+- [x] **TaskStatusChangeActivity** - Status updates (todo, in progress, done)
+- [x] **TaskMilestoneActivity** - Task attached/detached from milestone
+- [x] **TaskPriorityActivity** - Priority changes
+- [x] **TaskDueDateActivity** - Due date changes
+- [x] **TaskDescriptionActivity** - Description updates
+- [x] **TaskTitleActivity** - Title changes
+- [x] **TaskCreationActivity** - Task creation tracking
 
 ### 2.2 Timeline Component Architecture
 
-- [ ] **TimelineItem** - Generic timeline entry wrapper
-  - [ ] Avatar, timestamp, content area
-  - [ ] Support for both comments and activities
-  - [ ] Consistent spacing and borders
-- [ ] **Timeline** - Main timeline container
-  - [ ] Chronological sorting
-  - [ ] Mixed content rendering
-  - [ ] Pagination/loading support
-  - [ ] Filter options (comments only, activities only, all)
+- [x] **TimelineItem** - Generic timeline entry wrapper
+  - [x] Avatar, timestamp, content area
+  - [x] Support for both comments and activities
+  - [x] Consistent spacing and borders
+- [x] **Timeline** - Main timeline container
+  - [x] Chronological sorting
+  - [x] Mixed content rendering
+  - [x] Empty state handling
+  - [x] Filter options (comments only, activities only, all)
 
 ### 2.3 Activity Rendering Components
 
-- [ ] **ActivityIcon** - Dynamic icon selection based on activity type
-- [ ] **ActivityText** - Formatted text for different activity types
-- [ ] **ActivityDetails** - Additional context (old/new values, etc.)
-
-### 2.4 Enhanced Features
-
-- [ ] **TimelineFilters** - Filter by type, author, date range
-- [ ] **TimelineSearch** - Search within timeline content
-- [ ] **TimelineExport** - Export timeline data
-- [ ] **ActivityGrouping** - Group related activities
+- [x] **ActivityIcon** - Dynamic icon selection based on activity type
+- [x] **ActivityText** - Formatted text for different activity types
+- [x] **ActivityDetails** - Additional context (old/new values, etc.)
 
 ## Phase 3: Storybook and Testing
 
@@ -136,10 +130,10 @@ This plan outlines the creation of turboui components for displaying comment fee
 
 ### 4.1 TaskPage Integration
 
-- [ ] Replace CommentsPlaceholder with Timeline component
-- [ ] Wire up task activity data
-- [ ] Handle permissions and form state
-- [ ] Test with real data
+- [x] Replace CommentsPlaceholder with Timeline component
+- [x] Wire up task activity data
+- [x] Handle permissions and form state
+- [x] Test with real data in TaskPage stories
 
 ### 4.2 Existing Page Updates
 

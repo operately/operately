@@ -12,6 +12,7 @@ export * from "./PieChart";
 export * from "./ProgressBar";
 export * from "./StatusBadge";
 export * from "./TimeframeSelector";
+export * from "./Timeline";
 export * from "./WorkMap";
 
 export { DateDisplayField } from "./DateDisplayField";
