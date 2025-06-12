@@ -38,8 +38,8 @@ function Header() {
   const newGoalPath = paths.spaceNewGoalPath(space.id!);
   const newProjectPath = paths.newProjectPath({
     spaceId: space.id!,
-    backPath: paths.spaceGoalsPath(space.id!),
-    backPathName: `Back to ${space.name} Goal Map`,
+    backPath: paths.spaceWorkMapPath(space.id!),
+    backPathName: `Back to ${space.name} Work Map`,
   });
 
   return (
