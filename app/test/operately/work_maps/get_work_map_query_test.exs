@@ -427,6 +427,15 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
         }
       })
     end
+
+    test "does not return projects in which the contributor is the reviewer", ctx do
+      ctx = Factory.add_project(ctx, :project3, :space, reviewer: :contributor1)
+
+      {:ok, work_map} = GetWorkMapQuery.execute(:system, %{company_id: ctx.company.id, contributor_id: ctx.contributor1.id})
+      assert_work_map_structure(work_map, ctx, %{
+        project1: []
+      })
+    end
   end
 
   describe "functionality - execute/1 with deeply nested structure" do

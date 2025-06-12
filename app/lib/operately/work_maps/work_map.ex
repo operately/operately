@@ -217,7 +217,8 @@ defmodule Operately.WorkMaps.WorkMap do
           :reviewer_id ->
             item.reviewer && item.reviewer.id == filter_value
           :contributor_id ->
-            item.contributor && item.contributor.id == filter_value
+            reviewer_id = get_project_reviewer_id(item.resource)
+            item.contributor && item.contributor.id == filter_value && reviewer_id != filter_value
         end
       end)
     end
@@ -264,4 +265,12 @@ defmodule Operately.WorkMaps.WorkMap do
       children ++ descendants
     end
   end
+
+  defp get_project_reviewer_id(%{ contributors: contributors }) do
+    Enum.find_value(contributors, fn
+      %{ role: :reviewer, person_id: person_id } -> person_id
+      _ -> nil
+    end)
+  end
+  defp get_project_reviewer_id(_), do: nil
 end
