@@ -22,10 +22,10 @@ export function PageHeader(props: TaskPage.State) {
             trimBeforeSave
           />
 
-          <StatusSelector 
-            status={props.status} 
-            onChange={props.onStatusChange} 
-            size="md" 
+          <StatusSelector
+            status={props.status}
+            onChange={props.onStatusChange}
+            size="md"
             readonly={!props.canEdit}
             showFullBadge={true}
           />
