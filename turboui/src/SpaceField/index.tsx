@@ -76,7 +76,7 @@ export function useSpaceFieldState(p: SpaceField.Props): SpaceField.State {
     if (dialogMode === "search") {
       p.search({ query: searchQuery }).then(setSearchResults);
     }
-  }, [dialogMode, searchQuery, p.searchSpaces]);
+  }, [dialogMode, searchQuery, p.search]);
 
   const closeDialog = React.useCallback(() => {
     setIsOpen(false);
