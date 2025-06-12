@@ -11,6 +11,7 @@ export interface AvatarPerson {
 export interface AvatarProps {
   person: AvatarPerson;
   size: AvatarSize;
+  className?: string;
 }
 
 export interface AvatarListProps {
