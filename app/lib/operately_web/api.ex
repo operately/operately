@@ -38,6 +38,10 @@ defmodule OperatelyWeb.Api do
     mutation(:update_reviewer, OperatelyWeb.Api.Goals.UpdateReviewer)
   end
 
+  namespace(:spaces) do
+    query(:search, OperatelyWeb.Api.Spaces.Search)
+  end
+
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)
   query(:get_activity, Q.GetActivity)

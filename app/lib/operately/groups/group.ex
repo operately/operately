@@ -34,7 +34,7 @@ defmodule Operately.Groups.Group do
   def changeset(group, attrs) do
     group
     |> cast(attrs, [:company_id, :name, :mission, :deleted_at])
-    |> validate_required([:company_id, :name, :mission ])
+    |> validate_required([:company_id, :name, :mission])
   end
 
   #
@@ -65,13 +65,14 @@ defmodule Operately.Groups.Group do
   end
 
   def preload_members_access_level(space = %__MODULE__{}) do
-    subquery = from(b in Operately.Access.Binding,
-      join: c in assoc(b, :context),
-      where: c.group_id == ^space.id,
-      select: b
-    )
+    subquery =
+      from(b in Operately.Access.Binding,
+        join: c in assoc(b, :context),
+        where: c.group_id == ^space.id,
+        select: b
+      )
 
-    Repo.preload(space, [members: [access_group: [bindings: subquery]]])
+    Repo.preload(space, members: [access_group: [bindings: subquery]])
   end
 
   def set_potential_subscribers(space = %__MODULE__{}) do
@@ -81,5 +82,18 @@ defmodule Operately.Groups.Group do
 
   def preload_permissions(space = %__MODULE__{}) do
     Map.put(space, :permissions, Operately.Groups.Permissions.calculate_permissions(space.request_info.access_level))
+  end
+
+  def search(person, query) do
+    import Ecto.Query
+    import Operately.Access.Filters, only: [filter_by_view_access: 2]
+
+    from(s in __MODULE__)
+    |> where([s], s.company_id == ^person.company_id)
+    |> where([s], ilike(s.name, ^"%#{query}%"))
+    |> filter_by_view_access(person.id)
+    |> order_by([s], asc: s.name)
+    |> limit(10)
+    |> Operately.Repo.all()
   end
 end

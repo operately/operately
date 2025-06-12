@@ -2224,6 +2224,14 @@ export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
 }
 
+export interface SpacesSearchInput {
+  query: string;
+}
+
+export interface SpacesSearchResult {
+  spaces: Space[];
+}
+
 export interface AcknowledgeGoalProgressUpdateInput {
   id?: string | null;
 }
@@ -2943,6 +2951,15 @@ export interface GoalsUpdateReviewerInput {
 }
 
 export interface GoalsUpdateReviewerResult {
+  success: boolean | null;
+}
+
+export interface GoalsUpdateSpaceInput {
+  goalId: Id;
+  spaceId: Id;
+}
+
+export interface GoalsUpdateSpaceResult {
   success: boolean | null;
 }
 
@@ -3906,6 +3923,14 @@ class ApiNamespaceRoot {
   }
 }
 
+class ApiNamespaceSpaces {
+  constructor(private client: ApiClient) {}
+
+  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
+    return this.client.get("/spaces/search", input);
+  }
+}
+
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
@@ -3953,6 +3978,10 @@ class ApiNamespaceGoals {
     return this.client.post("/goals/update_reviewer", input);
   }
 
+  async updateSpace(input: GoalsUpdateSpaceInput): Promise<GoalsUpdateSpaceResult> {
+    return this.client.post("/goals/update_space", input);
+  }
+
   async updateTarget(input: GoalsUpdateTargetInput): Promise<GoalsUpdateTargetResult> {
     return this.client.post("/goals/update_target", input);
   }
@@ -3970,10 +3999,12 @@ export class ApiClient {
   private basePath: string;
   private headers: any;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceGoals: ApiNamespaceGoals;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
   }
 
@@ -6290,6 +6321,12 @@ export default {
   updateTaskStatus,
   useUpdateTaskStatus,
 
+  spaces: {
+    search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
+    useSearch: (input: SpacesSearchInput) =>
+      useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+  },
+
   goals: {
     parentGoalSearch: (input: GoalsParentGoalSearchInput) => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input),
     useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
@@ -6342,6 +6379,10 @@ export default {
       useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceGoals.updateDescription,
       ),
+
+    updateSpace: (input: GoalsUpdateSpaceInput) => defaultApiClient.apiNamespaceGoals.updateSpace(input),
+    useUpdateSpace: () =>
+      useMutation<GoalsUpdateSpaceInput, GoalsUpdateSpaceResult>(defaultApiClient.apiNamespaceGoals.updateSpace),
 
     updateTargetValue: (input: GoalsUpdateTargetValueInput) =>
       defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
