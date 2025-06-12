@@ -73,7 +73,6 @@ export function useState(props: MilestoneFieldProps): State {
 
   React.useEffect(() => {
     if (!isOpen) {
-      setIsOpen(false);
       setDialogMode(props.milestone ? "menu" : "search");
       setSearchQuery(""); // Clear search query when dialog closes
     }
