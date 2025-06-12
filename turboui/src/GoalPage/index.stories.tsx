@@ -551,6 +551,12 @@ export const DeleteGoalWithSubitem: Story = {
   },
 };
 
+export const MoveGoal: Story = {
+  args: {
+    moveModealOpen: true,
+  },
+};
+
 function asRichText(content: string): any {
   return {
     type: "doc",
