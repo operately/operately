@@ -9,7 +9,7 @@ import { StatusBadge } from "../StatusBadge";
 
 export function PageHeader(props: GoalPage.State) {
   const navigation = [
-    { to: props.spaceLink, label: props.spaceName },
+    { to: props.space.link, label: props.space.name },
     { to: props.workmapLink, label: "Goals" },
   ];
 
@@ -32,7 +32,7 @@ export function PageHeader(props: GoalPage.State) {
           <PrivacyIndicator
             resourceType="goal"
             privacyLevel={props.privacyLevel}
-            spaceName={props.spaceName}
+            spaceName={props.space.name}
             className="inline-block ml-3 align-[-2px]"
           />
 

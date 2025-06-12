@@ -41,14 +41,32 @@ const parentGoalSearch = async ({ query }: { query: string }): Promise<GoalPage.
   ].filter((goal) => goal.name.toLowerCase().includes(query.toLowerCase()));
 };
 
-function Component(props: Partial<GoalPage.Props>) {
-  const [parentGoal, setParentGoal] = React.useState<any>(
-    props.parentGoal || { name: "Accelerate product growth", link: "/goals/1", id: "1" },
-  );
+const spaceSearch = async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
+  return [
+    { id: "1", name: "Product Development", link: "/spaces/1" },
+    { id: "2", name: "Marketing", link: "/spaces/2" },
+    { id: "3", name: "Engineering", link: "/spaces/3" },
+  ].filter((space) => space.name.toLowerCase().includes(query.toLowerCase()));
+};
 
-  const [champion, setChampion] = React.useState<any>(props.champion);
-  const [reviewer, setReviewer] = React.useState<any>(props.reviewer);
+const defaultParentGoal: GoalPage.ParentGoal = {
+  id: "1",
+  name: "Accelerate product growth",
+  link: "/goals/1",
+};
+
+const defaultSpace: GoalPage.Space = {
+  id: "1",
+  name: "Product Development",
+  link: "/spaces/1",
+};
+
+function Component(props: Partial<GoalPage.Props>) {
+  const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
   const [dueDate, setDueDate] = React.useState<Date | null>(props.dueDate || null);
+  const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
+  const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
+  const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);
 
   const defaults = {
     description,
@@ -71,7 +89,9 @@ function Component(props: Partial<GoalPage.Props>) {
     <GoalPage
       {...defaults}
       {...props}
-      spaceLink="/spaces/1"
+      space={space}
+      setSpace={setSpace}
+      spaceSearch={spaceSearch}
       workmapLink="/spaces/1/workmaps/1"
       closeLink={storyPath("Pages/GoalClosePage", "Default")}
       editGoalLink={storyPath("Pages/GoalEditPage", "Default")}
