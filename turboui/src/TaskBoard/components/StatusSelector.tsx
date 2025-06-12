@@ -1,12 +1,13 @@
 import React from "react";
-import { StatusBadge } from "../../StatusBadge";
 import { Menu, MenuActionItem } from "../../Menu";
+import classNames from "../../utils/classnames";
 import {
   IconCircleDashed,
   IconCircleDot,
   IconCircleCheckFilled,
   IconX,
-  IconCheck
+  IconCheck,
+  IconChevronDown
 } from "@tabler/icons-react";
 
 // Import types from the shared types module
@@ -18,12 +19,12 @@ const ColoredIconCircleCheckFilled = (props: any) => (
   <IconCircleCheckFilled {...props} className="text-callout-success-icon" />
 );
 
-// Map task status to badge status, labels and icons
-const taskStatusConfig: Record<Types.Status, { status: string; label: string; icon: any; color?: string }> = {
-  pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
-  in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
-  done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
-  canceled: { status: "canceled", label: "Canceled", icon: IconX },
+// Map task status to labels and icons
+const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?: string; buttonColor?: string }> = {
+  pending: { label: "Not started", icon: IconCircleDashed, buttonColor: "text-content-dimmed" },
+  in_progress: { label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1", buttonColor: "text-brand-1" },
+  done: { label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon", buttonColor: "text-callout-success-icon" },
+  canceled: { label: "Canceled", icon: IconX, color: "text-red-500", buttonColor: "text-red-500" },
 };
 
 interface StatusSelectorProps {
@@ -32,6 +33,43 @@ interface StatusSelectorProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
   readonly?: boolean;
   showFullBadge?: boolean;
+}
+
+// Helper function to create a button-styled status selector
+function StatusButton({ status, size = 'md', readonly = false }: { status: Types.Status; size?: StatusSelectorProps['size']; readonly?: boolean }) {
+  const config = taskStatusConfig[status];
+  
+  // Button size configuration
+  const buttonSizeConfig = {
+    sm: { textSize: 'text-xs', padding: 'px-2 py-1', iconSize: 12 },
+    md: { textSize: 'text-sm', padding: 'px-2.5 py-1.5', iconSize: 14 },
+    lg: { textSize: 'text-sm', padding: 'px-3 py-1.5', iconSize: 16 },
+    xl: { textSize: 'text-base', padding: 'px-3.5 py-2', iconSize: 18 },
+    '2xl': { textSize: 'text-lg', padding: 'px-4 py-2.5', iconSize: 20 },
+  };
+  
+  const { textSize, padding, iconSize } = buttonSizeConfig[size];
+  
+  const buttonClassName = classNames(
+    "inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-100",
+    textSize,
+    padding,
+    readonly 
+      ? "border-surface-outline bg-surface-base cursor-default"
+      : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
+    config.buttonColor
+  );
+  
+  return (
+    <div className={buttonClassName}>
+      {React.createElement(config.icon, {
+        size: iconSize,
+        className: "flex-shrink-0",
+      })}
+      <span>{config.label}</span>
+      {!readonly && <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60" />}
+    </div>
+  );
 }
 
 export function StatusSelector({
@@ -114,10 +152,7 @@ export function StatusSelector({
     return (
       <div className="inline-flex items-center">
         {showFullBadge ? (
-          <StatusBadge
-            status={taskStatusConfig[status].status}
-            customLabel={taskStatusConfig[status].label}
-          />
+          <StatusButton status={status} size={size} readonly={true} />
         ) : (
           <div className={`inline-flex items-center justify-center ${containerSize}`}>
             {React.createElement(taskStatusConfig[status].icon, {
@@ -135,10 +170,7 @@ export function StatusSelector({
       customTrigger={
         <div className="cursor-pointer inline-flex items-center">
           {showFullBadge ? (
-            <StatusBadge
-              status={taskStatusConfig[status].status}
-              customLabel={taskStatusConfig[status].label}
-            />
+            <StatusButton status={status} size={size} readonly={false} />
           ) : (
             <div className={`inline-flex items-center justify-center ${containerSize}`}>
               {React.createElement(taskStatusConfig[status].icon, {
