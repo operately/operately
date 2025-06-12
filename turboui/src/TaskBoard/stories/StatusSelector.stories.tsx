@@ -20,7 +20,7 @@ const meta: Meta<typeof StatusSelector> = {
     },
     size: {
       control: "select",
-      options: ["sm", "md", "lg"],
+      options: ["sm", "md", "lg", "xl", "2xl"],
     },
     readonly: { control: "boolean" },
     showFullBadge: { control: "boolean" },
@@ -144,29 +144,78 @@ export const AllStatuses: Story = {
   },
 };
 
+
 /**
- * Status selector with full badge display
+ * Button-styled variants showing all sizes and states
  */
-export const WithFullBadge: Story = {
+export const ButtonStyleVariants: Story = {
   render: () => {
-    const [status, setStatus] = useState<Types.Status>("in_progress");
+    const [statuses, setStatuses] = useState<Record<string, Types.Status>>({
+      sm: "pending",
+      md: "in_progress", 
+      lg: "done",
+      xl: "canceled",
+      "2xl": "in_progress",
+    });
+
+    const updateStatus = (size: string, newStatus: Types.Status) => {
+      setStatuses((prev) => ({ ...prev, [size]: newStatus }));
+      console.log(`${size} status changed to:`, newStatus);
+    };
 
     return (
-      <div className="space-y-4">
+      <div className="space-y-8">
         <div>
-          <h3 className="text-sm font-medium mb-2">Full Badge Display</h3>
-          <StatusSelector
-            status={status}
-            onChange={(newStatus) => {
-              setStatus(newStatus);
-              console.log("Status changed to:", newStatus);
-            }}
-            showFullBadge={true}
-            size="md"
-          />
+          <h3 className="text-sm font-medium mb-4">Interactive Button Styles (All Sizes)</h3>
+          <div className="space-y-4">
+            {(["sm", "md", "lg", "xl", "2xl"] as const).map((size) => (
+              <div key={size} className="flex items-center gap-4">
+                <div className="w-12 text-xs text-content-subtle">{size}</div>
+                <StatusSelector
+                  status={statuses[size]!}
+                  onChange={(newStatus) => updateStatus(size, newStatus)}
+                  size={size}
+                  showFullBadge={true}
+                />
+              </div>
+            ))}
+          </div>
         </div>
-        <div className="text-xs text-content-subtle">
-          Current status: <span className="font-mono">{status}</span>
+
+        <div>
+          <h3 className="text-sm font-medium mb-4">Readonly Button Styles</h3>
+          <div className="space-y-4">
+            {(["sm", "md", "lg", "xl", "2xl"] as const).map((size) => (
+              <div key={size} className="flex items-center gap-4">
+                <div className="w-12 text-xs text-content-subtle">{size}</div>
+                <StatusSelector
+                  status="done"
+                  onChange={() => {}}
+                  size={size}
+                  showFullBadge={true}
+                  readonly={true}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium mb-4">All Status Types (md size)</h3>
+          <div className="space-y-3">
+            {(["pending", "in_progress", "done", "canceled"] as Types.Status[]).map((status) => (
+              <div key={status} className="flex items-center gap-4">
+                <div className="w-20 text-xs text-content-subtle">{status}</div>
+                <StatusSelector
+                  status={status}
+                  onChange={() => {}}
+                  size="md"
+                  showFullBadge={true}
+                  readonly={true}
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );

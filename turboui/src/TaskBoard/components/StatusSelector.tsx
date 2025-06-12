@@ -1,123 +1,188 @@
 import React from "react";
-import { StatusBadge } from "../../StatusBadge";
-import { Menu, MenuActionItem } from "../../Menu";
-import {
-  IconCircleDashed,
-  IconCircleDot,
-  IconCircleCheckFilled,
-  IconX,
-  IconCheck
-} from "@tabler/icons-react";
+import * as Popover from "@radix-ui/react-popover";
+import classNames from "../../utils/classnames";
+import { IconCircleDashed, IconCircleDot, IconCircleCheck, IconX, IconChevronDown } from "@tabler/icons-react";
 
 // Import types from the shared types module
 import * as Types from "../types";
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheckFilled = (props: any) => (
-  <IconCircleCheckFilled {...props} className="text-callout-success-icon" />
-);
+const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheck {...props} className="text-success" />;
+const ColoredIconX = (props: any) => <IconX {...props} className="text-red-500" />;
 
-// Map task status to badge status, labels and icons
-const taskStatusConfig: Record<Types.Status, { status: string; label: string; icon: any; color?: string }> = {
-  pending: { status: "not_started", label: "Not started", icon: IconCircleDashed },
-  in_progress: { status: "in_progress", label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1" },
-  done: { status: "completed", label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon" },
-  canceled: { status: "canceled", label: "Canceled", icon: IconX },
+// Map task status to labels and icons
+const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?: string; buttonColor?: string }> = {
+  pending: { label: "Not started", icon: IconCircleDashed, buttonColor: "text-content-dimmed" },
+  in_progress: {
+    label: "In progress",
+    icon: ColoredIconCircleDot,
+    color: "text-brand-1",
+    buttonColor: "text-brand-1",
+  },
+  done: {
+    label: "Done",
+    icon: ColoredIconCircleCheckFilled,
+    color: "text-success",
+    buttonColor: "text-success",
+  },
+  canceled: { label: "Canceled", icon: ColoredIconX, color: "text-red-500", buttonColor: "text-red-500" },
 };
 
 interface StatusSelectorProps {
   status: Types.Status;
   onChange: (newStatus: Types.Status) => void;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   readonly?: boolean;
   showFullBadge?: boolean;
+}
+
+// Helper function to create a button-styled status selector
+function StatusButton({
+  status,
+  size = "md",
+  readonly = false,
+}: {
+  status: Types.Status;
+  size?: StatusSelectorProps["size"];
+  readonly?: boolean;
+}) {
+  const config = taskStatusConfig[status];
+
+  // Button size configuration
+  const buttonSizeConfig = {
+    sm: { textSize: "text-xs", padding: "px-2 py-1", iconSize: 12 },
+    md: { textSize: "text-sm", padding: "px-2.5 py-1.5", iconSize: 14 },
+    lg: { textSize: "text-sm", padding: "px-3 py-1.5", iconSize: 16 },
+    xl: { textSize: "text-base", padding: "px-3.5 py-2", iconSize: 18 },
+    "2xl": { textSize: "text-lg", padding: "px-4 py-2.5", iconSize: 20 },
+  };
+
+  const { textSize, padding, iconSize } = buttonSizeConfig[size];
+
+  const buttonClassName = classNames(
+    "inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-100 whitespace-nowrap",
+    textSize,
+    padding,
+    readonly
+      ? "border-surface-outline bg-surface-base cursor-default"
+      : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
+    config.buttonColor,
+  );
+
+  return (
+    <div className={buttonClassName}>
+      {React.createElement(config.icon, {
+        size: iconSize,
+        className: "flex-shrink-0",
+      })}
+      <span>{config.label}</span>
+      {!readonly && <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60" />}
+    </div>
+  );
 }
 
 export function StatusSelector({
   status,
   onChange,
-  size = 'md',
+  size = "md",
   readonly = false,
   showFullBadge = false,
 }: StatusSelectorProps) {
-  // Define size-based dimensions
   const sizeConfig = {
-    sm: { iconSize: 14, containerSize: 'w-3.5 h-3.5' },
-    md: { iconSize: 16, containerSize: 'w-4 h-4' },
-    lg: { iconSize: 20, containerSize: 'w-5 h-5' },
-    xl: { iconSize: 24, containerSize: 'w-6 h-6' },
-    '2xl': { iconSize: 28, containerSize: 'w-7 h-7' },
+    sm: { iconSize: 14, containerSize: "w-3.5 h-3.5" },
+    md: { iconSize: 16, containerSize: "w-4 h-4" },
+    lg: { iconSize: 20, containerSize: "w-5 h-5" },
+    xl: { iconSize: 24, containerSize: "w-6 h-6" },
+    "2xl": { iconSize: 28, containerSize: "w-7 h-7" },
   };
-  
-  const { iconSize, containerSize } = sizeConfig[size];
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const inputRef = React.useRef<HTMLInputElement>(null);
 
-  // Filter status options based on search term
+  const { iconSize, containerSize } = sizeConfig[size];
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [searchTerm, setSearchTerm] = React.useState("");
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
   const filteredStatusOptions = Object.entries(taskStatusConfig).filter(([_, config]) =>
     config.label.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  // Handle menu open/close events
-  const handleMenuOpenChange = (open: boolean) => {
+  // Reset selected index when search results change (but not on every render)
+  React.useEffect(() => {
+    setSelectedIndex(0);
+  }, [filteredStatusOptions.length]);
+
+  // Scroll selected item into view
+  React.useEffect(() => {
+    const selectedItem = itemRefs.current[selectedIndex];
+    if (selectedItem) {
+      selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [selectedIndex]);
+
+  // Handle popover open/close
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
     if (open) {
-      // Focus input when menu opens
-      setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 50);
+      setTimeout(() => inputRef.current?.focus(), 50);
     } else {
-      // Reset search term when menu closes
       setSearchTerm("");
+      setSelectedIndex(0);
     }
   };
 
-  // Handle enter key in search input
+  // Handle keyboard navigation - copied from PersonField
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && filteredStatusOptions.length > 0) {
-      const firstOption = filteredStatusOptions[0];
-
-      if (firstOption) {
-        const newStatus = firstOption[0];
-        onChange(newStatus as Types.Status);
-      }
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex((prev) => 
+          prev < filteredStatusOptions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        break;
+      case "Enter":
+        e.preventDefault();
+        const selectedOption = filteredStatusOptions[selectedIndex];
+        if (selectedOption) {
+          onChange(selectedOption[0] as Types.Status);
+          setIsOpen(false);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        setIsOpen(false);
+        break;
     }
   };
 
-  // Custom search input for the menu header
-  const searchInput = (
-    <div className="relative">
-      <input
-        ref={inputRef}
-        type="text"
-        placeholder="Change status..."
-        className="w-full bg-surface-base text-content-base text-sm py-1 px-2 border border-surface-outline rounded-md focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyDown={(e) => {
-          // Prevent menu from closing when typing
-          e.stopPropagation();
-          handleKeyDown(e);
-        }}
-        onClick={(e) => e.stopPropagation()} // Prevent menu from closing when clicking in the input
-      />
-      <span className="absolute right-2 top-1.5 text-content-subtle">
-        <div className="text-[10px] font-mono">⏎</div>
-      </span>
-    </div>
-  );
+  const handleItemClick = (newStatus: Types.Status) => {
+    onChange(newStatus);
+    setIsOpen(false);
+  };
 
-  // Readonly mode - just show the status without interaction
   if (readonly) {
-    return (
-      <div className="inline-flex items-center">
+    return showFullBadge ? (
+      <StatusButton status={status} size={size} readonly={true} />
+    ) : (
+      <div className={`inline-flex items-center justify-center ${containerSize}`}>
+        {React.createElement(taskStatusConfig[status].icon, {
+          size: iconSize,
+          className: `align-middle ${taskStatusConfig[status].color || ""}`,
+        })}
+      </div>
+    );
+  }
+
+  return (
+    <Popover.Root open={isOpen} onOpenChange={handleOpenChange}>
+      <Popover.Trigger className="cursor-pointer">
         {showFullBadge ? (
-          <StatusBadge
-            status={taskStatusConfig[status].status}
-            customLabel={taskStatusConfig[status].label}
-          />
+          <StatusButton status={status} size={size} readonly={false} />
         ) : (
           <div className={`inline-flex items-center justify-center ${containerSize}`}>
             {React.createElement(taskStatusConfig[status].icon, {
@@ -126,48 +191,59 @@ export function StatusSelector({
             })}
           </div>
         )}
-      </div>
-    );
-  }
+      </Popover.Trigger>
 
-  return (
-    <Menu
-      customTrigger={
-        <div className="cursor-pointer inline-flex items-center">
-          {showFullBadge ? (
-            <StatusBadge
-              status={taskStatusConfig[status].status}
-              customLabel={taskStatusConfig[status].label}
-            />
-          ) : (
-            <div className={`inline-flex items-center justify-center ${containerSize}`}>
-              {React.createElement(taskStatusConfig[status].icon, {
-                size: iconSize,
-                className: `align-middle ${taskStatusConfig[status].color || ""}`,
+      <Popover.Portal>
+        <Popover.Content
+          className="bg-surface-base shadow rounded border border-stroke-base p-0.5"
+          style={{ width: 220 }}
+          sideOffset={4}
+          alignOffset={2}
+          align="start"
+        >
+          <div className="p-1">
+            <div className="p-1 pb-0.5">
+              <input
+                ref={inputRef}
+                className="w-full border border-stroke-base rounded px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
+                placeholder="Change status..."
+                value={searchTerm}
+                autoFocus
+                onChange={(e) => setSearchTerm(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+            </div>
+
+            <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
+              {filteredStatusOptions.map(([statusOption, config], index) => {
+                const isCurrentStatus = statusOption === status;
+                const isSelected = index === selectedIndex;
+                return (
+                  <div
+                    key={statusOption}
+                    ref={(el) => (itemRefs.current[index] = el)}
+                    className={classNames(
+                      "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer",
+                      {
+                        "bg-surface-dimmed": isSelected,
+                        "hover:bg-surface-dimmed": !isSelected,
+                      }
+                    )}
+                    onClick={() => handleItemClick(statusOption as Types.Status)}
+                    onMouseEnter={() => setSelectedIndex(index)}
+                  >
+                    <div className="flex items-center gap-1.5 truncate">
+                      {React.createElement(config.icon, { size: 18 })}
+                      <div className="text-sm truncate">{config.label}</div>
+                    </div>
+                    {isCurrentStatus && <IconCircleCheck size={14} className="text-primary-500 ml-2" />}
+                  </div>
+                );
               })}
             </div>
-          )}
-        </div>
-      }
-      size="small"
-      headerContent={searchInput}
-      onOpenChange={handleMenuOpenChange}
-    >
-      {filteredStatusOptions.map(([statusOption, config]) => {
-        const isCurrentStatus = statusOption === status;
-        return (
-          <MenuActionItem
-            key={statusOption}
-            icon={config.icon}
-            onClick={() => onChange(statusOption as Types.Status)}
-          >
-            <div className="flex items-center justify-between w-full">
-              {config.label}
-              {isCurrentStatus && <IconCheck size={14} className="text-primary-500 ml-2" />}
-            </div>
-          </MenuActionItem>
-        );
-      })}
-    </Menu>
+          </div>
+        </Popover.Content>
+      </Popover.Portal>
+    </Popover.Root>
   );
 }
