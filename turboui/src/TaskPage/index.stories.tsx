@@ -1,6 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { TaskPage } from ".";
+import { TaskActivity } from "../Timeline";
+import type { TimelineItem as TimelineItemType } from "../Timeline/types";
+import { Person as TimelinePerson } from "../CommentSection/types";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -21,6 +24,20 @@ const mockTaskPeople: TaskPage.Person[] = [
   { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
+
+// Timeline people (with profile links)
+const timelinePeople: TimelinePerson[] = [
+  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice", profileLink: "/people/alice" },
+  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
+  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie", profileLink: "/people/charlie" },
+  { id: "user-4", fullName: "Diana Prince", avatarUrl: undefined, profileLink: "/people/diana" },
+];
+
+const currentUser = timelinePeople[0]!;
+const alice = timelinePeople[0]!;
+const bob = timelinePeople[1]!;
+const charlie = timelinePeople[2]!;
+const diana = timelinePeople[3]!;
 
 // Mock milestone data for TaskPage - sorted by due date (earliest first), with some without due dates
 const mockMilestones: TaskPage.Milestone[] = [
@@ -183,6 +200,90 @@ function asRichTextWithList(paragraphs: string[], listItems: string[]): any {
   };
 }
 
+// Helper functions for creating timeline data
+function createComment(author: TimelinePerson, content: string, timeAgo: number): TimelineItemType {
+  return {
+    type: "comment",
+    value: {
+      id: `comment-${Date.now()}-${Math.random()}`,
+      content: JSON.stringify({ message: content }),
+      author,
+      insertedAt: new Date(Date.now() - timeAgo).toISOString(),
+      reactions: [],
+    },
+  };
+}
+
+function createTaskActivity(type: TaskActivity["type"], author: TimelinePerson, timeAgo: number, extraData: any = {}): TimelineItemType {
+  return {
+    type: "task-activity",
+    value: {
+      id: `activity-${Date.now()}-${Math.random()}`,
+      type,
+      author,
+      insertedAt: new Date(Date.now() - timeAgo).toISOString(),
+      ...extraData,
+    } as TaskActivity,
+  };
+}
+
+// Timeline data generators for different scenarios
+function createActiveTaskTimeline(): TimelineItemType[] {
+  return [
+    createComment(bob, "I've started working on the login component. Should have a first version ready by tomorrow.", 30 * 60 * 1000), // 30 min ago
+    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }), // 2 hours ago
+    createTaskActivity("task-assignment", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
+    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, { 
+      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" }, 
+      action: "attached" 
+    }),
+    createTaskActivity("task-priority", charlie, 6 * 60 * 60 * 1000, { fromPriority: "normal", toPriority: "high" }),
+    createComment(alice, "This is a critical feature for the beta release. Let's prioritize it.", 6.5 * 60 * 60 * 1000),
+    createTaskActivity("task-creation", alice, 24 * 60 * 60 * 1000), // 1 day ago
+  ];
+}
+
+function createMinimalTaskTimeline(): TimelineItemType[] {
+  return [
+    createTaskActivity("task-creation", alice, 2 * 60 * 60 * 1000), // 2 hours ago
+  ];
+}
+
+function createCompletedTaskTimeline(): TimelineItemType[] {
+  return [
+    createComment(alice, "Great work everyone! This turned out really well.", 30 * 60 * 1000),
+    createTaskActivity("task-status-change", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
+    createComment(bob, "All tests are passing and the feature is ready for release!", 2 * 60 * 60 * 1000),
+    createComment(charlie, "The design looks perfect. Nice work on the animations!", 4 * 60 * 60 * 1000),
+    createTaskActivity("task-assignment", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
+    createTaskActivity("task-creation", alice, 3 * 24 * 60 * 60 * 1000),
+  ];
+}
+
+function createOverdueTaskTimeline(): TimelineItemType[] {
+  return [
+    createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
+    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, { 
+      fromDueDate: null, 
+      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() 
+    }),
+    createTaskActivity("task-assignment", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
+    createTaskActivity("task-creation", alice, 7 * 24 * 60 * 60 * 1000),
+  ];
+}
+
+function createLongContentTimeline(): TimelineItemType[] {
+  return [
+    createComment(diana, "I've tested this thoroughly and everything works as expected. The error handling is particularly robust.", 30 * 60 * 1000),
+    createComment(charlie, "The UI looks great! I made some small adjustments to the spacing and colors to match our design system.", 2 * 60 * 60 * 1000),
+    createComment(bob, "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.", 4 * 60 * 60 * 1000),
+    createTaskActivity("task-description", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
+    createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
+    createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
+    createTaskActivity("task-creation", alice, 24 * 60 * 60 * 1000),
+  ];
+}
+
 function Component(props: Partial<TaskPage.Props>) {
   const [name, setName] = React.useState(props.name || "");
   const [description, setDescription] = React.useState(props.description || null);
@@ -299,6 +400,17 @@ function Component(props: Partial<TaskPage.Props>) {
 
     // Permissions
     canEdit: true,
+
+    // Timeline data
+    timelineItems: props.timelineItems || [],
+    currentUser: currentUser,
+    canComment: true,
+    onAddComment: (content: any) => {
+      console.log("Add comment:", content);
+    },
+    onEditComment: (id: string, content: any) => {
+      console.log("Edit comment:", id, content);
+    },
   };
 
   return <TaskPage {...defaults} />;
@@ -323,6 +435,7 @@ export const Default: Story = {
     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     assignees: [mockTaskPeople[0]!],
     milestone: mockMilestones[1], // Beta Release
+    timelineItems: createActiveTaskTimeline(),
   },
 };
 
@@ -458,6 +571,7 @@ export const MinimalTask: Story = {
     milestone: undefined,
     dueDate: undefined,
     assignees: [],
+    timelineItems: createMinimalTaskTimeline(),
   },
 };
 
@@ -481,6 +595,7 @@ export const CompletedTask: Story = {
     dueDate: new Date(2024, 0, 10), // January 10, 2024 (completed before due date)
     assignees: [mockTaskPeople[3]!],
     milestone: mockMilestones[0], // MVP Launch (completed)
+    timelineItems: createCompletedTaskTimeline(),
   },
 };
 
@@ -494,6 +609,7 @@ export const OverdueTask: Story = {
     status: "in_progress",
     dueDate: new Date(2024, 0, 5), // January 5, 2024 (overdue)
     assignees: [mockTaskPeople[0]!],
+    timelineItems: createOverdueTaskTimeline(),
   },
 };
 
@@ -518,6 +634,7 @@ export const LongContent: Story = {
     dueDate: new Date(2024, 3, 1), // April 1, 2024
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
+    timelineItems: createLongContentTimeline(),
   },
 };
 
@@ -532,6 +649,7 @@ export const MilestoneSelection: Story = {
     dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
     assignees: [mockTaskPeople[2]!],
     milestone: mockMilestones[4], // Code Review Process (no due date)
+    timelineItems: createMinimalTaskTimeline(),
   },
 };
 
@@ -547,6 +665,7 @@ export const ReadOnlyTask: Story = {
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[2], // User Testing Phase
     canEdit: false,
+    timelineItems: createActiveTaskTimeline(),
   },
 };
 
