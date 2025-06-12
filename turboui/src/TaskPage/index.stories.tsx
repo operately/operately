@@ -22,6 +22,52 @@ const mockTaskPeople: TaskPage.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
+// Mock milestone data for TaskPage - sorted by due date (earliest first), with some without due dates
+const mockMilestones: TaskPage.Milestone[] = [
+  {
+    id: "milestone-2",
+    title: "MVP Launch",
+    dueDate: new Date(2024, 0, 30), // January 30, 2024 (earliest)
+    status: "complete",
+    projectLink: "/projects/mobile-app/milestones/mvp",
+  },
+  {
+    id: "milestone-1",
+    title: "Beta Release",
+    dueDate: new Date(2024, 1, 15), // February 15, 2024
+    status: "pending",
+    projectLink: "/projects/mobile-app/milestones/beta",
+  },
+  {
+    id: "milestone-3",
+    title: "User Testing Phase",
+    dueDate: new Date(2024, 2, 10), // March 10, 2024
+    status: "pending",
+    projectLink: "/projects/mobile-app/milestones/testing",
+  },
+  {
+    id: "milestone-4",
+    title: "Performance Optimization",
+    dueDate: new Date(2024, 3, 5), // April 5, 2024
+    status: "pending",
+    projectLink: "/projects/mobile-app/milestones/performance",
+  },
+  {
+    id: "milestone-5",
+    title: "Code Review Process",
+    // No due date
+    status: "pending",
+    projectLink: "/projects/mobile-app/milestones/code-review",
+  },
+  {
+    id: "milestone-6",
+    title: "Documentation Update",
+    // No due date
+    status: "pending",
+    projectLink: "/projects/mobile-app/milestones/docs",
+  },
+];
+
 // Mock people data for RichEditor SearchFn (extended Person interface)
 const mockRichEditorPeople = [
   {
@@ -52,6 +98,25 @@ const mockRichEditorPeople = [
 const searchTaskPeople = async ({ query }: { query: string }): Promise<TaskPage.Person[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
   return mockTaskPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
+};
+
+// Mock search function for TaskPage milestones - maintains earliest first sorting
+const searchMilestones = async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  
+  const filtered = mockMilestones.filter((milestone) => 
+    milestone.title.toLowerCase().includes(query.toLowerCase())
+  );
+  
+  // Sort by due date (earliest first), then by title for those without due dates
+  return filtered.sort((a, b) => {
+    if (a.dueDate && b.dueDate) {
+      return a.dueDate.getTime() - b.dueDate.getTime();
+    }
+    if (a.dueDate && !b.dueDate) return -1; // Items with due dates come first
+    if (!a.dueDate && b.dueDate) return 1;
+    return a.title.localeCompare(b.title); // Alphabetical for no due dates
+  });
 };
 
 // Mock search function for RichEditor mentions
@@ -124,45 +189,25 @@ function Component(props: Partial<TaskPage.Props>) {
   const [status, setStatus] = React.useState(props.status || "pending");
   const [dueDate, setDueDate] = React.useState<Date | undefined>(props.dueDate);
   const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(props.assignees || []);
+  const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
 
-  // Sync state with prop changes
-  React.useEffect(() => {
-    if (props.name !== undefined) setName(props.name);
-  }, [props.name]);
-
-  React.useEffect(() => {
-    if (props.description !== undefined) setDescription(props.description);
-  }, [props.description]);
-
-  React.useEffect(() => {
-    if (props.status !== undefined) setStatus(props.status);
-  }, [props.status]);
-
-  React.useEffect(() => {
-    if (props.dueDate !== undefined) setDueDate(props.dueDate);
-  }, [props.dueDate]);
-
-  React.useEffect(() => {
-    if (props.assignees !== undefined) setAssignees(props.assignees);
-  }, [props.assignees]);
-
-  React.useEffect(() => {
-    if (props.isSubscribed !== undefined) setIsSubscribed(props.isSubscribed);
-  }, [props.isSubscribed]);
+  // Destructure to exclude milestone and onMilestoneChange from props
+  const { milestone: _ignoredMilestone, onMilestoneChange: _ignoredOnMilestoneChange, ...restProps } = props;
 
   const defaults: TaskPage.Props = {
-    ...props,
+    ...restProps,
 
     // Navigation
     spaceLink: "/spaces/product",
     spaceName: "Product",
     projectLink: props.projectLink ?? "/projects/mobile-app",
     projectName: props.projectName ?? "Mobile App V2",
-    milestoneLink: props.hasOwnProperty('milestoneLink') && props.milestoneLink === undefined ? undefined : (props.milestoneLink ?? "/milestones/beta-release"),
-    milestoneName: props.hasOwnProperty('milestoneName') && props.milestoneName === undefined ? undefined : (props.milestoneName ?? "Beta Release"),
+    // Clear legacy milestone props when milestone is null to prevent fallback
+    milestoneLink: milestone ? (props.milestoneLink ?? "/milestones/beta-release") : undefined,
+    milestoneName: milestone ? (props.milestoneName ?? "Beta Release") : undefined,
 
-    // Core data
+    // Core data - use local state
     name: name,
     onNameChange: async (newName: string) => {
       console.log("Updating task name:", newName);
@@ -195,9 +240,12 @@ function Component(props: Partial<TaskPage.Props>) {
       setAssignees(newAssignees);
     },
 
-    // Metadata
-    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // One week ago
-    createdBy: mockTaskPeople[0]!,
+    // Milestone - use local state only
+    milestone: milestone,
+    onMilestoneChange: (newMilestone) => {
+      console.log("Updating milestone:", newMilestone);
+      setMilestone(newMilestone);
+    },
 
     // Subscription
     isSubscribed: isSubscribed,
@@ -206,10 +254,13 @@ function Component(props: Partial<TaskPage.Props>) {
       setIsSubscribed(subscribed);
     },
 
+    // Metadata
+    createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // One week ago
+    createdBy: mockTaskPeople[0]!,
+
     // Actions
     onCopyUrl: () => {
       console.log("Copying URL to clipboard");
-      // Simulate copying to clipboard
       navigator.clipboard?.writeText(window.location.href);
     },
 
@@ -228,6 +279,21 @@ function Component(props: Partial<TaskPage.Props>) {
 
     // Search
     searchPeople: searchTaskPeople,
+    searchMilestones: searchMilestones,
+    onCreateMilestone: (title?: string) => {
+      console.log("Creating new milestone with title:", title);
+      // In a real app, this would open a modal or navigate to milestone creation
+      // For Storybook demo purposes, we'll create a simple milestone to show the interaction
+      if (title) {
+        const newMilestone: TaskPage.Milestone = {
+          id: `milestone-${Date.now()}`,
+          title: title,
+          status: "pending",
+          projectLink: "/projects/demo",
+        };
+        setMilestone(newMilestone);
+      }
+    },
     peopleSearch: searchRichEditorPeople,
     mentionedPersonLookup: mockMentionedPersonLookup,
 
@@ -256,6 +322,7 @@ export const Default: Story = {
     status: "in_progress",
     dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     assignees: [mockTaskPeople[0]!],
+    milestone: mockMilestones[1], // Beta Release
   },
 };
 
@@ -263,14 +330,132 @@ export const Default: Story = {
  * Task with minimal data - no project, milestone, assignee, or due date
  */
 export const MinimalTask: Story = {
+  render: (args) => {
+    const [name, setName] = React.useState(args.name || "");
+    const [description, setDescription] = React.useState(args.description || null);
+    const [status, setStatus] = React.useState(args.status || "pending");
+    const [dueDate, setDueDate] = React.useState<Date | undefined>(args.dueDate);
+    const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(args.assignees || []);
+    const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(() => args.milestone ?? null);
+    const [isSubscribed, setIsSubscribed] = React.useState(args.isSubscribed ?? true);
+
+    // Mock search that returns no milestones (empty array)
+    const searchMilestones = async (): Promise<TaskPage.Milestone[]> => {
+      await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+      return []; // No milestones available
+    };
+
+    const defaults: TaskPage.Props = {
+      ...args,
+
+      // Navigation
+      spaceLink: "/spaces/product",
+      spaceName: "Product",
+      projectLink: undefined,
+      projectName: undefined,
+      milestoneLink: undefined,
+      milestoneName: undefined,
+
+      // Core data
+      name: name,
+      onNameChange: async (newName: string) => {
+        console.log("Updating task name:", newName);
+        setName(newName);
+        return true;
+      },
+
+      description: description,
+      onDescriptionChange: async (newDescription: any) => {
+        console.log("Updating task description:", newDescription);
+        setDescription(newDescription);
+        return true;
+      },
+
+      status: status as any,
+      onStatusChange: (newStatus) => {
+        console.log("Updating task status:", newStatus);
+        setStatus(newStatus);
+      },
+
+      dueDate: dueDate,
+      onDueDateChange: (newDate) => {
+        console.log("Updating due date:", newDate);
+        setDueDate(newDate ?? undefined);
+      },
+
+      assignees: assignees,
+      onAssigneesChange: (newAssignees) => {
+        console.log("Updating assignees:", newAssignees);
+        setAssignees(newAssignees);
+      },
+
+      milestone: milestone,
+      onMilestoneChange: (newMilestone) => {
+        console.log("Updating milestone:", newMilestone);
+        setMilestone(newMilestone);
+      },
+
+      // Metadata
+      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // One week ago
+      createdBy: mockTaskPeople[0]!,
+
+      // Subscription
+      isSubscribed: isSubscribed,
+      onSubscriptionToggle: (subscribed) => {
+        console.log("Toggling subscription:", subscribed);
+        setIsSubscribed(subscribed);
+      },
+
+      // Actions
+      onCopyUrl: () => {
+        console.log("Copying URL to clipboard");
+        navigator.clipboard?.writeText(window.location.href);
+      },
+
+      onDelete: async () => {
+        console.log("Deleting task");
+        return Promise.resolve();
+      },
+
+      onDuplicate: () => {
+        console.log("Duplicating task");
+      },
+
+      onArchive: () => {
+        console.log("Archiving task");
+      },
+
+      // Search - no milestones available
+      searchPeople: searchTaskPeople,
+      searchMilestones: searchMilestones,
+      onCreateMilestone: (title?: string) => {
+        console.log("Creating new milestone from minimal task with title:", title);
+        // In a real app, this would open a modal or navigate to milestone creation
+        // For Storybook demo purposes, we'll create a simple milestone to show the interaction
+        if (title) {
+          const newMilestone: TaskPage.Milestone = {
+            id: `milestone-${Date.now()}`,
+            title: title,
+            status: "pending",
+            projectLink: "/projects/demo",
+          };
+          setMilestone(newMilestone);
+        }
+      },
+      peopleSearch: searchRichEditorPeople,
+      mentionedPersonLookup: mockMentionedPersonLookup,
+
+      // Permissions
+      canEdit: true,
+    };
+
+    return <TaskPage {...defaults} />;
+  },
   args: {
     name: "Review API documentation",
     description: null,
     status: "pending",
-    projectLink: undefined,
-    projectName: undefined,
-    milestoneLink: undefined,
-    milestoneName: undefined,
+    milestone: undefined,
     dueDate: undefined,
     assignees: [],
   },
@@ -295,6 +480,7 @@ export const CompletedTask: Story = {
     status: "done",
     dueDate: new Date(2024, 0, 10), // January 10, 2024 (completed before due date)
     assignees: [mockTaskPeople[3]!],
+    milestone: mockMilestones[0], // MVP Launch (completed)
   },
 };
 
@@ -331,6 +517,36 @@ export const LongContent: Story = {
     status: "pending",
     dueDate: new Date(2024, 3, 1), // April 1, 2024
     assignees: [mockTaskPeople[1]!],
+    milestone: mockMilestones[3], // Performance Optimization
+  },
+};
+
+/**
+ * Task with milestone selection capabilities showcased
+ */
+export const MilestoneSelection: Story = {
+  args: {
+    name: "Optimize database queries",
+    description: asRichText("Review and optimize slow database queries identified in performance monitoring."),
+    status: "pending",
+    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
+    assignees: [mockTaskPeople[2]!],
+    milestone: mockMilestones[4], // Code Review Process (no due date)
+  },
+};
+
+/**
+ * Read-only task page (canEdit: false) to test milestone field readonly state
+ */
+export const ReadOnlyTask: Story = {
+  args: {
+    name: "Test user interface components",
+    description: asRichText("Comprehensive testing of all UI components for accessibility and responsiveness."),
+    status: "in_progress",
+    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
+    assignees: [mockTaskPeople[1]!],
+    milestone: mockMilestones[2], // User Testing Phase
+    canEdit: false,
   },
 };
 

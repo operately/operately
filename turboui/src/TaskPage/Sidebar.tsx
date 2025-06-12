@@ -1,11 +1,11 @@
-import { IconAlertTriangleFilled, IconFlag, IconBell, IconBellOff, IconCalendar } from "@tabler/icons-react";
+import { IconAlertTriangleFilled, IconBell, IconBellOff, IconCalendar } from "@tabler/icons-react";
 import React from "react";
 import { TaskPage } from ".";
 import { DateDisplayField } from "../DateDisplayField";
 import FormattedTime from "../FormattedTime";
 import { PersonField } from "../PersonField";
+import { MilestoneField } from "../MilestoneField";
 import { AvatarWithName } from "../Avatar";
-import { BlackLink } from "../Link";
 import { durationHumanized, isOverdue } from "../utils/time";
 
 export function Sidebar(props: TaskPage.State) {
@@ -60,22 +60,30 @@ function Assignees(props: TaskPage.State) {
 }
 
 function Milestone(props: TaskPage.State) {
-  if (!props.milestoneLink || !props.milestoneName) {
-    return (
-      <SidebarSection title="Milestone">
-        <div className="text-sm text-content-dimmed">No milestone</div>
-      </SidebarSection>
-    );
-  }
+  // Convert legacy milestone data to new format for backward compatibility
+  const currentMilestone = props.milestone || (props.milestoneLink && props.milestoneName ? {
+    id: 'legacy-milestone',
+    title: props.milestoneName,
+    projectLink: props.milestoneLink,
+  } : null);
+
+  const handleMilestoneChange = (milestone: TaskPage.Milestone | null) => {
+    if (props.onMilestoneChange) {
+      props.onMilestoneChange(milestone);
+    }
+  };
 
   return (
     <SidebarSection title="Milestone">
-      <div className="flex items-start gap-1.5 text-sm">
-        <IconFlag size={18} className="text-blue-500 shrink-0 mt-px" />
-        <BlackLink to={props.milestoneLink} underline="hover">
-          {props.milestoneName}
-        </BlackLink>
-      </div>
+      <MilestoneField
+        milestone={currentMilestone}
+        setMilestone={handleMilestoneChange}
+        readonly={!props.canEdit}
+        searchMilestones={props.searchMilestones || (async () => [])}
+        onCreateNew={props.onCreateMilestone}
+        emptyStateMessage="Select milestone"
+        emptyStateReadOnlyMessage="No milestone"
+      />
     </SidebarSection>
   );
 }

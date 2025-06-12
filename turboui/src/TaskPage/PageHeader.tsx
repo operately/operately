@@ -43,11 +43,6 @@ function buildNavigation(props: TaskPage.State) {
     navigation.push({ to: props.projectLink, label: props.projectName });
   }
 
-  // Add milestone if available
-  if (props.milestoneLink && props.milestoneName) {
-    navigation.push({ to: props.milestoneLink, label: props.milestoneName });
-  }
-
   return navigation;
 }
 
