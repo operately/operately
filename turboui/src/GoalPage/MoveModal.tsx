@@ -12,11 +12,17 @@ export function MoveModal(props: GoalPage.State) {
   React.useEffect(() => setSelectedSpace(props.space), [props.space]);
 
   const handleSubmit = async (e: React.FormEvent) => {
+    if (!selectedSpace) return;
+    if (selectedSpace.id === props.space?.id) {
+      props.closeMoveModal();
+      return;
+    }
+
     e.preventDefault();
     setIsMoving(true);
 
     try {
-      console.log("Moving goal to another space...");
+      props.setSpace(selectedSpace);
     } finally {
       setIsMoving(false);
       props.closeMoveModal();
@@ -27,11 +33,19 @@ export function MoveModal(props: GoalPage.State) {
     <Modal
       isOpen={props.isMoveModalOpen}
       onClose={props.closeMoveModal}
-      size="medium"
+      size="small"
       title="Move goal to another space"
     >
       <form className="space-y-6" onSubmit={handleSubmit}>
-        <SpaceField space={selectedSpace} setSpace={setSelectedSpace} search={props.spaceSearch} variant="form-field" />
+        <div>
+          <label className="font-bold text-sm mb-1.5 block">Select destination space</label>
+          <SpaceField
+            space={selectedSpace}
+            setSpace={setSelectedSpace}
+            search={props.spaceSearch}
+            variant="form-field"
+          />
+        </div>
 
         <div className="flex items-center gap-2">
           <PrimaryButton size="sm" type="submit" loading={isMoving} disabled={isMoving}>

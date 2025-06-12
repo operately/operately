@@ -69,7 +69,7 @@ function Page() {
 
   const [space, setSpace] = usePageField({
     value: (data) => prepareSpace(data.goal.space),
-    update: async () => false, // should be Api.goals.updateSpace({ goalId: goal.id!, spaceId: v && v.id }),
+    update: (v) => Api.goals.updateSpace({ goalId: goal.id!, spaceId: v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
@@ -479,8 +479,8 @@ function prepareSpace(space: Space): GoalPage.Space {
 }
 
 function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
-  return async ({}: { query: string }): Promise<GoalPage.Space[]> => {
-    const data = await { spaces: [] as Space[] }; // Api.spaces.search({ query: query.trim() });
+  return async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
+    const data = await Api.spaces.search({ query: query });
 
     return data.spaces.map((space) => ({
       id: space.id!,
