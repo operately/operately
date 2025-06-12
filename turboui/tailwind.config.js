@@ -56,6 +56,8 @@ module.exports = {
           2: "#E3F2FF",
         },
 
+        success: "#059669",
+
         dark: {
           1: "rgba(30,30,34,1)",
           2: "rgba(35,35,39,1)",
