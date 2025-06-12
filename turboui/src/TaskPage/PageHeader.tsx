@@ -13,15 +13,21 @@ export function PageHeader(props: TaskPage.State) {
       <div className="flex-1">
         <Breadcrumbs navigation={navigation} />
 
-        <div className="flex items-center gap-2">
-          <StatusSelector status={props.status} onChange={props.onStatusChange} size="xl" readonly={!props.canEdit} />
-
+        <div className="flex items-center gap-3">
           <EditableText
             className="font-semibold text-2xl"
             text={props.name}
             onSave={props.onNameChange}
             readonly={!props.canEdit}
             trimBeforeSave
+          />
+
+          <StatusSelector 
+            status={props.status} 
+            onChange={props.onStatusChange} 
+            size="md" 
+            readonly={!props.canEdit}
+            showFullBadge={true}
           />
         </div>
       </div>

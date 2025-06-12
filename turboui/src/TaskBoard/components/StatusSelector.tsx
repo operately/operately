@@ -7,7 +7,7 @@ import {
   IconCircleCheckFilled,
   IconX,
   IconCheck,
-  IconChevronDown
+  IconChevronDown,
 } from "@tabler/icons-react";
 
 // Import types from the shared types module
@@ -22,44 +22,62 @@ const ColoredIconCircleCheckFilled = (props: any) => (
 // Map task status to labels and icons
 const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?: string; buttonColor?: string }> = {
   pending: { label: "Not started", icon: IconCircleDashed, buttonColor: "text-content-dimmed" },
-  in_progress: { label: "In progress", icon: ColoredIconCircleDot, color: "text-brand-1", buttonColor: "text-brand-1" },
-  done: { label: "Done", icon: ColoredIconCircleCheckFilled, color: "text-callout-success-icon", buttonColor: "text-callout-success-icon" },
+  in_progress: {
+    label: "In progress",
+    icon: ColoredIconCircleDot,
+    color: "text-brand-1",
+    buttonColor: "text-brand-1",
+  },
+  done: {
+    label: "Done",
+    icon: ColoredIconCircleCheckFilled,
+    color: "text-callout-success-icon",
+    buttonColor: "text-callout-success-icon",
+  },
   canceled: { label: "Canceled", icon: IconX, color: "text-red-500", buttonColor: "text-red-500" },
 };
 
 interface StatusSelectorProps {
   status: Types.Status;
   onChange: (newStatus: Types.Status) => void;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+  size?: "sm" | "md" | "lg" | "xl" | "2xl";
   readonly?: boolean;
   showFullBadge?: boolean;
 }
 
 // Helper function to create a button-styled status selector
-function StatusButton({ status, size = 'md', readonly = false }: { status: Types.Status; size?: StatusSelectorProps['size']; readonly?: boolean }) {
+function StatusButton({
+  status,
+  size = "md",
+  readonly = false,
+}: {
+  status: Types.Status;
+  size?: StatusSelectorProps["size"];
+  readonly?: boolean;
+}) {
   const config = taskStatusConfig[status];
-  
+
   // Button size configuration
   const buttonSizeConfig = {
-    sm: { textSize: 'text-xs', padding: 'px-2 py-1', iconSize: 12 },
-    md: { textSize: 'text-sm', padding: 'px-2.5 py-1.5', iconSize: 14 },
-    lg: { textSize: 'text-sm', padding: 'px-3 py-1.5', iconSize: 16 },
-    xl: { textSize: 'text-base', padding: 'px-3.5 py-2', iconSize: 18 },
-    '2xl': { textSize: 'text-lg', padding: 'px-4 py-2.5', iconSize: 20 },
+    sm: { textSize: "text-xs", padding: "px-2 py-1", iconSize: 12 },
+    md: { textSize: "text-sm", padding: "px-2.5 py-1.5", iconSize: 14 },
+    lg: { textSize: "text-sm", padding: "px-3 py-1.5", iconSize: 16 },
+    xl: { textSize: "text-base", padding: "px-3.5 py-2", iconSize: 18 },
+    "2xl": { textSize: "text-lg", padding: "px-4 py-2.5", iconSize: 20 },
   };
-  
+
   const { textSize, padding, iconSize } = buttonSizeConfig[size];
-  
+
   const buttonClassName = classNames(
     "inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-100",
     textSize,
     padding,
-    readonly 
+    readonly
       ? "border-surface-outline bg-surface-base cursor-default"
       : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
-    config.buttonColor
+    config.buttonColor,
   );
-  
+
   return (
     <div className={buttonClassName}>
       {React.createElement(config.icon, {
@@ -75,19 +93,19 @@ function StatusButton({ status, size = 'md', readonly = false }: { status: Types
 export function StatusSelector({
   status,
   onChange,
-  size = 'md',
+  size = "md",
   readonly = false,
   showFullBadge = false,
 }: StatusSelectorProps) {
   // Define size-based dimensions
   const sizeConfig = {
-    sm: { iconSize: 14, containerSize: 'w-3.5 h-3.5' },
-    md: { iconSize: 16, containerSize: 'w-4 h-4' },
-    lg: { iconSize: 20, containerSize: 'w-5 h-5' },
-    xl: { iconSize: 24, containerSize: 'w-6 h-6' },
-    '2xl': { iconSize: 28, containerSize: 'w-7 h-7' },
+    sm: { iconSize: 14, containerSize: "w-3.5 h-3.5" },
+    md: { iconSize: 16, containerSize: "w-4 h-4" },
+    lg: { iconSize: 20, containerSize: "w-5 h-5" },
+    xl: { iconSize: 24, containerSize: "w-6 h-6" },
+    "2xl": { iconSize: 28, containerSize: "w-7 h-7" },
   };
-  
+
   const { iconSize, containerSize } = sizeConfig[size];
   const [searchTerm, setSearchTerm] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -188,11 +206,7 @@ export function StatusSelector({
       {filteredStatusOptions.map(([statusOption, config]) => {
         const isCurrentStatus = statusOption === status;
         return (
-          <MenuActionItem
-            key={statusOption}
-            icon={config.icon}
-            onClick={() => onChange(statusOption as Types.Status)}
-          >
+          <MenuActionItem key={statusOption} icon={config.icon} onClick={() => onChange(statusOption as Types.Status)}>
             <div className="flex items-center justify-between w-full">
               {config.label}
               {isCurrentStatus && <IconCheck size={14} className="text-primary-500 ml-2" />}
