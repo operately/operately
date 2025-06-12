@@ -130,62 +130,84 @@ export function useState(props: PersonFieldProps): State {
 }
 
 function Trigger({ state }: { state: State }) {
-  const triggerClass = classNames({
-    "flex items-center gap-2 truncate text-left": !state.avatarOnly,
-    "flex items-center justify-center": state.avatarOnly,
-    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly && !state.avatarOnly,
-    "focus:outline-none rounded-full": !state.readonly && state.avatarOnly,
-    "cursor-pointer": !state.readonly,
-    "cursor-default": state.readonly,
-    "bg-surface-dimmed": state.isOpen && !state.avatarOnly,
-    "ring-2 ring-surface-accent": state.isOpen && state.avatarOnly,
-  });
+  return (
+    <Popover.Trigger className={calcTriggerClass(state)}>
+      <TriggerIcon state={state} />
+      <TriggerText state={state} />
+    </Popover.Trigger>
+  );
+}
 
+function calcTriggerClass(state: State) {
+  if (state.avatarOnly) {
+    return classNames({
+      "flex items-center justify-center": true,
+      "focus:outline-none rounded-full": !state.readonly,
+      "cursor-pointer": !state.readonly,
+      "cursor-default": state.readonly,
+      "ring-2 ring-surface-accent": state.isOpen,
+    });
+  } else {
+    return classNames({
+      "flex items-center gap-2 truncate text-left": true,
+      "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+      "cursor-pointer": !state.readonly,
+      "cursor-default": state.readonly,
+      "bg-surface-dimmed": state.isOpen,
+    });
+  }
+}
+
+function TriggerIcon({ state }: { state: State }) {
   if (state.person) {
     return (
-      <Popover.Trigger className={triggerClass}>
-        <div className={classNames({
+      <Avatar
+        person={state.person!}
+        size={state.avatarSize}
+        className={classNames({
           "transition-all duration-200": state.avatarOnly && !state.readonly,
           "hover:scale-105 hover:shadow-md": state.avatarOnly && !state.readonly,
-        })}>
-          <Avatar person={state.person} size={state.avatarSize} />
-        </div>
-
-        {!state.avatarOnly && (
-          <div className="-mt-0.5 truncate">
-            <div className="text-sm font-medium">{state.person.fullName}</div>
-            {state.showTitle && state.person.title && <div className="text-xs truncate">{state.person.title}</div>}
-          </div>
-        )}
-      </Popover.Trigger>
+        })}
+      />
     );
   } else {
     const Icon = state.readonly ? IconUser : IconUserPlus;
 
     return (
-      <Popover.Trigger className={triggerClass}>
-        <div
-          className={classNames({
-            "border border-content-subtle border-dashed rounded-full flex items-center justify-center": true,
-            "hover:border-content-accent transition-all duration-200": state.avatarOnly && !state.readonly,
-            "hover:scale-105": state.avatarOnly && !state.readonly,
-          })}
-          style={{
-            width: state.avatarSize,
-            height: state.avatarSize,
-          }}
-        >
-          <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
-        </div>
+      <div
+        className={classNames({
+          "border border-content-subtle border-dashed rounded-full flex items-center justify-center": true,
+          "hover:border-content-accent transition-all duration-200": state.avatarOnly && !state.readonly,
+          "hover:scale-105": state.avatarOnly && !state.readonly,
+        })}
+        style={{
+          width: state.avatarSize,
+          height: state.avatarSize,
+        }}
+      >
+        <Icon className="text-content-dimmed" size={state.avatarSize * 0.5} />
+      </div>
+    );
+  }
+}
 
-        {!state.avatarOnly && (
-          <div className="truncate">
-            <div className="text-sm font-medium text-content-dimmed">
-              {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
-            </div>
-          </div>
-        )}
-      </Popover.Trigger>
+function TriggerText({ state }: { state: State }) {
+  if (state.avatarOnly) return null;
+
+  if (state.person) {
+    return (
+      <div className="-mt-0.5 truncate">
+        <div className="text-sm font-medium">{state.person.fullName}</div>
+        {state.showTitle && state.person.title && <div className="text-xs truncate">{state.person.title}</div>}
+      </div>
+    );
+  } else {
+    return (
+      <div className="truncate">
+        <div className="text-sm font-medium text-content-dimmed">
+          {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
+        </div>
+      </div>
     );
   }
 }
@@ -213,10 +235,14 @@ function DialogMenu({ state }: { state: State }) {
   return (
     <div className="p-1">
       <DialogMenuOption icon={IconExternalLink} label="See profile" linkTo={state.person?.profileLink || "#"} />
-      <DialogMenuOption icon={IconSearch} label="Choose someone else" onClick={() => {
-        state.setSearchQuery(""); // Clear any previous search
-        state.setDialogMode("search");
-      }} />
+      <DialogMenuOption
+        icon={IconSearch}
+        label="Choose someone else"
+        onClick={() => {
+          state.setSearchQuery(""); // Clear any previous search
+          state.setDialogMode("search");
+        }}
+      />
 
       {state.extraDialogMenuOptions.map((option, index) => (
         <DialogMenuOption
@@ -291,9 +317,7 @@ function DialogSearch({ state }: { state: State }) {
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => 
-          prev < state.searchResults.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < state.searchResults.length - 1 ? prev + 1 : prev));
         break;
       case "ArrowUp":
         e.preventDefault();
@@ -333,13 +357,10 @@ function DialogSearch({ state }: { state: State }) {
           <div
             key={person.id}
             ref={(el) => (itemRefs.current[index] = el)}
-            className={classNames(
-              "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer",
-              {
-                "bg-surface-dimmed": index === selectedIndex,
-                "hover:bg-surface-dimmed": index !== selectedIndex,
-              }
-            )}
+            className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
+              "bg-surface-dimmed": index === selectedIndex,
+              "hover:bg-surface-dimmed": index !== selectedIndex,
+            })}
             onClick={() => {
               state.setPerson(person);
               state.setSearchQuery(""); // Clear search query
