@@ -19,7 +19,6 @@ import { DevBar } from "@/features/DevBar";
 import { Paths } from "@/routes/paths";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
-import { hasFeature } from "@/models/companies";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 function Navigation({ company }: { company: Api.Company }) {
@@ -43,32 +42,6 @@ function MobileNavigation({ company }: { company: Api.Company }) {
       window.location.href = "/";
     }
   };
-
-  const navLinks = React.useMemo(() => {
-    if (hasFeature(company, "new_navigation")) {
-      return (
-        <>
-          <MobileSectionLink to={Paths.goalsPath()} icon={Icons.IconBuildingEstate}>
-            Company
-          </MobileSectionLink>
-          <MobileSectionLink to={Paths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
-            My work
-          </MobileSectionLink>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <MobileSectionLink to={Paths.goalsPath()} icon={Icons.IconTargetArrow}>
-            Goals
-          </MobileSectionLink>
-          <MobileSectionLink to={Paths.projectsPath()} icon={Icons.IconTable}>
-            Projects
-          </MobileSectionLink>
-        </>
-      );
-    }
-  }, [company, me]);
 
   return (
     <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
@@ -94,7 +67,13 @@ function MobileNavigation({ company }: { company: Api.Company }) {
             Home
           </MobileSectionLink>
 
-          {navLinks}
+          <MobileSectionLink to={Paths.workMapPath()} icon={Icons.IconBuildingEstate}>
+            Company
+          </MobileSectionLink>
+
+          <MobileSectionLink to={Paths.profilePath(me.id)} icon={Icons.IconBriefcase}>
+            My work
+          </MobileSectionLink>
 
           <MobileSectionLink to={Paths.reviewPath()} icon={Icons.IconCoffee}>
             Review
@@ -156,32 +135,6 @@ function MobileSectionAction({ onClick, children, icon }) {
 function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
 
-  const navLinks = React.useMemo(() => {
-    if (hasFeature(company, "new_navigation")) {
-      return (
-        <>
-          <SectionLink to={Paths.goalsPath()} icon={Icons.IconBuildingEstate}>
-            Company
-          </SectionLink>
-          <SectionLink to={Paths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
-            My work
-          </SectionLink>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <SectionLink to={Paths.goalsPath()} icon={Icons.IconTargetArrow}>
-            Goals
-          </SectionLink>
-          <SectionLink to={Paths.projectsPath()} icon={Icons.IconTable}>
-            Projects
-          </SectionLink>
-        </>
-      );
-    }
-  }, [company, me]);
-
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
@@ -199,7 +152,13 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
               Home
             </SectionLink>
 
-            {navLinks}
+            <SectionLink to={Paths.workMapPath()} icon={Icons.IconBuildingEstate}>
+              Company
+            </SectionLink>
+
+            <SectionLink to={Paths.profilePath(me.id)} icon={Icons.IconBriefcase}>
+              My work
+            </SectionLink>
           </div>
 
           <div className="border-l border-surface-outline pl-4">
