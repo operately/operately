@@ -16,6 +16,14 @@ export namespace TaskPage {
     avatarUrl: string | null;
   }
 
+  export interface Milestone {
+    id: string;
+    title: string;
+    dueDate?: Date;
+    status?: "pending" | "complete" | "overdue";
+    projectLink?: string;
+  }
+
   export interface Props {
     // Navigation/Hierarchy
     spaceLink: string;
@@ -24,6 +32,10 @@ export namespace TaskPage {
     projectName?: string;
     milestoneLink?: string;
     milestoneName?: string;
+
+    // Milestone selection
+    milestone?: Milestone | null;
+    onMilestoneChange?: (milestone: Milestone | null) => void;
 
     // Core task data
     name: string;
@@ -57,6 +69,10 @@ export namespace TaskPage {
 
     // Search functionality for assignees
     searchPeople?: (params: { query: string }) => Promise<Person[]>;
+
+    // Search functionality for milestones
+    searchMilestones?: (params: { query: string }) => Promise<Milestone[]>;
+    onCreateMilestone?: (title?: string) => void;
 
     // Search functionality for rich editor mentions
     peopleSearch?: SearchFn;
