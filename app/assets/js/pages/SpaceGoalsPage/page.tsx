@@ -37,8 +37,8 @@ function Header() {
   const newGoalPath = DeprecatedPaths.spaceNewGoalPath(space.id!);
   const newProjectPath = DeprecatedPaths.newProjectPath({
     spaceId: space.id!,
-    backPath: DeprecatedPaths.spaceGoalsPath(space.id!),
-    backPathName: `Back to ${space.name} Goal Map`,
+    backPath: DeprecatedPaths.spaceWorkMapPath(space.id!),
+    backPathName: `Back to ${space.name} Work Map`,
   });
 
   return (
