@@ -41,6 +41,13 @@ const meta = {
       options: [undefined, "all", "goals", "completed"],
       control: { type: "select" },
     },
+    showIndentation: {
+      description: "Whether to show indentation guides",
+      control: "boolean",
+    },
+  },
+  args: {
+    showIndentation: true,
   },
 } satisfies Meta<typeof TableRow>;
 
@@ -256,7 +263,13 @@ export const OutdatedGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow item={data.mockGoalOutdated} level={0} isLast={false} tab={args.tab} />
+        <TableRow
+          item={data.mockGoalOutdated}
+          level={0}
+          isLast={false}
+          tab={args.tab}
+          showIndentation={args.showIndentation}
+        />
       </tbody>
     </>
   ),
@@ -335,10 +348,34 @@ export const MultipleRows: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow item={data.mockGoalOnTrack} level={0} isLast={false} tab={args.tab} />
-        <TableRow item={data.mockProjectOnTrack} level={1} isLast={false} tab={args.tab} />
-        <TableRow item={data.mockGoalCompleted} level={0} isLast={false} tab={args.tab} />
-        <TableRow item={data.mockProjectCompleted} level={0} isLast={true} tab={args.tab} />
+        <TableRow
+          item={data.mockGoalOnTrack}
+          level={0}
+          isLast={false}
+          tab={args.tab}
+          showIndentation={args.showIndentation}
+        />
+        <TableRow
+          item={data.mockProjectOnTrack}
+          level={1}
+          isLast={false}
+          tab={args.tab}
+          showIndentation={args.showIndentation}
+        />
+        <TableRow
+          item={data.mockGoalCompleted}
+          level={0}
+          isLast={false}
+          tab={args.tab}
+          showIndentation={args.showIndentation}
+        />
+        <TableRow
+          item={data.mockProjectCompleted}
+          level={0}
+          isLast={true}
+          tab={args.tab}
+          showIndentation={args.showIndentation}
+        />
       </tbody>
     </>
   ),

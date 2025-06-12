@@ -18,6 +18,7 @@ interface Props {
   level: number;
   isLast: boolean;
   tab: WorkMap.Filter;
+  showIndentation: boolean;
   columnOptions?: WorkMap.ColumnOptions;
 }
 
@@ -28,7 +29,13 @@ export function TableRow(props: Props) {
   return (
     <>
       <RowContainer item={item}>
-        <ItemNameCell item={item} tab={tab} level={level} expanded={expanded} setExpanded={setExpanded} />
+        <ItemNameCell
+          item={item}
+          level={level}
+          expanded={expanded}
+          setExpanded={setExpanded}
+          showIndentation={props.showIndentation}
+        />
         <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
         <ProgressCell
           progress={item.progress}
