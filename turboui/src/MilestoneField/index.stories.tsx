@@ -4,7 +4,7 @@ import React from "react";
 import { MilestoneField } from "./index";
 
 const meta: Meta<typeof MilestoneField> = {
-  title: "MilestoneField",
+  title: "Components/TaskBoard/MilestoneField",
   component: MilestoneField,
   parameters: {
     layout: "padded",
@@ -43,7 +43,7 @@ const mockMilestones = [
     projectLink: "/projects/migration",
   },
   {
-    id: "2", 
+    id: "2",
     title: "Beta Testing Complete",
     dueDate: new Date("2024-02-01"),
     status: "complete" as const,
@@ -77,12 +77,10 @@ const Template = (args: any) => {
 
   const searchMilestones = async ({ query }: { query: string }) => {
     // Simulate search delay
-    await new Promise(resolve => setTimeout(resolve, 200));
-    
-    const filtered = mockMilestones.filter(m =>
-      m.title.toLowerCase().includes(query.toLowerCase())
-    );
-    
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    const filtered = mockMilestones.filter((m) => m.title.toLowerCase().includes(query.toLowerCase()));
+
     // Sort by due date (earliest first), then by title for those without due dates
     return filtered.sort((a, b) => {
       if (a.dueDate && b.dueDate) {
@@ -118,7 +116,7 @@ const Template = (args: any) => {
         searchMilestones={searchMilestones}
         onCreateNew={handleCreateNew}
       />
-      
+
       <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
         <strong>Selected:</strong> {milestone ? milestone.title : "None"}
       </div>
@@ -192,13 +190,11 @@ export const WithoutCreateNew: Story = {
     const [milestone, setMilestone] = React.useState(args.milestone || null);
 
     const searchMilestones = async ({ query }: { query: string }) => {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       if (!query) return mockMilestones;
-      
-      return mockMilestones.filter(m =>
-        m.title.toLowerCase().includes(query.toLowerCase())
-      );
+
+      return mockMilestones.filter((m) => m.title.toLowerCase().includes(query.toLowerCase()));
     };
 
     return (
@@ -210,7 +206,7 @@ export const WithoutCreateNew: Story = {
           searchMilestones={searchMilestones}
           // No onCreateNew prop - should hide "Create new" option
         />
-        
+
         <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
           <strong>Selected:</strong> {milestone ? milestone.title : "None"}
         </div>
@@ -229,13 +225,11 @@ export const InteractiveDemo: Story = {
     const [readonly, setReadonly] = React.useState(false);
 
     const searchMilestones = async ({ query }: { query: string }) => {
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
       if (!query) return mockMilestones;
-      
-      return mockMilestones.filter(m =>
-        m.title.toLowerCase().includes(query.toLowerCase())
-      );
+
+      return mockMilestones.filter((m) => m.title.toLowerCase().includes(query.toLowerCase()));
     };
 
     const handleCreateNew = (title?: string) => {
@@ -257,11 +251,7 @@ export const InteractiveDemo: Story = {
       <div className="space-y-4">
         <div className="flex items-center gap-4">
           <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              checked={readonly}
-              onChange={(e) => setReadonly(e.target.checked)}
-            />
+            <input type="checkbox" checked={readonly} onChange={(e) => setReadonly(e.target.checked)} />
             Read only
           </label>
           <button
@@ -284,14 +274,22 @@ export const InteractiveDemo: Story = {
 
         <div className="p-3 bg-gray-100 rounded">
           <div className="text-sm space-y-1">
-            <div><strong>Selected:</strong> {milestone ? milestone.title : "None"}</div>
+            <div>
+              <strong>Selected:</strong> {milestone ? milestone.title : "None"}
+            </div>
             {milestone?.dueDate && (
-              <div><strong>Due:</strong> {milestone.dueDate.toLocaleDateString()}</div>
+              <div>
+                <strong>Due:</strong> {milestone.dueDate.toLocaleDateString()}
+              </div>
             )}
             {milestone?.status && (
-              <div><strong>Status:</strong> {milestone.status}</div>
+              <div>
+                <strong>Status:</strong> {milestone.status}
+              </div>
             )}
-            <div><strong>Read only:</strong> {readonly ? "Yes" : "No"}</div>
+            <div>
+              <strong>Read only:</strong> {readonly ? "Yes" : "No"}
+            </div>
           </div>
         </div>
       </div>

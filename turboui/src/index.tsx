@@ -3,6 +3,7 @@ export * from "./TestableElement";
 export * from "./Avatar";
 export * from "./Button";
 export * from "./Chronometer";
+export * from "./CommentSection";
 export * from "./FormattedTime";
 export * from "./Link";
 export * from "./Menu";
