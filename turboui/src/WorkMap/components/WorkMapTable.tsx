@@ -4,7 +4,6 @@ import { TableRow } from "./TableRow";
 import classNames from "../../utils/classnames";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle } from "@tabler/icons-react";
-import { useShowIndentation } from "../hooks/useShowIndentation";
 
 interface Props {
   items: WorkMap.Item[];
@@ -14,7 +13,7 @@ interface Props {
 
 export function WorkMapTable({ items, tab, columnOptions = {} }: Props) {
   const emptyWorkMap = items.length === 0;
-  const showIndentation = useShowIndentation(items);
+  const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
