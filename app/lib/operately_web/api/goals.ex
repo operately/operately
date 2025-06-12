@@ -174,6 +174,29 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule UpdateSpace do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, null: false
+      field :space_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_space(inputs.space_id)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule AddTarget do
     use TurboConnect.Mutation
 
@@ -500,6 +523,16 @@ defmodule OperatelyWeb.Api.Goals do
     def update_parent_goal(multi, parent_goal_id) do
       Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{parent_goal_id: parent_goal_id})
+      end)
+    end
+
+    def update_space(multi, space_id) do
+      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+        if goal.group_id == space_id do
+          {:ok, goal}
+        else
+          Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
+        end
       end)
     end
 

@@ -9,6 +9,35 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "update space" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_space], %{})
+    end
+
+    test "it requires a goal_id and space_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_space], %{})
+      assert res.message == "Missing required fields: goal_id, space_id"
+    end
+
+    test "it updates the space", ctx do
+      ctx = Factory.add_space(ctx, :product)
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        space_id: Paths.space_id(ctx.product)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_space], inputs)
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.group_id == ctx.product.id
+    end
+  end
+
   describe "update parent goal" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_parent_goal], %{})
