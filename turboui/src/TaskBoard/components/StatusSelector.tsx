@@ -64,7 +64,16 @@ function StatusButton({
     "inline-flex items-center gap-1.5 rounded-full border font-medium transition-all duration-100 whitespace-nowrap",
     textSize,
     padding,
-    readonly
+    // Special styling for "done" and "canceled" status to make them more prominent
+    status === "done"
+      ? readonly
+        ? "border-green-200 bg-green-50 cursor-default"
+        : "border-green-200 bg-green-50 hover:bg-green-100 cursor-pointer"
+      : status === "canceled"
+      ? readonly
+        ? "border-red-200 bg-red-50 cursor-default"
+        : "border-red-200 bg-red-50 hover:bg-red-100 cursor-pointer"
+      : readonly
       ? "border-surface-outline bg-surface-base cursor-default"
       : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
     config.buttonColor,
