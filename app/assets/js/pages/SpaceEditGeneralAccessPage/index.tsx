@@ -1,14 +1,14 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
 import Forms from "@/components/Forms";
 
-import { Paths } from "@/routes/paths";
-import { useNavigateTo } from "@/routes/useNavigateTo";
-import { initialAccessLevels, applyAccessLevelConstraints, AccessSelectors } from "@/features/spaces";
+import { AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export default { name: "SpaceEditGeneralAccessPage", loader, Page } as PageModule;
 
@@ -40,7 +40,7 @@ function Page() {
 function Form() {
   const { space } = Pages.useLoadedData();
 
-  const navigateBack = useNavigateTo(Paths.spaceAccessManagementPath(space.id!));
+  const navigateBack = useNavigateTo(DeprecatedPaths.spaceAccessManagementPath(space.id!));
   const [edit] = Spaces.useEditSpacePermissions();
 
   const form = Forms.useForm({

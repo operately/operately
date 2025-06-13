@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubLink, useEditResourceHubLink } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 
-import { useLoadedData } from "./loader";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
+import { useLoadedData } from "./loader";
 
 export function Form() {
   const { link } = useLoadedData();
@@ -38,7 +38,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(Paths.resourceHubLinkPath(link.id!));
+      navigate(DeprecatedPaths.resourceHubLinkPath(link.id!));
     },
     submit: async () => {
       const { title, url, description } = form.values;
@@ -51,9 +51,9 @@ export function Form() {
           description: JSON.stringify(description),
           type: link.type,
         });
-        navigate(Paths.resourceHubLinkPath(link.id!));
+        navigate(DeprecatedPaths.resourceHubLinkPath(link.id!));
       } else {
-        navigate(Paths.resourceHubLinkPath(link.id!));
+        navigate(DeprecatedPaths.resourceHubLinkPath(link.id!));
       }
     },
   });

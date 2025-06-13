@@ -1,19 +1,19 @@
-import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 
 export function ProjectPageNavigation({ project }) {
-  return <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name }]} />;
 }
 
 export function ProjectMilestonesNavigation({ project }: { project: Projects.Project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.projectPath(project.id!), label: project.name! },
-        { to: Paths.projectMilestonesPath(project.id!), label: "Milestones" },
+        { to: DeprecatedPaths.projectPath(project.id!), label: project.name! },
+        { to: DeprecatedPaths.projectMilestonesPath(project.id!), label: "Milestones" },
       ]}
     />
   );
@@ -23,8 +23,8 @@ export function ProjectContribsSubpageNavigation({ project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.projectPath(project.id!), label: project.name },
-        { to: Paths.projectContributorsPath(project.id!), label: "Team & Access" },
+        { to: DeprecatedPaths.projectPath(project.id!), label: project.name },
+        { to: DeprecatedPaths.projectContributorsPath(project.id!), label: "Team & Access" },
       ]}
     />
   );
@@ -34,8 +34,8 @@ export function ProjectRetrospectiveNavigation({ project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.projectPath(project.id!), label: project.name },
-        { to: Paths.projectRetrospectivePath(project.id!), label: "Retrospective" },
+        { to: DeprecatedPaths.projectPath(project.id!), label: project.name },
+        { to: DeprecatedPaths.projectRetrospectivePath(project.id!), label: "Retrospective" },
       ]}
     />
   );

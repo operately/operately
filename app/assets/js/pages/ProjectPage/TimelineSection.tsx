@@ -1,13 +1,12 @@
-import * as Projects from "@/models/projects";
-import * as React from "react";
 import * as Milestones from "@/models/milestones";
+import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
+import * as React from "react";
 
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
-import { DimmedLabel } from "./Label";
-import { SecondaryButton } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link, SecondaryButton } from "turboui";
+import { DimmedLabel } from "./Label";
 
 import FormattedTime from "@/components/FormattedTime";
 import { assertPresent } from "@/utils/assertions";
@@ -35,7 +34,7 @@ export function TimelineSection({ project }: { project: Projects.Project }) {
 
 function ViewTimelineLink({ project }: { project: Projects.Project }) {
   return (
-    <Link to={Paths.projectMilestonesPath(project.id!)} testId="manage-timeline">
+    <Link to={DeprecatedPaths.projectMilestonesPath(project.id!)} testId="manage-timeline">
       View
     </Link>
   );
@@ -164,7 +163,7 @@ function ProjectMilestones({ project }) {
 }
 
 function MilestonesZeroState({ project }) {
-  const editPath = Paths.projectEditTimelinePath(project.id!);
+  const editPath = DeprecatedPaths.projectEditTimelinePath(project.id!);
 
   const editLink = (
     <SecondaryButton linkTo={editPath} testId="add-milestones-link" size="xs">
@@ -182,7 +181,7 @@ function MilestonesZeroState({ project }) {
 
 function AllMilestonesCompleted({ project }) {
   const editLink = (
-    <Link to={Paths.projectEditTimelinePath(project.id!)} testId="add-milestones-link">
+    <Link to={DeprecatedPaths.projectEditTimelinePath(project.id!)} testId="add-milestones-link">
       Add more milestones
     </Link>
   );
@@ -208,7 +207,7 @@ function MilestonesList({ milestones }: { milestones: Projects.Milestone[] }) {
 }
 
 function MilestoneLink({ milestone }) {
-  const path = Paths.projectMilestonePath(milestone.id!);
+  const path = DeprecatedPaths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
   const deadline = milestone.deadlineAt;
 

@@ -1,19 +1,19 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import { useLoadedData, useFilters } from "./loader";
-import { PrimaryButton } from "turboui";
 import { ProjectList } from "@/features/ProjectList";
+import { PrimaryButton } from "turboui";
+import { useFilters, useLoadedData } from "./loader";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import classNames from "classnames";
-import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { projects } = useLoadedData();
 
-  const newProjectPath = Paths.newProjectPath({
-    backPath: Paths.projectsPath(),
+  const newProjectPath = DeprecatedPaths.newProjectPath({
+    backPath: DeprecatedPaths.projectsPath(),
     backPathName: "Back to Projects",
   });
 

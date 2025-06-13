@@ -1,11 +1,11 @@
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFileDeleted } from "@/api";
-import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
-import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import type { ActivityHandler } from "../interfaces";
 
 const ResourceHubFileDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,7 +16,7 @@ const ResourceHubFileDeleted: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.resourceHub?.id, "resourceHub must be present in activity");
 
-    return Paths.resourceHubPath(content(activity).resourceHub!.id!);
+    return DeprecatedPaths.resourceHubPath(content(activity).resourceHub!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

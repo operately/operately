@@ -1,18 +1,18 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import * as Projects from "@/models/projects";
 import * as KeyResources from "@/models/keyResources";
+import * as Projects from "@/models/projects";
 
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { Link, ButtonLink, DivLink } from "turboui";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { ButtonLink, DivLink, Link } from "turboui";
 
+import { DeprecatedPaths } from "@/routes/paths";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
-import { Paths } from "@/routes/paths";
-import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -56,14 +56,14 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
   const { project } = useLoadedData();
-  const gotoResourceList = useNavigateTo(Paths.projectEditResourcesPath(project.id!));
+  const gotoResourceList = useNavigateTo(DeprecatedPaths.projectEditResourcesPath(project.id!));
   const [remove] = KeyResources.useRemoveKeyResource();
 
   const title = resource!.title;
   const icon = <ResourceIcon resourceType={resource!.resourceType!} size={32} />;
   const removeId = createTestId("remove-resource", title!);
 
-  const editPath = Paths.projectEditResourcePath(resource!.id!);
+  const editPath = DeprecatedPaths.projectEditResourcePath(resource!.id!);
   const editId = createTestId("edit-resource", title!);
 
   const submit = React.useCallback(async () => {
@@ -124,7 +124,7 @@ function PotentialResourceListItem({ resourceType }: { resourceType: string }) {
   const icon = <ResourceIcon resourceType={resourceType} size={32} />;
 
   const id = createTestId("add-resource", title);
-  const path = Paths.projectNewResourcePath(project.id!, { resourceType });
+  const path = DeprecatedPaths.projectNewResourcePath(project.id!, { resourceType });
 
   return (
     <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">

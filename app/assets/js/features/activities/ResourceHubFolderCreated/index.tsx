@@ -1,11 +1,11 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFolderCreated } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
 
@@ -18,7 +18,7 @@ const ResourceHubFolderCreated: ActivityHandler = {
     const folder = content(activity).folder;
     assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderCreated activity content");
 
-    return Paths.resourceHubFolderPath(folder.id);
+    return DeprecatedPaths.resourceHubFolderPath(folder.id);
   },
 
   PageTitle(_props: { activity: any }) {

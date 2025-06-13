@@ -1,23 +1,22 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Spaces from "@/models/spaces";
 import * as Discussions from "@/models/discussions";
-import * as Time from "@/utils/time";
+import * as Spaces from "@/models/spaces";
 import { PageModule } from "@/routes/types";
+import * as Time from "@/utils/time";
+import * as React from "react";
 
-import { Discussion } from "@/models/discussions";
-import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "turboui";
-import { createTestId } from "@/utils/testid";
-import { truncateString } from "@/utils/strings";
-import { assertPresent } from "@/utils/assertions";
 import { richContentToString } from "@/components/RichContent";
+import { Discussion } from "@/models/discussions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
+import { truncateString } from "@/utils/strings";
+import { createTestId } from "@/utils/testid";
+import { DivLink, PrimaryButton } from "turboui";
 
-import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
+import { Avatar } from "turboui";
 
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
 
@@ -63,8 +62,8 @@ function Navigation() {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.spacePath(space.id!), label: space.name! },
-        { to: Paths.spaceDiscussionsPath(space.id!), label: "Discussions" },
+        { to: DeprecatedPaths.spacePath(space.id!), label: space.name! },
+        { to: DeprecatedPaths.spaceDiscussionsPath(space.id!), label: "Discussions" },
       ]}
     />
   );
@@ -80,7 +79,7 @@ function NewDiscussionButton() {
   const { space } = Pages.useLoadedData<LoadedData>();
 
   return (
-    <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={DeprecatedPaths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
       New Discussion
     </PrimaryButton>
   );
@@ -118,7 +117,7 @@ function DiscussionList() {
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
 
-  const path = Paths.discussionEditPath(discussion.id!);
+  const path = DeprecatedPaths.discussionEditPath(discussion.id!);
 
   const className = classNames(
     "flex items-start gap-4",

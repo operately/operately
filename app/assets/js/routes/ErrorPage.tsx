@@ -1,11 +1,11 @@
-import * as React from "react";
 import NotFoundPage from "@/pages/NotFoundPage";
+import * as React from "react";
 
-import { GhostButton } from "turboui";
-import { Paths } from "./paths";
-import { useRouteError } from "react-router-dom";
-import { AxiosError } from "axios";
 import { captureException } from "@sentry/react";
+import { AxiosError } from "axios";
+import { useRouteError } from "react-router-dom";
+import { GhostButton } from "turboui";
+import { DeprecatedPaths } from "./paths";
 
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
@@ -22,8 +22,8 @@ function ServerErrorPage() {
 
   React.useEffect(() => {
     console.error(error);
-    captureException(error, { level: 'fatal' })
-  }, [error])
+    captureException(error, { level: "fatal" });
+  }, [error]);
 
   return (
     <div className="absolute inset-0 flex justify-center items-center gap-16">
@@ -35,7 +35,7 @@ function ServerErrorPage() {
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
         <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo={Paths.homePath()} testId="back-to-lobby">
+          <GhostButton linkTo={DeprecatedPaths.homePath()} testId="back-to-lobby">
             Go back to Home
           </GhostButton>
         </div>

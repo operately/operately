@@ -1,9 +1,9 @@
 import * as People from "@/models/people";
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectResuming } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 const ProjectResuming: ActivityHandler = {
@@ -12,7 +12,7 @@ const ProjectResuming: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

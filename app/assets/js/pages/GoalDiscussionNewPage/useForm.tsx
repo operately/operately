@@ -1,12 +1,12 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
-import { Paths } from "@/routes/paths";
-import { Validators } from "@/utils/validators";
-import { useFormState, formValidator } from "@/components/Form/useFormState";
+import { formValidator, useFormState } from "@/components/Form/useFormState";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
+import * as Goals from "@/models/goals";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Validators } from "@/utils/validators";
 
 type FormFields = {
   title: string;
@@ -48,7 +48,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
           sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
           subscriberIds: subscriptionsState.currentSubscribersList,
         })
-          .then((data) => navigate(Paths.goalActivityPath(data.id!)))
+          .then((data) => navigate(DeprecatedPaths.goalActivityPath(data.id!)))
           .finally(() => setSubmitting(false));
       },
       submitting,

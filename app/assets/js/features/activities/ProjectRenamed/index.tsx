@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectRenamed } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 
 const ProjectRenamed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -14,7 +14,7 @@ const ProjectRenamed: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

@@ -1,14 +1,14 @@
 import React from "react";
 
-import { PrimaryButton, DimmedLink } from "turboui";
+import { DimmedLink, PrimaryButton } from "turboui";
 
-import * as Goals from "@/models/goals";
 import * as TipTapEditor from "@/components/Editor";
 import { FormTitleInput } from "@/components/FormTitleInput";
+import * as Goals from "@/models/goals";
 
-import { Paths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
 import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
 import { useForm } from "./useForm";
 
@@ -41,7 +41,7 @@ export function Form({ goal }: { goal: Goals.Goal }) {
           Post Discussion
         </PrimaryButton>
 
-        <DimmedLink to={Paths.goalDiscussionsPath(goal.id!)}>Cancel</DimmedLink>
+        <DimmedLink to={DeprecatedPaths.goalDiscussionsPath(goal.id!)}>Cancel</DimmedLink>
       </div>
     </>
   );

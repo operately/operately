@@ -1,12 +1,11 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
-import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DivLink, SecondaryButton } from "turboui";
 
-import { Avatar } from "turboui";
 import classNames from "classnames";
+import { Avatar } from "turboui";
 
 export function Colleagues({ person }: { person: People.Person }) {
   const [allPeersVisible, setAllPeersVisible] = React.useState(false);
@@ -128,7 +127,9 @@ function PersonCard(props: PersonCardProps) {
   const testid = `person-card-${person.id}`;
 
   if (link) {
-    return <DivLink to={Paths.profilePath(person.id!)} className={className} children={content} testId={testid} />;
+    return (
+      <DivLink to={DeprecatedPaths.profilePath(person.id!)} className={className} children={content} testId={testid} />
+    );
   } else {
     return <div className={className} children={content} data-test-id={testid} />;
   }

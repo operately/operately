@@ -3,7 +3,7 @@ import React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 
-import { compareIds, Paths } from "@/routes/paths";
+import { compareIds, DeprecatedPaths } from "@/routes/paths";
 
 import { assertPresent } from "@/utils/assertions";
 import { MiniWorkMap } from "turboui";
@@ -23,7 +23,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
         state: project.closedAt ? "closed" : project.status === "paused" ? "paused" : "active",
         status: project.lastCheckIn?.status || "pending",
         name: project.name,
-        itemPath: Paths.projectPath(project.id),
+        itemPath: DeprecatedPaths.projectPath(project.id),
         progress: Projects.getProgress(project),
         completed: Projects.isClosed(project),
         assignees: Projects.getPeople(project),
@@ -43,7 +43,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
         state: goal.closedAt ? "closed" : "active",
         status: goal.lastCheckIn?.status || "pending",
         name: goal.name,
-        itemPath: Paths.goalPath(goal.id),
+        itemPath: DeprecatedPaths.goalPath(goal.id),
         progress: goal.progressPercentage,
         completed: goal.isClosed,
         assignees: Goals.getPeople(goal),

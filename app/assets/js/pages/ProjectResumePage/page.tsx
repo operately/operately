@@ -1,14 +1,13 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+import { useLoadedData } from "./loader";
 
-import { PrimaryButton } from "turboui";
-import { DimmedLink } from "turboui";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DimmedLink, PrimaryButton } from "turboui";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -16,7 +15,7 @@ export function Page() {
   return (
     <Pages.Page title={["Resume", project.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />
+        <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Ready to resume project?</div>
@@ -31,7 +30,7 @@ export function Page() {
 
           <div className="flex items-center gap-6 mt-8">
             <ResumeButton project={project} />
-            <DimmedLink to={Paths.projectPath(project.id!)}>Keep it paused</DimmedLink>
+            <DimmedLink to={DeprecatedPaths.projectPath(project.id!)}>Keep it paused</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -40,7 +39,7 @@ export function Page() {
 }
 
 function ResumeButton({ project }) {
-  const path = Paths.projectPath(project.id);
+  const path = DeprecatedPaths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 
   const [resume, { loading }] = Projects.useResumeProject();

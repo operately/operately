@@ -1,13 +1,13 @@
-import * as React from "react";
-import * as Timeframes from "@/utils/timeframes";
 import * as People from "@/models/people";
+import * as Timeframes from "@/utils/timeframes";
+import * as React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalEditing } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths, compareIds } from "@/routes/paths";
-import { goalLink, feedTitle } from "../feedItemLinks";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const GoalEditing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalPath(content(activity).goal!.id!);
+    return DeprecatedPaths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

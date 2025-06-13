@@ -1,10 +1,10 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import { PageModule } from "@/routes/types";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 
 export default { name: "CompanyPermissionsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -12,7 +12,7 @@ function Page() {
   return (
     <Pages.Page title="Permissions">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={Paths.companyAdminPath()} title="Back to Company Admin" />
+        <Paper.NavigateBack to={DeprecatedPaths.companyAdminPath()} title="Back to Company Admin" />
         <div className="font-extrabold text-2xl mb-4 text-center">Permission Breakdown</div>
         <Paper.Body>
           <Header />

@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
@@ -10,7 +10,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   await redirectIfFeatureEnabled(params, {
     feature: "new_profile_page",
-    path: Paths.profileV2Path(params.id),
+    path: DeprecatedPaths.profileV2Path(params.id),
   });
 
   return {

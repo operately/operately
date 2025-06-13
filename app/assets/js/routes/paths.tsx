@@ -1,12 +1,32 @@
-import { LinkOptions } from "@/features/ResourceHub";
 import * as GoalAddPage from "@/pages/GoalAddPage";
 import * as ProfileEditPage from "@/pages/ProfileEditPage";
 import * as ProjectAddPage from "@/pages/ProjectAddPage";
 import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage";
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
+import * as React from "react";
+
+import { LinkOptions } from "@/features/ResourceHub";
 import { WorkMap } from "turboui";
+import { useLoadedData } from "../pages/GoalAddPage/loader";
+
+const UNACCEPTABLE_PATH_CHARACTERS = ["/", "?", "#", "[", "]"];
 
 export class Paths {
+  //
+  // When deprecatedLookup is true, the paths will use the old lookup method
+  // which is based on the company ID in the window.location.pathname.
+  //
+  // We've deprecated this method and replaced it with a new one that uses
+  // a more robust way to get the company ID, based on the react-router context.
+  //
+  private deprecatedLookup: boolean;
+  private companyId?: string | null;
+
+  constructor(opts: { deprecatedLookup?: boolean; companyId: string | null }) {
+    this.companyId = opts.companyId || null;
+    this.deprecatedLookup = opts.deprecatedLookup || false;
+  }
+
   static lobbyPath() {
     return "/";
   }
@@ -16,63 +36,63 @@ export class Paths {
   }
 
   static newCompanyPath() {
-    return createPath(["new"]);
+    return "/new";
   }
 
   static companyHomePath(companyId: string) {
-    return createPath([companyId]);
+    return "/" + companyId;
   }
 
-  static companyPermissionsPath() {
-    return createCompanyPath(["admin", "permissions"]);
+  companyPermissionsPath() {
+    return this.createCompanyPath(["admin", "permissions"]);
   }
 
-  static companyRenamePath() {
-    return createCompanyPath(["admin", "rename"]);
+  companyRenamePath() {
+    return this.createCompanyPath(["admin", "rename"]);
   }
 
-  static companyAdminRestoreSuspendedPeoplePath() {
-    return createCompanyPath(["admin", "restore-suspended-people"]);
+  companyAdminRestoreSuspendedPeoplePath() {
+    return this.createCompanyPath(["admin", "restore-suspended-people"]);
   }
 
-  static feedPath() {
-    return createCompanyPath(["feed"]);
+  feedPath() {
+    return this.createCompanyPath(["feed"]);
   }
 
-  static isHomePath() {
-    return window.location.pathname === Paths.homePath();
+  isHomePath() {
+    return window.location.pathname === DeprecatedPaths.homePath();
   }
 
-  static homePath() {
-    return createCompanyPath([]);
+  homePath() {
+    return this.createCompanyPath([]);
   }
 
-  static accountPath() {
-    return createCompanyPath(["account"]);
+  accountPath() {
+    return this.createCompanyPath(["account"]);
   }
 
-  static accountAppearancePath() {
-    return createCompanyPath(["account", "appearance"]);
+  accountAppearancePath() {
+    return this.createCompanyPath(["account", "appearance"]);
   }
 
-  static accountSecurityPath() {
-    return createCompanyPath(["account", "security"]);
+  accountSecurityPath() {
+    return this.createCompanyPath(["account", "security"]);
   }
 
-  static accountChangePasswordPath() {
-    return createCompanyPath(["account", "security", "change-password"]);
+  accountChangePasswordPath() {
+    return this.createCompanyPath(["account", "security", "change-password"]);
   }
 
-  static notificationsPath() {
-    return createCompanyPath(["notifications"]);
+  notificationsPath() {
+    return this.createCompanyPath(["notifications"]);
   }
 
-  static reviewPath() {
-    return createCompanyPath(["review"]);
+  reviewPath() {
+    return this.createCompanyPath(["review"]);
   }
 
-  static profileEditPath(personId: string, params?: { from: ProfileEditPage.FromLocation }) {
-    const path = createCompanyPath(["people", personId, "profile", "edit"]);
+  profileEditPath(personId: string, params?: { from: ProfileEditPage.FromLocation }) {
+    const path = this.createCompanyPath(["people", personId, "profile", "edit"]);
 
     if (params?.from) {
       return path + "?from=" + params.from;
@@ -81,414 +101,434 @@ export class Paths {
     }
   }
 
-  static companyAdminPath() {
-    return createCompanyPath(["admin"]);
+  companyAdminPath() {
+    return this.createCompanyPath(["admin"]);
   }
 
-  static companyManagePeoplePath() {
-    return createCompanyPath(["admin", "manage-people"]);
+  companyManagePeoplePath() {
+    return this.createCompanyPath(["admin", "manage-people"]);
   }
 
-  static companyManageAdminsPath() {
-    return createCompanyPath(["admin", "manage-admins"]);
+  companyManageAdminsPath() {
+    return this.createCompanyPath(["admin", "manage-admins"]);
   }
 
-  static companyManagePeopleAddPeoplePath() {
-    return createCompanyPath(["admin", "manage-people", "add"]);
+  companyManagePeopleAddPeoplePath() {
+    return this.createCompanyPath(["admin", "manage-people", "add"]);
   }
 
-  static companyAdminManageTrustedDomainsPath() {
-    return createCompanyPath(["admin", "manage-trusted-email-domains"]);
+  companyAdminManageTrustedDomainsPath() {
+    return this.createCompanyPath(["admin", "manage-trusted-email-domains"]);
   }
 
-  static peoplePath() {
-    return createCompanyPath(["people"]);
+  peoplePath() {
+    return this.createCompanyPath(["people"]);
   }
 
-  static discussionsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "discussions"]);
+  discussionsPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "discussions"]);
   }
 
-  static discussionDraftsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "discussions", "drafts"]);
+  discussionDraftsPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "discussions", "drafts"]);
   }
 
-  static discussionPath(discussionId: string) {
-    return createCompanyPath(["discussions", discussionId]);
+  discussionPath(discussionId: string) {
+    return this.createCompanyPath(["discussions", discussionId]);
   }
 
-  static discussionEditPath(discussionId: string) {
-    return createCompanyPath(["discussions", discussionId, "edit"]);
+  discussionEditPath(discussionId: string) {
+    return this.createCompanyPath(["discussions", discussionId, "edit"]);
   }
 
-  static discussionNewPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "discussions", "new"]);
+  discussionNewPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "discussions", "new"]);
   }
 
-  static projectPath(projectId: string) {
-    return createCompanyPath(["projects", projectId]);
+  projectPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId]);
   }
 
-  static projectCheckInNewPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "check-ins", "new"]);
+  projectCheckInNewPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "check-ins", "new"]);
   }
 
-  static projectNewPath({ goalId }: { goalId: string }) {
-    return createCompanyPath(["projects", "new"]) + "?goalId=" + goalId;
+  projectNewPath({ goalId }: { goalId: string }) {
+    return this.createCompanyPath(["projects", "new"]) + "?goalId=" + goalId;
   }
 
-  static projectCheckInPath(checkInId: string) {
-    return createCompanyPath(["project-check-ins", checkInId]);
+  projectCheckInPath(checkInId: string) {
+    return this.createCompanyPath(["project-check-ins", checkInId]);
   }
 
-  static projectCheckInEditPath(checkInId: string) {
-    return createCompanyPath(["project-check-ins", checkInId, "edit"]);
+  projectCheckInEditPath(checkInId: string) {
+    return this.createCompanyPath(["project-check-ins", checkInId, "edit"]);
   }
 
-  static projectCheckInsPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "check-ins"]);
+  projectCheckInsPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "check-ins"]);
   }
 
-  static projectRetrospectivePath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "retrospective"]);
+  projectRetrospectivePath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "retrospective"]);
   }
 
-  static projectRetrospectiveEditPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "retrospective", "edit"]);
-  }
-  static projectMilestonesPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "milestones"]);
+  projectRetrospectiveEditPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "retrospective", "edit"]);
   }
 
-  static projectMilestonePath(milestoneId: string) {
-    return createCompanyPath(["milestones", milestoneId]);
+  projectMilestonesPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "milestones"]);
   }
 
-  static projectContributorsPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "contributors"]);
+  projectMilestonePath(milestoneId: string) {
+    return this.createCompanyPath(["milestones", milestoneId]);
   }
 
-  static projectContributorsAddPath(projectId: string, params: ProjectContributorsAddPage.UrlParams) {
-    return createCompanyPath(["projects", projectId, "contributors", "add"]) + encodeUrlParams(params);
+  projectContributorsPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "contributors"]);
   }
 
-  static projectContributorsEditPath(contributorId: string, params?: ProjectContributorsEditPage.UrlParams) {
-    return createCompanyPath(["project-contribs", contributorId, "edit"]) + encodeUrlParams(params);
+  projectContributorsAddPath(projectId: string, params: ProjectContributorsAddPage.UrlParams) {
+    return this.createCompanyPath(["projects", projectId, "contributors", "add"]) + encodeUrlParams(params);
   }
 
-  static editProjectGoalPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "goal"]);
+  projectContributorsEditPath(contributorId: string, params?: ProjectContributorsEditPage.UrlParams) {
+    return this.createCompanyPath(["project-contribs", contributorId, "edit"]) + encodeUrlParams(params);
   }
 
-  static editProjectNamePath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "name"]);
+  editProjectGoalPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "goal"]);
   }
 
-  static editProjectAccessLevelsPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "permissions"]);
+  editProjectNamePath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "name"]);
   }
 
-  static moveProjectPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "move"]);
+  editProjectAccessLevelsPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "permissions"]);
   }
 
-  static pauseProjectPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "pause"]);
+  moveProjectPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "move"]);
   }
 
-  static resumeProjectPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "resume"]);
+  pauseProjectPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "pause"]);
   }
 
-  static orgChartPath() {
-    return createCompanyPath(["people", "org-chart"]);
+  resumeProjectPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "resume"]);
   }
 
-  static newSpacePath() {
-    return createCompanyPath(["spaces", "new"]);
+  orgChartPath() {
+    return this.createCompanyPath(["people", "org-chart"]);
   }
 
-  static resourceHubPath(resourceHubId: string) {
-    return createCompanyPath(["resource-hubs", resourceHubId]);
+  newSpacePath() {
+    return this.createCompanyPath(["spaces", "new"]);
   }
 
-  static resourceHubDraftsPath(resourceHubId: string) {
-    return createCompanyPath(["resource-hubs", resourceHubId, "drafts"]);
+  resourceHubPath(resourceHubId: string) {
+    return this.createCompanyPath(["resource-hubs", resourceHubId]);
   }
 
-  static resourceHubFolderPath(folderId: string) {
-    return createCompanyPath(["folders", folderId]);
+  resourceHubDraftsPath(resourceHubId: string) {
+    return this.createCompanyPath(["resource-hubs", resourceHubId, "drafts"]);
   }
 
-  static resourceHubFilePath(fileId: string) {
-    return createCompanyPath(["files", fileId]);
+  resourceHubFolderPath(folderId: string) {
+    return this.createCompanyPath(["folders", folderId]);
   }
 
-  static resourceHubEditFilePath(fileId: string) {
-    return createCompanyPath(["files", fileId, "edit"]);
+  resourceHubFilePath(fileId: string) {
+    return this.createCompanyPath(["files", fileId]);
   }
 
-  static resourceHubDocumentPath(documentId: string) {
-    return createCompanyPath(["documents", documentId]);
+  resourceHubEditFilePath(fileId: string) {
+    return this.createCompanyPath(["files", fileId, "edit"]);
   }
 
-  static resourceHubEditDocumentPath(documentId: string) {
-    return createCompanyPath(["documents", documentId, "edit"]);
+  resourceHubDocumentPath(documentId: string) {
+    return this.createCompanyPath(["documents", documentId]);
   }
 
-  static resourceHubNewDocumentPath(resourceHubId: string, folderId?: string) {
+  resourceHubEditDocumentPath(documentId: string) {
+    return this.createCompanyPath(["documents", documentId, "edit"]);
+  }
+
+  resourceHubNewDocumentPath(resourceHubId: string, folderId?: string) {
     if (folderId) {
-      return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]) + "?folderId=" + folderId;
+      return this.createCompanyPath(["resource-hubs", resourceHubId, "new-document"]) + "?folderId=" + folderId;
     } else {
-      return createCompanyPath(["resource-hubs", resourceHubId, "new-document"]);
+      return this.createCompanyPath(["resource-hubs", resourceHubId, "new-document"]);
     }
   }
 
-  static resourceHubNewLinkPath(resourceHubId: string, attrs: { folderId?: string; type?: LinkOptions }) {
+  resourceHubNewLinkPath(resourceHubId: string, attrs: { folderId?: string; type?: LinkOptions }) {
     const { folderId, type } = attrs;
 
     if (folderId && type) {
-      return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + `?folderId=${folderId}&type=${type}`;
+      return (
+        this.createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + `?folderId=${folderId}&type=${type}`
+      );
     } else if (folderId) {
-      return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + "?folderId=" + folderId;
+      return this.createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + "?folderId=" + folderId;
     } else if (type) {
-      return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + "?type=" + type;
+      return this.createCompanyPath(["resource-hubs", resourceHubId, "new-link"]) + "?type=" + type;
     } else {
-      return createCompanyPath(["resource-hubs", resourceHubId, "new-link"]);
+      return this.createCompanyPath(["resource-hubs", resourceHubId, "new-link"]);
     }
   }
 
-  static resourceHubEditLinkPath(linkId: string) {
-    return createCompanyPath(["links", linkId, "edit"]);
+  resourceHubEditLinkPath(linkId: string) {
+    return this.createCompanyPath(["links", linkId, "edit"]);
   }
 
-  static resourceHubLinkPath(linkId: string) {
-    return createCompanyPath(["links", linkId]);
+  resourceHubLinkPath(linkId: string) {
+    return this.createCompanyPath(["links", linkId]);
   }
 
-  static spacePath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId]);
+  spacePath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId]);
   }
 
-  static spaceEditPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "edit"]);
+  spaceEditPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "edit"]);
   }
 
-  static spaceEditGeneralAccessPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
+  spaceEditGeneralAccessPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
   }
 
-  static spaceGoalsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "goals"]);
+  spaceGoalsPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "goals"]);
   }
 
-  static spaceDiscussionsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "discussions"]);
+  spaceDiscussionsPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "discussions"]);
   }
 
-  static spaceAppearancePath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "appearance"]);
+  spaceAppearancePath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "appearance"]);
   }
 
-  static spaceAccessManagementPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "access"]);
+  spaceAccessManagementPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "access"]);
   }
 
-  static spaceAddMembersPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "add-members"]);
+  spaceAddMembersPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "add-members"]);
   }
 
-  static workMapPath(tab?: WorkMap.Filter) {
-    return createCompanyPath(["work-map"]) + (tab ? `?tab=${tab}` : "");
+  workMapPath(tab?: WorkMap.Filter) {
+    return this.createCompanyPath(["work-map"]) + (tab ? `?tab=${tab}` : "");
   }
 
-  static spaceWorkMapPath(spaceId: string, tab?: WorkMap.Filter) {
-    return createCompanyPath(["spaces", spaceId, "work-map"]) + (tab ? `?tab=${tab}` : "");
+  spaceWorkMapPath(spaceId: string, tab?: WorkMap.Filter) {
+    return this.createCompanyPath(["spaces", spaceId, "work-map"]) + (tab ? `?tab=${tab}` : "");
   }
 
-  static goalClosePath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "complete"]);
+  goalClosePath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "complete"]);
   }
 
-  static goalPath(goalId: string) {
-    return createCompanyPath(["goals", goalId]);
+  goalPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId]);
   }
 
   // Temporary path
-  static goalV2Path(goalId: string) {
-    return createCompanyPath(["goals", goalId, "v2"]);
+  goalV2Path(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "v2"]);
   }
-  static goalV3Path(goalId: string) {
-    return createCompanyPath(["goals", goalId, "v3"]);
-  }
-
-  static newGoalPath(params?: GoalAddPage.UrlParams) {
-    return createCompanyPath(["goals", "new"]) + encodeUrlParams(params);
+  goalV3Path(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "v3"]);
   }
 
-  static spaceNewGoalPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "goals", "new"]);
+  newGoalPath(params?: GoalAddPage.UrlParams) {
+    return this.createCompanyPath(["goals", "new"]) + encodeUrlParams(params);
   }
 
-  static newProjectPath(params?: ProjectAddPage.UrlParams) {
-    return createCompanyPath(["projects", "new"]) + encodeUrlParams(params);
+  spaceNewGoalPath(spaceId: string) {
+    return this.createCompanyPath(["spaces", spaceId, "goals", "new"]);
   }
 
-  static projectsPath() {
-    return createCompanyPath(["projects"]);
+  newProjectPath(params?: ProjectAddPage.UrlParams) {
+    return this.createCompanyPath(["projects", "new"]) + encodeUrlParams(params);
   }
 
-  static goalsPath() {
-    return createCompanyPath(["goals"]);
+  projectsPath() {
+    return this.createCompanyPath(["projects"]);
   }
 
-  static goalAboutPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "about"]);
+  goalsPath() {
+    return this.createCompanyPath(["goals"]);
   }
 
-  static goalSubgoalsPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "subgoals"]);
+  goalAboutPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "about"]);
   }
 
-  static goalNewPath({ parentGoalId }: { parentGoalId: string }) {
-    return createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
+  goalSubgoalsPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "subgoals"]);
   }
 
-  static goalCheckInNewPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "check-ins", "new"]);
+  goalNewPath({ parentGoalId }: { parentGoalId: string }) {
+    return this.createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
-  static goalCheckInPath(checkInId: string) {
-    return createCompanyPath(["goal-check-ins", checkInId]);
+  goalCheckInNewPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "check-ins", "new"]);
   }
 
-  static newGoalDiscussionPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "discussions", "new"]);
+  goalCheckInPath(checkInId: string) {
+    return this.createCompanyPath(["goal-check-ins", checkInId]);
   }
 
-  static goalDiscussionsPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "discussions"]);
+  newGoalDiscussionPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "discussions", "new"]);
   }
 
-  static goalDiscussionPath(id: string) {
-    return createCompanyPath(["goal-activities", id]);
+  goalDiscussionsPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "discussions"]);
   }
 
-  static goalRetrospectivePath(id: string) {
-    return createCompanyPath(["goal-activities", id]);
+  goalDiscussionPath(id: string) {
+    return this.createCompanyPath(["goal-activities", id]);
   }
 
-  static goalDiscussionEditPath(activityId: string) {
-    return createCompanyPath(["goal-activities", activityId, "edit"]);
+  goalRetrospectivePath(id: string) {
+    return this.createCompanyPath(["goal-activities", id]);
   }
 
-  static goalActivityPath(activityId: string) {
-    return createCompanyPath(["goal-activities", activityId]);
+  goalDiscussionEditPath(activityId: string) {
+    return this.createCompanyPath(["goal-activities", activityId, "edit"]);
   }
 
-  static createCompanyPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "complete"]);
+  goalActivityPath(activityId: string) {
+    return this.createCompanyPath(["goal-activities", activityId]);
   }
 
-  static goalReopenPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "reopen"]);
+  goalReopenPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "reopen"]);
   }
 
-  static goalArchivePath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "archive"]);
+  goalArchivePath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "archive"]);
   }
 
-  static goalEditParentPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "edit", "parent"]);
+  goalEditParentPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "edit", "parent"]);
   }
 
-  static goalEditTimeframePath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "edit", "timeframe"]);
+  goalEditTimeframePath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "edit", "timeframe"]);
   }
 
-  static goalEditPath(goalId: string) {
-    return createCompanyPath(["goals", goalId, "edit"]);
+  goalEditPath(goalId: string) {
+    return this.createCompanyPath(["goals", goalId, "edit"]);
   }
 
-  static profileV2Path(personId: string) {
-    return createCompanyPath(["people", personId, "v2"]);
+  profileV2Path(personId: string) {
+    return this.createCompanyPath(["people", personId, "v2"]);
   }
 
-  static profilePath(personId: string) {
-    return createCompanyPath(["people", personId]);
+  profilePath(personId: string) {
+    return this.createCompanyPath(["people", personId]);
   }
 
-  static profileGoalsPath(personId: string) {
-    return createCompanyPath(["people", personId, "goals"]);
+  profileGoalsPath(personId: string) {
+    return this.createCompanyPath(["people", personId, "goals"]);
   }
 
-  static projectEditTimelinePath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "timeline"]);
+  projectEditTimelinePath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "timeline"]);
   }
 
-  static projectEditDescriptionPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "description"]);
+  projectEditDescriptionPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "description"]);
   }
 
-  static projectEditResourcesPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "resources"]);
+  projectEditResourcesPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "resources"]);
   }
 
-  static projectEditResourcePath(resourceId: string) {
-    return createCompanyPath(["project-resources", resourceId, "edit"]);
+  projectEditResourcePath(resourceId: string) {
+    return this.createCompanyPath(["project-resources", resourceId, "edit"]);
   }
 
-  static projectEditPermissionsPath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "edit", "permissions"]);
+  projectEditPermissionsPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "edit", "permissions"]);
   }
 
-  static projectNewResourcePath(projectId: string, { resourceType }: { resourceType: string }) {
-    return createCompanyPath(["projects", projectId, "resources", "new"]) + "?resourceType=" + resourceType;
+  projectNewResourcePath(projectId: string, { resourceType }: { resourceType: string }) {
+    return this.createCompanyPath(["projects", projectId, "resources", "new"]) + "?resourceType=" + resourceType;
   }
 
-  static projectClosePath(projectId: string) {
-    return createCompanyPath(["projects", projectId, "close"]);
+  projectClosePath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "close"]);
   }
 
-  static taskPath(taskId: string) {
-    return createCompanyPath(["tasks", taskId]);
+  taskPath(taskId: string) {
+    return this.createCompanyPath(["tasks", taskId]);
   }
-}
 
-function getCompanyID(): string {
-  const parts = window.location.pathname.split("/") as string[];
+  //
+  // Private utility methods
+  //
 
-  if (parts.length >= 2) {
-    return parts[1]!;
-  } else {
-    throw new Error("Company ID not found in path");
+  private createCompanyPath(elements: string[]) {
+    return this.createPath([this.getCompanyID(), ...elements]);
   }
-}
 
-function createCompanyPath(elements: string[]) {
-  return createPath([getCompanyID(), ...elements]);
-}
+  private createPath(elements: string[]) {
+    Paths.validatePathElements(elements);
+    return "/" + elements.join("/");
+  }
 
-function createPath(elements: string[]) {
-  validatePathElements(elements);
+  private getCompanyID(): string {
+    if (this.deprecatedLookup) {
+      const parts = window.location.pathname.split("/") as string[];
 
-  return "/" + elements.join("/");
-}
-
-const UNACCEPTABLE_CHARACTERS = ["/", "?", "#", "[", "]"];
-
-function validatePathElements(elements: string[]) {
-  elements.forEach((element) => {
-    if (!element) {
-      throw new Error("Unsuported path elements: " + JSON.stringify(elements));
-    }
-
-    UNACCEPTABLE_CHARACTERS.forEach((char) => {
-      if (element.includes(char)) {
-        throw new Error(`Path elements cannot contain ${char}`);
+      if (parts.length >= 2) {
+        return parts[1]!;
+      } else {
+        throw new Error("Company ID not found in path");
       }
+    } else {
+      if (!this.companyId) {
+        throw new Error("Can't create company paths without a company ID");
+      }
+
+      return this.companyId;
+    }
+  }
+
+  static validatePathElements(elements: string[]) {
+    elements.forEach((element) => {
+      if (!element) {
+        throw new Error("Unsuported path elements: " + JSON.stringify(elements));
+      }
+
+      UNACCEPTABLE_PATH_CHARACTERS.forEach((char) => {
+        if (element.includes(char)) {
+          throw new Error(`Path elements cannot contain ${char}`);
+        }
+      });
     });
-  });
+  }
+}
+
+export const DeprecatedPaths = new Paths({ deprecatedLookup: true, companyId: null });
+
+export function usePaths() {
+  const { company } = useLoadedData();
+
+  const paths = React.useMemo(() => {
+    return new Paths({ deprecatedLookup: false, companyId: company?.id || null });
+  }, [company.id]);
+
+  return paths;
 }
 
 type ID = string | null | undefined;

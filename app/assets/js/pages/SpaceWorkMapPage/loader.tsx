@@ -1,7 +1,7 @@
 import { Space, getSpace } from "@/models/spaces";
 import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { fetchAll } from "../../utils/async";
 
@@ -16,7 +16,7 @@ interface LoaderResult {
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   await redirectIfFeatureNotEnabled(params, {
     feature: "space_work_map",
-    path: Paths.spaceGoalsPath(params.id),
+    path: DeprecatedPaths.spaceGoalsPath(params.id),
   });
 
   return PageCache.fetch({

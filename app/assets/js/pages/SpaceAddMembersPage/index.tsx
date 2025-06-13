@@ -1,18 +1,18 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
-import * as Spaces from "@/models/spaces";
 import * as People from "@/models/people";
+import * as Spaces from "@/models/spaces";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { Paths, compareIds } from "@/routes/paths";
-import { SecondaryButton } from "turboui";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
-import { PageModule } from "@/routes/types";
+import { SecondaryButton } from "turboui";
 
 export default { name: "SpaceAddMembersPage", loader, Page } as PageModule;
 
@@ -41,7 +41,7 @@ function newMember() {
 
 function Page() {
   const { space } = Pages.useLoadedData() as LoaderResult;
-  const backPath = Paths.spaceAccessManagementPath(space.id!);
+  const backPath = DeprecatedPaths.spaceAccessManagementPath(space.id!);
   const navigate = useNavigate();
   const [add] = Spaces.useAddSpaceMembers();
 

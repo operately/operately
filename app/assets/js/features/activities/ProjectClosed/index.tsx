@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import type { ActivityContentProjectClosed } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { projectLink, feedTitle } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectClosed: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const ProjectClosed: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectRetrospectivePath(content(activity).project!.id!);
+    return DeprecatedPaths.projectRetrospectivePath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,7 +32,7 @@ const ProjectClosed: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const retroId = content(activity).project!.id!;
-    const retroPath = Paths.projectRetrospectivePath(retroId!);
+    const retroPath = DeprecatedPaths.projectRetrospectivePath(retroId!);
     const retroLink = <Link to={retroPath}>retrospective</Link>;
     const project = projectLink(content(activity).project!);
 

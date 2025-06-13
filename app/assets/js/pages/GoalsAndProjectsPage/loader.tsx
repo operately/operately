@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
@@ -12,7 +12,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   await redirectIfFeatureEnabled(params, {
     feature: "work_map_page",
-    path: Paths.workMapPath(),
+    path: DeprecatedPaths.workMapPath(),
   });
 
   const [goals, projects] = await Promise.all([

@@ -3,9 +3,9 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { Paths } from "@/routes/paths";
-import { useLoadedData } from "./loader";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Form } from "./Form";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -27,8 +27,8 @@ function Navigation({ project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.projectPath(project.id), label: project.name! },
-        { to: Paths.projectCheckInsPath(project.id), label: "Check-Ins" },
+        { to: DeprecatedPaths.projectPath(project.id), label: project.name! },
+        { to: DeprecatedPaths.projectCheckInsPath(project.id), label: "Check-Ins" },
       ]}
     />
   );

@@ -1,10 +1,10 @@
-import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyOwnerRemoving } from "@/api";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
 
-import { feedTitle } from "../feedItemLinks";
 import { firstName } from "@/models/people";
+import { feedTitle } from "../feedItemLinks";
 
 const CompanyOwnerRemoving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,7 +12,7 @@ const CompanyOwnerRemoving: ActivityHandler = {
   },
 
   pagePath(_activity: Activity) {
-    return Paths.companyAdminPath();
+    return DeprecatedPaths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {

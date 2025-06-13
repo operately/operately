@@ -1,13 +1,13 @@
-import React from "react";
 import * as People from "@/models/people";
+import React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFileCreated } from "@/api";
-import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
-import { assertPresent } from "@/utils/assertions";
+import type { ActivityHandler } from "../interfaces";
 
 const ResourceHubFileCreated: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -21,9 +21,9 @@ const ResourceHubFileCreated: ActivityHandler = {
     assertPresent(data.resourceHub?.id, "resourceHub must be present in FileCreated activity");
 
     if (data.files.length === 1 && data.files[0]) {
-      return Paths.resourceHubFilePath(data.files[0].id!);
+      return DeprecatedPaths.resourceHubFilePath(data.files[0].id!);
     } else {
-      return Paths.resourceHubPath(data.resourceHub.id);
+      return DeprecatedPaths.resourceHubPath(data.resourceHub.id);
     }
   },
 
@@ -76,7 +76,7 @@ const ResourceHubFileCreated: ActivityHandler = {
             assertPresent(file.id, "id must be present in file");
             assertPresent(file.name, "name must be present in file");
 
-            const path = Paths.resourceHubFilePath(file.id);
+            const path = DeprecatedPaths.resourceHubFilePath(file.id);
             const name = file.name;
 
             return (

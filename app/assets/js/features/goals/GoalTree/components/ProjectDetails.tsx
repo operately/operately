@@ -3,21 +3,21 @@ import React from "react";
 import FormattedTime from "@/components/FormattedTime";
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 
-import classNames from "classnames";
-import { match } from "ts-pattern";
-import { Project, sortContributorsByRole } from "@/models/projects";
-import { StatusSection } from "@/features/projectCheckIns/StatusSection";
-import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { DivLink, AvatarList } from "turboui";
+import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
+import { StatusSection } from "@/features/projectCheckIns/StatusSection";
+import { RetrospectiveContent } from "@/features/ProjectRetrospective";
+import { Project, sortContributorsByRole } from "@/models/projects";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
-import { Paths } from "@/routes/paths";
-import { RetrospectiveContent } from "@/features/ProjectRetrospective";
+import classNames from "classnames";
+import { match } from "ts-pattern";
+import { AvatarList, DivLink } from "turboui";
 
-import { Status } from "./Status";
 import { ProjectNode } from "../tree";
 import { useTreeContext } from "../treeContext";
+import { Status } from "./Status";
 
 export function ProjectDetails({ node }: { node: ProjectNode }) {
   const { density } = useTreeContext();
@@ -68,7 +68,7 @@ function NextMilestone({ project }: { project: Project }) {
   if (!project.nextMilestone) return <></>;
 
   const name = truncateString(project.nextMilestone.title!, size !== "xs" ? 30 : 20);
-  const path = Paths.projectMilestonePath(project.nextMilestone.id!);
+  const path = DeprecatedPaths.projectMilestonePath(project.nextMilestone.id!);
 
   return (
     <DivLink to={path} className="flex items-center gap-2">
@@ -83,7 +83,7 @@ function NextMilestone({ project }: { project: Project }) {
 function SpaceName({ project }: { project: Project }) {
   assertPresent(project.space, "space must be present in project");
 
-  const path = Paths.spacePath(project.space.id!);
+  const path = DeprecatedPaths.spacePath(project.space.id!);
 
   return (
     <DivLink to={path} className="text-xs text-content-dimmed hover:underline underline-offset-2">

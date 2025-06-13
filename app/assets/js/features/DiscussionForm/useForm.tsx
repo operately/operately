@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as TipTapEditor from "@/components/Editor";
 import * as Discussions from "@/models/discussions";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
-import { useNavigate } from "react-router-dom";
-import { Paths } from "@/routes/paths";
-import { Subscriber } from "@/models/notifications";
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { Subscriber } from "@/models/notifications";
+import { DeprecatedPaths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -77,7 +77,8 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate });
   const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate });
 
-  const cancelPath = mode === "edit" ? Paths.discussionPath(discussion?.id!) : Paths.spaceDiscussionsPath(space.id!);
+  const cancelPath =
+    mode === "edit" ? DeprecatedPaths.discussionPath(discussion?.id!) : DeprecatedPaths.spaceDiscussionsPath(space.id!);
 
   return {
     title,
@@ -125,7 +126,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(false);
 
-    navigate(Paths.discussionPath(res.discussion.id));
+    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -155,7 +156,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(false);
 
-    navigate(Paths.discussionPath(res.discussion.id));
+    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -181,7 +182,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
 
     setSubmitting(false);
 
-    navigate(Paths.discussionPath(res.discussion.id));
+    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -208,7 +209,7 @@ function usePublishDraft({ discussion, title, editor, validate }): [() => Promis
 
     setSubmitting(false);
 
-    navigate(Paths.discussionPath(res.discussion.id));
+    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
 
     return true;
   };

@@ -1,19 +1,19 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
 
-import { goalLink, feedTitle } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
-import { Link } from "turboui";
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "turboui";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { assertPresent } from "@/utils/assertions";
 import { ActivityHandler } from "../interfaces";
 import { TimeframeEdited } from "./TimeframeEdited";
-import { assertPresent } from "@/utils/assertions";
 
 const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -21,7 +21,7 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   pagePath(activity: Activity) {
-    return Paths.goalActivityPath(activity.id!);
+    return DeprecatedPaths.goalActivityPath(activity.id!);
   },
 
   PageTitle({ activity }) {
@@ -68,7 +68,7 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
-    const path = Paths.goalActivityPath(activity.id!);
+    const path = DeprecatedPaths.goalActivityPath(activity.id!);
     const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 
     if (page === "goal") {

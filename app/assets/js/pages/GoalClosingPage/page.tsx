@@ -1,12 +1,12 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { ActiveSubitemsWarning } from "./ActiveSubitemsWarning";
 
-import { useLoadedData } from "./loader";
 import { Form } from "./Form";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -29,7 +29,7 @@ export function Page() {
 function Navigation() {
   const { goal } = useLoadedData();
 
-  return <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />;
 }
 
 function PageTitle() {

@@ -1,17 +1,17 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
+import { Navigation } from "@/features/goals/GoalPageNavigation";
 
-import { Avatar } from "turboui";
 import RichContent from "@/components/RichContent";
+import { Avatar } from "turboui";
 
-import { useLoadedData } from "./loader";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -38,7 +38,7 @@ const DimmedLabel = ({ children }) => (
 );
 
 const AvatarAndName = ({ person }) => {
-  const profilePath = Paths.profilePath(person.id);
+  const profilePath = DeprecatedPaths.profilePath(person.id);
 
   return (
     <DivLink to={profilePath}>

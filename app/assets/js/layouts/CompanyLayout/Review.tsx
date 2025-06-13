@@ -2,9 +2,9 @@ import React from "react";
 
 import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
 
-import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { IconCoffee } from "@tabler/icons-react";
+import { DivLink } from "turboui";
 
 export function Review() {
   const [count, refetch] = useAssignmentsCount();
@@ -12,7 +12,7 @@ export function Review() {
 
   return (
     <DivLink
-      to={Paths.reviewPath()}
+      to={DeprecatedPaths.reviewPath()}
       className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-bg-highlight px-1.5 py-0.5 rounded relative"
       testId="review-link"
     >

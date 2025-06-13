@@ -1,9 +1,9 @@
-import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
 import { Resource } from "@/models/resourceHubs";
+import { DeprecatedPaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 
 export function ResourcePageNavigation({ resource }: { resource: Resource }) {
   assertPresent(resource.resourceHub, "resourceHub must be present in document");
@@ -11,13 +11,13 @@ export function ResourcePageNavigation({ resource }: { resource: Resource }) {
   const path = getPathToResource(resource);
 
   let items = [
-    { to: Paths.spacePath(resource.resourceHub.space.id!), label: resource.resourceHub.space.name! },
-    { to: Paths.resourceHubPath(resource.resourceHub.id!), label: resource.resourceHub.name! },
+    { to: DeprecatedPaths.spacePath(resource.resourceHub.space.id!), label: resource.resourceHub.space.name! },
+    { to: DeprecatedPaths.resourceHubPath(resource.resourceHub.id!), label: resource.resourceHub.name! },
   ];
 
   items = items.concat(
     path.map((folder) => ({
-      to: Paths.resourceHubFolderPath(folder.id!),
+      to: DeprecatedPaths.resourceHubFolderPath(folder.id!),
       label: folder.name!,
     })),
   );

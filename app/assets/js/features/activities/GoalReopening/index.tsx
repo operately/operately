@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import { Activity, ActivityContentGoalClosing } from "@/api";
-import { Paths } from "@/routes/paths";
-import { ActivityHandler } from "../interfaces";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
+import { ActivityHandler } from "../interfaces";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { goalLink, feedTitle } from "../feedItemLinks";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 import RichContent, { Summary } from "@/components/RichContent";
 
@@ -17,7 +17,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalActivityPath(activity.id!);
+    return DeprecatedPaths.goalActivityPath(activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -39,7 +39,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(activity.id!);
+    const path = DeprecatedPaths.goalActivityPath(activity.id!);
     const link = <Link to={path}>reopened</Link>;
 
     if (page === "goal") {
