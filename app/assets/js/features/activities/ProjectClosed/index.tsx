@@ -5,7 +5,7 @@ import type { ActivityContentProjectClosed } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -14,8 +14,8 @@ const ProjectClosed: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectRetrospectivePath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectRetrospectivePath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,7 +32,7 @@ const ProjectClosed: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const retroId = content(activity).project!.id!;
-    const retroPath = DeprecatedPaths.projectRetrospectivePath(retroId!);
+    const retroPath = paths.projectRetrospectivePath(retroId!);
     const retroLink = <Link to={retroPath}>retrospective</Link>;
     const project = projectLink(content(activity).project!);
 

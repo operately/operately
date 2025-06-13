@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { assertPresent } from "@/utils/assertions";
 import React from "react";
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
@@ -15,11 +15,11 @@ const ResourceHubFileCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
+  pagePath(paths, activity: Activity): string {
     const data = content(activity);
     assertPresent(data.file?.id, "file must be present in activity");
 
-    return DeprecatedPaths.resourceHubFilePath(data.file.id);
+    return paths.resourceHubFilePath(data.file.id);
   },
 
   PageTitle(_props: { activity: any }) {

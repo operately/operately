@@ -5,7 +5,7 @@ import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
 
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
@@ -20,8 +20,8 @@ const GoalTimeframeEditing: ActivityHandler = {
     return `Goal timeframe change`;
   },
 
-  pagePath(activity: Activity) {
-    return DeprecatedPaths.goalActivityPath(activity.id!);
+  pagePath(paths, activity: Activity) {
+    return paths.goalActivityPath(activity.id!);
   },
 
   PageTitle({ activity }) {
@@ -68,7 +68,7 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
-    const path = DeprecatedPaths.goalActivityPath(activity.id!);
+    const path = paths.goalActivityPath(activity.id!);
     const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 
     if (page === "goal") {

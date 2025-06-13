@@ -7,7 +7,7 @@ import * as Icons from "@tabler/icons-react";
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { DeprecatedPaths } from "@/routes/paths";
+
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Link } from "turboui";
@@ -19,8 +19,8 @@ const GoalDiscussionCreation: ActivityHandler = {
     return activity.commentThread!.title as string;
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.goalActivityPath(activity.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.goalActivityPath(activity.id!);
   },
 
   PageTitle({ activity }: { activity: Activity }) {
@@ -46,7 +46,7 @@ const GoalDiscussionCreation: ActivityHandler = {
           <PageOptions.Link
             icon={Icons.IconEdit}
             title="Edit"
-            to={DeprecatedPaths.goalDiscussionEditPath(activity.id!)}
+            to={paths.goalDiscussionEditPath(activity.id!)}
             testId="edit"
           />
         )}
@@ -65,7 +65,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const path = DeprecatedPaths.goalActivityPath(activity.id!);
+    const path = paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "goal") {

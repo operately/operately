@@ -9,7 +9,7 @@ const CompanyEditing: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
+  pagePath(paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 

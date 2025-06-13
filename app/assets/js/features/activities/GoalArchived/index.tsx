@@ -4,7 +4,7 @@ import type { ActivityContentGoalArchived } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalArchived: ActivityHandler = {
@@ -12,8 +12,8 @@ const GoalArchived: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.goalPath(content(activity).goal!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

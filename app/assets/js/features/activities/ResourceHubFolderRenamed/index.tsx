@@ -3,7 +3,7 @@ import React from "react";
 
 import type { ActivityContentResourceHubFolderRenamed } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
@@ -13,11 +13,11 @@ const ResourceHubFolderRenamed: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
+  pagePath(paths, activity: Activity) {
     const folder = content(activity).folder;
     assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderRenamed activity content");
 
-    return DeprecatedPaths.resourceHubFolderPath(folder.id);
+    return paths.resourceHubFolderPath(folder.id);
   },
 
   PageTitle(_props: { activity: any }) {

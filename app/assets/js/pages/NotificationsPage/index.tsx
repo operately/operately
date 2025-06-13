@@ -1,19 +1,20 @@
-import * as React from "react";
+import * as Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Notifications from "@/models/notifications";
-import * as Api from "@/api";
 import * as Signals from "@/signals";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler from "@/features/activities";
+import { Avatar } from "turboui";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { TextSeparator } from "@/components/TextSeparator";
-import { SecondaryButton } from "turboui";
 import { PageModule } from "@/routes/types";
+import { useNavigateTo } from "@/routes/useNavigateTo";
+import { SecondaryButton } from "turboui";
+import { usePaths } from "../../routes/paths";
 
 export default { name: "NotificationsPage", loader, Page } as PageModule;
 
@@ -109,10 +110,11 @@ function PreviousNotifications() {
 }
 
 function NotificationItem({ notification }: any) {
+  const paths = usePaths();
   const author = notification.activity.author;
   const testId = "notification-item" + "-" + notification.activity.action;
 
-  const goToActivity = useNavigateTo(ActivityHandler.pagePath(notification.activity));
+  const goToActivity = useNavigateTo(ActivityHandler.pagePath(paths, notification.activity));
   const [mark] = Notifications.useMarkNotificationAsRead();
   const refresh = Pages.useRefresh();
 
