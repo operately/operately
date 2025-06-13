@@ -4,7 +4,6 @@ import * as Accounts from "@/models/accounts";
 import * as React from "react";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
@@ -31,9 +30,9 @@ function Page() {
         newPasswordConfirmation: form.values.confirmPassword,
       });
 
-      navigate(DeprecatedPaths.accountSecurityPath());
+      navigate(paths.accountSecurityPath());
     },
-    cancel: () => navigate(DeprecatedPaths.accountSecurityPath()),
+    cancel: () => navigate(paths.accountSecurityPath()),
   });
 
   return (

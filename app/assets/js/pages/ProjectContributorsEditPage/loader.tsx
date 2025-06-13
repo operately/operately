@@ -1,6 +1,5 @@
 import * as Pages from "@/components/Pages";
 import * as ProjectContributors from "@/models/projectContributors";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export interface UrlParams {
@@ -25,5 +24,5 @@ export async function loader({ params, request }): Promise<LoaderResult> {
 
 export function useGotoProjectContributors() {
   const { contributor } = Pages.useLoadedData() as LoaderResult;
-  return useNavigateTo(DeprecatedPaths.projectContributorsPath(contributor.project!.id!));
+  return useNavigateTo(paths.projectContributorsPath(contributor.project!.id!));
 }

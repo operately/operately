@@ -13,7 +13,6 @@ import { PrimaryButton, SecondaryButton } from "turboui";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
 import { AccessLevel } from "@/features/projects/AccessLevel";
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
@@ -64,7 +63,7 @@ function AddContribsButton() {
   const { project } = useLoadedData();
 
   if (!project.permissions?.canEditContributors) return null;
-  const path = DeprecatedPaths.projectContributorsAddPath(project.id!, { type: "contributor" });
+  const path = paths.projectContributorsAddPath(project.id!, { type: "contributor" });
 
   return (
     <PrimaryButton linkTo={path} testId="add-contributors-button" size="sm">
@@ -75,7 +74,7 @@ function AddContribsButton() {
 
 function GeneralAccess() {
   const { project } = useLoadedData();
-  const editPath = DeprecatedPaths.projectEditPermissionsPath(project.id!);
+  const editPath = paths.projectEditPermissionsPath(project.id!);
 
   return (
     <Paper.Section title="General Access">
@@ -156,7 +155,7 @@ function ContributorNameAndResponsibility({ contributor }: { contributor: Projec
 
 function ReviewerPlaceholder() {
   const { project } = useLoadedData();
-  const path = DeprecatedPaths.projectContributorsAddPath(project.id!, { type: "reviewer" });
+  const path = paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
 
   return (
     <Paper.Section title="Reviewer">
@@ -190,7 +189,7 @@ function PlaceholderTitleAndDescription({ title, description }: { title: string;
 
 function ChampionPlaceholder() {
   const { project } = useLoadedData();
-  const path = DeprecatedPaths.projectContributorsAddPath(project.id!, { type: "champion" });
+  const path = paths.projectContributorsAddPath(project.id!, { type: "champion" });
 
   return (
     <Paper.Section title="Champion">
@@ -279,7 +278,7 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 }
 
 function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  const path = DeprecatedPaths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
+  const path = paths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
 
   return (
     <MenuLinkItem to={path} testId="convert-to-contributor">
@@ -289,7 +288,7 @@ function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  const path = DeprecatedPaths.projectContributorsEditPath(contributor.id!, { action: "change-champion" });
+  const path = paths.projectContributorsEditPath(contributor.id!, { action: "change-champion" });
 
   return (
     <MenuLinkItem to={path} testId="choose-new-champion">
@@ -299,7 +298,7 @@ function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  const path = DeprecatedPaths.projectContributorsEditPath(contributor.id!, { action: "change-reviewer" });
+  const path = paths.projectContributorsEditPath(contributor.id!, { action: "change-reviewer" });
 
   return (
     <MenuLinkItem to={path} testId="choose-new-reviewer">
@@ -309,7 +308,7 @@ function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
-  const path = DeprecatedPaths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
+  const path = paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
 
   return (
     <MenuLinkItem to={path} testId="edit-contributor">

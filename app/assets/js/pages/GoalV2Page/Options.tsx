@@ -2,7 +2,6 @@ import * as React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import * as Icons from "@tabler/icons-react";
 
@@ -36,7 +35,7 @@ export function Options({ toggleShowDeleteGoal }: Props) {
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
           title="Close Goal"
-          to={DeprecatedPaths.goalClosePath(goal.id!)}
+          to={paths.goalClosePath(goal.id!)}
           testId="close-goal"
         />
       )}
@@ -45,7 +44,7 @@ export function Options({ toggleShowDeleteGoal }: Props) {
         <PageOptions.Link
           icon={Icons.IconRotateDot}
           title="Reopen Goal"
-          to={DeprecatedPaths.goalReopenPath(goal.id!)}
+          to={paths.goalReopenPath(goal.id!)}
           testId="reopen-goal"
         />
       )}

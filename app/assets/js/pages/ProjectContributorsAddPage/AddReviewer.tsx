@@ -8,7 +8,6 @@ import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNaviga
 import { PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
 
@@ -69,5 +68,5 @@ function useForm() {
 
 function useGoBack() {
   const { project } = Pages.useLoadedData() as LoaderResult;
-  return useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
+  return useNavigateTo(paths.projectContributorsPath(project.id!));
 }

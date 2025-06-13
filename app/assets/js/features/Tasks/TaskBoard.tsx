@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { useIsDarkMode } from "@/contexts/ThemeContext";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "@/features/DragAndDrop";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { insertAt } from "@/utils/array";
 import { match } from "ts-pattern";
 import { AvatarList, DivLink } from "turboui";
@@ -151,7 +151,7 @@ function TaskItem({
       <div className="my-1" style={isDragging ? {} : style} data-test-id={testId}>
         <DivLink
           className="text-sm bg-surface-base rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
-          to={DeprecatedPaths.taskPath(task.id!)}
+          to={paths.taskPath(task.id!)}
         >
           <div className="font-medium">{task.name}</div>
           <AvatarList people={task.assignees!} size="tiny" stacked maxElements={5} />

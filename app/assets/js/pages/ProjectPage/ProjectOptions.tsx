@@ -3,8 +3,6 @@ import * as Projects from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
-
 export function ProjectOptions({ project }) {
   return (
     <PageOptions.Root testId="project-options-button">
@@ -12,7 +10,7 @@ export function ProjectOptions({ project }) {
         <PageOptions.Link
           icon={Icons.IconPlayerPlayFilled}
           title="Resume the project"
-          to={DeprecatedPaths.resumeProjectPath(project.id)}
+          to={paths.resumeProjectPath(project.id)}
           testId="resume-project-link"
         />
       )}
@@ -21,7 +19,7 @@ export function ProjectOptions({ project }) {
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit project name"
-          to={DeprecatedPaths.editProjectNamePath(project.id)}
+          to={paths.editProjectNamePath(project.id)}
           testId="edit-project-name-button"
         />
       )}
@@ -30,7 +28,7 @@ export function ProjectOptions({ project }) {
         <PageOptions.Link
           icon={Icons.IconPlayerPauseFilled}
           title="Pause the project"
-          to={DeprecatedPaths.pauseProjectPath(project.id)}
+          to={paths.pauseProjectPath(project.id)}
           testId="pause-project-link"
         />
       )}
@@ -39,7 +37,7 @@ export function ProjectOptions({ project }) {
         <PageOptions.Link
           icon={Icons.IconExchange}
           title="Change Parent Goal"
-          to={DeprecatedPaths.editProjectGoalPath(project.id)}
+          to={paths.editProjectGoalPath(project.id)}
           testId="connect-project-to-goal-link"
         />
       )}
@@ -48,7 +46,7 @@ export function ProjectOptions({ project }) {
         <PageOptions.Link
           icon={Icons.IconReplace}
           title="Move project to another space"
-          to={DeprecatedPaths.moveProjectPath(project.id)}
+          to={paths.moveProjectPath(project.id)}
           testId="move-project-link"
         />
       )}
@@ -57,7 +55,7 @@ export function ProjectOptions({ project }) {
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
           title="Close the project"
-          to={DeprecatedPaths.projectClosePath(project.id)}
+          to={paths.projectClosePath(project.id)}
           testId="close-project"
         />
       )}

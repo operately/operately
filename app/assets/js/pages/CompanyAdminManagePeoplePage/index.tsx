@@ -10,7 +10,6 @@ import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { DeprecatedPaths } from "@/routes/paths";
 import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
 
 import Modal, { ModalState, useModalState } from "@/components/Modal";
@@ -62,12 +61,12 @@ function Page() {
 }
 
 function Navigation() {
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />;
+  return <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function AddMemberButton() {
   return (
-    <PrimaryButton linkTo={DeprecatedPaths.companyManagePeopleAddPeoplePath()} testId="add-person">
+    <PrimaryButton linkTo={paths.companyManagePeopleAddPeoplePath()} testId="add-person">
       Add Team Member
     </PrimaryButton>
   );
@@ -126,7 +125,7 @@ function PersonRow({ person }: { person: People.Person }) {
 function PersonInfo({ person }: { person: People.Person }) {
   return (
     <div>
-      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={paths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 
@@ -174,7 +173,7 @@ function EditProfileButton({ person }: { person: People.Person }) {
   return (
     <SecondaryButton
       size="xs"
-      linkTo={DeprecatedPaths.profileEditPath(person.id!, { from: "admin-manage-people" })}
+      linkTo={paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
       testId={createTestId("edit", person.id!)}
     >
       Edit Profile
@@ -205,7 +204,7 @@ function PersonOptions({ person }: { person: People.Person }) {
 
 function PersonOptionViewProfile({ person }: { person: People.Person }) {
   return (
-    <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={DeprecatedPaths.profilePath(person.id!)}>
+    <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={paths.profilePath(person.id!)}>
       View Profile
     </MenuLinkItem>
   );

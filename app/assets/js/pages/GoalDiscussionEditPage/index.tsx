@@ -9,7 +9,6 @@ import * as React from "react";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
 import { DimmedLink, PrimaryButton } from "turboui";
 
@@ -55,7 +54,7 @@ function Page() {
               Save
             </PrimaryButton>
 
-            <DimmedLink to={DeprecatedPaths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={paths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -97,7 +96,7 @@ function useForm({ activity }: { activity: Activities.Activity }) {
         title: fields.title,
         message: JSON.stringify(fields.editor.editor.getJSON()),
       }),
-      onCompleted: (_data, navigate) => navigate(DeprecatedPaths.goalActivityPath(activity.id!)),
+      onCompleted: (_data, navigate) => navigate(paths.goalActivityPath(activity.id!)),
     }),
   });
 }

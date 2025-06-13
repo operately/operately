@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import Api from "@/api";
@@ -104,7 +103,7 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
   const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
   const content = <ActivityHandler.FeedItemContent activity={activity} page={page} />;
   const alignement = ActivityHandler.feedItemAlignment(activity);
-  const profilePath = DeprecatedPaths.profilePath(author.id!);
+  const profilePath = paths.profilePath(author.id!);
 
   return (
     <div className={classNames("flex flex-1 gap-3", alignement)}>

@@ -1,7 +1,6 @@
 import React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { SecondaryButton } from "turboui";
@@ -11,7 +10,7 @@ import { useLoadedData } from "./loader";
 
 export function NextCheckIn() {
   const { goal } = useLoadedData();
-  const navigate = useNavigateTo(DeprecatedPaths.goalCheckInNewPath(goal.id!));
+  const navigate = useNavigateTo(paths.goalCheckInNewPath(goal.id!));
 
   assertPresent(goal.nextUpdateScheduledAt, "nextUpdateScheduledAt must be present in goal");
 

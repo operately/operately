@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
@@ -26,7 +25,7 @@ function Page() {
   const { space } = Pages.useLoadedData<LoaderResult>();
 
   const [edit] = Spaces.useEditSpace();
-  const backPath = DeprecatedPaths.spacePath(space.id!);
+  const backPath = paths.spacePath(space.id!);
 
   const form = Forms.useForm({
     fields: {

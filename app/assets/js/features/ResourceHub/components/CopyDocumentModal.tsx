@@ -3,7 +3,6 @@ import React from "react";
 import Forms from "@/components/Forms";
 import { useSubscriptions } from "@/features/Subscriptions";
 import * as Hub from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { CopyResourceModal } from "./CopyResource";
@@ -46,7 +45,7 @@ export function CopyDocumentModal(props: FormProps) {
         copiedDocumentId: resource.id,
       });
 
-      navigate(DeprecatedPaths.resourceHubDocumentPath(res.document.id));
+      navigate(paths.resourceHubDocumentPath(res.document.id));
     },
   });
 

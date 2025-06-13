@@ -1,21 +1,20 @@
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 export function NewDropdown() {
   return (
     <DropdownMenu testId="new-dropdown" name="New" icon={Icons.IconPlus} align="end">
       <DropdownLinkItem
-        path={DeprecatedPaths.newGoalPath()}
+        path={paths.newGoalPath()}
         icon={Icons.IconTargetArrow}
         title="New goal"
         testId="new-dropdown-new-goal"
       />
 
       <DropdownLinkItem
-        path={DeprecatedPaths.newProjectPath()}
+        path={paths.newProjectPath()}
         icon={Icons.IconTable}
         title="New project"
         testId="new-dropdown-new-project"
@@ -24,7 +23,7 @@ export function NewDropdown() {
       <DropdownSeparator />
 
       <DropdownLinkItem
-        path={DeprecatedPaths.newSpacePath()}
+        path={paths.newSpacePath()}
         icon={Icons.IconTent}
         title="New space"
         testId="new-dropdown-new-space"
@@ -33,7 +32,7 @@ export function NewDropdown() {
       <DropdownSeparator />
 
       <DropdownLinkItem
-        path={DeprecatedPaths.companyManagePeopleAddPeoplePath()}
+        path={paths.companyManagePeopleAddPeoplePath()}
         icon={Icons.IconUser}
         title="New team member"
         testId="new-dropdown-new-team-member"

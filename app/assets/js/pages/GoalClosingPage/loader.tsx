@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -48,7 +48,7 @@ function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Pro
       id: goal.id!,
       name: goal.name!,
       type: "goal",
-      link: DeprecatedPaths.goalPath(goal.id!),
+      link: paths.goalPath(goal.id!),
     });
   });
 
@@ -57,7 +57,7 @@ function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Pro
       id: project.id!,
       name: project.name!,
       type: "project",
-      link: DeprecatedPaths.projectPath(project.id!),
+      link: paths.projectPath(project.id!),
     });
   });
 

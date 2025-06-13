@@ -11,7 +11,6 @@ import { Avatar, PrimaryButton, SecondaryButton } from "turboui";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
-import { DeprecatedPaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
@@ -44,8 +43,8 @@ export function Page() {
 }
 
 function Navigation({ task }: { task: Tasks.Task }) {
-  const projectPath = DeprecatedPaths.projectPath(task.project!.id!);
-  const milestonePath = DeprecatedPaths.projectMilestonePath(task.milestone!.id!);
+  const projectPath = paths.projectPath(task.project!.id!);
+  const milestonePath = paths.projectMilestonePath(task.milestone!.id!);
 
   return (
     <Paper.Navigation

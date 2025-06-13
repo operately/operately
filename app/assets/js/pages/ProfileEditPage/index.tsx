@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
 
@@ -50,13 +49,13 @@ function Navigation() {
     return (
       <Paper.Navigation
         items={[
-          { label: "Company Administration", to: DeprecatedPaths.companyAdminPath() },
-          { label: "Manage Team Members", to: DeprecatedPaths.companyManagePeoplePath() },
+          { label: "Company Administration", to: paths.companyAdminPath() },
+          { label: "Manage Team Members", to: paths.companyManagePeoplePath() },
         ]}
       />
     );
   } else {
-    return <Paper.Navigation items={[{ label: "Account", to: DeprecatedPaths.accountPath() }]} />;
+    return <Paper.Navigation items={[{ label: "Account", to: paths.accountPath() }]} />;
   }
 }
 
@@ -92,9 +91,9 @@ function ProfileForm({ person }: { person: People.Person }) {
       });
 
       if (me.id === person.id) {
-        navigate(DeprecatedPaths.accountPath());
+        navigate(paths.accountPath());
       } else {
-        navigate(DeprecatedPaths.companyManagePeoplePath());
+        navigate(paths.companyManagePeoplePath());
       }
     },
   });

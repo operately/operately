@@ -4,7 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
@@ -15,7 +14,7 @@ export function Page() {
   return (
     <Pages.Page title={["Overview Edit", project.name!]}>
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />
+        <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body>
           <div className="text-content-accent text-sm font-medium">PROJECT OVERVIEW</div>
@@ -31,7 +30,7 @@ export function Page() {
 function Editor() {
   const { project } = useLoadedData();
 
-  const goToProjectPage = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
+  const goToProjectPage = useNavigateTo(paths.projectPath(project.id!));
 
   const [post, { loading }] = Projects.useUpdateProjectDescription();
 
@@ -65,7 +64,7 @@ function Editor() {
           <PrimaryButton onClick={submit} testId="save" loading={loading}>
             Save
           </PrimaryButton>
-          <SecondaryButton linkTo={DeprecatedPaths.projectPath(project.id!)}>Cancel</SecondaryButton>
+          <SecondaryButton linkTo={paths.projectPath(project.id!)}>Cancel</SecondaryButton>
         </div>
       </TipTapEditor.Root>
     </div>

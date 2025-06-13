@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useDownloadFile } from "@/models/blobs";
 import { useDeleteResourceHubFile } from "@/models/resourceHubs";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
@@ -22,7 +21,7 @@ export function Options() {
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit"
-          to={DeprecatedPaths.resourceHubEditFilePath(file.id!)}
+          to={paths.resourceHubEditFilePath(file.id!)}
           testId="edit-file-link"
         />
       )}
@@ -51,10 +50,10 @@ function DeleteAction() {
 
   const redirect = () => {
     if (file.parentFolder) {
-      navigate(DeprecatedPaths.resourceHubFolderPath(file.parentFolder.id!));
+      navigate(paths.resourceHubFolderPath(file.parentFolder.id!));
     } else {
       assertPresent(file.resourceHub, "resourceHub must be present in file");
-      navigate(DeprecatedPaths.resourceHubPath(file.resourceHub.id!));
+      navigate(paths.resourceHubPath(file.resourceHub.id!));
     }
   };
 

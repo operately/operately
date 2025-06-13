@@ -3,7 +3,6 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 import * as Turboui from "turboui";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { redirect } from "react-router-dom";
 
@@ -20,7 +19,7 @@ async function loader({ params }): Promise<LoaderResult> {
   if (Companies.hasFeature(company, "ai_playground")) {
     return {};
   } else {
-    throw redirect(DeprecatedPaths.homePath());
+    throw redirect(paths.homePath());
   }
 }
 

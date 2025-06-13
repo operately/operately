@@ -4,7 +4,6 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useRefresh } from "./loader";
 
@@ -67,7 +66,7 @@ const useReopenMilestone = (milestone: Milestones.Milestone) => {
 
 const useArchiveMilestone = (project: Projects.Project, milestone: Milestones.Milestone) => {
   const refresh = useRefresh();
-  const gotoProject = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
+  const gotoProject = useNavigateTo(paths.projectPath(project.id!));
 
   const [post] = Milestones.useRemoveProjectMilestone();
 

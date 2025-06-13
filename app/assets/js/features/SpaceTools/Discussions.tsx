@@ -2,7 +2,6 @@ import React from "react";
 
 import { Discussion } from "@/models/discussions";
 import { Space } from "@/models/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Container } from "./components";
 import { RegularState } from "./Discussions/RegularState";
 import { ZeroState } from "./Discussions/ZeroState";
@@ -13,7 +12,7 @@ interface Props {
 }
 
 export function Discussions(props: Props) {
-  const path = DeprecatedPaths.discussionsPath(props.space.id!);
+  const path = paths.discussionsPath(props.space.id!);
   const isZeroState = props.discussions.length < 1;
 
   return (

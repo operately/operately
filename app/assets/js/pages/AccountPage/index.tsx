@@ -6,7 +6,6 @@ import * as Icons from "@tabler/icons-react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { logOut } from "@/routes/auth";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { BurgerActionsGroup, BurgerButton, BurgerLink } from "./BurgerActions";
 
@@ -40,7 +39,7 @@ function ProfileLink() {
   const me = useMe()!;
 
   return (
-    <BurgerLink icon={Icons.IconUserCircle} to={DeprecatedPaths.profileEditPath(me.id!)} testId="profile-link">
+    <BurgerLink icon={Icons.IconUserCircle} to={paths.profileEditPath(me.id!)} testId="profile-link">
       Profile
     </BurgerLink>
   );
@@ -48,7 +47,7 @@ function ProfileLink() {
 
 function AppearanceLink() {
   return (
-    <BurgerLink icon={Icons.IconPalette} to={DeprecatedPaths.accountAppearancePath()} testId="appearance-link">
+    <BurgerLink icon={Icons.IconPalette} to={paths.accountAppearancePath()} testId="appearance-link">
       Appearance
     </BurgerLink>
   );
@@ -56,7 +55,7 @@ function AppearanceLink() {
 
 function PasswordLink() {
   return (
-    <BurgerLink icon={Icons.IconLockPassword} to={DeprecatedPaths.accountSecurityPath()} testId="password-link">
+    <BurgerLink icon={Icons.IconLockPassword} to={paths.accountSecurityPath()} testId="password-link">
       Password &amp; Security
     </BurgerLink>
   );

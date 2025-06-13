@@ -9,7 +9,6 @@ import * as React from "react";
 import { Datepicker } from "@/components/Datepicker";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 import { DimmedLink, PrimaryButton } from "turboui";
@@ -198,7 +197,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           Submit
         </PrimaryButton>
 
-        <DimmedLink to={DeprecatedPaths.goalPath(goal.id!)}>Cancel</DimmedLink>
+        <DimmedLink to={paths.goalPath(goal.id!)}>Cancel</DimmedLink>
       </div>
     </div>
   );

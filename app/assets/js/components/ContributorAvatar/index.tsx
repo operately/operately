@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { Tooltip } from "@/components/Tooltip";
 import { ProjectContributor } from "@/models/projects";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import { useColorMode } from "@/contexts/ThemeContext";
@@ -74,7 +73,7 @@ function Placeholder(props: PlaceholderProps) {
     </div>
   );
 
-  const path = DeprecatedPaths.projectContributorsPath(props.project.id!);
+  const path = paths.projectContributorsPath(props.project.id!);
 
   return (
     <Tooltip content={tooltipContent}>

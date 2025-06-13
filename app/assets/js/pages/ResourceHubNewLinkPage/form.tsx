@@ -7,7 +7,6 @@ import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 
@@ -37,7 +36,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.resourceHubPath(resourceHub.id!));
+      navigate(paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
       const res = await post({
@@ -50,7 +49,7 @@ export function Form() {
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
-      navigate(DeprecatedPaths.resourceHubLinkPath(res.link.id));
+      navigate(paths.resourceHubLinkPath(res.link.id));
     },
   });
 

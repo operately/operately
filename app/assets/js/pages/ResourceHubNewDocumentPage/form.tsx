@@ -8,7 +8,6 @@ import { useFormContext } from "@/components/Forms/FormContext";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 
@@ -48,7 +47,7 @@ export function Form() {
         subscriberIds: subscriptionsState.currentSubscribersList,
         postAsDraft: isDraft,
       });
-      navigate(DeprecatedPaths.resourceHubDocumentPath(res.document.id));
+      navigate(paths.resourceHubDocumentPath(res.document.id));
     },
   });
   form.actions.setState;
@@ -112,7 +111,7 @@ function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
 
 function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
   return (
-    <Link to={DeprecatedPaths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
+    <Link to={paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
       Discard this document
     </Link>
   );

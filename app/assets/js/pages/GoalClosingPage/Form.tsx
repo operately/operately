@@ -5,7 +5,6 @@ import { emptyContent } from "@/components/RichContent";
 import * as Goals from "@/models/goals";
 
 import { Options, SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
@@ -14,7 +13,7 @@ export function Form() {
   const { goal } = useLoadedData();
 
   const [close] = Goals.useCloseGoal();
-  const navigateToGoal = useNavigateTo(DeprecatedPaths.goalPath(goal.id!));
+  const navigateToGoal = useNavigateTo(paths.goalPath(goal.id!));
 
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 

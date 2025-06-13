@@ -4,7 +4,6 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from "turboui";
@@ -90,7 +89,7 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.companyManagePeoplePath());
+      navigate(paths.companyManagePeoplePath());
     },
   });
 
@@ -173,8 +172,8 @@ function Navigation() {
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" },
-        { to: DeprecatedPaths.companyManagePeoplePath(), label: "Manage People" },
+        { to: paths.companyAdminPath(), label: "Company Administration" },
+        { to: paths.companyManagePeoplePath(), label: "Manage People" },
       ]}
     />
   );

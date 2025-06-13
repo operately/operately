@@ -8,7 +8,6 @@ import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useLoadedData, useResourceTypeParam } from "./loader";
 import { useForm } from "./useForm";
 
@@ -38,7 +37,7 @@ export function Page() {
 }
 
 function Form({ project, form }) {
-  const onCancel = useNavigateTo(DeprecatedPaths.projectEditResourcesPath(project.id));
+  const onCancel = useNavigateTo(paths.projectEditResourcesPath(project.id));
   const namePlaceholder = KeyResources.placeholderName(form.resourceType);
 
   return (

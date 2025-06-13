@@ -15,7 +15,6 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CopyDocumentModal, ResourcePageNavigation } from "@/features/ResourceHub";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
@@ -146,7 +145,7 @@ function ContinueEditingDraft() {
 
   const [publish] = usePublishResourceHubDocument();
   const refresh = Pages.useRefresh();
-  const editPath = DeprecatedPaths.resourceHubEditDocumentPath(document.id!);
+  const editPath = paths.resourceHubEditDocumentPath(document.id!);
 
   const publishHandler = async () => {
     await publish({ documentId: document.id });

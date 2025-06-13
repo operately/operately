@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
@@ -28,7 +27,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.projectCheckInPath(checkIn.id!));
+      navigate(paths.projectCheckInPath(checkIn.id!));
     },
     submit: async () => {
       const res = await edit({
@@ -37,7 +36,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
         description: JSON.stringify(form.values.description),
       });
 
-      navigate(DeprecatedPaths.projectCheckInPath(res.checkIn.id));
+      navigate(paths.projectCheckInPath(res.checkIn.id));
     },
   });
 

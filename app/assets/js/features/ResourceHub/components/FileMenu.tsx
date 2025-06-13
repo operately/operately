@@ -7,7 +7,6 @@ import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 import { useNodesContext } from "@/features/ResourceHub";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useDownloadFile } from "@/models/blobs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
@@ -49,7 +48,7 @@ function DownloadFileMenuItem({ file }: Props) {
 }
 
 function EditFileMenuItem({ file }: Props) {
-  const editPath = DeprecatedPaths.resourceHubEditFilePath(file.id!);
+  const editPath = paths.resourceHubEditFilePath(file.id!);
   const editId = createTestId("edit", file.id!);
 
   return (

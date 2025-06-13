@@ -1,7 +1,6 @@
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import * as Notifications from "@/models/notifications";
@@ -9,7 +8,7 @@ import classNames from "classnames";
 
 export function Bell() {
   const count = Notifications.useUnreadCount();
-  const path = DeprecatedPaths.notificationsPath();
+  const path = paths.notificationsPath();
   const style = { height: "32px", width: "32px" };
 
   const className = classNames(

@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { useDeleteResourceHubDocument } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
@@ -24,7 +23,7 @@ export function Options({ showCopyModal }: Props) {
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
-          to={DeprecatedPaths.resourceHubEditDocumentPath(document.id!)}
+          to={paths.resourceHubEditDocumentPath(document.id!)}
           testId="edit-document-link"
           keepOutsideOnBigScreen
         />
@@ -47,9 +46,9 @@ function DeleteAction() {
 
   const redirect = () => {
     if (folder) {
-      navigate(DeprecatedPaths.resourceHubFolderPath(folder.id!));
+      navigate(paths.resourceHubFolderPath(folder.id!));
     } else {
-      navigate(DeprecatedPaths.resourceHubPath(resourceHub.id!));
+      navigate(paths.resourceHubPath(resourceHub.id!));
     }
   };
 

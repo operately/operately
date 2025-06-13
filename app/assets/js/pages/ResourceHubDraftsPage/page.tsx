@@ -3,7 +3,6 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
-import { DeprecatedPaths } from "@/routes/paths";
 
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
@@ -34,8 +33,8 @@ function PageNavigation() {
     <Paper.Navigation
       testId="navigation"
       items={[
-        { to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
-        { to: DeprecatedPaths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
+        { to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
+        { to: paths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
       ]}
     />
   );
