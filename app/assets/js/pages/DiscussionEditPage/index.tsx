@@ -5,10 +5,10 @@ import * as Paper from "@/components/PaperContainer";
 import * as Discussions from "@/models/discussions";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { GhostButton, Link, PrimaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -98,8 +98,8 @@ function Navigation({ space }) {
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.spacePath(space.id), label: space.name },
-        { to: DeprecatedPaths.spaceDiscussionsPath(space.id), label: "Discussions" },
+        { to: paths.spacePath(space.id), label: space.name },
+        { to: paths.spaceDiscussionsPath(space.id), label: "Discussions" },
       ]}
     />
   );

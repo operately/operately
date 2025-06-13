@@ -8,13 +8,14 @@ import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 import { ProfilePage } from "turboui";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { IconPencil } from "@tabler/icons-react";
 import { loader, useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
 
 function Page() {
+  const paths = usePaths();
   const { person, workMap, reviewerWorkMap } = useLoadedData();
 
   assertPresent(person.peers);
@@ -36,7 +37,7 @@ function Page() {
         type: "link" as const,
         icon: IconPencil,
         label: "Edit",
-        link: DeprecatedPaths.profileEditPath(person.id!),
+        link: paths.profileEditPath(person.id!),
         hidden: !person.permissions.canEditProfile,
       },
     ],

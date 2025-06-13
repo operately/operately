@@ -5,11 +5,11 @@ import * as Popover from "@radix-ui/react-popover";
 
 import { SmallStatusIndicator } from "@/components/status";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { Node } from "../tree";
 
+import { usePaths } from "@/routes/paths";
 export function Status({ node, children }: { node: Node; children: ReactNode }) {
   const [hoveringTrigger, setHoveringTrigger] = useState(false);
   const [hoveringContent, setHoveringContent] = useState(false);
@@ -64,17 +64,17 @@ function useClickHandler(node: Node) {
   return () => {
     if (node.type === "goal") {
       if (node.isClosed) {
-        return navigate(DeprecatedPaths.goalPath(node.id!));
+        return navigate(paths.goalPath(node.id!));
       } else {
-        return navigate(DeprecatedPaths.goalCheckInPath(node.asGoalNode()!.lastCheckIn!.id!));
+        return navigate(paths.goalCheckInPath(node.asGoalNode()!.lastCheckIn!.id!));
       }
     }
 
     if (node.type === "project") {
       if (node.isClosed) {
-        return navigate(DeprecatedPaths.projectRetrospectivePath(node.id!));
+        return navigate(paths.projectRetrospectivePath(node.id!));
       } else {
-        return navigate(DeprecatedPaths.projectCheckInPath(node.asProjectNode()!.lastCheckIn!.id!));
+        return navigate(paths.projectCheckInPath(node.asProjectNode()!.lastCheckIn!.id!));
       }
     }
 

@@ -5,9 +5,9 @@ import * as React from "react";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 interface Error {
   field: string;
   message: string;
@@ -47,8 +47,8 @@ export function useForm(options: FormOptions): FormState {
 
   const redirect = useNavigateTo(
     options.mode === "create"
-      ? DeprecatedPaths.projectPath(options.project.id!)
-      : DeprecatedPaths.projectRetrospectivePath(options.project.id!),
+      ? paths.projectPath(options.project.id!)
+      : paths.projectRetrospectivePath(options.project.id!),
   );
 
   const [post, { loading: posting }] = Projects.useCloseProject();

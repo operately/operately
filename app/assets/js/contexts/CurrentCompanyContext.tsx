@@ -4,8 +4,8 @@ import * as React from "react";
 import { useProfileUpdatedSignal } from "@/signals";
 import { assertPresent } from "@/utils/assertions";
 import { throttle } from "@/utils/throttle";
-import { DeprecatedPaths } from "../routes/paths";
 
+import { usePaths } from "@/routes/paths";
 interface CurrentCompanyContextProps {
   me: People.Person | null;
 
@@ -61,7 +61,7 @@ export function useMentionedPersonLookupFn(): (
   return async (id: string) => {
     const person = ctx.people?.find((p) => p.id === id);
     if (person) {
-      return { ...person, profileLink: DeprecatedPaths.profilePath(person.id) };
+      return { ...person, profileLink: paths.profilePath(person.id) };
     }
     ctx.peopleRefetch();
     return null;

@@ -2,7 +2,6 @@ import plurarize from "@/utils/plurarize";
 
 import { GoalProgressUpdate } from "@/api";
 import { Goal } from "@/models/goals";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Node } from "./node";
 
 import * as Spaces from "@/models/spaces";
@@ -10,6 +9,7 @@ import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 
+import { usePaths } from "@/routes/paths";
 export class GoalNode extends Node {
   public goal: Goal;
   public lastCheckIn: GoalProgressUpdate | null | undefined;
@@ -80,7 +80,7 @@ export class GoalNode extends Node {
   }
 
   linkTo(): string {
-    return DeprecatedPaths.goalPath(this.goal.id!);
+    return paths.goalPath(this.goal.id!);
   }
 
   childrenInfoLabel(): string {

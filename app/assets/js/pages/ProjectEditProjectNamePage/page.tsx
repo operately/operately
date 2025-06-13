@@ -5,17 +5,18 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   return (
     <Pages.Page title={["Edit Project Name", project.name!]}>
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />
+        <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body>
           <h1 className="mb-8 font-extrabold text-content-accent text-3xl">Editing the project's name</h1>
@@ -27,7 +28,7 @@ export function Page() {
 }
 
 function Form({ project }: { project: Projects.Project }) {
-  const navigateToProject = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
+  const navigateToProject = useNavigateTo(paths.projectPath(project.id!));
   const [projectName, setProjectName] = React.useState(project.name);
 
   const [edit, { loading }] = Projects.useEditProjectName();

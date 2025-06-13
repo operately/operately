@@ -11,10 +11,10 @@ import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
-import { DeprecatedPaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
@@ -58,6 +58,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const navigate = useNavigate();
   const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
 
@@ -116,7 +117,7 @@ function Page() {
     try {
       await Api.deleteGoal({ goalId: goal.id! });
       PageCache.invalidate(pageCacheKey(goal.id!));
-      navigate(DeprecatedPaths.spaceWorkMapPath(goal.space!.id, "goals"));
+      navigate(paths.spaceWorkMapPath(goal.space!.id, "goals"));
     } catch (error) {
       console.error("Failed to delete goal:", error);
       showErrorToast("Something went wrong", "Failed to delete the goal. Please try again.");
@@ -125,14 +126,14 @@ function Page() {
 
   const props: GoalPage.Props = {
     goalName: goal.name,
-    workmapLink: DeprecatedPaths.spaceWorkMapPath(goal.space.id, "goals"),
-    closeLink: DeprecatedPaths.goalClosePath(goal.id),
-    reopenLink: DeprecatedPaths.goalReopenPath(goal.id),
-    editGoalLink: DeprecatedPaths.goalEditPath(goal.id),
-    newCheckInLink: DeprecatedPaths.goalCheckInNewPath(goal.id),
-    newDiscussionLink: DeprecatedPaths.newGoalDiscussionPath(goal.id),
-    addSubprojectLink: DeprecatedPaths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
-    addSubgoalLink: DeprecatedPaths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
+    workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
+    closeLink: paths.goalClosePath(goal.id),
+    reopenLink: paths.goalReopenPath(goal.id),
+    editGoalLink: paths.goalEditPath(goal.id),
+    newCheckInLink: paths.goalCheckInNewPath(goal.id),
+    newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
+    addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
+    addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(goal.retrospective),
     neglectedGoal: false,
@@ -279,7 +280,7 @@ function preparePerson(person: People.Person | null | undefined) {
       fullName: person.fullName!,
       title: person.title || "",
       avatarUrl: person.avatarUrl || "",
-      profileLink: DeprecatedPaths.profilePath(person.id!),
+      profileLink: paths.profilePath(person.id!),
     };
   }
 }
@@ -292,7 +293,7 @@ function prepareCheckIns(checkIns: GoalProgressUpdate[]): GoalPage.Props["checkI
       id: checkIn.id!,
       author: preparePerson(checkIn.author)!,
       date: Time.parse(checkIn.insertedAt!)!,
-      link: DeprecatedPaths.goalCheckInPath(checkIn.id!),
+      link: paths.goalCheckInPath(checkIn.id!),
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,
       status: checkIn.status!,
@@ -304,7 +305,7 @@ function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGo
   if (!g) {
     return null;
   } else {
-    return { id: g!.id!, link: DeprecatedPaths.goalPath(g!.id!), name: g!.name! };
+    return { id: g!.id!, link: paths.goalPath(g!.id!), name: g!.name! };
   }
 }
 
@@ -442,7 +443,7 @@ function prepareDiscussions(discussions: GoalDiscussion[]): GoalPage.Props["disc
       date: Time.parse(discussion.insertedAt)!,
       title: discussion.title,
       author: preparePerson(discussion.author)!,
-      link: DeprecatedPaths.goalDiscussionPath(discussion.id),
+      link: paths.goalDiscussionPath(discussion.id),
       content: JSON.parse(discussion.content),
       commentCount: discussion.commentCount,
     };
@@ -455,7 +456,7 @@ function prepareRetrospective(retrospective: GoalRetrospective | null | undefine
   }
 
   return {
-    link: DeprecatedPaths.goalRetrospectivePath(retrospective.id),
+    link: paths.goalRetrospectivePath(retrospective.id),
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
     author: preparePerson(retrospective.author)!,
@@ -475,7 +476,7 @@ function prepareSpace(space: Space): GoalPage.Space {
   return {
     id: space.id!,
     name: space.name!,
-    link: DeprecatedPaths.spacePath(space.id!),
+    link: paths.spacePath(space.id!),
   };
 }
 
@@ -486,7 +487,7 @@ function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
     return data.spaces.map((space) => ({
       id: space.id!,
       name: space.name!,
-      link: DeprecatedPaths.spacePath(space.id!),
+      link: paths.spacePath(space.id!),
     }));
   };
 }

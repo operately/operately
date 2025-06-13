@@ -9,7 +9,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { Avatar } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
 import { Spacer } from "@/components/Spacer";
@@ -26,6 +26,7 @@ import { assertPresent } from "@/utils/assertions";
 import { banner } from "../ProjectPage/Banner";
 import { useLoadedData, useRefresh } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
@@ -117,8 +118,8 @@ function Navigation({ project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.projectPath(project.id), label: project.name! },
-        { to: DeprecatedPaths.projectCheckInsPath(project.id), label: "Check-Ins" },
+        { to: paths.projectPath(project.id), label: project.name! },
+        { to: paths.projectCheckInsPath(project.id), label: "Check-Ins" },
       ]}
     />
   );
@@ -140,6 +141,7 @@ function Acknowledgement() {
 }
 
 function Options() {
+  const paths = usePaths();
   const { checkIn } = useLoadedData();
   const me = useMe()!;
 
@@ -150,7 +152,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"
-        to={DeprecatedPaths.projectCheckInEditPath(checkIn.id!)}
+        to={paths.projectCheckInEditPath(checkIn.id!)}
         testId="edit-check-in"
       />
     </PageOptions.Root>

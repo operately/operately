@@ -5,9 +5,9 @@ import * as React from "react";
 
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 interface UseFormOptions {
   mode: "create" | "edit";
   space: Spaces.Space;
@@ -77,8 +77,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate });
   const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate });
 
-  const cancelPath =
-    mode === "edit" ? DeprecatedPaths.discussionPath(discussion?.id!) : DeprecatedPaths.spaceDiscussionsPath(space.id!);
+  const cancelPath = mode === "edit" ? paths.discussionPath(discussion?.id!) : paths.spaceDiscussionsPath(space.id!);
 
   return {
     title,
@@ -126,7 +125,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -156,7 +155,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -182,7 +181,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -209,7 +208,7 @@ function usePublishDraft({ discussion, title, editor, validate }): [() => Promis
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };

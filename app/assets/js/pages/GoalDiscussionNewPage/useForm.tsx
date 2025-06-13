@@ -5,9 +5,9 @@ import * as TipTapEditor from "@/components/Editor";
 import { formValidator, useFormState } from "@/components/Form/useFormState";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
 
+import { usePaths } from "@/routes/paths";
 type FormFields = {
   title: string;
   setTitle: (title: string) => void;
@@ -48,7 +48,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
           sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
           subscriberIds: subscriptionsState.currentSubscribersList,
         })
-          .then((data) => navigate(DeprecatedPaths.goalActivityPath(data.id!)))
+          .then((data) => navigate(paths.goalActivityPath(data.id!)))
           .finally(() => setSubmitting(false));
       },
       submitting,

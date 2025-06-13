@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { Tooltip } from "@/components/Tooltip";
 import { ProjectContributor } from "@/models/projects";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import { useColorMode } from "@/contexts/ThemeContext";
@@ -12,6 +11,7 @@ import { TestableElement } from "@/utils/testid";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 type Size = "xs" | "md" | "base" | "lg";
 const DefaultSize: Size = "base";
 
@@ -67,6 +67,7 @@ interface PlaceholderProps extends TestableElement {
 }
 
 function Placeholder(props: PlaceholderProps) {
+  const paths = usePaths();
   const tooltipContent = (
     <div className="w-64">
       <p className="font-bold mb-1">{props.tooltipTitle}</p>
@@ -74,7 +75,7 @@ function Placeholder(props: PlaceholderProps) {
     </div>
   );
 
-  const path = DeprecatedPaths.projectContributorsPath(props.project.id!);
+  const path = paths.projectContributorsPath(props.project.id!);
 
   return (
     <Tooltip content={tooltipContent}>

@@ -8,7 +8,6 @@ import * as React from "react";
 
 import { richContentToString } from "@/components/RichContent";
 import { Discussion } from "@/models/discussions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";
@@ -18,6 +17,7 @@ import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
 
 interface LoadedData {
@@ -57,13 +57,14 @@ function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   const { space } = Pages.useLoadedData<LoadedData>();
 
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.spacePath(space.id!), label: space.name! },
-        { to: DeprecatedPaths.spaceDiscussionsPath(space.id!), label: "Discussions" },
+        { to: paths.spacePath(space.id!), label: space.name! },
+        { to: paths.spaceDiscussionsPath(space.id!), label: "Discussions" },
       ]}
     />
   );
@@ -76,16 +77,18 @@ function Header() {
 }
 
 function NewDiscussionButton() {
+  const paths = usePaths();
   const { space } = Pages.useLoadedData<LoadedData>();
 
   return (
-    <PrimaryButton linkTo={DeprecatedPaths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
       New Discussion
     </PrimaryButton>
   );
 }
 
 function ZeroDiscussions() {
+  const paths = usePaths();
   return <div className="text-center text-base font-medium mt-28">You don't have any drafts.</div>;
 }
 
@@ -117,7 +120,7 @@ function DiscussionList() {
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
 
-  const path = DeprecatedPaths.discussionEditPath(discussion.id!);
+  const path = paths.discussionEditPath(discussion.id!);
 
   const className = classNames(
     "flex items-start gap-4",

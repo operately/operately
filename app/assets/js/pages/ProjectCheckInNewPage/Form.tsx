@@ -8,9 +8,9 @@ import { useNavigate } from "react-router-dom";
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ project }: { project: Project }) {
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
 
@@ -36,7 +36,7 @@ export function Form({ project }: { project: Project }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.projectCheckInsPath(project.id!));
+      navigate(paths.projectCheckInsPath(project.id!));
     },
     submit: async () => {
       const res = await post({
@@ -47,7 +47,7 @@ export function Form({ project }: { project: Project }) {
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
 
-      navigate(DeprecatedPaths.projectCheckInPath(res.checkIn.id));
+      navigate(paths.projectCheckInPath(res.checkIn.id));
     },
   });
 

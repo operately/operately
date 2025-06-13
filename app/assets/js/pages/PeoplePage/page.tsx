@@ -2,10 +2,10 @@ import * as Pages from "@/components/Pages";
 import * as React from "react";
 
 import { Person } from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Avatar, Link } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { company, people } = useLoadedData();
 
@@ -40,7 +40,7 @@ function PersonCard({ person }: { person: Person }) {
 
         <div className="flex flex-col">
           <div className="font-bold leading-tight">
-            <Link to={DeprecatedPaths.profilePath(person.id!!)} underline="never" testId={testId}>
+            <Link to={paths.profilePath(person.id!!)} underline="never" testId={testId}>
               {person.fullName}
             </Link>
           </div>

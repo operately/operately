@@ -2,10 +2,10 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
 
+import { usePaths } from "@/routes/paths";
 interface Error {
   field: string;
   message: string;
@@ -35,7 +35,7 @@ export interface FormState {
 
 export function useForm(project: Projects.Project): FormState {
   const navigate = useNavigate();
-  const milestonesPath = DeprecatedPaths.projectMilestonesPath(project.id!);
+  const milestonesPath = paths.projectMilestonesPath(project.id!);
 
   const oldStart = Time.parseDate(project.startedAt);
   const oldDue = Time.parseDate(project.deadline);

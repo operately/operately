@@ -4,7 +4,6 @@ import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as React from "react";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 import { CheckInButton } from "./CheckInButton";
 import { useLoadedData } from "./loader";
@@ -13,6 +12,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { SmallStatusIndicator } from "@/components/status";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -31,9 +31,10 @@ export function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />;
 }
 
 function Header() {
@@ -89,7 +90,7 @@ function isCurrentYear(year: number) {
 
 function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
   const author = checkIn.author!;
-  const path = DeprecatedPaths.projectCheckInPath(checkIn.id!);
+  const path = paths.projectCheckInPath(checkIn.id!);
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>

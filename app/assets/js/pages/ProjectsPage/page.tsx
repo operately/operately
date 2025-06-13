@@ -6,14 +6,15 @@ import { ProjectList } from "@/features/ProjectList";
 import { PrimaryButton } from "turboui";
 import { useFilters, useLoadedData } from "./loader";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import classNames from "classnames";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { projects } = useLoadedData();
 
-  const newProjectPath = DeprecatedPaths.newProjectPath({
-    backPath: DeprecatedPaths.projectsPath(),
+  const newProjectPath = paths.newProjectPath({
+    backPath: paths.projectsPath(),
     backPathName: "Back to Projects",
   });
 

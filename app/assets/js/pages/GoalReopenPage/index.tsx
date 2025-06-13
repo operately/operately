@@ -4,9 +4,9 @@ import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Form } from "./Form";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalReopenPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -25,12 +25,13 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (
     <Pages.Page title={"Reopen " + goal.name}>
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />
+        <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body>
           <Title />

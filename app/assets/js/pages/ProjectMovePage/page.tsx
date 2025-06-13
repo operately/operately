@@ -7,10 +7,11 @@ import * as Projects from "@/models/projects";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { SpaceCard, SpaceCardGrid } from "@/features/spaces/SpaceCards";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project, spaces } = useLoadedData();
 
@@ -44,7 +45,7 @@ function NoOtherSpaces() {
 }
 
 function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; candidateSpaces: Spaces.Space[] }) {
-  const gotoProject = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
+  const gotoProject = useNavigateTo(paths.projectPath(project.id!));
   const [move] = Projects.useMoveProjectToSpace();
 
   const moveProjectToSpace = async (project: Projects.Project, space: Spaces.Space) => {

@@ -9,9 +9,9 @@ import { Avatar } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { PrivacyIndicator } from "@/features/Permissions";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, PieChart } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 interface ProjectListItemProps {
   project: Projects.Project;
   avatarPosition?: "bottom" | "right";
@@ -39,7 +39,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
 }
 
 function ProjectNameLine({ project }) {
-  const path = DeprecatedPaths.projectPath(project.id);
+  const path = paths.projectPath(project.id);
 
   return (
     <div className="font-extrabold flex items-center gap-2">
@@ -61,7 +61,7 @@ function ProjectStatusLine({ project }: { project: Projects.Project }) {
             Closed on <FormattedTime time={project.closedAt!} format="short-date" /> &middot;{" "}
           </>
         )}
-        <Link to={DeprecatedPaths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
+        <Link to={paths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
       </div>
     );
   } else {

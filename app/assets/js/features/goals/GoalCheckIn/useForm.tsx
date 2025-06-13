@@ -8,10 +8,10 @@ import * as Time from "@/utils/time";
 import Forms from "@/components/Forms";
 import { emptyContent } from "@/components/RichContent";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
+import { usePaths } from "@/routes/paths";
 interface NewProps {
   mode: "new";
   goal: Goal;
@@ -43,7 +43,7 @@ export function useForm(props: EditProps | NewProps) {
     },
     cancel: () => {
       if (mode === "new") {
-        navigate(DeprecatedPaths.goalPath(goal.id!));
+        navigate(paths.goalPath(goal.id!));
       } else {
         setPageMode("view");
       }
@@ -70,7 +70,7 @@ export function useForm(props: EditProps | NewProps) {
 
         const res = await post(payload);
 
-        navigate(DeprecatedPaths.goalCheckInPath(res.update!.id));
+        navigate(paths.goalCheckInPath(res.update!.id));
       } else {
         const payload = { ...commonAttrs, id: props.update.id! };
         await edit(payload);

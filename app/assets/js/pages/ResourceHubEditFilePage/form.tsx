@@ -6,8 +6,8 @@ import { ResourceHubFile, useEditResourceHubFile } from "@/models/resourceHubs";
 import Forms from "@/components/Forms";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
 import { findNameAndExtension } from "@/features/ResourceHub";
-import { DeprecatedPaths } from "@/routes/paths";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ file }: { file: ResourceHubFile }) {
   const navigate = useNavigate();
   const [edit] = useEditResourceHubFile();
@@ -28,7 +28,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.resourceHubFilePath(file.id!));
+      navigate(paths.resourceHubFilePath(file.id!));
     },
     submit: async () => {
       const { title, description } = form.values;
@@ -39,9 +39,9 @@ export function Form({ file }: { file: ResourceHubFile }) {
           name: !extension ? title : [title, extension].join("."),
           description: JSON.stringify(description),
         });
-        navigate(DeprecatedPaths.resourceHubFilePath(res.file.id));
+        navigate(paths.resourceHubFilePath(res.file.id));
       } else {
-        navigate(DeprecatedPaths.resourceHubFilePath(file.id!));
+        navigate(paths.resourceHubFilePath(file.id!));
       }
     },
   });

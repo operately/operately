@@ -9,10 +9,10 @@ import classNames from "classnames";
 
 import { useIsViewMode } from "@/components/Pages";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
-import { DeprecatedPaths } from "@/routes/paths";
 import { GhostLink, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function ParentGoal() {
   const isViewMode = useIsViewMode();
 
@@ -89,5 +89,5 @@ function GoalName({ link }: { link?: boolean }) {
   if (!link) {
     return <div className="font-medium text-sm text-content-dimmed">{parentGoal.name}</div>;
   }
-  return <GhostLink to={DeprecatedPaths.goalPath(parentGoal.id!)} text={parentGoal.name!} dimmed size="sm" />;
+  return <GhostLink to={paths.goalPath(parentGoal.id!)} text={parentGoal.name!} dimmed size="sm" />;
 }

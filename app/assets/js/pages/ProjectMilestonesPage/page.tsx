@@ -10,10 +10,10 @@ import { GhostButton } from "turboui";
 
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -33,7 +33,7 @@ export function Page() {
 }
 
 function Title({ project }) {
-  const editTimeline = DeprecatedPaths.projectEditTimelinePath(project.id);
+  const editTimeline = paths.projectEditTimelinePath(project.id);
 
   return (
     <div className="flex items-center justify-between mb-8">
@@ -118,7 +118,7 @@ function MilestoneList({ project }) {
 }
 
 function PendingItem({ milestone }) {
-  const path = DeprecatedPaths.projectMilestonePath(milestone.id);
+  const path = paths.projectMilestonePath(milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
@@ -146,7 +146,7 @@ function PendingItem({ milestone }) {
 }
 
 function DoneItem({ milestone }) {
-  const path = DeprecatedPaths.projectMilestonePath(milestone.id);
+  const path = paths.projectMilestonePath(milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">

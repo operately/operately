@@ -14,7 +14,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { OngoingDraftActions } from "@/features/drafts";
@@ -23,6 +23,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { discussion } = useLoadedData();
 
@@ -116,14 +117,15 @@ function Navigation({ space }) {
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.spacePath(space.id), label: space.name },
-        { to: DeprecatedPaths.spaceDiscussionsPath(space.id), label: "Discussions" },
+        { to: paths.spacePath(space.id), label: space.name },
+        { to: paths.spaceDiscussionsPath(space.id), label: "Discussions" },
       ]}
     />
   );
 }
 
 function Options() {
+  const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
   const { discussion } = useLoadedData();
@@ -131,7 +133,7 @@ function Options() {
 
   const handleArchive = async () => {
     await archive({ messageId: discussion.id! });
-    navigate(DeprecatedPaths.spaceDiscussionsPath(discussion.space!.id!));
+    navigate(paths.spaceDiscussionsPath(discussion.space!.id!));
   };
 
   if (!compareIds(me.id, discussion.author!.id)) return null;
@@ -141,7 +143,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit"
-        to={DeprecatedPaths.discussionEditPath(discussion.id!)}
+        to={paths.discussionEditPath(discussion.id!)}
         testId="edit-discussion"
         keepOutsideOnBigScreen
       />
@@ -173,11 +175,12 @@ function DicusssionComments() {
 }
 
 function ContinueEditingDraft() {
+  const paths = usePaths();
   const { discussion } = useLoadedData();
 
   const [publish] = Discussions.usePublishDiscussion();
   const refresh = Pages.useRefresh();
-  const editPath = DeprecatedPaths.discussionEditPath(discussion.id!);
+  const editPath = paths.discussionEditPath(discussion.id!);
 
   const publishHandler = async () => {
     await publish({ id: discussion.id! });

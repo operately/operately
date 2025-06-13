@@ -4,9 +4,9 @@ import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { PrivacyIndicator } from "@/features/Permissions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DimmedLink, DivLink } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Header({ project }: { project: Projects.Project }) {
   return (
     <div className="flex-1 mb-2">
@@ -44,7 +44,7 @@ function ParentGoal({ project }: { project: Projects.Project }) {
 }
 
 function ParentGoalNotLinked({ project }: { project: Projects.Project }) {
-  const path = DeprecatedPaths.editProjectGoalPath(project.id!);
+  const path = paths.editProjectGoalPath(project.id!);
 
   return (
     <div className="text-sm text-content-dimmed mx-1 font-medium">
@@ -58,7 +58,7 @@ function ParentGoalLinked({ goal }: { goal: Goals.Goal }) {
     <>
       <Icons.IconTarget size={14} className="text-red-500" />
       <DivLink
-        to={DeprecatedPaths.goalPath(goal.id!)}
+        to={paths.goalPath(goal.id!)}
         className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
         testId="project-goal-link"
       >
