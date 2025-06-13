@@ -1,14 +1,14 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectMilestoneCommented } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,7 +16,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectMilestonePath(content(activity).milestone!.id!);
+    return DeprecatedPaths.projectMilestonePath(content(activity).milestone!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const project = content(activity).project!;
     const milestone = content(activity).milestone!;
-    const path = Paths.projectMilestonePath(milestone.id!);
+    const path = DeprecatedPaths.projectMilestonePath(milestone.id!);
     const link = <Link to={path}>{milestone!.title!}</Link>;
     const what = didWhat(content(activity).commentAction!);
 

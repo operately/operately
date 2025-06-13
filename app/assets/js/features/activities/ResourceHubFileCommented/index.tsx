@@ -1,14 +1,14 @@
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFileCommented } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
 import React from "react";
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
-import { assertPresent } from "@/utils/assertions";
 
 const ResourceHubFileCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -19,7 +19,7 @@ const ResourceHubFileCommented: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.file?.id, "file must be present in activity");
 
-    return Paths.resourceHubFilePath(data.file.id);
+    return DeprecatedPaths.resourceHubFilePath(data.file.id);
   },
 
   PageTitle(_props: { activity: any }) {

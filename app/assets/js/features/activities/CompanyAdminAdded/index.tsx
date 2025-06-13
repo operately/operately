@@ -1,8 +1,8 @@
 import { Activity, ActivityContentCompanyAdminAdded } from "@/api";
-import { ActivityHandler } from "../interfaces";
-import { feedTitle } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 import { firstName, namesListToString } from "@/models/people";
+import { DeprecatedPaths } from "@/routes/paths";
+import { feedTitle } from "../feedItemLinks";
+import { ActivityHandler } from "../interfaces";
 
 const CompanyAdminAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +10,7 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   pagePath(): string {
-    return Paths.companyAdminPath();
+    return DeprecatedPaths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {

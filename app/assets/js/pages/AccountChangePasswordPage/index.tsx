@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
+import * as React from "react";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { useNavigate } from "react-router-dom";
 
 export default { name: "AccountChangePasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -31,9 +31,9 @@ function Page() {
         newPasswordConfirmation: form.values.confirmPassword,
       });
 
-      navigate(Paths.accountSecurityPath());
+      navigate(DeprecatedPaths.accountSecurityPath());
     },
-    cancel: () => navigate(Paths.accountSecurityPath()),
+    cancel: () => navigate(DeprecatedPaths.accountSecurityPath()),
   });
 
   return (

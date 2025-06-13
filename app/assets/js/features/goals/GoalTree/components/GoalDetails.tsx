@@ -8,7 +8,7 @@ import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 import { AvatarLink } from "@/components/AvatarLink";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -56,8 +56,8 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
     flex: size !== "xs",
   });
 
-  const newGoalPath = Paths.goalNewPath({ parentGoalId: node.goal.id! });
-  const newProjectPath = Paths.newProjectPath({
+  const newGoalPath = DeprecatedPaths.goalNewPath({ parentGoalId: node.goal.id! });
+  const newProjectPath = DeprecatedPaths.newProjectPath({
     goalId: node.goal.id!,
     spaceId: node.goal.space!.id!,
     backPathName: "Back to Goal Map",
@@ -132,7 +132,7 @@ function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
   assertPresent(goal.champion, "champion must be present in goal");
   assertPresent(goal.space, "space must be present in goal");
 
-  const path = Paths.spacePath(goal.space.id!);
+  const path = DeprecatedPaths.spacePath(goal.space.id!);
 
   return (
     <div className="flex items-center gap-1">

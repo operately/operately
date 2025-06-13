@@ -3,16 +3,15 @@ import React from "react";
 import { filterPossibleParentGoals, Goal } from "@/models/goals";
 import { IconBuildingEstate, IconTarget } from "@tabler/icons-react";
 
-import classNames from "classnames";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Forms from "@/components/Forms";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import classNames from "classnames";
 
-import { GhostLink } from "turboui";
 import { useIsViewMode } from "@/components/Pages";
-import { Paths } from "@/routes/paths";
-import { useLoadedData } from "./loader";
-import { SecondaryButton } from "turboui";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
+import { DeprecatedPaths } from "@/routes/paths";
+import { GhostLink, SecondaryButton } from "turboui";
+import { useLoadedData } from "./loader";
 
 export function ParentGoal() {
   const isViewMode = useIsViewMode();
@@ -90,5 +89,5 @@ function GoalName({ link }: { link?: boolean }) {
   if (!link) {
     return <div className="font-medium text-sm text-content-dimmed">{parentGoal.name}</div>;
   }
-  return <GhostLink to={Paths.goalPath(parentGoal.id!)} text={parentGoal.name!} dimmed size="sm" />;
+  return <GhostLink to={DeprecatedPaths.goalPath(parentGoal.id!)} text={parentGoal.name!} dimmed size="sm" />;
 }

@@ -1,20 +1,20 @@
 import React from "react";
 
-import * as Goals from "@/models/goals";
 import Forms from "@/components/Forms";
 import { emptyContent } from "@/components/RichContent";
+import * as Goals from "@/models/goals";
 
+import { Options, SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
-import { Options, SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { useLoadedData } from "./loader";
-import { Paths } from "@/routes/paths";
 
 export function Form() {
   const { goal } = useLoadedData();
 
   const [close] = Goals.useCloseGoal();
-  const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id!));
+  const navigateToGoal = useNavigateTo(DeprecatedPaths.goalPath(goal.id!));
 
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 

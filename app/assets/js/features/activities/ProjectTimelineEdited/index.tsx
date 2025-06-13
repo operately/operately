@@ -1,17 +1,17 @@
-import * as React from "react";
-import * as Time from "@/utils/time";
 import * as Milestones from "@/models/milestones";
-import * as Icons from "@tabler/icons-react";
 import * as People from "@/models/people";
+import * as Time from "@/utils/time";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectTimelineEdited } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 const ProjectTimelineEdited: ActivityHandler = {
@@ -20,7 +20,7 @@ const ProjectTimelineEdited: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -159,7 +159,7 @@ function UpdatedMilestones({ content }: { content: Content }) {
 }
 
 function MilestoneLink({ milestone }: { milestone: Milestones.Milestone }) {
-  const path = Paths.projectMilestonePath(milestone.id!);
+  const path = DeprecatedPaths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
 
   return (

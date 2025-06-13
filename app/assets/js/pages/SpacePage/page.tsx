@@ -7,15 +7,15 @@ import * as Spaces from "@/models/spaces";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { AvatarList, PrimaryButton, SecondaryButton } from "turboui";
 
-import { useJoinSpace } from "@/models/spaces";
-import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { assertPresent } from "@/utils/assertions";
+import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
 import { ToolsSection } from "@/features/SpaceTools";
+import { useJoinSpace } from "@/models/spaces";
+import { assertPresent } from "@/utils/assertions";
 
-import { useLoadedData, useRefresh } from "./loader";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { match } from "ts-pattern";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const { space, tools } = useLoadedData();
@@ -46,7 +46,7 @@ function SpaceEdit() {
 
   return (
     <div className="absolute right-4 top-4">
-      <SecondaryButton size="xs" linkTo={Paths.spaceEditPath(space.id!)} testId="edit-space">
+      <SecondaryButton size="xs" linkTo={DeprecatedPaths.spaceEditPath(space.id!)} testId="edit-space">
         Edit
       </SecondaryButton>
     </div>
@@ -135,7 +135,7 @@ function JoinButton({ space }) {
 }
 
 function ManageAccessButton({ space }: { space: Spaces.Space }) {
-  const path = Paths.spaceAccessManagementPath(space.id!);
+  const path = DeprecatedPaths.spaceAccessManagementPath(space.id!);
 
   assertPresent(space.permissions, "permissions must be present in space");
   if (!space.permissions.canAddMembers) return null;

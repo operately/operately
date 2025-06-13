@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubFolder, useCopyResourceHubFolder } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useNodesContext } from "../contexts/NodesContext";
@@ -42,7 +42,7 @@ export function CopyFolderModal(props: FormProps) {
         destParentFolderId: form.values.location.type == "folder" ? form.values.location.id : undefined,
       });
 
-      navigate(Paths.resourceHubFolderPath(res.folderId));
+      navigate(DeprecatedPaths.resourceHubFolderPath(res.folderId));
     },
   });
 

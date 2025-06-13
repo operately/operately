@@ -2,11 +2,11 @@ import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
-import { useBoolState } from "@/hooks/useBoolState";
 import { useNodesContext } from "@/features/ResourceHub";
-import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
+import { useBoolState } from "@/hooks/useBoolState";
+import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
-import { Paths } from "@/routes/paths";
+import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface Props {
@@ -36,7 +36,7 @@ export function LinkMenu({ link }: Props) {
 }
 
 function EditLinkMenuItem({ link }: Props) {
-  const editPath = Paths.resourceHubEditLinkPath(link.id!);
+  const editPath = DeprecatedPaths.resourceHubEditLinkPath(link.id!);
   const editId = createTestId("edit", link.id!);
 
   return (

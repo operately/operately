@@ -1,14 +1,14 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import type { ActivityContentProjectRetrospectiveCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink } from "./../feedItemLinks";
-import { Paths } from "@/routes/paths";
-import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "turboui";
+import { feedTitle, projectLink } from "./../feedItemLinks";
 
 const ProjectRetrospectiveCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,7 +16,7 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectRetrospectivePath(content(activity).projectId!);
+    return DeprecatedPaths.projectRetrospectivePath(content(activity).projectId!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const project = content(activity).project!;
 
-    const retrospectivePath = Paths.projectRetrospectivePath(project.id!);
+    const retrospectivePath = DeprecatedPaths.projectRetrospectivePath(project.id!);
     const retrospectiveLink = <Link to={retrospectivePath}>Retrospective</Link>;
 
     if (page === "project") {

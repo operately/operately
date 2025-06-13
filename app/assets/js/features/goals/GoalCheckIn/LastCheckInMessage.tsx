@@ -1,19 +1,19 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Goals from "@/models/goals";
 import * as Reactions from "@/models/reactions";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import RichContent from "@/components/RichContent";
+import { Avatar } from "turboui";
 
-import { SecondaryButton } from "turboui";
-import { Paths } from "@/routes/paths";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { SecondaryButton } from "turboui";
 
+import { assertPresent } from "@/utils/assertions";
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "turboui";
-import { assertPresent } from "@/utils/assertions";
 
 export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
@@ -21,8 +21,8 @@ export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
   assertPresent(goal.lastCheckIn.author, "author must be present in lastCheckIn");
 
   const { author, message } = goal.lastCheckIn;
-  const path = Paths.goalCheckInPath(goal.lastCheckIn.id!);
-  const championProfilePath = Paths.profilePath(author.id!);
+  const path = DeprecatedPaths.goalCheckInPath(goal.lastCheckIn.id!);
+  const championProfilePath = DeprecatedPaths.profilePath(author.id!);
 
   return (
     <div className="flex items-start gap-4">
@@ -53,7 +53,7 @@ export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 
-  const path = Paths.goalCheckInPath(goal.lastCheckIn!.id!);
+  const path = DeprecatedPaths.goalCheckInPath(goal.lastCheckIn!.id!);
 
   return (
     <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">

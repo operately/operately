@@ -1,8 +1,8 @@
-import * as Goals from "@/models/goals";
 import * as Editor from "@/components/Editor";
-import { useNavigate } from "react-router-dom";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
-import { Paths } from "@/routes/paths";
+import * as Goals from "@/models/goals";
+import { DeprecatedPaths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 
 export interface FormState {
   messageEditor: Editor.EditorState;
@@ -19,7 +19,7 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
     mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
-  const goalPath = Paths.goalPath(goal.id!);
+  const goalPath = DeprecatedPaths.goalPath(goal.id!);
 
   const [reopen] = Goals.useReopenGoal();
 

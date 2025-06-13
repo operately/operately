@@ -2,10 +2,10 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 
 import { LinkOptions } from "@/features/ResourceHub";
-import { useAddFile, AddFileProps } from "../useAddFile";
+import { AddFileProps, useAddFile } from "../useAddFile";
 
 interface Props {
   children: NonNullable<React.ReactNode>;
@@ -29,11 +29,11 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
 
   const toggleShowAddFolder = () => setShowAddFolder(!showAddFolder);
   const navigateToNewDocument = () =>
-    navigate(Paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
+    navigate(DeprecatedPaths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
 
   const navigateToNewLink = (type?: LinkOptions) => {
     navigate(
-      Paths.resourceHubNewLinkPath(resourceHub.id!, {
+      DeprecatedPaths.resourceHubNewLinkPath(resourceHub.id!, {
         folderId: folder?.id || undefined,
         type: type,
       }),

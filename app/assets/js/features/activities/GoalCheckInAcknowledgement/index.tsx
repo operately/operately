@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import type { ActivityContentGoalCheckInAcknowledgement } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, goalLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
+import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalCheckInAcknowledgement: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalCheckInPath(content(activity).update!.id!);
+    return DeprecatedPaths.goalCheckInPath(content(activity).update!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     const goal = content(activity).goal!;
     const update = content(activity).update!;
 
-    const path = Paths.goalCheckInPath(update.id!);
+    const path = DeprecatedPaths.goalCheckInPath(update.id!);
     const link = <Link to={path}>Check-In</Link>;
 
     if (page === "goal") {

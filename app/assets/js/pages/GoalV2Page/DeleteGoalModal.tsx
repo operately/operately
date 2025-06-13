@@ -1,15 +1,15 @@
 import React from "react";
 import { MiniWorkMap } from "turboui";
 
-import { useNavigate } from "react-router-dom";
 import { findGoalChildren, useDeleteGoal } from "@/models/goals";
+import { useNavigate } from "react-router-dom";
 import { useWorkItems } from "./useWorkItems";
 
-import Modal from "@/components/Modal";
-import { PrimaryButton, SecondaryButton } from "turboui";
-import { Paths } from "@/routes/paths";
-import { useLoadedData } from "./loader";
 import { WarningCallout } from "@/components/Callouts";
+import Modal from "@/components/Modal";
+import { DeprecatedPaths } from "@/routes/paths";
+import { PrimaryButton, SecondaryButton } from "turboui";
+import { useLoadedData } from "./loader";
 
 interface Props {
   showDeleteGoal: boolean;
@@ -45,7 +45,7 @@ function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void
     if (loading) return;
     await deleteGoal({ goalId: goal.id });
     toggleShowDeleteGoal();
-    navigate(Paths.goalsPath());
+    navigate(DeprecatedPaths.goalsPath());
   };
 
   return (

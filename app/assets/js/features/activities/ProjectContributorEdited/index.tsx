@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import type { ActivityContentProjectContributorEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
-import { Paths, compareIds } from "@/routes/paths";
 import { accessLevelAsString } from "@/features/Permissions";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectContributorEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const ProjectContributorEdited: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

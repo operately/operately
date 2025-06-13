@@ -1,11 +1,11 @@
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectGoalConnection } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink, goalLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
+import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
 
 const ProjectGoalConnection: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -13,7 +13,7 @@ const ProjectGoalConnection: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

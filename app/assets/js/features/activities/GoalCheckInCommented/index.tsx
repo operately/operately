@@ -1,15 +1,15 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import type { ActivityContentGoalCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, goalLink } from "./../feedItemLinks";
-import { Paths } from "@/routes/paths";
-import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { Link } from "turboui";
+import { feedTitle, goalLink } from "./../feedItemLinks";
 
 const GoalUpdateCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -17,7 +17,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalCheckInPath(content(activity).update?.id!);
+    return DeprecatedPaths.goalCheckInPath(content(activity).update?.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -39,7 +39,7 @@ const GoalUpdateCommented: ActivityHandler = {
     assertPresent(data.update, "Update must be present in activity content");
     assertPresent(data.update.id, "Update ID must be present in activity content");
 
-    const checkInPath = Paths.goalCheckInPath(data.update.id);
+    const checkInPath = DeprecatedPaths.goalCheckInPath(data.update.id);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "goal") {

@@ -1,8 +1,8 @@
 import * as React from "react";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { WorkMapPage } from "turboui";
 import { useLoadedData } from "./loader";
-import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { data } = useLoadedData();
@@ -14,7 +14,7 @@ export function Page() {
       title={title}
       items={workMap}
       columnOptions={{ hideSpace: true }}
-      navigation={[{ to: Paths.spacePath(space.id), label: space.name }]}
+      navigation={[{ to: DeprecatedPaths.spacePath(space.id), label: space.name }]}
     />
   );
 }

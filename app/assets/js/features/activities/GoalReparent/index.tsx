@@ -1,10 +1,10 @@
 import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalReparent } from "@/api";
-import { Paths } from "@/routes/paths";
-import { ActivityHandler } from "../interfaces";
-import { goalLink, feedTitle } from "../feedItemLinks";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { feedTitle, goalLink } from "../feedItemLinks";
+import { ActivityHandler } from "../interfaces";
 
 const GoalReparent: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const GoalReparent: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.goal?.id, "goal.id must be present in activity");
 
-    return Paths.goalPath(data.goal.id);
+    return DeprecatedPaths.goalPath(data.goal.id);
   },
 
   PageTitle(_props: { activity: any }) {

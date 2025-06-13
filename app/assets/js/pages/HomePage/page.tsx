@@ -1,17 +1,17 @@
 import React from "react";
 
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Spaces from "@/models/spaces";
+import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
+import * as Spaces from "@/models/spaces";
 
-import { SpaceCardLink, SpaceCardGrid } from "@/features/spaces/SpaceCards";
+import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
 
-import { useLoadedData } from "./loader";
-import { Feed, useItemsQuery } from "@/features/Feed";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { Feed, useItemsQuery } from "@/features/Feed";
+import { usePaths } from "@/routes/paths";
 import { GhostButton } from "turboui";
-import { Paths } from "@/routes/paths";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   return (
@@ -64,8 +64,10 @@ function ActivityFeed() {
 }
 
 function AddSpaceButton() {
+  const paths = usePaths();
+
   return (
-    <GhostButton linkTo={Paths.newSpacePath()} testId="add-space" size="sm">
+    <GhostButton linkTo={paths.newSpacePath()} testId="add-space" size="sm">
       Add Space
     </GhostButton>
   );

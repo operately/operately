@@ -1,23 +1,23 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { IconEdit } from "@tabler/icons-react";
+import FormattedTime from "@/components/FormattedTime";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { AvatarWithName } from "turboui";
-import { Spacer } from "@/components/Spacer";
-import FormattedTime from "@/components/FormattedTime";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { IconEdit } from "@tabler/icons-react";
+import { AvatarWithName } from "turboui";
 
-import { useLoadedData, useRefresh } from "./loader";
-import { assertPresent } from "@/utils/assertions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { RetrospectiveContent } from "@/features/ProjectRetrospective";
+import { assertPresent } from "@/utils/assertions";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const { retrospective } = useLoadedData();
@@ -58,7 +58,7 @@ function Options() {
         <PageOptions.Link
           icon={IconEdit}
           title="Edit retrospective"
-          to={Paths.projectRetrospectiveEditPath(retrospective.project!.id!)}
+          to={DeprecatedPaths.projectRetrospectiveEditPath(retrospective.project!.id!)}
           testId="edit-retrospective"
         />
       )}

@@ -1,20 +1,18 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as People from "@/models/people";
+import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
+import * as People from "@/models/people";
+import * as React from "react";
 
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { AddAdminsModal } from "./AddAdminsModal";
+import { AddOwnersModal } from "./AddOwnersModal";
 import { useLoadedData } from "./loader";
 import { useFrom } from "./useForm";
-import { Paths, compareIds } from "@/routes/paths";
-import { AddOwnersModal } from "./AddOwnersModal";
-import { AddAdminsModal } from "./AddAdminsModal";
 
-import { Avatar } from "turboui";
-import { BlackLink } from "turboui";
-import { SecondaryButton } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
+import { Avatar, BlackLink, SecondaryButton } from "turboui";
 
 export function Page() {
   const form = useFrom();
@@ -24,7 +22,7 @@ export function Page() {
   return (
     <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
       <Paper.Root>
-        <Paper.Navigation items={[{ to: Paths.companyAdminPath(), label: "Company Administration" }]} />
+        <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body>
           <Paper.Header
@@ -79,7 +77,7 @@ function PersonRow({ person, type }: { person: People.Person; type: "admins" | "
 function PersonInfo({ person }: { person: People.Person }) {
   return (
     <div>
-      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 

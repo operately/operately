@@ -1,10 +1,10 @@
 import * as People from "@/models/people";
 import { feedTitle } from "../feedItemLinks";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyMemberRestoring } from "@/api";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
 
 const CompanyMemberRestoring: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,7 +12,7 @@ const CompanyMemberRestoring: ActivityHandler = {
   },
 
   pagePath(_activity: Activity) {
-    return Paths.homePath();
+    return DeprecatedPaths.homePath();
   },
 
   PageTitle(_props: { activity: any }) {
