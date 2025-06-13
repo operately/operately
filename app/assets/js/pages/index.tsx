@@ -53,7 +53,6 @@ import PeoplePage from "./PeoplePage";
 import ProfileEditPage from "./ProfileEditPage";
 import ProfileGoalsPage from "./ProfileGoalsPage";
 import ProfilePage from "./ProfilePage";
-import ProfileV2Page from "./ProfileV2Page";
 import ProjectAddPage from "./ProjectAddPage";
 import ProjectAddResourcePage from "./ProjectAddResourcePage";
 import ProjectArchivationPage from "./ProjectArchivationPage";
@@ -163,7 +162,6 @@ export default {
   ProfileEditPage,
   ProfileGoalsPage,
   ProfilePage,
-  ProfileV2Page,
   ProjectAddPage,
   ProjectAddResourcePage,
   ProjectArchivationPage,
