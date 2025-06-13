@@ -474,21 +474,7 @@ export class Paths {
   }
 
   private getCompanyID(): string {
-    if (this.deprecatedLookup) {
-      const parts = window.location.pathname.split("/") as string[];
-
-      if (parts.length >= 2) {
-        return parts[1]!;
-      } else {
-        throw new Error("Company ID not found in path");
-      }
-    } else {
-      if (!this.companyId) {
-        throw new Error("Can't create company paths without a company ID");
-      }
-
-      return this.companyId;
-    }
+    return this.companyId;
   }
 
   static validatePathElements(elements: string[]) {
@@ -518,7 +504,7 @@ export function usePaths() {
   }
 
   const paths = React.useMemo(() => {
-    return new Paths({ companyId: data.company.id });
+    return new Paths({ companyId: data.company.id! });
   }, [data.company.id]);
 
   return paths;

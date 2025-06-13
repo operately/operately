@@ -5,6 +5,7 @@ import * as React from "react";
 import { Summary } from "@/components/RichContent";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
+import { usePaths } from "@/routes/paths";
 import { DivLink, Link, PrimaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";
@@ -41,6 +42,7 @@ function Header() {
 
 function NewDiscussionButton() {
   const { space } = useLoadedData();
+  const paths = usePaths();
 
   return (
     <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">

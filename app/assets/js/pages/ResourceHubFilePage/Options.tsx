@@ -6,11 +6,13 @@ import { useNavigate } from "react-router-dom";
 import { useDownloadFile } from "@/models/blobs";
 import { useDeleteResourceHubFile } from "@/models/resourceHubs";
 
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 export function Options() {
   const { file } = useLoadedData();
+  const paths = usePaths();
   assertPresent(file.permissions, "permissions must be present in file");
 
   return (
@@ -47,6 +49,7 @@ function DeleteAction() {
   const { file } = useLoadedData();
   const [remove] = useDeleteResourceHubFile();
   const navigate = useNavigate();
+  const paths = usePaths();
 
   const redirect = () => {
     if (file.parentFolder) {

@@ -4,6 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
 
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -36,6 +37,7 @@ export function Page() {
 
 function PageNavigation() {
   const { resourceHub } = useLoadedData();
+  const paths = usePaths();
 
   assertPresent(resourceHub.space, "space must be present in resourceHub");
 

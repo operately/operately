@@ -8,6 +8,7 @@ import { useFormContext } from "@/components/Forms/FormContext";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 
@@ -17,6 +18,7 @@ export function Form() {
   const { resourceHub, folder } = useLoadedData();
   const navigate = useNavigate();
   const [post] = useCreateResourceHubDocument();
+  const paths = usePaths();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 
@@ -110,6 +112,7 @@ function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
 }
 
 function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
+  const paths = usePaths();
   return (
     <Link to={paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
       Discard this document

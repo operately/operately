@@ -7,6 +7,7 @@ import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 
@@ -16,6 +17,7 @@ export function Form() {
   const { resourceHub, folder, linkType } = useLoadedData();
   const navigate = useNavigate();
   const [post] = useCreateResourceHubLink();
+  const paths = usePaths();
 
   assertPresent(resourceHub.potentialSubscribers, "potentialSubscribers must be present in resourceHub");
 

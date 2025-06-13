@@ -9,6 +9,7 @@ import * as Spaces from "@/models/spaces";
 import Forms from "@/components/Forms";
 
 import { AccessLevel, AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { SecondaryButton } from "turboui";
 
@@ -17,6 +18,7 @@ export default { name: "SpaceAddPage", loader: Pages.emptyLoader, Page } as Page
 function Page() {
   const navigate = useNavigate();
   const [create] = Spaces.useCreateSpace();
+  const paths = usePaths();
 
   const form = Forms.useForm({
     fields: {
