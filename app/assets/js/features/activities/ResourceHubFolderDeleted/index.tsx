@@ -1,10 +1,10 @@
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubFolderDeleted } from "@/api";
-import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, resourceHubLink, spaceLink } from "../feedItemLinks";
+import type { ActivityHandler } from "../interfaces";
 
 const ResourceHubFolderDeleted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,7 +12,7 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   },
 
   pagePath(activity: Activity) {
-    return Paths.resourceHubPath(content(activity).resourceHub!.id!);
+    return DeprecatedPaths.resourceHubPath(content(activity).resourceHub!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

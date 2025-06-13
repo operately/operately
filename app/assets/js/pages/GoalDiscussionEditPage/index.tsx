@@ -1,20 +1,19 @@
-import * as React from "react";
+import * as Api from "@/api";
+import * as TipTapEditor from "@/components/Editor";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Goals from "@/models/goals";
-import * as TipTapEditor from "@/components/Editor";
 import * as Activities from "@/models/activities";
-import * as Api from "@/api";
+import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
+import * as React from "react";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
-import { PrimaryButton } from "turboui";
-import { DimmedLink } from "turboui";
-import { Paths } from "@/routes/paths";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
+import { DimmedLink, PrimaryButton } from "turboui";
 
-import { useFormState, formValidator, useFormMutationAction } from "@/components/Form/useFormState";
+import { formValidator, useFormMutationAction, useFormState } from "@/components/Form/useFormState";
 import { match } from "ts-pattern";
 
 export default { name: "GoalDiscussionEditPage", loader, Page } as PageModule;
@@ -56,7 +55,7 @@ function Page() {
               Save
             </PrimaryButton>
 
-            <DimmedLink to={Paths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={DeprecatedPaths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -98,7 +97,7 @@ function useForm({ activity }: { activity: Activities.Activity }) {
         title: fields.title,
         message: JSON.stringify(fields.editor.editor.getJSON()),
       }),
-      onCompleted: (_data, navigate) => navigate(Paths.goalActivityPath(activity.id!)),
+      onCompleted: (_data, navigate) => navigate(DeprecatedPaths.goalActivityPath(activity.id!)),
     }),
   });
 }

@@ -1,16 +1,16 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
-import * as Pages from "@/components/Pages";
 import * as Forms from "@/components/Form";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as KeyResources from "@/models/keyResources";
+import * as React from "react";
 
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { useLoadedData, useResourceTypeParam } from "./loader";
 import { useForm } from "./useForm";
-import { Paths } from "@/routes/paths";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -38,7 +38,7 @@ export function Page() {
 }
 
 function Form({ project, form }) {
-  const onCancel = useNavigateTo(Paths.projectEditResourcesPath(project.id));
+  const onCancel = useNavigateTo(DeprecatedPaths.projectEditResourcesPath(project.id));
   const namePlaceholder = KeyResources.placeholderName(form.resourceType);
 
   return (

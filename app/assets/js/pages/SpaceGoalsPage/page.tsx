@@ -3,11 +3,11 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { useLoadedData } from "./loader";
-import { GoalTree } from "@/features/goals/GoalTree";
-import { Paths } from "@/routes/paths";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton";
+import { GoalTree } from "@/features/goals/GoalTree";
+import { DeprecatedPaths } from "@/routes/paths";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { space, goals, projects } = useLoadedData();
@@ -34,10 +34,10 @@ export function Page() {
 function Header() {
   const { space } = useLoadedData();
 
-  const newGoalPath = Paths.spaceNewGoalPath(space.id!);
-  const newProjectPath = Paths.newProjectPath({
+  const newGoalPath = DeprecatedPaths.spaceNewGoalPath(space.id!);
+  const newProjectPath = DeprecatedPaths.newProjectPath({
     spaceId: space.id!,
-    backPath: Paths.spaceGoalsPath(space.id!),
+    backPath: DeprecatedPaths.spaceGoalsPath(space.id!),
     backPathName: `Back to ${space.name} Goal Map`,
   });
 

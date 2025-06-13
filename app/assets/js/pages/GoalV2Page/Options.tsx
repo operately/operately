@@ -1,10 +1,10 @@
 import * as React from "react";
 
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { Paths } from "@/routes/paths";
+import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
 
@@ -36,7 +36,7 @@ export function Options({ toggleShowDeleteGoal }: Props) {
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
           title="Close Goal"
-          to={Paths.goalClosePath(goal.id!)}
+          to={DeprecatedPaths.goalClosePath(goal.id!)}
           testId="close-goal"
         />
       )}
@@ -45,7 +45,7 @@ export function Options({ toggleShowDeleteGoal }: Props) {
         <PageOptions.Link
           icon={Icons.IconRotateDot}
           title="Reopen Goal"
-          to={Paths.goalReopenPath(goal.id!)}
+          to={DeprecatedPaths.goalReopenPath(goal.id!)}
           testId="reopen-goal"
         />
       )}

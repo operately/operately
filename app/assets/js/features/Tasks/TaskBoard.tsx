@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as Tasks from "@/models/tasks";
+import * as React from "react";
 
 import { useIsDarkMode } from "@/contexts/ThemeContext";
-import { DivLink, AvatarList } from "turboui";
+import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "@/features/DragAndDrop";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 import { insertAt } from "@/utils/array";
-import { DragAndDropProvider, useDraggable, useDropZone, useDraggingAnimation } from "@/features/DragAndDrop";
-import { Paths, compareIds } from "@/routes/paths";
 import { match } from "ts-pattern";
+import { AvatarList, DivLink } from "turboui";
 
 interface TaskBoardState {
   todoTasks: Tasks.Task[];
@@ -151,7 +151,7 @@ function TaskItem({
       <div className="my-1" style={isDragging ? {} : style} data-test-id={testId}>
         <DivLink
           className="text-sm bg-surface-base rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
-          to={Paths.taskPath(task.id!)}
+          to={DeprecatedPaths.taskPath(task.id!)}
         >
           <div className="font-medium">{task.name}</div>
           <AvatarList people={task.assignees!} size="tiny" stacked maxElements={5} />

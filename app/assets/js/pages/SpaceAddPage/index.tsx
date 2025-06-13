@@ -8,10 +8,10 @@ import * as Spaces from "@/models/spaces";
 
 import Forms from "@/components/Forms";
 
-import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "turboui";
-import { AccessLevel, AccessSelectors, initialAccessLevels, applyAccessLevelConstraints } from "@/features/spaces";
+import { AccessLevel, AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { SecondaryButton } from "turboui";
 
 export default { name: "SpaceAddPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -37,14 +37,14 @@ function Page() {
         companyPermissions: form.values.access.companyMembers,
       });
 
-      navigate(Paths.spacePath(res.group.id!));
+      navigate(DeprecatedPaths.spacePath(res.group.id!));
     },
   });
 
   return (
     <Pages.Page title="Create a new space">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={Paths.homePath()} title="Back to Home" />
+        <Paper.NavigateBack to={DeprecatedPaths.homePath()} title="Back to Home" />
         <Title />
 
         <Forms.Form form={form}>

@@ -1,13 +1,13 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
+import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { useLoadedData } from "./loader";
-import { Paths } from "@/routes/paths";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
+import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -31,7 +31,7 @@ function GoalList() {
   const { project, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const projectPath = Paths.projectPath(project.id!);
+  const projectPath = DeprecatedPaths.projectPath(project.id!);
 
   const [connect] = Goals.useConnectGoalToProject();
 

@@ -1,13 +1,12 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
-import * as Goals from "@/models/goals";
-import * as Tabs from "@/components/Tabs";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Tabs from "@/components/Tabs";
+import * as Goals from "@/models/goals";
 import * as Timeframes from "@/utils/timeframes";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { GhostLink } from "turboui";
-import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
+import { GhostLink, PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -59,10 +58,10 @@ function GoalIcon() {
 function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
   return (
     <Tabs.Root activeTab={activeTab}>
-      <Tabs.Tab id="status" title="Current Status" linkTo={Paths.goalPath(goal.id!)} />
-      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={Paths.goalSubgoalsPath(goal.id!)} />
-      <Tabs.Tab id="discussions" title="Discussions" linkTo={Paths.goalDiscussionsPath(goal.id!)} />
-      <Tabs.Tab id="about" title="About" linkTo={Paths.goalAboutPath(goal.id!)} />
+      <Tabs.Tab id="status" title="Current Status" linkTo={DeprecatedPaths.goalPath(goal.id!)} />
+      <Tabs.Tab id="subgoals" title="Sub-Goals and Projects" linkTo={DeprecatedPaths.goalSubgoalsPath(goal.id!)} />
+      <Tabs.Tab id="discussions" title="Discussions" linkTo={DeprecatedPaths.goalDiscussionsPath(goal.id!)} />
+      <Tabs.Tab id="about" title="About" linkTo={DeprecatedPaths.goalAboutPath(goal.id!)} />
     </Tabs.Root>
   );
 }
@@ -74,14 +73,26 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconTarget size={14} className="text-red-500" />
-        <GhostLink to={Paths.goalPath(goal.id!)} text={goal.name!} testId="project-goal-link" dimmed size="sm" />
+        <GhostLink
+          to={DeprecatedPaths.goalPath(goal.id!)}
+          text={goal.name!}
+          testId="project-goal-link"
+          dimmed
+          size="sm"
+        />
       </div>
     );
   } else {
     content = (
       <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
-        <GhostLink to={Paths.goalsPath()} text="Company-wide goal" testId="company-goals-link" dimmed size="sm" />
+        <GhostLink
+          to={DeprecatedPaths.goalsPath()}
+          text="Company-wide goal"
+          testId="company-goals-link"
+          dimmed
+          size="sm"
+        />
       </div>
     );
   }
@@ -101,7 +112,7 @@ function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit Goal Definition"
-          to={Paths.goalEditPath(goal.id)}
+          to={DeprecatedPaths.goalEditPath(goal.id)}
           testId="edit-goal-definition"
         />
       )}
@@ -110,7 +121,7 @@ function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconCalendar}
           title="Edit Timeframe"
-          to={Paths.goalEditTimeframePath(goal.id)}
+          to={DeprecatedPaths.goalEditTimeframePath(goal.id)}
           testId="edit-goal-timeframe"
         />
       )}
@@ -119,7 +130,7 @@ function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconExchange}
           title="Change Parent"
-          to={Paths.goalEditParentPath(goal.id)}
+          to={DeprecatedPaths.goalEditParentPath(goal.id)}
           testId="change-parent-goal"
         />
       )}
@@ -128,7 +139,7 @@ function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconCircleCheck}
           title="Close Goal"
-          to={Paths.goalClosePath(goal.id)}
+          to={DeprecatedPaths.goalClosePath(goal.id)}
           testId="close-goal"
         />
       )}
@@ -137,7 +148,7 @@ function Options({ goal }) {
         <PageOptions.Link
           icon={Icons.IconRotateDot}
           title="Reopen Goal"
-          to={Paths.goalReopenPath(goal.id)}
+          to={DeprecatedPaths.goalReopenPath(goal.id)}
           testId="reopen-goal"
         />
       )}
@@ -201,7 +212,7 @@ function CheckInButton({ goal }) {
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 
-  const path = Paths.goalCheckInNewPath(goal.id!);
+  const path = DeprecatedPaths.goalCheckInNewPath(goal.id!);
 
   return (
     <div className="mt-1">

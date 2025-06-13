@@ -3,14 +3,14 @@ import React from "react";
 import * as People from "@/models/people";
 import { toPersonWithLink } from "@/models/people";
 
-import { PageModule } from "@/routes/types";
-import { ProfilePage } from "turboui";
 import { Feed, useItemsQuery } from "@/features/Feed";
+import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
+import { ProfilePage } from "turboui";
 
-import { loader, useLoadedData } from "./loader";
+import { DeprecatedPaths } from "@/routes/paths";
 import { IconPencil } from "@tabler/icons-react";
-import { Paths } from "@/routes/paths";
+import { loader, useLoadedData } from "./loader";
 
 export default { name: "ProfileV2Page", loader, Page } as PageModule;
 
@@ -36,7 +36,7 @@ function Page() {
         type: "link" as const,
         icon: IconPencil,
         label: "Edit",
-        link: Paths.profileEditPath(person.id!),
+        link: DeprecatedPaths.profileEditPath(person.id!),
         hidden: !person.permissions.canEditProfile,
       },
     ],

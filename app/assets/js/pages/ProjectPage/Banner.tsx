@@ -1,11 +1,10 @@
-import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
-import { PrimaryButton } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
 import { match } from "ts-pattern";
+import { Link, PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -17,7 +16,7 @@ export function banner(project: Projects.Project) {
 }
 
 function ProjectClosedBanner({ project }: { project: Projects.Project }) {
-  const retroPath = Paths.projectRetrospectivePath(project.id!);
+  const retroPath = DeprecatedPaths.projectRetrospectivePath(project.id!);
 
   return (
     <Paper.Banner testId="project-closed-banner">
@@ -31,7 +30,7 @@ function ProjectClosedBanner({ project }: { project: Projects.Project }) {
 }
 
 function ProjectPausedBanner({ project }: { project: Projects.Project }) {
-  const resumePath = Paths.resumeProjectPath(project.id!);
+  const resumePath = DeprecatedPaths.resumeProjectPath(project.id!);
 
   return (
     <Paper.Banner testId="project-paused-banner">

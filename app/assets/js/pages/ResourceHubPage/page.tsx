@@ -4,9 +4,9 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
 
-import { Paths } from "@/routes/paths";
-import { useLoadedData, useRefresh } from "./loader";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const { resourceHub, nodes, draftNodes } = useLoadedData();
@@ -43,7 +43,7 @@ function PageNavigation() {
   return (
     <Paper.Navigation
       testId="navigation"
-      items={[{ to: Paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
+      items={[{ to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
     />
   );
 }

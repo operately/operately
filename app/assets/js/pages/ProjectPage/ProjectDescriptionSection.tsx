@@ -1,9 +1,8 @@
-import * as React from "react";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link, SecondaryButton } from "turboui";
 
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
 
@@ -28,7 +27,7 @@ function EditLink({ project }: { project: Projects.Project }) {
   if (!project.permissions!.canEditDescription) return null;
   if (!project.description) return null;
 
-  const path = Paths.projectEditDescriptionPath(project.id!);
+  const path = DeprecatedPaths.projectEditDescriptionPath(project.id!);
 
   return (
     <div className="text-sm">
@@ -79,7 +78,7 @@ function ExpandCollapseButton({ showMore, setShowMore }) {
 }
 
 function DescriptionZeroState({ project }) {
-  const writePath = Paths.projectEditDescriptionPath(project.id!);
+  const writePath = DeprecatedPaths.projectEditDescriptionPath(project.id!);
 
   const editLink = (
     <SecondaryButton linkTo={writePath} testId="write-project-description-link" size="xs">

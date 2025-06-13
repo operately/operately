@@ -1,13 +1,13 @@
-import React from "react";
 import * as People from "@/models/people";
+import React from "react";
 
 import type { ActivityContentProjectContributorsAddition } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink } from "./../feedItemLinks";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Avatar } from "turboui";
+import { feedTitle, projectLink } from "./../feedItemLinks";
 
 const ProjectContributorsAddition: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

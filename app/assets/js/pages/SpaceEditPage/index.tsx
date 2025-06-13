@@ -1,11 +1,11 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
-import { useNavigate } from "react-router-dom";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
-import { Paths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 
@@ -26,7 +26,7 @@ function Page() {
   const { space } = Pages.useLoadedData<LoaderResult>();
 
   const [edit] = Spaces.useEditSpace();
-  const backPath = Paths.spacePath(space.id!);
+  const backPath = DeprecatedPaths.spacePath(space.id!);
 
   const form = Forms.useForm({
     fields: {

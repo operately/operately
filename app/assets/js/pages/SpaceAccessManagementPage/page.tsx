@@ -4,20 +4,19 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 
-import { Paths } from "@/routes/paths";
-import { Space } from "@/models/spaces";
-import { AccessLevel } from "@/features/spaces";
-import { OtherPeople } from "./OtherPeople";
+import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
-import { Menu, MenuActionItem, SubMenu } from "turboui";
-import { SpaceAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { AccessLevel } from "@/features/spaces";
+import { Space } from "@/models/spaces";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
+import { OtherPeople } from "./OtherPeople";
 
+import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
+import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
-import { assertPresent } from "@/utils/assertions";
-import { useEditSpaceMembersPermissions, useRemoveGroupMember } from "@/models/spaces";
 
 import { Avatar } from "turboui";
 
@@ -43,7 +42,7 @@ export function Page() {
 
 function Title() {
   const { space } = useLoadedData();
-  const addMembersPath = Paths.spaceAddMembersPath(space.id!);
+  const addMembersPath = DeprecatedPaths.spaceAddMembersPath(space.id!);
 
   assertPresent(space.permissions, "Space permissions must be present");
 
@@ -66,12 +65,12 @@ function Title() {
 }
 
 function Navigation({ space }: { space: Space }) {
-  return <Paper.Navigation items={[{ to: Paths.spacePath(space.id!), label: space.name! }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.spacePath(space.id!), label: space.name! }]} />;
 }
 
 function GeneralAccess() {
   const { space } = useLoadedData();
-  const editPath = Paths.spaceEditGeneralAccessPath(space.id!);
+  const editPath = DeprecatedPaths.spaceEditGeneralAccessPath(space.id!);
 
   assertPresent(space.accessLevels, "Space access levels must be present");
   assertPresent(space.permissions, "Space permissions must be present");

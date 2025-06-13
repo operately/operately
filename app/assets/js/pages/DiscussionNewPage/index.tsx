@@ -1,15 +1,14 @@
 import React from "react";
 
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 
-import { PrimaryButton, GhostButton } from "turboui";
-import { Form, useForm, FormState } from "@/features/DiscussionForm";
-import { Paths } from "@/routes/paths";
+import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
-import { Link } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { GhostButton, Link, PrimaryButton } from "turboui";
 
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
 
@@ -90,5 +89,5 @@ function DiscardLink({ form }) {
 }
 
 function Navigation({ space }) {
-  return <Paper.Navigation items={[{ to: Paths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
 }

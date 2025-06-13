@@ -1,30 +1,30 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
+import { Avatar } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
-import { Paths, compareIds } from "@/routes/paths";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
 import { Spacer } from "@/components/Spacer";
-import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSection";
+import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useForProjectCheckIn } from "@/features/CommentSection";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
-import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { banner } from "../ProjectPage/Banner";
+import { useLoadedData, useRefresh } from "./loader";
 
 export function Page() {
   const { checkIn } = useLoadedData();
@@ -117,8 +117,8 @@ function Navigation({ project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.projectPath(project.id), label: project.name! },
-        { to: Paths.projectCheckInsPath(project.id), label: "Check-Ins" },
+        { to: DeprecatedPaths.projectPath(project.id), label: project.name! },
+        { to: DeprecatedPaths.projectCheckInsPath(project.id), label: "Check-Ins" },
       ]}
     />
   );
@@ -150,7 +150,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"
-        to={Paths.projectCheckInEditPath(checkIn.id!)}
+        to={DeprecatedPaths.projectCheckInEditPath(checkIn.id!)}
         testId="edit-check-in"
       />
     </PageOptions.Root>

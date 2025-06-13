@@ -1,18 +1,18 @@
 import React from "react";
 
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Milestones from "@/models/milestones";
-import * as Pages from "@/components/Pages";
 import * as Time from "@/utils/time";
 
-import { GhostButton } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
+import { GhostButton } from "turboui";
 
-import { useLoadedData } from "./loader";
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { Link } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { Paths } from "@/routes/paths";
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "turboui";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -33,7 +33,7 @@ export function Page() {
 }
 
 function Title({ project }) {
-  const editTimeline = Paths.projectEditTimelinePath(project.id);
+  const editTimeline = DeprecatedPaths.projectEditTimelinePath(project.id);
 
   return (
     <div className="flex items-center justify-between mb-8">
@@ -118,7 +118,7 @@ function MilestoneList({ project }) {
 }
 
 function PendingItem({ milestone }) {
-  const path = Paths.projectMilestonePath(milestone.id);
+  const path = DeprecatedPaths.projectMilestonePath(milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">
@@ -146,7 +146,7 @@ function PendingItem({ milestone }) {
 }
 
 function DoneItem({ milestone }) {
-  const path = Paths.projectMilestonePath(milestone.id);
+  const path = DeprecatedPaths.projectMilestonePath(milestone.id);
 
   return (
     <div className="flex flex-col border-b border-stroke-base first:border-t first:border-stroke-base py-1">

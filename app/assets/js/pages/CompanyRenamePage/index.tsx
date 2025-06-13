@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
 import Forms from "@/components/Forms";
-import { useNavigate, useRevalidator } from "react-router-dom";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { useNavigate, useRevalidator } from "react-router-dom";
 
 export default { name: "CompanyRenamePage", loader, Page } as PageModule;
 
@@ -33,16 +33,16 @@ function Page() {
     submit: async () => {
       await edit({ name: form.values.name });
 
-      navigate(Paths.companyAdminPath());
+      navigate(DeprecatedPaths.companyAdminPath());
       revalidate();
     },
-    cancel: () => navigate(Paths.companyAdminPath()),
+    cancel: () => navigate(DeprecatedPaths.companyAdminPath()),
   });
 
   return (
     <Pages.Page title={"Rename Company"} testId="company-rename-page">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={Paths.companyAdminPath()} title="Back to Company Admin" />
+        <Paper.NavigateBack to={DeprecatedPaths.companyAdminPath()} title="Back to Company Admin" />
 
         <Paper.Body>
           <Forms.Form form={form}>

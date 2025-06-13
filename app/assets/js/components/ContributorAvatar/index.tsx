@@ -1,16 +1,16 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { ProjectContributor } from "@/models/projects";
 import { Tooltip } from "@/components/Tooltip";
-import { Paths } from "@/routes/paths";
+import { ProjectContributor } from "@/models/projects";
+import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
-import { Avatar } from "turboui";
-import classNames from "classnames";
-import { TestableElement } from "@/utils/testid";
 import { useColorMode } from "@/contexts/ThemeContext";
+import { TestableElement } from "@/utils/testid";
+import classNames from "classnames";
+import { Avatar } from "turboui";
 
 type Size = "xs" | "md" | "base" | "lg";
 const DefaultSize: Size = "base";
@@ -74,7 +74,7 @@ function Placeholder(props: PlaceholderProps) {
     </div>
   );
 
-  const path = Paths.projectContributorsPath(props.project.id!);
+  const path = DeprecatedPaths.projectContributorsPath(props.project.id!);
 
   return (
     <Tooltip content={tooltipContent}>

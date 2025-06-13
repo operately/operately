@@ -1,11 +1,11 @@
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as Icons from "@tabler/icons-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import * as Icons from "@tabler/icons-react";
-import * as PageOptions from "@/components/PaperContainer/PageOptions";
 
 import { useDeleteResourceHubLink } from "@/models/resourceHubs";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
@@ -19,7 +19,7 @@ export function Options() {
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit"
-          to={Paths.resourceHubEditLinkPath(link.id!)}
+          to={DeprecatedPaths.resourceHubEditLinkPath(link.id!)}
           testId="edit-link-link"
         />
       )}
@@ -35,10 +35,10 @@ function DeleteAction() {
 
   const redirect = () => {
     if (link.parentFolder) {
-      navigate(Paths.resourceHubFolderPath(link.parentFolder.id!));
+      navigate(DeprecatedPaths.resourceHubFolderPath(link.parentFolder.id!));
     } else {
       assertPresent(link.resourceHub, "resourceHub must be present in link");
-      navigate(Paths.resourceHubPath(link.resourceHub.id!));
+      navigate(DeprecatedPaths.resourceHubPath(link.resourceHub.id!));
     }
   };
 

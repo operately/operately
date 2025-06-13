@@ -1,15 +1,15 @@
-import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
 
 import * as Notifications from "@/models/notifications";
 import classNames from "classnames";
 
 export function Bell() {
   const count = Notifications.useUnreadCount();
-  const path = Paths.notificationsPath();
+  const path = DeprecatedPaths.notificationsPath();
   const style = { height: "32px", width: "32px" };
 
   const className = classNames(

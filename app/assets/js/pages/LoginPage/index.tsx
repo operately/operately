@@ -1,16 +1,16 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
 import Forms from "@/components/Forms";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 
-import classNames from "classnames";
-import { logIn } from "@/routes/auth";
-import { Link, DimmedLink } from "turboui";
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
-import { Paths } from "@/routes/paths";
+import { logIn } from "@/routes/auth";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import classNames from "classnames";
+import { DimmedLink, Link } from "turboui";
 
 export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -98,7 +98,7 @@ function PasswordInput() {
 
 function ForgotPasswordLink() {
   return (
-    <DimmedLink to={Paths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
+    <DimmedLink to={DeprecatedPaths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
       Forgot password?
     </DimmedLink>
   );

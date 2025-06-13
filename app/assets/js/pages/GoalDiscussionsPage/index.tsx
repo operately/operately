@@ -1,19 +1,18 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
+import * as Paper from "@/components/PaperContainer";
 import * as Activities from "@/models/activities";
+import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { Header } from "@/features/goals/GoalPageHeader";
+import { Navigation } from "@/features/goals/GoalPageNavigation";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar } from "turboui";
-import { DivLink } from "turboui";
 import ActivityHandler from "@/features/activities";
+import { Avatar, DivLink } from "turboui";
 
 export default { name: "GoalDiscussionsPage", loader, Page } as PageModule;
 
@@ -39,7 +38,7 @@ async function loader({ params }): Promise<LoaderResult> {
     goal: await goalPromise,
     activities: await activitiesPromise,
   };
-};
+}
 
 function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
@@ -54,7 +53,7 @@ function Page() {
 
           <div className="flex items-center my-6">
             <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
-            <PrimaryButton size="sm" linkTo={Paths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
+            <PrimaryButton size="sm" linkTo={DeprecatedPaths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
               Start a new discussion
             </PrimaryButton>
           </div>
@@ -64,7 +63,7 @@ function Page() {
       </Paper.Root>
     </Pages.Page>
   );
-};
+}
 
 function ActivityList() {
   const { activities } = Pages.useLoadedData<LoaderResult>();
@@ -80,7 +79,7 @@ function ActivityList() {
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
   const path = ActivityHandler.pagePath(activity);
-  const authorProfilePath = Paths.profilePath(activity.author!.id!);
+  const authorProfilePath = DeprecatedPaths.profilePath(activity.author!.id!);
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">

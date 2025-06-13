@@ -1,17 +1,17 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import * as Icons from "@tabler/icons-react";
 
-import { Activity } from "@/models/activities";
 import { ActivityContentGoalClosing } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
-import { Paths } from "@/routes/paths";
+import { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 
-import { ActivityHandler } from "../interfaces";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { feedTitle, goalLink } from "../feedItemLinks";
 import { Link } from "turboui";
+import { feedTitle, goalLink } from "../feedItemLinks";
+import { ActivityHandler } from "../interfaces";
 
 const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -19,7 +19,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalActivityPath(activity.id!);
+    return DeprecatedPaths.goalActivityPath(activity.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -65,7 +65,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
-    const path = Paths.goalActivityPath(activity.id!);
+    const path = DeprecatedPaths.goalActivityPath(activity.id!);
     const link = <Link to={path}>closed</Link>;
 
     if (page === "goal") {

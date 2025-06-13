@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubFile, useEditResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
 import { findNameAndExtension } from "@/features/ResourceHub";
+import { DeprecatedPaths } from "@/routes/paths";
 
 export function Form({ file }: { file: ResourceHubFile }) {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
       }
     },
     cancel: () => {
-      navigate(Paths.resourceHubFilePath(file.id!));
+      navigate(DeprecatedPaths.resourceHubFilePath(file.id!));
     },
     submit: async () => {
       const { title, description } = form.values;
@@ -39,9 +39,9 @@ export function Form({ file }: { file: ResourceHubFile }) {
           name: !extension ? title : [title, extension].join("."),
           description: JSON.stringify(description),
         });
-        navigate(Paths.resourceHubFilePath(res.file.id));
+        navigate(DeprecatedPaths.resourceHubFilePath(res.file.id));
       } else {
-        navigate(Paths.resourceHubFilePath(file.id!));
+        navigate(DeprecatedPaths.resourceHubFilePath(file.id!));
       }
     },
   });

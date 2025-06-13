@@ -1,25 +1,24 @@
 import * as React from "react";
 
-import * as People from "@/models/people";
+import ActivityHandler from "@/features/activities";
 import * as Activities from "@/models/activities";
 import { GoalActivities } from "@/models/goals";
-import ActivityHandler from "@/features/activities";
+import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 
 import { match } from "ts-pattern";
 
-import FormattedTime from "@/components/FormattedTime";
 import { AvatarLink } from "@/components/AvatarLink";
-import { SecondaryButton } from "turboui";
+import FormattedTime from "@/components/FormattedTime";
 import { richContentToString } from "@/components/RichContent";
-import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
+import { DivLink, SecondaryButton } from "turboui";
 
+import { StatusBadge } from "turboui";
 import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
-import { StatusBadge } from "turboui";
 
 interface Props {
   activity: Activities.Activity;
@@ -27,7 +26,7 @@ interface Props {
 
 export function Messages() {
   const { goal } = useLoadedData();
-  const writeMessagePath = Paths.newGoalDiscussionPath(goal.id!);
+  const writeMessagePath = DeprecatedPaths.newGoalDiscussionPath(goal.id!);
 
   return (
     <DisableInEditMode>

@@ -3,10 +3,10 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 
-import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { resourceHub, draftNodes } = useLoadedData();
@@ -34,8 +34,8 @@ function PageNavigation() {
     <Paper.Navigation
       testId="navigation"
       items={[
-        { to: Paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
-        { to: Paths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
+        { to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
+        { to: DeprecatedPaths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
       ]}
     />
   );

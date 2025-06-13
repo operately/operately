@@ -1,17 +1,17 @@
-import * as React from "react";
-import * as Time from "@/utils/time";
 import * as Activities from "@/models/activities";
+import * as Time from "@/utils/time";
+import * as React from "react";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
 
-import { Avatar } from "turboui";
-import classNames from "classnames";
-import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
-import FormattedTime from "@/components/FormattedTime";
 import Api from "@/api";
+import FormattedTime from "@/components/FormattedTime";
+import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
+import classNames from "classnames";
+import { Avatar } from "turboui";
 
 type Page = "company" | "project" | "goal" | "space" | "profile";
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
@@ -104,7 +104,7 @@ function ActivityItem({ activity, page }: { activity: Activities.Activity; page:
   const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
   const content = <ActivityHandler.FeedItemContent activity={activity} page={page} />;
   const alignement = ActivityHandler.feedItemAlignment(activity);
-  const profilePath = Paths.profilePath(author.id!);
+  const profilePath = DeprecatedPaths.profilePath(author.id!);
 
   return (
     <div className={classNames("flex flex-1 gap-3", alignement)}>

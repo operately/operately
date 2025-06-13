@@ -1,27 +1,27 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Reactions from "@/models/reactions";
 import * as Discussions from "@/models/discussions";
+import * as Reactions from "@/models/reactions";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import RichContent from "@/components/RichContent";
 
 import { Spacer } from "@/components/Spacer";
-import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CommentSection, useComments } from "@/features/CommentSection";
+import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
-import { Paths, compareIds } from "@/routes/paths";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useNavigate } from "react-router-dom";
-import { assertPresent } from "@/utils/assertions";
-import { useLoadedData } from "./loader";
-import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { OngoingDraftActions } from "@/features/drafts";
+import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { assertPresent } from "@/utils/assertions";
+import { useNavigate } from "react-router-dom";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { discussion } = useLoadedData();
@@ -116,8 +116,8 @@ function Navigation({ space }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.spacePath(space.id), label: space.name },
-        { to: Paths.spaceDiscussionsPath(space.id), label: "Discussions" },
+        { to: DeprecatedPaths.spacePath(space.id), label: space.name },
+        { to: DeprecatedPaths.spaceDiscussionsPath(space.id), label: "Discussions" },
       ]}
     />
   );
@@ -131,7 +131,7 @@ function Options() {
 
   const handleArchive = async () => {
     await archive({ messageId: discussion.id! });
-    navigate(Paths.spaceDiscussionsPath(discussion.space!.id!));
+    navigate(DeprecatedPaths.spaceDiscussionsPath(discussion.space!.id!));
   };
 
   if (!compareIds(me.id, discussion.author!.id)) return null;
@@ -141,7 +141,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit"
-        to={Paths.discussionEditPath(discussion.id!)}
+        to={DeprecatedPaths.discussionEditPath(discussion.id!)}
         testId="edit-discussion"
         keepOutsideOnBigScreen
       />
@@ -177,7 +177,7 @@ function ContinueEditingDraft() {
 
   const [publish] = Discussions.usePublishDiscussion();
   const refresh = Pages.useRefresh();
-  const editPath = Paths.discussionEditPath(discussion.id!);
+  const editPath = DeprecatedPaths.discussionEditPath(discussion.id!);
 
   const publishHandler = async () => {
     await publish({ id: discussion.id! });

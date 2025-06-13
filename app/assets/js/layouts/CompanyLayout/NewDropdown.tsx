@@ -1,21 +1,21 @@
-import * as React from "react";
 import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { DropdownMenu, DropdownLinkItem, DropdownSeparator } from "./DropdownMenu";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 export function NewDropdown() {
   return (
     <DropdownMenu testId="new-dropdown" name="New" icon={Icons.IconPlus} align="end">
       <DropdownLinkItem
-        path={Paths.newGoalPath()}
+        path={DeprecatedPaths.newGoalPath()}
         icon={Icons.IconTargetArrow}
         title="New goal"
         testId="new-dropdown-new-goal"
       />
 
       <DropdownLinkItem
-        path={Paths.newProjectPath()}
+        path={DeprecatedPaths.newProjectPath()}
         icon={Icons.IconTable}
         title="New project"
         testId="new-dropdown-new-project"
@@ -24,7 +24,7 @@ export function NewDropdown() {
       <DropdownSeparator />
 
       <DropdownLinkItem
-        path={Paths.newSpacePath()}
+        path={DeprecatedPaths.newSpacePath()}
         icon={Icons.IconTent}
         title="New space"
         testId="new-dropdown-new-space"
@@ -33,7 +33,7 @@ export function NewDropdown() {
       <DropdownSeparator />
 
       <DropdownLinkItem
-        path={Paths.companyManagePeopleAddPeoplePath()}
+        path={DeprecatedPaths.companyManagePeopleAddPeoplePath()}
         icon={Icons.IconUser}
         title="New team member"
         testId="new-dropdown-new-team-member"

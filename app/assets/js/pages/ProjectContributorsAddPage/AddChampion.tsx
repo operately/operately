@@ -1,14 +1,14 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { PermissionLevels } from "@/features/Permissions";
-import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { useAddProjectContributor } from "@/api";
+import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
+import { PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
 
@@ -65,5 +65,5 @@ function useForm() {
 
 function useGoBack() {
   const { project } = Pages.useLoadedData() as LoaderResult;
-  return useNavigateTo(Paths.projectContributorsPath(project.id!));
+  return useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
 }

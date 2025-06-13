@@ -1,14 +1,13 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
+import * as React from "react";
 
-import { useLoadedData } from "./loader";
 import { useNavigateTo } from "@/routes/useNavigateTo";
+import { useLoadedData } from "./loader";
 
-import { PrimaryButton } from "turboui";
-import { DimmedLink } from "turboui";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DimmedLink, PrimaryButton } from "turboui";
 
 export function Page() {
   const { goal } = useLoadedData();
@@ -16,7 +15,7 @@ export function Page() {
   return (
     <Pages.Page title={["Archiving ", goal.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />
+        <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Archive this goal?</div>
@@ -26,7 +25,7 @@ export function Page() {
 
           <div className="flex items-center gap-6 mt-8">
             <ArchiveButton goal={goal} />
-            <DimmedLink to={Paths.goalPath(goal.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={DeprecatedPaths.goalPath(goal.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -35,7 +34,7 @@ export function Page() {
 }
 
 function ArchiveButton({ goal }) {
-  const navigateToGoal = useNavigateTo(Paths.goalPath(goal.id!));
+  const navigateToGoal = useNavigateTo(DeprecatedPaths.goalPath(goal.id!));
 
   const [archive, { loading: loading }] = Goals.useArchiveGoal();
 

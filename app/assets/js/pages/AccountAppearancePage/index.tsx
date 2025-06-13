@@ -1,18 +1,18 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import classnames from "classnames";
 import Forms from "@/components/Forms";
+import classnames from "classnames";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { Paths } from "@/routes/paths";
-import { useNavigate } from "react-router-dom";
-import { useTheme, useSetTheme } from "@/contexts/ThemeContext";
+import { useSetTheme, useTheme } from "@/contexts/ThemeContext";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { useNavigate } from "react-router-dom";
 
 export default { name: "AccountAppearancePage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -40,7 +40,7 @@ function Form() {
     },
     submit: async () => {
       await People.updateProfile({ id: me.id, theme: form.values.theme });
-      navigate(Paths.accountPath());
+      navigate(DeprecatedPaths.accountPath());
     },
   });
 

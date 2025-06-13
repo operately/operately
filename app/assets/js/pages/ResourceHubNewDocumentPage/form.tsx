@@ -5,12 +5,12 @@ import { ResourceHub, useCreateResourceHubDocument } from "@/models/resourceHubs
 
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
-import { Link } from "turboui";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { Link } from "turboui";
 
 import { useLoadedData } from "./loader";
 
@@ -48,7 +48,7 @@ export function Form() {
         subscriberIds: subscriptionsState.currentSubscribersList,
         postAsDraft: isDraft,
       });
-      navigate(Paths.resourceHubDocumentPath(res.document.id));
+      navigate(DeprecatedPaths.resourceHubDocumentPath(res.document.id));
     },
   });
   form.actions.setState;
@@ -112,7 +112,7 @@ function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
 
 function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
   return (
-    <Link to={Paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
+    <Link to={DeprecatedPaths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
       Discard this document
     </Link>
   );

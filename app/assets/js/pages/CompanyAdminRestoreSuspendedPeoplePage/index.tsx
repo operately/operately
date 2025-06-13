@@ -1,17 +1,16 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as People from "@/models/people";
+import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
+import * as People from "@/models/people";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "turboui";
-import { BlackLink, Link } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
+import { BlackLink, Link, SecondaryButton } from "turboui";
 
-import { Avatar } from "turboui";
-import { createTestId } from "@/utils/testid";
 import { InfoCallout } from "@/components/Callouts";
 import { PageModule } from "@/routes/types";
+import { createTestId } from "@/utils/testid";
+import { Avatar } from "turboui";
 
 export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
@@ -49,7 +48,7 @@ function Page() {
 }
 
 function Navigation() {
-  return <Paper.Navigation items={[{ to: Paths.companyAdminPath(), label: "Company Administration" }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function NoSuspenedPeopleMessage() {
@@ -62,7 +61,7 @@ function NoSuspenedPeopleMessage() {
         description={
           <p>
             There are no deactivated people in {company.name}. To remove access for departing team members, visit the{" "}
-            <Link to={Paths.companyManagePeoplePath()}>Manage People</Link> page.
+            <Link to={DeprecatedPaths.companyManagePeoplePath()}>Manage People</Link> page.
           </p>
         }
       />
@@ -100,7 +99,7 @@ function PersonRow({ person }: { person: People.Person }) {
 function PersonInfo({ person }: { person: People.Person }) {
   return (
     <div>
-      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 

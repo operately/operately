@@ -1,11 +1,11 @@
-import React from "react";
+import * as TipTapEditor from "@/components/Editor";
 import * as Goals from "@/models/goals";
 import * as Timeframes from "@/utils/timeframes";
-import * as TipTapEditor from "@/components/Editor";
+import React from "react";
 
-import { useNavigateTo } from "@/routes/useNavigateTo";
-import { Paths } from "@/routes/paths";
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 
 interface Error {
@@ -30,7 +30,7 @@ export function useForm({ goal }: { goal: Goals.Goal }): Form {
   const originalTimeframe = Timeframes.parse(goal.timeframe);
   const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(originalTimeframe);
 
-  const navigateToGoalPage = useNavigateTo(Paths.goalPath(goal.id));
+  const navigateToGoalPage = useNavigateTo(DeprecatedPaths.goalPath(goal.id));
   const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframe();
 
   const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {

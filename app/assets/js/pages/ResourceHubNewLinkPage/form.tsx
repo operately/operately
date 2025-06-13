@@ -5,11 +5,11 @@ import { useCreateResourceHubLink } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
+import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
-import { LinkOptions, LinkIcon } from "@/features/ResourceHub";
 
 import { useLoadedData } from "./loader";
 
@@ -37,7 +37,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(Paths.resourceHubPath(resourceHub.id!));
+      navigate(DeprecatedPaths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
       const res = await post({
@@ -50,7 +50,7 @@ export function Form() {
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
-      navigate(Paths.resourceHubLinkPath(res.link.id));
+      navigate(DeprecatedPaths.resourceHubLinkPath(res.link.id));
     },
   });
 

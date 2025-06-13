@@ -1,11 +1,11 @@
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentDiscussionCommentSubmitted } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
 import { feedTitle } from "../feedItemLinks";
@@ -16,7 +16,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   pagePath(_activity: Activity): string {
-    return Paths.discussionPath(content(_activity).discussion!.id!);
+    return DeprecatedPaths.discussionPath(content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -35,7 +35,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
     const discussion = content(activity).discussion!;
     const space = content(activity).space!;
 
-    const path = Paths.discussionPath(discussion.id!);
+    const path = DeprecatedPaths.discussionPath(discussion.id!);
     const activityLink = <Link to={path}>{discussion.title}</Link>;
 
     if (page === "space") {
