@@ -127,6 +127,7 @@ function Page() {
     goalName: goal.name,
     workmapLink: Paths.spaceWorkMapPath(goal.space.id, "goals"),
     closeLink: Paths.goalClosePath(goal.id),
+    reopenLink: Paths.goalReopenPath(goal.id),
     editGoalLink: Paths.goalEditPath(goal.id),
     newCheckInLink: Paths.goalCheckInNewPath(goal.id),
     newDiscussionLink: Paths.newGoalDiscussionPath(goal.id),

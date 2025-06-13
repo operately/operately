@@ -92,9 +92,10 @@ function Component(props: Partial<GoalPage.Props>) {
       space={space}
       setSpace={setSpace}
       spaceSearch={spaceSearch}
-      workmapLink="/spaces/1/workmaps/1"
-      closeLink={storyPath("Pages/GoalClosePage", "Default")}
-      editGoalLink={storyPath("Pages/GoalEditPage", "Default")}
+      workmapLink="#"
+      closeLink="#"
+      reopenLink="#"
+      editGoalLink="#"
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
       newDiscussionLink="#"
       addSubgoalLink="#"
