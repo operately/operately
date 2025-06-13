@@ -9,7 +9,6 @@ import { Person as TimelinePerson } from "../CommentSection/types";
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
 import { Sidebar } from "./Sidebar";
-import { pageOptions } from "./PageOptions";
 
 export namespace TaskPage {
   export interface Person {
@@ -109,7 +108,7 @@ export function TaskPage(props: TaskPage.Props) {
   const state = useTaskPageState(props);
 
   return (
-    <PageNew title={[state.name]} options={pageOptions(state)} size="fullwidth">
+    <PageNew title={[state.name]} size="fullwidth">
       <div className="px-4 py-4">
         <PageHeader {...state} />
         <div className="flex-1 overflow-scroll">
