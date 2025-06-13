@@ -5,11 +5,11 @@ import * as Paper from "@/components/PaperContainer";
 
 import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton";
 import { GoalTree } from "@/features/goals/GoalTree";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
 import classNames from "classnames";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { goals, projects } = useLoadedData();
   const size = Pages.useWindowSizeBreakpoints();
@@ -32,9 +32,10 @@ export function Page() {
 }
 
 function Header() {
-  const newGoalPath = DeprecatedPaths.newGoalPath({ companyWide: true });
-  const newProjectPath = DeprecatedPaths.newProjectPath({
-    backPath: DeprecatedPaths.goalsPath(),
+  const paths = usePaths();
+  const newGoalPath = paths.newGoalPath({ companyWide: true });
+  const newProjectPath = paths.newProjectPath({
+    backPath: paths.goalsPath(),
     backPathName: "Back to Goal Map",
   });
 

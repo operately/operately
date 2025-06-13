@@ -2,9 +2,9 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function ResourcesSection({ project }: { project: Projects.Project }) {
   return (
     <div className="border-t border-stroke-base py-6">
@@ -23,12 +23,13 @@ export function ResourcesSection({ project }: { project: Projects.Project }) {
 }
 
 function EditLink({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canEditResources) return false;
   if (!project.keyResources || project.keyResources.length === 0) return false;
 
   return (
     <div className="text-sm">
-      <Link to={DeprecatedPaths.projectEditResourcesPath(project.id!)} testId="edit-resources-link">
+      <Link to={paths.projectEditResourcesPath(project.id!)} testId="edit-resources-link">
         Edit
       </Link>
     </div>
@@ -44,7 +45,8 @@ function Content({ project }) {
 }
 
 function ResourcesZeroState({ project }) {
-  const editPath = DeprecatedPaths.projectEditResourcesPath(project.id!);
+  const paths = usePaths();
+  const editPath = paths.projectEditResourcesPath(project.id!);
 
   const editLink = (
     <SecondaryButton linkTo={editPath} testId="add-resources-link" size="xs">

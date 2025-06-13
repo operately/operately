@@ -8,12 +8,12 @@ import { useAddProjectContributors } from "@/api";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { SecondaryButton } from "turboui";
 import { LoaderResult } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 interface ContributorFields {
   key: number;
   personId: string;
@@ -38,8 +38,9 @@ function newContributor() {
 }
 
 export function AddContributors() {
+  const paths = usePaths();
   const { project } = Pages.useLoadedData() as LoaderResult;
-  const gotoContribPage = useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
+  const gotoContribPage = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();
 
   const form = Forms.useForm({
@@ -66,7 +67,7 @@ export function AddContributors() {
   return (
     <Pages.Page title={["Add contributors", project.name!]}>
       <Paper.Root size="small">
-        <Paper.NavigateBack to={DeprecatedPaths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
+        <Paper.NavigateBack to={paths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
         <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
 
         <Forms.Form form={form}>

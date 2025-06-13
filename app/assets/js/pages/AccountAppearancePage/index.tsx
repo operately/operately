@@ -10,10 +10,10 @@ import classnames from "classnames";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useSetTheme, useTheme } from "@/contexts/ThemeContext";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "AccountAppearancePage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
@@ -30,6 +30,7 @@ function Page() {
 }
 
 function Form() {
+  const paths = usePaths();
   const me = useMe()!;
   const currentTheme = useTheme();
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function Form() {
     },
     submit: async () => {
       await People.updateProfile({ id: me.id, theme: form.values.theme });
-      navigate(DeprecatedPaths.accountPath());
+      navigate(paths.accountPath());
     },
   });
 

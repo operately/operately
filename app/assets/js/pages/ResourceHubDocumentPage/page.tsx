@@ -15,12 +15,12 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CopyDocumentModal, ResourcePageNavigation } from "@/features/ResourceHub";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { document, folder, resourceHub } = useLoadedData();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
@@ -142,11 +142,12 @@ function DocumentSubscriptions() {
 }
 
 function ContinueEditingDraft() {
+  const paths = usePaths();
   const { document } = useLoadedData();
 
   const [publish] = usePublishResourceHubDocument();
   const refresh = Pages.useRefresh();
-  const editPath = DeprecatedPaths.resourceHubEditDocumentPath(document.id!);
+  const editPath = paths.resourceHubEditDocumentPath(document.id!);
 
   const publishHandler = async () => {
     await publish({ documentId: document.id });

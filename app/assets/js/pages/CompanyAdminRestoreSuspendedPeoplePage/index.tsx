@@ -4,7 +4,6 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { BlackLink, Link, SecondaryButton } from "turboui";
 
 import { InfoCallout } from "@/components/Callouts";
@@ -12,6 +11,7 @@ import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -48,10 +48,12 @@ function Page() {
 }
 
 function Navigation() {
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />;
+  const paths = usePaths();
+  return <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function NoSuspenedPeopleMessage() {
+  const paths = usePaths();
   const { company } = Pages.useLoadedData<LoaderResult>();
 
   return (
@@ -61,7 +63,7 @@ function NoSuspenedPeopleMessage() {
         description={
           <p>
             There are no deactivated people in {company.name}. To remove access for departing team members, visit the{" "}
-            <Link to={DeprecatedPaths.companyManagePeoplePath()}>Manage People</Link> page.
+            <Link to={paths.companyManagePeoplePath()}>Manage People</Link> page.
           </p>
         }
       />
@@ -97,9 +99,10 @@ function PersonRow({ person }: { person: People.Person }) {
 }
 
 function PersonInfo({ person }: { person: People.Person }) {
+  const paths = usePaths();
   return (
     <div>
-      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={paths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 

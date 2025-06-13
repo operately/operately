@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import Api from "@/api";
@@ -13,6 +12,7 @@ import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 type Page = "company" | "project" | "goal" | "space" | "profile";
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 
@@ -99,12 +99,13 @@ function ActivityGroupItems({ group, page }: { group: Activities.ActivityGroup; 
 }
 
 function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
+  const paths = usePaths();
   const author = activity.author!;
   const time = activity.insertedAt!;
   const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
   const content = <ActivityHandler.FeedItemContent activity={activity} page={page} />;
   const alignement = ActivityHandler.feedItemAlignment(activity);
-  const profilePath = DeprecatedPaths.profilePath(author.id!);
+  const profilePath = paths.profilePath(author.id!);
 
   return (
     <div className={classNames("flex flex-1 gap-3", alignement)}>

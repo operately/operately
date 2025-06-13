@@ -4,17 +4,18 @@ import * as Goals from "@/models/goals";
 import * as React from "react";
 
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
   return (
     <Pages.Page title={["Changing Parent", goal.name!]}>
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />
+        <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body>
           <div className="text-content-accent text-2xl font-extrabold mb-8">Choose a new parent for the goal</div>
@@ -27,10 +28,11 @@ export function Page() {
 }
 
 function GoalList() {
+  const paths = usePaths();
   const { goal, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const goalPath = DeprecatedPaths.goalPath(goal.id!);
+  const goalPath = paths.goalPath(goal.id!);
 
   const [select] = Goals.useChangeGoalParent();
 

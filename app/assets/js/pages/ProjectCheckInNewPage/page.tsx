@@ -3,10 +3,10 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Form } from "./Form";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -24,11 +24,12 @@ export function Page() {
 }
 
 function Navigation({ project }) {
+  const paths = usePaths();
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.projectPath(project.id), label: project.name! },
-        { to: DeprecatedPaths.projectCheckInsPath(project.id), label: "Check-Ins" },
+        { to: paths.projectPath(project.id), label: project.name! },
+        { to: paths.projectCheckInsPath(project.id), label: "Check-Ins" },
       ]}
     />
   );

@@ -8,11 +8,12 @@ import { Avatar } from "turboui";
 
 import { Summary } from "@/components/RichContent";
 import { SmallStatusIndicator } from "@/components/status";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, SecondaryButton } from "turboui";
 import { DimmedLabel } from "./Label";
 
+import { usePaths } from "@/routes/paths";
 export function CheckInSection({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   return (
     <div className="border-t border-stroke-base py-6">
       <div className="flex items-start gap-4">
@@ -20,7 +21,7 @@ export function CheckInSection({ project }: { project: Projects.Project }) {
           <div className="font-bold text-sm">Check-Ins</div>
           {project.lastCheckIn && (
             <div className="text-sm">
-              <Link to={DeprecatedPaths.projectCheckInsPath(project.id!)}>View all</Link>
+              <Link to={paths.projectCheckInsPath(project.id!)}>View all</Link>
             </div>
           )}
         </div>
@@ -95,8 +96,9 @@ function LastCheckInContent({ project }: { project: Projects.Project }) {
 }
 
 function LastCheckInLink({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   const time = project.lastCheckIn!.insertedAt!;
-  const path = DeprecatedPaths.projectCheckInPath(project.lastCheckIn!.id!);
+  const path = paths.projectCheckInPath(project.lastCheckIn!.id!);
 
   return (
     <Link to={path} testId="last-check-in-link">
@@ -106,9 +108,10 @@ function LastCheckInLink({ project }: { project: Projects.Project }) {
 }
 
 function CheckInNowButton({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canCheckIn) return null;
 
-  const newCheckInPath = DeprecatedPaths.projectCheckInNewPath(project.id!);
+  const newCheckInPath = paths.projectCheckInNewPath(project.id!);
 
   return (
     <div className="flex">
@@ -131,9 +134,10 @@ function CheckInZeroState({ project }: { project: Projects.Project }) {
 }
 
 function NoReviewerCallout({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (project.reviewer) return null;
 
-  const path = DeprecatedPaths.projectContributorsAddPath(project.id!, { type: "reviewer" });
+  const path = paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
   const addReviewer = (
     <Link to={path} testId="add-reviewer">
       Add a Reviewer

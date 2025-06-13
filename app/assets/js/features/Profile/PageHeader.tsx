@@ -2,16 +2,17 @@ import * as Tabs from "@/components/Tabs";
 import * as React from "react";
 
 import { Person } from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
 
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 interface PageHeaderProps {
   person: Person;
   activeTab: "about" | "goals";
 }
 
 export function PageHeader(props: PageHeaderProps) {
+  const paths = usePaths();
   return (
     <div>
       <div className="flex items-center gap-4">
@@ -26,8 +27,8 @@ export function PageHeader(props: PageHeaderProps) {
       </div>
 
       <Tabs.Root activeTab={props.activeTab}>
-        <Tabs.Tab id="about" title="About" linkTo={DeprecatedPaths.profilePath(props.person.id!)} />
-        <Tabs.Tab id="goals" title="Goals" linkTo={DeprecatedPaths.profileGoalsPath(props.person.id!)} />
+        <Tabs.Tab id="about" title="About" linkTo={paths.profilePath(props.person.id!)} />
+        <Tabs.Tab id="goals" title="Goals" linkTo={paths.profileGoalsPath(props.person.id!)} />
       </Tabs.Root>
     </div>
   );

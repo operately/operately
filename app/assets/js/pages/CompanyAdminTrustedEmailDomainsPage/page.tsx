@@ -4,20 +4,21 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { GhostButton } from "turboui";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { company } = useLoadedData();
   const form = useForm({ company });
 
   return (
     <Pages.Page title={["Trusted Email Domains", company.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />
+        <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Trusted Email Domains</div>
