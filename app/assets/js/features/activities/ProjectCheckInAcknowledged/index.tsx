@@ -5,7 +5,7 @@ import type { ActivityContentProjectCheckInAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 
@@ -31,6 +31,7 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const project = content(activity).project!;
     const checkIn = content(activity).checkIn!;
 

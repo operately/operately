@@ -8,8 +8,8 @@ import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
-
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, goalLink } from "./../feedItemLinks";
@@ -39,6 +39,7 @@ const GoalDiscussionCreation: ActivityHandler = {
 
   PageOptions({ activity }: { activity: Activity }) {
     const me = useMe()!;
+    const paths = usePaths();
 
     return (
       <PageOptions.Root testId="options">
@@ -65,6 +66,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const path = paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 

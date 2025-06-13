@@ -5,7 +5,7 @@ import type { ActivityContentProjectMoved } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -39,6 +39,7 @@ const ProjectMoved: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
+    const paths = usePaths();
     const oldSpace = content(activity).oldSpace!;
     const newSpace = content(activity).newSpace!;
 

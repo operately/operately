@@ -5,7 +5,7 @@ import type { ActivityContentProjectClosed } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -31,6 +31,7 @@ const ProjectClosed: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const retroId = content(activity).project!.id!;
     const retroPath = paths.projectRetrospectivePath(retroId!);
     const retroLink = <Link to={retroPath}>retrospective</Link>;

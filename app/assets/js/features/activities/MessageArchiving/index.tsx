@@ -1,6 +1,7 @@
 import type { ActivityContentMessageArchiving } from "@/api";
 import type { Activity } from "@/models/activities";
 
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { Link } from "react-router-dom";
 import { feedTitle } from "../feedItemLinks";
@@ -11,7 +12,7 @@ const MessageArchiving: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(paths, _activity: Activity) {
+  pagePath(_paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 
@@ -28,6 +29,7 @@ const MessageArchiving: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const title = content(activity).title!;
     const space = content(activity).space!;
     const spaceLink = <Link to={paths.spacePath(space.id!)}>{space.name!}</Link>;

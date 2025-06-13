@@ -4,6 +4,7 @@ import React from "react";
 import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
@@ -67,6 +68,7 @@ const ResourceHubFileCreated: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const data = content(activity);
 
     if (data.files && data.files.length > 1) {

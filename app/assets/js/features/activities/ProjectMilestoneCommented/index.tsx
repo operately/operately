@@ -7,6 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
 
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -32,6 +33,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const project = content(activity).project!;
     const milestone = content(activity).milestone!;
     const path = paths.projectMilestonePath(milestone.id!);

@@ -11,6 +11,7 @@ import { feedTitle, goalLink } from "../feedItemLinks";
 
 import RichContent from "@/components/RichContent";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ActivityHandler } from "../interfaces";
 import { TimeframeEdited } from "./TimeframeEdited";
@@ -68,6 +69,7 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
+    const paths = usePaths();
     const path = paths.goalActivityPath(activity.id!);
     const activityLink = <Link to={path}>{extendedOrShortened(activity)} the timeframe</Link>;
 

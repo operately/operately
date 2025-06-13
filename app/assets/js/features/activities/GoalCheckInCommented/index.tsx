@@ -7,6 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
 
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "./../feedItemLinks";
@@ -33,6 +34,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const data = content(activity);
 
     assertPresent(data.goal, "Goal must be present in activity content");

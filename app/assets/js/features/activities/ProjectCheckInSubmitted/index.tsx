@@ -8,6 +8,7 @@ import type { ActivityHandler } from "../interfaces";
 import { Summary } from "@/components/RichContent";
 import { SmallStatusIndicator } from "@/components/status";
 
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 
@@ -33,6 +34,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const project = content(activity).project!;
     const checkIn = content(activity).checkIn!;
 

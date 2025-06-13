@@ -7,6 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
 
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, spaceLink } from "./../feedItemLinks";
 
@@ -32,6 +33,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const discussion = content(activity).discussion!;
 
     const path = paths.discussionPath(discussion.id!);

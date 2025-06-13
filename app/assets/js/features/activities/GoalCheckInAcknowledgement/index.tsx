@@ -5,7 +5,7 @@ import type { ActivityContentGoalCheckInAcknowledgement } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
@@ -31,6 +31,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const goal = content(activity).goal!;
     const update = content(activity).update!;
 

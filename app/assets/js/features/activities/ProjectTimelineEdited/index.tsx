@@ -6,12 +6,12 @@ import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
 
-
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectTimelineEdited } from "@/api";
 import type { Activity } from "@/models/activities";
+import { usePaths } from "@/routes/paths";
 import type { ActivityHandler } from "../interfaces";
 
 const ProjectTimelineEdited: ActivityHandler = {
@@ -159,6 +159,7 @@ function UpdatedMilestones({ content }: { content: Content }) {
 }
 
 function MilestoneLink({ milestone }: { milestone: Milestones.Milestone }) {
+  const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
 

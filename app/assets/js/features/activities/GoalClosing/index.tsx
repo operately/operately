@@ -7,8 +7,8 @@ import { ActivityContentGoalClosing } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Activity } from "@/models/activities";
 
-
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
@@ -65,6 +65,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
+    const paths = usePaths();
     const path = paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>closed</Link>;
 

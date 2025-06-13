@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { Activity, ActivityContentGoalClosing } from "@/api";
 
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { ActivityHandler } from "../interfaces";
 
@@ -39,6 +40,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; content: any; page: any }) {
+    const paths = usePaths();
     const path = paths.goalActivityPath(activity.id!);
     const link = <Link to={path}>reopened</Link>;
 

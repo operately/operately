@@ -4,10 +4,10 @@ import * as React from "react";
 import type { ActivityContentGoalCheckIn } from "@/api";
 import type { Activity } from "@/models/activities";
 
-
 import { ActivityHandler } from "../interfaces";
 
 import { richContentToString } from "@/components/RichContent";
+import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import { match } from "ts-pattern";
 import { Link } from "turboui";
@@ -55,6 +55,7 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
+    const paths = usePaths();
     const path = paths.goalCheckInPath(content(activity).update!.id!);
     const link = <Link to={path}>submitted a check-in</Link>;
 

@@ -6,6 +6,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
 
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
 import { feedTitle } from "../feedItemLinks";
@@ -32,6 +33,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const discussion = content(activity).discussion!;
     const space = content(activity).space!;
 
