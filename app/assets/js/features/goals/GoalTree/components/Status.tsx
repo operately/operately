@@ -59,6 +59,7 @@ export function Status({ node, children }: { node: Node; children: ReactNode }) 
 }
 
 function useClickHandler(node: Node) {
+  const paths = usePaths();
   const navigate = useNavigate();
 
   return () => {

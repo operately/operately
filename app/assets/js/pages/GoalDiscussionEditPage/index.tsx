@@ -71,6 +71,7 @@ type FormFields = {
 };
 
 function useForm({ activity }: { activity: Activities.Activity }) {
+  const paths = usePaths();
   const commentThread = activity.commentThread!;
   const [title, setTitle] = React.useState(commentThread.title!);
 

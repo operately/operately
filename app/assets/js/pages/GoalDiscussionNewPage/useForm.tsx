@@ -15,6 +15,7 @@ type FormFields = {
 };
 
 export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
+  const paths = usePaths();
   const navigate = useNavigate();
 
   const [title, setTitle] = React.useState("");

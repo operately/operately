@@ -25,6 +25,7 @@ interface EditProps {
 }
 
 export function useForm(props: EditProps | NewProps) {
+  const paths = usePaths();
   const { mode, goal } = props;
   const [post] = usePostGoalProgressUpdate();
   const [edit] = useEditGoalProgressUpdate();

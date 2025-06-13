@@ -68,6 +68,7 @@ function useForm() {
 }
 
 function useGoBack() {
+  const paths = usePaths();
   const { project } = Pages.useLoadedData() as LoaderResult;
   return useNavigateTo(paths.projectContributorsPath(project.id!));
 }

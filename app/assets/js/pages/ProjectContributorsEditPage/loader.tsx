@@ -24,6 +24,7 @@ export async function loader({ params, request }): Promise<LoaderResult> {
 }
 
 export function useGotoProjectContributors() {
+  const paths = usePaths();
   const { contributor } = Pages.useLoadedData() as LoaderResult;
   return useNavigateTo(paths.projectContributorsPath(contributor.project!.id!));
 }
