@@ -64,7 +64,7 @@ function Navigation({ goal }: { goal: Goals.Goal }) {
     <Paper.Navigation
       items={[
         { to: DeprecatedPaths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: DeprecatedPaths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: DeprecatedPaths.spaceWorkMapPath(goal.space.id!), label: "Work Map" },
         { to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! },
       ]}
     />

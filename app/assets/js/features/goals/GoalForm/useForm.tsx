@@ -388,7 +388,7 @@ function createCancelPath(config: FormConfig): string {
   if (config.mode === "edit") {
     return DeprecatedPaths.goalPath(config.goal!.id!);
   } else if (config.allowSpaceSelection) {
-    return DeprecatedPaths.goalsPath();
+    return DeprecatedPaths.workMapPath();
   } else {
     return DeprecatedPaths.spacePath(config.space!.id!);
   }
