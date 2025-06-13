@@ -5,16 +5,16 @@ import { MiniWorkMap } from "turboui";
 import { Spacer } from "@/components/Spacer";
 import { SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
 import { useWorkItems } from "./useWorkItems";
 
-import { usePaths } from "@/routes/paths";
 export function RelatedWork() {
+  const items = useWorkItems();
   const paths = usePaths();
   const { goal } = useLoadedData();
-  const items = useWorkItems();
 
   assertPresent(goal.space, "space must be present in goal");
 

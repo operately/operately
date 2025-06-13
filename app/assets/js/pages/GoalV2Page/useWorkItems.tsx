@@ -5,17 +5,17 @@ import * as Projects from "@/models/projects";
 
 import { compareIds } from "@/routes/paths";
 
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { MiniWorkMap } from "turboui";
 import { useLoadedData } from "./loader";
 
-import { usePaths } from "@/routes/paths";
 export function useWorkItems(): MiniWorkMap.WorkItem[] {
+  const paths = usePaths();
   const { goal, goals, projects } = useLoadedData();
 
   const items: MiniWorkMap.WorkItem[] = React.useMemo(() => {
     const projectAsWorkItem = (project: Projects.Project) => {
-      const paths = usePaths();
       assertPresent(project.id, "project id must be present");
       assertPresent(project.name, "project name must be present");
 
@@ -34,7 +34,6 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
     };
 
     const goalAsWorkItem = (goal: Goals.Goal) => {
-      const paths = usePaths();
       assertPresent(goal.id, "goal id must be present");
       assertPresent(goal.name, "goal name must be present");
       assertPresent(goal.isClosed, "goal closed status must be present");
