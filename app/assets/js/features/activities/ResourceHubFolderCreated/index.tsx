@@ -5,7 +5,7 @@ import type { ActivityContentResourceHubFolderCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
 
@@ -14,11 +14,11 @@ const ResourceHubFolderCreated: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
+  pagePath(paths, activity: Activity): string {
     const folder = content(activity).folder;
     assertPresent(folder?.id, "folder.id must be present in ResourceHubFolderCreated activity content");
 
-    return DeprecatedPaths.resourceHubFolderPath(folder.id);
+    return paths.resourceHubFolderPath(folder.id);
   },
 
   PageTitle(_props: { activity: any }) {

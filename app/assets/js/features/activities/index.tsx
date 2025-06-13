@@ -12,8 +12,8 @@ import type { Activity } from "@/models/activities";
 //
 
 const ActivityHandler: interfaces.ActivityHandler = {
-  pagePath(activity: Activity) {
-    return handler(activity).pagePath(activity);
+  pagePath(paths: Paths, activity: Activity) {
+    return handler(activity).pagePath(paths, activity);
   },
 
   pageHtmlTitle(activity: Activity) {
@@ -143,10 +143,12 @@ import CommentAdded from "@/features/activities/CommentAdded";
 import CompanyAdding from "@/features/activities/CompanyAdding";
 import CompanyAdminAdded from "@/features/activities/CompanyAdminAdded";
 import CompanyAdminRemoved from "@/features/activities/CompanyAdminRemoved";
-import CompanyOwnersAdding from "@/features/activities/CompanyOwnersAdding";
+import CompanyEditing from "@/features/activities/CompanyEditing";
+import CompanyMemberRestoring from "@/features/activities/CompanyMemberRestoring";
 import CompanyOwnerRemoving from "@/features/activities/CompanyOwnerRemoving";
-import DiscussionPosting from "@/features/activities/DiscussionPosting";
+import CompanyOwnersAdding from "@/features/activities/CompanyOwnersAdding";
 import DiscussionCommentSubmitted from "@/features/activities/DiscussionCommentSubmitted";
+import DiscussionPosting from "@/features/activities/DiscussionPosting";
 import GoalArchived from "@/features/activities/GoalArchived";
 import GoalCheckIn from "@/features/activities/GoalCheckIn";
 import GoalCheckInAcknowledgement from "@/features/activities/GoalCheckInAcknowledgement";
@@ -158,15 +160,16 @@ import GoalEditing from "@/features/activities/GoalEditing";
 import GoalReopening from "@/features/activities/GoalReopening";
 import GoalReparent from "@/features/activities/GoalReparent";
 import GoalTimeframeEditing from "@/features/activities/GoalTimeframeEditing";
+import MessageArchiving from "@/features/activities/MessageArchiving";
 import ProjectArchived from "@/features/activities/ProjectArchived";
 import ProjectCheckInAcknowledged from "@/features/activities/ProjectCheckInAcknowledged";
 import ProjectCheckInCommented from "@/features/activities/ProjectCheckInCommented";
 import ProjectCheckInSubmitted from "@/features/activities/ProjectCheckInSubmitted";
 import ProjectClosed from "@/features/activities/ProjectClosed";
 import ProjectContributorAddition from "@/features/activities/ProjectContributorAddition";
-import ProjectContributorsAddition from "@/features/activities/ProjectContributorsAddition";
 import ProjectContributorEdited from "@/features/activities/ProjectContributorEdited";
 import ProjectContributorRemoved from "@/features/activities/ProjectContributorRemoved";
+import ProjectContributorsAddition from "@/features/activities/ProjectContributorsAddition";
 import ProjectCreated from "@/features/activities/ProjectCreated";
 import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
 import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
@@ -179,29 +182,27 @@ import ProjectRenamed from "@/features/activities/ProjectRenamed";
 import ProjectResuming from "@/features/activities/ProjectResuming";
 import ProjectRetrospectiveCommented from "@/features/activities/ProjectRetrospectiveCommented";
 import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
-import ResourceHubDocumentCreated from "@/features/activities/ResourceHubDocumentCreated";
-import ResourceHubDocumentEdited from "@/features/activities/ResourceHubDocumentEdited";
 import ResourceHubDocumentCommented from "@/features/activities/ResourceHubDocumentCommented";
+import ResourceHubDocumentCreated from "@/features/activities/ResourceHubDocumentCreated";
 import ResourceHubDocumentDeleted from "@/features/activities/ResourceHubDocumentDeleted";
-import ResourceHubFileCreated from "@/features/activities/ResourceHubFileCreated";
-import ResourceHubFileEdited from "@/features/activities/ResourceHubFileEdited";
-import ResourceHubFileDeleted from "@/features/activities/ResourceHubFileDeleted";
+import ResourceHubDocumentEdited from "@/features/activities/ResourceHubDocumentEdited";
 import ResourceHubFileCommented from "@/features/activities/ResourceHubFileCommented";
+import ResourceHubFileCreated from "@/features/activities/ResourceHubFileCreated";
+import ResourceHubFileDeleted from "@/features/activities/ResourceHubFileDeleted";
+import ResourceHubFileEdited from "@/features/activities/ResourceHubFileEdited";
 import ResourceHubFolderCopied from "@/features/activities/ResourceHubFolderCopied";
 import ResourceHubFolderCreated from "@/features/activities/ResourceHubFolderCreated";
 import ResourceHubFolderDeleted from "@/features/activities/ResourceHubFolderDeleted";
 import ResourceHubFolderRenamed from "@/features/activities/ResourceHubFolderRenamed";
-import ResourceHubLinkCreated from "@/features/activities/ResourceHubLinkCreated";
-import ResourceHubLinkEdited from "@/features/activities/ResourceHubLinkEdited";
-import ResourceHubLinkDeleted from "@/features/activities/ResourceHubLinkDeleted";
 import ResourceHubLinkCommented from "@/features/activities/ResourceHubLinkCommented";
+import ResourceHubLinkCreated from "@/features/activities/ResourceHubLinkCreated";
+import ResourceHubLinkDeleted from "@/features/activities/ResourceHubLinkDeleted";
+import ResourceHubLinkEdited from "@/features/activities/ResourceHubLinkEdited";
 import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
-import CompanyEditing from "@/features/activities/CompanyEditing";
-import CompanyMemberRestoring from "@/features/activities/CompanyMemberRestoring";
-import MessageArchiving from "@/features/activities/MessageArchiving";
+import { Paths } from "../../routes/paths";
 
 function handler(activity: Activity) {
   return match(activity.action)

@@ -1,7 +1,7 @@
 import { feedTitle } from "../feedItemLinks";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyEditing } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 const CompanyEditing: ActivityHandler = {
@@ -9,7 +9,7 @@ const CompanyEditing: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
+  pagePath(_paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 

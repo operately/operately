@@ -3,19 +3,19 @@ import * as React from "react";
 
 import type { ActivityContentGoalCheckIn } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
 
 import { ActivityHandler } from "../interfaces";
 
 import { richContentToString } from "@/components/RichContent";
+import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import { match } from "ts-pattern";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalCheckIn: ActivityHandler = {
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.goalCheckInPath(content(activity).update!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.goalCheckInPath(content(activity).update!.id!);
   },
 
   pageHtmlTitle(_activity: Activity): string {
@@ -55,7 +55,8 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }) {
-    const path = DeprecatedPaths.goalCheckInPath(content(activity).update!.id!);
+    const paths = usePaths();
+    const path = paths.goalCheckInPath(content(activity).update!.id!);
     const link = <Link to={path}>submitted a check-in</Link>;
 
     if (page === "goal") {

@@ -4,7 +4,7 @@ import type { ActivityContentProjectCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectCreated: ActivityHandler = {
@@ -12,8 +12,8 @@ const ProjectCreated: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity) {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

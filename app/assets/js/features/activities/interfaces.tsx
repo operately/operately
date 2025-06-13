@@ -1,4 +1,5 @@
 import type { Activity } from "@/models/activities";
+import { Paths } from "@/routes/paths";
 
 export interface ActivityHandler {
   // Feed items
@@ -7,7 +8,7 @@ export interface ActivityHandler {
   feedItemAlignment(activity: Activity): "items-start" | "items-center";
 
   // Activity page
-  pagePath(activity: Activity): string;
+  pagePath(paths: Paths, activity: Activity): string;
   pageHtmlTitle(activity: Activity): string;
   PageTitle(props: { activity: Activity }): JSX.Element;
   PageContent(props: { activity: Activity }): JSX.Element;

@@ -1,6 +1,5 @@
 import { Activity, ActivityContentCompanyAdminAdded } from "@/api";
 import { firstName, namesListToString } from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
@@ -9,8 +8,8 @@ const CompanyAdminAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(): string {
-    return DeprecatedPaths.companyAdminPath();
+  pagePath(paths): string {
+    return paths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {

@@ -8,7 +8,7 @@ const CompanyAdding: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
+  pagePath(_paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 

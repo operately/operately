@@ -3,7 +3,7 @@ import React from "react";
 
 import type { ActivityContentResourceHubLinkEdited } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
@@ -12,8 +12,8 @@ const ResourceHubLinkEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
-    return DeprecatedPaths.resourceHubLinkPath(content(activity).link!.id!);
+  pagePath(paths, activity: Activity) {
+    return paths.resourceHubLinkPath(content(activity).link!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
