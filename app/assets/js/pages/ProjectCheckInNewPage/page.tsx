@@ -6,6 +6,7 @@ import * as Paper from "@/components/PaperContainer";
 import { Form } from "./Form";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 

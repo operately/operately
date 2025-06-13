@@ -11,6 +11,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import FormattedTime from "@/components/FormattedTime";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalCheckInNewPage", loader, Page } as PageModule;
 
 interface LoaderResult {

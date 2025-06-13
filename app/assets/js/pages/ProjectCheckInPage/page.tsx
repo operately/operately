@@ -26,6 +26,7 @@ import { assertPresent } from "@/utils/assertions";
 import { banner } from "../ProjectPage/Banner";
 import { useLoadedData, useRefresh } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { checkIn } = useLoadedData();
   const refresh = useRefresh();
@@ -140,6 +141,7 @@ function Acknowledgement() {
 }
 
 function Options() {
+  const paths = usePaths();
   const { checkIn } = useLoadedData();
   const me = useMe()!;
 

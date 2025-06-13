@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as ProjectContributors from "@/models/projectContributors";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 export interface UrlParams {
   action: "edit-contributor" | "change-champion" | "change-reviewer" | "reassign-as-contributor";
 }

@@ -8,11 +8,13 @@ import { Container } from "./components";
 import { RegularState } from "./ResourceHubs/RegularState";
 import { ZeroState } from "./ResourceHubs/ZeroState";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   resourceHub: ResourceHubs.ResourceHub;
 }
 
 export function ResourceHub(props: Props) {
+  const paths = usePaths();
   assertPresent(props.resourceHub.nodes, "nodes must be present in resourceHub");
 
   const testid = createTestId(props.resourceHub.name!);

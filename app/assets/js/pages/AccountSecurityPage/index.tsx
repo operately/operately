@@ -7,9 +7,11 @@ import { Link } from "turboui";
 
 import { PageModule } from "@/routes/types";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "AccountSecurityPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const paths = usePaths();
   return (
     <Pages.Page title={"Password & Security"} testId="account-security-page">
       <Paper.Root size="small">

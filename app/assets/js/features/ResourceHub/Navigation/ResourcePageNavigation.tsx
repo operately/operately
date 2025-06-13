@@ -4,6 +4,7 @@ import * as React from "react";
 import { Resource } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 export function ResourcePageNavigation({ resource }: { resource: Resource }) {
   assertPresent(resource.resourceHub, "resourceHub must be present in document");
   assertPresent(resource.resourceHub.space, "space must be present in document.resourceHub");

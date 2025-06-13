@@ -11,6 +11,7 @@ import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
+import { usePaths } from "@/routes/paths";
 interface NewProps {
   mode: "new";
   goal: Goal;

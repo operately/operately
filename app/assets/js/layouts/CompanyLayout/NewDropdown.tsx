@@ -3,7 +3,9 @@ import * as React from "react";
 
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
+import { usePaths } from "@/routes/paths";
 export function NewDropdown() {
+  const paths = usePaths();
   return (
     <DropdownMenu testId="new-dropdown" name="New" icon={Icons.IconPlus} align="end">
       <DropdownLinkItem

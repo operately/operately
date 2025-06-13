@@ -3,6 +3,7 @@ import * as Time from "@/utils/time";
 
 import Api from "@/api";
 
+import { usePaths } from "@/routes/paths";
 export type Person = api.Person;
 
 export { getPeople, getPerson, updateProfile, useGetMe, useGetPeople } from "@/api";

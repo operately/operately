@@ -16,6 +16,7 @@ import { assertPresent } from "@/utils/assertions";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { space, tools } = useLoadedData();
 
@@ -39,6 +40,7 @@ export function Page() {
 }
 
 function SpaceEdit() {
+  const paths = usePaths();
   const { space } = useLoadedData();
 
   if (space.permissions?.canEdit !== true) return null;

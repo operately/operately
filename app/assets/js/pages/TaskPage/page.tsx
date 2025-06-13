@@ -15,6 +15,7 @@ import { truncateString } from "@/utils/strings";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { task } = useLoadedData();
 

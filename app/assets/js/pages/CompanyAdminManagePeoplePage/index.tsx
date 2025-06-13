@@ -18,6 +18,7 @@ import plurarize from "@/utils/plurarize";
 import { createTestId } from "@/utils/testid";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminManagePeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -61,10 +62,12 @@ function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   return <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function AddMemberButton() {
+  const paths = usePaths();
   return (
     <PrimaryButton linkTo={paths.companyManagePeopleAddPeoplePath()} testId="add-person">
       Add Team Member

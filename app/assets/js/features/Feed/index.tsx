@@ -12,6 +12,7 @@ import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 type Page = "company" | "project" | "goal" | "space" | "profile";
 type ScopeType = "company" | "project" | "goal" | "space" | "person";
 

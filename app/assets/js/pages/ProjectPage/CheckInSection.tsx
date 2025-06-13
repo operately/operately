@@ -11,6 +11,7 @@ import { SmallStatusIndicator } from "@/components/status";
 import { Link, SecondaryButton } from "turboui";
 import { DimmedLabel } from "./Label";
 
+import { usePaths } from "@/routes/paths";
 export function CheckInSection({ project }: { project: Projects.Project }) {
   return (
     <div className="border-t border-stroke-base py-6">

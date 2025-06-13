@@ -11,6 +11,7 @@ import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminRestoreSuspendedPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -47,10 +48,12 @@ function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   return <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function NoSuspenedPeopleMessage() {
+  const paths = usePaths();
   const { company } = Pages.useLoadedData<LoaderResult>();
 
   return (

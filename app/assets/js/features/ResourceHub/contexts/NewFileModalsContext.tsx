@@ -6,6 +6,7 @@ import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import { LinkOptions } from "@/features/ResourceHub";
 import { AddFileProps, useAddFile } from "../useAddFile";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   children: NonNullable<React.ReactNode>;
   resourceHub: ResourceHub;
@@ -31,6 +32,7 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
     navigate(paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
 
   const navigateToNewLink = (type?: LinkOptions) => {
+    const paths = usePaths();
     navigate(
       paths.resourceHubNewLinkPath(resourceHub.id!, {
         folderId: folder?.id || undefined,

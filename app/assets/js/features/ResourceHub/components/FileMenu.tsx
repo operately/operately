@@ -11,6 +11,7 @@ import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   file: Hub.ResourceHubFile;
 }

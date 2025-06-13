@@ -9,6 +9,7 @@ import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 import { IconCopy, IconEdit, IconFileExport, IconTrash } from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   showCopyModal: () => void;
 }
@@ -40,6 +41,7 @@ function CopyLink({ showCopyModal }) {
 }
 
 function DeleteAction() {
+  const paths = usePaths();
   const { document, folder, resourceHub } = useLoadedData();
   const [remove] = useDeleteResourceHubDocument();
   const navigate = useNavigate();

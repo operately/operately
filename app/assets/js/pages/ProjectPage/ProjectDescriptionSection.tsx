@@ -5,6 +5,7 @@ import { Link, SecondaryButton } from "turboui";
 
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
 
+import { usePaths } from "@/routes/paths";
 export function ProjectDescriptionSection({ project }: { project: Projects.Project }) {
   return (
     <div className="border-t border-stroke-base py-6 mt-4">

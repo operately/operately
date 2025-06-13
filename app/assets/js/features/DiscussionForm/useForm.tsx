@@ -7,6 +7,7 @@ import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscr
 import { Subscriber } from "@/models/notifications";
 import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 interface UseFormOptions {
   mode: "create" | "edit";
   space: Spaces.Space;

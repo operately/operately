@@ -8,7 +8,9 @@ import * as Projects from "@/models/projects";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   return (

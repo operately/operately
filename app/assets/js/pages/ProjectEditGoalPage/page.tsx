@@ -8,6 +8,7 @@ import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -27,6 +28,7 @@ export function Page() {
 }
 
 function GoalList() {
+  const paths = usePaths();
   const { project, goals } = useLoadedData();
 
   const navigate = useNavigate();

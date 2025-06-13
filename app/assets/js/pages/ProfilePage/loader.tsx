@@ -2,6 +2,7 @@ import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
+import { usePaths } from "@/routes/paths";
 interface LoaderResult {
   person: People.Person;
 }

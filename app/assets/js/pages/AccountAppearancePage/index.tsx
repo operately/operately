@@ -13,6 +13,7 @@ import { PageNavigation } from "@/features/accounts/PageNavigation";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "AccountAppearancePage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
@@ -29,6 +30,7 @@ function Page() {
 }
 
 function Form() {
+  const paths = usePaths();
   const me = useMe()!;
   const currentTheme = useTheme();
   const navigate = useNavigate();

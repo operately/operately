@@ -15,6 +15,7 @@ import { DimmedLink, PrimaryButton } from "turboui";
 import { formValidator, useFormMutationAction, useFormState } from "@/components/Form/useFormState";
 import { match } from "ts-pattern";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalDiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -28,6 +29,7 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const { activity } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ activity: activity });
   const goal = Activities.getGoal(activity);

@@ -7,6 +7,7 @@ import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ document }: { document: ResourceHubDocument }) {
   const navigate = useNavigate();
   const [edit] = useEditResourceHubDocument();

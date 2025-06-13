@@ -14,6 +14,7 @@ import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
@@ -57,6 +58,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const navigate = useNavigate();
   const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
 

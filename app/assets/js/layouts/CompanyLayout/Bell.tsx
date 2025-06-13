@@ -6,7 +6,9 @@ import { DivLink } from "turboui";
 import * as Notifications from "@/models/notifications";
 import classNames from "classnames";
 
+import { usePaths } from "@/routes/paths";
 export function Bell() {
+  const paths = usePaths();
   const count = Notifications.useUnreadCount();
   const path = paths.notificationsPath();
   const style = { height: "32px", width: "32px" };

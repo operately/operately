@@ -9,6 +9,7 @@ import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
   const [edit] = useEditProjectCheckIn();
   const navigate = useNavigate();

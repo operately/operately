@@ -8,7 +8,9 @@ import { useFilters, useLoadedData } from "./loader";
 
 import classNames from "classnames";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { projects } = useLoadedData();
 
   const newProjectPath = paths.newProjectPath({

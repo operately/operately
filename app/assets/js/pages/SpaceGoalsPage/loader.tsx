@@ -5,6 +5,7 @@ import * as Spaces from "@/models/spaces";
 
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
+import { usePaths } from "@/routes/paths";
 interface LoadedData {
   space: Spaces.Space;
   goals: Goals.Goal[];

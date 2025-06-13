@@ -9,6 +9,7 @@ import { logOut } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { BurgerActionsGroup, BurgerButton, BurgerLink } from "./BurgerActions";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "AccountPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
@@ -36,6 +37,7 @@ function Page() {
 }
 
 function ProfileLink() {
+  const paths = usePaths();
   const me = useMe()!;
 
   return (
@@ -46,6 +48,7 @@ function ProfileLink() {
 }
 
 function AppearanceLink() {
+  const paths = usePaths();
   return (
     <BurgerLink icon={Icons.IconPalette} to={paths.accountAppearancePath()} testId="appearance-link">
       Appearance
@@ -54,6 +57,7 @@ function AppearanceLink() {
 }
 
 function PasswordLink() {
+  const paths = usePaths();
   return (
     <BurgerLink icon={Icons.IconLockPassword} to={paths.accountSecurityPath()} testId="password-link">
       Password &amp; Security

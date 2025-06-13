@@ -9,6 +9,7 @@ import { createTestId } from "@/utils/testid";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { Node } from "../tree";
 
+import { usePaths } from "@/routes/paths";
 export function Status({ node, children }: { node: Node; children: ReactNode }) {
   const [hoveringTrigger, setHoveringTrigger] = useState(false);
   const [hoveringContent, setHoveringContent] = useState(false);

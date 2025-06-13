@@ -17,6 +17,7 @@ import { AccessLevel } from "@/features/projects/AccessLevel";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   return (
     <Pages.Page title="New Project">
@@ -47,6 +48,7 @@ function Navigation() {
 }
 
 function Form() {
+  const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();

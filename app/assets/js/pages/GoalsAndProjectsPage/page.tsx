@@ -9,6 +9,7 @@ import { useLoadedData } from "./loader";
 
 import classNames from "classnames";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { goals, projects } = useLoadedData();
   const size = Pages.useWindowSizeBreakpoints();
@@ -31,6 +32,7 @@ export function Page() {
 }
 
 function Header() {
+  const paths = usePaths();
   const newGoalPath = paths.newGoalPath({ companyWide: true });
   const newProjectPath = paths.newProjectPath({
     backPath: paths.goalsPath(),

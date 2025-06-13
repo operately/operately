@@ -8,6 +8,7 @@ import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { PageModule } from "@/routes/types";
 import { GhostButton, Link, PrimaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {

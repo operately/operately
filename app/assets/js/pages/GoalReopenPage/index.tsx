@@ -6,6 +6,7 @@ import * as React from "react";
 
 import { Form } from "./Form";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalReopenPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -24,6 +25,7 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const { goal } = Pages.useLoadedData<LoaderResult>();
 
   return (

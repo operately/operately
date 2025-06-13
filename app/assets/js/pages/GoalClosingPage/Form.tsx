@@ -9,7 +9,9 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Form() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
   const [close] = Goals.useCloseGoal();

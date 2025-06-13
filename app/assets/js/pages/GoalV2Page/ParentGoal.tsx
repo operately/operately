@@ -12,6 +12,7 @@ import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
 import { GhostLink, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function ParentGoal() {
   const isViewMode = useIsViewMode();
 

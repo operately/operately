@@ -8,6 +8,7 @@ import { insertAt } from "@/utils/array";
 import { match } from "ts-pattern";
 import { AvatarList, DivLink } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 interface TaskBoardState {
   todoTasks: Tasks.Task[];
   inProgressTasks: Tasks.Task[];

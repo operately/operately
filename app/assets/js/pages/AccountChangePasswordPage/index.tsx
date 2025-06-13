@@ -7,9 +7,11 @@ import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "AccountChangePasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const paths = usePaths();
   const navigate = useNavigate();
 
   const form = Forms.useForm({

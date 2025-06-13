@@ -8,7 +8,9 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   return (
@@ -28,6 +30,7 @@ export function Page() {
 }
 
 function Editor() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   const goToProjectPage = useNavigateTo(paths.projectPath(project.id!));

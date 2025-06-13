@@ -3,6 +3,7 @@ import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
+import { usePaths } from "@/routes/paths";
 interface LoaderResult {
   data: {
     workMap: ReturnType<typeof convertToWorkMapItem>[];

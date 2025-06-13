@@ -53,6 +53,7 @@ function NewDiscussionButton() {
 
 function ContinueEditingDrafts() {
   const { space, myDrafts } = useLoadedData();
+  const paths = usePaths();
 
   if (myDrafts.length < 1) {
     return null;
@@ -100,6 +101,7 @@ function DiscussionList() {
 }
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
+  const paths = usePaths();
   assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 

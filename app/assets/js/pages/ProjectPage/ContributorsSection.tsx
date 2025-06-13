@@ -6,6 +6,7 @@ import { ChampionPlaceholder, ContributorAvatar, ReviewerPlaceholder } from "@/c
 import { ProjectContributor } from "@/models/projectContributors";
 import { SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function ContributorsSection({ project }: { project: Projects.Project }) {
   const { champion, reviewer, contributors } = ProjectContributors.splitByRole(project.contributors!);
 

@@ -11,6 +11,7 @@ import { CopyDocumentModal } from "./CopyDocumentModal";
 import { CopyResourceMenuItem } from "./CopyResource";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   document: Hub.ResourceHubDocument;
 }

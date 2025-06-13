@@ -11,6 +11,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -43,6 +44,7 @@ function Page() {
 export type FromLocation = "admin-manage-people" | null;
 
 function Navigation() {
+  const paths = usePaths();
   const { from } = Pages.useLoadedData() as LoaderResult;
 
   if (from === "admin-manage-people") {

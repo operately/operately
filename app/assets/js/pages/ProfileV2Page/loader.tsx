@@ -6,6 +6,7 @@ import { PageCache } from "@/routes/PageCache";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { fetchAll } from "@/utils/async";
 
+import { usePaths } from "@/routes/paths";
 interface LoaderResult {
   data: {
     person: People.PersonWithLink;

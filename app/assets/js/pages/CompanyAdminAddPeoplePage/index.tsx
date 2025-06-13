@@ -11,6 +11,7 @@ import { PrimaryButton } from "turboui";
 import Forms from "@/components/Forms";
 import { match } from "ts-pattern";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -169,6 +170,7 @@ function AddedPage({ state, setPageState }: { state: PageStateAdded; setPageStat
 }
 
 function Navigation() {
+  const paths = usePaths();
   return (
     <Paper.Navigation
       items={[

@@ -8,7 +8,9 @@ import { SecondaryButton } from "turboui";
 import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function NextCheckIn() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
   const navigate = useNavigateTo(paths.goalCheckInNewPath(goal.id!));
 

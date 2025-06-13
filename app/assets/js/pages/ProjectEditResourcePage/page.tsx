@@ -11,6 +11,7 @@ import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project, keyResource } = useLoadedData();
   const form = useForm(project, keyResource);

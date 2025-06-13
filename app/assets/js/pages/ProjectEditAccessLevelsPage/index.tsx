@@ -13,6 +13,7 @@ import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "ProjectEditAccessLevelsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -50,6 +51,7 @@ function Page() {
 }
 
 function Form() {
+  const paths = usePaths();
   const { project, space } = Pages.useLoadedData();
   const parentAccessLevel = space.accessLevels!;
 

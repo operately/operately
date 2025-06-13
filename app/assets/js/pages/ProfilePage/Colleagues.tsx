@@ -6,6 +6,7 @@ import { DivLink, SecondaryButton } from "turboui";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Colleagues({ person }: { person: People.Person }) {
   const [allPeersVisible, setAllPeersVisible] = React.useState(false);
   const [allReportsVisible, setAllReportsVisible] = React.useState(false);
@@ -103,6 +104,7 @@ interface PersonCardProps {
 }
 
 function PersonCard(props: PersonCardProps) {
+  const paths = usePaths();
   const { person, highlight, link } = props;
 
   const className = classNames("flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-surface-dimmed", "relative", {

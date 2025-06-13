@@ -5,6 +5,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
 
+import { usePaths } from "@/routes/paths";
 interface Error {
   field: string;
   message: string;

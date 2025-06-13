@@ -14,6 +14,7 @@ import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 interface LoaderResult {

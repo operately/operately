@@ -14,7 +14,9 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
 import { Avatar, BlackLink, SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const form = useFrom();
 
   const { admins, owners } = useLoadedData();

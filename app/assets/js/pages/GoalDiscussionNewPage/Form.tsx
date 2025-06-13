@@ -11,6 +11,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ goal }: { goal: Goals.Goal }) {
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 

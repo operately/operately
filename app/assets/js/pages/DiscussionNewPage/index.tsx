@@ -9,6 +9,7 @@ import { SubscribersSelector } from "@/features/Subscriptions";
 import { PageModule } from "@/routes/types";
 import { GhostButton, Link, PrimaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionNewPage", loader, Page } as PageModule;
 
 interface LoaderResult {

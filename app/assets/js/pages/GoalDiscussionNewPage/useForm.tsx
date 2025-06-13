@@ -7,6 +7,7 @@ import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
 import { Validators } from "@/utils/validators";
 
+import { usePaths } from "@/routes/paths";
 type FormFields = {
   title: string;
   setTitle: (title: string) => void;

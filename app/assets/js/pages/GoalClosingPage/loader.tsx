@@ -3,6 +3,7 @@ import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import { compareIds } from "@/routes/paths";
 
+import { usePaths } from "@/routes/paths";
 interface LoaderResult {
   goal: Goals.Goal;
   activeSubitems: ActiveSubitem[];

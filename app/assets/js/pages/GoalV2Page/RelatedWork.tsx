@@ -10,7 +10,9 @@ import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
 import { useWorkItems } from "./useWorkItems";
 
+import { usePaths } from "@/routes/paths";
 export function RelatedWork() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
   const items = useWorkItems();
 

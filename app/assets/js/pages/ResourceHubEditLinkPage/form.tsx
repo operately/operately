@@ -10,7 +10,9 @@ import { isValidURL } from "@/utils/validators";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Form() {
+  const paths = usePaths();
   const { link } = useLoadedData();
   const navigate = useNavigate();
   const [edit] = useEditResourceHubLink();

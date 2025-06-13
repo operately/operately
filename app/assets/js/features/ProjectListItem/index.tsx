@@ -11,6 +11,7 @@ import { PrivacyIndicator } from "@/features/Permissions";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { Link, PieChart } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 interface ProjectListItemProps {
   project: Projects.Project;
   avatarPosition?: "bottom" | "right";

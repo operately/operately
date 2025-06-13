@@ -11,6 +11,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { assertPresent } from "@/utils/assertions";
 import { match } from "ts-pattern";
 
+import { usePaths } from "@/routes/paths";
 export function TimelineSection({ project }: { project: Projects.Project }) {
   return (
     <div className="border-t border-stroke-base py-6">

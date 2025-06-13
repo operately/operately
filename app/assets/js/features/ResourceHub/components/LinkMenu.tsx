@@ -8,6 +8,7 @@ import { createTestId } from "@/utils/testid";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   link: Hub.ResourceHubLink;
 }

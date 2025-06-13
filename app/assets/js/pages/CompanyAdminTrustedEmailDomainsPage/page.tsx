@@ -9,7 +9,9 @@ import { GhostButton } from "turboui";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { company } = useLoadedData();
   const form = useForm({ company });
 

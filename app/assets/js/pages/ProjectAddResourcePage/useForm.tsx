@@ -4,6 +4,7 @@ import * as React from "react";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 interface FormState {
   projectId: string;
   resourceType: string;

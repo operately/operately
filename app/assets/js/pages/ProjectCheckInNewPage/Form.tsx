@@ -10,6 +10,7 @@ import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ project }: { project: Project }) {
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
 

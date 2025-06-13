@@ -3,6 +3,7 @@ import * as Projects from "@/models/projects";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
+import { usePaths } from "@/routes/paths";
 export function ProjectOptions({ project }) {
   return (
     <PageOptions.Root testId="project-options-button">

@@ -13,6 +13,7 @@ import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { Link } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 

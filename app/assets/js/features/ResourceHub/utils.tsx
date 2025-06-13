@@ -2,6 +2,7 @@ import { ResourceHubNode } from "@/models/resourceHubs";
 
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 export type NodeType = "document" | "folder" | "file" | "link";
 
 export function findPath(nodeType: NodeType, node: ResourceHubNode) {

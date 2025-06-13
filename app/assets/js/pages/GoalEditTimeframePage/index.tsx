@@ -14,6 +14,7 @@ import { assertPresent } from "@/utils/assertions";
 import { DimmedLink, PrimaryButton } from "turboui";
 import { Form, useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalEditTimeframePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -55,6 +56,7 @@ function Page() {
 }
 
 function Title() {
+  const paths = usePaths();
   return <div className="text-content-accent text-2xl font-extrabold">Editing the Goal's Timeframe</div>;
 }
 

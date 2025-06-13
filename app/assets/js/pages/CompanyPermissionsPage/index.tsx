@@ -4,9 +4,11 @@ import { PageModule } from "@/routes/types";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyPermissionsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const paths = usePaths();
   return (
     <Pages.Page title="Permissions">
       <Paper.Root size="small">

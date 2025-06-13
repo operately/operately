@@ -4,7 +4,9 @@ import * as React from "react";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Navigation() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
   assertPresent(goal.space, "space must be present in goal");

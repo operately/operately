@@ -6,6 +6,7 @@ import * as React from "react";
 import { PrivacyIndicator } from "@/features/Permissions";
 import { DimmedLink, DivLink } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Header({ project }: { project: Projects.Project }) {
   return (
     <div className="flex-1 mb-2">

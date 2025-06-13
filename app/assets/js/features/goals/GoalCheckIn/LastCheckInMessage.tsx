@@ -14,6 +14,7 @@ import { assertPresent } from "@/utils/assertions";
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
   if (!goal.lastCheckIn) return null;
 

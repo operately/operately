@@ -5,6 +5,7 @@ import { Link } from "turboui";
 
 import * as api from "@/api";
 
+import { usePaths } from "@/routes/paths";
 export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element)[]) => {
   return (
     <>
@@ -17,6 +18,7 @@ export const feedTitle = (activity: api.Activity, ...rest: (string | JSX.Element
 };
 
 export const projectLink = (project: api.Project) => {
+  const paths = usePaths();
   const path = paths.projectPath(project!.id!);
   const name = project!.name!;
 
@@ -24,6 +26,7 @@ export const projectLink = (project: api.Project) => {
 };
 
 export const goalLink = (goal: api.Goal) => {
+  const paths = usePaths();
   const path = paths.goalPath(goal!.id!);
   const name = goal!.name!;
 
@@ -31,6 +34,7 @@ export const goalLink = (goal: api.Goal) => {
 };
 
 export const spaceLink = (space: api.Space) => {
+  const paths = usePaths();
   const path = paths.spacePath(space!.id!);
   const name = space!.name!;
 
@@ -38,6 +42,7 @@ export const spaceLink = (space: api.Space) => {
 };
 
 export const resourceHubLink = (hub: api.ResourceHub) => {
+  const paths = usePaths();
   const path = paths.resourceHubPath(hub.id!);
   const name = hub.name!;
 
@@ -45,6 +50,7 @@ export const resourceHubLink = (hub: api.ResourceHub) => {
 };
 
 export const documentLink = (document: api.ResourceHubDocument) => {
+  const paths = usePaths();
   const path = paths.resourceHubDocumentPath(document.id!);
   const name = document.name!;
 
@@ -52,6 +58,7 @@ export const documentLink = (document: api.ResourceHubDocument) => {
 };
 
 export const fileLink = (file: api.ResourceHubFile) => {
+  const paths = usePaths();
   const path = paths.resourceHubFilePath(file.id!);
   const name = file.name!;
 
@@ -59,6 +66,7 @@ export const fileLink = (file: api.ResourceHubFile) => {
 };
 
 export const folderLink = (folder: api.ResourceHubFolder) => {
+  const paths = usePaths();
   const path = paths.resourceHubFolderPath(folder.id!);
   const name = folder.name!;
 
@@ -66,6 +74,7 @@ export const folderLink = (folder: api.ResourceHubFolder) => {
 };
 
 export const linkLink = (link: api.ResourceHubLink) => {
+  const paths = usePaths();
   const path = paths.resourceHubLinkPath(link.id!);
   const name = link.name!;
 

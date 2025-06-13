@@ -7,6 +7,7 @@ import { Project, ProjectRetrospective } from "@/models/projects";
 import { assertPresent } from "@/utils/assertions";
 import { Node } from "./node";
 
+import { usePaths } from "@/routes/paths";
 export class ProjectNode extends Node {
   public project: Project;
   public lastCheckIn: ProjectCheckIn | null | undefined;

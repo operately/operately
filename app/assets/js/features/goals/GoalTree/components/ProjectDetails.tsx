@@ -18,6 +18,7 @@ import { ProjectNode } from "../tree";
 import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
 
+import { usePaths } from "@/routes/paths";
 export function ProjectDetails({ node }: { node: ProjectNode }) {
   const { density } = useTreeContext();
   const size = useWindowSizeBreakpoints();

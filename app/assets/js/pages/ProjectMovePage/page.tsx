@@ -11,6 +11,7 @@ import { compareIds } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project, spaces } = useLoadedData();
 

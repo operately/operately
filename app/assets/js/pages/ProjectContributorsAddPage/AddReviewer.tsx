@@ -11,6 +11,7 @@ import Forms from "@/components/Forms";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function AddReviewer() {
   const { project } = Pages.useLoadedData() as LoaderResult;
 

@@ -7,6 +7,7 @@ import * as React from "react";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useRefresh } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export interface FormState {
   milestone: Milestones.Milestone;
   titleAndDeadline: TitleAndDeadlineState;
@@ -65,6 +66,7 @@ const useReopenMilestone = (milestone: Milestones.Milestone) => {
 };
 
 const useArchiveMilestone = (project: Projects.Project, milestone: Milestones.Milestone) => {
+  const paths = usePaths();
   const refresh = useRefresh();
   const gotoProject = useNavigateTo(paths.projectPath(project.id!));
 

@@ -9,6 +9,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useNodesContext } from "../contexts/NodesContext";
 import { CopyResourceModal } from "./CopyResource";
 
+import { usePaths } from "@/routes/paths";
 interface FormProps {
   resource: ResourceHubFolder;
   isOpen: boolean;
@@ -16,6 +17,7 @@ interface FormProps {
 }
 
 export function CopyFolderModal(props: FormProps) {
+  const paths = usePaths();
   const { resource, hideModal } = props;
   const { parent } = useNodesContext();
 

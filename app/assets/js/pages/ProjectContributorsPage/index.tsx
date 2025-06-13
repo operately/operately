@@ -21,6 +21,7 @@ import { BorderedRow } from "@/components/BorderedRow";
 import { OtherPeople } from "./OtherPeople";
 import { loader, useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "ProjectContributorsPage", loader, Page } as PageModule;
 
 function Page() {
@@ -60,6 +61,7 @@ function Title() {
 }
 
 function AddContribsButton() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   if (!project.permissions?.canEditContributors) return null;
@@ -73,6 +75,7 @@ function AddContribsButton() {
 }
 
 function GeneralAccess() {
+  const paths = usePaths();
   const { project } = useLoadedData();
   const editPath = paths.projectEditPermissionsPath(project.id!);
 
@@ -154,6 +157,7 @@ function ContributorNameAndResponsibility({ contributor }: { contributor: Projec
 }
 
 function ReviewerPlaceholder() {
+  const paths = usePaths();
   const { project } = useLoadedData();
   const path = paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
 
@@ -188,6 +192,7 @@ function PlaceholderTitleAndDescription({ title, description }: { title: string;
 }
 
 function ChampionPlaceholder() {
+  const paths = usePaths();
   const { project } = useLoadedData();
   const path = paths.projectContributorsAddPath(project.id!, { type: "champion" });
 

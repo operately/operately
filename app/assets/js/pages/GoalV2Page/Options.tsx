@@ -7,6 +7,7 @@ import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   toggleShowDeleteGoal: () => void;
 }

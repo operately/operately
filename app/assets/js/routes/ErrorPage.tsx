@@ -6,6 +6,7 @@ import { AxiosError } from "axios";
 import { useRouteError } from "react-router-dom";
 import { GhostButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
 
@@ -17,6 +18,7 @@ export default function ErrorPage() {
 }
 
 function ServerErrorPage() {
+  const paths = usePaths();
   const error = useRouteError() as AxiosError | null;
 
   React.useEffect(() => {

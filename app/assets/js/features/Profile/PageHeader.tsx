@@ -5,12 +5,14 @@ import { Person } from "@/models/people";
 
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 interface PageHeaderProps {
   person: Person;
   activeTab: "about" | "goals";
 }
 
 export function PageHeader(props: PageHeaderProps) {
+  const paths = usePaths();
   return (
     <div>
       <div className="flex items-center gap-4">

@@ -5,6 +5,7 @@ import { useProfileUpdatedSignal } from "@/signals";
 import { assertPresent } from "@/utils/assertions";
 import { throttle } from "@/utils/throttle";
 
+import { usePaths } from "@/routes/paths";
 interface CurrentCompanyContextProps {
   me: People.Person | null;
 

@@ -3,6 +3,7 @@ import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
 import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 export interface FormState {
   messageEditor: Editor.EditorState;
   submit: () => Promise<void>;

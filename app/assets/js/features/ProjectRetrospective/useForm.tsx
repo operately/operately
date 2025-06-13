@@ -7,6 +7,7 @@ import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscr
 import { Subscriber } from "@/models/notifications";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 interface Error {
   field: string;
   message: string;

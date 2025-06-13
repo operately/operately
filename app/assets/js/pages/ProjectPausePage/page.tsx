@@ -8,7 +8,9 @@ import { useLoadedData } from "./loader";
 
 import { DimmedLink, PrimaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   return (

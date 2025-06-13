@@ -5,7 +5,9 @@ import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignment
 import { IconCoffee } from "@tabler/icons-react";
 import { DivLink } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Review() {
+  const paths = usePaths();
   const [count, refetch] = useAssignmentsCount();
   useReviewRefreshSignal(refetch);
 

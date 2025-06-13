@@ -7,6 +7,7 @@ import { Link, PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 
+import { usePaths } from "@/routes/paths";
 export function banner(project: Projects.Project) {
   return match(project.status)
     .with("closed", () => <ProjectClosedBanner project={project} />)

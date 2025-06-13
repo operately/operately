@@ -9,6 +9,7 @@ import { AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } fro
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "SpaceEditGeneralAccessPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -37,6 +38,7 @@ function Page() {
 }
 
 function Form() {
+  const paths = usePaths();
   const { space } = Pages.useLoadedData();
 
   const navigateBack = useNavigateTo(paths.spaceAccessManagementPath(space.id!));

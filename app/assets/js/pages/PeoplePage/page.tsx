@@ -5,6 +5,7 @@ import { Person } from "@/models/people";
 import { Avatar, Link } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { company, people } = useLoadedData();
 

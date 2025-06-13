@@ -7,6 +7,7 @@ import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscr
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 interface Error {
   message: string;
 }

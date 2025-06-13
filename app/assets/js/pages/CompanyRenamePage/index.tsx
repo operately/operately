@@ -7,6 +7,7 @@ import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
 import { useNavigate, useRevalidator } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyRenamePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -20,6 +21,7 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const navigate = useNavigate();
   const { revalidate } = useRevalidator();
   const { company } = Pages.useLoadedData<LoaderResult>();

@@ -7,6 +7,7 @@ import Forms from "@/components/Forms";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
 import { findNameAndExtension } from "@/features/ResourceHub";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ file }: { file: ResourceHubFile }) {
   const navigate = useNavigate();
   const [edit] = useEditResourceHubFile();

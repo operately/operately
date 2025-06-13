@@ -17,6 +17,7 @@ import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "DiscussionDraftsPage", loader, Page } as PageModule;
 
 interface LoadedData {
@@ -56,6 +57,7 @@ function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   const { space } = Pages.useLoadedData<LoadedData>();
 
   return (
@@ -75,6 +77,7 @@ function Header() {
 }
 
 function NewDiscussionButton() {
+  const paths = usePaths();
   const { space } = Pages.useLoadedData<LoadedData>();
 
   return (
@@ -85,6 +88,7 @@ function NewDiscussionButton() {
 }
 
 function ZeroDiscussions() {
+  const paths = usePaths();
   return <div className="text-center text-base font-medium mt-28">You don't have any drafts.</div>;
 }
 

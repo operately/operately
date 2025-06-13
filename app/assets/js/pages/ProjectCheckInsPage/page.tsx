@@ -12,6 +12,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { SmallStatusIndicator } from "@/components/status";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -30,6 +31,7 @@ export function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   return <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />;

@@ -9,6 +9,7 @@ import { GhostLink, PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 
+import { usePaths } from "@/routes/paths";
 interface HeaderProps {
   activeTab: "status" | "subgoals" | "discussions" | "about";
   goal: Goals.Goal;

@@ -9,6 +9,7 @@ import { AllDoneState } from "./GoalsAndProjects/AllDoneState";
 import { RegularState } from "./GoalsAndProjects/RegularState";
 import { ZeroState } from "./GoalsAndProjects/ZeroState";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   title: string;
   space: Space;
@@ -17,6 +18,7 @@ interface Props {
 }
 
 export function GoalsAndProjects(props: Props) {
+  const paths = usePaths();
   const state = calculateState(props.goals, props.projects);
 
   return (

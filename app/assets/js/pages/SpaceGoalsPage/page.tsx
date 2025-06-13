@@ -8,6 +8,7 @@ import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton"
 import { GoalTree } from "@/features/goals/GoalTree";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { space, goals, projects } = useLoadedData();
 
@@ -31,6 +32,7 @@ export function Page() {
 }
 
 function Header() {
+  const paths = usePaths();
   const { space } = useLoadedData();
 
   const newGoalPath = paths.spaceNewGoalPath(space.id!);

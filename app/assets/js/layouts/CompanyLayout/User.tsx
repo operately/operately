@@ -4,7 +4,9 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Link } from "react-router-dom";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function User() {
+  const paths = usePaths();
   const me = useMe();
 
   if (!me) return null;

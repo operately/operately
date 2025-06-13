@@ -7,6 +7,7 @@ import * as Hub from "@/features/ResourceHub";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { resourceHub, draftNodes } = useLoadedData();
 
@@ -25,6 +26,7 @@ export function Page() {
 }
 
 function PageNavigation() {
+  const paths = usePaths();
   const { resourceHub } = useLoadedData();
 
   assertPresent(resourceHub.space, "space must be present in resourceHub");

@@ -10,6 +10,7 @@ import Modal from "@/components/Modal";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   showDeleteGoal: boolean;
   toggleShowDeleteGoal: () => void;

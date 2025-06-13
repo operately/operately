@@ -7,6 +7,7 @@ import { ActiveSubitemsWarning } from "./ActiveSubitemsWarning";
 import { Form } from "./Form";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { goal } = useLoadedData();
 
@@ -26,6 +27,7 @@ export function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
   return <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />;

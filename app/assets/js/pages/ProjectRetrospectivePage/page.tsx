@@ -18,6 +18,7 @@ import { RetrospectiveContent } from "@/features/ProjectRetrospective";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { retrospective } = useLoadedData();
 
@@ -49,6 +50,7 @@ export function Page() {
 }
 
 function Options() {
+  const paths = usePaths();
   const { retrospective } = useLoadedData();
 
   return (

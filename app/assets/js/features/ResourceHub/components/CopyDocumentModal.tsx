@@ -7,6 +7,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { CopyResourceModal } from "./CopyResource";
 
+import { usePaths } from "@/routes/paths";
 interface FormProps {
   resource: Hub.ResourceHubDocument;
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface FormProps {
 }
 
 export function CopyDocumentModal(props: FormProps) {
+  const paths = usePaths();
   const { parent, resource, hideModal } = props;
 
   const [post] = Hub.useCreateResourceHubDocument();

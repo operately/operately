@@ -23,6 +23,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { discussion } = useLoadedData();
 
@@ -124,6 +125,7 @@ function Navigation({ space }) {
 }
 
 function Options() {
+  const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
   const { discussion } = useLoadedData();
@@ -173,6 +175,7 @@ function DicusssionComments() {
 }
 
 function ContinueEditingDraft() {
+  const paths = usePaths();
   const { discussion } = useLoadedData();
 
   const [publish] = Discussions.usePublishDiscussion();

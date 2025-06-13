@@ -2,6 +2,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
+import { usePaths } from "@/routes/paths";
 export function ProjectPageNavigation({ project }) {
   return <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name }]} />;
 }

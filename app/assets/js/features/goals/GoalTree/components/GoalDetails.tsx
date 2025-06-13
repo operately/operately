@@ -19,6 +19,7 @@ import { GoalNode, Node } from "../tree";
 import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
 
+import { usePaths } from "@/routes/paths";
 export function GoalDetails({ node }: { node: GoalNode }) {
   const size = useWindowSizeBreakpoints();
   const { density } = useTreeContext();

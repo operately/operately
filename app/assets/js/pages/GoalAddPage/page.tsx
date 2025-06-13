@@ -8,6 +8,7 @@ import { Form, FormState, useForm } from "@/features/goals/GoalForm";
 import { PrimaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const me = useMe()!;
   const { spaceID, space, spaces, company, parentGoal, goals, isCompanyWide } = useLoadedData();

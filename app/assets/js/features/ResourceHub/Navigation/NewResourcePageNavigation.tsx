@@ -4,6 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   resourceHub: ResourceHub;
   folder: ResourceHubFolder | undefined;

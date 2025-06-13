@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "SpaceEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -21,6 +22,7 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const navigate = useNavigate();
   const { space } = Pages.useLoadedData<LoaderResult>();
 

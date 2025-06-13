@@ -20,6 +20,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { document, folder, resourceHub } = useLoadedData();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
@@ -141,6 +142,7 @@ function DocumentSubscriptions() {
 }
 
 function ContinueEditingDraft() {
+  const paths = usePaths();
   const { document } = useLoadedData();
 
   const [publish] = usePublishResourceHubDocument();

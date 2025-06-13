@@ -4,6 +4,7 @@ import * as React from "react";
 import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { Link, SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function ResourcesSection({ project }: { project: Projects.Project }) {
   return (
     <div className="border-t border-stroke-base py-6">

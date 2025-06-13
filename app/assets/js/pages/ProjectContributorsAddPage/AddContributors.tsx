@@ -13,6 +13,7 @@ import { createTestId } from "@/utils/testid";
 import { SecondaryButton } from "turboui";
 import { LoaderResult } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 interface ContributorFields {
   key: number;
   personId: string;
@@ -37,6 +38,7 @@ function newContributor() {
 }
 
 export function AddContributors() {
+  const paths = usePaths();
   const { project } = Pages.useLoadedData() as LoaderResult;
   const gotoContribPage = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();

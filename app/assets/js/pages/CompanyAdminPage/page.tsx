@@ -11,7 +11,9 @@ import { useLoadedData } from "./loader";
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { OptionsMenuItem } from "./OptionsMenu";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { company } = useLoadedData();
 
   return (
@@ -80,6 +82,7 @@ function AdminsMenu() {
 }
 
 function OwnersMenu() {
+  const paths = usePaths();
   const { ownerIds } = useLoadedData();
 
   const me = useMe();
