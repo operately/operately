@@ -81,6 +81,7 @@ export namespace GoalPage {
   export interface Props {
     workmapLink: string;
     closeLink: string;
+    reopenLink: string;
     editGoalLink: string;
     newCheckInLink: string;
     newDiscussionLink: string;

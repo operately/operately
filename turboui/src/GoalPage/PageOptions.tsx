@@ -1,4 +1,4 @@
-import { IconCircleArrowRight, IconCircleCheck, IconTrash } from "@tabler/icons-react";
+import { IconCircleArrowRight, IconCircleCheck, IconRotateDot, IconTrash } from "@tabler/icons-react";
 import { GoalPage } from ".";
 
 export function pageOptions(props: GoalPage.State) {
@@ -9,6 +9,13 @@ export function pageOptions(props: GoalPage.State) {
       link: props.closeLink,
       icon: IconCircleCheck,
       hidden: !props.canEdit || props.state === "closed",
+    },
+    {
+      type: "link" as const,
+      label: "Re-open Goal",
+      link: props.reopenLink,
+      icon: IconRotateDot,
+      hidden: !props.canEdit || props.state !== "closed",
     },
     {
       type: "action" as const,
