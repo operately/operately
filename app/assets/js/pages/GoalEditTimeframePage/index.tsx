@@ -9,12 +9,12 @@ import * as React from "react";
 import { Datepicker } from "@/components/Datepicker";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 import { DimmedLink, PrimaryButton } from "turboui";
 import { Form, useForm } from "./useForm";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalEditTimeframePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -189,6 +189,7 @@ function Comments({ form }: { form: Form }) {
 }
 
 function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
+  const paths = usePaths();
   return (
     <div className="mt-6">
       <Error form={form} />
@@ -198,7 +199,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           Submit
         </PrimaryButton>
 
-        <DimmedLink to={DeprecatedPaths.goalPath(goal.id!)}>Cancel</DimmedLink>
+        <DimmedLink to={paths.goalPath(goal.id!)}>Cancel</DimmedLink>
       </div>
     </div>
   );

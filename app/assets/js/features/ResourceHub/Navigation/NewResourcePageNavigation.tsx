@@ -2,7 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
+import { Paths, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 interface Props {
@@ -11,25 +11,26 @@ interface Props {
 }
 
 export function NewResourcePageNavigation({ resourceHub, folder }: Props) {
+  const paths = usePaths();
   assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   let items = [
-    { to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
-    { to: DeprecatedPaths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
+    { to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
+    { to: paths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
   ];
 
   if (folder) {
-    items = items.concat(folderNavItems(folder));
+    items = items.concat(folderNavItems(paths, folder));
   }
 
   return <Paper.Navigation items={items} />;
 }
 
-function folderNavItems(folder: ResourceHubFolder) {
+function folderNavItems(paths: Paths, folder: ResourceHubFolder) {
   assertPresent(folder.pathToFolder, "pathToFolder must be present in folder");
 
   return folder.pathToFolder.map((folder) => ({
-    to: DeprecatedPaths.resourceHubFolderPath(folder.id!),
+    to: paths.resourceHubFolderPath(folder.id!),
     label: folder.name!,
   }));
 }

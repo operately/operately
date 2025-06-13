@@ -10,10 +10,10 @@ import { useEditProjectPermissions } from "@/api";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "ProjectEditAccessLevelsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -51,10 +51,11 @@ function Page() {
 }
 
 function Form() {
+  const paths = usePaths();
   const { project, space } = Pages.useLoadedData();
   const parentAccessLevel = space.accessLevels!;
 
-  const navigateToContributorsPath = useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
+  const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [edit] = useEditProjectPermissions();
 
   const form = Forms.useForm({

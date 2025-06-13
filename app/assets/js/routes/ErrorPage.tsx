@@ -5,8 +5,8 @@ import { captureException } from "@sentry/react";
 import { AxiosError } from "axios";
 import { useRouteError } from "react-router-dom";
 import { GhostButton } from "turboui";
-import { DeprecatedPaths } from "./paths";
 
+import { usePaths } from "@/routes/paths";
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
 
@@ -18,6 +18,7 @@ export default function ErrorPage() {
 }
 
 function ServerErrorPage() {
+  const paths = usePaths();
   const error = useRouteError() as AxiosError | null;
 
   React.useEffect(() => {
@@ -35,7 +36,7 @@ function ServerErrorPage() {
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
         <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo={DeprecatedPaths.homePath()} testId="back-to-lobby">
+          <GhostButton linkTo={paths.homePath()} testId="back-to-lobby">
             Go back to Home
           </GhostButton>
         </div>

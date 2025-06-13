@@ -6,9 +6,10 @@ import { ResourceHubDocument, useEditResourceHubDocument, usePublishResourceHubD
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
 import { areRichTextObjectsEqual } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
 
+import { usePaths } from "@/routes/paths";
 export function Form({ document }: { document: ResourceHubDocument }) {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = useEditResourceHubDocument();
   const [publish] = usePublishResourceHubDocument();
@@ -26,7 +27,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         addError("content", "Content is required");
       }
     },
-    cancel: () => navigate(DeprecatedPaths.resourceHubDocumentPath(document.id!)),
+    cancel: () => navigate(paths.resourceHubDocumentPath(document.id!)),
     submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
 
@@ -46,7 +47,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         });
       }
 
-      navigate(DeprecatedPaths.resourceHubDocumentPath(document.id!));
+      navigate(paths.resourceHubDocumentPath(document.id!));
     },
   });
 

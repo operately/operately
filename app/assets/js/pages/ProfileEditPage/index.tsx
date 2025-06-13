@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
 
@@ -12,6 +11,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -44,19 +44,20 @@ function Page() {
 export type FromLocation = "admin-manage-people" | null;
 
 function Navigation() {
+  const paths = usePaths();
   const { from } = Pages.useLoadedData() as LoaderResult;
 
   if (from === "admin-manage-people") {
     return (
       <Paper.Navigation
         items={[
-          { label: "Company Administration", to: DeprecatedPaths.companyAdminPath() },
-          { label: "Manage Team Members", to: DeprecatedPaths.companyManagePeoplePath() },
+          { label: "Company Administration", to: paths.companyAdminPath() },
+          { label: "Manage Team Members", to: paths.companyManagePeoplePath() },
         ]}
       />
     );
   } else {
-    return <Paper.Navigation items={[{ label: "Account", to: DeprecatedPaths.accountPath() }]} />;
+    return <Paper.Navigation items={[{ label: "Account", to: paths.accountPath() }]} />;
   }
 }
 
@@ -66,6 +67,7 @@ const ManagerOptions = [
 ];
 
 function ProfileForm({ person }: { person: People.Person }) {
+  const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
 
@@ -92,9 +94,9 @@ function ProfileForm({ person }: { person: People.Person }) {
       });
 
       if (me.id === person.id) {
-        navigate(DeprecatedPaths.accountPath());
+        navigate(paths.accountPath());
       } else {
-        navigate(DeprecatedPaths.companyManagePeoplePath());
+        navigate(paths.companyManagePeoplePath());
       }
     },
   });

@@ -8,7 +8,7 @@ import * as React from "react";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";
@@ -41,7 +41,8 @@ function newMember() {
 
 function Page() {
   const { space } = Pages.useLoadedData() as LoaderResult;
-  const backPath = DeprecatedPaths.spaceAccessManagementPath(space.id!);
+  const paths = usePaths();
+  const backPath = paths.spaceAccessManagementPath(space.id!);
   const navigate = useNavigate();
   const [add] = Spaces.useAddSpaceMembers();
 

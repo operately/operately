@@ -2,12 +2,12 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { ActiveSubitemsWarning } from "./ActiveSubitemsWarning";
 
 import { Form } from "./Form";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { goal } = useLoadedData();
 
@@ -27,9 +27,10 @@ export function Page() {
 }
 
 function Navigation() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />;
 }
 
 function PageTitle() {

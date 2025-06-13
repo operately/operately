@@ -6,7 +6,7 @@ import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
@@ -17,6 +17,7 @@ import { AccessLevel } from "@/features/projects/AccessLevel";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   return (
     <Pages.Page title="New Project">
@@ -47,6 +48,7 @@ function Navigation() {
 }
 
 function Form() {
+  const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
   const [add] = Projects.useCreateProject();
@@ -95,7 +97,7 @@ function Form() {
         spaceAccessLevel: form.values.access.spaceMembers,
       });
 
-      navigate(DeprecatedPaths.projectPath(res.project.id!));
+      navigate(paths.projectPath(res.project.id!));
     },
   });
 

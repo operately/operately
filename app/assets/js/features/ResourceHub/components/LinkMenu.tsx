@@ -4,11 +4,11 @@ import * as Hub from "@/models/resourceHubs";
 
 import { useNodesContext } from "@/features/ResourceHub";
 import { useBoolState } from "@/hooks/useBoolState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   link: Hub.ResourceHubLink;
 }
@@ -36,7 +36,8 @@ export function LinkMenu({ link }: Props) {
 }
 
 function EditLinkMenuItem({ link }: Props) {
-  const editPath = DeprecatedPaths.resourceHubEditLinkPath(link.id!);
+  const paths = usePaths();
+  const editPath = paths.resourceHubEditLinkPath(link.id!);
   const editId = createTestId("edit", link.id!);
 
   return (

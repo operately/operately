@@ -11,10 +11,10 @@ import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
-import { DeprecatedPaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
+import { Paths, usePaths } from "@/routes/paths";
 export default { name: "GoalV3Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
@@ -58,6 +58,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const navigate = useNavigate();
   const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
 
@@ -68,7 +69,7 @@ function Page() {
   assertPresent(goal.permissions?.canEdit);
 
   const [space, setSpace] = usePageField({
-    value: (data) => prepareSpace(data.goal.space),
+    value: (data) => prepareSpace(paths, data.goal.space),
     update: (v) => Api.goals.updateSpace({ goalId: goal.id!, spaceId: v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
@@ -80,19 +81,19 @@ function Page() {
   });
 
   const [champion, setChampion] = usePageField({
-    value: (data) => preparePerson(data.goal.champion),
+    value: (data) => preparePerson(paths, data.goal.champion),
     update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
-    value: (data) => preparePerson(data.goal.reviewer),
+    value: (data) => preparePerson(paths, data.goal.reviewer),
     update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
   const [parentGoal, setParentGoal] = usePageField({
-    value: (data) => prepareParentGoal(data.goal.parentGoal),
+    value: (data) => prepareParentGoal(paths, data.goal.parentGoal),
     update: (v) => Api.goals.updateParentGoal({ goalId: goal.id!, parentGoalId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
   });
@@ -100,13 +101,13 @@ function Page() {
   const championSearch = usePeopleSearch({
     scope: { type: "space", id: goal.space.id! },
     ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => preparePerson(p)!,
+    transformResult: (p) => preparePerson(paths, p)!,
   });
 
   const reviewerSearch = usePeopleSearch({
     scope: { type: "space", id: goal.space.id! },
     ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => preparePerson(p)!,
+    transformResult: (p) => preparePerson(paths, p)!,
   });
 
   const parentGoalSearch = useParentGoalSearch(goal);
@@ -116,7 +117,7 @@ function Page() {
     try {
       await Api.deleteGoal({ goalId: goal.id! });
       PageCache.invalidate(pageCacheKey(goal.id!));
-      navigate(DeprecatedPaths.spaceWorkMapPath(goal.space!.id, "goals"));
+      navigate(paths.spaceWorkMapPath(goal.space!.id, "goals"));
     } catch (error) {
       console.error("Failed to delete goal:", error);
       showErrorToast("Something went wrong", "Failed to delete the goal. Please try again.");
@@ -125,16 +126,16 @@ function Page() {
 
   const props: GoalPage.Props = {
     goalName: goal.name,
-    workmapLink: DeprecatedPaths.spaceWorkMapPath(goal.space.id, "goals"),
-    closeLink: DeprecatedPaths.goalClosePath(goal.id),
-    reopenLink: DeprecatedPaths.goalReopenPath(goal.id),
-    editGoalLink: DeprecatedPaths.goalEditPath(goal.id),
-    newCheckInLink: DeprecatedPaths.goalCheckInNewPath(goal.id),
-    newDiscussionLink: DeprecatedPaths.newGoalDiscussionPath(goal.id),
-    addSubprojectLink: DeprecatedPaths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
-    addSubgoalLink: DeprecatedPaths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
+    workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
+    closeLink: paths.goalClosePath(goal.id),
+    reopenLink: paths.goalReopenPath(goal.id),
+    editGoalLink: paths.goalEditPath(goal.id),
+    newCheckInLink: paths.goalCheckInNewPath(goal.id),
+    newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
+    addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
+    addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
     closedAt: Time.parse(goal.closedAt),
-    retrospective: prepareRetrospective(goal.retrospective),
+    retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,
     deleteGoal,
 
@@ -164,8 +165,8 @@ function Page() {
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
-    checkIns: prepareCheckIns(checkIns),
-    discussions: prepareDiscussions(discussions),
+    checkIns: prepareCheckIns(paths, checkIns),
+    discussions: prepareDiscussions(paths, discussions),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
@@ -270,7 +271,7 @@ function Page() {
   return <GoalPage key={goal.id!} {...props} />;
 }
 
-function preparePerson(person: People.Person | null | undefined) {
+function preparePerson(paths: Paths, person: People.Person | null | undefined) {
   if (!person) {
     return null;
   } else {
@@ -279,20 +280,20 @@ function preparePerson(person: People.Person | null | undefined) {
       fullName: person.fullName!,
       title: person.title || "",
       avatarUrl: person.avatarUrl || "",
-      profileLink: DeprecatedPaths.profilePath(person.id!),
+      profileLink: paths.profilePath(person.id!),
     };
   }
 }
 
-function prepareCheckIns(checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
+function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
   return checkIns.map((checkIn) => {
     assertPresent(checkIn.author, "author must be present in check-in");
 
     return {
       id: checkIn.id!,
-      author: preparePerson(checkIn.author)!,
+      author: preparePerson(paths, checkIn.author)!,
       date: Time.parse(checkIn.insertedAt!)!,
-      link: DeprecatedPaths.goalCheckInPath(checkIn.id!),
+      link: paths.goalCheckInPath(checkIn.id!),
       content: JSON.parse(checkIn.message!),
       commentCount: checkIn.commentsCount!,
       status: checkIn.status!,
@@ -300,11 +301,11 @@ function prepareCheckIns(checkIns: GoalProgressUpdate[]): GoalPage.Props["checkI
   });
 }
 
-function prepareParentGoal(g: Goal | null | undefined): GoalPage.Props["parentGoal"] {
+function prepareParentGoal(paths: Paths, g: Goal | null | undefined): GoalPage.Props["parentGoal"] {
   if (!g) {
     return null;
   } else {
-    return { id: g!.id!, link: DeprecatedPaths.goalPath(g!.id!), name: g!.name! };
+    return { id: g!.id!, link: paths.goalPath(g!.id!), name: g!.name! };
   }
 }
 
@@ -435,58 +436,65 @@ function usePeopleSearch<T>(hookParams: UsePeopleSearch<T>): PeopleSearchFn<T> {
   };
 }
 
-function prepareDiscussions(discussions: GoalDiscussion[]): GoalPage.Props["discussions"] {
+function prepareDiscussions(paths: Paths, discussions: GoalDiscussion[]): GoalPage.Props["discussions"] {
   return discussions.map((discussion) => {
     return {
       id: discussion.id,
       date: Time.parse(discussion.insertedAt)!,
       title: discussion.title,
-      author: preparePerson(discussion.author)!,
-      link: DeprecatedPaths.goalDiscussionPath(discussion.id),
+      author: preparePerson(paths, discussion.author)!,
+      link: paths.goalDiscussionPath(discussion.id),
       content: JSON.parse(discussion.content),
       commentCount: discussion.commentCount,
     };
   });
 }
 
-function prepareRetrospective(retrospective: GoalRetrospective | null | undefined): GoalPage.Props["retrospective"] {
+function prepareRetrospective(
+  paths: Paths,
+  retrospective: GoalRetrospective | null | undefined,
+): GoalPage.Props["retrospective"] {
   if (!retrospective) {
     return null;
   }
 
   return {
-    link: DeprecatedPaths.goalRetrospectivePath(retrospective.id),
+    link: paths.goalRetrospectivePath(retrospective.id),
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
-    author: preparePerson(retrospective.author)!,
+    author: preparePerson(paths, retrospective.author)!,
   };
 }
 
 function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
+  const paths = usePaths();
+
   return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
     const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id! });
-    const goals = data.goals.map(prepareParentGoal);
+    const goals = data.goals.map((g) => prepareParentGoal(paths, g));
 
     return goals.map((g) => g!);
   };
 }
 
-function prepareSpace(space: Space): GoalPage.Space {
+function prepareSpace(paths: Paths, space: Space): GoalPage.Space {
   return {
     id: space.id!,
     name: space.name!,
-    link: DeprecatedPaths.spacePath(space.id!),
+    link: paths.spacePath(space.id!),
   };
 }
 
 function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
+  const paths = usePaths();
+
   return async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
     const data = await Api.spaces.search({ query: query });
 
     return data.spaces.map((space) => ({
       id: space.id!,
       name: space.name!,
-      link: DeprecatedPaths.spacePath(space.id!),
+      link: paths.spacePath(space.id!),
     }));
   };
 }

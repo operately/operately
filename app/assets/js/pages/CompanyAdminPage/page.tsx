@@ -4,14 +4,16 @@ import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { DeprecatedPaths, includesId } from "@/routes/paths";
+import { includesId } from "@/routes/paths";
 import { Link } from "turboui";
 import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";
 import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { OptionsMenuItem } from "./OptionsMenu";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { company } = useLoadedData();
 
   return (
@@ -31,7 +33,7 @@ export function Page() {
             </p>
 
             <p className="mt-2">
-              <Link to={DeprecatedPaths.companyPermissionsPath()}>View permission breakdown</Link>
+              <Link to={paths.companyPermissionsPath()}>View permission breakdown</Link>
             </p>
           </Paper.Section>
 
@@ -47,6 +49,7 @@ export function Page() {
 }
 
 function AdminsMenu() {
+  const paths = usePaths();
   const { adminIds, ownerIds } = useLoadedData();
 
   const me = useMe();
@@ -58,9 +61,9 @@ function AdminsMenu() {
     return null;
   }
 
-  const managePeople = DeprecatedPaths.companyManagePeoplePath();
-  const renameCompanyPath = DeprecatedPaths.companyRenamePath();
-  const restorePath = DeprecatedPaths.companyAdminRestoreSuspendedPeoplePath();
+  const managePeople = paths.companyManagePeoplePath();
+  const renameCompanyPath = paths.companyRenamePath();
+  const restorePath = paths.companyAdminRestoreSuspendedPeoplePath();
 
   return (
     <Paper.Section title="As an admin or owner, you can:">
@@ -80,6 +83,7 @@ function AdminsMenu() {
 }
 
 function OwnersMenu() {
+  const paths = usePaths();
   const { ownerIds } = useLoadedData();
 
   const me = useMe();
@@ -90,8 +94,8 @@ function OwnersMenu() {
     return null;
   }
 
-  const manageTrustedDomains = DeprecatedPaths.companyAdminManageTrustedDomainsPath();
-  const manageAdmins = DeprecatedPaths.companyManageAdminsPath();
+  const manageTrustedDomains = paths.companyAdminManageTrustedDomainsPath();
+  const manageAdmins = paths.companyManageAdminsPath();
 
   return (
     <Paper.Section title="As an owner, you can:">

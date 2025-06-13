@@ -8,21 +8,22 @@ import RichContent from "@/components/RichContent";
 import { Avatar } from "turboui";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";
 import plurarize from "@/utils/plurarize";
 import { DivLink } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   if (!goal.lastCheckIn) return null;
 
   assertPresent(goal.lastCheckIn.author, "author must be present in lastCheckIn");
 
   const { author, message } = goal.lastCheckIn;
-  const path = DeprecatedPaths.goalCheckInPath(goal.lastCheckIn.id!);
-  const championProfilePath = DeprecatedPaths.profilePath(author.id!);
+  const path = paths.goalCheckInPath(goal.lastCheckIn.id!);
+  const championProfilePath = paths.profilePath(author.id!);
 
   return (
     <div className="flex items-start gap-4">
@@ -51,9 +52,10 @@ export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
 }
 
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   if (!goal.lastCheckIn) return null;
 
-  const path = DeprecatedPaths.goalCheckInPath(goal.lastCheckIn!.id!);
+  const path = paths.goalCheckInPath(goal.lastCheckIn!.id!);
 
   return (
     <div className="flex items-center gap-1 text-sm leading-none text-content-dimmed">

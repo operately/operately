@@ -4,15 +4,15 @@ import { PageModule } from "@/routes/types";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
-
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyPermissionsPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const paths = usePaths();
   return (
     <Pages.Page title="Permissions">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={DeprecatedPaths.companyAdminPath()} title="Back to Company Admin" />
+        <Paper.NavigateBack to={paths.companyAdminPath()} title="Back to Company Admin" />
         <div className="font-extrabold text-2xl mb-4 text-center">Permission Breakdown</div>
         <Paper.Body>
           <Header />

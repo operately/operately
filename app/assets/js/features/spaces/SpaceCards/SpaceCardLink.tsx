@@ -1,8 +1,9 @@
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { SpaceCard, SpaceCardProps } from "./SpaceCard";
 
+import { usePaths } from "@/routes/paths";
 export function SpaceCardLink(props: SpaceCardProps) {
-  return <SpaceCard {...props} linkTo={DeprecatedPaths.spacePath(props.space.id!)} />;
+  const paths = usePaths();
+  return <SpaceCard {...props} linkTo={paths.spacePath(props.space.id!)} />;
 }

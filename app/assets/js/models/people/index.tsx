@@ -2,8 +2,7 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 import Api from "@/api";
-import { DeprecatedPaths } from "@/routes/paths";
-
+import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
 export { getPeople, getPerson, updateProfile, useGetMe, useGetPeople } from "@/api";
@@ -136,17 +135,21 @@ export interface PersonWithLink extends Person {
  * @param useV2 - Whether to use V2 profile paths (optional, defaults to false)
  * @returns Person(s) with added link property
  */
-export function toPersonWithLink(person: Person, useV2?: boolean): PersonWithLink;
-export function toPersonWithLink(people: Person[], useV2?: boolean): PersonWithLink[];
-export function toPersonWithLink(personOrPeople: Person | Person[], useV2 = false): PersonWithLink | PersonWithLink[] {
+export function toPersonWithLink(paths: Paths, person: Person, useV2?: boolean): PersonWithLink;
+export function toPersonWithLink(paths: Paths, people: Person[], useV2?: boolean): PersonWithLink[];
+export function toPersonWithLink(
+  paths: Paths,
+  personOrPeople: Person | Person[],
+  useV2 = false,
+): PersonWithLink | PersonWithLink[] {
   if (Array.isArray(personOrPeople)) {
-    return personOrPeople.map((person) => toPersonWithLink(person, useV2));
+    return personOrPeople.map((person) => toPersonWithLink(paths, person, useV2));
   }
 
   const person = personOrPeople;
 
   return {
     ...person,
-    link: useV2 ? DeprecatedPaths.profileV2Path(person.id!) : DeprecatedPaths.profilePath(person.id!),
+    link: useV2 ? paths.profileV2Path(person.id!) : paths.profilePath(person.id!),
   };
 }

@@ -5,10 +5,11 @@ import * as Icons from "@tabler/icons-react";
 import { Avatar, Link } from "turboui";
 import { useLoadedData } from "./loader";
 
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import classNames from "classnames";
 import { OrgChart, OrgChartNode, useOrgChart } from "./useOrgChart";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { people } = useLoadedData();
 
@@ -76,8 +77,9 @@ function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
 }
 
 function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
+  const paths = usePaths();
   const person = node.person;
-  const path = DeprecatedPaths.profilePath(person.id!);
+  const path = paths.profilePath(person.id!);
 
   return (
     <div className="">
