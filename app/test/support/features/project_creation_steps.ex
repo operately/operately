@@ -75,8 +75,11 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
     |> UI.fill(testid: "name", with: fields.name)
     |> UI.select_person_in(id: "champion", name: fields.champion.full_name)
-    |> UI.click(testid: "space")
-    |> UI.click_text("Test Group")
+    |> run_if(fields[:space], fn ctx ->
+      ctx
+      |> UI.click(testid: "space")
+      |> UI.click_text(fields.space.name)
+    end)
     |> run_if(fields[:reviewer], fn ctx ->
       ctx
       |> UI.select_person_in(testid: "reviewer", name: fields.reviewer.full_name)
@@ -92,6 +95,12 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       |> UI.fill(testid: "creatorrole", with: "Responsible for managing the project")
     end)
     |> UI.click(testid: "submit")
+  end
+
+  step :select_space, ctx, space_name do
+    ctx
+    |> UI.click(testid: "space")
+    |> UI.click_text(space_name)
   end
 
   step :assert_project_created, ctx, fields do

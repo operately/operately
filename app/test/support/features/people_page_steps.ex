@@ -26,4 +26,12 @@ defmodule Operately.Support.Features.PeoplePageSteps do
       |> UI.assert_text(text)
     end)
   end
+
+  step :click_about_tab, ctx do
+    UI.click(ctx, testid: "tab-about")
+  end
+
+  step :click_activity_tab, ctx do
+    UI.click(ctx, testid: "tab-activity")
+  end
 end

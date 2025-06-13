@@ -33,7 +33,6 @@ defmodule Operately.Features.NotificationsTest do
 
   feature "mark all unread notifications as read", ctx do
     ctx
-    |> UI.login_as(ctx.reviewer)
     |> Steps.given_a_project_creation_notification_exists()
     |> UI.login_as(ctx.champion)
     |> Steps.assert_notification_count(2)

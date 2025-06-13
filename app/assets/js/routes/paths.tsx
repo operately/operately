@@ -421,8 +421,12 @@ export class Paths {
     return this.createCompanyPath(["people", personId, "v2"]);
   }
 
-  profilePath(personId: string) {
-    return this.createCompanyPath(["people", personId]);
+  profilePath(personId: string, tab?: string) {
+    if (tab) {
+      return this.createCompanyPath(["people", personId]) + "?tab=" + tab;
+    } else {
+      return this.createCompanyPath(["people", personId]);
+    }
   }
 
   projectEditTimelinePath(projectId: string) {
