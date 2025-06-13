@@ -278,10 +278,6 @@ export class Paths {
     return createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
   }
 
-  static spaceGoalsPath(spaceId: string) {
-    return createCompanyPath(["spaces", spaceId, "goals"]);
-  }
-
   static spaceDiscussionsPath(spaceId: string) {
     return createCompanyPath(["spaces", spaceId, "discussions"]);
   }
@@ -336,10 +332,6 @@ export class Paths {
 
   static projectsPath() {
     return createCompanyPath(["projects"]);
-  }
-
-  static goalsPath() {
-    return createCompanyPath(["goals"]);
   }
 
   static goalAboutPath(goalId: string) {
@@ -408,10 +400,6 @@ export class Paths {
 
   static goalEditPath(goalId: string) {
     return createCompanyPath(["goals", goalId, "edit"]);
-  }
-
-  static profileV2Path(personId: string) {
-    return createCompanyPath(["people", personId, "v2"]);
   }
 
   static profilePath(personId: string) {

@@ -45,7 +45,7 @@ function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void
     if (loading) return;
     await deleteGoal({ goalId: goal.id });
     toggleShowDeleteGoal();
-    navigate(Paths.goalsPath());
+    navigate(Paths.workMapPath());
   };
 
   return (

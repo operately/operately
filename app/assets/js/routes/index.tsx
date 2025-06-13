@@ -85,7 +85,6 @@ export function createAppRoutes() {
         pageRoute("people", pages.PeoplePage),
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
         pageRoute("people/:id", pages.ProfilePage),
-        pageRoute("people/:id/v2", pages.ProfileV2Page),
         pageRoute("people/:id/goals", pages.ProfileGoalsPage),
         pageRoute("people/:id/profile/edit", pages.ProfileEditPage),
 
