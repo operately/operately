@@ -33,7 +33,6 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
     navigate(paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
 
   const navigateToNewLink = (type?: LinkOptions) => {
-    const paths = usePaths();
     navigate(
       paths.resourceHubNewLinkPath(resourceHub.id!, {
         folderId: folder?.id || undefined,
