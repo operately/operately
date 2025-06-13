@@ -5,7 +5,7 @@ import type { ActivityContentGoalCheckInAcknowledgement } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
@@ -14,8 +14,8 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.goalCheckInPath(content(activity).update!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.goalCheckInPath(content(activity).update!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const GoalCheckInAcknowledgement: ActivityHandler = {
     const goal = content(activity).goal!;
     const update = content(activity).update!;
 
-    const path = DeprecatedPaths.goalCheckInPath(update.id!);
+    const path = paths.goalCheckInPath(update.id!);
     const link = <Link to={path}>Check-In</Link>;
 
     if (page === "goal") {

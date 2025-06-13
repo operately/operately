@@ -2,7 +2,7 @@ import * as People from "@/models/people";
 
 import type { ActivityContentResourceHubLinkCreated } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, linkLink, resourceHubLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
@@ -11,8 +11,8 @@ const ResourceHubLinkCreated: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
-    return DeprecatedPaths.resourceHubLinkPath(content(activity).link?.id!);
+  pagePath(paths, activity: Activity) {
+    return paths.resourceHubLinkPath(content(activity).link?.id!);
   },
 
   PageTitle(_props: { activity: any }) {

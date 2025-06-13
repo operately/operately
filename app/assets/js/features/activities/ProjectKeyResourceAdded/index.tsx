@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import React from "react";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectKeyResourceAdded: ActivityHandler = {
@@ -12,8 +12,8 @@ const ProjectKeyResourceAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

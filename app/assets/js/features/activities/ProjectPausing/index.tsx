@@ -3,7 +3,7 @@ import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectPausing: ActivityHandler = {
@@ -11,8 +11,8 @@ const ProjectPausing: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

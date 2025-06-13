@@ -1,6 +1,6 @@
 import type { ActivityContentMessageArchiving } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { feedTitle } from "../feedItemLinks";
@@ -11,7 +11,7 @@ const MessageArchiving: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
+  pagePath(paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 
@@ -30,7 +30,7 @@ const MessageArchiving: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const title = content(activity).title!;
     const space = content(activity).space!;
-    const spaceLink = <Link to={DeprecatedPaths.spacePath(space.id!)}>{space.name!}</Link>;
+    const spaceLink = <Link to={paths.spacePath(space.id!)}>{space.name!}</Link>;
 
     if (page === "space") {
       return feedTitle(activity, "deleted:", title);

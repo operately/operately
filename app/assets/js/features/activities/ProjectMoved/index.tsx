@@ -5,7 +5,7 @@ import type { ActivityContentProjectMoved } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -14,8 +14,8 @@ const ProjectMoved: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity) {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -42,8 +42,8 @@ const ProjectMoved: ActivityHandler = {
     const oldSpace = content(activity).oldSpace!;
     const newSpace = content(activity).newSpace!;
 
-    const oldSpacePath = DeprecatedPaths.spacePath(oldSpace.id!);
-    const newSpacePath = DeprecatedPaths.spacePath(newSpace.id!);
+    const oldSpacePath = paths.spacePath(oldSpace.id!);
+    const newSpacePath = paths.spacePath(newSpace.id!);
 
     const oldLink = <Link to={oldSpacePath}>{oldSpace.name}</Link>;
     const newLink = <Link to={newSpacePath}>{newSpace.name}</Link>;
