@@ -34,7 +34,7 @@ function NewGoalForSpacePage({ form }: { form: FormState }) {
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
-        <Paper.NavigateBack to={Paths.goalsPath()} title={`Back to ${space!.name} Space`} />
+        <Paper.NavigateBack to={Paths.workMapPath()} title={`Back to ${space!.name} Space`} />
 
         <h1 className="mb-4 font-bold text-3xl text-center">Adding a new subgoal for {space!.name}</h1>
 
@@ -54,7 +54,7 @@ function NewGoalPage({ form }: { form: FormState }) {
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
-        <Paper.NavigateBack to={Paths.goalsPath()} title="Back to Goals" />
+        <Paper.NavigateBack to={Paths.workMapPath()} title="Back to Work Map" />
 
         <h1 className="mb-4 font-bold text-3xl text-center">
           Adding a new {isCompanyWide ? "company-wide" : " "} goal

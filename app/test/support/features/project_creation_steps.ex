@@ -60,10 +60,8 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   step :start_adding_project, ctx do
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.click(testid: "goals-and-projects")
-    |> UI.click(testid: "add-options")
-    |> UI.click(testid: "add-project")
+    |> UI.click(testid: "new-dropdown")
+    |> UI.click(testid: "new-dropdown-new-project")
   end
 
   step :start_adding_project_from_lobby, ctx do
@@ -77,6 +75,8 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
     |> UI.fill(testid: "name", with: fields.name)
     |> UI.select_person_in(id: "champion", name: fields.champion.full_name)
+    |> UI.click(testid: "space")
+    |> UI.click_text("Test Group")
     |> run_if(fields[:reviewer], fn ctx ->
       ctx
       |> UI.select_person_in(testid: "reviewer", name: fields.reviewer.full_name)

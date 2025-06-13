@@ -136,17 +136,17 @@ export interface PersonWithLink extends Person {
  * @param useV2 - Whether to use V2 profile paths (optional, defaults to false)
  * @returns Person(s) with added link property
  */
-export function toPersonWithLink(person: Person, useV2?: boolean): PersonWithLink;
-export function toPersonWithLink(people: Person[], useV2?: boolean): PersonWithLink[];
-export function toPersonWithLink(personOrPeople: Person | Person[], useV2 = false): PersonWithLink | PersonWithLink[] {
+export function toPersonWithLink(person: Person): PersonWithLink;
+export function toPersonWithLink(people: Person[]): PersonWithLink[];
+export function toPersonWithLink(personOrPeople: Person | Person[]): PersonWithLink | PersonWithLink[] {
   if (Array.isArray(personOrPeople)) {
-    return personOrPeople.map((person) => toPersonWithLink(person, useV2));
+    return personOrPeople.map((person) => toPersonWithLink(person));
   }
 
   const person = personOrPeople;
 
   return {
     ...person,
-    link: useV2 ? Paths.profileV2Path(person.id!) : Paths.profilePath(person.id!),
+    link: Paths.profilePath(person.id!),
   };
 }
