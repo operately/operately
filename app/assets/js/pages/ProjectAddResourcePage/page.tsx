@@ -37,7 +37,7 @@ export function Page() {
 }
 
 function Form({ project, form }) {
-  const onCancel = useNavigateTo(DeprecatedPaths.projectEditResourcesPath(project.id));
+  const onCancel = useNavigateTo(paths.projectEditResourcesPath(project.id));
   const namePlaceholder = KeyResources.placeholderName(form.resourceType);
 
   return (

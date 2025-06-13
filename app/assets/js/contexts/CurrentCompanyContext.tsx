@@ -60,7 +60,7 @@ export function useMentionedPersonLookupFn(): (
   return async (id: string) => {
     const person = ctx.people?.find((p) => p.id === id);
     if (person) {
-      return { ...person, profileLink: DeprecatedPaths.profilePath(person.id) };
+      return { ...person, profileLink: paths.profilePath(person.id) };
     }
     ctx.peopleRefetch();
     return null;

@@ -16,8 +16,8 @@ export function RelatedWork() {
 
   assertPresent(goal.space, "space must be present in goal");
 
-  const newGoalPath = DeprecatedPaths.goalNewPath({ parentGoalId: goal.id! });
-  const newProjectPath = DeprecatedPaths.newProjectPath({ goalId: goal.id!, spaceId: goal.space.id! });
+  const newGoalPath = paths.goalNewPath({ parentGoalId: goal.id! });
+  const newProjectPath = paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space.id! });
 
   return (
     <DisableInEditMode>

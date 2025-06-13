@@ -11,7 +11,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   await redirectIfFeatureEnabled(params, {
     feature: "work_map_page",
-    path: DeprecatedPaths.workMapPath(),
+    path: paths.workMapPath(),
   });
 
   const [goals, projects] = await Promise.all([

@@ -11,7 +11,7 @@ export function User() {
 
   return (
     <Link
-      to={DeprecatedPaths.accountPath()}
+      to={paths.accountPath()}
       className="flex items-center cursor-pointer border border-stroke-base rounded-full"
       style={{ height: "32px", width: "32px" }}
       data-test-id="account-menu"

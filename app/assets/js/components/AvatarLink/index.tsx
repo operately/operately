@@ -8,7 +8,7 @@ interface AvatarLinkProps extends AvatarProps {
 
 export function AvatarLink({ className, ...props }: AvatarLinkProps) {
   return (
-    <DivLink to={DeprecatedPaths.profilePath(props.person!.id!)} className={className}>
+    <DivLink to={paths.profilePath(props.person!.id!)} className={className}>
       <Avatar {...props} />
     </DivLink>
   );

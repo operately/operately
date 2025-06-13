@@ -23,12 +23,12 @@ interface LoaderResult {
 async function loader({ params }): Promise<LoaderResult> {
   await redirectIfFeatureEnabled(params, {
     feature: "goal_page_v3",
-    path: DeprecatedPaths.goalV3Path(params.id),
+    path: paths.goalV3Path(params.id),
   });
 
   await redirectIfFeatureEnabled(params, {
     feature: "new_goal_page",
-    path: DeprecatedPaths.goalV2Path(params.id),
+    path: paths.goalV2Path(params.id),
   });
 
   return {

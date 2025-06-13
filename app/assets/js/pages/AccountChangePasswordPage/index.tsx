@@ -30,9 +30,9 @@ function Page() {
         newPasswordConfirmation: form.values.confirmPassword,
       });
 
-      navigate(DeprecatedPaths.accountSecurityPath());
+      navigate(paths.accountSecurityPath());
     },
-    cancel: () => navigate(DeprecatedPaths.accountSecurityPath()),
+    cancel: () => navigate(paths.accountSecurityPath()),
   });
 
   return (

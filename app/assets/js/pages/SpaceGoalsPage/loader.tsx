@@ -14,7 +14,7 @@ interface LoadedData {
 export async function loader({ params }): Promise<LoadedData> {
   await redirectIfFeatureEnabled(params, {
     feature: "space_work_map",
-    path: DeprecatedPaths.spaceWorkMapPath(params.id),
+    path: paths.spaceWorkMapPath(params.id),
   });
 
   const spacePromise = Spaces.getSpace({

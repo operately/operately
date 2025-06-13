@@ -18,7 +18,7 @@ export function useForm(goal: Goals.Goal, subscriptionsState: SubscriptionsState
     mentionSearchScope: { type: "goal", id: goal.id! },
   });
 
-  const goalPath = DeprecatedPaths.goalPath(goal.id!);
+  const goalPath = paths.goalPath(goal.id!);
 
   const [reopen] = Goals.useReopenGoal();
 

@@ -36,14 +36,14 @@ function Page() {
         companyPermissions: form.values.access.companyMembers,
       });
 
-      navigate(DeprecatedPaths.spacePath(res.group.id!));
+      navigate(paths.spacePath(res.group.id!));
     },
   });
 
   return (
     <Pages.Page title="Create a new space">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={DeprecatedPaths.homePath()} title="Back to Home" />
+        <Paper.NavigateBack to={paths.homePath()} title="Back to Home" />
         <Title />
 
         <Forms.Form form={form}>

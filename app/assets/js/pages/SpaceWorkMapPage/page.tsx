@@ -13,7 +13,7 @@ export function Page() {
       title={title}
       items={workMap}
       columnOptions={{ hideSpace: true }}
-      navigation={[{ to: DeprecatedPaths.spacePath(space.id), label: space.name }]}
+      navigation={[{ to: paths.spacePath(space.id), label: space.name }]}
     />
   );
 }

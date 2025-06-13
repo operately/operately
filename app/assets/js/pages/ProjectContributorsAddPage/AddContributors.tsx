@@ -38,7 +38,7 @@ function newContributor() {
 
 export function AddContributors() {
   const { project } = Pages.useLoadedData() as LoaderResult;
-  const gotoContribPage = useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
+  const gotoContribPage = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();
 
   const form = Forms.useForm({
@@ -65,7 +65,7 @@ export function AddContributors() {
   return (
     <Pages.Page title={["Add contributors", project.name!]}>
       <Paper.Root size="small">
-        <Paper.NavigateBack to={DeprecatedPaths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
+        <Paper.NavigateBack to={paths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
         <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
 
         <Forms.Form form={form}>

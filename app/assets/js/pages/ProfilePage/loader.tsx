@@ -9,7 +9,7 @@ interface LoaderResult {
 export async function loader({ params }): Promise<LoaderResult> {
   await redirectIfFeatureEnabled(params, {
     feature: "new_profile_page",
-    path: DeprecatedPaths.profileV2Path(params.id),
+    path: paths.profileV2Path(params.id),
   });
 
   return {

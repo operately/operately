@@ -42,7 +42,7 @@ function PageNavigation() {
   return (
     <Paper.Navigation
       testId="navigation"
-      items={[{ to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
+      items={[{ to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
     />
   );
 }

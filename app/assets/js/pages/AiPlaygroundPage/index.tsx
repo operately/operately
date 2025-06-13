@@ -19,7 +19,7 @@ async function loader({ params }): Promise<LoaderResult> {
   if (Companies.hasFeature(company, "ai_playground")) {
     return {};
   } else {
-    throw redirect(DeprecatedPaths.homePath());
+    throw redirect(paths.homePath());
   }
 }
 

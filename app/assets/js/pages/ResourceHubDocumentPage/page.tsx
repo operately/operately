@@ -145,7 +145,7 @@ function ContinueEditingDraft() {
 
   const [publish] = usePublishResourceHubDocument();
   const refresh = Pages.useRefresh();
-  const editPath = DeprecatedPaths.resourceHubEditDocumentPath(document.id!);
+  const editPath = paths.resourceHubEditDocumentPath(document.id!);
 
   const publishHandler = async () => {
     await publish({ documentId: document.id });

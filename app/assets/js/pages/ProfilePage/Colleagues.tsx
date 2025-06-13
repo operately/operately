@@ -126,9 +126,7 @@ function PersonCard(props: PersonCardProps) {
   const testid = `person-card-${person.id}`;
 
   if (link) {
-    return (
-      <DivLink to={DeprecatedPaths.profilePath(person.id!)} className={className} children={content} testId={testid} />
-    );
+    return <DivLink to={paths.profilePath(person.id!)} className={className} children={content} testId={testid} />;
   } else {
     return <div className={className} children={content} data-test-id={testid} />;
   }

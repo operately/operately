@@ -39,7 +39,7 @@ function PersonCard({ person }: { person: Person }) {
 
         <div className="flex flex-col">
           <div className="font-bold leading-tight">
-            <Link to={DeprecatedPaths.profilePath(person.id!!)} underline="never" testId={testId}>
+            <Link to={paths.profilePath(person.id!!)} underline="never" testId={testId}>
               {person.fullName}
             </Link>
           </div>

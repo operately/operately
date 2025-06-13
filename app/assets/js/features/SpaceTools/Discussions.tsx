@@ -12,7 +12,7 @@ interface Props {
 }
 
 export function Discussions(props: Props) {
-  const path = DeprecatedPaths.discussionsPath(props.space.id!);
+  const path = paths.discussionsPath(props.space.id!);
   const isZeroState = props.discussions.length < 1;
 
   return (

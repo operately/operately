@@ -95,7 +95,7 @@ function Form() {
         spaceAccessLevel: form.values.access.spaceMembers,
       });
 
-      navigate(DeprecatedPaths.projectPath(res.project.id!));
+      navigate(paths.projectPath(res.project.id!));
     },
   });
 

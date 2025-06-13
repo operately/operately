@@ -53,7 +53,7 @@ function Form() {
   const { project, space } = Pages.useLoadedData();
   const parentAccessLevel = space.accessLevels!;
 
-  const navigateToContributorsPath = useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
+  const navigateToContributorsPath = useNavigateTo(paths.projectContributorsPath(project.id!));
   const [edit] = useEditProjectPermissions();
 
   const form = Forms.useForm({

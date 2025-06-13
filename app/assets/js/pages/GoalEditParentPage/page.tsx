@@ -13,7 +13,7 @@ export function Page() {
   return (
     <Pages.Page title={["Changing Parent", goal.name!]}>
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />
+        <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body>
           <div className="text-content-accent text-2xl font-extrabold mb-8">Choose a new parent for the goal</div>
@@ -29,7 +29,7 @@ function GoalList() {
   const { goal, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const goalPath = DeprecatedPaths.goalPath(goal.id!);
+  const goalPath = paths.goalPath(goal.id!);
 
   const [select] = Goals.useChangeGoalParent();
 

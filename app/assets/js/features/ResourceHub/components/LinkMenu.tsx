@@ -35,7 +35,7 @@ export function LinkMenu({ link }: Props) {
 }
 
 function EditLinkMenuItem({ link }: Props) {
-  const editPath = DeprecatedPaths.resourceHubEditLinkPath(link.id!);
+  const editPath = paths.resourceHubEditLinkPath(link.id!);
   const editId = createTestId("edit", link.id!);
 
   return (

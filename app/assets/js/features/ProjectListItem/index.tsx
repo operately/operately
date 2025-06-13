@@ -38,7 +38,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
 }
 
 function ProjectNameLine({ project }) {
-  const path = DeprecatedPaths.projectPath(project.id);
+  const path = paths.projectPath(project.id);
 
   return (
     <div className="font-extrabold flex items-center gap-2">
@@ -60,7 +60,7 @@ function ProjectStatusLine({ project }: { project: Projects.Project }) {
             Closed on <FormattedTime time={project.closedAt!} format="short-date" /> &middot;{" "}
           </>
         )}
-        <Link to={DeprecatedPaths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
+        <Link to={paths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
       </div>
     );
   } else {

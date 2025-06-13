@@ -33,10 +33,10 @@ export function Page() {
 function Header() {
   const { space } = useLoadedData();
 
-  const newGoalPath = DeprecatedPaths.spaceNewGoalPath(space.id!);
-  const newProjectPath = DeprecatedPaths.newProjectPath({
+  const newGoalPath = paths.spaceNewGoalPath(space.id!);
+  const newProjectPath = paths.newProjectPath({
     spaceId: space.id!,
-    backPath: DeprecatedPaths.spaceGoalsPath(space.id!),
+    backPath: paths.spaceGoalsPath(space.id!),
     backPathName: `Back to ${space.name} Goal Map`,
   });
 

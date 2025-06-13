@@ -45,7 +45,7 @@ export function CopyDocumentModal(props: FormProps) {
         copiedDocumentId: resource.id,
       });
 
-      navigate(DeprecatedPaths.resourceHubDocumentPath(res.document.id));
+      navigate(paths.resourceHubDocumentPath(res.document.id));
     },
   });
 

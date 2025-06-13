@@ -146,6 +146,6 @@ export function toPersonWithLink(personOrPeople: Person | Person[], useV2 = fals
 
   return {
     ...person,
-    link: useV2 ? DeprecatedPaths.profileV2Path(person.id!) : DeprecatedPaths.profilePath(person.id!),
+    link: useV2 ? paths.profileV2Path(person.id!) : paths.profilePath(person.id!),
   };
 }

@@ -39,7 +39,7 @@ function Form() {
     },
     submit: async () => {
       await People.updateProfile({ id: me.id, theme: form.values.theme });
-      navigate(DeprecatedPaths.accountPath());
+      navigate(paths.accountPath());
     },
   });
 

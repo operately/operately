@@ -14,7 +14,7 @@ interface LoaderResult {
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   await redirectIfFeatureNotEnabled(params, {
     feature: "work_map_page",
-    path: DeprecatedPaths.goalsPath(),
+    path: paths.goalsPath(),
   });
 
   return await PageCache.fetch({

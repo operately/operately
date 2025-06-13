@@ -46,8 +46,8 @@ export function useForm(options: FormOptions): FormState {
 
   const redirect = useNavigateTo(
     options.mode === "create"
-      ? DeprecatedPaths.projectPath(options.project.id!)
-      : DeprecatedPaths.projectRetrospectivePath(options.project.id!),
+      ? paths.projectPath(options.project.id!)
+      : paths.projectRetrospectivePath(options.project.id!),
   );
 
   const [post, { loading: posting }] = Projects.useCloseProject();

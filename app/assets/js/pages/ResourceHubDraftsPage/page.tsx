@@ -33,8 +33,8 @@ function PageNavigation() {
     <Paper.Navigation
       testId="navigation"
       items={[
-        { to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
-        { to: DeprecatedPaths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
+        { to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! },
+        { to: paths.resourceHubPath(resourceHub.id!), label: resourceHub.name! },
       ]}
     />
   );

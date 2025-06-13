@@ -16,7 +16,7 @@ export function Page() {
   return (
     <Pages.Page title={["Trusted Email Domains", company.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />
+        <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Trusted Email Domains</div>

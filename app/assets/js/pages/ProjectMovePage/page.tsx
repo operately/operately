@@ -44,7 +44,7 @@ function NoOtherSpaces() {
 }
 
 function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; candidateSpaces: Spaces.Space[] }) {
-  const gotoProject = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
+  const gotoProject = useNavigateTo(paths.projectPath(project.id!));
   const [move] = Projects.useMoveProjectToSpace();
 
   const moveProjectToSpace = async (project: Projects.Project, space: Spaces.Space) => {

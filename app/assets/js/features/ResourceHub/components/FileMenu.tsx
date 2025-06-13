@@ -48,7 +48,7 @@ function DownloadFileMenuItem({ file }: Props) {
 }
 
 function EditFileMenuItem({ file }: Props) {
-  const editPath = DeprecatedPaths.resourceHubEditFilePath(file.id!);
+  const editPath = paths.resourceHubEditFilePath(file.id!);
   const editId = createTestId("edit", file.id!);
 
   return (

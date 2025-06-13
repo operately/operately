@@ -62,7 +62,7 @@ export class ProjectNode extends Node {
   }
 
   linkTo(): string {
-    return DeprecatedPaths.projectPath(this.project!.id!);
+    return paths.projectPath(this.project!.id!);
   }
 
   childrenInfoLabel(): string | null {

@@ -88,5 +88,5 @@ function DiscardLink({ form }) {
 }
 
 function Navigation({ space }) {
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
 }

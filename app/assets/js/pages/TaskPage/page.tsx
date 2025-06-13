@@ -43,8 +43,8 @@ export function Page() {
 }
 
 function Navigation({ task }: { task: Tasks.Task }) {
-  const projectPath = DeprecatedPaths.projectPath(task.project!.id!);
-  const milestonePath = DeprecatedPaths.projectMilestonePath(task.milestone!.id!);
+  const projectPath = paths.projectPath(task.project!.id!);
+  const milestonePath = paths.projectMilestonePath(task.milestone!.id!);
 
   return (
     <Paper.Navigation

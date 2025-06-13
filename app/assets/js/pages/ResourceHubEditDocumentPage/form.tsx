@@ -25,7 +25,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         addError("content", "Content is required");
       }
     },
-    cancel: () => navigate(DeprecatedPaths.resourceHubDocumentPath(document.id!)),
+    cancel: () => navigate(paths.resourceHubDocumentPath(document.id!)),
     submit: async (type: "save" | "publish-draft") => {
       const { title, content } = form.values;
 
@@ -45,7 +45,7 @@ export function Form({ document }: { document: ResourceHubDocument }) {
         });
       }
 
-      navigate(DeprecatedPaths.resourceHubDocumentPath(document.id!));
+      navigate(paths.resourceHubDocumentPath(document.id!));
     },
   });
 

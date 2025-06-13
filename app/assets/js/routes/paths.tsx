@@ -12,19 +12,10 @@ import { WorkMap } from "turboui";
 const UNACCEPTABLE_PATH_CHARACTERS = ["/", "?", "#", "[", "]"];
 
 export class Paths {
-  //
-  // When deprecatedLookup is true, the paths will use the old lookup method
-  // which is based on the company ID in the window.location.pathname.
-  //
-  // We've deprecated this method and replaced it with a new one that uses
-  // a more robust way to get the company ID, based on the react-router context.
-  //
-  private deprecatedLookup: boolean;
-  private companyId?: string | null;
+  private companyId: string;
 
-  constructor(opts: { deprecatedLookup?: boolean; companyId: string | null }) {
-    this.companyId = opts.companyId || null;
-    this.deprecatedLookup = opts.deprecatedLookup || false;
+  constructor(opts: { companyId: string }) {
+    this.companyId = opts.companyId;
   }
 
   static lobbyPath() {
@@ -515,8 +506,6 @@ export class Paths {
   }
 }
 
-export const DeprecatedPaths = new Paths({ deprecatedLookup: true, companyId: null });
-
 export function usePaths() {
   const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } };
 
@@ -529,7 +518,7 @@ export function usePaths() {
   }
 
   const paths = React.useMemo(() => {
-    return new Paths({ deprecatedLookup: false, companyId: data.company.id });
+    return new Paths({ companyId: data.company.id });
   }, [data.company.id]);
 
   return paths;

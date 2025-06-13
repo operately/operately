@@ -32,7 +32,7 @@ export function Page() {
 function Navigation() {
   const { project } = useLoadedData();
 
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />;
 }
 
 function Header() {
@@ -88,7 +88,7 @@ function isCurrentYear(year: number) {
 
 function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
   const author = checkIn.author!;
-  const path = DeprecatedPaths.projectCheckInPath(checkIn.id!);
+  const path = paths.projectCheckInPath(checkIn.id!);
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>

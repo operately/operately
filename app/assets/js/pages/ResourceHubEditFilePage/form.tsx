@@ -27,7 +27,7 @@ export function Form({ file }: { file: ResourceHubFile }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.resourceHubFilePath(file.id!));
+      navigate(paths.resourceHubFilePath(file.id!));
     },
     submit: async () => {
       const { title, description } = form.values;
@@ -38,9 +38,9 @@ export function Form({ file }: { file: ResourceHubFile }) {
           name: !extension ? title : [title, extension].join("."),
           description: JSON.stringify(description),
         });
-        navigate(DeprecatedPaths.resourceHubFilePath(res.file.id));
+        navigate(paths.resourceHubFilePath(res.file.id));
       } else {
-        navigate(DeprecatedPaths.resourceHubFilePath(file.id!));
+        navigate(paths.resourceHubFilePath(file.id!));
       }
     },
   });

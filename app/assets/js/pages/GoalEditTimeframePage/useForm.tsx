@@ -29,7 +29,7 @@ export function useForm({ goal }: { goal: Goals.Goal }): Form {
   const originalTimeframe = Timeframes.parse(goal.timeframe);
   const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(originalTimeframe);
 
-  const navigateToGoalPage = useNavigateTo(DeprecatedPaths.goalPath(goal.id));
+  const navigateToGoalPage = useNavigateTo(paths.goalPath(goal.id));
   const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframe();
 
   const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {

@@ -18,7 +18,7 @@ interface LoaderResult {
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   await redirectIfFeatureNotEnabled(params, {
     feature: "new_profile_page",
-    path: DeprecatedPaths.profilePath(params.id),
+    path: paths.profilePath(params.id),
   });
 
   return fetchData(params.id, refreshCache);

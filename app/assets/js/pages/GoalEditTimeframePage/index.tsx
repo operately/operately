@@ -197,7 +197,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           Submit
         </PrimaryButton>
 
-        <DimmedLink to={DeprecatedPaths.goalPath(goal.id!)}>Cancel</DimmedLink>
+        <DimmedLink to={paths.goalPath(goal.id!)}>Cancel</DimmedLink>
       </div>
     </div>
   );

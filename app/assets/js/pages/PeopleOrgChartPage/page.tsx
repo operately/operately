@@ -77,7 +77,7 @@ function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
 
 function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
   const person = node.person;
-  const path = DeprecatedPaths.profilePath(person.id!);
+  const path = paths.profilePath(person.id!);
 
   return (
     <div className="">

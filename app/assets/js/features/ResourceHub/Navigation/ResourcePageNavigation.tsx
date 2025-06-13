@@ -10,13 +10,13 @@ export function ResourcePageNavigation({ resource }: { resource: Resource }) {
   const path = getPathToResource(resource);
 
   let items = [
-    { to: DeprecatedPaths.spacePath(resource.resourceHub.space.id!), label: resource.resourceHub.space.name! },
-    { to: DeprecatedPaths.resourceHubPath(resource.resourceHub.id!), label: resource.resourceHub.name! },
+    { to: paths.spacePath(resource.resourceHub.space.id!), label: resource.resourceHub.space.name! },
+    { to: paths.resourceHubPath(resource.resourceHub.id!), label: resource.resourceHub.name! },
   ];
 
   items = items.concat(
     path.map((folder) => ({
-      to: DeprecatedPaths.resourceHubFolderPath(folder.id!),
+      to: paths.resourceHubFolderPath(folder.id!),
       label: folder.name!,
     })),
   );

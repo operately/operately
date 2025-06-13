@@ -39,7 +39,7 @@ function Page() {
 function Form() {
   const { space } = Pages.useLoadedData();
 
-  const navigateBack = useNavigateTo(DeprecatedPaths.spaceAccessManagementPath(space.id!));
+  const navigateBack = useNavigateTo(paths.spaceAccessManagementPath(space.id!));
   const [edit] = Spaces.useEditSpacePermissions();
 
   const form = Forms.useForm({

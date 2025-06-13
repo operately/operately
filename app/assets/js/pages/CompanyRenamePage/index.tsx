@@ -32,16 +32,16 @@ function Page() {
     submit: async () => {
       await edit({ name: form.values.name });
 
-      navigate(DeprecatedPaths.companyAdminPath());
+      navigate(paths.companyAdminPath());
       revalidate();
     },
-    cancel: () => navigate(DeprecatedPaths.companyAdminPath()),
+    cancel: () => navigate(paths.companyAdminPath()),
   });
 
   return (
     <Pages.Page title={"Rename Company"} testId="company-rename-page">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={DeprecatedPaths.companyAdminPath()} title="Back to Company Admin" />
+        <Paper.NavigateBack to={paths.companyAdminPath()} title="Back to Company Admin" />
 
         <Paper.Body>
           <Forms.Form form={form}>

@@ -37,7 +37,7 @@ const DimmedLabel = ({ children }) => (
 );
 
 const AvatarAndName = ({ person }) => {
-  const profilePath = DeprecatedPaths.profilePath(person.id);
+  const profilePath = paths.profilePath(person.id);
 
   return (
     <DivLink to={profilePath}>

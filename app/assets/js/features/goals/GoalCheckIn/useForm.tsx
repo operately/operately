@@ -42,7 +42,7 @@ export function useForm(props: EditProps | NewProps) {
     },
     cancel: () => {
       if (mode === "new") {
-        navigate(DeprecatedPaths.goalPath(goal.id!));
+        navigate(paths.goalPath(goal.id!));
       } else {
         setPageMode("view");
       }
@@ -69,7 +69,7 @@ export function useForm(props: EditProps | NewProps) {
 
         const res = await post(payload);
 
-        navigate(DeprecatedPaths.goalCheckInPath(res.update!.id));
+        navigate(paths.goalCheckInPath(res.update!.id));
       } else {
         const payload = { ...commonAttrs, id: props.update.id! };
         await edit(payload);

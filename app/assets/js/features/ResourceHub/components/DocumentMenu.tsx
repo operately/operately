@@ -48,7 +48,7 @@ export function DocumentMenu({ document }: Props) {
 }
 
 function EditDocumentMenuItem({ document }: Props) {
-  const editPath = DeprecatedPaths.resourceHubEditDocumentPath(document.id!);
+  const editPath = paths.resourceHubEditDocumentPath(document.id!);
   const editId = createTestId("edit", document.id!);
 
   return (

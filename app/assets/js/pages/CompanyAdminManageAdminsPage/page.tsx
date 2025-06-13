@@ -22,7 +22,7 @@ export function Page() {
   return (
     <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />
+        <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body>
           <Paper.Header
@@ -77,7 +77,7 @@ function PersonRow({ person, type }: { person: People.Person; type: "admins" | "
 function PersonInfo({ person }: { person: People.Person }) {
   return (
     <div>
-      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={paths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 

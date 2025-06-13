@@ -117,8 +117,8 @@ function Navigation({ project }) {
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.projectPath(project.id), label: project.name! },
-        { to: DeprecatedPaths.projectCheckInsPath(project.id), label: "Check-Ins" },
+        { to: paths.projectPath(project.id), label: project.name! },
+        { to: paths.projectCheckInsPath(project.id), label: "Check-Ins" },
       ]}
     />
   );
@@ -150,7 +150,7 @@ function Options() {
       <PageOptions.Link
         icon={Icons.IconEdit}
         title="Edit check-in"
-        to={DeprecatedPaths.projectCheckInEditPath(checkIn.id!)}
+        to={paths.projectCheckInEditPath(checkIn.id!)}
         testId="edit-check-in"
       />
     </PageOptions.Root>

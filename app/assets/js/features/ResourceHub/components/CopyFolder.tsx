@@ -41,7 +41,7 @@ export function CopyFolderModal(props: FormProps) {
         destParentFolderId: form.values.location.type == "folder" ? form.values.location.id : undefined,
       });
 
-      navigate(DeprecatedPaths.resourceHubFolderPath(res.folderId));
+      navigate(paths.resourceHubFolderPath(res.folderId));
     },
   });
 

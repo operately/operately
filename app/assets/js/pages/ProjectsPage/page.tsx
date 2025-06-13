@@ -11,8 +11,8 @@ import classNames from "classnames";
 export function Page() {
   const { projects } = useLoadedData();
 
-  const newProjectPath = DeprecatedPaths.newProjectPath({
-    backPath: DeprecatedPaths.projectsPath(),
+  const newProjectPath = paths.newProjectPath({
+    backPath: paths.projectsPath(),
     backPathName: "Back to Projects",
   });
 

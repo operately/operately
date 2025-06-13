@@ -28,7 +28,7 @@ export function Page() {
 function Navigation() {
   const { goal } = useLoadedData();
 
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />;
+  return <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />;
 }
 
 function PageTitle() {

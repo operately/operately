@@ -18,7 +18,7 @@ function Page() {
           <Paper.Header title="Password & Security" />
 
           <div>You are using your email and password to sign in to your account.</div>
-          <Link to={DeprecatedPaths.accountChangePasswordPath()} testId="change-password">
+          <Link to={paths.accountChangePasswordPath()} testId="change-password">
             Change your password
           </Link>
         </Paper.Body>

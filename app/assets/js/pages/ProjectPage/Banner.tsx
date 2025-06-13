@@ -15,7 +15,7 @@ export function banner(project: Projects.Project) {
 }
 
 function ProjectClosedBanner({ project }: { project: Projects.Project }) {
-  const retroPath = DeprecatedPaths.projectRetrospectivePath(project.id!);
+  const retroPath = paths.projectRetrospectivePath(project.id!);
 
   return (
     <Paper.Banner testId="project-closed-banner">
@@ -29,7 +29,7 @@ function ProjectClosedBanner({ project }: { project: Projects.Project }) {
 }
 
 function ProjectPausedBanner({ project }: { project: Projects.Project }) {
-  const resumePath = DeprecatedPaths.resumeProjectPath(project.id!);
+  const resumePath = paths.resumeProjectPath(project.id!);
 
   return (
     <Paper.Banner testId="project-paused-banner">

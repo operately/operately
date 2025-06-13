@@ -28,11 +28,11 @@ export function NewFileModalsProvider({ children, resourceHub, folder }: Props) 
 
   const toggleShowAddFolder = () => setShowAddFolder(!showAddFolder);
   const navigateToNewDocument = () =>
-    navigate(DeprecatedPaths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
+    navigate(paths.resourceHubNewDocumentPath(resourceHub.id!, folder?.id || undefined));
 
   const navigateToNewLink = (type?: LinkOptions) => {
     navigate(
-      DeprecatedPaths.resourceHubNewLinkPath(resourceHub.id!, {
+      paths.resourceHubNewLinkPath(resourceHub.id!, {
         folderId: folder?.id || undefined,
         type: type,
       }),

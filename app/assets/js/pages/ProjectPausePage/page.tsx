@@ -14,7 +14,7 @@ export function Page() {
   return (
     <Pages.Page title={["Pausing", project.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />
+        <Paper.Navigation items={[{ to: paths.projectPath(project.id!), label: project.name! }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Pause this project?</div>
@@ -30,7 +30,7 @@ export function Page() {
 
           <div className="flex items-center gap-6 mt-8">
             <PauseProject project={project} />
-            <DimmedLink to={DeprecatedPaths.projectPath(project.id!)}>Keep it active</DimmedLink>
+            <DimmedLink to={paths.projectPath(project.id!)}>Keep it active</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -39,7 +39,7 @@ export function Page() {
 }
 
 function PauseProject({ project }) {
-  const path = DeprecatedPaths.projectPath(project.id);
+  const path = paths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 
   const [pause, { loading }] = Projects.usePauseProject();

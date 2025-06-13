@@ -41,7 +41,7 @@ function newMember() {
 
 function Page() {
   const { space } = Pages.useLoadedData() as LoaderResult;
-  const backPath = DeprecatedPaths.spaceAccessManagementPath(space.id!);
+  const backPath = paths.spaceAccessManagementPath(space.id!);
   const navigate = useNavigate();
   const [add] = Spaces.useAddSpaceMembers();
 

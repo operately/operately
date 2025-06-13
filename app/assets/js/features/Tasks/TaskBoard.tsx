@@ -151,7 +151,7 @@ function TaskItem({
       <div className="my-1" style={isDragging ? {} : style} data-test-id={testId}>
         <DivLink
           className="text-sm bg-surface-base rounded p-2 border border-stroke-base flex items-start justify-between cursor-pointer"
-          to={DeprecatedPaths.taskPath(task.id!)}
+          to={paths.taskPath(task.id!)}
         >
           <div className="font-medium">{task.name}</div>
           <AvatarList people={task.assignees!} size="tiny" stacked maxElements={5} />

@@ -10,7 +10,7 @@ function Page() {
   return (
     <Pages.Page title="Permissions">
       <Paper.Root size="small">
-        <Paper.NavigateBack to={DeprecatedPaths.companyAdminPath()} title="Back to Company Admin" />
+        <Paper.NavigateBack to={paths.companyAdminPath()} title="Back to Company Admin" />
         <div className="font-extrabold text-2xl mb-4 text-center">Permission Breakdown</div>
         <Paper.Body>
           <Header />

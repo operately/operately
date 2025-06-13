@@ -20,7 +20,7 @@ interface FormState {
 }
 
 export function useForm(project: Projects.Project, resourceType: string): FormState {
-  const gotoResourceList = useNavigateTo(DeprecatedPaths.projectEditResourcesPath(project.id!));
+  const gotoResourceList = useNavigateTo(paths.projectEditResourcesPath(project.id!));
 
   const [name, setName] = React.useState("");
   const [url, setUrl] = React.useState("");

@@ -34,7 +34,7 @@ function ServerErrorPage() {
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
         <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo={DeprecatedPaths.homePath()} testId="back-to-lobby">
+          <GhostButton linkTo={paths.homePath()} testId="back-to-lobby">
             Go back to Home
           </GhostButton>
         </div>

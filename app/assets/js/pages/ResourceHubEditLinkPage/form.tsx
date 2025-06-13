@@ -37,7 +37,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.resourceHubLinkPath(link.id!));
+      navigate(paths.resourceHubLinkPath(link.id!));
     },
     submit: async () => {
       const { title, url, description } = form.values;
@@ -50,9 +50,9 @@ export function Form() {
           description: JSON.stringify(description),
           type: link.type,
         });
-        navigate(DeprecatedPaths.resourceHubLinkPath(link.id!));
+        navigate(paths.resourceHubLinkPath(link.id!));
       } else {
-        navigate(DeprecatedPaths.resourceHubLinkPath(link.id!));
+        navigate(paths.resourceHubLinkPath(link.id!));
       }
     },
   });

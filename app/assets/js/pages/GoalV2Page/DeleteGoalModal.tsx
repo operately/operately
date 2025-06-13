@@ -44,7 +44,7 @@ function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void
     if (loading) return;
     await deleteGoal({ goalId: goal.id });
     toggleShowDeleteGoal();
-    navigate(DeprecatedPaths.goalsPath());
+    navigate(paths.goalsPath());
   };
 
   return (

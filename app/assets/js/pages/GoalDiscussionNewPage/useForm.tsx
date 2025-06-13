@@ -47,7 +47,7 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
           sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
           subscriberIds: subscriptionsState.currentSubscribersList,
         })
-          .then((data) => navigate(DeprecatedPaths.goalActivityPath(data.id!)))
+          .then((data) => navigate(paths.goalActivityPath(data.id!)))
           .finally(() => setSubmitting(false));
       },
       submitting,

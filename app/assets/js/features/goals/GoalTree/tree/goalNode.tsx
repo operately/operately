@@ -79,7 +79,7 @@ export class GoalNode extends Node {
   }
 
   linkTo(): string {
-    return DeprecatedPaths.goalPath(this.goal.id!);
+    return paths.goalPath(this.goal.id!);
   }
 
   childrenInfoLabel(): string {

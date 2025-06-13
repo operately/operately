@@ -36,7 +36,7 @@ export function Form() {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.resourceHubPath(resourceHub.id!));
+      navigate(paths.resourceHubPath(resourceHub.id!));
     },
     submit: async () => {
       const res = await post({
@@ -49,7 +49,7 @@ export function Form() {
         sendNotificationsToEveryone: subscriptionsState.subscriptionType === Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
-      navigate(DeprecatedPaths.resourceHubLinkPath(res.link.id));
+      navigate(paths.resourceHubLinkPath(res.link.id));
     },
   });
 

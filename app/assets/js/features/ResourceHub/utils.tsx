@@ -8,16 +8,16 @@ export function findPath(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
       assertPresent(node.document?.id, "document must be present in node");
-      return DeprecatedPaths.resourceHubDocumentPath(node.document.id);
+      return paths.resourceHubDocumentPath(node.document.id);
     case "folder":
       assertPresent(node.folder?.id, "folder must be present in node");
-      return DeprecatedPaths.resourceHubFolderPath(node.folder.id);
+      return paths.resourceHubFolderPath(node.folder.id);
     case "link":
       assertPresent(node.link?.id, "link must be present in node");
-      return DeprecatedPaths.resourceHubLinkPath(node.link.id);
+      return paths.resourceHubLinkPath(node.link.id);
     case "file":
       assertPresent(node.file?.id, "file must be present in node");
-      return DeprecatedPaths.resourceHubFilePath(node.file.id);
+      return paths.resourceHubFilePath(node.file.id);
   }
 }
 

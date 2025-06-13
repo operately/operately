@@ -35,7 +35,7 @@ function Page() {
         type: "link" as const,
         icon: IconPencil,
         label: "Edit",
-        link: DeprecatedPaths.profileEditPath(person.id!),
+        link: paths.profileEditPath(person.id!),
         hidden: !person.permissions.canEditProfile,
       },
     ],

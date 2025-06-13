@@ -47,7 +47,7 @@ export function Form() {
         subscriberIds: subscriptionsState.currentSubscribersList,
         postAsDraft: isDraft,
       });
-      navigate(DeprecatedPaths.resourceHubDocumentPath(res.document.id));
+      navigate(paths.resourceHubDocumentPath(res.document.id));
     },
   });
   form.actions.setState;
@@ -111,7 +111,7 @@ function FormActions({ resourceHub }: { resourceHub: ResourceHub }) {
 
 function DiscardLink({ resourceHubId }: { resourceHubId: string }) {
   return (
-    <Link to={DeprecatedPaths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
+    <Link to={paths.resourceHubPath(resourceHubId)} testId="discard" className="font-medium">
       Discard this document
     </Link>
   );

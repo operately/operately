@@ -27,7 +27,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.projectCheckInPath(checkIn.id!));
+      navigate(paths.projectCheckInPath(checkIn.id!));
     },
     submit: async () => {
       const res = await edit({
@@ -36,7 +36,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
         description: JSON.stringify(form.values.description),
       });
 
-      navigate(DeprecatedPaths.projectCheckInPath(res.checkIn.id));
+      navigate(paths.projectCheckInPath(res.checkIn.id));
     },
   });
 

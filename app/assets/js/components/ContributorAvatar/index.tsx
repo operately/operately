@@ -73,7 +73,7 @@ function Placeholder(props: PlaceholderProps) {
     </div>
   );
 
-  const path = DeprecatedPaths.projectContributorsPath(props.project.id!);
+  const path = paths.projectContributorsPath(props.project.id!);
 
   return (
     <Tooltip content={tooltipContent}>

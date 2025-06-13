@@ -25,7 +25,7 @@ function Page() {
   const { space } = Pages.useLoadedData<LoaderResult>();
 
   const [edit] = Spaces.useEditSpace();
-  const backPath = DeprecatedPaths.spacePath(space.id!);
+  const backPath = paths.spacePath(space.id!);
 
   const form = Forms.useForm({
     fields: {

@@ -57,7 +57,7 @@ function Options() {
         <PageOptions.Link
           icon={IconEdit}
           title="Edit retrospective"
-          to={DeprecatedPaths.projectRetrospectiveEditPath(retrospective.project!.id!)}
+          to={paths.projectRetrospectiveEditPath(retrospective.project!.id!)}
           testId="edit-retrospective"
         />
       )}

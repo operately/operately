@@ -55,8 +55,8 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
     flex: size !== "xs",
   });
 
-  const newGoalPath = DeprecatedPaths.goalNewPath({ parentGoalId: node.goal.id! });
-  const newProjectPath = DeprecatedPaths.newProjectPath({
+  const newGoalPath = paths.goalNewPath({ parentGoalId: node.goal.id! });
+  const newProjectPath = paths.newProjectPath({
     goalId: node.goal.id!,
     spaceId: node.goal.space!.id!,
     backPathName: "Back to Goal Map",
@@ -131,7 +131,7 @@ function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
   assertPresent(goal.champion, "champion must be present in goal");
   assertPresent(goal.space, "space must be present in goal");
 
-  const path = DeprecatedPaths.spacePath(goal.space.id!);
+  const path = paths.spacePath(goal.space.id!);
 
   return (
     <div className="flex items-center gap-1">

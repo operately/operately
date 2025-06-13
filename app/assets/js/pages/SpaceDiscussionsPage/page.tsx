@@ -43,7 +43,7 @@ function NewDiscussionButton() {
   const { space } = useLoadedData();
 
   return (
-    <PrimaryButton linkTo={DeprecatedPaths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
       New Discussion
     </PrimaryButton>
   );
@@ -55,7 +55,7 @@ function ContinueEditingDrafts() {
   if (myDrafts.length < 1) {
     return null;
   } else if (myDrafts.length === 1) {
-    const path = DeprecatedPaths.discussionEditPath(myDrafts[0]!.id!);
+    const path = paths.discussionEditPath(myDrafts[0]!.id!);
 
     return (
       <div className="flex justify-center">
@@ -65,7 +65,7 @@ function ContinueEditingDrafts() {
       </div>
     );
   } else {
-    const path = DeprecatedPaths.discussionDraftsPath(space.id!);
+    const path = paths.discussionDraftsPath(space.id!);
 
     return (
       <div className="flex justify-center">
@@ -101,7 +101,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
-  const path = DeprecatedPaths.discussionPath(discussion.id!);
+  const path = paths.discussionPath(discussion.id!);
 
   const className = classNames(
     "flex gap-4",

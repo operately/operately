@@ -63,17 +63,17 @@ function useClickHandler(node: Node) {
   return () => {
     if (node.type === "goal") {
       if (node.isClosed) {
-        return navigate(DeprecatedPaths.goalPath(node.id!));
+        return navigate(paths.goalPath(node.id!));
       } else {
-        return navigate(DeprecatedPaths.goalCheckInPath(node.asGoalNode()!.lastCheckIn!.id!));
+        return navigate(paths.goalCheckInPath(node.asGoalNode()!.lastCheckIn!.id!));
       }
     }
 
     if (node.type === "project") {
       if (node.isClosed) {
-        return navigate(DeprecatedPaths.projectRetrospectivePath(node.id!));
+        return navigate(paths.projectRetrospectivePath(node.id!));
       } else {
-        return navigate(DeprecatedPaths.projectCheckInPath(node.asProjectNode()!.lastCheckIn!.id!));
+        return navigate(paths.projectCheckInPath(node.asProjectNode()!.lastCheckIn!.id!));
       }
     }
 

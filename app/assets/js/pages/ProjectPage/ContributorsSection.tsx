@@ -34,7 +34,7 @@ function ContribList({ contributors }: { contributors: ProjectContributor[] }) {
 
 function ManageAccessButton({ project }: { project: Projects.Project }) {
   if (!project.permissions!.canEditContributors) return null;
-  const path = DeprecatedPaths.projectContributorsPath(project.id!);
+  const path = paths.projectContributorsPath(project.id!);
 
   return (
     <SecondaryButton size="xs" testId="manage-team-button" linkTo={path}>

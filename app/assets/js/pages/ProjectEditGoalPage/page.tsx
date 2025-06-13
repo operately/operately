@@ -30,7 +30,7 @@ function GoalList() {
   const { project, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const projectPath = DeprecatedPaths.projectPath(project.id!);
+  const projectPath = paths.projectPath(project.id!);
 
   const [connect] = Goals.useConnectGoalToProject();
 

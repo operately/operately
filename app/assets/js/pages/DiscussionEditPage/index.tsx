@@ -97,8 +97,8 @@ function Navigation({ space }) {
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.spacePath(space.id), label: space.name },
-        { to: DeprecatedPaths.spaceDiscussionsPath(space.id), label: "Discussions" },
+        { to: paths.spacePath(space.id), label: space.name },
+        { to: paths.spaceDiscussionsPath(space.id), label: "Discussions" },
       ]}
     />
   );
