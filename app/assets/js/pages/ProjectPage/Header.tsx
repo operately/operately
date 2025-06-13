@@ -1,11 +1,11 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
-import * as Projects from "@/models/projects";
 import * as Goals from "@/models/goals";
+import * as Projects from "@/models/projects";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { DimmedLink, DivLink } from "turboui";
-import { Paths } from "@/routes/paths";
 import { PrivacyIndicator } from "@/features/Permissions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DimmedLink, DivLink } from "turboui";
 
 export function Header({ project }: { project: Projects.Project }) {
   return (
@@ -44,7 +44,7 @@ function ParentGoal({ project }: { project: Projects.Project }) {
 }
 
 function ParentGoalNotLinked({ project }: { project: Projects.Project }) {
-  const path = Paths.editProjectGoalPath(project.id!);
+  const path = DeprecatedPaths.editProjectGoalPath(project.id!);
 
   return (
     <div className="text-sm text-content-dimmed mx-1 font-medium">
@@ -58,7 +58,7 @@ function ParentGoalLinked({ goal }: { goal: Goals.Goal }) {
     <>
       <Icons.IconTarget size={14} className="text-red-500" />
       <DivLink
-        to={Paths.goalPath(goal.id!)}
+        to={DeprecatedPaths.goalPath(goal.id!)}
         className="text-sm text-content-dimmed mx-1 hover:underline font-medium"
         testId="project-goal-link"
       >

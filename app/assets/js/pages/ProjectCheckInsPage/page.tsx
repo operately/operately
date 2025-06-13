@@ -1,17 +1,17 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
+import * as React from "react";
 
-import { useLoadedData } from "./loader";
-import { CheckInButton } from "./CheckInButton";
-import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
+import { CheckInButton } from "./CheckInButton";
+import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar } from "turboui";
 import { SmallStatusIndicator } from "@/components/status";
+import { Avatar } from "turboui";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -33,7 +33,7 @@ export function Page() {
 function Navigation() {
   const { project } = useLoadedData();
 
-  return <Paper.Navigation items={[{ to: Paths.projectPath(project.id!), label: project.name! }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.projectPath(project.id!), label: project.name! }]} />;
 }
 
 function Header() {
@@ -89,7 +89,7 @@ function isCurrentYear(year: number) {
 
 function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
   const author = checkIn.author!;
-  const path = Paths.projectCheckInPath(checkIn.id!);
+  const path = DeprecatedPaths.projectCheckInPath(checkIn.id!);
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>

@@ -1,7 +1,7 @@
 import { Activity, ActivityContentSpaceAdded } from "@/api";
-import { ActivityHandler } from "../interfaces";
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, spaceLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
+import { ActivityHandler } from "../interfaces";
 
 const SpaceAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -9,7 +9,7 @@ const SpaceAdded: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.spacePath(content(activity).space!.id!);
+    return DeprecatedPaths.spacePath(content(activity).space!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

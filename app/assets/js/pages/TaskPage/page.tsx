@@ -1,21 +1,20 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
-import * as Pages from "@/components/Pages";
-import * as Tasks from "@/models/tasks";
-import * as Forms from "@/components/Form";
-import * as Icons from "@tabler/icons-react";
 import * as TipTapEditor from "@/components/Editor";
+import * as Forms from "@/components/Form";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as Tasks from "@/models/tasks";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
 import RichContent from "@/components/RichContent";
-import { Avatar } from "turboui";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { Avatar, PrimaryButton, SecondaryButton } from "turboui";
 
-import { useLoadedData } from "./loader";
-import { useForm, FormState } from "./useForm";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
+import { DeprecatedPaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
-import { Paths } from "@/routes/paths";
+import { useLoadedData } from "./loader";
+import { FormState, useForm } from "./useForm";
 
 export function Page() {
   const { task } = useLoadedData();
@@ -45,8 +44,8 @@ export function Page() {
 }
 
 function Navigation({ task }: { task: Tasks.Task }) {
-  const projectPath = Paths.projectPath(task.project!.id!);
-  const milestonePath = Paths.projectMilestonePath(task.milestone!.id!);
+  const projectPath = DeprecatedPaths.projectPath(task.project!.id!);
+  const milestonePath = DeprecatedPaths.projectMilestonePath(task.milestone!.id!);
 
   return (
     <Paper.Navigation

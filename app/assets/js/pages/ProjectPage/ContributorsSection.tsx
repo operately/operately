@@ -1,11 +1,11 @@
-import * as React from "react";
-import * as Projects from "@/models/projects";
 import * as ProjectContributors from "@/models/projectContributors";
+import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { SecondaryButton } from "turboui";
-import { ContributorAvatar, ReviewerPlaceholder, ChampionPlaceholder } from "@/components/ContributorAvatar";
+import { ChampionPlaceholder, ContributorAvatar, ReviewerPlaceholder } from "@/components/ContributorAvatar";
 import { ProjectContributor } from "@/models/projectContributors";
+import { DeprecatedPaths } from "@/routes/paths";
+import { SecondaryButton } from "turboui";
 
 export function ContributorsSection({ project }: { project: Projects.Project }) {
   const { champion, reviewer, contributors } = ProjectContributors.splitByRole(project.contributors!);
@@ -35,7 +35,7 @@ function ContribList({ contributors }: { contributors: ProjectContributor[] }) {
 
 function ManageAccessButton({ project }: { project: Projects.Project }) {
   if (!project.permissions!.canEditContributors) return null;
-  const path = Paths.projectContributorsPath(project.id!);
+  const path = DeprecatedPaths.projectContributorsPath(project.id!);
 
   return (
     <SecondaryButton size="xs" testId="manage-team-button" linkTo={path}>

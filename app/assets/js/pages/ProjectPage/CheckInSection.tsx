@@ -1,17 +1,16 @@
-import * as React from "react";
-import * as Projects from "@/models/projects";
-import * as People from "@/models/people";
 import * as Callouts from "@/components/Callouts";
+import * as People from "@/models/people";
+import * as Projects from "@/models/projects";
+import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
 import { Avatar } from "turboui";
 
-import { DimmedLabel } from "./Label";
-import { SecondaryButton } from "turboui";
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
-import { SmallStatusIndicator } from "@/components/status";
 import { Summary } from "@/components/RichContent";
+import { SmallStatusIndicator } from "@/components/status";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link, SecondaryButton } from "turboui";
+import { DimmedLabel } from "./Label";
 
 export function CheckInSection({ project }: { project: Projects.Project }) {
   return (
@@ -21,7 +20,7 @@ export function CheckInSection({ project }: { project: Projects.Project }) {
           <div className="font-bold text-sm">Check-Ins</div>
           {project.lastCheckIn && (
             <div className="text-sm">
-              <Link to={Paths.projectCheckInsPath(project.id!)}>View all</Link>
+              <Link to={DeprecatedPaths.projectCheckInsPath(project.id!)}>View all</Link>
             </div>
           )}
         </div>
@@ -97,7 +96,7 @@ function LastCheckInContent({ project }: { project: Projects.Project }) {
 
 function LastCheckInLink({ project }: { project: Projects.Project }) {
   const time = project.lastCheckIn!.insertedAt!;
-  const path = Paths.projectCheckInPath(project.lastCheckIn!.id!);
+  const path = DeprecatedPaths.projectCheckInPath(project.lastCheckIn!.id!);
 
   return (
     <Link to={path} testId="last-check-in-link">
@@ -109,7 +108,7 @@ function LastCheckInLink({ project }: { project: Projects.Project }) {
 function CheckInNowButton({ project }: { project: Projects.Project }) {
   if (!project.permissions!.canCheckIn) return null;
 
-  const newCheckInPath = Paths.projectCheckInNewPath(project.id!);
+  const newCheckInPath = DeprecatedPaths.projectCheckInNewPath(project.id!);
 
   return (
     <div className="flex">
@@ -134,7 +133,7 @@ function CheckInZeroState({ project }: { project: Projects.Project }) {
 function NoReviewerCallout({ project }: { project: Projects.Project }) {
   if (project.reviewer) return null;
 
-  const path = Paths.projectContributorsAddPath(project.id!, { type: "reviewer" });
+  const path = DeprecatedPaths.projectContributorsAddPath(project.id!, { type: "reviewer" });
   const addReviewer = (
     <Link to={path} testId="add-reviewer">
       Add a Reviewer

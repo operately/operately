@@ -1,10 +1,10 @@
-import type { Activity } from "@/models/activities";
 import type { ActivityContentMessageArchiving } from "@/api";
-import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import React from "react";
 import { Link } from "react-router-dom";
 import { feedTitle } from "../feedItemLinks";
+import type { ActivityHandler } from "../interfaces";
 
 const MessageArchiving: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -30,7 +30,7 @@ const MessageArchiving: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const title = content(activity).title!;
     const space = content(activity).space!;
-    const spaceLink = <Link to={Paths.spacePath(space.id!)}>{space.name!}</Link>;
+    const spaceLink = <Link to={DeprecatedPaths.spacePath(space.id!)}>{space.name!}</Link>;
 
     if (page === "space") {
       return feedTitle(activity, "deleted:", title);

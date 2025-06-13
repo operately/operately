@@ -1,18 +1,18 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
 import Forms from "@/components/Forms";
 
 import { useEditProjectPermissions } from "@/api";
-import { Paths } from "@/routes/paths";
-import { useNavigateTo } from "@/routes/useNavigateTo";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
+import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { initialAccessLevels, applyAccessLevelConstraints } from "@/features/Permissions/AccessFields";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export default { name: "ProjectEditAccessLevelsPage", loader, Page } as PageModule;
 
@@ -54,7 +54,7 @@ function Form() {
   const { project, space } = Pages.useLoadedData();
   const parentAccessLevel = space.accessLevels!;
 
-  const navigateToContributorsPath = useNavigateTo(Paths.projectContributorsPath(project.id!));
+  const navigateToContributorsPath = useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
   const [edit] = useEditProjectPermissions();
 
   const form = Forms.useForm({

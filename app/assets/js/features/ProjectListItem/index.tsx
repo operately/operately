@@ -1,17 +1,16 @@
-import * as React from "react";
 import * as Milestones from "@/models/milestones";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
-import { Avatar } from "turboui";
-import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
+import classNames from "classnames";
+import { Avatar } from "turboui";
 
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
-import { PieChart } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
 import { PrivacyIndicator } from "@/features/Permissions";
+import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link, PieChart } from "turboui";
 
 interface ProjectListItemProps {
   project: Projects.Project;
@@ -40,7 +39,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
 }
 
 function ProjectNameLine({ project }) {
-  const path = Paths.projectPath(project.id);
+  const path = DeprecatedPaths.projectPath(project.id);
 
   return (
     <div className="font-extrabold flex items-center gap-2">
@@ -53,7 +52,6 @@ function ProjectNameLine({ project }) {
   );
 }
 
-
 function ProjectStatusLine({ project }: { project: Projects.Project }) {
   if (project.status === "closed") {
     return (
@@ -63,7 +61,7 @@ function ProjectStatusLine({ project }: { project: Projects.Project }) {
             Closed on <FormattedTime time={project.closedAt!} format="short-date" /> &middot;{" "}
           </>
         )}
-        <Link to={Paths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
+        <Link to={DeprecatedPaths.projectRetrospectivePath(project.id!)}>Read the retrospective</Link>
       </div>
     );
   } else {
@@ -87,7 +85,7 @@ function MilestoneCompletion({ project }) {
 
   return (
     <div className="flex items-center gap-2 shrink-0">
-      <PieChart slices={[{percentage: percentage, color: "var(--color-accent-1)" }]} size={16} />
+      <PieChart slices={[{ percentage: percentage, color: "var(--color-accent-1)" }]} size={16} />
       {done.length}/{totalCount} completed
     </div>
   );

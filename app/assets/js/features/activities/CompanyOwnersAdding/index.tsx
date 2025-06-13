@@ -1,10 +1,10 @@
 import { firstName, namesListToString } from "@/models/people";
 import { feedTitle } from "../feedItemLinks";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentCompanyOwnersAdding } from "@/api";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
 
 const CompanyOwnersAdding: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,7 +12,7 @@ const CompanyOwnersAdding: ActivityHandler = {
   },
 
   pagePath(_activity: Activity) {
-    return Paths.companyAdminPath();
+    return DeprecatedPaths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {

@@ -1,14 +1,14 @@
 import React from "react";
 
-import { useNavigate } from "react-router-dom";
-import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
 import { Person } from "@/models/people";
+import { ProjectCheckIn, useEditProjectCheckIn } from "@/models/projectCheckIns";
+import { useNavigate } from "react-router-dom";
 
+import FormattedTime from "@/components/FormattedTime";
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import FormattedTime from "@/components/FormattedTime";
 
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
   const [edit] = useEditProjectCheckIn();
@@ -28,7 +28,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
       }
     },
     cancel: () => {
-      navigate(Paths.projectCheckInPath(checkIn.id!));
+      navigate(DeprecatedPaths.projectCheckInPath(checkIn.id!));
     },
     submit: async () => {
       const res = await edit({
@@ -37,7 +37,7 @@ export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
         description: JSON.stringify(form.values.description),
       });
 
-      navigate(Paths.projectCheckInPath(res.checkIn.id));
+      navigate(DeprecatedPaths.projectCheckInPath(res.checkIn.id));
     },
   });
 

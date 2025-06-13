@@ -1,12 +1,12 @@
-import * as React from "react";
+import * as TipTapEditor from "@/components/Editor";
 import * as Milestones from "@/models/milestones";
 import * as Projects from "@/models/projects";
-import * as TipTapEditor from "@/components/Editor";
 import * as Time from "@/utils/time";
+import * as React from "react";
 
-import { useRefresh } from "./loader";
+import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { Paths } from "@/routes/paths";
+import { useRefresh } from "./loader";
 
 export interface FormState {
   milestone: Milestones.Milestone;
@@ -67,7 +67,7 @@ const useReopenMilestone = (milestone: Milestones.Milestone) => {
 
 const useArchiveMilestone = (project: Projects.Project, milestone: Milestones.Milestone) => {
   const refresh = useRefresh();
-  const gotoProject = useNavigateTo(Paths.projectPath(project.id!));
+  const gotoProject = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
 
   const [post] = Milestones.useRemoveProjectMilestone();
 

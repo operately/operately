@@ -1,25 +1,23 @@
 import { PageModule } from "@/routes/types";
 
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as People from "@/models/people";
-import * as Icons from "@tabler/icons-react";
+import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as Invitations from "@/models/invitations";
+import * as People from "@/models/people";
 import * as Time from "@/utils/time";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { PrimaryButton, SecondaryButton } from "turboui";
-import { BlackLink } from "turboui";
-import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
+import { DeprecatedPaths } from "@/routes/paths";
+import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
 
-import { Avatar } from "turboui";
 import Modal, { ModalState, useModalState } from "@/components/Modal";
-import { createTestId } from "@/utils/testid";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import plurarize from "@/utils/plurarize";
+import { createTestId } from "@/utils/testid";
+import { Avatar } from "turboui";
 
 export default { name: "CompanyAdminManagePeoplePage", loader, Page } as PageModule;
 
@@ -64,12 +62,12 @@ function Page() {
 }
 
 function Navigation() {
-  return <Paper.Navigation items={[{ to: Paths.companyAdminPath(), label: "Company Administration" }]} />;
+  return <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />;
 }
 
 function AddMemberButton() {
   return (
-    <PrimaryButton linkTo={Paths.companyManagePeopleAddPeoplePath()} testId="add-person">
+    <PrimaryButton linkTo={DeprecatedPaths.companyManagePeopleAddPeoplePath()} testId="add-person">
       Add Team Member
     </PrimaryButton>
   );
@@ -128,7 +126,7 @@ function PersonRow({ person }: { person: People.Person }) {
 function PersonInfo({ person }: { person: People.Person }) {
   return (
     <div>
-      <BlackLink to={Paths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 
@@ -176,7 +174,7 @@ function EditProfileButton({ person }: { person: People.Person }) {
   return (
     <SecondaryButton
       size="xs"
-      linkTo={Paths.profileEditPath(person.id!, { from: "admin-manage-people" })}
+      linkTo={DeprecatedPaths.profileEditPath(person.id!, { from: "admin-manage-people" })}
       testId={createTestId("edit", person.id!)}
     >
       Edit Profile
@@ -207,7 +205,7 @@ function PersonOptions({ person }: { person: People.Person }) {
 
 function PersonOptionViewProfile({ person }: { person: People.Person }) {
   return (
-    <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={Paths.profilePath(person.id!)}>
+    <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={DeprecatedPaths.profilePath(person.id!)}>
       View Profile
     </MenuLinkItem>
   );

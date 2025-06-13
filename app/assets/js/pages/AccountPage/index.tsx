@@ -1,14 +1,14 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as Icons from "@tabler/icons-react";
 
-import { logOut } from "@/routes/auth";
-import { Paths } from "@/routes/paths";
-import { BurgerActionsGroup, BurgerLink, BurgerButton } from "./BurgerActions";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { logOut } from "@/routes/auth";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { BurgerActionsGroup, BurgerButton, BurgerLink } from "./BurgerActions";
 
 export default { name: "AccountPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -40,7 +40,7 @@ function ProfileLink() {
   const me = useMe()!;
 
   return (
-    <BurgerLink icon={Icons.IconUserCircle} to={Paths.profileEditPath(me.id!)} testId="profile-link">
+    <BurgerLink icon={Icons.IconUserCircle} to={DeprecatedPaths.profileEditPath(me.id!)} testId="profile-link">
       Profile
     </BurgerLink>
   );
@@ -48,7 +48,7 @@ function ProfileLink() {
 
 function AppearanceLink() {
   return (
-    <BurgerLink icon={Icons.IconPalette} to={Paths.accountAppearancePath()} testId="appearance-link">
+    <BurgerLink icon={Icons.IconPalette} to={DeprecatedPaths.accountAppearancePath()} testId="appearance-link">
       Appearance
     </BurgerLink>
   );
@@ -56,7 +56,7 @@ function AppearanceLink() {
 
 function PasswordLink() {
   return (
-    <BurgerLink icon={Icons.IconLockPassword} to={Paths.accountSecurityPath()} testId="password-link">
+    <BurgerLink icon={Icons.IconLockPassword} to={DeprecatedPaths.accountSecurityPath()} testId="password-link">
       Password &amp; Security
     </BurgerLink>
   );

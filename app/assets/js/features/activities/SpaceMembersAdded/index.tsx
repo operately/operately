@@ -1,8 +1,8 @@
 import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
-import { ActivityHandler } from "../interfaces";
-import { feedTitle, spaceLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 import { firstName, namesListToString } from "@/models/people";
+import { DeprecatedPaths } from "@/routes/paths";
+import { feedTitle, spaceLink } from "../feedItemLinks";
+import { ActivityHandler } from "../interfaces";
 
 const SpaceMembersAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +10,7 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.spacePath(content(activity).space!.id!);
+    return DeprecatedPaths.spacePath(content(activity).space!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

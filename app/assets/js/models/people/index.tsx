@@ -2,11 +2,11 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 import Api from "@/api";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 
 export type Person = api.Person;
 
-export { useGetMe, getPerson, getPeople, updateProfile, useGetPeople } from "@/api";
+export { getPeople, getPerson, updateProfile, useGetMe, useGetPeople } from "@/api";
 
 export type SearchScope =
   | { type: "company"; id?: undefined }
@@ -147,6 +147,6 @@ export function toPersonWithLink(personOrPeople: Person | Person[], useV2 = fals
 
   return {
     ...person,
-    link: useV2 ? Paths.profileV2Path(person.id!) : Paths.profilePath(person.id!),
+    link: useV2 ? DeprecatedPaths.profileV2Path(person.id!) : DeprecatedPaths.profilePath(person.id!),
   };
 }

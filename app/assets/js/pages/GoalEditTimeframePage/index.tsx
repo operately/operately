@@ -1,19 +1,18 @@
-import * as React from "react";
-import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
-import * as Paper from "@/components/PaperContainer";
-import * as Timeframes from "@/utils/timeframes";
 import * as TipTapEditor from "@/components/Editor";
+import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
+import * as Goals from "@/models/goals";
 import * as Time from "@/utils/time";
+import * as Timeframes from "@/utils/timeframes";
+import * as React from "react";
 
-import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { PrimaryButton } from "turboui";
-import { Paths } from "@/routes/paths";
-import { DimmedLink } from "turboui";
 import { Datepicker } from "@/components/Datepicker";
-import { PageModule } from "@/routes/types";
+import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
+import { DimmedLink, PrimaryButton } from "turboui";
 import { Form, useForm } from "./useForm";
 
 export default { name: "GoalEditTimeframePage", loader, Page } as PageModule;
@@ -199,7 +198,7 @@ function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
           Submit
         </PrimaryButton>
 
-        <DimmedLink to={Paths.goalPath(goal.id!)}>Cancel</DimmedLink>
+        <DimmedLink to={DeprecatedPaths.goalPath(goal.id!)}>Cancel</DimmedLink>
       </div>
     </div>
   );

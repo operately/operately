@@ -1,13 +1,13 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
+import * as React from "react";
 
-import { useNavigate } from "react-router-dom";
-import { Paths } from "@/routes/paths";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { PrimaryButton } from "turboui";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { useNavigate } from "react-router-dom";
+import { PrimaryButton } from "turboui";
 
 import Forms from "@/components/Forms";
 import { match } from "ts-pattern";
@@ -90,7 +90,7 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
       }
     },
     cancel: () => {
-      navigate(Paths.companyManagePeoplePath());
+      navigate(DeprecatedPaths.companyManagePeoplePath());
     },
   });
 
@@ -173,8 +173,8 @@ function Navigation() {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.companyAdminPath(), label: "Company Administration" },
-        { to: Paths.companyManagePeoplePath(), label: "Manage People" },
+        { to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" },
+        { to: DeprecatedPaths.companyManagePeoplePath(), label: "Manage People" },
       ]}
     />
   );

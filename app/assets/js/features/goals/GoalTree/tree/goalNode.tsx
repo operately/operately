@@ -2,7 +2,7 @@ import plurarize from "@/utils/plurarize";
 
 import { GoalProgressUpdate } from "@/api";
 import { Goal } from "@/models/goals";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Node } from "./node";
 
 import * as Spaces from "@/models/spaces";
@@ -80,7 +80,7 @@ export class GoalNode extends Node {
   }
 
   linkTo(): string {
-    return Paths.goalPath(this.goal.id!);
+    return DeprecatedPaths.goalPath(this.goal.id!);
   }
 
   childrenInfoLabel(): string {

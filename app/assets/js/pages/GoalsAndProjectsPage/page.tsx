@@ -3,10 +3,10 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { GoalTree } from "@/features/goals/GoalTree";
-import { Paths } from "@/routes/paths";
-import { useLoadedData } from "./loader";
 import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton";
+import { GoalTree } from "@/features/goals/GoalTree";
+import { DeprecatedPaths } from "@/routes/paths";
+import { useLoadedData } from "./loader";
 
 import classNames from "classnames";
 
@@ -32,9 +32,9 @@ export function Page() {
 }
 
 function Header() {
-  const newGoalPath = Paths.newGoalPath({ companyWide: true });
-  const newProjectPath = Paths.newProjectPath({
-    backPath: Paths.goalsPath(),
+  const newGoalPath = DeprecatedPaths.newGoalPath({ companyWide: true });
+  const newProjectPath = DeprecatedPaths.newProjectPath({
+    backPath: DeprecatedPaths.goalsPath(),
     backPathName: "Back to Goal Map",
   });
 

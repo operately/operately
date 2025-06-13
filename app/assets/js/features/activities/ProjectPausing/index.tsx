@@ -1,10 +1,10 @@
-import * as People from "@/models/people";
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectPausing } from "@/api";
+import type { Activity } from "@/models/activities";
+import * as People from "@/models/people";
 import type { ActivityHandler } from "../interfaces";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 
 const ProjectPausing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -12,7 +12,7 @@ const ProjectPausing: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

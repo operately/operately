@@ -1,14 +1,13 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
+import * as React from "react";
 
-import { useLoadedData } from "./loader";
-import { Avatar } from "turboui";
-import { Link } from "turboui";
 import * as Icons from "@tabler/icons-react";
+import { Avatar, Link } from "turboui";
+import { useLoadedData } from "./loader";
 
-import { useOrgChart, OrgChart, OrgChartNode } from "./useOrgChart";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 import classNames from "classnames";
-import { Paths, compareIds } from "@/routes/paths";
+import { OrgChart, OrgChartNode, useOrgChart } from "./useOrgChart";
 
 export function Page() {
   const { people } = useLoadedData();
@@ -78,7 +77,7 @@ function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
 
 function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
   const person = node.person;
-  const path = Paths.profilePath(person.id!);
+  const path = DeprecatedPaths.profilePath(person.id!);
 
   return (
     <div className="">

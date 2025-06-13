@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Tabs from "@/components/Tabs";
+import * as React from "react";
 
 import { Person } from "@/models/people";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 
 import { Avatar } from "turboui";
 
@@ -26,8 +26,8 @@ export function PageHeader(props: PageHeaderProps) {
       </div>
 
       <Tabs.Root activeTab={props.activeTab}>
-        <Tabs.Tab id="about" title="About" linkTo={Paths.profilePath(props.person.id!)} />
-        <Tabs.Tab id="goals" title="Goals" linkTo={Paths.profileGoalsPath(props.person.id!)} />
+        <Tabs.Tab id="about" title="About" linkTo={DeprecatedPaths.profilePath(props.person.id!)} />
+        <Tabs.Tab id="goals" title="Goals" linkTo={DeprecatedPaths.profileGoalsPath(props.person.id!)} />
       </Tabs.Root>
     </div>
   );

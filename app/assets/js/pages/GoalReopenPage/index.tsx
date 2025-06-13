@@ -1,10 +1,10 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Form } from "./Form";
 
 export default { name: "GoalReopenPage", loader, Page } as PageModule;
@@ -30,7 +30,7 @@ function Page() {
   return (
     <Pages.Page title={"Reopen " + goal.name}>
       <Paper.Root>
-        <Paper.Navigation items={[{ to: Paths.goalPath(goal.id!), label: goal.name! }]} />
+        <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body>
           <Title />

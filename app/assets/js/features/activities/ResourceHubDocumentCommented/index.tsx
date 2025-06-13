@@ -1,11 +1,11 @@
 import * as People from "@/models/people";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubDocumentCommented } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
 import React from "react";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 
@@ -15,7 +15,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.resourceHubDocumentPath(content(activity).document!.id!);
+    return DeprecatedPaths.resourceHubDocumentPath(content(activity).document!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

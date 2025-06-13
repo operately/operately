@@ -1,15 +1,15 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
 import * as Projects from "@/models/projects";
 
+import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
+import { SpaceCard, SpaceCardGrid } from "@/features/spaces/SpaceCards";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
-import { SpaceCardGrid, SpaceCard } from "@/features/spaces/SpaceCards";
-import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { Paths, compareIds } from "@/routes/paths";
 
 export function Page() {
   const { project, spaces } = useLoadedData();
@@ -44,7 +44,7 @@ function NoOtherSpaces() {
 }
 
 function MoveToSpace({ project, candidateSpaces }: { project: Projects.Project; candidateSpaces: Spaces.Space[] }) {
-  const gotoProject = useNavigateTo(Paths.projectPath(project.id!));
+  const gotoProject = useNavigateTo(DeprecatedPaths.projectPath(project.id!));
   const [move] = Projects.useMoveProjectToSpace();
 
   const moveProjectToSpace = async (project: Projects.Project, space: Spaces.Space) => {

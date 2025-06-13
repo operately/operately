@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { Paths, compareIds } from "@/routes/paths";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -17,12 +17,12 @@ export interface ActiveSubitem {
 
 export async function loader({ params }): Promise<LoaderResult> {
   const [goal, goals, projects] = await Promise.all([
-    Goals.getGoal({ 
+    Goals.getGoal({
       id: params.goalId,
       includeChampion: true,
       includeReviewer: true,
       includePotentialSubscribers: true,
-  }).then((data) => data.goal!),
+    }).then((data) => data.goal!),
     Goals.getGoals({}).then((data) => data.goals!),
     Projects.getProjects({}).then((data) => data.projects!),
   ]);
@@ -48,7 +48,7 @@ function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Pro
       id: goal.id!,
       name: goal.name!,
       type: "goal",
-      link: Paths.goalPath(goal.id!),
+      link: DeprecatedPaths.goalPath(goal.id!),
     });
   });
 
@@ -57,7 +57,7 @@ function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Pro
       id: project.id!,
       name: project.name!,
       type: "project",
-      link: Paths.projectPath(project.id!),
+      link: DeprecatedPaths.projectPath(project.id!),
     });
   });
 
