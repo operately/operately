@@ -1,13 +1,12 @@
-import * as Time from "@/utils/time";
 import * as Spaces from "@/models/spaces";
+import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 
-import { Project } from "@/models/projects";
-import { Paths } from "@/routes/paths";
-import { Node } from "./node";
-import { assertPresent } from "@/utils/assertions";
 import { ProjectCheckIn } from "@/api";
-import { ProjectRetrospective } from "@/models/projects";
+import { Project, ProjectRetrospective } from "@/models/projects";
+import { DeprecatedPaths } from "@/routes/paths";
+import { assertPresent } from "@/utils/assertions";
+import { Node } from "./node";
 
 export class ProjectNode extends Node {
   public project: Project;
@@ -64,7 +63,7 @@ export class ProjectNode extends Node {
   }
 
   linkTo(): string {
-    return Paths.projectPath(this.project!.id!);
+    return DeprecatedPaths.projectPath(this.project!.id!);
   }
 
   childrenInfoLabel(): string | null {

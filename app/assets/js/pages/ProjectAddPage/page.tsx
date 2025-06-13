@@ -1,21 +1,21 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
-import * as Projects from "@/models/projects";
+import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
+import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
+import * as React from "react";
 
-import { useLoadedData } from "./loader";
-import { Paths, compareIds } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { DeprecatedPaths, compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
+import { useLoadedData } from "./loader";
 
 import Forms from "@/components/Forms";
-import { SecondaryButton } from "turboui";
-import { AccessLevel } from "@/features/projects/AccessLevel";
 import { PermissionLevels } from "@/features/Permissions";
-import { AccessSelectors } from "@/features/projects/AccessSelectors";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
+import { AccessLevel } from "@/features/projects/AccessLevel";
+import { AccessSelectors } from "@/features/projects/AccessSelectors";
+import { SecondaryButton } from "turboui";
 
 export function Page() {
   return (
@@ -95,7 +95,7 @@ function Form() {
         spaceAccessLevel: form.values.access.spaceMembers,
       });
 
-      navigate(Paths.projectPath(res.project.id!));
+      navigate(DeprecatedPaths.projectPath(res.project.id!));
     },
   });
 

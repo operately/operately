@@ -1,21 +1,20 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import { Discussion } from "@/models/discussions";
-import { DivLink, Link } from "turboui";
 import { Summary } from "@/components/RichContent";
-import { PrimaryButton } from "turboui";
-import { Paths } from "@/routes/paths";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
+import { Discussion } from "@/models/discussions";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DivLink, Link, PrimaryButton } from "turboui";
 
-import { useLoadedData } from "./loader";
 import { assertPresent } from "@/utils/assertions";
+import { useLoadedData } from "./loader";
 
-import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
-import classNames from "classnames";
 import { CommentsCountIndicator } from "@/features/Comments";
+import classNames from "classnames";
+import { Avatar } from "turboui";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -45,7 +44,7 @@ function NewDiscussionButton() {
   const { space } = useLoadedData();
 
   return (
-    <PrimaryButton linkTo={Paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={DeprecatedPaths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
       New Discussion
     </PrimaryButton>
   );
@@ -57,7 +56,7 @@ function ContinueEditingDrafts() {
   if (myDrafts.length < 1) {
     return null;
   } else if (myDrafts.length === 1) {
-    const path = Paths.discussionEditPath(myDrafts[0]!.id!);
+    const path = DeprecatedPaths.discussionEditPath(myDrafts[0]!.id!);
 
     return (
       <div className="flex justify-center">
@@ -67,7 +66,7 @@ function ContinueEditingDrafts() {
       </div>
     );
   } else {
-    const path = Paths.discussionDraftsPath(space.id!);
+    const path = DeprecatedPaths.discussionDraftsPath(space.id!);
 
     return (
       <div className="flex justify-center">
@@ -103,7 +102,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
-  const path = Paths.discussionPath(discussion.id!);
+  const path = DeprecatedPaths.discussionPath(discussion.id!);
 
   const className = classNames(
     "flex gap-4",

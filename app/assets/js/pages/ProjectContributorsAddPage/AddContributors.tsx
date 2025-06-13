@@ -1,18 +1,18 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as Projects from "@/models/projects";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 import { useAddProjectContributors } from "@/api";
+import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
-import { LoaderResult } from "./loader";
-import { SecondaryButton } from "turboui";
 import { createTestId } from "@/utils/testid";
+import { SecondaryButton } from "turboui";
+import { LoaderResult } from "./loader";
 
 interface ContributorFields {
   key: number;
@@ -39,7 +39,7 @@ function newContributor() {
 
 export function AddContributors() {
   const { project } = Pages.useLoadedData() as LoaderResult;
-  const gotoContribPage = useNavigateTo(Paths.projectContributorsPath(project.id!));
+  const gotoContribPage = useNavigateTo(DeprecatedPaths.projectContributorsPath(project.id!));
   const [add] = useAddProjectContributors();
 
   const form = Forms.useForm({
@@ -66,7 +66,7 @@ export function AddContributors() {
   return (
     <Pages.Page title={["Add contributors", project.name!]}>
       <Paper.Root size="small">
-        <Paper.NavigateBack to={Paths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
+        <Paper.NavigateBack to={DeprecatedPaths.projectContributorsPath(project.id!)} title="Back to Team & Access" />
         <div className="text-2xl font-extrabold mb-4 text-center">Add contributors to {project.name}</div>
 
         <Forms.Form form={form}>

@@ -1,11 +1,11 @@
 import React from "react";
 
-import { Space } from "@/models/spaces";
 import { Discussion } from "@/models/discussions";
-import { Paths } from "@/routes/paths";
+import { Space } from "@/models/spaces";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Container } from "./components";
-import { ZeroState } from "./Discussions/ZeroState";
 import { RegularState } from "./Discussions/RegularState";
+import { ZeroState } from "./Discussions/ZeroState";
 
 interface Props {
   space: Space;
@@ -13,7 +13,7 @@ interface Props {
 }
 
 export function Discussions(props: Props) {
-  const path = Paths.discussionsPath(props.space.id!);
+  const path = DeprecatedPaths.discussionsPath(props.space.id!);
   const isZeroState = props.discussions.length < 1;
 
   return (

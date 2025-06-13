@@ -1,14 +1,14 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Goals from "@/models/goals";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { useSubscriptions } from "@/features/Subscriptions";
-import { assertPresent } from "@/utils/assertions";
-import { useForm, Form as CheckInForm } from "@/features/goals/GoalCheckIn";
+import { Form as CheckInForm, useForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
+import { useSubscriptions } from "@/features/Subscriptions";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { assertPresent } from "@/utils/assertions";
 
 import FormattedTime from "@/components/FormattedTime";
 
@@ -63,9 +63,9 @@ function Navigation({ goal }: { goal: Goals.Goal }) {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: Paths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
-        { to: Paths.goalPath(goal.id!), label: goal.name! },
+        { to: DeprecatedPaths.spacePath(goal.space.id!), label: goal.space.name! },
+        { to: DeprecatedPaths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! },
       ]}
     />
   );

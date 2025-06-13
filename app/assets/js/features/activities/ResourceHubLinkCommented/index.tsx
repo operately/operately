@@ -1,14 +1,14 @@
-import React from "react";
 import * as People from "@/models/people";
+import React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubLinkCommented } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
 import { Summary } from "@/components/RichContent";
-import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
 
 const ResourceHubLinkCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -19,7 +19,7 @@ const ResourceHubLinkCommented: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.link?.id, "link.id must be present in activity");
 
-    return Paths.resourceHubLinkPath(data.link.id);
+    return DeprecatedPaths.resourceHubLinkPath(data.link.id);
   },
 
   PageTitle(_props: { activity: any }) {

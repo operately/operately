@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentDiscussionPosting } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Paths } from "@/routes/paths";
-import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "turboui";
 import { feedTitle, spaceLink } from "./../feedItemLinks";
 
 const DiscussionPosting: ActivityHandler = {
@@ -16,7 +16,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   pagePath(_activity: Activity): string {
-    return Paths.discussionPath(content(_activity).discussion!.id!);
+    return DeprecatedPaths.discussionPath(content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -34,7 +34,7 @@ const DiscussionPosting: ActivityHandler = {
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const discussion = content(activity).discussion!;
 
-    const path = Paths.discussionPath(discussion.id!);
+    const path = DeprecatedPaths.discussionPath(discussion.id!);
     const link = <Link to={path}>{discussion.title!}</Link>;
 
     if (page === "space") {

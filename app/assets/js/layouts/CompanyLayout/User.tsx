@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Avatar } from "turboui";
-import { Link } from "react-router-dom";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "react-router-dom";
+import { Avatar } from "turboui";
 
 export function User() {
   const me = useMe();
@@ -12,7 +12,7 @@ export function User() {
 
   return (
     <Link
-      to={Paths.accountPath()}
+      to={DeprecatedPaths.accountPath()}
       className="flex items-center cursor-pointer border border-stroke-base rounded-full"
       style={{ height: "32px", width: "32px" }}
       data-test-id="account-menu"

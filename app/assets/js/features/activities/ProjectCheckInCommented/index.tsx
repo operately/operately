@@ -1,14 +1,14 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
 import type { ActivityContentProjectCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink } from "./../feedItemLinks";
-import { Paths } from "@/routes/paths";
-import { Link } from "turboui";
 import { Summary } from "@/components/RichContent";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link } from "turboui";
+import { feedTitle, projectLink } from "./../feedItemLinks";
 
 const ProjectCheckInCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -16,7 +16,7 @@ const ProjectCheckInCommented: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectCheckInPath(content(activity).checkIn!.id!);
+    return DeprecatedPaths.projectCheckInPath(content(activity).checkIn!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -35,7 +35,7 @@ const ProjectCheckInCommented: ActivityHandler = {
     const project = content(activity).project!;
     const checkIn = content(activity).checkIn!;
 
-    const checkInPath = Paths.projectCheckInPath(checkIn.id!);
+    const checkInPath = DeprecatedPaths.projectCheckInPath(checkIn.id!);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "project") {

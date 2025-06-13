@@ -1,7 +1,7 @@
 import { Company, getCompany } from "@/models/companies";
 import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {
@@ -15,7 +15,7 @@ interface LoaderResult {
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   await redirectIfFeatureNotEnabled(params, {
     feature: "work_map_page",
-    path: Paths.goalsPath(),
+    path: DeprecatedPaths.goalsPath(),
   });
 
   return await PageCache.fetch({

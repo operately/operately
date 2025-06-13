@@ -1,6 +1,6 @@
 import { ResourceHubNode } from "@/models/resourceHubs";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export type NodeType = "document" | "folder" | "file" | "link";
@@ -9,16 +9,16 @@ export function findPath(nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
       assertPresent(node.document?.id, "document must be present in node");
-      return Paths.resourceHubDocumentPath(node.document.id);
+      return DeprecatedPaths.resourceHubDocumentPath(node.document.id);
     case "folder":
       assertPresent(node.folder?.id, "folder must be present in node");
-      return Paths.resourceHubFolderPath(node.folder.id);
+      return DeprecatedPaths.resourceHubFolderPath(node.folder.id);
     case "link":
       assertPresent(node.link?.id, "link must be present in node");
-      return Paths.resourceHubLinkPath(node.link.id);
+      return DeprecatedPaths.resourceHubLinkPath(node.link.id);
     case "file":
       assertPresent(node.file?.id, "file must be present in node");
-      return Paths.resourceHubFilePath(node.file.id);
+      return DeprecatedPaths.resourceHubFilePath(node.file.id);
   }
 }
 

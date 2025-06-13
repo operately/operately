@@ -1,9 +1,9 @@
-import * as React from "react";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { useLoadedData } from "./loader";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
+import { useLoadedData } from "./loader";
 
 export function Navigation() {
   const { goal } = useLoadedData();
@@ -13,9 +13,9 @@ export function Navigation() {
   return (
     <Paper.Navigation
       items={[
-        { to: Paths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: Paths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
-        { to: Paths.goalPath(goal.id!), label: goal.name! },
+        { to: DeprecatedPaths.spacePath(goal.space.id!), label: goal.space.name! },
+        { to: DeprecatedPaths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! },
       ]}
     />
   );

@@ -4,8 +4,8 @@ import type { ActivityContentProjectContributorRemoved } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
-import { Paths } from "@/routes/paths";
 
 const ProjectContributorRemoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -13,7 +13,7 @@ const ProjectContributorRemoved: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

@@ -1,13 +1,13 @@
-import * as React from "react";
 import * as People from "@/models/people";
+import * as React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentProjectMoved } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
+import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectMoved: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -15,7 +15,7 @@ const ProjectMoved: ActivityHandler = {
   },
 
   pagePath(activity: Activity) {
-    return Paths.projectPath(content(activity).project!.id!);
+    return DeprecatedPaths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -42,8 +42,8 @@ const ProjectMoved: ActivityHandler = {
     const oldSpace = content(activity).oldSpace!;
     const newSpace = content(activity).newSpace!;
 
-    const oldSpacePath = Paths.spacePath(oldSpace.id!);
-    const newSpacePath = Paths.spacePath(newSpace.id!);
+    const oldSpacePath = DeprecatedPaths.spacePath(oldSpace.id!);
+    const newSpacePath = DeprecatedPaths.spacePath(newSpace.id!);
 
     const oldLink = <Link to={oldSpacePath}>{oldSpace.name}</Link>;
     const newLink = <Link to={newSpacePath}>{newSpace.name}</Link>;

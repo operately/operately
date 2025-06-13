@@ -6,7 +6,7 @@ import * as ProjectContributorsAddPage from "@/pages/ProjectContributorsAddPage"
 import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPage";
 import { WorkMap } from "turboui";
 
-export class Paths {
+export class DeprecatedPaths {
   static lobbyPath() {
     return "/";
   }
@@ -40,7 +40,7 @@ export class Paths {
   }
 
   static isHomePath() {
-    return window.location.pathname === Paths.homePath();
+    return window.location.pathname === DeprecatedPaths.homePath();
   }
 
   static homePath() {

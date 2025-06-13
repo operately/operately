@@ -3,9 +3,9 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 import * as Turboui from "turboui";
 
-import { Paths } from "@/routes/paths";
-import { redirect } from "react-router-dom";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
+import { redirect } from "react-router-dom";
 
 export default { name: "AiPlaygroundPage", loader, Page } as PageModule;
 
@@ -20,7 +20,7 @@ async function loader({ params }): Promise<LoaderResult> {
   if (Companies.hasFeature(company, "ai_playground")) {
     return {};
   } else {
-    throw redirect(Paths.homePath());
+    throw redirect(DeprecatedPaths.homePath());
   }
 }
 

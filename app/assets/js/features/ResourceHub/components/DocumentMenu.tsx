@@ -2,15 +2,15 @@ import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
-import { useBoolState } from "@/hooks/useBoolState";
-import { Menu, MenuLinkItem, MenuActionItem } from "turboui";
-import { Paths } from "@/routes/paths";
-import { createTestId } from "@/utils/testid";
 import { useNodesContext } from "@/features/ResourceHub";
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
-import { CopyResourceMenuItem } from "./CopyResource";
-import { CopyDocumentModal } from "./CopyDocumentModal";
+import { useBoolState } from "@/hooks/useBoolState";
+import { DeprecatedPaths } from "@/routes/paths";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
+import { createTestId } from "@/utils/testid";
+import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
+import { CopyDocumentModal } from "./CopyDocumentModal";
+import { CopyResourceMenuItem } from "./CopyResource";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface Props {
   document: Hub.ResourceHubDocument;
@@ -49,7 +49,7 @@ export function DocumentMenu({ document }: Props) {
 }
 
 function EditDocumentMenuItem({ document }: Props) {
-  const editPath = Paths.resourceHubEditDocumentPath(document.id!);
+  const editPath = DeprecatedPaths.resourceHubEditDocumentPath(document.id!);
   const editId = createTestId("edit", document.id!);
 
   return (

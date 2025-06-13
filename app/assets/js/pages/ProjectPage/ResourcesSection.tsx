@@ -1,10 +1,9 @@
-import * as React from "react";
 import * as Projects from "@/models/projects";
+import * as React from "react";
 
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { SecondaryButton } from "turboui";
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Link, SecondaryButton } from "turboui";
 
 export function ResourcesSection({ project }: { project: Projects.Project }) {
   return (
@@ -29,7 +28,7 @@ function EditLink({ project }: { project: Projects.Project }) {
 
   return (
     <div className="text-sm">
-      <Link to={Paths.projectEditResourcesPath(project.id!)} testId="edit-resources-link">
+      <Link to={DeprecatedPaths.projectEditResourcesPath(project.id!)} testId="edit-resources-link">
         Edit
       </Link>
     </div>
@@ -45,7 +44,7 @@ function Content({ project }) {
 }
 
 function ResourcesZeroState({ project }) {
-  const editPath = Paths.projectEditResourcesPath(project.id!);
+  const editPath = DeprecatedPaths.projectEditResourcesPath(project.id!);
 
   const editLink = (
     <SecondaryButton linkTo={editPath} testId="add-resources-link" size="xs">

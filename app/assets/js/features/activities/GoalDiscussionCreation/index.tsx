@@ -1,17 +1,17 @@
 import React from "react";
 
-import * as People from "@/models/people";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
+import * as People from "@/models/people";
 import * as Icons from "@tabler/icons-react";
 
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import RichContent, { Summary } from "@/components/RichContent";
-import { Paths } from "@/routes/paths";
+import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { DeprecatedPaths } from "@/routes/paths";
 
-import { ActivityHandler } from "../interfaces";
-import { Link } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { Link } from "turboui";
+import { ActivityHandler } from "../interfaces";
 import { feedTitle, goalLink } from "./../feedItemLinks";
 
 const GoalDiscussionCreation: ActivityHandler = {
@@ -20,7 +20,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   pagePath(activity: Activity): string {
-    return Paths.goalActivityPath(activity.id!);
+    return DeprecatedPaths.goalActivityPath(activity.id!);
   },
 
   PageTitle({ activity }: { activity: Activity }) {
@@ -46,7 +46,7 @@ const GoalDiscussionCreation: ActivityHandler = {
           <PageOptions.Link
             icon={Icons.IconEdit}
             title="Edit"
-            to={Paths.goalDiscussionEditPath(activity.id!)}
+            to={DeprecatedPaths.goalDiscussionEditPath(activity.id!)}
             testId="edit"
           />
         )}
@@ -65,7 +65,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const path = Paths.goalActivityPath(activity.id!);
+    const path = DeprecatedPaths.goalActivityPath(activity.id!);
     const link = <Link to={path}>{activity.commentThread!.title}</Link>;
 
     if (page === "goal") {

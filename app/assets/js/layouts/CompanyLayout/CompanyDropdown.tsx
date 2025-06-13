@@ -1,9 +1,9 @@
-import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Companies from "@/models/companies";
+import * as Icons from "@tabler/icons-react";
+import * as React from "react";
 
-import { Paths } from "@/routes/paths";
-import { DropdownMenu, DropdownLinkItem, DropdownSeparator } from "./DropdownMenu";
+import { DeprecatedPaths } from "@/routes/paths";
+import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 export function CompanyDropdown({ company }: { company: Companies.Company }) {
   return (
@@ -15,19 +15,19 @@ export function CompanyDropdown({ company }: { company: Companies.Company }) {
       showDropdownIcon
     >
       <DropdownLinkItem
-        path={Paths.feedPath()}
+        path={DeprecatedPaths.feedPath()}
         icon={Icons.IconRss}
         title="The Feed"
         testId="company-dropdown-company-feed"
       />
       <DropdownLinkItem
-        path={Paths.peoplePath()}
+        path={DeprecatedPaths.peoplePath()}
         icon={Icons.IconUserCircle}
         title="People"
         testId="company-dropdown-people"
       />
       <DropdownLinkItem
-        path={Paths.orgChartPath()}
+        path={DeprecatedPaths.orgChartPath()}
         icon={Icons.IconBinaryTree2}
         title="Org Chart"
         testId="company-dropdown-org-chart"
@@ -36,13 +36,13 @@ export function CompanyDropdown({ company }: { company: Companies.Company }) {
       <DropdownSeparator />
 
       <DropdownLinkItem
-        path={Paths.companyAdminPath()}
+        path={DeprecatedPaths.companyAdminPath()}
         icon={Icons.IconCircleKey}
         title="Company Admin"
         testId="company-dropdown-company-admin"
       />
       <DropdownLinkItem
-        path={Paths.lobbyPath()}
+        path={DeprecatedPaths.lobbyPath()}
         icon={Icons.IconSwitch}
         title="Switch Company"
         testId="company-dropdown-switch"

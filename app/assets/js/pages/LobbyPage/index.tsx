@@ -7,7 +7,7 @@ import * as React from "react";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink, Link } from "turboui";
 
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 import plurarize from "@/utils/plurarize";
@@ -86,7 +86,7 @@ function CompanyCard({ company }: { company: Api.Company }) {
   );
 
   return (
-    <DivLink to={Paths.companyHomePath(company.id!)} className={className}>
+    <DivLink to={DeprecatedPaths.companyHomePath(company.id!)} className={className}>
       <Icons.IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
       <div className="font-medium mt-2">{company.name}</div>
       <div className="text-xs">{plurarize(company.memberCount!, "member", "members")}</div>
@@ -107,7 +107,7 @@ function AddCompanyCard() {
   );
 
   return (
-    <DivLink to={Paths.newCompanyPath()} className={className} testId="add-company-card">
+    <DivLink to={DeprecatedPaths.newCompanyPath()} className={className} testId="add-company-card">
       <div className="font-bold sm:text-lg">+ Create new</div>
       <div className="text-xs sm:text-sm font-medium">Add new organization</div>
       <div className="flex justify-end mt-3">

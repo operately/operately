@@ -1,11 +1,10 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
+import * as React from "react";
 
-import { useLoadedData } from "./loader";
 import { Person } from "@/models/people";
-import { Avatar } from "turboui";
-import { Link } from "turboui";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
+import { Avatar, Link } from "turboui";
+import { useLoadedData } from "./loader";
 
 export function Page() {
   const { company, people } = useLoadedData();
@@ -41,7 +40,7 @@ function PersonCard({ person }: { person: Person }) {
 
         <div className="flex flex-col">
           <div className="font-bold leading-tight">
-            <Link to={Paths.profilePath(person.id!!)} underline="never" testId={testId}>
+            <Link to={DeprecatedPaths.profilePath(person.id!!)} underline="never" testId={testId}>
               {person.fullName}
             </Link>
           </div>

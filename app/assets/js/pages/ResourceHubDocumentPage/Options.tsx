@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { useDeleteResourceHubDocument } from "@/models/resourceHubs";
-import { Paths } from "@/routes/paths";
+import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
-import { useLoadedData } from "./loader";
-import { IconCopy, IconEdit, IconTrash, IconFileExport } from "@tabler/icons-react";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
+import { IconCopy, IconEdit, IconFileExport, IconTrash } from "@tabler/icons-react";
+import { useLoadedData } from "./loader";
 
 interface Props {
   showCopyModal: () => void;
@@ -24,7 +24,7 @@ export function Options({ showCopyModal }: Props) {
         <PageOptions.Link
           icon={IconEdit}
           title="Edit"
-          to={Paths.resourceHubEditDocumentPath(document.id!)}
+          to={DeprecatedPaths.resourceHubEditDocumentPath(document.id!)}
           testId="edit-document-link"
           keepOutsideOnBigScreen
         />
@@ -47,9 +47,9 @@ function DeleteAction() {
 
   const redirect = () => {
     if (folder) {
-      navigate(Paths.resourceHubFolderPath(folder.id!));
+      navigate(DeprecatedPaths.resourceHubFolderPath(folder.id!));
     } else {
-      navigate(Paths.resourceHubPath(resourceHub.id!));
+      navigate(DeprecatedPaths.resourceHubPath(resourceHub.id!));
     }
   };
 

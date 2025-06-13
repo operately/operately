@@ -1,11 +1,11 @@
-import React from "react";
 import * as People from "@/models/people";
+import React from "react";
 
-import type { Activity } from "@/models/activities";
 import type { ActivityContentResourceHubLinkEdited } from "@/api";
-import type { ActivityHandler } from "../interfaces";
-import { Paths } from "@/routes/paths";
+import type { Activity } from "@/models/activities";
+import { DeprecatedPaths } from "@/routes/paths";
 import { feedTitle, spaceLink } from "../feedItemLinks";
+import type { ActivityHandler } from "../interfaces";
 
 const ResourceHubLinkEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -13,7 +13,7 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   pagePath(activity: Activity) {
-    return Paths.resourceHubLinkPath(content(activity).link!.id!);
+    return DeprecatedPaths.resourceHubLinkPath(content(activity).link!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

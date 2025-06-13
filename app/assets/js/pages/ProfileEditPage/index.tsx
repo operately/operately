@@ -1,16 +1,16 @@
-import * as React from "react";
+import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import * as Pages from "@/components/Pages";
+import * as React from "react";
 
+import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
-import { Paths } from "@/routes/paths";
 import { Timezones } from "./timezones";
 
-import { Avatar } from "turboui";
 import Forms from "@/components/Forms";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { PageModule } from "@/routes/types";
+import { Avatar } from "turboui";
 
 export default { name: "ProfileEditPage", loader, Page } as PageModule;
 
@@ -50,13 +50,13 @@ function Navigation() {
     return (
       <Paper.Navigation
         items={[
-          { label: "Company Administration", to: Paths.companyAdminPath() },
-          { label: "Manage Team Members", to: Paths.companyManagePeoplePath() },
+          { label: "Company Administration", to: DeprecatedPaths.companyAdminPath() },
+          { label: "Manage Team Members", to: DeprecatedPaths.companyManagePeoplePath() },
         ]}
       />
     );
   } else {
-    return <Paper.Navigation items={[{ label: "Account", to: Paths.accountPath() }]} />;
+    return <Paper.Navigation items={[{ label: "Account", to: DeprecatedPaths.accountPath() }]} />;
   }
 }
 
@@ -92,9 +92,9 @@ function ProfileForm({ person }: { person: People.Person }) {
       });
 
       if (me.id === person.id) {
-        navigate(Paths.accountPath());
+        navigate(DeprecatedPaths.accountPath());
       } else {
-        navigate(Paths.companyManagePeoplePath());
+        navigate(DeprecatedPaths.companyManagePeoplePath());
       }
     },
   });
