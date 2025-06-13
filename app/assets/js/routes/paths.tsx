@@ -59,10 +59,6 @@ export class Paths {
     return this.createCompanyPath(["feed"]);
   }
 
-  isHomePath() {
-    return window.location.pathname === DeprecatedPaths.homePath();
-  }
-
   homePath() {
     return this.createCompanyPath([]);
   }
