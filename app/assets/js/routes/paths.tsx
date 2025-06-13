@@ -297,10 +297,6 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "edit", "general-access"]);
   }
 
-  spaceGoalsPath(spaceId: string) {
-    return this.createCompanyPath(["spaces", spaceId, "goals"]);
-  }
-
   spaceDiscussionsPath(spaceId: string) {
     return this.createCompanyPath(["spaces", spaceId, "discussions"]);
   }
@@ -355,10 +351,6 @@ export class Paths {
 
   projectsPath() {
     return this.createCompanyPath(["projects"]);
-  }
-
-  goalsPath() {
-    return this.createCompanyPath(["goals"]);
   }
 
   goalAboutPath(goalId: string) {
@@ -431,10 +423,6 @@ export class Paths {
 
   profilePath(personId: string) {
     return this.createCompanyPath(["people", personId]);
-  }
-
-  profileGoalsPath(personId: string) {
-    return this.createCompanyPath(["people", personId, "goals"]);
   }
 
   projectEditTimelinePath(projectId: string) {

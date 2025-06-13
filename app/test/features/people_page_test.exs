@@ -17,10 +17,15 @@ defmodule Operately.Features.PeoplePageTest do
     ctx
     |> UI.login_as(ctx.creator)
     |> Steps.visit_person_page(ctx.bob)
+    |> Steps.click_activity_tab()
     |> Steps.assert_activity_visible_on_feed(%{name: "Bob", project_name: "new_feature"})
+    |> Steps.click_about_tab()
     |> Steps.click_on_person_card(ctx.john)
+    |> Steps.click_activity_tab()
     |> Steps.assert_activity_visible_on_feed(%{name: "John", project_name: "improve_performance"})
+    |> Steps.click_about_tab()
     |> Steps.click_on_person_card(ctx.bob)
+    |> Steps.click_activity_tab()
     |> Steps.assert_activity_visible_on_feed(%{name: "Bob", project_name: "new_feature"})
   end
 end

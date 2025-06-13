@@ -9,7 +9,7 @@ export function Navigation({ space }: { space: Spaces.Space }) {
     <Paper.Navigation
       items={[
         { to: DeprecatedPaths.spacePath(space.id!), label: space.name! },
-        { to: DeprecatedPaths.spaceGoalsPath(space.id!), label: "Goals & Projects" },
+        { to: DeprecatedPaths.spaceWorkMapPath(space.id!), label: "Work Map" },
       ]}
     />
   );
