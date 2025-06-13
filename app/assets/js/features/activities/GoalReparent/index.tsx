@@ -1,7 +1,7 @@
 import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalReparent } from "@/api";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
@@ -11,11 +11,11 @@ const GoalReparent: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
+  pagePath(paths, activity: Activity): string {
     const data = content(activity);
     assertPresent(data.goal?.id, "goal.id must be present in activity");
 
-    return DeprecatedPaths.goalPath(data.goal.id);
+    return paths.goalPath(data.goal.id);
   },
 
   PageTitle(_props: { activity: any }) {

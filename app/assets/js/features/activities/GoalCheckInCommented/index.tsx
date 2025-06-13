@@ -6,7 +6,8 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "./../feedItemLinks";
@@ -16,8 +17,8 @@ const GoalUpdateCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.goalCheckInPath(content(activity).update?.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.goalCheckInPath(content(activity).update?.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -33,13 +34,14 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const data = content(activity);
 
     assertPresent(data.goal, "Goal must be present in activity content");
     assertPresent(data.update, "Update must be present in activity content");
     assertPresent(data.update.id, "Update ID must be present in activity content");
 
-    const checkInPath = DeprecatedPaths.goalCheckInPath(data.update.id);
+    const checkInPath = paths.goalCheckInPath(data.update.id);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "goal") {

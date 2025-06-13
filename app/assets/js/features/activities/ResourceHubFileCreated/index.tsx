@@ -3,7 +3,8 @@ import React from "react";
 
 import type { ActivityContentResourceHubFileCreated } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 import { feedTitle, fileLink, resourceHubLink, spaceLink } from "../feedItemLinks";
@@ -14,16 +15,16 @@ const ResourceHubFileCreated: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
+  pagePath(paths, activity: Activity) {
     const data = content(activity);
 
     assertPresent(data.files, "files must be present in FileCreated activity");
     assertPresent(data.resourceHub?.id, "resourceHub must be present in FileCreated activity");
 
     if (data.files.length === 1 && data.files[0]) {
-      return DeprecatedPaths.resourceHubFilePath(data.files[0].id!);
+      return paths.resourceHubFilePath(data.files[0].id!);
     } else {
-      return DeprecatedPaths.resourceHubPath(data.resourceHub.id);
+      return paths.resourceHubPath(data.resourceHub.id);
     }
   },
 
@@ -67,6 +68,7 @@ const ResourceHubFileCreated: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const data = content(activity);
 
     if (data.files && data.files.length > 1) {
@@ -76,7 +78,7 @@ const ResourceHubFileCreated: ActivityHandler = {
             assertPresent(file.id, "id must be present in file");
             assertPresent(file.name, "name must be present in file");
 
-            const path = DeprecatedPaths.resourceHubFilePath(file.id);
+            const path = paths.resourceHubFilePath(file.id);
             const name = file.name;
 
             return (
