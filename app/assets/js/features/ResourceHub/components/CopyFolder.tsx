@@ -4,12 +4,12 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubFolder, useCopyResourceHubFolder } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useNodesContext } from "../contexts/NodesContext";
 import { CopyResourceModal } from "./CopyResource";
 
+import { usePaths } from "@/routes/paths";
 interface FormProps {
   resource: ResourceHubFolder;
   isOpen: boolean;
@@ -17,6 +17,7 @@ interface FormProps {
 }
 
 export function CopyFolderModal(props: FormProps) {
+  const paths = usePaths();
   const { resource, hideModal } = props;
   const { parent } = useNodesContext();
 
@@ -42,7 +43,7 @@ export function CopyFolderModal(props: FormProps) {
         destParentFolderId: form.values.location.type == "folder" ? form.values.location.id : undefined,
       });
 
-      navigate(DeprecatedPaths.resourceHubFolderPath(res.folderId));
+      navigate(paths.resourceHubFolderPath(res.folderId));
     },
   });
 

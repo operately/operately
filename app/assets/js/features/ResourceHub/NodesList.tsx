@@ -2,16 +2,17 @@ import React, { useMemo } from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
-import classNames from "classnames";
-import { DivLink } from "turboui";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { createTestId } from "@/utils/testid";
-import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst } from "./utils";
-import { DocumentMenu, FileMenu, FolderMenu, LinkMenu, FolderZeroNodes, HubZeroNodes } from "./components";
-import { NodesProps, NodesProvider } from "./contexts/NodesContext";
+import classNames from "classnames";
+import { DivLink } from "turboui";
+import { usePaths } from "../../routes/paths";
+import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes, LinkMenu } from "./components";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
-import { NodeIcon } from "./NodeIcon";
+import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 import { NodeDescription } from "./NodeDescription";
+import { NodeIcon } from "./NodeIcon";
+import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst } from "./utils";
 
 export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
@@ -41,12 +42,13 @@ interface NodeItemProps {
 }
 
 function NodeItem({ node, testid }: NodeItemProps) {
+  const paths = usePaths();
   const className = classNames(
     "flex justify-between gap-2 py-4 px-2 items-center",
     "border-b border-stroke-base first:border-t-0",
   );
 
-  const path = findPath(node.type as NodeType, node);
+  const path = findPath(paths, node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (

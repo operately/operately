@@ -4,7 +4,7 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { AddAdminsModal } from "./AddAdminsModal";
 import { AddOwnersModal } from "./AddOwnersModal";
 import { useLoadedData } from "./loader";
@@ -14,7 +14,9 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { createTestId } from "@/utils/testid";
 import { Avatar, BlackLink, SecondaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const form = useFrom();
 
   const { admins, owners } = useLoadedData();
@@ -22,7 +24,7 @@ export function Page() {
   return (
     <Pages.Page title={"Manage admins and owners"} testId="manage-admins-page">
       <Paper.Root>
-        <Paper.Navigation items={[{ to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" }]} />
+        <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />
 
         <Paper.Body>
           <Paper.Header
@@ -75,9 +77,10 @@ function PersonRow({ person, type }: { person: People.Person; type: "admins" | "
 }
 
 function PersonInfo({ person }: { person: People.Person }) {
+  const paths = usePaths();
   return (
     <div>
-      <BlackLink to={DeprecatedPaths.profilePath(person.id!)} className="font-bold" underline="hover">
+      <BlackLink to={paths.profilePath(person.id!)} className="font-bold" underline="hover">
         {person.fullName}
       </BlackLink>
 

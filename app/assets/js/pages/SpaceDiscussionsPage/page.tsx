@@ -5,7 +5,7 @@ import * as React from "react";
 import { Summary } from "@/components/RichContent";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { DivLink, Link, PrimaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";
@@ -42,9 +42,10 @@ function Header() {
 
 function NewDiscussionButton() {
   const { space } = useLoadedData();
+  const paths = usePaths();
 
   return (
-    <PrimaryButton linkTo={DeprecatedPaths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
+    <PrimaryButton linkTo={paths.discussionNewPath(space.id!)} size="sm" testId="new-discussion">
       New Discussion
     </PrimaryButton>
   );
@@ -52,11 +53,12 @@ function NewDiscussionButton() {
 
 function ContinueEditingDrafts() {
   const { space, myDrafts } = useLoadedData();
+  const paths = usePaths();
 
   if (myDrafts.length < 1) {
     return null;
   } else if (myDrafts.length === 1) {
-    const path = DeprecatedPaths.discussionEditPath(myDrafts[0]!.id!);
+    const path = paths.discussionEditPath(myDrafts[0]!.id!);
 
     return (
       <div className="flex justify-center">
@@ -66,7 +68,7 @@ function ContinueEditingDrafts() {
       </div>
     );
   } else {
-    const path = DeprecatedPaths.discussionDraftsPath(space.id!);
+    const path = paths.discussionDraftsPath(space.id!);
 
     return (
       <div className="flex justify-center">
@@ -99,10 +101,11 @@ function DiscussionList() {
 }
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
+  const paths = usePaths();
   assertPresent(discussion.author, "author must be present in discussion");
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
-  const path = DeprecatedPaths.discussionPath(discussion.id!);
+  const path = paths.discussionPath(discussion.id!);
 
   const className = classNames(
     "flex gap-4",

@@ -9,13 +9,13 @@ import * as React from "react";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
 import { DimmedLink, PrimaryButton } from "turboui";
 
 import { formValidator, useFormMutationAction, useFormState } from "@/components/Form/useFormState";
 import { match } from "ts-pattern";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalDiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -29,6 +29,7 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
+  const paths = usePaths();
   const { activity } = Pages.useLoadedData<LoaderResult>();
   const form = useForm({ activity: activity });
   const goal = Activities.getGoal(activity);
@@ -55,7 +56,7 @@ function Page() {
               Save
             </PrimaryButton>
 
-            <DimmedLink to={DeprecatedPaths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={paths.goalActivityPath(activity.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -70,6 +71,7 @@ type FormFields = {
 };
 
 function useForm({ activity }: { activity: Activities.Activity }) {
+  const paths = usePaths();
   const commentThread = activity.commentThread!;
   const [title, setTitle] = React.useState(commentThread.title!);
 
@@ -97,7 +99,7 @@ function useForm({ activity }: { activity: Activities.Activity }) {
         title: fields.title,
         message: JSON.stringify(fields.editor.editor.getJSON()),
       }),
-      onCompleted: (_data, navigate) => navigate(DeprecatedPaths.goalActivityPath(activity.id!)),
+      onCompleted: (_data, navigate) => navigate(paths.goalActivityPath(activity.id!)),
     }),
   });
 }

@@ -3,7 +3,6 @@ import React from "react";
 import { MiniWorkMap } from "turboui";
 
 import { Spacer } from "@/components/Spacer";
-import { DeprecatedPaths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";
@@ -11,14 +10,16 @@ import { DisableInEditMode, Title } from "./components";
 import { useLoadedData } from "./loader";
 import { useWorkItems } from "./useWorkItems";
 
+import { usePaths } from "@/routes/paths";
 export function RelatedWork() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
   const items = useWorkItems();
 
   assertPresent(goal.space, "space must be present in goal");
 
-  const newGoalPath = DeprecatedPaths.goalNewPath({ parentGoalId: goal.id! });
-  const newProjectPath = DeprecatedPaths.newProjectPath({ goalId: goal.id!, spaceId: goal.space.id! });
+  const newGoalPath = paths.goalNewPath({ parentGoalId: goal.id! });
+  const newProjectPath = paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space.id! });
 
   return (
     <DisableInEditMode>

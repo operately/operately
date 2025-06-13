@@ -5,10 +5,10 @@ import * as Paper from "@/components/PaperContainer";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Form, FormState, useForm } from "@/features/goals/GoalForm";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PrimaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const me = useMe()!;
   const { spaceID, space, spaces, company, parentGoal, goals, isCompanyWide } = useLoadedData();
@@ -29,12 +29,13 @@ export function Page() {
 }
 
 function NewGoalForSpacePage({ form }: { form: FormState }) {
+  const paths = usePaths();
   const { space } = useLoadedData();
 
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
-        <Paper.NavigateBack to={DeprecatedPaths.goalsPath()} title={`Back to ${space!.name} Space`} />
+        <Paper.NavigateBack to={paths.goalsPath()} title={`Back to ${space!.name} Space`} />
 
         <h1 className="mb-4 font-bold text-3xl text-center">Adding a new subgoal for {space!.name}</h1>
 
@@ -49,12 +50,13 @@ function NewGoalForSpacePage({ form }: { form: FormState }) {
 }
 
 function NewGoalPage({ form }: { form: FormState }) {
+  const paths = usePaths();
   const { isCompanyWide } = useLoadedData();
 
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
-        <Paper.NavigateBack to={DeprecatedPaths.goalsPath()} title="Back to Goals" />
+        <Paper.NavigateBack to={paths.goalsPath()} title="Back to Goals" />
 
         <h1 className="mb-4 font-bold text-3xl text-center">
           Adding a new {isCompanyWide ? "company-wide" : " "} goal

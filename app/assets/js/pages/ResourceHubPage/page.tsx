@@ -4,7 +4,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
 
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -37,13 +37,14 @@ export function Page() {
 
 function PageNavigation() {
   const { resourceHub } = useLoadedData();
+  const paths = usePaths();
 
   assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   return (
     <Paper.Navigation
       testId="navigation"
-      items={[{ to: DeprecatedPaths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
+      items={[{ to: paths.spacePath(resourceHub.space.id!), label: resourceHub.space.name! }]}
     />
   );
 }

@@ -6,9 +6,9 @@ import * as Paper from "@/components/PaperContainer";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton";
 import { GoalTree } from "@/features/goals/GoalTree";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { space, goals, projects } = useLoadedData();
 
@@ -32,12 +32,13 @@ export function Page() {
 }
 
 function Header() {
+  const paths = usePaths();
   const { space } = useLoadedData();
 
-  const newGoalPath = DeprecatedPaths.spaceNewGoalPath(space.id!);
-  const newProjectPath = DeprecatedPaths.newProjectPath({
+  const newGoalPath = paths.spaceNewGoalPath(space.id!);
+  const newProjectPath = paths.newProjectPath({
     spaceId: space.id!,
-    backPath: DeprecatedPaths.spaceGoalsPath(space.id!),
+    backPath: paths.spaceGoalsPath(space.id!),
     backPathName: `Back to ${space.name} Goal Map`,
   });
 

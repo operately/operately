@@ -5,10 +5,10 @@ import * as React from "react";
 
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -28,10 +28,11 @@ export function Page() {
 }
 
 function GoalList() {
+  const paths = usePaths();
   const { project, goals } = useLoadedData();
 
   const navigate = useNavigate();
-  const projectPath = DeprecatedPaths.projectPath(project.id!);
+  const projectPath = paths.projectPath(project.id!);
 
   const [connect] = Goals.useConnectGoalToProject();
 

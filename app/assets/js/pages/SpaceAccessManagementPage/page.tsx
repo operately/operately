@@ -9,7 +9,7 @@ import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
 import { AccessLevel } from "@/features/spaces";
 import { Space } from "@/models/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
 import { OtherPeople } from "./OtherPeople";
 
@@ -42,7 +42,8 @@ export function Page() {
 
 function Title() {
   const { space } = useLoadedData();
-  const addMembersPath = DeprecatedPaths.spaceAddMembersPath(space.id!);
+  const paths = usePaths();
+  const addMembersPath = paths.spaceAddMembersPath(space.id!);
 
   assertPresent(space.permissions, "Space permissions must be present");
 
@@ -65,12 +66,14 @@ function Title() {
 }
 
 function Navigation({ space }: { space: Space }) {
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.spacePath(space.id!), label: space.name! }]} />;
+  const paths = usePaths();
+  return <Paper.Navigation items={[{ to: paths.spacePath(space.id!), label: space.name! }]} />;
 }
 
 function GeneralAccess() {
   const { space } = useLoadedData();
-  const editPath = DeprecatedPaths.spaceEditGeneralAccessPath(space.id!);
+  const paths = usePaths();
+  const editPath = paths.spaceEditGeneralAccessPath(space.id!);
 
   assertPresent(space.accessLevels, "Space access levels must be present");
   assertPresent(space.permissions, "Space permissions must be present");

@@ -3,17 +3,19 @@ import React from "react";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 
-import { compareIds, DeprecatedPaths } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 
 import { assertPresent } from "@/utils/assertions";
 import { MiniWorkMap } from "turboui";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function useWorkItems(): MiniWorkMap.WorkItem[] {
   const { goal, goals, projects } = useLoadedData();
 
   const items: MiniWorkMap.WorkItem[] = React.useMemo(() => {
     const projectAsWorkItem = (project: Projects.Project) => {
+      const paths = usePaths();
       assertPresent(project.id, "project id must be present");
       assertPresent(project.name, "project name must be present");
 
@@ -23,7 +25,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
         state: project.closedAt ? "closed" : project.status === "paused" ? "paused" : "active",
         status: project.lastCheckIn?.status || "pending",
         name: project.name,
-        itemPath: DeprecatedPaths.projectPath(project.id),
+        itemPath: paths.projectPath(project.id),
         progress: Projects.getProgress(project),
         completed: Projects.isClosed(project),
         assignees: Projects.getPeople(project),
@@ -32,6 +34,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
     };
 
     const goalAsWorkItem = (goal: Goals.Goal) => {
+      const paths = usePaths();
       assertPresent(goal.id, "goal id must be present");
       assertPresent(goal.name, "goal name must be present");
       assertPresent(goal.isClosed, "goal closed status must be present");
@@ -43,7 +46,7 @@ export function useWorkItems(): MiniWorkMap.WorkItem[] {
         state: goal.closedAt ? "closed" : "active",
         status: goal.lastCheckIn?.status || "pending",
         name: goal.name,
-        itemPath: DeprecatedPaths.goalPath(goal.id),
+        itemPath: paths.goalPath(goal.id),
         progress: goal.progressPercentage,
         completed: goal.isClosed,
         assignees: Goals.getPeople(goal),
