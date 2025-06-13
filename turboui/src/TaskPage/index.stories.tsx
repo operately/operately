@@ -27,9 +27,19 @@ const mockTaskPeople: TaskPage.Person[] = [
 
 // Timeline people (with profile links)
 const timelinePeople: TimelinePerson[] = [
-  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice", profileLink: "/people/alice" },
+  {
+    id: "user-1",
+    fullName: "Alice Johnson",
+    avatarUrl: "https://i.pravatar.cc/150?u=alice",
+    profileLink: "/people/alice",
+  },
   { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
-  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie", profileLink: "/people/charlie" },
+  {
+    id: "user-3",
+    fullName: "Charlie Brown",
+    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
+    profileLink: "/people/charlie",
+  },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: undefined, profileLink: "/people/diana" },
 ];
 
@@ -120,11 +130,9 @@ const searchTaskPeople = async ({ query }: { query: string }): Promise<TaskPage.
 // Mock search function for TaskPage milestones - maintains earliest first sorting
 const searchMilestones = async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  
-  const filtered = mockMilestones.filter((milestone) => 
-    milestone.title.toLowerCase().includes(query.toLowerCase())
-  );
-  
+
+  const filtered = mockMilestones.filter((milestone) => milestone.title.toLowerCase().includes(query.toLowerCase()));
+
   // Sort by due date (earliest first), then by title for those without due dates
   return filtered.sort((a, b) => {
     if (a.dueDate && b.dueDate) {
@@ -214,7 +222,12 @@ function createComment(author: TimelinePerson, content: string, timeAgo: number)
   };
 }
 
-function createTaskActivity(type: TaskActivity["type"], author: TimelinePerson, timeAgo: number, extraData: any = {}): TimelineItemType {
+function createTaskActivity(
+  type: TaskActivity["type"],
+  author: TimelinePerson,
+  timeAgo: number,
+  extraData: any = {},
+): TimelineItemType {
   return {
     type: "task-activity",
     value: {
@@ -230,14 +243,20 @@ function createTaskActivity(type: TaskActivity["type"], author: TimelinePerson, 
 // Timeline data generators for different scenarios
 function createActiveTaskTimeline(): TimelineItemType[] {
   return [
-    createComment(bob, "I've started working on the login component. Should have a first version ready by tomorrow.", 30 * 60 * 1000), // 30 min ago
-    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }), // 2 hours ago
+    createComment(
+      bob,
+      "I've started working on the login component. Should have a first version ready by tomorrow.",
+      30 * 60 * 1000,
+    ), // 30 min ago
+    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, {
+      fromStatus: "not_started",
+      toStatus: "in_progress",
+    }), // 2 hours ago
     createTaskActivity("task-assignment", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
-    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, { 
-      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" }, 
-      action: "attached" 
+    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, {
+      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
+      action: "attached",
     }),
-    createTaskActivity("task-priority", charlie, 6 * 60 * 60 * 1000, { fromPriority: "normal", toPriority: "high" }),
     createComment(alice, "This is a critical feature for the beta release. Let's prioritize it.", 6.5 * 60 * 60 * 1000),
     createTaskActivity("task-creation", alice, 24 * 60 * 60 * 1000), // 1 day ago
   ];
@@ -263,9 +282,9 @@ function createCompletedTaskTimeline(): TimelineItemType[] {
 function createOverdueTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
-    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, { 
-      fromDueDate: null, 
-      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() 
+    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, {
+      fromDueDate: null,
+      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     }),
     createTaskActivity("task-assignment", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
     createTaskActivity("task-creation", alice, 7 * 24 * 60 * 60 * 1000),
@@ -274,9 +293,21 @@ function createOverdueTaskTimeline(): TimelineItemType[] {
 
 function createLongContentTimeline(): TimelineItemType[] {
   return [
-    createComment(diana, "I've tested this thoroughly and everything works as expected. The error handling is particularly robust.", 30 * 60 * 1000),
-    createComment(charlie, "The UI looks great! I made some small adjustments to the spacing and colors to match our design system.", 2 * 60 * 60 * 1000),
-    createComment(bob, "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.", 4 * 60 * 60 * 1000),
+    createComment(
+      diana,
+      "I've tested this thoroughly and everything works as expected. The error handling is particularly robust.",
+      30 * 60 * 1000,
+    ),
+    createComment(
+      charlie,
+      "The UI looks great! I made some small adjustments to the spacing and colors to match our design system.",
+      2 * 60 * 60 * 1000,
+    ),
+    createComment(
+      bob,
+      "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.",
+      4 * 60 * 60 * 1000,
+    ),
     createTaskActivity("task-description", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
     createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
     createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
@@ -575,7 +606,6 @@ export const MinimalTask: Story = {
   },
 };
 
-
 /**
  * Completed task
  */
@@ -668,4 +698,3 @@ export const ReadOnlyTask: Story = {
     timelineItems: createActiveTaskTimeline(),
   },
 };
-

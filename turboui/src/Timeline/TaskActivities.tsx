@@ -1,5 +1,4 @@
 import React from "react";
-import { Avatar } from "../Avatar";
 import { shortName } from "../Avatar/AvatarWithName";
 import { BlackLink } from "../Link";
 import FormattedTime from "../FormattedTime";
@@ -8,56 +7,53 @@ import { TaskActivityProps, TaskActivity } from "./types";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
-    <div className="flex items-start gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative">
+    <div className="flex items-center gap-3 py-2 text-content-dimmed text-sm relative">
       <div className="shrink-0">
-        <Avatar person={activity.author} size="normal" />
+        <ActivityIcon activity={activity} />
       </div>
 
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="font-semibold">
-              {activity.author.profileLink ? (
-                <BlackLink to={activity.author.profileLink} underline="hover">
-                  {shortName(activity.author.fullName)}
-                </BlackLink>
-              ) : (
-                shortName(activity.author.fullName)
-              )}
-            </div>
-            <ActivityIcon activity={activity} />
-            <ActivityText activity={activity} />
-          </div>
-
-          <div className="flex items-center gap-2">
-            <span className="text-content-dimmed text-sm">
-              <FormattedTime time={activity.insertedAt} format="relative" />
-            </span>
-          </div>
+      <div className="flex-1 flex items-center gap-1.5">
+        <div className="font-medium text-content-accent">
+          {activity.author.profileLink ? (
+            <BlackLink to={activity.author.profileLink} underline="hover">
+              {shortName(activity.author.fullName)}
+            </BlackLink>
+          ) : (
+            shortName(activity.author.fullName)
+          )}
         </div>
+        <ActivityText activity={activity} />
+      </div>
+
+      <div className="shrink-0">
+        <span className="text-content-dimmed text-xs">
+          <FormattedTime time={activity.insertedAt} format="relative" />
+        </span>
       </div>
     </div>
   );
 }
 
 function ActivityIcon({ activity }: { activity: TaskActivity }) {
-  const iconProps = { size: 16, className: "text-content-dimmed" };
-  
+  const iconProps = { size: 14, className: "text-content-dimmed" };
+
   switch (activity.type) {
     case "task-assignment":
       return <Icons.IconUserPlus {...iconProps} className="text-blue-500" />;
     case "task-status-change":
       return getStatusIcon(activity.toStatus);
     case "task-milestone":
-      return activity.action === "attached" 
-        ? <Icons.IconTarget {...iconProps} className="text-green-500" />
-        : <Icons.IconTargetOff {...iconProps} className="text-orange-500" />;
-    case "task-priority":
-      return getPriorityIcon(activity.toPriority);
+      return activity.action === "attached" ? (
+        <Icons.IconFlag {...iconProps} className="text-green-500" />
+      ) : (
+        <Icons.IconFlagX {...iconProps} className="text-orange-500" />
+      );
     case "task-due-date":
-      return activity.toDueDate 
-        ? <Icons.IconCalendarPlus {...iconProps} className="text-blue-500" />
-        : <Icons.IconCalendarMinus {...iconProps} className="text-orange-500" />;
+      return activity.toDueDate ? (
+        <Icons.IconCalendarPlus {...iconProps} className="text-blue-500" />
+      ) : (
+        <Icons.IconCalendarMinus {...iconProps} className="text-orange-500" />
+      );
     case "task-description":
       return <Icons.IconFileText {...iconProps} className="text-purple-500" />;
     case "task-title":
@@ -71,29 +67,14 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
 
 function getStatusIcon(status: string) {
   switch (status) {
-    case "todo":
-      return <Icons.IconCircle size={16} className="text-gray-500" />;
+    case "not_started":
+      return <Icons.IconCircle size={14} className="text-gray-500" />;
     case "in_progress":
-      return <Icons.IconClockPlay size={16} className="text-blue-500" />;
+      return <Icons.IconClockPlay size={14} className="text-blue-500" />;
     case "done":
-      return <Icons.IconCircleCheck size={16} className="text-green-500" />;
+      return <Icons.IconCircleCheck size={14} className="text-green-500" />;
     default:
-      return <Icons.IconCircle size={16} className="text-gray-500" />;
-  }
-}
-
-function getPriorityIcon(priority: string) {
-  switch (priority) {
-    case "urgent":
-      return <Icons.IconAlertTriangle size={16} className="text-red-500" />;
-    case "high":
-      return <Icons.IconChevronUp size={16} className="text-orange-500" />;
-    case "normal":
-      return <Icons.IconMinus size={16} className="text-gray-500" />;
-    case "low":
-      return <Icons.IconChevronDown size={16} className="text-blue-500" />;
-    default:
-      return <Icons.IconMinus size={16} className="text-gray-500" />;
+      return <Icons.IconCircle size={14} className="text-gray-500" />;
   }
 }
 
@@ -123,8 +104,8 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
               </BlackLink>
             ) : (
               <span className="font-semibold">{shortName(activity.assignee.fullName)}</span>
-            )}
-            {" "}from this task
+            )}{" "}
+            from this task
           </span>
         );
       }
@@ -132,9 +113,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task-status-change":
       return (
         <span className="text-content-accent">
-          changed status from{" "}
-          <span className="font-semibold">{formatStatus(activity.fromStatus)}</span>
-          {" "}to{" "}
+          changed status from <span className="font-semibold">{formatStatus(activity.fromStatus)}</span> to{" "}
           <span className="font-semibold">{formatStatus(activity.toStatus)}</span>
         </span>
       );
@@ -143,28 +122,16 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
       if (activity.action === "attached") {
         return (
           <span className="text-content-accent">
-            attached this task to milestone{" "}
-            <span className="font-semibold">{activity.milestone.title}</span>
+            attached this task to milestone <span className="font-semibold">{activity.milestone.title}</span>
           </span>
         );
       } else {
         return (
           <span className="text-content-accent">
-            detached this task from milestone{" "}
-            <span className="font-semibold">{activity.milestone.title}</span>
+            detached this task from milestone <span className="font-semibold">{activity.milestone.title}</span>
           </span>
         );
       }
-
-    case "task-priority":
-      return (
-        <span className="text-content-accent">
-          changed priority from{" "}
-          <span className="font-semibold">{formatPriority(activity.fromPriority)}</span>
-          {" "}to{" "}
-          <span className="font-semibold">{formatPriority(activity.toPriority)}</span>
-        </span>
-      );
 
     case "task-due-date":
       if (activity.toDueDate && !activity.fromDueDate) {
@@ -177,19 +144,15 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
           </span>
         );
       } else if (!activity.toDueDate && activity.fromDueDate) {
-        return (
-          <span className="text-content-accent">
-            removed due date
-          </span>
-        );
+        return <span className="text-content-accent">removed due date</span>;
       } else if (activity.toDueDate && activity.fromDueDate) {
         return (
           <span className="text-content-accent">
             changed due date from{" "}
             <span className="font-semibold">
               <FormattedTime time={activity.fromDueDate} format="short-date" />
-            </span>
-            {" "}to{" "}
+            </span>{" "}
+            to{" "}
             <span className="font-semibold">
               <FormattedTime time={activity.toDueDate} format="short-date" />
             </span>
@@ -208,19 +171,13 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task-title":
       return (
         <span className="text-content-accent">
-          changed title from{" "}
-          <span className="font-semibold">"{activity.fromTitle}"</span>
-          {" "}to{" "}
+          changed title from <span className="font-semibold">"{activity.fromTitle}"</span> to{" "}
           <span className="font-semibold">"{activity.toTitle}"</span>
         </span>
       );
 
     case "task-creation":
-      return (
-        <span className="text-content-accent">
-          created this task
-        </span>
-      );
+      return <span className="text-content-accent">created this task</span>;
 
     default:
       return <span className="text-content-accent">performed an action</span>;
@@ -229,28 +186,13 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
 
 function formatStatus(status: string): string {
   switch (status) {
-    case "todo":
-      return "To Do";
+    case "not_started":
+      return "Not Started";
     case "in_progress":
       return "In Progress";
     case "done":
       return "Done";
     default:
       return status;
-  }
-}
-
-function formatPriority(priority: string): string {
-  switch (priority) {
-    case "urgent":
-      return "Urgent";
-    case "high":
-      return "High";
-    case "normal":
-      return "Normal";
-    case "low":
-      return "Low";
-    default:
-      return priority;
   }
 }

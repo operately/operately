@@ -17,7 +17,7 @@ function ActivitySection(props: TaskPage.State) {
   if (props.timelineItems && props.currentUser) {
     return (
       <div>
-        <h3 className="text-lg font-semibold mb-4">Activity & Discussion</h3>
+        <h3 className="font-bold mb-4">Activity & Discussion</h3>
         <Timeline
           items={props.timelineItems}
           currentUser={props.currentUser}
@@ -31,15 +31,12 @@ function ActivitySection(props: TaskPage.State) {
     );
   }
 
-  return <CommentsPlaceholder />;
-}
-
-function CommentsPlaceholder() {
+  // Fallback for when timeline data is not provided
   return (
-    <div className="border border-surface-outline rounded-lg p-6 bg-surface-dimmed">
-      <div className="text-center text-content-subtle">
-        <div className="text-sm font-medium mb-1">Comments & Activity</div>
-        <div className="text-xs">This section will contain the task's activity feed and comments</div>
+    <div>
+      <h3 className="font-bold mb-4">Activity & Discussion</h3>
+      <div className="text-content-dimmed text-center py-8">
+        Timeline data not available
       </div>
     </div>
   );
