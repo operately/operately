@@ -5,7 +5,8 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+
+import { usePaths } from "@/routes/paths";
 import React from "react";
 import { Link } from "turboui";
 import { feedTitle } from "../feedItemLinks";
@@ -15,8 +16,8 @@ const DiscussionCommentSubmitted: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity): string {
-    return DeprecatedPaths.discussionPath(content(_activity).discussion!.id!);
+  pagePath(paths, _activity: Activity): string {
+    return paths.discussionPath(content(_activity).discussion!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -32,10 +33,11 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const discussion = content(activity).discussion!;
     const space = content(activity).space!;
 
-    const path = DeprecatedPaths.discussionPath(discussion.id!);
+    const path = paths.discussionPath(discussion.id!);
     const activityLink = <Link to={path}>{discussion.title}</Link>;
 
     if (page === "space") {

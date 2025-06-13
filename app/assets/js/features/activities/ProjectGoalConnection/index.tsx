@@ -4,7 +4,7 @@ import type { ActivityContentProjectGoalConnection } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
 
 const ProjectGoalConnection: ActivityHandler = {
@@ -12,8 +12,8 @@ const ProjectGoalConnection: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

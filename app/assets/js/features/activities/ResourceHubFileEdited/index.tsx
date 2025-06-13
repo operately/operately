@@ -4,7 +4,7 @@ import React from "react";
 import type { ActivityContentResourceHubFileEdited } from "@/api";
 import { Summary } from "@/components/RichContent";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
@@ -13,9 +13,9 @@ const ResourceHubFileEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity) {
+  pagePath(paths, activity: Activity) {
     const file = content(activity).file!;
-    return DeprecatedPaths.resourceHubFilePath(file.id!);
+    return paths.resourceHubFilePath(file.id!);
   },
 
   PageTitle(_props: { activity: any }) {

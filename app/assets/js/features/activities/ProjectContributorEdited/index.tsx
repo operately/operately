@@ -6,7 +6,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { accessLevelAsString } from "@/features/Permissions";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectContributorEdited: ActivityHandler = {
@@ -14,8 +14,8 @@ const ProjectContributorEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

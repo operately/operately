@@ -1,6 +1,6 @@
 import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
 import { firstName, namesListToString } from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
@@ -9,8 +9,8 @@ const SpaceMembersAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.spacePath(content(activity).space!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.spacePath(content(activity).space!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

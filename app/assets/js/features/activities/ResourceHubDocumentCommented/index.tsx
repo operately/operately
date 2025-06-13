@@ -5,7 +5,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import React from "react";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 
@@ -14,8 +14,8 @@ const ResourceHubDocumentCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.resourceHubDocumentPath(content(activity).document!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.resourceHubDocumentPath(content(activity).document!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

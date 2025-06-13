@@ -1,5 +1,5 @@
 import * as People from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectResuming } from "@/api";
@@ -11,8 +11,8 @@ const ProjectResuming: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {

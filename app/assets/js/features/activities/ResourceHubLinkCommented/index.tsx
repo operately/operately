@@ -6,7 +6,7 @@ import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
 
@@ -15,11 +15,11 @@ const ResourceHubLinkCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
+  pagePath(paths, activity: Activity): string {
     const data = content(activity);
     assertPresent(data.link?.id, "link.id must be present in activity");
 
-    return DeprecatedPaths.resourceHubLinkPath(data.link.id);
+    return paths.resourceHubLinkPath(data.link.id);
   },
 
   PageTitle(_props: { activity: any }) {

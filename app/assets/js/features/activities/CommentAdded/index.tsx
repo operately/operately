@@ -12,7 +12,7 @@ import type {
 import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
@@ -22,14 +22,14 @@ const CommentAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
+  pagePath(paths, activity: Activity): string {
     const commentedActivity = content(activity).activity!;
 
     return match(commentedActivity.action)
-      .with("goal_timeframe_editing", () => DeprecatedPaths.goalActivityPath(commentedActivity.id!))
-      .with("goal_closing", () => DeprecatedPaths.goalActivityPath(commentedActivity.id!))
-      .with("goal_discussion_creation", () => DeprecatedPaths.goalActivityPath(commentedActivity.id!))
-      .with("goal_reopening", () => DeprecatedPaths.goalActivityPath(commentedActivity.id!))
+      .with("goal_timeframe_editing", () => paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_closing", () => paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_discussion_creation", () => paths.goalActivityPath(commentedActivity.id!))
+      .with("goal_reopening", () => paths.goalActivityPath(commentedActivity.id!))
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -48,13 +48,14 @@ const CommentAdded: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const commentedActivity = content(activity).activity!;
 
     return match(commentedActivity.action)
       .with("goal_timeframe_editing", () => {
         const c = commentedActivity.content as ActivityContentGoalTimeframeEditing;
         const goal = c.goal!;
-        const path = DeprecatedPaths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>timeframe change</Link>;
 
         if (page === "goal") {
@@ -66,7 +67,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_closing", () => {
         const c = commentedActivity.content as ActivityContentGoalClosing;
         const goal = c.goal!;
-        const path = DeprecatedPaths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>goal closing</Link>;
 
         if (page === "goal") {
@@ -78,7 +79,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_discussion_creation", () => {
         const c = commentedActivity.content as ActivityContentGoalDiscussionCreation;
         const goal = c.goal!;
-        const path = DeprecatedPaths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>{commentedActivity.commentThread!.title}</Link>;
 
         if (page === "goal") {
@@ -90,7 +91,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_reopening", () => {
         const c = commentedActivity.content as ActivityContentGoalReopening;
         const goal = c.goal!;
-        const path = DeprecatedPaths.goalActivityPath(commentedActivity.id!);
+        const path = paths.goalActivityPath(commentedActivity.id!);
         const activityLink = <Link to={path}>goal reopening</Link>;
 
         if (page === "goal") {

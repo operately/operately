@@ -5,7 +5,7 @@ import type { ActivityContentProjectCheckInAcknowledged } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 
@@ -14,8 +14,8 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectCheckInPath(content(activity).checkIn!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectCheckInPath(content(activity).checkIn!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -31,10 +31,11 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
+    const paths = usePaths();
     const project = content(activity).project!;
     const checkIn = content(activity).checkIn!;
 
-    const checkInPath = DeprecatedPaths.projectCheckInPath(checkIn.id!);
+    const checkInPath = paths.projectCheckInPath(checkIn.id!);
     const checkInLink = <Link to={checkInPath}>Check-In</Link>;
 
     if (page === "project") {

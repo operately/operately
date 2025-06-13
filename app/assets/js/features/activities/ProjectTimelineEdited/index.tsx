@@ -6,12 +6,12 @@ import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectTimelineEdited } from "@/api";
 import type { Activity } from "@/models/activities";
+import { usePaths } from "@/routes/paths";
 import type { ActivityHandler } from "../interfaces";
 
 const ProjectTimelineEdited: ActivityHandler = {
@@ -19,8 +19,8 @@ const ProjectTimelineEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(activity: Activity): string {
-    return DeprecatedPaths.projectPath(content(activity).project!.id!);
+  pagePath(paths, activity: Activity): string {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -159,7 +159,8 @@ function UpdatedMilestones({ content }: { content: Content }) {
 }
 
 function MilestoneLink({ milestone }: { milestone: Milestones.Milestone }) {
-  const path = DeprecatedPaths.projectMilestonePath(milestone.id!);
+  const paths = usePaths();
+  const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
 
   return (

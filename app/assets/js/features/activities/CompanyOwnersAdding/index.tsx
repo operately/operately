@@ -3,7 +3,7 @@ import { feedTitle } from "../feedItemLinks";
 
 import type { ActivityContentCompanyOwnersAdding } from "@/api";
 import type { Activity } from "@/models/activities";
-import { DeprecatedPaths } from "@/routes/paths";
+
 import type { ActivityHandler } from "../interfaces";
 
 const CompanyOwnersAdding: ActivityHandler = {
@@ -11,8 +11,8 @@ const CompanyOwnersAdding: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
-    return DeprecatedPaths.companyAdminPath();
+  pagePath(paths, _activity: Activity) {
+    return paths.companyAdminPath();
   },
 
   PageTitle(_props: { activity: any }) {

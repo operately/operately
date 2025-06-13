@@ -7,7 +7,7 @@ import * as React from "react";
 
 import { Header } from "@/features/goals/GoalPageHeader";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -42,6 +42,7 @@ async function loader({ params }): Promise<LoaderResult> {
 
 function Page() {
   const { goal } = Pages.useLoadedData<LoaderResult>();
+  const paths = usePaths();
 
   return (
     <Pages.Page title={[goal.name!]} testId="discussions-page">
@@ -53,7 +54,7 @@ function Page() {
 
           <div className="flex items-center my-6">
             <div className="flex-1 font-bold text-xs uppercase">Discussions</div>
-            <PrimaryButton size="sm" linkTo={DeprecatedPaths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
+            <PrimaryButton size="sm" linkTo={paths.newGoalDiscussionPath(goal.id!)} testId="start-discussion">
               Start a new discussion
             </PrimaryButton>
           </div>
@@ -78,8 +79,9 @@ function ActivityList() {
 }
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
-  const path = ActivityHandler.pagePath(activity);
-  const authorProfilePath = DeprecatedPaths.profilePath(activity.author!.id!);
+  const paths = usePaths();
+  const path = ActivityHandler.pagePath(paths, activity);
+  const authorProfilePath = paths.profilePath(activity.author!.id!);
 
   return (
     <div className="flex items-start border-t border-stroke-base py-6">
