@@ -27,9 +27,19 @@ const mockTaskPeople: TaskPage.Person[] = [
 
 // Timeline people (with profile links)
 const timelinePeople: TimelinePerson[] = [
-  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice", profileLink: "/people/alice" },
+  {
+    id: "user-1",
+    fullName: "Alice Johnson",
+    avatarUrl: "https://i.pravatar.cc/150?u=alice",
+    profileLink: "/people/alice",
+  },
   { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
-  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie", profileLink: "/people/charlie" },
+  {
+    id: "user-3",
+    fullName: "Charlie Brown",
+    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
+    profileLink: "/people/charlie",
+  },
   { id: "user-4", fullName: "Diana Prince", avatarUrl: undefined, profileLink: "/people/diana" },
 ];
 
@@ -120,11 +130,9 @@ const searchTaskPeople = async ({ query }: { query: string }): Promise<TaskPage.
 // Mock search function for TaskPage milestones - maintains earliest first sorting
 const searchMilestones = async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  
-  const filtered = mockMilestones.filter((milestone) => 
-    milestone.title.toLowerCase().includes(query.toLowerCase())
-  );
-  
+
+  const filtered = mockMilestones.filter((milestone) => milestone.title.toLowerCase().includes(query.toLowerCase()));
+
   // Sort by due date (earliest first), then by title for those without due dates
   return filtered.sort((a, b) => {
     if (a.dueDate && b.dueDate) {
@@ -214,7 +222,12 @@ function createComment(author: TimelinePerson, content: string, timeAgo: number)
   };
 }
 
-function createTaskActivity(type: TaskActivity["type"], author: TimelinePerson, timeAgo: number, extraData: any = {}): TimelineItemType {
+function createTaskActivity(
+  type: TaskActivity["type"],
+  author: TimelinePerson,
+  timeAgo: number,
+  extraData: any = {},
+): TimelineItemType {
   return {
     type: "task-activity",
     value: {
@@ -230,14 +243,20 @@ function createTaskActivity(type: TaskActivity["type"], author: TimelinePerson, 
 // Timeline data generators for different scenarios
 function createActiveTaskTimeline(): TimelineItemType[] {
   return [
-    createComment(bob, "I've started working on the login component. Should have a first version ready by tomorrow.", 30 * 60 * 1000), // 30 min ago
-    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }), // 2 hours ago
+    createComment(
+      bob,
+      "I've started working on the login component. Should have a first version ready by tomorrow.",
+      30 * 60 * 1000,
+    ), // 30 min ago
+    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, {
+      fromStatus: "not_started",
+      toStatus: "in_progress",
+    }), // 2 hours ago
     createTaskActivity("task-assignment", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
-    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, { 
-      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" }, 
-      action: "attached" 
+    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, {
+      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
+      action: "attached",
     }),
-    createTaskActivity("task-priority", charlie, 6 * 60 * 60 * 1000, { fromPriority: "normal", toPriority: "high" }),
     createComment(alice, "This is a critical feature for the beta release. Let's prioritize it.", 6.5 * 60 * 60 * 1000),
     createTaskActivity("task-creation", alice, 24 * 60 * 60 * 1000), // 1 day ago
   ];
@@ -263,9 +282,9 @@ function createCompletedTaskTimeline(): TimelineItemType[] {
 function createOverdueTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
-    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, { 
-      fromDueDate: null, 
-      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString() 
+    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, {
+      fromDueDate: null,
+      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     }),
     createTaskActivity("task-assignment", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
     createTaskActivity("task-creation", alice, 7 * 24 * 60 * 60 * 1000),
@@ -274,9 +293,21 @@ function createOverdueTaskTimeline(): TimelineItemType[] {
 
 function createLongContentTimeline(): TimelineItemType[] {
   return [
-    createComment(diana, "I've tested this thoroughly and everything works as expected. The error handling is particularly robust.", 30 * 60 * 1000),
-    createComment(charlie, "The UI looks great! I made some small adjustments to the spacing and colors to match our design system.", 2 * 60 * 60 * 1000),
-    createComment(bob, "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.", 4 * 60 * 60 * 1000),
+    createComment(
+      diana,
+      "I've tested this thoroughly and everything works as expected. The error handling is particularly robust.",
+      30 * 60 * 1000,
+    ),
+    createComment(
+      charlie,
+      "The UI looks great! I made some small adjustments to the spacing and colors to match our design system.",
+      2 * 60 * 60 * 1000,
+    ),
+    createComment(
+      bob,
+      "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.",
+      4 * 60 * 60 * 1000,
+    ),
     createTaskActivity("task-description", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
     createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
     createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
@@ -443,127 +474,6 @@ export const Default: Story = {
  * Task with minimal data - no project, milestone, assignee, or due date
  */
 export const MinimalTask: Story = {
-  render: (args) => {
-    const [name, setName] = React.useState(args.name || "");
-    const [description, setDescription] = React.useState(args.description || null);
-    const [status, setStatus] = React.useState(args.status || "pending");
-    const [dueDate, setDueDate] = React.useState<Date | undefined>(args.dueDate);
-    const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(args.assignees || []);
-    const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(() => args.milestone ?? null);
-    const [isSubscribed, setIsSubscribed] = React.useState(args.isSubscribed ?? true);
-
-    // Mock search that returns no milestones (empty array)
-    const searchMilestones = async (): Promise<TaskPage.Milestone[]> => {
-      await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-      return []; // No milestones available
-    };
-
-    const defaults: TaskPage.Props = {
-      ...args,
-
-      // Navigation
-      spaceLink: "/spaces/product",
-      spaceName: "Product",
-      projectLink: undefined,
-      projectName: undefined,
-      milestoneLink: undefined,
-      milestoneName: undefined,
-
-      // Core data
-      name: name,
-      onNameChange: async (newName: string) => {
-        console.log("Updating task name:", newName);
-        setName(newName);
-        return true;
-      },
-
-      description: description,
-      onDescriptionChange: async (newDescription: any) => {
-        console.log("Updating task description:", newDescription);
-        setDescription(newDescription);
-        return true;
-      },
-
-      status: status as any,
-      onStatusChange: (newStatus) => {
-        console.log("Updating task status:", newStatus);
-        setStatus(newStatus);
-      },
-
-      dueDate: dueDate,
-      onDueDateChange: (newDate) => {
-        console.log("Updating due date:", newDate);
-        setDueDate(newDate ?? undefined);
-      },
-
-      assignees: assignees,
-      onAssigneesChange: (newAssignees) => {
-        console.log("Updating assignees:", newAssignees);
-        setAssignees(newAssignees);
-      },
-
-      milestone: milestone,
-      onMilestoneChange: (newMilestone) => {
-        console.log("Updating milestone:", newMilestone);
-        setMilestone(newMilestone);
-      },
-
-      // Metadata
-      createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), // One week ago
-      createdBy: mockTaskPeople[0]!,
-
-      // Subscription
-      isSubscribed: isSubscribed,
-      onSubscriptionToggle: (subscribed) => {
-        console.log("Toggling subscription:", subscribed);
-        setIsSubscribed(subscribed);
-      },
-
-      // Actions
-      onCopyUrl: () => {
-        console.log("Copying URL to clipboard");
-        navigator.clipboard?.writeText(window.location.href);
-      },
-
-      onDelete: async () => {
-        console.log("Deleting task");
-        return Promise.resolve();
-      },
-
-      onDuplicate: () => {
-        console.log("Duplicating task");
-      },
-
-      onArchive: () => {
-        console.log("Archiving task");
-      },
-
-      // Search - no milestones available
-      searchPeople: searchTaskPeople,
-      searchMilestones: searchMilestones,
-      onCreateMilestone: (title?: string) => {
-        console.log("Creating new milestone from minimal task with title:", title);
-        // In a real app, this would open a modal or navigate to milestone creation
-        // For Storybook demo purposes, we'll create a simple milestone to show the interaction
-        if (title) {
-          const newMilestone: TaskPage.Milestone = {
-            id: `milestone-${Date.now()}`,
-            title: title,
-            status: "pending",
-            projectLink: "/projects/demo",
-          };
-          setMilestone(newMilestone);
-        }
-      },
-      peopleSearch: searchRichEditorPeople,
-      mentionedPersonLookup: mockMentionedPersonLookup,
-
-      // Permissions
-      canEdit: true,
-    };
-
-    return <TaskPage {...defaults} />;
-  },
   args: {
     name: "Review API documentation",
     description: null,
@@ -574,7 +484,6 @@ export const MinimalTask: Story = {
     timelineItems: createMinimalTaskTimeline(),
   },
 };
-
 
 /**
  * Completed task
@@ -635,37 +544,6 @@ export const LongContent: Story = {
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
     timelineItems: createLongContentTimeline(),
-  },
-};
-
-/**
- * Task with milestone selection capabilities showcased
- */
-export const MilestoneSelection: Story = {
-  args: {
-    name: "Optimize database queries",
-    description: asRichText("Review and optimize slow database queries identified in performance monitoring."),
-    status: "pending",
-    dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 2 weeks from now
-    assignees: [mockTaskPeople[2]!],
-    milestone: mockMilestones[4], // Code Review Process (no due date)
-    timelineItems: createMinimalTaskTimeline(),
-  },
-};
-
-/**
- * Read-only task page (canEdit: false) to test milestone field readonly state
- */
-export const ReadOnlyTask: Story = {
-  args: {
-    name: "Test user interface components",
-    description: asRichText("Comprehensive testing of all UI components for accessibility and responsiveness."),
-    status: "in_progress",
-    dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days from now
-    assignees: [mockTaskPeople[1]!],
-    milestone: mockMilestones[2], // User Testing Phase
-    canEdit: false,
-    timelineItems: createActiveTaskTimeline(),
   },
 };
 
