@@ -7,7 +7,7 @@ import { useWorkItems } from "./useWorkItems";
 
 import { WarningCallout } from "@/components/Callouts";
 import Modal from "@/components/Modal";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
@@ -32,6 +32,7 @@ export function DeleteGoalModal({ showDeleteGoal, toggleShowDeleteGoal }: Props)
 }
 
 function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void }) {
+  const paths = usePaths();
   const { goal } = useLoadedData();
   const [deleteGoal, { loading }] = useDeleteGoal();
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void
     if (loading) return;
     await deleteGoal({ goalId: goal.id });
     toggleShowDeleteGoal();
-    navigate(DeprecatedPaths.goalsPath());
+    navigate(paths.goalsPath());
   };
 
   return (

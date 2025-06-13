@@ -9,11 +9,11 @@ import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ButtonLink, DivLink, Link } from "turboui";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -55,15 +55,16 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 }
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
+  const paths = usePaths();
   const { project } = useLoadedData();
-  const gotoResourceList = useNavigateTo(DeprecatedPaths.projectEditResourcesPath(project.id!));
+  const gotoResourceList = useNavigateTo(paths.projectEditResourcesPath(project.id!));
   const [remove] = KeyResources.useRemoveKeyResource();
 
   const title = resource!.title;
   const icon = <ResourceIcon resourceType={resource!.resourceType!} size={32} />;
   const removeId = createTestId("remove-resource", title!);
 
-  const editPath = DeprecatedPaths.projectEditResourcePath(resource!.id!);
+  const editPath = paths.projectEditResourcePath(resource!.id!);
   const editId = createTestId("edit-resource", title!);
 
   const submit = React.useCallback(async () => {
@@ -118,13 +119,14 @@ function PotentialResourceList() {
 }
 
 function PotentialResourceListItem({ resourceType }: { resourceType: string }) {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   const title = KeyResources.humanTitle(resourceType);
   const icon = <ResourceIcon resourceType={resourceType} size={32} />;
 
   const id = createTestId("add-resource", title);
-  const path = DeprecatedPaths.projectNewResourcePath(project.id!, { resourceType });
+  const path = paths.projectNewResourcePath(project.id!, { resourceType });
 
   return (
     <div className="rounded border border-stroke-base flex flex-col items-center justify-center text-center">

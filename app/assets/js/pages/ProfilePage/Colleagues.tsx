@@ -1,12 +1,12 @@
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink, SecondaryButton } from "turboui";
 
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Colleagues({ person }: { person: People.Person }) {
   const [allPeersVisible, setAllPeersVisible] = React.useState(false);
   const [allReportsVisible, setAllReportsVisible] = React.useState(false);
@@ -104,6 +104,7 @@ interface PersonCardProps {
 }
 
 function PersonCard(props: PersonCardProps) {
+  const paths = usePaths();
   const { person, highlight, link } = props;
 
   const className = classNames("flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-surface-dimmed", "relative", {
@@ -127,9 +128,7 @@ function PersonCard(props: PersonCardProps) {
   const testid = `person-card-${person.id}`;
 
   if (link) {
-    return (
-      <DivLink to={DeprecatedPaths.profilePath(person.id!)} className={className} children={content} testId={testid} />
-    );
+    return <DivLink to={paths.profilePath(person.id!)} className={className} children={content} testId={testid} />;
   } else {
     return <div className={className} children={content} data-test-id={testid} />;
   }

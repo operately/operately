@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds, Paths } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;
@@ -16,6 +16,8 @@ export interface ActiveSubitem {
 }
 
 export async function loader({ params }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId });
+
   const [goal, goals, projects] = await Promise.all([
     Goals.getGoal({
       id: params.goalId,
@@ -29,7 +31,7 @@ export async function loader({ params }): Promise<LoaderResult> {
 
   return {
     goal: goal,
-    activeSubitems: findActiveSubitems(goal, goals, projects),
+    activeSubitems: findActiveSubitems(paths, goal, goals, projects),
   };
 }
 
@@ -37,7 +39,12 @@ export function useLoadedData(): LoaderResult {
   return Pages.useLoadedData() as LoaderResult;
 }
 
-function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Projects.Project[]): ActiveSubitem[] {
+function findActiveSubitems(
+  paths: Paths,
+  goal: Goals.Goal,
+  goals: Goals.Goal[],
+  projects: Projects.Project[],
+): ActiveSubitem[] {
   const activeGoals = findSubgoals(goal.id!, goals);
   const activeProjects = findActiveProjects(projects, [...activeGoals, goal]);
 
@@ -48,7 +55,7 @@ function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Pro
       id: goal.id!,
       name: goal.name!,
       type: "goal",
-      link: DeprecatedPaths.goalPath(goal.id!),
+      link: paths.goalPath(goal.id!),
     });
   });
 
@@ -57,7 +64,7 @@ function findActiveSubitems(goal: Goals.Goal, goals: Goals.Goal[], projects: Pro
       id: project.id!,
       name: project.name!,
       type: "project",
-      link: DeprecatedPaths.projectPath(project.id!),
+      link: paths.projectPath(project.id!),
     });
   });
 

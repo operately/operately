@@ -5,12 +5,13 @@ import { useNavigate } from "react-router-dom";
 
 import { useDeleteResourceHubLink } from "@/models/resourceHubs";
 
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 export function Options() {
   const { link } = useLoadedData();
+  const paths = usePaths();
   assertPresent(link.permissions, "permissions must be present in link");
 
   return (
@@ -19,7 +20,7 @@ export function Options() {
         <PageOptions.Link
           icon={Icons.IconEdit}
           title="Edit"
-          to={DeprecatedPaths.resourceHubEditLinkPath(link.id!)}
+          to={paths.resourceHubEditLinkPath(link.id!)}
           testId="edit-link-link"
         />
       )}
@@ -32,13 +33,14 @@ function DeleteAction() {
   const { link } = useLoadedData();
   const [remove] = useDeleteResourceHubLink();
   const navigate = useNavigate();
+  const paths = usePaths();
 
   const redirect = () => {
     if (link.parentFolder) {
-      navigate(DeprecatedPaths.resourceHubFolderPath(link.parentFolder.id!));
+      navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
     } else {
       assertPresent(link.resourceHub, "resourceHub must be present in link");
-      navigate(DeprecatedPaths.resourceHubPath(link.resourceHub.id!));
+      navigate(paths.resourceHubPath(link.resourceHub.id!));
     }
   };
 

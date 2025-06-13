@@ -13,10 +13,10 @@ import { ToolsSection } from "@/features/SpaceTools";
 import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
   const { space, tools } = useLoadedData();
 
@@ -40,13 +40,14 @@ export function Page() {
 }
 
 function SpaceEdit() {
+  const paths = usePaths();
   const { space } = useLoadedData();
 
   if (space.permissions?.canEdit !== true) return null;
 
   return (
     <div className="absolute right-4 top-4">
-      <SecondaryButton size="xs" linkTo={DeprecatedPaths.spaceEditPath(space.id!)} testId="edit-space">
+      <SecondaryButton size="xs" linkTo={paths.spaceEditPath(space.id!)} testId="edit-space">
         Edit
       </SecondaryButton>
     </div>
@@ -135,7 +136,8 @@ function JoinButton({ space }) {
 }
 
 function ManageAccessButton({ space }: { space: Spaces.Space }) {
-  const path = DeprecatedPaths.spaceAccessManagementPath(space.id!);
+  const paths = usePaths();
+  const path = paths.spaceAccessManagementPath(space.id!);
 
   assertPresent(space.permissions, "permissions must be present in space");
   if (!space.permissions.canAddMembers) return null;

@@ -8,7 +8,6 @@ import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 import { AvatarLink } from "@/components/AvatarLink";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import classNames from "classnames";
 import { match } from "ts-pattern";
@@ -20,6 +19,7 @@ import { GoalNode, Node } from "../tree";
 import { useTreeContext } from "../treeContext";
 import { Status } from "./Status";
 
+import { usePaths } from "@/routes/paths";
 export function GoalDetails({ node }: { node: GoalNode }) {
   const size = useWindowSizeBreakpoints();
   const { density } = useTreeContext();
@@ -45,6 +45,7 @@ export function GoalDetails({ node }: { node: GoalNode }) {
 }
 
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
+  const paths = usePaths();
   const size = useWindowSizeBreakpoints();
 
   if (node.isClosed) return <></>;
@@ -56,8 +57,8 @@ export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNod
     flex: size !== "xs",
   });
 
-  const newGoalPath = DeprecatedPaths.goalNewPath({ parentGoalId: node.goal.id! });
-  const newProjectPath = DeprecatedPaths.newProjectPath({
+  const newGoalPath = paths.goalNewPath({ parentGoalId: node.goal.id! });
+  const newProjectPath = paths.newProjectPath({
     goalId: node.goal.id!,
     spaceId: node.goal.space!.id!,
     backPathName: "Back to Goal Map",
@@ -129,10 +130,11 @@ function GoalTimeframeIcon({ isOverdue }: { isOverdue: boolean }) {
 }
 
 function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   assertPresent(goal.champion, "champion must be present in goal");
   assertPresent(goal.space, "space must be present in goal");
 
-  const path = DeprecatedPaths.spacePath(goal.space.id!);
+  const path = paths.spacePath(goal.space.id!);
 
   return (
     <div className="flex items-center gap-1">

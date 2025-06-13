@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
 interface UseFormOptions {
@@ -45,6 +45,7 @@ interface Error {
 }
 
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
+  const paths = usePaths();
   const subscriptionsState = useSubscriptions(potentialSubscribers, { ignoreMe: true });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -77,8 +78,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate });
   const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate });
 
-  const cancelPath =
-    mode === "edit" ? DeprecatedPaths.discussionPath(discussion?.id!) : DeprecatedPaths.spaceDiscussionsPath(space.id!);
+  const cancelPath = mode === "edit" ? paths.discussionPath(discussion?.id!) : paths.spaceDiscussionsPath(space.id!);
 
   return {
     title,
@@ -105,6 +105,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
 }
 
 function usePostMessage({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
 
@@ -126,7 +127,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -135,6 +136,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
 }
 
 function usePostAsDraft({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
 
@@ -156,7 +158,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -165,6 +167,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
 }
 
 function useSaveChanges({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
   const [submitting, setSubmitting] = React.useState(false);
@@ -182,7 +185,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };
@@ -191,6 +194,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
 }
 
 function usePublishDraft({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
   const [submitting, setSubmitting] = React.useState(false);
@@ -209,7 +213,7 @@ function usePublishDraft({ discussion, title, editor, validate }): [() => Promis
 
     setSubmitting(false);
 
-    navigate(DeprecatedPaths.discussionPath(res.discussion.id));
+    navigate(paths.discussionPath(res.discussion.id));
 
     return true;
   };

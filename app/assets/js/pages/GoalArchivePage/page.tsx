@@ -6,16 +6,17 @@ import * as React from "react";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DimmedLink, PrimaryButton } from "turboui";
 
+import { usePaths } from "@/routes/paths";
 export function Page() {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
   return (
     <Pages.Page title={["Archiving ", goal.name!]}>
       <Paper.Root size="small">
-        <Paper.Navigation items={[{ to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! }]} />
+        <Paper.Navigation items={[{ to: paths.goalPath(goal.id!), label: goal.name! }]} />
 
         <Paper.Body minHeight="none">
           <div className="text-content-accent text-3xl font-extrabold">Archive this goal?</div>
@@ -25,7 +26,7 @@ export function Page() {
 
           <div className="flex items-center gap-6 mt-8">
             <ArchiveButton goal={goal} />
-            <DimmedLink to={DeprecatedPaths.goalPath(goal.id!)}>Cancel</DimmedLink>
+            <DimmedLink to={paths.goalPath(goal.id!)}>Cancel</DimmedLink>
           </div>
         </Paper.Body>
       </Paper.Root>
@@ -34,7 +35,8 @@ export function Page() {
 }
 
 function ArchiveButton({ goal }) {
-  const navigateToGoal = useNavigateTo(DeprecatedPaths.goalPath(goal.id!));
+  const paths = usePaths();
+  const navigateToGoal = useNavigateTo(paths.goalPath(goal.id!));
 
   const [archive, { loading: loading }] = Goals.useArchiveGoal();
 

@@ -4,10 +4,10 @@ import * as Timeframes from "@/utils/timeframes";
 import React from "react";
 
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 interface Error {
   message: string;
 }
@@ -24,13 +24,15 @@ export interface Form {
 }
 
 export function useForm({ goal }: { goal: Goals.Goal }): Form {
+  const paths = usePaths();
+
   assertPresent(goal.timeframe, "timeframe must be present in goal");
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 
   const originalTimeframe = Timeframes.parse(goal.timeframe);
   const [timeframe, setTimeframe] = React.useState<Timeframes.Timeframe>(originalTimeframe);
 
-  const navigateToGoalPage = useNavigateTo(DeprecatedPaths.goalPath(goal.id));
+  const navigateToGoalPage = useNavigateTo(paths.goalPath(goal.id));
   const [editTimeframe, { loading: submitting }] = Goals.useEditGoalTimeframe();
 
   const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {

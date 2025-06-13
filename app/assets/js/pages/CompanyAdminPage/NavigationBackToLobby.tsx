@@ -1,7 +1,8 @@
 import * as Paper from "@/components/PaperContainer";
-import { DeprecatedPaths } from "@/routes/paths";
 import * as React from "react";
 
+import { usePaths } from "@/routes/paths";
 export function NavigationBackToLobby() {
-  return <Paper.Navigation items={[{ to: DeprecatedPaths.homePath(), label: "Home" }]} />;
+  const paths = usePaths();
+  return <Paper.Navigation items={[{ to: paths.homePath(), label: "Home" }]} />;
 }

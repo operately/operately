@@ -5,7 +5,7 @@ import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 
-import { compareIds } from "@/routes/paths";
+import { compareIds, Paths } from "@/routes/paths";
 
 type NodeTypes = "goal" | "project";
 
@@ -45,7 +45,7 @@ export abstract class Node {
 
   abstract childrenInfoLabel(): string | null;
   abstract compareTimeframe(b: Node): number;
-  abstract linkTo(): string;
+  abstract linkTo(paths: Paths): string;
   abstract activeTimeframe(): Timeframes.Timeframe | null;
 
   asGoalNode() {

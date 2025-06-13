@@ -9,7 +9,7 @@ import RichContent from "@/components/RichContent";
 import { Avatar } from "turboui";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 import { useLoadedData } from "./loader";
 
@@ -38,7 +38,8 @@ const DimmedLabel = ({ children }) => (
 );
 
 const AvatarAndName = ({ person }) => {
-  const profilePath = DeprecatedPaths.profilePath(person.id);
+  const paths = usePaths();
+  const profilePath = paths.profilePath(person.id);
 
   return (
     <DivLink to={profilePath}>

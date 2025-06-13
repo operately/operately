@@ -6,12 +6,12 @@ import * as React from "react";
 import { Form as CheckInForm, useForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
 import { useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
 import FormattedTime from "@/components/FormattedTime";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "GoalCheckInNewPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -58,14 +58,15 @@ function Header() {
 }
 
 function Navigation({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   assertPresent(goal.space, "space must be present in goal");
 
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: DeprecatedPaths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
-        { to: DeprecatedPaths.goalPath(goal.id!), label: goal.name! },
+        { to: paths.spacePath(goal.space.id!), label: goal.space.name! },
+        { to: paths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: paths.goalPath(goal.id!), label: goal.name! },
       ]}
     />
   );

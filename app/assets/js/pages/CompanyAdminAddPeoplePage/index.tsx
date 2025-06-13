@@ -4,7 +4,6 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from "turboui";
@@ -12,6 +11,7 @@ import { PrimaryButton } from "turboui";
 import Forms from "@/components/Forms";
 import { match } from "ts-pattern";
 
+import { usePaths } from "@/routes/paths";
 export default { name: "CompanyAdminAddPeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -51,6 +51,7 @@ function Page() {
 }
 
 function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
+  const paths = usePaths();
   const navigate = useNavigate();
 
   const [add] = Companies.useAddCompanyMember();
@@ -90,7 +91,7 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
       }
     },
     cancel: () => {
-      navigate(DeprecatedPaths.companyManagePeoplePath());
+      navigate(paths.companyManagePeoplePath());
     },
   });
 
@@ -170,11 +171,12 @@ function AddedPage({ state, setPageState }: { state: PageStateAdded; setPageStat
 }
 
 function Navigation() {
+  const paths = usePaths();
   return (
     <Paper.Navigation
       items={[
-        { to: DeprecatedPaths.companyAdminPath(), label: "Company Administration" },
-        { to: DeprecatedPaths.companyManagePeoplePath(), label: "Manage People" },
+        { to: paths.companyAdminPath(), label: "Company Administration" },
+        { to: paths.companyManagePeoplePath(), label: "Manage People" },
       ]}
     />
   );

@@ -8,7 +8,7 @@ import * as React from "react";
 
 import { PermissionsState, usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { useListState } from "@/hooks/useListState";
-import { DeprecatedPaths } from "@/routes/paths";
+import { Paths, usePaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 
@@ -240,9 +240,10 @@ function newEmptyTarget() {
 }
 
 function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>, () => void, boolean, Error[]] {
+  const paths = usePaths();
   const navigate = useNavigate();
 
-  const cancel = useNavigateTo(createCancelPath(config));
+  const cancel = useNavigateTo(createCancelPath(paths, config));
 
   const [create, { loading: submittingCreate }] = Goals.useCreateGoal();
   const [edit, { loading: submittingEdit }] = Goals.useEditGoal();
@@ -282,7 +283,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
         spaceAccessLevel: fields.permissions.permissions.space,
       });
 
-      navigate(DeprecatedPaths.goalPath(res.goal.id!));
+      navigate(paths.goalPath(res.goal.id!));
       return true;
     } else {
       const res = await edit({
@@ -319,7 +320,7 @@ function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>,
         spaceAccessLevel: fields.permissions.permissions.space,
       });
 
-      navigate(DeprecatedPaths.goalPath(res.goal.id!));
+      navigate(paths.goalPath(res.goal.id!));
       return true;
     }
   };
@@ -384,12 +385,12 @@ function prepareDescriptionForSave(fields: Fields): string | null {
   return JSON.stringify(content);
 }
 
-function createCancelPath(config: FormConfig): string {
+function createCancelPath(paths: Paths, config: FormConfig): string {
   if (config.mode === "edit") {
-    return DeprecatedPaths.goalPath(config.goal!.id!);
+    return paths.goalPath(config.goal!.id!);
   } else if (config.allowSpaceSelection) {
-    return DeprecatedPaths.goalsPath();
+    return paths.goalsPath();
   } else {
-    return DeprecatedPaths.spacePath(config.space!.id!);
+    return paths.spacePath(config.space!.id!);
   }
 }

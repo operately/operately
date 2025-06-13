@@ -4,7 +4,6 @@ import * as Hub from "@/models/resourceHubs";
 
 import { useNodesContext } from "@/features/ResourceHub";
 import { useBoolState } from "@/hooks/useBoolState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 import { createTestId } from "@/utils/testid";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";
@@ -12,6 +11,7 @@ import { CopyDocumentModal } from "./CopyDocumentModal";
 import { CopyResourceMenuItem } from "./CopyResource";
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
+import { usePaths } from "@/routes/paths";
 interface Props {
   document: Hub.ResourceHubDocument;
 }
@@ -49,7 +49,8 @@ export function DocumentMenu({ document }: Props) {
 }
 
 function EditDocumentMenuItem({ document }: Props) {
-  const editPath = DeprecatedPaths.resourceHubEditDocumentPath(document.id!);
+  const paths = usePaths();
+  const editPath = paths.resourceHubEditDocumentPath(document.id!);
   const editId = createTestId("edit", document.id!);
 
   return (
