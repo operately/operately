@@ -15,7 +15,7 @@ const meta: Meta<typeof Timeline> = {
     (Story) => (
       <Page title="Task Timeline" size="medium">
         <div className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Activity & Discussion</h2>
+          <h2 className="text-lg font-semibold mb-4">Comments & Activity</h2>
           <Story />
         </div>
       </Page>
@@ -77,7 +77,7 @@ const mockTaskAssignment: TimelineItem = {
 const mockStatusChange: TimelineItem = {
   type: "task-activity",
   value: {
-    id: "activity-2", 
+    id: "activity-2",
     type: "task-status-change",
     author: mockUser,
     insertedAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
@@ -90,7 +90,7 @@ const mockMilestoneAttachment: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-3",
-    type: "task-milestone", 
+    type: "task-milestone",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
     milestone: {
@@ -151,17 +151,13 @@ const createMockProps = (items: TimelineItem[]): TimelineProps => ({
 });
 
 export const Default: Story = {
-  args: createMockProps([
-    mockComment,
-    mockTaskAssignment,
-    mockStatusChange,
-  ]),
+  args: createMockProps([mockComment, mockTaskAssignment, mockStatusChange]),
 };
 
 export const FullTimeline: Story = {
   args: createMockProps([
     mockComment,
-    mockTaskAssignment, 
+    mockTaskAssignment,
     mockStatusChange,
     mockMilestoneAttachment,
     mockPriorityChange,
@@ -194,12 +190,7 @@ export const CommentsOnly: Story = {
 
 export const ActivitiesOnly: Story = {
   args: {
-    ...createMockProps([
-      mockTaskAssignment,
-      mockStatusChange, 
-      mockMilestoneAttachment,
-      mockPriorityChange,
-    ]),
+    ...createMockProps([mockTaskAssignment, mockStatusChange, mockMilestoneAttachment, mockPriorityChange]),
     filters: {
       showComments: false,
       showActivities: true,
@@ -213,11 +204,7 @@ export const EmptyTimeline: Story = {
 
 export const ReadOnly: Story = {
   args: {
-    ...createMockProps([
-      mockComment,
-      mockTaskAssignment,
-      mockStatusChange,
-    ]),
+    ...createMockProps([mockComment, mockTaskAssignment, mockStatusChange]),
     canComment: false,
   },
 };

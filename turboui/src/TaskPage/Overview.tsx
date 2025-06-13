@@ -17,7 +17,7 @@ function ActivitySection(props: TaskPage.State) {
   if (props.timelineItems && props.currentUser) {
     return (
       <div>
-        <h3 className="font-bold mb-4">Activity & Discussion</h3>
+        <h3 className="font-bold mb-4">Comments & Activity</h3>
         <Timeline
           items={props.timelineItems}
           currentUser={props.currentUser}
@@ -34,10 +34,8 @@ function ActivitySection(props: TaskPage.State) {
   // Fallback for when timeline data is not provided
   return (
     <div>
-      <h3 className="font-bold mb-4">Activity & Discussion</h3>
-      <div className="text-content-dimmed text-center py-8">
-        Timeline data not available
-      </div>
+      <h3 className="font-bold mb-4">Comments & Activity</h3>
+      <div className="text-content-dimmed text-center py-8">Timeline data not available</div>
     </div>
   );
 }
