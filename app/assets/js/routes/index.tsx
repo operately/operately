@@ -56,6 +56,7 @@ export function createAppRoutes() {
     },
     saasAdminRoutes(),
     {
+      id: "companyRoot",
       path: "/:companyId",
       loader: companyLoader,
       element: <CompanyRoutes />,

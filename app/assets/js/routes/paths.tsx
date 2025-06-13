@@ -6,8 +6,8 @@ import * as ProjectContributorsEditPage from "@/pages/ProjectContributorsEditPag
 import * as React from "react";
 
 import { LinkOptions } from "@/features/ResourceHub";
+import { useRouteLoaderData } from "react-router-dom";
 import { WorkMap } from "turboui";
-import { useLoadedData } from "../pages/GoalAddPage/loader";
 
 const UNACCEPTABLE_PATH_CHARACTERS = ["/", "?", "#", "[", "]"];
 
@@ -518,11 +518,19 @@ export class Paths {
 export const DeprecatedPaths = new Paths({ deprecatedLookup: true, companyId: null });
 
 export function usePaths() {
-  const { company } = useLoadedData();
+  const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } };
+
+  if (!data) {
+    throw new Error("usePaths must be used within a company route context");
+  }
+
+  if (!data.company) {
+    throw new Error("usePaths must be used within a company route context with a valid company");
+  }
 
   const paths = React.useMemo(() => {
-    return new Paths({ deprecatedLookup: false, companyId: company?.id || null });
-  }, [company.id]);
+    return new Paths({ deprecatedLookup: false, companyId: data.company.id });
+  }, [data.company.id]);
 
   return paths;
 }
