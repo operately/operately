@@ -7,15 +7,19 @@ import { TaskActivityProps, TaskActivity } from "./types";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
-    <div className="flex items-center gap-3 py-2 text-content-dimmed text-sm relative">
+    <div className="flex items-center gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
       <div className="shrink-0">
         <ActivityIcon activity={activity} />
       </div>
 
       <div className="flex-1 flex items-center gap-1.5">
-        <div className="font-medium text-content-accent">
+        <div className="font-medium text-content-dimmed">
           {activity.author.profileLink ? (
-            <BlackLink to={activity.author.profileLink} underline="hover">
+            <BlackLink
+              to={activity.author.profileLink}
+              underline="hover"
+              className="text-content-dimmed hover:text-content-accent"
+            >
               {shortName(activity.author.fullName)}
             </BlackLink>
           ) : (
@@ -26,7 +30,7 @@ export function TaskActivityItem({ activity }: TaskActivityProps) {
       </div>
 
       <div className="shrink-0">
-        <span className="text-content-dimmed text-xs">
+        <span className="text-content-subtle text-xs">
           <FormattedTime time={activity.insertedAt} format="relative" />
         </span>
       </div>
@@ -35,7 +39,7 @@ export function TaskActivityItem({ activity }: TaskActivityProps) {
 }
 
 function ActivityIcon({ activity }: { activity: TaskActivity }) {
-  const iconProps = { size: 14, className: "text-content-dimmed" };
+  const iconProps = { size: 12, className: "text-content-subtle" };
 
   switch (activity.type) {
     case "task-assignment":
@@ -68,13 +72,13 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
 function getStatusIcon(status: string) {
   switch (status) {
     case "not_started":
-      return <Icons.IconCircle size={14} className="text-gray-500" />;
+      return <Icons.IconCircle size={12} className="text-gray-500" />;
     case "in_progress":
-      return <Icons.IconClockPlay size={14} className="text-blue-500" />;
+      return <Icons.IconClockPlay size={12} className="text-blue-500" />;
     case "done":
-      return <Icons.IconCircleCheck size={14} className="text-green-500" />;
+      return <Icons.IconCircleCheck size={12} className="text-green-500" />;
     default:
-      return <Icons.IconCircle size={14} className="text-gray-500" />;
+      return <Icons.IconCircle size={12} className="text-gray-500" />;
   }
 }
 
@@ -83,27 +87,35 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task-assignment":
       if (activity.action === "assigned") {
         return (
-          <span className="text-content-accent">
+          <span className="text-content-dimmed">
             assigned this task to{" "}
             {activity.assignee.profileLink ? (
-              <BlackLink to={activity.assignee.profileLink} underline="hover" className="font-semibold">
+              <BlackLink
+                to={activity.assignee.profileLink}
+                underline="hover"
+                className="font-medium text-content-dimmed"
+              >
                 {shortName(activity.assignee.fullName)}
               </BlackLink>
             ) : (
-              <span className="font-semibold">{shortName(activity.assignee.fullName)}</span>
+              <span className="font-medium text-content-dimmed">{shortName(activity.assignee.fullName)}</span>
             )}
           </span>
         );
       } else {
         return (
-          <span className="text-content-accent">
+          <span className="text-content-dimmed">
             unassigned{" "}
             {activity.assignee.profileLink ? (
-              <BlackLink to={activity.assignee.profileLink} underline="hover" className="font-semibold">
+              <BlackLink
+                to={activity.assignee.profileLink}
+                underline="hover"
+                className="font-medium text-content-dimmed"
+              >
                 {shortName(activity.assignee.fullName)}
               </BlackLink>
             ) : (
-              <span className="font-semibold">{shortName(activity.assignee.fullName)}</span>
+              <span className="font-medium text-content-dimmed">{shortName(activity.assignee.fullName)}</span>
             )}{" "}
             from this task
           </span>
@@ -112,23 +124,26 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
 
     case "task-status-change":
       return (
-        <span className="text-content-accent">
-          changed status from <span className="font-semibold">{formatStatus(activity.fromStatus)}</span> to{" "}
-          <span className="font-semibold">{formatStatus(activity.toStatus)}</span>
+        <span className="text-content-dimmed">
+          changed status from{" "}
+          <span className="font-medium text-content-dimmed">{formatStatus(activity.fromStatus)}</span> to{" "}
+          <span className="font-medium text-content-dimmed">{formatStatus(activity.toStatus)}</span>
         </span>
       );
 
     case "task-milestone":
       if (activity.action === "attached") {
         return (
-          <span className="text-content-accent">
-            attached this task to milestone <span className="font-semibold">{activity.milestone.title}</span>
+          <span className="text-content-dimmed">
+            attached this task to milestone{" "}
+            <span className="font-medium text-content-dimmed">{activity.milestone.title}</span>
           </span>
         );
       } else {
         return (
-          <span className="text-content-accent">
-            detached this task from milestone <span className="font-semibold">{activity.milestone.title}</span>
+          <span className="text-content-dimmed">
+            detached this task from milestone{" "}
+            <span className="font-medium text-content-dimmed">{activity.milestone.title}</span>
           </span>
         );
       }
@@ -136,51 +151,51 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task-due-date":
       if (activity.toDueDate && !activity.fromDueDate) {
         return (
-          <span className="text-content-accent">
+          <span className="text-content-dimmed">
             set due date to{" "}
-            <span className="font-semibold">
+            <span className="font-medium text-content-dimmed">
               <FormattedTime time={activity.toDueDate} format="short-date" />
             </span>
           </span>
         );
       } else if (!activity.toDueDate && activity.fromDueDate) {
-        return <span className="text-content-accent">removed due date</span>;
+        return <span className="text-content-subtle">removed due date</span>;
       } else if (activity.toDueDate && activity.fromDueDate) {
         return (
-          <span className="text-content-accent">
+          <span className="text-content-subtle">
             changed due date from{" "}
-            <span className="font-semibold">
+            <span className="font-medium text-content-dimmed">
               <FormattedTime time={activity.fromDueDate} format="short-date" />
             </span>{" "}
             to{" "}
-            <span className="font-semibold">
+            <span className="font-medium text-content-dimmed">
               <FormattedTime time={activity.toDueDate} format="short-date" />
             </span>
           </span>
         );
       }
-      return <span className="text-content-accent">updated due date</span>;
+      return <span className="text-content-dimmed">updated due date</span>;
 
     case "task-description":
       return (
-        <span className="text-content-accent">
+        <span className="text-content-dimmed">
           {activity.hasContent ? "updated the description" : "removed the description"}
         </span>
       );
 
     case "task-title":
       return (
-        <span className="text-content-accent">
-          changed title from <span className="font-semibold">"{activity.fromTitle}"</span> to{" "}
-          <span className="font-semibold">"{activity.toTitle}"</span>
+        <span className="text-content-dimmed">
+          changed title from <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
+          <span className="font-medium text-content-dimmed">"{activity.toTitle}"</span>
         </span>
       );
 
     case "task-creation":
-      return <span className="text-content-accent">created this task</span>;
+      return <span className="text-content-dimmed">created this task</span>;
 
     default:
-      return <span className="text-content-accent">performed an action</span>;
+      return <span className="text-content-dimmed">performed an action</span>;
   }
 }
 
