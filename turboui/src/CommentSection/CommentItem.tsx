@@ -8,18 +8,18 @@ import RichContent from "../RichContent";
 import * as Icons from "@tabler/icons-react";
 import { CommentItemProps } from "./types";
 
-export function CommentItem({ 
-  comment, 
-  onEdit, 
+export function CommentItem({
+  comment,
+  onEdit,
   canComment,
-  currentUserId 
+  currentUserId,
 }: CommentItemProps & { currentUserId?: string }) {
   const content = JSON.parse(comment.content)["message"];
   const isOwnComment = currentUserId === comment.author.id;
 
   return (
     <div
-      className="flex items-start gap-3 py-3 not-first:border-t border-stroke-base text-content-accent relative"
+      className="flex items-start gap-3 py-4 not-first:border-t border-stroke-base text-content-accent relative bg-surface-dimmed rounded-lg px-4 my-2"
       id={comment.id}
     >
       <div className="shrink-0">
@@ -54,34 +54,25 @@ export function CommentItem({
         </div>
 
         <div className="mb-2">
-          <RichContent 
-            content={content} 
-            mentionedPersonLookup={async () => ({ 
-              id: "", 
-              fullName: "", 
-              avatarUrl: null, 
-              title: "", 
-              profileLink: "" 
+          <RichContent
+            content={content}
+            mentionedPersonLookup={async () => ({
+              id: "",
+              fullName: "",
+              avatarUrl: null,
+              title: "",
+              profileLink: "",
             })}
           />
         </div>
 
-        {canComment && (
-          <ReactionList 
-            reactions={comment.reactions}
-          />
-        )}
+        {canComment && <ReactionList reactions={comment.reactions} />}
       </div>
     </div>
   );
 }
 
-
-function ReactionList({ 
-  reactions 
-}: { 
-  reactions: any[]; 
-}) {
+function ReactionList({ reactions }: { reactions: any[] }) {
   // This should integrate with the actual reaction system
   return <div>Reactions: {reactions.length}</div>;
 }

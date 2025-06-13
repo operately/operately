@@ -46,6 +46,7 @@ export function DateDisplayField({
   const handleChange = (newDate: Date | null) => {
     if (date?.getTime() !== newDate?.getTime()) {
       setDate(newDate);
+      setIsOpen(false); // Close popover after date selection
     }
   };
 
@@ -75,8 +76,8 @@ export function DateDisplayField({
   } else {
     const triggerClassName = classNames(
       {
-        "inline-block": variant === "inline",
-        "inline-block border border-surface-outline rounded-lg w-full": variant === "form-field",
+        "inline-block focus:outline-none hover:bg-surface-dimmed rounded-lg": variant === "inline",
+        "inline-block border border-surface-outline rounded-lg w-full focus:outline-none hover:bg-surface-dimmed": variant === "form-field",
       },
       className,
     );
@@ -92,16 +93,19 @@ export function DateDisplayField({
   }
 }
 
-const DatePickerPopover = ({
-  date,
-  clearDate,
-  setNewDate,
-}: {
-  date?: Date | null;
-  clearDate: () => void;
-  setNewDate: (date: Date | null) => void;
-}) => (
-  <Popover.Content className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50" sideOffset={5}>
+const DatePickerPopover = React.forwardRef<
+  HTMLDivElement,
+  {
+    date?: Date | null;
+    clearDate: () => void;
+    setNewDate: (date: Date | null) => void;
+  }
+>(({ date, clearDate, setNewDate }, ref) => (
+  <Popover.Content 
+    ref={ref}
+    className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50" 
+    sideOffset={5}
+  >
     <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
       <div className="text-sm font-medium">Select date</div>
       {date && (
@@ -121,7 +125,7 @@ const DatePickerPopover = ({
 
     <Popover.Arrow />
   </Popover.Content>
-);
+));
 
 interface DateDisplayProps {
   date: Date | null | undefined;
@@ -142,13 +146,14 @@ interface DateDisplayProps {
 }
 
 function DateDisplay(props: DateDisplayProps) {
-  if (!props.date && props.showEmptyStateAsButton) {
+  if (!props.date && props.showEmptyStateAsButton && props.readonly) {
     return <EmptyStateButton emptyStateText={props.emptyStateText} readonly={props.readonly} variant={props.variant} />;
   }
 
   const iconSize = props.iconSize;
   const textSize = props.textSize;
-  const Elem = props.readonly ? "span" : "button";
+  // Always use span since this component is wrapped in Popover.Trigger when interactive
+  const Elem = "span";
   const isDateOverdue = props.date && isOverdue(props.date);
   const variant = props.variant || "inline";
 
@@ -156,8 +161,7 @@ function DateDisplay(props: DateDisplayProps) {
     {
       "flex items-center": true,
       "gap-1.5": props.showIcon,
-      "focus:outline-none hover:bg-surface-dimmed rounded-lg": !props.readonly,
-      "px-1.5 py-1 -my-1 -mx-1.5": !props.readonly && variant === "inline",
+      "px-1.5 py-1": variant === "inline",
       "px-2 py-1.5": variant === "form-field",
       "text-content-error": isDateOverdue && props.showOverdueWarning,
       "text-content-dimmed": !props.date,

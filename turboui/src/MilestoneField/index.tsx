@@ -131,8 +131,8 @@ function Trigger({ state }: { state: State }) {
   if (state.milestone) {
     return (
       <Popover.Trigger className={triggerClass}>
-        <div className="flex items-center gap-1.5">
-          <IconFlag size={18} className="text-blue-500 shrink-0" />
+        <div className="flex items-start gap-1.5">
+          <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div className="truncate">
             <div className="text-sm font-medium">{state.milestone.title}</div>
             {state.milestone.dueDate && (
@@ -350,8 +350,8 @@ function DialogSearch({ state }: { state: State }) {
             }}
             onMouseEnter={() => setSelectedIndex(index)}
           >
-            <div className="flex items-center gap-1.5 truncate">
-              <IconFlag size={18} className="text-blue-500 shrink-0" />
+            <div className="flex items-start gap-1.5 truncate">
+              <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
               <div className="truncate">
                 <div className="text-sm truncate">{milestone.title}</div>
                 {milestone.dueDate && (
