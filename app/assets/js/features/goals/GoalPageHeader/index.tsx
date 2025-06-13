@@ -87,7 +87,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
       <div className="flex items-center gap-1">
         <Icons.IconBuildingEstate size={14} />
         <GhostLink
-          to={DeprecatedPaths.goalsPath()}
+          to={DeprecatedPaths.workMapPath()}
           text="Company-wide goal"
           testId="company-goals-link"
           dimmed

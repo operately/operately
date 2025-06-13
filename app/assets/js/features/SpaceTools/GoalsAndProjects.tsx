@@ -21,7 +21,7 @@ export function GoalsAndProjects(props: Props) {
   const state = calculateState(props.goals, props.projects);
 
   return (
-    <Container path={DeprecatedPaths.spaceGoalsPath(props.space.id!)} testId="goals-and-projects">
+    <Container path={DeprecatedPaths.spaceWorkMapPath(props.space.id!)} testId="goals-and-projects">
       {match(state)
         .with("zero", () => <ZeroState />)
         .with("all-done", () => <AllDoneState {...props} />)

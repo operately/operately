@@ -34,13 +34,13 @@ export function Page() {
 function Header() {
   const newGoalPath = DeprecatedPaths.newGoalPath({ companyWide: true });
   const newProjectPath = DeprecatedPaths.newProjectPath({
-    backPath: DeprecatedPaths.goalsPath(),
-    backPathName: "Back to Goal Map",
+    backPath: DeprecatedPaths.workMapPath(),
+    backPathName: "Back to Work Map",
   });
 
   return (
     <Paper.Header
-      title="Goal Map"
+      title="Work Map"
       actions={<AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />}
       layout="title-center-actions-left"
       underline
