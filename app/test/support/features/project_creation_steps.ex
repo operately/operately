@@ -75,6 +75,8 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     ctx
     |> UI.fill(testid: "name", with: fields.name)
     |> UI.select_person_in(id: "champion", name: fields.champion.full_name)
+    |> UI.click(testid: "space")
+    |> UI.click_text("Test Group")
     |> run_if(fields[:reviewer], fn ctx ->
       ctx
       |> UI.select_person_in(testid: "reviewer", name: fields.reviewer.full_name)
