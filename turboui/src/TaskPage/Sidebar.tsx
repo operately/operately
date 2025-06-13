@@ -1,4 +1,12 @@
-import { IconAlertTriangleFilled, IconBell, IconBellOff, IconCalendar } from "@tabler/icons-react";
+import {
+  IconAlertTriangleFilled,
+  IconBell,
+  IconBellOff,
+  IconCalendar,
+  IconLink,
+  IconTrash,
+  IconArchive,
+} from "@tabler/icons-react";
 import React from "react";
 import { TaskPage } from ".";
 import { DateDisplayField } from "../DateDisplayField";
@@ -16,6 +24,7 @@ export function Sidebar(props: TaskPage.State) {
       <Milestone {...props} />
       <CreatedBy {...props} />
       <Subscription {...props} />
+      <Actions {...props} />
     </div>
   );
 }
@@ -61,11 +70,15 @@ function Assignees(props: TaskPage.State) {
 
 function Milestone(props: TaskPage.State) {
   // Convert legacy milestone data to new format for backward compatibility
-  const currentMilestone = props.milestone || (props.milestoneLink && props.milestoneName ? {
-    id: 'legacy-milestone',
-    title: props.milestoneName,
-    projectLink: props.milestoneLink,
-  } : null);
+  const currentMilestone =
+    props.milestone ||
+    (props.milestoneLink && props.milestoneName
+      ? {
+          id: "legacy-milestone",
+          title: props.milestoneName,
+          projectLink: props.milestoneLink,
+        }
+      : null);
 
   const handleMilestoneChange = (milestone: TaskPage.Milestone | null) => {
     if (props.onMilestoneChange) {
@@ -92,7 +105,12 @@ function CreatedBy(props: TaskPage.State) {
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">
-        <AvatarWithName person={props.createdBy} size={"tiny"} nameFormat="short" link={`/people/${props.createdBy.id}`} />
+        <AvatarWithName
+          person={props.createdBy}
+          size={"tiny"}
+          nameFormat="short"
+          link={`/people/${props.createdBy.id}`}
+        />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
           <FormattedTime time={props.createdAt} format="short-date" />
@@ -143,6 +161,51 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
       <div className="font-bold text-sm">{title}</div>
       {children}
     </div>
+  );
+}
+
+function Actions(props: TaskPage.State) {
+  const actions = [
+    {
+      label: "Copy URL",
+      onClick: props.onCopyUrl,
+      icon: IconLink,
+      show: true,
+    },
+    {
+      label: "Archive",
+      onClick: props.onArchive,
+      icon: IconArchive,
+      show: !!props.onArchive,
+    },
+    {
+      label: "Delete",
+      onClick: () => props.onDelete(),
+      icon: IconTrash,
+      show: props.canEdit,
+      danger: true,
+    },
+  ].filter((action) => action.show);
+
+  if (actions.length === 0) return null;
+
+  return (
+    <SidebarSection title="Actions">
+      <div className="space-y-1">
+        {actions.map((action, index) => (
+          <button
+            key={index}
+            onClick={action.onClick}
+            className={`flex items-center gap-2 text-xs hover:bg-surface-highlight rounded px-2 py-1 -mx-2 w-full text-left ${
+              action.danger ? "text-content-error hover:bg-red-50" : ""
+            }`}
+          >
+            <action.icon size={16} className={action.danger ? "text-content-error" : "text-content-dimmed"} />
+            <span>{action.label}</span>
+          </button>
+        ))}
+      </div>
+    </SidebarSection>
   );
 }
 
