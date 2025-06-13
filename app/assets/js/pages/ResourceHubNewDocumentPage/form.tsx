@@ -8,7 +8,6 @@ import { useFormContext } from "@/components/Forms/FormContext";
 import { DimmedSection } from "@/components/PaperContainer";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Link } from "turboui";
 

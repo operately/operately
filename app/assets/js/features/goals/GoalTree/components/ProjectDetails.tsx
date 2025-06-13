@@ -8,7 +8,6 @@ import { DescriptionSection } from "@/features/projectCheckIns/DescriptionSectio
 import { StatusSection } from "@/features/projectCheckIns/StatusSection";
 import { RetrospectiveContent } from "@/features/ProjectRetrospective";
 import { Project, sortContributorsByRole } from "@/models/projects";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import classNames from "classnames";

@@ -5,7 +5,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Discussions from "@/models/discussions";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { GhostButton, Link, PrimaryButton } from "turboui";
 

@@ -4,7 +4,6 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { BlackLink, Link, SecondaryButton } from "turboui";
 
 import { InfoCallout } from "@/components/Callouts";

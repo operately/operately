@@ -1,7 +1,6 @@
 import { Space, getSpace } from "@/models/spaces";
 import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { fetchAll } from "../../utils/async";
 

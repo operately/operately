@@ -4,7 +4,6 @@ import * as Goals from "@/models/goals";
 import * as React from "react";
 
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 

@@ -8,7 +8,6 @@ import * as Time from "@/utils/time";
 import Forms from "@/components/Forms";
 import { emptyContent } from "@/components/RichContent";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 

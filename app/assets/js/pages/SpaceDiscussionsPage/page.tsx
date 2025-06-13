@@ -5,7 +5,6 @@ import * as React from "react";
 import { Summary } from "@/components/RichContent";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink, Link, PrimaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";

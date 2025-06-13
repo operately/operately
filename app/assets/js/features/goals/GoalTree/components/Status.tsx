@@ -5,7 +5,6 @@ import * as Popover from "@radix-ui/react-popover";
 
 import { SmallStatusIndicator } from "@/components/status";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { IconArrowUpRight } from "@tabler/icons-react";
 import { Node } from "../tree";

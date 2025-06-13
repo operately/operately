@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubFolder, useCopyResourceHubFolder } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useNodesContext } from "../contexts/NodesContext";

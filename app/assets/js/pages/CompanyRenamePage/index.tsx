@@ -4,7 +4,6 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate, useRevalidator } from "react-router-dom";
 

@@ -1,7 +1,6 @@
 import * as Editor from "@/components/Editor";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
 export interface FormState {

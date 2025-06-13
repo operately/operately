@@ -8,7 +8,6 @@ import { useAddProjectContributors } from "@/api";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { SecondaryButton } from "turboui";

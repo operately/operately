@@ -1,7 +1,6 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {

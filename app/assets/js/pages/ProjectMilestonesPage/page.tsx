@@ -10,7 +10,6 @@ import { GhostButton } from "turboui";
 
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
 import { useLoadedData } from "./loader";
 

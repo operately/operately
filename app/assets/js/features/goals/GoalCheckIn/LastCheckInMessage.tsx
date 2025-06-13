@@ -8,7 +8,6 @@ import RichContent from "@/components/RichContent";
 import { Avatar } from "turboui";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";

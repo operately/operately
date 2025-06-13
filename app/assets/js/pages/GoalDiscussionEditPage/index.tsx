@@ -9,7 +9,6 @@ import * as React from "react";
 
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
 import { DimmedLink, PrimaryButton } from "turboui";
 

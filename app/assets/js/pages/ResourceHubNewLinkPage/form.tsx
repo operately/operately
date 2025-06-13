@@ -7,7 +7,6 @@ import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { LinkIcon, LinkOptions } from "@/features/ResourceHub";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 

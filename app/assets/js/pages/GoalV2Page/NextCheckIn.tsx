@@ -1,7 +1,6 @@
 import React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 import { SecondaryButton } from "turboui";

@@ -4,7 +4,6 @@ import * as Hub from "@/models/resourceHubs";
 
 import { useNodesContext } from "@/features/ResourceHub";
 import { useBoolState } from "@/hooks/useBoolState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 import { createTestId } from "@/utils/testid";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";

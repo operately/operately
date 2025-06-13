@@ -5,7 +5,6 @@ import * as Timeframes from "@/utils/timeframes";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { GhostLink, PrimaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";

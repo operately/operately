@@ -2,7 +2,6 @@ import * as Pages from "@/components/Pages";
 import * as React from "react";
 
 import { Person } from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Avatar, Link } from "turboui";
 import { useLoadedData } from "./loader";
 

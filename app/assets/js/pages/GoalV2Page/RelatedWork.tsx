@@ -3,7 +3,6 @@ import React from "react";
 import { MiniWorkMap } from "turboui";
 
 import { Spacer } from "@/components/Spacer";
-import { DeprecatedPaths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
 import { assertPresent } from "@/utils/assertions";

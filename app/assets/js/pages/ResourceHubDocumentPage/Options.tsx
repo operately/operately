@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { useDeleteResourceHubDocument } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";

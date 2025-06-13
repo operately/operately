@@ -9,7 +9,6 @@ import { Avatar } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { PrivacyIndicator } from "@/features/Permissions";
 import { StatusIndicator } from "@/features/ProjectListItem/StatusIndicator";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, PieChart } from "turboui";
 
 interface ProjectListItemProps {

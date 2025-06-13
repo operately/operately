@@ -9,7 +9,6 @@ import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { ButtonLink, DivLink, Link } from "turboui";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { createTestId } from "@/utils/testid";
 import { useLoadedData } from "./loader";

@@ -10,7 +10,6 @@ import { useEditProjectPermissions } from "@/api";
 import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNavigation";
 import { applyAccessLevelConstraints, initialAccessLevels } from "@/features/Permissions/AccessFields";
 import { AccessSelectors } from "@/features/projects/AccessSelectors";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 

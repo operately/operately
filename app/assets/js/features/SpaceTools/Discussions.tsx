@@ -2,7 +2,6 @@ import React from "react";
 
 import { Discussion } from "@/models/discussions";
 import { Space } from "@/models/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Container } from "./components";
 import { RegularState } from "./Discussions/RegularState";
 import { ZeroState } from "./Discussions/ZeroState";

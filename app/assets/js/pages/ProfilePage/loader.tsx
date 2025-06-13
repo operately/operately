@@ -1,6 +1,5 @@
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {

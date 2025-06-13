@@ -3,7 +3,6 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 import * as Turboui from "turboui";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { redirect } from "react-router-dom";
 

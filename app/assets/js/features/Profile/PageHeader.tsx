@@ -2,7 +2,6 @@ import * as Tabs from "@/components/Tabs";
 import * as React from "react";
 
 import { Person } from "@/models/people";
-import { DeprecatedPaths } from "@/routes/paths";
 
 import { Avatar } from "turboui";
 

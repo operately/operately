@@ -1,7 +1,6 @@
 import React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "react-router-dom";
 import { Avatar } from "turboui";
 

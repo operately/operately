@@ -4,7 +4,6 @@ import * as Accounts from "@/models/accounts";
 import * as React from "react";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 

@@ -2,7 +2,6 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 import Api from "@/api";
-import { DeprecatedPaths } from "@/routes/paths";
 
 export type Person = api.Person;
 

@@ -10,7 +10,6 @@ import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { IconEdit } from "@tabler/icons-react";
 import { AvatarWithName } from "turboui";
 

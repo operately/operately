@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { Tooltip } from "@/components/Tooltip";
 import { ProjectContributor } from "@/models/projects";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import { useColorMode } from "@/contexts/ThemeContext";

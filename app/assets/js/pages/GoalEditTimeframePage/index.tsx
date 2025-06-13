@@ -9,7 +9,6 @@ import * as React from "react";
 import { Datepicker } from "@/components/Datepicker";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { SubscribersSelector, SubscriptionsState } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 import { DimmedLink, PrimaryButton } from "turboui";

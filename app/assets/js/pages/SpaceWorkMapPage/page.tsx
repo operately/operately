@@ -1,6 +1,5 @@
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { WorkMapPage } from "turboui";
 import { useLoadedData } from "./loader";
 

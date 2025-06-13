@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubLink, useEditResourceHubLink } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 

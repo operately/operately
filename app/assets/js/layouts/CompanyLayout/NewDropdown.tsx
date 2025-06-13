@@ -1,7 +1,6 @@
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
 
 export function NewDropdown() {

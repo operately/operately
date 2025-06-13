@@ -5,7 +5,6 @@ import * as TipTapEditor from "@/components/Editor";
 import { formValidator, useFormState } from "@/components/Form/useFormState";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Validators } from "@/utils/validators";
 
 type FormFields = {

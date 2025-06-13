@@ -4,7 +4,6 @@ import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { PrivacyIndicator } from "@/features/Permissions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DimmedLink, DivLink } from "turboui";
 
 export function Header({ project }: { project: Projects.Project }) {

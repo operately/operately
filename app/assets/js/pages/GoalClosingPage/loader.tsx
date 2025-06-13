@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 
 interface LoaderResult {
   goal: Goals.Goal;

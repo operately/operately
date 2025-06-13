@@ -4,7 +4,6 @@ import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as React from "react";
 
 import { Summary } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 import { CheckInButton } from "./CheckInButton";
 import { useLoadedData } from "./loader";

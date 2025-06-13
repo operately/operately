@@ -4,7 +4,6 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useRefresh } from "./loader";
 

@@ -5,7 +5,6 @@ import * as Paper from "@/components/PaperContainer";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Form, FormState, useForm } from "@/features/goals/GoalForm";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PrimaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 

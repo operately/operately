@@ -1,7 +1,6 @@
 import React from "react";
 
 import { ResourceHubNode } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
 
 interface Props {

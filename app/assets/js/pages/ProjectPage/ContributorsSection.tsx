@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { ChampionPlaceholder, ContributorAvatar, ReviewerPlaceholder } from "@/components/ContributorAvatar";
 import { ProjectContributor } from "@/models/projectContributors";
-import { DeprecatedPaths } from "@/routes/paths";
 import { SecondaryButton } from "turboui";
 
 export function ContributorsSection({ project }: { project: Projects.Project }) {

@@ -13,7 +13,6 @@ import { PrimaryButton, SecondaryButton } from "turboui";
 import { ProjectAccessLevelBadge } from "@/components/Badges/AccessLevelBadges";
 import { ContributorAvatar, PlaceholderAvatar } from "@/components/ContributorAvatar";
 import { AccessLevel } from "@/features/projects/AccessLevel";
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
 import { Menu, MenuActionItem, MenuLinkItem } from "turboui";

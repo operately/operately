@@ -1,7 +1,6 @@
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import * as Notifications from "@/models/notifications";

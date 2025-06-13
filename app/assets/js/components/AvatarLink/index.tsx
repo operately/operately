@@ -1,6 +1,5 @@
 import React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Avatar, AvatarProps, DivLink } from "turboui";
 
 interface AvatarLinkProps extends AvatarProps {

@@ -2,7 +2,6 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { ResourceIcon } from "@/components/KeyResourceIcon";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, SecondaryButton } from "turboui";
 
 export function ResourcesSection({ project }: { project: Projects.Project }) {

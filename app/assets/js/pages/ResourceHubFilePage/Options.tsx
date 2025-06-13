@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { useDownloadFile } from "@/models/blobs";
 import { useDeleteResourceHubFile } from "@/models/resourceHubs";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 

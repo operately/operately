@@ -3,7 +3,7 @@ import * as React from "react";
 
 import { useIsDarkMode } from "@/contexts/ThemeContext";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "@/features/DragAndDrop";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { insertAt } from "@/utils/array";
 import { match } from "ts-pattern";
 import { AvatarList, DivLink } from "turboui";

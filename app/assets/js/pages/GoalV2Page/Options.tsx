@@ -2,7 +2,6 @@ import * as React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import * as Icons from "@tabler/icons-react";
 

@@ -11,7 +11,6 @@ import { Avatar, PrimaryButton, SecondaryButton } from "turboui";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
-import { DeprecatedPaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";

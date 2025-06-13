@@ -4,7 +4,6 @@ import * as Timeframes from "@/utils/timeframes";
 
 import { ProjectCheckIn } from "@/api";
 import { Project, ProjectRetrospective } from "@/models/projects";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { Node } from "./node";
 

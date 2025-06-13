@@ -4,7 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";

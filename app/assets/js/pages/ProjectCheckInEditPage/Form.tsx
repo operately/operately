@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import FormattedTime from "@/components/FormattedTime";
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {

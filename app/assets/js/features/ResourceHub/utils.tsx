@@ -1,6 +1,5 @@
 import { ResourceHubNode } from "@/models/resourceHubs";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export type NodeType = "document" | "folder" | "file" | "link";

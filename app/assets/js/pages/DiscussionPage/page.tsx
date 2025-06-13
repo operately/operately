@@ -14,7 +14,7 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { OngoingDraftActions } from "@/features/drafts";

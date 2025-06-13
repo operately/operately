@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import Forms from "@/components/Forms";
 import { Spacer } from "@/components/Spacer";
 import { Options, SubscribersSelector, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export function Form({ project }: { project: Project }) {

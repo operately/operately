@@ -6,7 +6,7 @@ import * as Spaces from "@/models/spaces";
 import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
 

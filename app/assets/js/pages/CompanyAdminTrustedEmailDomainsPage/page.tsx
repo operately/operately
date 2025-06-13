@@ -4,7 +4,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { createTestId } from "@/utils/testid";
 import { GhostButton } from "turboui";
 import { useLoadedData } from "./loader";

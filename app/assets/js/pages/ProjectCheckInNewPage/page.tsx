@@ -3,7 +3,6 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Form } from "./Form";
 import { useLoadedData } from "./loader";
 

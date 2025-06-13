@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
 

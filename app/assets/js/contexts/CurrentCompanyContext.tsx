@@ -4,7 +4,6 @@ import * as React from "react";
 import { useProfileUpdatedSignal } from "@/signals";
 import { assertPresent } from "@/utils/assertions";
 import { throttle } from "@/utils/throttle";
-import { DeprecatedPaths } from "../routes/paths";
 
 interface CurrentCompanyContextProps {
   me: People.Person | null;

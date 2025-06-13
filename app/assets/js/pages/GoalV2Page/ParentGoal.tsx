@@ -9,7 +9,6 @@ import classNames from "classnames";
 
 import { useIsViewMode } from "@/components/Pages";
 import { GoalSelector } from "@/features/goals/GoalTree/GoalSelector";
-import { DeprecatedPaths } from "@/routes/paths";
 import { GhostLink, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 

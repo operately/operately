@@ -8,7 +8,6 @@ import * as React from "react";
 
 import { richContentToString } from "@/components/RichContent";
 import { Discussion } from "@/models/discussions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";

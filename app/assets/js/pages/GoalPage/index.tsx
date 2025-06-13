@@ -10,7 +10,6 @@ import { banner } from "@/features/goals/GoalPageHeader/Banner";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { GoalTargets } from "@/features/goals/GoalTargets";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";

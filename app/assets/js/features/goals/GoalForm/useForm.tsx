@@ -8,7 +8,6 @@ import * as React from "react";
 
 import { PermissionsState, usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { useListState } from "@/hooks/useListState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 

@@ -2,7 +2,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Link, PrimaryButton } from "turboui";
 

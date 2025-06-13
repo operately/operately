@@ -1,7 +1,6 @@
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, SecondaryButton } from "turboui";
 
 import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";

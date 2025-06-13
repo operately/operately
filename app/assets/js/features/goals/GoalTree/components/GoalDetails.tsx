@@ -8,7 +8,6 @@ import { useWindowSizeBreakpoints } from "@/components/Pages";
 
 import { AvatarLink } from "@/components/AvatarLink";
 import { DescriptionSection, StatusSection, TargetsSection } from "@/features/goals/GoalCheckIn";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import classNames from "classnames";
 import { match } from "ts-pattern";

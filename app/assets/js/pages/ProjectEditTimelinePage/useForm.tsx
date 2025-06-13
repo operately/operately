@@ -2,7 +2,6 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
 

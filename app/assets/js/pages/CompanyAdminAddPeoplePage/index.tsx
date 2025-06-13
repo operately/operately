@@ -4,7 +4,6 @@ import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 import { PrimaryButton } from "turboui";

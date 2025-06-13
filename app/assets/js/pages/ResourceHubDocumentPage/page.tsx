@@ -15,7 +15,6 @@ import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CopyDocumentModal, ResourcePageNavigation } from "@/features/ResourceHub";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useLoadedData } from "./loader";

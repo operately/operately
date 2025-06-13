@@ -6,7 +6,6 @@ import * as Spaces from "@/models/spaces";
 
 import { Form, FormState, useForm } from "@/features/DiscussionForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { GhostButton, Link, PrimaryButton } from "turboui";
 

@@ -4,7 +4,6 @@ import * as React from "react";
 
 import { Activity } from "@/api";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { DeprecatedPaths } from "@/routes/paths";
 import { DivLink } from "turboui";
 
 import Api from "@/api";

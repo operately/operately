@@ -2,7 +2,6 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 
 import { LinkOptions } from "@/features/ResourceHub";
 import { AddFileProps, useAddFile } from "../useAddFile";

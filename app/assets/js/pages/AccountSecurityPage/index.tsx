@@ -5,7 +5,6 @@ import * as React from "react";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
 import { Link } from "turboui";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 
 export default { name: "AccountSecurityPage", loader: Pages.emptyLoader, Page } as PageModule;

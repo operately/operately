@@ -1,7 +1,6 @@
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 

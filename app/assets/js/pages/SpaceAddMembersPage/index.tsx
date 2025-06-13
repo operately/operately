@@ -8,7 +8,7 @@ import * as React from "react";
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { createTestId } from "@/utils/testid";
 import { useNavigate } from "react-router-dom";

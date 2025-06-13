@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
-import { DeprecatedPaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 

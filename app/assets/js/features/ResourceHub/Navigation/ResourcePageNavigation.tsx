@@ -2,7 +2,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { Resource } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 export function ResourcePageNavigation({ resource }: { resource: Resource }) {

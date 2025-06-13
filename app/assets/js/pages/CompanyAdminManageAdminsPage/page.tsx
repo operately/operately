@@ -4,7 +4,7 @@ import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { AddAdminsModal } from "./AddAdminsModal";
 import { AddOwnersModal } from "./AddOwnersModal";
 import { useLoadedData } from "./loader";

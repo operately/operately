@@ -1,7 +1,6 @@
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link } from "turboui";
 
 import * as api from "@/api";

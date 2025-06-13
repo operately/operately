@@ -4,7 +4,6 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, SecondaryButton } from "turboui";
 import { DimmedLabel } from "./Label";
 

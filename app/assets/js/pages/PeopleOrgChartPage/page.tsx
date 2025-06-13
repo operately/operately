@@ -5,7 +5,7 @@ import * as Icons from "@tabler/icons-react";
 import { Avatar, Link } from "turboui";
 import { useLoadedData } from "./loader";
 
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import classNames from "classnames";
 import { OrgChart, OrgChartNode, useOrgChart } from "./useOrgChart";
 

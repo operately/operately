@@ -4,7 +4,6 @@ import * as Timeframes from "@/utils/timeframes";
 import React from "react";
 
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { assertPresent } from "@/utils/assertions";
 

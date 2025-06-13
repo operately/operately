@@ -6,7 +6,6 @@ import * as React from "react";
 import Forms from "@/components/Forms";
 
 import { AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 

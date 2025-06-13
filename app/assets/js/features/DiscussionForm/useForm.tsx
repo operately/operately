@@ -5,7 +5,6 @@ import * as React from "react";
 
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
 interface UseFormOptions {

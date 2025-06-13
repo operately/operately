@@ -2,7 +2,6 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 interface Props {

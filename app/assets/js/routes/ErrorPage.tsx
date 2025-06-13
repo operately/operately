@@ -5,7 +5,6 @@ import { captureException } from "@sentry/react";
 import { AxiosError } from "axios";
 import { useRouteError } from "react-router-dom";
 import { GhostButton } from "turboui";
-import { DeprecatedPaths } from "./paths";
 
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;

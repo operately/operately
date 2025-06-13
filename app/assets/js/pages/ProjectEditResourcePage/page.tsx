@@ -8,7 +8,6 @@ import { ResourceIcon } from "@/components/KeyResourceIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 import { useForm } from "./useForm";
 

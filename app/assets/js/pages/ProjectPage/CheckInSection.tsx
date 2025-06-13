@@ -8,7 +8,6 @@ import { Avatar } from "turboui";
 
 import { Summary } from "@/components/RichContent";
 import { SmallStatusIndicator } from "@/components/status";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Link, SecondaryButton } from "turboui";
 import { DimmedLabel } from "./Label";
 

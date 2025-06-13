@@ -3,7 +3,6 @@ import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoadedData {

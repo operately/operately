@@ -7,7 +7,6 @@ import { useWorkItems } from "./useWorkItems";
 
 import { WarningCallout } from "@/components/Callouts";
 import Modal from "@/components/Modal";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 

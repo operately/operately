@@ -7,7 +7,6 @@ import { FormTitleInput } from "@/components/FormTitleInput";
 import * as Goals from "@/models/goals";
 
 import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
 import { useForm } from "./useForm";

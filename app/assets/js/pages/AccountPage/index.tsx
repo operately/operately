@@ -6,7 +6,6 @@ import * as Icons from "@tabler/icons-react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { logOut } from "@/routes/auth";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { BurgerActionsGroup, BurgerButton, BurgerLink } from "./BurgerActions";
 

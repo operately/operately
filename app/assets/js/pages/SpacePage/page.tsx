@@ -13,7 +13,6 @@ import { ToolsSection } from "@/features/SpaceTools";
 import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
 

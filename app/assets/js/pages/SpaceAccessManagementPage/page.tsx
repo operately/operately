@@ -9,7 +9,6 @@ import { BorderedRow } from "@/components/BorderedRow";
 import { PermissionLevels } from "@/features/Permissions";
 import { AccessLevel } from "@/features/spaces";
 import { Space } from "@/models/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Menu, MenuActionItem, PrimaryButton, SecondaryButton, SubMenu } from "turboui";
 import { OtherPeople } from "./OtherPeople";
 

@@ -9,7 +9,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { Avatar } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
-import { DeprecatedPaths, compareIds } from "@/routes/paths";
+import { compareIds } from "@/routes/paths";
 import { AckCTA } from "./AckCTA";
 
 import { Spacer } from "@/components/Spacer";

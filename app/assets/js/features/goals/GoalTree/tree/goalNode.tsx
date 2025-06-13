@@ -2,7 +2,6 @@ import plurarize from "@/utils/plurarize";
 
 import { GoalProgressUpdate } from "@/api";
 import { Goal } from "@/models/goals";
-import { DeprecatedPaths } from "@/routes/paths";
 import { Node } from "./node";
 
 import * as Spaces from "@/models/spaces";

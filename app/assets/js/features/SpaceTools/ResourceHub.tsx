@@ -4,7 +4,6 @@ import * as React from "react";
 import { assertPresent } from "@/utils/assertions";
 import { createTestId } from "@/utils/testid";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Container } from "./components";
 import { RegularState } from "./ResourceHubs/RegularState";
 import { ZeroState } from "./ResourceHubs/ZeroState";

@@ -9,7 +9,6 @@ import * as Spaces from "@/models/spaces";
 import Forms from "@/components/Forms";
 
 import { AccessLevel, AccessSelectors, applyAccessLevelConstraints, initialAccessLevels } from "@/features/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { SecondaryButton } from "turboui";
 

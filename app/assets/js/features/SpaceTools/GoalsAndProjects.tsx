@@ -3,7 +3,6 @@ import React from "react";
 import { Goal } from "@/models/goals";
 import { Project } from "@/models/projects";
 import { Space } from "@/models/spaces";
-import { DeprecatedPaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { Container } from "./components";
 import { AllDoneState } from "./GoalsAndProjects/AllDoneState";

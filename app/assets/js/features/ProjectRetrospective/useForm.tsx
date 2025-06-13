@@ -5,7 +5,6 @@ import * as React from "react";
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 interface Error {

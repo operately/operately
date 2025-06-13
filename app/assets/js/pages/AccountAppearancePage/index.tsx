@@ -10,7 +10,6 @@ import classnames from "classnames";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useSetTheme, useTheme } from "@/contexts/ThemeContext";
 import { PageNavigation } from "@/features/accounts/PageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 

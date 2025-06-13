@@ -3,7 +3,6 @@ import * as WorkMap from "@/models/workMap";
 import { convertToWorkMapItem } from "@/models/workMap";
 
 import { PageCache } from "@/routes/PageCache";
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { fetchAll } from "@/utils/async";
 

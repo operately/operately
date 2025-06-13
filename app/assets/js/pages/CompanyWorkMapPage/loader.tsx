@@ -1,7 +1,6 @@
 import { Company, getCompany } from "@/models/companies";
 import { convertToWorkMapItem, getWorkMap } from "@/models/workMap";
 import { PageCache } from "@/routes/PageCache";
-import { DeprecatedPaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 interface LoaderResult {

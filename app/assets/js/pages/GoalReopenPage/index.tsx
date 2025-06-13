@@ -4,7 +4,6 @@ import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { Form } from "./Form";
 
 export default { name: "GoalReopenPage", loader, Page } as PageModule;

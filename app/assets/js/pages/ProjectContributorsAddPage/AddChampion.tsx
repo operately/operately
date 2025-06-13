@@ -8,7 +8,6 @@ import { ProjectContribsSubpageNavigation } from "@/components/ProjectPageNaviga
 import { PermissionLevels } from "@/features/Permissions";
 
 import Forms from "@/components/Forms";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { LoaderResult } from "./loader";
 

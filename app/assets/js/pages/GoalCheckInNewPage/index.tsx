@@ -6,7 +6,6 @@ import * as React from "react";
 import { Form as CheckInForm, useForm } from "@/features/goals/GoalCheckIn";
 import { banner } from "@/features/goals/GoalPageHeader/Banner";
 import { useSubscriptions } from "@/features/Subscriptions";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 

@@ -6,7 +6,6 @@ import * as React from "react";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useLoadedData } from "./loader";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import { DimmedLink, PrimaryButton } from "turboui";
 
 export function Page() {

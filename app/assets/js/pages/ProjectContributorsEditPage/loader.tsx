@@ -1,6 +1,5 @@
 import * as Pages from "@/components/Pages";
 import * as ProjectContributors from "@/models/projectContributors";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 export interface UrlParams {

@@ -1,5 +1,4 @@
 import * as Pages from "@/components/Pages";
-import { DeprecatedPaths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import React from "react";
 import { GhostButton } from "turboui";

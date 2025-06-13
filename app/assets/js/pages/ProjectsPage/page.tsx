@@ -6,7 +6,6 @@ import { ProjectList } from "@/features/ProjectList";
 import { PrimaryButton } from "turboui";
 import { useFilters, useLoadedData } from "./loader";
 
-import { DeprecatedPaths } from "@/routes/paths";
 import classNames from "classnames";
 
 export function Page() {

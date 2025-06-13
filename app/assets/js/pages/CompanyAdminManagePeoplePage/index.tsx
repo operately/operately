@@ -10,7 +10,6 @@ import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { DeprecatedPaths } from "@/routes/paths";
 import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
 
 import Modal, { ModalState, useModalState } from "@/components/Modal";

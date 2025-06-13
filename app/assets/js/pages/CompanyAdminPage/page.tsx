@@ -4,7 +4,7 @@ import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { DeprecatedPaths, includesId } from "@/routes/paths";
+import { includesId } from "@/routes/paths";
 import { Link } from "turboui";
 import { CompanyAdmins, CompanyOwners } from "./CompanyAdmins";
 import { useLoadedData } from "./loader";

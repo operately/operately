@@ -6,7 +6,6 @@ import * as Paper from "@/components/PaperContainer";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { AddGoalOrProjectButton } from "@/features/goals/AddGoalOrProjectButton";
 import { GoalTree } from "@/features/goals/GoalTree";
-import { DeprecatedPaths } from "@/routes/paths";
 import { useLoadedData } from "./loader";
 
 export function Page() {
