@@ -9,6 +9,7 @@ import { findNameAndExtension } from "@/features/ResourceHub";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ file }: { file: ResourceHubFile }) {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = useEditResourceHubFile();
 

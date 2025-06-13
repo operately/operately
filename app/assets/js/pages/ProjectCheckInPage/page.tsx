@@ -115,6 +115,7 @@ function Title() {
 }
 
 function Navigation({ project }) {
+  const paths = usePaths();
   return (
     <Paper.Navigation
       items={[

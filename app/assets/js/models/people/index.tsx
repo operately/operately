@@ -24,6 +24,7 @@ export const spaceScope = (spaceId: string) => {
 };
 
 export function usePeopleSearch(scope: SearchScope) {
+  const paths = usePaths();
   //
   // There are multiple components that use this hook. Some of them
   // pass in a string, others pass in an object with a query property.

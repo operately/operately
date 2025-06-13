@@ -13,6 +13,7 @@ import { DimmedLabel } from "./Label";
 
 import { usePaths } from "@/routes/paths";
 export function CheckInSection({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   return (
     <div className="border-t border-stroke-base py-6">
       <div className="flex items-start gap-4">
@@ -95,6 +96,7 @@ function LastCheckInContent({ project }: { project: Projects.Project }) {
 }
 
 function LastCheckInLink({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   const time = project.lastCheckIn!.insertedAt!;
   const path = paths.projectCheckInPath(project.lastCheckIn!.id!);
 
@@ -106,6 +108,7 @@ function LastCheckInLink({ project }: { project: Projects.Project }) {
 }
 
 function CheckInNowButton({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canCheckIn) return null;
 
   const newCheckInPath = paths.projectCheckInNewPath(project.id!);
@@ -131,6 +134,7 @@ function CheckInZeroState({ project }: { project: Projects.Project }) {
 }
 
 function NoReviewerCallout({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (project.reviewer) return null;
 
   const path = paths.projectContributorsAddPath(project.id!, { type: "reviewer" });

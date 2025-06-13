@@ -13,6 +13,7 @@ import { useForm } from "./useForm";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 
   const subscriptionsState = useSubscriptions(goal.potentialSubscribers, {

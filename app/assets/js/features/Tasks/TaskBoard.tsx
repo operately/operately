@@ -145,6 +145,7 @@ function TaskItem({
   style: React.CSSProperties;
   testId: string;
 }) {
+  const paths = usePaths();
   const { ref, isDragging } = useDraggable({ id: task.id!, zoneId });
 
   return (

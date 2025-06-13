@@ -45,6 +45,7 @@ export function GoalDetails({ node }: { node: GoalNode }) {
 }
 
 export function GoalActions({ hovered, node }: { hovered: boolean; node: GoalNode }) {
+  const paths = usePaths();
   const size = useWindowSizeBreakpoints();
 
   if (node.isClosed) return <></>;
@@ -129,6 +130,7 @@ function GoalTimeframeIcon({ isOverdue }: { isOverdue: boolean }) {
 }
 
 function ChampionAndSpace({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   assertPresent(goal.champion, "champion must be present in goal");
   assertPresent(goal.space, "space must be present in goal");
 

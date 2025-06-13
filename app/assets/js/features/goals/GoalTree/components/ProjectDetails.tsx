@@ -63,6 +63,7 @@ function ProjectStatus({ node }: { node: ProjectNode }) {
 }
 
 function NextMilestone({ project }: { project: Project }) {
+  const paths = usePaths();
   const size = useWindowSizeBreakpoints();
 
   if (!project.nextMilestone) return <></>;
@@ -81,6 +82,7 @@ function NextMilestone({ project }: { project: Project }) {
 }
 
 function SpaceName({ project }: { project: Project }) {
+  const paths = usePaths();
   assertPresent(project.space, "space must be present in project");
 
   const path = paths.spacePath(project.space.id!);

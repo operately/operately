@@ -89,5 +89,6 @@ function DiscardLink({ form }) {
 }
 
 function Navigation({ space }) {
+  const paths = usePaths();
   return <Paper.Navigation items={[{ to: paths.spaceDiscussionsPath(space.id), label: space.name! }]} />;
 }

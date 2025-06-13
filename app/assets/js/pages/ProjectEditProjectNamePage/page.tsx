@@ -28,6 +28,7 @@ export function Page() {
 }
 
 function Form({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   const navigateToProject = useNavigateTo(paths.projectPath(project.id!));
   const [projectName, setProjectName] = React.useState(project.name);
 

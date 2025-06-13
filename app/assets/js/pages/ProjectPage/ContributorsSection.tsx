@@ -34,6 +34,7 @@ function ContribList({ contributors }: { contributors: ProjectContributor[] }) {
 }
 
 function ManageAccessButton({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canEditContributors) return null;
   const path = paths.projectContributorsPath(project.id!);
 

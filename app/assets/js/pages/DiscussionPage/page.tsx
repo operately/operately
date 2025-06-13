@@ -114,6 +114,7 @@ function DiscussionTitle() {
 }
 
 function Navigation({ space }) {
+  const paths = usePaths();
   return (
     <Paper.Navigation
       items={[

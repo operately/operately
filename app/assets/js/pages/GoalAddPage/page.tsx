@@ -29,6 +29,7 @@ export function Page() {
 }
 
 function NewGoalForSpacePage({ form }: { form: FormState }) {
+  const paths = usePaths();
   const { space } = useLoadedData();
 
   return (
@@ -49,6 +50,7 @@ function NewGoalForSpacePage({ form }: { form: FormState }) {
 }
 
 function NewGoalPage({ form }: { form: FormState }) {
+  const paths = usePaths();
   const { isCompanyWide } = useLoadedData();
 
   return (

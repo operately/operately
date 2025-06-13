@@ -16,6 +16,7 @@ import { DivLink } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   if (!goal.lastCheckIn) return null;
 
   assertPresent(goal.lastCheckIn.author, "author must be present in lastCheckIn");
@@ -51,6 +52,7 @@ export function LastCheckInMessage({ goal }: { goal: Goals.Goal }) {
 }
 
 function LastMessageComments({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   if (!goal.lastCheckIn) return null;
 
   const path = paths.goalCheckInPath(goal.lastCheckIn!.id!);

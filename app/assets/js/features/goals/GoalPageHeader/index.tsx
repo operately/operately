@@ -56,6 +56,7 @@ function GoalIcon() {
 }
 
 function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; goal: Goals.Goal }) {
+  const paths = usePaths();
   return (
     <Tabs.Root activeTab={activeTab}>
       <Tabs.Tab id="status" title="Current Status" linkTo={paths.goalPath(goal.id!)} />
@@ -67,6 +68,7 @@ function GoalTabs({ activeTab, goal }: { activeTab: HeaderProps["activeTab"]; go
 }
 
 function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
+  const paths = usePaths();
   let content: React.ReactNode;
 
   if (goal) {
@@ -94,6 +96,7 @@ function ParentGoal({ goal }: { goal: Goals.Goal | null | undefined }) {
 }
 
 function Options({ goal }) {
+  const paths = usePaths();
   return (
     <PageOptions.Root testId="goal-options">
       {goal.permissions.canEdit && !goal.isClosed && (
@@ -197,6 +200,7 @@ function TimeframeState({ goal }) {
 }
 
 function CheckInButton({ goal }) {
+  const paths = usePaths();
   if (!goal.permissions.canCheckIn) return null;
   if (goal.isClosed || goal.isArchived) return null;
 

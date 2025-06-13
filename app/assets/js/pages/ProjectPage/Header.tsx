@@ -44,6 +44,7 @@ function ParentGoal({ project }: { project: Projects.Project }) {
 }
 
 function ParentGoalNotLinked({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   const path = paths.editProjectGoalPath(project.id!);
 
   return (
@@ -54,6 +55,7 @@ function ParentGoalNotLinked({ project }: { project: Projects.Project }) {
 }
 
 function ParentGoalLinked({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   return (
     <>
       <Icons.IconTarget size={14} className="text-red-500" />

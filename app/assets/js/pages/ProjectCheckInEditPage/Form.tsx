@@ -11,6 +11,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ checkIn }: { checkIn: ProjectCheckIn }) {
+  const paths = usePaths();
   const [edit] = useEditProjectCheckIn();
   const navigate = useNavigate();
 

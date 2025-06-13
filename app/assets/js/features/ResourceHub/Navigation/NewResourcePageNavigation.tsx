@@ -11,6 +11,7 @@ interface Props {
 }
 
 export function NewResourcePageNavigation({ resourceHub, folder }: Props) {
+  const paths = usePaths();
   assertPresent(resourceHub.space, "space must be present in resourceHub");
 
   let items = [

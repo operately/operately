@@ -35,6 +35,7 @@ export function Page() {
 }
 
 function ArchiveButton({ goal }) {
+  const paths = usePaths();
   const navigateToGoal = useNavigateTo(paths.goalPath(goal.id!));
 
   const [archive, { loading: loading }] = Goals.useArchiveGoal();

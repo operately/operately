@@ -16,6 +16,7 @@ export function banner(project: Projects.Project) {
 }
 
 function ProjectClosedBanner({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   const retroPath = paths.projectRetrospectivePath(project.id!);
 
   return (
@@ -30,6 +31,7 @@ function ProjectClosedBanner({ project }: { project: Projects.Project }) {
 }
 
 function ProjectPausedBanner({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   const resumePath = paths.resumeProjectPath(project.id!);
 
   return (

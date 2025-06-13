@@ -41,6 +41,7 @@ export function Page() {
 }
 
 function PauseProject({ project }) {
+  const paths = usePaths();
   const path = paths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 

@@ -11,11 +11,11 @@ import { Avatar, PrimaryButton, SecondaryButton } from "turboui";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
+import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
 import { useLoadedData } from "./loader";
 import { FormState, useForm } from "./useForm";
 
-import { usePaths } from "@/routes/paths";
 export function Page() {
   const { task } = useLoadedData();
 
@@ -44,6 +44,7 @@ export function Page() {
 }
 
 function Navigation({ task }: { task: Tasks.Task }) {
+  const paths = usePaths();
   const projectPath = paths.projectPath(task.project!.id!);
   const milestonePath = paths.projectMilestonePath(task.milestone!.id!);
 

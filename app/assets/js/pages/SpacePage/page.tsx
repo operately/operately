@@ -136,6 +136,7 @@ function JoinButton({ space }) {
 }
 
 function ManageAccessButton({ space }: { space: Spaces.Space }) {
+  const paths = usePaths();
   const path = paths.spaceAccessManagementPath(space.id!);
 
   assertPresent(space.permissions, "permissions must be present in space");

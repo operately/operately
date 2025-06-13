@@ -126,6 +126,7 @@ function PersonRow({ person }: { person: People.Person }) {
 }
 
 function PersonInfo({ person }: { person: People.Person }) {
+  const paths = usePaths();
   return (
     <div>
       <BlackLink to={paths.profilePath(person.id!)} className="font-bold" underline="hover">
@@ -173,6 +174,7 @@ function ExpiredInvitationAndRenewButton({ person }: { person: People.Person }) 
 }
 
 function EditProfileButton({ person }: { person: People.Person }) {
+  const paths = usePaths();
   return (
     <SecondaryButton
       size="xs"
@@ -206,6 +208,7 @@ function PersonOptions({ person }: { person: People.Person }) {
 }
 
 function PersonOptionViewProfile({ person }: { person: People.Person }) {
+  const paths = usePaths();
   return (
     <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={paths.profilePath(person.id!)}>
       View Profile

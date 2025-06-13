@@ -49,6 +49,7 @@ function DownloadFileMenuItem({ file }: Props) {
 }
 
 function EditFileMenuItem({ file }: Props) {
+  const paths = usePaths();
   const editPath = paths.resourceHubEditFilePath(file.id!);
   const editId = createTestId("edit", file.id!);
 

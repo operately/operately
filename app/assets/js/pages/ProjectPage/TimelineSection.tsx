@@ -33,6 +33,7 @@ export function TimelineSection({ project }: { project: Projects.Project }) {
 }
 
 function ViewTimelineLink({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   return (
     <Link to={paths.projectMilestonesPath(project.id!)} testId="manage-timeline">
       View
@@ -163,6 +164,7 @@ function ProjectMilestones({ project }) {
 }
 
 function MilestonesZeroState({ project }) {
+  const paths = usePaths();
   const editPath = paths.projectEditTimelinePath(project.id!);
 
   const editLink = (
@@ -180,6 +182,7 @@ function MilestonesZeroState({ project }) {
 }
 
 function AllMilestonesCompleted({ project }) {
+  const paths = usePaths();
   const editLink = (
     <Link to={paths.projectEditTimelinePath(project.id!)} testId="add-milestones-link">
       Add more milestones
@@ -207,6 +210,7 @@ function MilestonesList({ milestones }: { milestones: Projects.Milestone[] }) {
 }
 
 function MilestoneLink({ milestone }) {
+  const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
   const deadline = milestone.deadlineAt;

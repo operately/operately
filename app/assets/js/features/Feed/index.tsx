@@ -99,6 +99,7 @@ function ActivityGroupItems({ group, page }: { group: Activities.ActivityGroup; 
 }
 
 function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
+  const paths = usePaths();
   const author = activity.author!;
   const time = activity.insertedAt!;
   const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;

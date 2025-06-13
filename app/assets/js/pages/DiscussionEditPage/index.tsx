@@ -95,6 +95,7 @@ function CancelLink({ form }: { form: FormState }) {
 }
 
 function Navigation({ space }) {
+  const paths = usePaths();
   return (
     <Paper.Navigation
       items={[

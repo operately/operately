@@ -77,6 +77,7 @@ function PersonRow({ person, type }: { person: People.Person; type: "admins" | "
 }
 
 function PersonInfo({ person }: { person: People.Person }) {
+  const paths = usePaths();
   return (
     <div>
       <BlackLink to={paths.profilePath(person.id!)} className="font-bold" underline="hover">

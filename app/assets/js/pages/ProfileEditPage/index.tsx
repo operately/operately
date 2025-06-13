@@ -67,6 +67,7 @@ const ManagerOptions = [
 ];
 
 function ProfileForm({ person }: { person: People.Person }) {
+  const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
 

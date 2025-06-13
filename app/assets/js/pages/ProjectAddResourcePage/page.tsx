@@ -38,6 +38,7 @@ export function Page() {
 }
 
 function Form({ project, form }) {
+  const paths = usePaths();
   const onCancel = useNavigateTo(paths.projectEditResourcesPath(project.id));
   const namePlaceholder = KeyResources.placeholderName(form.resourceType);
 

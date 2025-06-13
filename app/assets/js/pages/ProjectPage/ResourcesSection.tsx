@@ -23,6 +23,7 @@ export function ResourcesSection({ project }: { project: Projects.Project }) {
 }
 
 function EditLink({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canEditResources) return false;
   if (!project.keyResources || project.keyResources.length === 0) return false;
 
@@ -44,6 +45,7 @@ function Content({ project }) {
 }
 
 function ResourcesZeroState({ project }) {
+  const paths = usePaths();
   const editPath = paths.projectEditResourcesPath(project.id!);
 
   const editLink = (

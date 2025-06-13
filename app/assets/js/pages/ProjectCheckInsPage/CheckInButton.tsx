@@ -5,6 +5,7 @@ import { PrimaryButton } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function CheckInButton({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canCheckIn) return null;
 
   const path = paths.projectCheckInNewPath(project.id!);

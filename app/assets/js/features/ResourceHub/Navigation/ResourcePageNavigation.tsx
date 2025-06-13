@@ -6,6 +6,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
 export function ResourcePageNavigation({ resource }: { resource: Resource }) {
+  const paths = usePaths();
   assertPresent(resource.resourceHub, "resourceHub must be present in document");
   assertPresent(resource.resourceHub.space, "space must be present in document.resourceHub");
   const path = getPathToResource(resource);

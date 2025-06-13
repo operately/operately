@@ -283,6 +283,7 @@ function ContributotNameAndResponsibility({ contributor }: { contributor: Projec
 }
 
 function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "reassign-as-contributor" });
 
   return (
@@ -293,6 +294,7 @@ function ReassignAsContributorMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "change-champion" });
 
   return (
@@ -303,6 +305,7 @@ function ChangeProjectChampionMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "change-reviewer" });
 
   return (
@@ -313,6 +316,7 @@ function ChangeProjectReviewerMenuItem({ contributor }: { contributor: ProjectCo
 }
 
 function EditMenuItem({ contributor }: { contributor: ProjectContributor }) {
+  const paths = usePaths();
   const path = paths.projectContributorsEditPath(contributor.id!, { action: "edit-contributor" });
 
   return (

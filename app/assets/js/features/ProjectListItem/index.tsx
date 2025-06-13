@@ -39,6 +39,7 @@ export function ProjectListItem({ project, avatarPosition = "bottom", showSpace 
 }
 
 function ProjectNameLine({ project }) {
+  const paths = usePaths();
   const path = paths.projectPath(project.id);
 
   return (
@@ -53,6 +54,7 @@ function ProjectNameLine({ project }) {
 }
 
 function ProjectStatusLine({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (project.status === "closed") {
     return (
       <div className="mt-2 text-sm font-medium">

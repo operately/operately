@@ -118,6 +118,7 @@ function DiscussionList() {
 }
 
 function DiscussionListItem({ discussion }: { discussion: Discussion }) {
+  const paths = usePaths();
   assertPresent(discussion.author, "author must be present in discussion");
 
   const path = paths.discussionEditPath(discussion.id!);

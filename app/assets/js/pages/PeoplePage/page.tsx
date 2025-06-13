@@ -31,6 +31,7 @@ function PeopleList({ people }: { people: Person[] }) {
 }
 
 function PersonCard({ person }: { person: Person }) {
+  const paths = usePaths();
   const testId = "person-" + person.id!;
 
   return (

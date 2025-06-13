@@ -9,6 +9,7 @@ import { areRichTextObjectsEqual } from "@/components/RichContent";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ document }: { document: ResourceHubDocument }) {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = useEditResourceHubDocument();
   const [publish] = usePublishResourceHubDocument();

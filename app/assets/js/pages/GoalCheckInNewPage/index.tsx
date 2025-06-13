@@ -58,6 +58,7 @@ function Header() {
 }
 
 function Navigation({ goal }: { goal: Goals.Goal }) {
+  const paths = usePaths();
   assertPresent(goal.space, "space must be present in goal");
 
   return (

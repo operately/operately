@@ -35,6 +35,7 @@ export function Page() {
 }
 
 function ArchiveButton({ project }) {
+  const paths = usePaths();
   const navigateToProjectArchive = useNavigateTo(paths.projectPath(project.id!));
 
   const [archive, { loading }] = Projects.useArchiveProject();

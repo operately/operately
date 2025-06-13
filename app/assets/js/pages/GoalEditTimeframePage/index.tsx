@@ -190,6 +190,7 @@ function Comments({ form }: { form: Form }) {
 }
 
 function Submit({ goal, form }: { goal: Goals.Goal; form: Form }) {
+  const paths = usePaths();
   return (
     <div className="mt-6">
       <Error form={form} />

@@ -12,6 +12,7 @@ import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
 export function Form({ project }: { project: Project }) {
+  const paths = usePaths();
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
 
   const [post] = usePostProjectCheckIn();

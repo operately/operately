@@ -33,6 +33,7 @@ export function Page() {
 }
 
 function Title({ project }) {
+  const paths = usePaths();
   const editTimeline = paths.projectEditTimelinePath(project.id);
 
   return (
@@ -118,6 +119,7 @@ function MilestoneList({ project }) {
 }
 
 function PendingItem({ milestone }) {
+  const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id);
 
   return (
@@ -146,6 +148,7 @@ function PendingItem({ milestone }) {
 }
 
 function DoneItem({ milestone }) {
+  const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id);
 
   return (

@@ -12,6 +12,7 @@ interface Props {
   toggleShowDeleteGoal: () => void;
 }
 export function Options({ toggleShowDeleteGoal }: Props) {
+  const paths = usePaths();
   const { goal } = useLoadedData();
 
   assertPresent(goal.permissions, "permissions must be present in goal");

@@ -89,6 +89,7 @@ function isCurrentYear(year: number) {
 }
 
 function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
+  const paths = usePaths();
   const author = checkIn.author!;
   const path = paths.projectCheckInPath(checkIn.id!);
 

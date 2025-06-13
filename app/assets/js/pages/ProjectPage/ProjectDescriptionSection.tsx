@@ -24,6 +24,7 @@ export function ProjectDescriptionSection({ project }: { project: Projects.Proje
 }
 
 function EditLink({ project }: { project: Projects.Project }) {
+  const paths = usePaths();
   if (!project.permissions!.canEditDescription) return null;
   if (!project.description) return null;
 
@@ -78,6 +79,7 @@ function ExpandCollapseButton({ showMore, setShowMore }) {
 }
 
 function DescriptionZeroState({ project }) {
+  const paths = usePaths();
   const writePath = paths.projectEditDescriptionPath(project.id!);
 
   const editLink = (

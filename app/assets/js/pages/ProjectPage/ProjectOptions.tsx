@@ -5,6 +5,7 @@ import * as React from "react";
 
 import { usePaths } from "@/routes/paths";
 export function ProjectOptions({ project }) {
+  const paths = usePaths();
   return (
     <PageOptions.Root testId="project-options-button">
       {project.permissions.canPause && Projects.isResumable(project) && (

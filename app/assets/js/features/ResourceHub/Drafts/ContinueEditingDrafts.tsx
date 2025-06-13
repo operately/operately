@@ -10,6 +10,7 @@ interface Props {
 }
 
 export function ContinueEditingDrafts({ resourceHubId, drafts }: Props) {
+  const paths = usePaths();
   if (drafts.length < 1) {
     return null;
   } else if (drafts.length === 1) {

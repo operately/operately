@@ -15,6 +15,7 @@ interface Props {
 }
 
 export function Options({ showCopyModal }: Props) {
+  const paths = usePaths();
   const { document } = useLoadedData();
   assertPresent(document.permissions, "permissions must be present in document");
 

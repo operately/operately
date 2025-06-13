@@ -40,6 +40,7 @@ export function Page() {
 }
 
 function ResumeButton({ project }) {
+  const paths = usePaths();
   const path = paths.projectPath(project.id);
   const onSuccess = useNavigateTo(path);
 

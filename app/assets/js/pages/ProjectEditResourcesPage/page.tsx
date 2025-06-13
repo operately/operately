@@ -55,6 +55,7 @@ function ResourcesListWithData({ project }: { project: Projects.Project }) {
 }
 
 function ResourceListItem({ resource }: { resource: KeyResources.KeyResource }) {
+  const paths = usePaths();
   const { project } = useLoadedData();
   const gotoResourceList = useNavigateTo(paths.projectEditResourcesPath(project.id!));
   const [remove] = KeyResources.useRemoveKeyResource();
@@ -118,6 +119,7 @@ function PotentialResourceList() {
 }
 
 function PotentialResourceListItem({ resourceType }: { resourceType: string }) {
+  const paths = usePaths();
   const { project } = useLoadedData();
 
   const title = KeyResources.humanTitle(resourceType);

@@ -49,6 +49,7 @@ export function DocumentMenu({ document }: Props) {
 }
 
 function EditDocumentMenuItem({ document }: Props) {
+  const paths = usePaths();
   const editPath = paths.resourceHubEditDocumentPath(document.id!);
   const editId = createTestId("edit", document.id!);
 

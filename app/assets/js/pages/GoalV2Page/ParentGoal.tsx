@@ -81,6 +81,7 @@ function GoalIcon() {
 }
 
 function GoalName({ link }: { link?: boolean }) {
+  const paths = usePaths();
   const [parentGoal] = Forms.useFieldValue<Goal | null>("parentGoal");
 
   if (!parentGoal) {
