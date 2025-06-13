@@ -11,7 +11,7 @@ import { match } from "ts-pattern";
 import { AvatarLink } from "@/components/AvatarLink";
 import FormattedTime from "@/components/FormattedTime";
 import { richContentToString } from "@/components/RichContent";
-import { DeprecatedPaths } from "@/routes/paths";
+import { DeprecatedPaths, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { DivLink, SecondaryButton } from "turboui";
@@ -166,7 +166,8 @@ function MessageTitle({ title, children }: { title: string; children?: React.Rea
 }
 
 function PageLink({ activity, children }) {
-  const path = ActivityHandler.pagePath(activity);
+  const paths = usePaths();
+  const path = ActivityHandler.pagePath(paths, activity);
   return <DivLink to={path}>{children}</DivLink>;
 }
 

@@ -7,7 +7,7 @@ import * as React from "react";
 
 import { Header } from "@/features/goals/GoalPageHeader";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
-import { DeprecatedPaths } from "@/routes/paths";
+import { DeprecatedPaths, usePaths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -78,7 +78,8 @@ function ActivityList() {
 }
 
 function ActivityItem({ activity }: { activity: Activities.Activity }) {
-  const path = ActivityHandler.pagePath(activity);
+  const paths = usePaths();
+  const path = ActivityHandler.pagePath(paths, activity);
   const authorProfilePath = DeprecatedPaths.profilePath(activity.author!.id!);
 
   return (
