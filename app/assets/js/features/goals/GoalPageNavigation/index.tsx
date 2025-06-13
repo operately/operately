@@ -10,7 +10,7 @@ export function Navigation({ space }: { space: Spaces.Space }) {
     <Paper.Navigation
       items={[
         { to: Paths.spacePath(space.id!), label: space.name! },
-        { to: Paths.spaceGoalsPath(space.id!), label: "Goals & Projects" },
+        { to: Paths.spaceWorkMapPath(space.id!), label: "Goals & Projects" },
       ]}
     />
   );

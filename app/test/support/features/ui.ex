@@ -157,6 +157,12 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def click_text(state, text) do
+    execute("click_text", state, fn session ->
+      session |> Browser.click(Query.text(text))
+    end)
+  end
+
   def fill(ctx, query, with: value) do
     #
     # Why do we need to sleep here?

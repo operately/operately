@@ -14,7 +14,7 @@ export function Navigation() {
     <Paper.Navigation
       items={[
         { to: Paths.spacePath(goal.space.id!), label: goal.space.name! },
-        { to: Paths.spaceGoalsPath(goal.space.id!), label: "Goals & Projects" },
+        { to: Paths.spaceWorkMapPath(goal.space.id!), label: "Goals & Projects" },
         { to: Paths.goalPath(goal.id!), label: goal.name! },
       ]}
     />

@@ -75,8 +75,8 @@ defmodule Operately.Support.Features.ProfileSteps do
     Map.merge(ctx, %{goals: [goal1, goal2]})
   end
 
-  step :click_goals_tab, ctx do
-    UI.click(ctx, testid: "tab-goals")
+  step :click_about_tab, ctx do
+    UI.click(ctx, testid: "tab-about")
   end
 
   step :assert_goals_visible, ctx do
