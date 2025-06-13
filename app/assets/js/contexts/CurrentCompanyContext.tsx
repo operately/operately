@@ -49,6 +49,7 @@ export function useMe(): People.Person | null {
 export function useMentionedPersonLookupFn(): (
   id: string,
 ) => Promise<(People.Person & { profileLink: string }) | null> {
+  const paths = usePaths();
   const ctx = React.useContext(CurrentCompanyContext);
   if (!ctx) {
     return async () => null;

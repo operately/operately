@@ -7,10 +7,10 @@ import { useWorkItems } from "./useWorkItems";
 
 import { WarningCallout } from "@/components/Callouts";
 import Modal from "@/components/Modal";
+import { usePaths } from "@/routes/paths";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
-import { usePaths } from "@/routes/paths";
 interface Props {
   showDeleteGoal: boolean;
   toggleShowDeleteGoal: () => void;
@@ -32,6 +32,7 @@ export function DeleteGoalModal({ showDeleteGoal, toggleShowDeleteGoal }: Props)
 }
 
 function DeleteGoal({ toggleShowDeleteGoal }: { toggleShowDeleteGoal: () => void }) {
+  const paths = usePaths();
   const { goal } = useLoadedData();
   const [deleteGoal, { loading }] = useDeleteGoal();
   const navigate = useNavigate();

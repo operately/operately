@@ -5,9 +5,9 @@ import * as React from "react";
 
 import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
 import { Subscriber } from "@/models/notifications";
+import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
-import { usePaths } from "@/routes/paths";
 interface UseFormOptions {
   mode: "create" | "edit";
   space: Spaces.Space;
@@ -45,6 +45,7 @@ interface Error {
 }
 
 export function useForm({ space, mode, discussion, potentialSubscribers = [] }: UseFormOptions): FormState {
+  const paths = usePaths();
   const subscriptionsState = useSubscriptions(potentialSubscribers, { ignoreMe: true });
 
   const [errors, setErrors] = React.useState<Error[]>([]);
@@ -104,6 +105,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
 }
 
 function usePostMessage({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
 
@@ -134,6 +136,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
 }
 
 function usePostAsDraft({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
 
@@ -164,6 +167,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
 }
 
 function useSaveChanges({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
   const [submitting, setSubmitting] = React.useState(false);
@@ -190,6 +194,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
 }
 
 function usePublishDraft({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
   const [submitting, setSubmitting] = React.useState(false);

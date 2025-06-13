@@ -24,6 +24,8 @@ export interface Form {
 }
 
 export function useForm({ goal }: { goal: Goals.Goal }): Form {
+  const paths = usePaths();
+
   assertPresent(goal.timeframe, "timeframe must be present in goal");
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
 

@@ -23,6 +23,7 @@ interface NewFileModalsContext extends AddFileProps {
 const Context = React.createContext<NewFileModalsContext | undefined>(undefined);
 
 export function NewFileModalsProvider({ children, resourceHub, folder }: Props) {
+  const paths = usePaths();
   const navigate = useNavigate();
   const [showAddFolder, setShowAddFolder] = React.useState(false);
   const fileProps = useAddFile();

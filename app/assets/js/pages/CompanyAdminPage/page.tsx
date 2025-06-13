@@ -49,6 +49,7 @@ export function Page() {
 }
 
 function AdminsMenu() {
+  const paths = usePaths();
   const { adminIds, ownerIds } = useLoadedData();
 
   const me = useMe();

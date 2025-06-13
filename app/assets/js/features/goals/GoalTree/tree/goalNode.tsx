@@ -9,7 +9,6 @@ import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
 import * as Timeframes from "@/utils/timeframes";
 
-import { usePaths } from "@/routes/paths";
 export class GoalNode extends Node {
   public goal: Goal;
   public lastCheckIn: GoalProgressUpdate | null | undefined;
@@ -79,7 +78,7 @@ export class GoalNode extends Node {
     }
   }
 
-  linkTo(): string {
+  linkTo(paths): string {
     return paths.goalPath(this.goal.id!);
   }
 

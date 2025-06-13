@@ -51,6 +51,7 @@ function Page() {
 }
 
 function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
+  const paths = usePaths();
   const navigate = useNavigate();
 
   const [add] = Companies.useAddCompanyMember();

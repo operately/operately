@@ -2,10 +2,10 @@ import { ResourceHubNode } from "@/models/resourceHubs";
 
 import { assertPresent } from "@/utils/assertions";
 
-import { usePaths } from "@/routes/paths";
+import { Paths } from "@/routes/paths";
 export type NodeType = "document" | "folder" | "file" | "link";
 
-export function findPath(nodeType: NodeType, node: ResourceHubNode) {
+export function findPath(paths: Paths, nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {
     case "document":
       assertPresent(node.document?.id, "document must be present in node");

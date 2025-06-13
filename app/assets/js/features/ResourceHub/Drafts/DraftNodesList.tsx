@@ -2,13 +2,14 @@ import React from "react";
 
 import { ResourceHubNode } from "@/models/resourceHubs";
 
-import classNames from "classnames";
-import { DivLink } from "turboui";
 import { CommentsCountIndicator } from "@/features/Comments";
-import { createTestId } from "@/utils/testid";
-import { findCommentsCount, findPath, NodeType } from "@/features/ResourceHub/utils";
 import { NodeDescription } from "@/features/ResourceHub/NodeDescription";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
+import { findCommentsCount, findPath, NodeType } from "@/features/ResourceHub/utils";
+import { usePaths } from "@/routes/paths";
+import { createTestId } from "@/utils/testid";
+import classNames from "classnames";
+import { DivLink } from "turboui";
 
 interface Props {
   nodes: ResourceHubNode[];
@@ -30,12 +31,13 @@ interface NodeItemProps {
 }
 
 function NodeItem({ node, testid }: NodeItemProps) {
+  const paths = usePaths();
   const className = classNames(
     "flex justify-between gap-2 py-4 px-2 items-center",
     "border-b border-stroke-base first:border-t-0",
   );
 
-  const path = findPath(node.type as NodeType, node);
+  const path = findPath(paths, node.type as NodeType, node);
   const commentsCount = findCommentsCount(node.type as NodeType, node);
 
   return (

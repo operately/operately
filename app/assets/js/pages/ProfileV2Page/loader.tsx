@@ -3,10 +3,10 @@ import * as WorkMap from "@/models/workMap";
 import { convertToWorkMapItem } from "@/models/workMap";
 
 import { PageCache } from "@/routes/PageCache";
+import { Paths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { fetchAll } from "@/utils/async";
 
-import { usePaths } from "@/routes/paths";
 interface LoaderResult {
   data: {
     person: People.PersonWithLink;
@@ -17,6 +17,8 @@ interface LoaderResult {
 }
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId });
+
   await redirectIfFeatureNotEnabled(params, {
     feature: "new_profile_page",
     path: paths.profilePath(params.id),

@@ -2,10 +2,10 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
+import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
 
-import { usePaths } from "@/routes/paths";
 interface Error {
   field: string;
   message: string;
@@ -34,6 +34,7 @@ export interface FormState {
 }
 
 export function useForm(project: Projects.Project): FormState {
+  const paths = usePaths();
   const navigate = useNavigate();
   const milestonesPath = paths.projectMilestonesPath(project.id!);
 

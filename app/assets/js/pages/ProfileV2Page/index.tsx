@@ -25,10 +25,10 @@ function Page() {
   const props = {
     title: [person.fullName!, "Profile"],
 
-    person: toPersonWithLink(person, true),
-    peers: toPersonWithLink(People.sortByName(person.peers), true),
-    reports: toPersonWithLink(People.sortByName(person.reports), true),
-    manager: person.manager ? toPersonWithLink(person.manager, true) : null,
+    person: toPersonWithLink(paths, person, true),
+    peers: toPersonWithLink(paths, People.sortByName(person.peers), true),
+    reports: toPersonWithLink(paths, People.sortByName(person.reports), true),
+    manager: person.manager ? toPersonWithLink(paths, person.manager, true) : null,
 
     workMap: workMap,
     reviewerWorkMap: reviewerWorkMap,

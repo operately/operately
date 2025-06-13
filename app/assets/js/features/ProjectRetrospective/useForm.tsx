@@ -35,6 +35,7 @@ export interface FormState {
 }
 
 export function useForm(options: FormOptions): FormState {
+  const paths = usePaths();
   const subscriptionsState = useSubscriptions(options.potentialSubscribers || [], {
     ignoreMe: true,
     notifyPrioritySubscribers: true,

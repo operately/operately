@@ -2,8 +2,7 @@ import * as api from "@/api";
 import * as Time from "@/utils/time";
 
 import Api from "@/api";
-
-import { usePaths } from "@/routes/paths";
+import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
 export { getPeople, getPerson, updateProfile, useGetMe, useGetPeople } from "@/api";
@@ -24,7 +23,6 @@ export const spaceScope = (spaceId: string) => {
 };
 
 export function usePeopleSearch(scope: SearchScope) {
-  const paths = usePaths();
   //
   // There are multiple components that use this hook. Some of them
   // pass in a string, others pass in an object with a query property.
@@ -137,11 +135,15 @@ export interface PersonWithLink extends Person {
  * @param useV2 - Whether to use V2 profile paths (optional, defaults to false)
  * @returns Person(s) with added link property
  */
-export function toPersonWithLink(person: Person, useV2?: boolean): PersonWithLink;
-export function toPersonWithLink(people: Person[], useV2?: boolean): PersonWithLink[];
-export function toPersonWithLink(personOrPeople: Person | Person[], useV2 = false): PersonWithLink | PersonWithLink[] {
+export function toPersonWithLink(paths: Paths, person: Person, useV2?: boolean): PersonWithLink;
+export function toPersonWithLink(paths: Paths, people: Person[], useV2?: boolean): PersonWithLink[];
+export function toPersonWithLink(
+  paths: Paths,
+  personOrPeople: Person | Person[],
+  useV2 = false,
+): PersonWithLink | PersonWithLink[] {
   if (Array.isArray(personOrPeople)) {
-    return personOrPeople.map((person) => toPersonWithLink(person, useV2));
+    return personOrPeople.map((person) => toPersonWithLink(paths, person, useV2));
   }
 
   const person = personOrPeople;

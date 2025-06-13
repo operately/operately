@@ -88,7 +88,6 @@ function NewDiscussionButton() {
 }
 
 function ZeroDiscussions() {
-  const paths = usePaths();
   return <div className="text-center text-base font-medium mt-28">You don't have any drafts.</div>;
 }
 

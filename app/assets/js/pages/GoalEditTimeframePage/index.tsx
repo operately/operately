@@ -56,7 +56,6 @@ function Page() {
 }
 
 function Title() {
-  const paths = usePaths();
   return <div className="text-content-accent text-2xl font-extrabold">Editing the Goal's Timeframe</div>;
 }
 

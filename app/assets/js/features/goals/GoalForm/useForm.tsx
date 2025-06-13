@@ -8,10 +8,10 @@ import * as React from "react";
 
 import { PermissionsState, usePermissionsState } from "@/features/Permissions/usePermissionsState";
 import { useListState } from "@/hooks/useListState";
+import { Paths, usePaths } from "@/routes/paths";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useNavigate } from "react-router-dom";
 
-import { usePaths } from "@/routes/paths";
 export interface FormState {
   config: FormConfig;
   fields: Fields;
@@ -240,9 +240,10 @@ function newEmptyTarget() {
 }
 
 function useSubmit(fields: Fields, config: FormConfig): [() => Promise<boolean>, () => void, boolean, Error[]] {
+  const paths = usePaths();
   const navigate = useNavigate();
 
-  const cancel = useNavigateTo(createCancelPath(config));
+  const cancel = useNavigateTo(createCancelPath(paths, config));
 
   const [create, { loading: submittingCreate }] = Goals.useCreateGoal();
   const [edit, { loading: submittingEdit }] = Goals.useEditGoal();
@@ -384,7 +385,7 @@ function prepareDescriptionForSave(fields: Fields): string | null {
   return JSON.stringify(content);
 }
 
-function createCancelPath(config: FormConfig): string {
+function createCancelPath(paths: Paths, config: FormConfig): string {
   if (config.mode === "edit") {
     return paths.goalPath(config.goal!.id!);
   } else if (config.allowSpaceSelection) {

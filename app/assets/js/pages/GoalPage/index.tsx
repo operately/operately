@@ -10,11 +10,11 @@ import { banner } from "@/features/goals/GoalPageHeader/Banner";
 import { Navigation } from "@/features/goals/GoalPageNavigation";
 import { GoalTargets } from "@/features/goals/GoalTargets";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
+import { Paths } from "@/routes/paths";
 import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
-import { usePaths } from "@/routes/paths";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -22,6 +22,8 @@ interface LoaderResult {
 }
 
 async function loader({ params }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId });
+
   await redirectIfFeatureEnabled(params, {
     feature: "goal_page_v3",
     path: paths.goalV3Path(params.id),

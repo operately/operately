@@ -6,12 +6,14 @@ import * as Turboui from "turboui";
 import { PageModule } from "@/routes/types";
 import { redirect } from "react-router-dom";
 
-import { usePaths } from "@/routes/paths";
+import { Paths } from "@/routes/paths";
 export default { name: "AiPlaygroundPage", loader, Page } as PageModule;
 
 interface LoaderResult {}
 
 async function loader({ params }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId! });
+
   const company = await Companies.getCompany({
     id: params.companyId,
     includePermissions: true,

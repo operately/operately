@@ -2,9 +2,9 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import { ResourceHub, ResourceHubFolder } from "@/models/resourceHubs";
+import { Paths, usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 
-import { usePaths } from "@/routes/paths";
 interface Props {
   resourceHub: ResourceHub;
   folder: ResourceHubFolder | undefined;
@@ -20,13 +20,13 @@ export function NewResourcePageNavigation({ resourceHub, folder }: Props) {
   ];
 
   if (folder) {
-    items = items.concat(folderNavItems(folder));
+    items = items.concat(folderNavItems(paths, folder));
   }
 
   return <Paper.Navigation items={items} />;
 }
 
-function folderNavItems(folder: ResourceHubFolder) {
+function folderNavItems(paths: Paths, folder: ResourceHubFolder) {
   assertPresent(folder.pathToFolder, "pathToFolder must be present in folder");
 
   return folder.pathToFolder.map((folder) => ({
