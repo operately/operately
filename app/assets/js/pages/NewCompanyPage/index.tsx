@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DeprecatedPaths } from "@/routes/paths";
+import { Paths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
 
 import Forms from "@/components/Forms";
@@ -29,14 +29,14 @@ function Page() {
         isDemo: form.values.isDemo == "true",
       });
 
-      navigate(DeprecatedPaths.companyHomePath(res.company.id));
+      navigate(Paths.companyHomePath(res.company.id));
     },
   });
 
   return (
     <Pages.Page title={"New Company"}>
       <Paper.Root size="small" className="mt-24">
-        <Paper.NavigateBack to={DeprecatedPaths.lobbyPath()} title="Back to the Lobby" />
+        <Paper.NavigateBack to={Paths.lobbyPath()} title="Back to the Lobby" />
         <Paper.Body>
           <PageTitle />
 

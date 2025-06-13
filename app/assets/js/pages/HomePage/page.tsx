@@ -9,7 +9,7 @@ import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { DeprecatedPaths } from "@/routes/paths";
+import { usePaths } from "@/routes/paths";
 import { GhostButton } from "turboui";
 import { useLoadedData } from "./loader";
 
@@ -64,8 +64,10 @@ function ActivityFeed() {
 }
 
 function AddSpaceButton() {
+  const paths = usePaths();
+
   return (
-    <GhostButton linkTo={DeprecatedPaths.newSpacePath()} testId="add-space" size="sm">
+    <GhostButton linkTo={paths.newSpacePath()} testId="add-space" size="sm">
       Add Space
     </GhostButton>
   );

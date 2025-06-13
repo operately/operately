@@ -20,7 +20,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { hasFeature } from "@/models/companies";
-import { DeprecatedPaths } from "@/routes/paths";
+import { Paths, usePaths } from "@/routes/paths";
 
 function Navigation({ company }: { company: Api.Company }) {
   const size = useWindowSizeBreakpoints();
@@ -34,6 +34,7 @@ function Navigation({ company }: { company: Api.Company }) {
 
 function MobileNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
+  const paths = usePaths();
   const [open, setOpen] = React.useState(false);
 
   const handleLogOut = async () => {
@@ -48,10 +49,10 @@ function MobileNavigation({ company }: { company: Api.Company }) {
     if (hasFeature(company, "new_navigation")) {
       return (
         <>
-          <MobileSectionLink to={DeprecatedPaths.goalsPath()} icon={Icons.IconBuildingEstate}>
+          <MobileSectionLink to={paths.goalsPath()} icon={Icons.IconBuildingEstate}>
             Company
           </MobileSectionLink>
-          <MobileSectionLink to={DeprecatedPaths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
+          <MobileSectionLink to={paths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
             My work
           </MobileSectionLink>
         </>
@@ -59,10 +60,10 @@ function MobileNavigation({ company }: { company: Api.Company }) {
     } else {
       return (
         <>
-          <MobileSectionLink to={DeprecatedPaths.goalsPath()} icon={Icons.IconTargetArrow}>
+          <MobileSectionLink to={paths.goalsPath()} icon={Icons.IconTargetArrow}>
             Goals
           </MobileSectionLink>
-          <MobileSectionLink to={DeprecatedPaths.projectsPath()} icon={Icons.IconTable}>
+          <MobileSectionLink to={paths.projectsPath()} icon={Icons.IconTable}>
             Projects
           </MobileSectionLink>
         </>
@@ -74,7 +75,7 @@ function MobileNavigation({ company }: { company: Api.Company }) {
     <div className="transition-all z-50 py-2 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
-          <DivLink className="flex items-center gap-2 cursor-pointer" to={DeprecatedPaths.homePath()}>
+          <DivLink className="flex items-center gap-2 cursor-pointer" to={paths.homePath()}>
             <OperatelyLogo />
           </DivLink>
           <div className="font-bold">{company.name}</div>
@@ -90,33 +91,33 @@ function MobileNavigation({ company }: { company: Api.Company }) {
           className="flex flex-col bg-base absolute inset-0 top-10 bg-surface-bg border-t border-surface-outline"
           onClick={() => setOpen(false)}
         >
-          <MobileSectionLink to={DeprecatedPaths.homePath()} icon={Icons.IconHome2}>
+          <MobileSectionLink to={paths.homePath()} icon={Icons.IconHome2}>
             Home
           </MobileSectionLink>
 
           {navLinks}
 
-          <MobileSectionLink to={DeprecatedPaths.reviewPath()} icon={Icons.IconCoffee}>
+          <MobileSectionLink to={paths.reviewPath()} icon={Icons.IconCoffee}>
             Review
           </MobileSectionLink>
 
-          <MobileSectionLink to={DeprecatedPaths.peoplePath()} icon={Icons.IconUserCircle}>
+          <MobileSectionLink to={paths.peoplePath()} icon={Icons.IconUserCircle}>
             People
           </MobileSectionLink>
 
-          <MobileSectionLink to={DeprecatedPaths.notificationsPath()} icon={Icons.IconBell}>
+          <MobileSectionLink to={paths.notificationsPath()} icon={Icons.IconBell}>
             Notifications
           </MobileSectionLink>
 
-          <MobileSectionLink to={DeprecatedPaths.accountPath()} icon={Icons.IconUser}>
+          <MobileSectionLink to={paths.accountPath()} icon={Icons.IconUser}>
             Account
           </MobileSectionLink>
 
-          <MobileSectionLink to={DeprecatedPaths.companyAdminPath()} icon={Icons.IconCircleKey}>
+          <MobileSectionLink to={paths.companyAdminPath()} icon={Icons.IconCircleKey}>
             Company Admin
           </MobileSectionLink>
 
-          <MobileSectionLink to={DeprecatedPaths.lobbyPath()} icon={Icons.IconSwitch}>
+          <MobileSectionLink to={Paths.lobbyPath()} icon={Icons.IconSwitch}>
             Switch Company
           </MobileSectionLink>
 
@@ -155,15 +156,16 @@ function MobileSectionAction({ onClick, children, icon }) {
 
 function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
+  const paths = usePaths();
 
   const navLinks = React.useMemo(() => {
     if (hasFeature(company, "new_navigation")) {
       return (
         <>
-          <SectionLink to={DeprecatedPaths.goalsPath()} icon={Icons.IconBuildingEstate}>
+          <SectionLink to={paths.goalsPath()} icon={Icons.IconBuildingEstate}>
             Company
           </SectionLink>
-          <SectionLink to={DeprecatedPaths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
+          <SectionLink to={paths.profileV2Path(me.id)} icon={Icons.IconBriefcase}>
             My work
           </SectionLink>
         </>
@@ -171,10 +173,10 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
     } else {
       return (
         <>
-          <SectionLink to={DeprecatedPaths.goalsPath()} icon={Icons.IconTargetArrow}>
+          <SectionLink to={paths.goalsPath()} icon={Icons.IconTargetArrow}>
             Goals
           </SectionLink>
-          <SectionLink to={DeprecatedPaths.projectsPath()} icon={Icons.IconTable}>
+          <SectionLink to={paths.projectsPath()} icon={Icons.IconTable}>
             Projects
           </SectionLink>
         </>
@@ -186,7 +188,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
         <div className="flex items-center">
-          <DivLink className="flex items-center gap-2 cursor-pointer" to={DeprecatedPaths.homePath()}>
+          <DivLink className="flex items-center gap-2 cursor-pointer" to={paths.homePath()}>
             <OperatelyLogo />
           </DivLink>
 
@@ -195,7 +197,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           </div>
 
           <div className="flex items-center gap-2.5 border-l border-surface-outline px-4">
-            <SectionLink to={DeprecatedPaths.homePath()} icon={Icons.IconHome2}>
+            <SectionLink to={paths.homePath()} icon={Icons.IconHome2}>
               Home
             </SectionLink>
 

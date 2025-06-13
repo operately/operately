@@ -7,7 +7,7 @@ import { OperatelyLogo } from "@/components/OperatelyLogo";
 
 import { SignInWithGoogleButton } from "@/features/auth/Buttons";
 import { logIn } from "@/routes/auth";
-import { DeprecatedPaths } from "@/routes/paths";
+import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
 import classNames from "classnames";
 import { DimmedLink, Link } from "turboui";
@@ -98,7 +98,7 @@ function PasswordInput() {
 
 function ForgotPasswordLink() {
   return (
-    <DimmedLink to={DeprecatedPaths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
+    <DimmedLink to={Paths.forgotPasswordPath()} className="text-sm font-normal" testId="forgot-password-link">
       Forgot password?
     </DimmedLink>
   );

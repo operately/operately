@@ -11,7 +11,7 @@ import { useLoadedData } from "../pages/GoalAddPage/loader";
 
 const UNACCEPTABLE_PATH_CHARACTERS = ["/", "?", "#", "[", "]"];
 
-class Paths {
+export class Paths {
   //
   // When deprecatedLookup is true, the paths will use the old lookup method
   // which is based on the company ID in the window.location.pathname.
