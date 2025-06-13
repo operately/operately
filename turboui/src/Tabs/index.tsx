@@ -62,6 +62,7 @@ export function Tabs({ tabs }: { tabs: TabsState }) {
 
 function TabItem({ tab, activeTab }: { tab: Tab; activeTab: string }) {
   const tabPath = useTabPath(tab.id);
+  const testId = `tab-${tab.label.toLowerCase()}`;
 
   const labelClass = classNames("flex items-center gap-1 px-1.5 py-1.5 text-sm relative -mb-px font-medium -mx-1.5", {
     "text-white rounded-t": activeTab === tab.id,
@@ -71,7 +72,7 @@ function TabItem({ tab, activeTab }: { tab: Tab; activeTab: string }) {
 
   return (
     <div className="relative pb-1.5">
-      <DivLink className={labelClass} to={tabPath}>
+      <DivLink className={labelClass} to={tabPath} testId={testId}>
         <span className="flex-shrink-0">{tab.icon}</span>
         <span className="leading-none whitespace-nowrap ml-1">{tab.label}</span>
         <TabCountBadge count={tab.count} />
