@@ -69,6 +69,7 @@ defmodule Operately.Features.SubscriptionsTest do
         "what-could-ve-gone-better" => "We built the thing",
         "what-did-you-learn" => "We learned the thing"
       }
+
       ctx = Map.put(ctx, :params, params)
 
       ctx
@@ -187,7 +188,7 @@ defmodule Operately.Features.SubscriptionsTest do
 
     feature "All contributors", ctx do
       ctx
-      |> Steps.go_to_new_goal_update_page()
+      |> Steps.go_to_goal_check_in_page()
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_all_people()
       |> Steps.submit_goal_update_form()
@@ -196,7 +197,7 @@ defmodule Operately.Features.SubscriptionsTest do
 
     feature "Select specific contributors", ctx do
       ctx
-      |> Steps.go_to_new_goal_update_page()
+      |> Steps.go_to_goal_check_in_page()
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_specific_people()
       |> Steps.toggle_person_checkbox(ctx.john)
@@ -208,7 +209,7 @@ defmodule Operately.Features.SubscriptionsTest do
 
     feature "No one", ctx do
       ctx
-      |> Steps.go_to_new_goal_update_page()
+      |> Steps.go_to_goal_check_in_page()
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_no_one()
       |> Steps.submit_goal_update_form()
@@ -217,7 +218,7 @@ defmodule Operately.Features.SubscriptionsTest do
 
     feature "Subscribe and unsubribe", ctx do
       ctx
-      |> Steps.go_to_new_goal_update_page()
+      |> Steps.go_to_goal_check_in_page()
       |> Steps.fill_out_goal_update_form()
       |> Steps.select_all_people()
       |> Steps.submit_goal_update_form()
