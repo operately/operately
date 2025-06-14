@@ -24,15 +24,15 @@ defmodule TurboConnect.QueryTest do
   test "defining a query with inputs and outputs" do
     assert ExampleQuery.__inputs__() == %{
              fields: [
-               {:id, :string, [optional: true]}
+               {:id, :string, [null: false, optional: true]}
              ]
            }
 
     assert ExampleQuery.__outputs__() == %{
              fields: [
-               {:id, :string, [optional: true]},
-               {:name, :string, [optional: true]},
-               {:hobbies, {:list, :string}, [optional: true]}
+               {:id, :string, [null: false, optional: true]},
+               {:name, :string, [null: false, optional: true]},
+               {:hobbies, {:list, :string}, [null: false, optional: true]}
              ]
            }
   end

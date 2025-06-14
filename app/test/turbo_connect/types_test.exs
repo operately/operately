@@ -12,7 +12,7 @@ defmodule TurboConnect.TypesTest do
 
     object :post do
       field? :title, :string
-      field? :content, :string
+      field? :content, :string, null: true
     end
 
     object :event do
@@ -39,31 +39,31 @@ defmodule TurboConnect.TypesTest do
     assert TestSpec.__objects__() == %{
              user: %{
                fields: [
-                 {:name, :string, [optional: true]},
-                 {:age, :integer, [optional: true]},
-                 {:posts, {:list, :post}, [optional: true]}
+                 {:name, :string, [null: false, optional: true]},
+                 {:age, :integer, [null: false, optional: true]},
+                 {:posts, {:list, :post}, [null: false, optional: true]}
                ]
              },
              post: %{
                fields: [
-                 {:title, :string, [optional: true]},
-                 {:content, :string, [optional: true]}
+                 {:title, :string, [null: false, optional: true]},
+                 {:content, :string, [optional: true, null: true]}
                ]
              },
              event: %{
                fields: [
-                 {:inserted_at, :datetime, [optional: true]},
-                 {:content, :event_content, [optional: true]}
+                 {:inserted_at, :datetime, [null: false, optional: true]},
+                 {:content, :event_content, [null: false, optional: true]}
                ]
              },
              user_added_event: %{
                fields: [
-                 {:user_id, :integer, [optional: true]}
+                 {:user_id, :integer, [null: false, optional: true]}
                ]
              },
              user_removed_event: %{
                fields: [
-                 {:user_id, :integer, [optional: true]}
+                 {:user_id, :integer, [null: false, optional: true]}
                ]
              }
            }
