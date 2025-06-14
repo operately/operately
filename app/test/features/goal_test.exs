@@ -25,7 +25,7 @@ defmodule Operately.Features.GoalTest do
     target_name: "First response time",
     from: "30",
     to: "15",
-    unit: "minutes",
+    unit: "minutes"
   }
 
   feature "adding goal parent", ctx do
@@ -152,46 +152,45 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_comment_on_the_timeframe_change_notification_sent()
   end
 
-  describe "deletion" do
-    setup ctx do
-      ctx
-      |> Factory.enable_feature("new_goal_page")
-    end
+  #
+  # TODO: We have deleted the goal_v2 page. When the functionality is reintroduced,
+  # in goal_v3, we can re-enable these tests.
+  #
+  # describe "deletion" do
+  #   feature "given goal has no subgoals and projects, it can be deleted", ctx do
+  #     ctx
+  #     |> Steps.visit_goals_page()
+  #     |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
+  #     |> Steps.visit_page()
+  #     |> Steps.delete_goal()
+  #     |> Steps.assert_goal_deleted(goal_name: ctx.goal.name)
+  #   end
 
-    feature "given goal has no subgoals and projects, it can be deleted", ctx do
-      ctx
-      |> Steps.visit_goals_page()
-      |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
-      |> Steps.visit_page()
-      |> Steps.delete_goal()
-      |> Steps.assert_goal_deleted(goal_name: ctx.goal.name)
-    end
+  #   feature "given goal has targets, check-ins and discussions, it can be deleted", ctx do
+  #     ctx
+  #     |> Steps.given_goal_has_targets()
+  #     |> Steps.given_goal_has_checkins()
+  #     |> Steps.given_goal_has_discussions()
 
-    feature "given goal has targets, check-ins and discussions, it can be deleted", ctx do
-      ctx
-      |> Steps.given_goal_has_targets()
-      |> Steps.given_goal_has_checkins()
-      |> Steps.given_goal_has_discussions()
+  #     |> Steps.visit_goals_page()
+  #     |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
+  #     |> Steps.visit_page()
+  #     |> Steps.delete_goal()
+  #     |> Steps.assert_goal_deleted(goal_name: ctx.goal.name)
+  #   end
 
-      |> Steps.visit_goals_page()
-      |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
-      |> Steps.visit_page()
-      |> Steps.delete_goal()
-      |> Steps.assert_goal_deleted(goal_name: ctx.goal.name)
-    end
+  #   feature "given goal has subgoals, it cannot be deleted", ctx do
+  #     ctx
+  #     |> Steps.given_goal_has_subgoals()
+  #     |> Steps.visit_page()
+  #     |> Steps.assert_goal_cannot_be_deleted()
+  #   end
 
-    feature "given goal has subgoals, it cannot be deleted", ctx do
-      ctx
-      |> Steps.given_goal_has_subgoals()
-      |> Steps.visit_page()
-      |> Steps.assert_goal_cannot_be_deleted()
-    end
-
-    feature "given goal has projects, it cannot be deleted", ctx do
-      ctx
-      |> Steps.given_goal_has_projects()
-      |> Steps.visit_page()
-      |> Steps.assert_goal_cannot_be_deleted()
-    end
-  end
+  #   feature "given goal has projects, it cannot be deleted", ctx do
+  #     ctx
+  #     |> Steps.given_goal_has_projects()
+  #     |> Steps.visit_page()
+  #     |> Steps.assert_goal_cannot_be_deleted()
+  #   end
+  # end
 end

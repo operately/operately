@@ -53,7 +53,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   # Goal Update
   #
 
-  step :go_to_new_goal_update_page, ctx do
+  step :go_to_goal_check_in_page, ctx do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.click(testid: "check-in-button")
@@ -143,11 +143,12 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
   #
 
   step :assert_current_subscribers, ctx, attrs do
-    text = case attrs.count do
-      0 -> "No one"
-      1 -> "1 person"
-      count -> "#{count} people"
-    end
+    text =
+      case attrs.count do
+        0 -> "No one"
+        1 -> "1 person"
+        count -> "#{count} people"
+      end
 
     ctx
     |> UI.assert_text("#{text} will be notified when someone comments on this #{attrs.resource}.")
