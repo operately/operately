@@ -12,6 +12,7 @@ import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { GoalField } from "../GoalField";
 import { PersonField } from "../PersonField";
+import { PrivacyField } from "../PrivacyField";
 import classNames from "../utils/classnames";
 import { durationHumanized, isOverdue } from "../utils/time";
 
@@ -25,6 +26,7 @@ export function Sidebar(props: GoalPage.State) {
       <DueDate {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
+      <Privacy {...props} />
     </div>
   );
 }
@@ -230,5 +232,13 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
       <div className="font-bold text-sm mb-1.5">{title}</div>
       {children}
     </div>
+  );
+}
+
+function Privacy(props: GoalPage.State) {
+  return (
+    <SidebarSection title="Privacy">
+      <PrivacyField privacyLevel={props.privacyLevel} readonly={true} />
+    </SidebarSection>
   );
 }

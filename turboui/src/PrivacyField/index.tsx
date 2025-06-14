@@ -2,7 +2,6 @@ import * as Popover from "@radix-ui/react-popover";
 import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconWorld } from "@tabler/icons-react";
 import React, { useState } from "react";
 import { match } from "ts-pattern";
-import { SecondaryButton } from "../Button";
 import classNames from "../utils/classnames";
 
 const PRIVACY_LEVELS = ["public", "internal", "confidential", "secret"] as const;
@@ -184,14 +183,8 @@ interface PrivacyDisplayProps {
 }
 
 function PrivacyDisplay(props: PrivacyDisplayProps) {
-  if (!props.privacyLevel && props.showEmptyStateAsButton && props.readonly) {
-    return <EmptyStateButton emptyStateText={props.emptyStateText} readonly={props.readonly} variant={props.variant} />;
-  }
-
   const iconSize = props.iconSize;
   const textSize = props.textSize;
-  // Always use span since this component is wrapped in Popover.Trigger when interactive
-  const Elem = "span";
   const variant = props.variant || "inline";
 
   const elemClass = classNames(
@@ -223,44 +216,14 @@ function PrivacyDisplay(props: PrivacyDisplayProps) {
   }
 
   return (
-    <Elem className={elemClass}>
+    <span className={elemClass}>
       <div className="flex items-center gap-1.5">
         {icon}
         <span>{text}</span>
       </div>
       {variant === "form-field" && !props.readonly && <IconChevronDown size={14} className="text-content-dimmed" />}
-    </Elem>
+    </span>
   );
-}
-
-function EmptyStateButton({
-  readonly,
-  emptyStateText,
-  variant,
-}: {
-  readonly: boolean;
-  emptyStateText: string;
-  variant?: "inline" | "form-field";
-}) {
-  if (readonly) {
-    return null;
-  } else {
-    // If it's a form-field variant, we'll add padding to make it look like a form field
-    const containerClass = classNames({
-      "text-content-subtle": true,
-      "p-1.5": variant === "form-field",
-      "w-full": variant === "form-field",
-    });
-
-    // For form-field variant, wrap the button in a container that takes full width
-    return (
-      <div className={containerClass}>
-        <SecondaryButton size="xs" icon={IconLock}>
-          {emptyStateText}
-        </SecondaryButton>
-      </div>
-    );
-  }
 }
 
 function getPrivacyIcon(level: PrivacyLevels, size: number) {
@@ -275,7 +238,7 @@ function getPrivacyIcon(level: PrivacyLevels, size: number) {
 function getPrivacyTitle(level: PrivacyLevels, spaceName: string) {
   return match(level)
     .with("public", () => "Public")
-    .with("internal", () => "Internal")
+    .with("internal", () => "Everyone in the company")
     .with("confidential", () => `${spaceName} only`)
     .with("secret", () => "Invite-only")
     .exhaustive();
