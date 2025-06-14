@@ -7,22 +7,22 @@ defmodule OperatelyWeb.Api.Mutations.EditGoal do
   alias Operately.Operations.GoalEditing
 
   inputs do
-    field? :goal_id, :id
-    field? :parent_goal_id, :id
-    field? :name, :string
-    field? :champion_id, :id
-    field? :reviewer_id, :id
-    field? :timeframe, :timeframe
-    field? :added_targets, list_of(:create_target_input)
-    field? :updated_targets, list_of(:update_target_input)
-    field? :description, :string
-    field? :anonymous_access_level, :integer
-    field? :company_access_level, :integer
-    field? :space_access_level, :integer
+    field? :goal_id, :id, null: true
+    field? :parent_goal_id, :id, null: true
+    field? :name, :string, null: true
+    field? :champion_id, :id, null: true
+    field? :reviewer_id, :id, null: true
+    field? :timeframe, :timeframe, null: true
+    field? :added_targets, list_of(:create_target_input), null: true
+    field? :updated_targets, list_of(:update_target_input), null: true
+    field? :description, :string, null: true
+    field? :anonymous_access_level, :integer, null: true
+    field? :company_access_level, :integer, null: true
+    field? :space_access_level, :integer, null: true
   end
 
   outputs do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   def call(conn, inputs) do

@@ -7,14 +7,14 @@ defmodule OperatelyWeb.Api.Mutations.EditDiscussion do
   alias Operately.Messages.Message
 
   inputs do
-    field? :id, :id
-    field? :title, :string
-    field? :body, :string
-    field? :state, :string
+    field? :id, :id, null: true
+    field? :title, :string, null: true
+    field? :body, :string, null: true
+    field? :state, :string, null: true
   end
 
   outputs do
-    field? :discussion, :discussion
+    field? :discussion, :discussion, null: true
   end
 
   def call(conn, inputs) do

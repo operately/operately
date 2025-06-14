@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectContributor do
   alias Operately.Operations.ProjectContributorRemoved
 
   inputs do
-    field? :contrib_id, :string
+    field? :contrib_id, :string, null: true
   end
 
   outputs do
-    field? :project_contributor, :project_contributor
+    field? :project_contributor, :project_contributor, null: true
   end
 
   def call(conn, inputs) do

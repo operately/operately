@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubFile do
   alias Operately.Operations.ResourceHubFileEditing
 
   inputs do
-    field? :file_id, :id
-    field? :name, :string
-    field? :description, :string
+    field? :file_id, :id, null: true
+    field? :name, :string, null: true
+    field? :description, :string, null: true
   end
 
   outputs do
-    field? :file, :resource_hub_file
+    field? :file, :resource_hub_file, null: true
   end
 
   def call(conn, inputs) do

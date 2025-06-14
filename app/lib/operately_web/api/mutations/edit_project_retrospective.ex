@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospective do
   alias Operately.Operations.ProjectRetrospectiveEditing
 
   inputs do
-    field? :id, :string
-    field? :content, :string
+    field? :id, :string, null: true
+    field? :content, :string, null: true
   end
 
   outputs do
-    field? :retrospective, :project_retrospective
+    field? :retrospective, :project_retrospective, null: true
   end
 
   def call(conn, inputs) do

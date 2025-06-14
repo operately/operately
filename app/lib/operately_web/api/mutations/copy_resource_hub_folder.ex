@@ -7,14 +7,14 @@ defmodule OperatelyWeb.Api.Mutations.CopyResourceHubFolder do
   alias Operately.ResourceHubs.{Permissions, ResourceHub, Folder}
 
   inputs do
-    field? :folder_name, :string
-    field? :folder_id, :id
-    field? :dest_resource_hub_id, :id
-    field? :dest_parent_folder_id, :id
+    field? :folder_name, :string, null: true
+    field? :folder_id, :id, null: true
+    field? :dest_resource_hub_id, :id, null: true
+    field? :dest_parent_folder_id, :id, null: true
   end
 
   outputs do
-    field? :folder_id, :id
+    field? :folder_id, :id, null: true
   end
 
   def call(conn, inputs) do

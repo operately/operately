@@ -5,12 +5,12 @@ defmodule OperatelyWeb.Api.Queries.GetSpaces do
   import Operately.Access.Filters, only: [filter_by_view_access: 2]
 
   outputs do
-    field? :spaces, list_of(:space)
+    field? :spaces, list_of(:space), null: true
   end
 
   inputs do
-    field? :include_access_levels, :boolean
-    field? :include_members, :boolean
+    field? :include_access_levels, :boolean, null: true
+    field? :include_members, :boolean, null: true
   end
 
   def call(conn, inputs) do

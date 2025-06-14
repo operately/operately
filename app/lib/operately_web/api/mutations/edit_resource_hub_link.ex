@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubLink do
   alias Operately.Operations.ResourceHubLinkEditing
 
   inputs do
-    field? :link_id, :id
-    field? :name, :string
-    field? :type, :string
-    field? :url, :string
-    field? :description, :string
+    field? :link_id, :id, null: true
+    field? :name, :string, null: true
+    field? :type, :string, null: true
+    field? :url, :string, null: true
+    field? :description, :string, null: true
   end
 
   outputs do
-    field? :link, :resource_hub_link
+    field? :link, :resource_hub_link, null: true
   end
 
   def call(conn, inputs) do

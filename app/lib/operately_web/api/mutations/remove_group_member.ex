@@ -7,8 +7,8 @@ defmodule OperatelyWeb.Api.Mutations.RemoveGroupMember do
   alias Operately.Operations.GroupMemberRemoving
 
   inputs do
-    field? :group_id, :string
-    field? :member_id, :string
+    field? :group_id, :string, null: true
+    field? :member_id, :string, null: true
   end
 
   def call(conn, inputs) do

@@ -7,12 +7,12 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributors do
   alias Operately.Operations.ProjectContributorsAddition, as: Operation
 
   inputs do
-    field? :project_id, :string
-    field? :contributors, list_of(:project_contributor_input)
+    field? :project_id, :string, null: true
+    field? :contributors, list_of(:project_contributor_input), null: true
   end
 
   outputs do
-    field? :success, :boolean
+    field? :success, :boolean, null: true
   end
 
   def call(conn, inputs) do

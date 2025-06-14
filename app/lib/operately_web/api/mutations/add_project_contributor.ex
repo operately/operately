@@ -5,15 +5,15 @@ defmodule OperatelyWeb.Api.Mutations.AddProjectContributor do
   import Operately.Access.Filters, only: [filter_by_full_access: 2, forbidden_or_not_found: 2]
 
   inputs do
-    field? :project_id, :string
-    field? :person_id, :string
-    field? :responsibility, :string
-    field? :permissions, :integer
-    field? :role, :string
+    field? :project_id, :string, null: true
+    field? :person_id, :string, null: true
+    field? :responsibility, :string, null: true
+    field? :permissions, :integer, null: true
+    field? :role, :string, null: true
   end
 
   outputs do
-    field? :project_contributor, :project_contributor
+    field? :project_contributor, :project_contributor, null: true
   end
 
   def call(conn, inputs) do
