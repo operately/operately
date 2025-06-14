@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Spaces do
     use TurboConnect.Query
 
     inputs do
-      field :query, :string, null: false
+      field :query, :string, null: true
     end
 
     outputs do
-      field :spaces, list_of(:space), null: false
+      field :spaces, list_of(:space), null: true
     end
 
     def call(conn, inputs) do

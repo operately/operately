@@ -348,8 +348,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :space do
-    field :id, :string, null: false
-    field :name, :string, null: false
+    field :id, :string, null: true
+    field :name, :string, null: true
 
     field? :mission, :string
     field? :is_member, :boolean
@@ -1009,9 +1009,9 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :goal do
-    field :id, :string, null: false
-    field :name, :string, null: false
-    field :status, :goal_status, null: false
+    field :id, :string, null: true
+    field :name, :string, null: true
+    field :status, :goal_status, null: true
     field :due_date, :date, null: true
 
     field? :inserted_at, :date
@@ -1046,21 +1046,21 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :goal_discussion do
-    field :id, :id, null: false
-    field :title, :string, null: false
-    field :inserted_at, :date, null: false
-    field :comment_count, :integer, null: false
-    field :author, :person, null: false
-    field :content, :string, null: false
+    field :id, :id, null: true
+    field :title, :string, null: true
+    field :inserted_at, :date, null: true
+    field :comment_count, :integer, null: true
+    field :author, :person, null: true
+    field :content, :string, null: true
   end
 
   object :goal_retrospective do
-    field :id, :id, null: false
-    field :title, :string, null: false
-    field :inserted_at, :date, null: false
-    field :comment_count, :integer, null: false
-    field :author, :person, null: false
-    field :content, :string, null: false
+    field :id, :id, null: true
+    field :title, :string, null: true
+    field :inserted_at, :date, null: true
+    field :comment_count, :integer, null: true
+    field :author, :person, null: true
+    field :content, :string, null: true
   end
 
   object :activity_content_project_resuming do
@@ -1119,11 +1119,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :person do
-    field :id, :string, null: false
-    field :full_name, :string, null: false
-    field :title, :string, null: false
+    field :id, :string, null: true
+    field :full_name, :string, null: true
+    field :title, :string, null: true
     field :avatar_url, :string, null: true
-    field :email, :string, null: false
+    field :email, :string, null: true
 
     field? :timezone, :string
     field? :send_daily_summary, :boolean
@@ -1143,7 +1143,7 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :person_permissions do
-    field :can_edit_profile, :boolean
+    field :can_edit_profile, :boolean, null: true
   end
 
   object :project_health do
@@ -1573,24 +1573,24 @@ defmodule OperatelyWeb.Api.Types do
   enum(:work_map_item_state, values: [:active, :paused, :closed])
 
   object :work_map_item do
-    field :id, :string, null: false
+    field :id, :string, null: true
     field :parent_id, :string, null: true
-    field :name, :string, null: false
-    field :state, :work_map_item_state, null: false
-    field :status, :work_map_item_status, null: false
-    field :progress, :float, null: false
-    field :space, :space, null: false
-    field :space_path, :string, null: false
+    field :name, :string, null: true
+    field :state, :work_map_item_state, null: true
+    field :status, :work_map_item_status, null: true
+    field :progress, :float, null: true
+    field :space, :space, null: true
+    field :space_path, :string, null: true
     field :owner, :person, null: true
     field :owner_path, :string, null: true
-    field :next_step, :string, null: false
-    field :is_new, :boolean, null: false
+    field :next_step, :string, null: true
+    field :is_new, :boolean, null: true
     field :completed_on, :date, null: true
     field :timeframe, :timeframe, null: true
-    field :children, list_of(:work_map_item), null: false
-    field :type, :work_map_item_type, null: false
-    field :item_path, :string, null: false
-    field :privacy, :work_map_item_privacy, null: false
+    field :children, list_of(:work_map_item), null: true
+    field :type, :work_map_item_type, null: true
+    field :item_path, :string, null: true
+    field :privacy, :work_map_item_privacy, null: true
 
     field? :assignees, list_of(:person)
   end

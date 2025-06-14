@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Query
 
     inputs do
-      field :goal_id, :id, null: false
+      field :goal_id, :id, null: true
     end
 
     outputs do
@@ -34,12 +34,12 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Query
 
     inputs do
-      field :query, :string, null: false
-      field :goal_id, :id, null: false
+      field :query, :string, null: true
+      field :goal_id, :id, null: true
     end
 
     outputs do
-      field :goals, list_of(:goal), null: false
+      field :goals, list_of(:goal), null: true
     end
 
     def call(conn, inputs) do
@@ -59,8 +59,8 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :name, :string, null: false
+      field :goal_id, :id, null: true
+      field :name, :string, null: true
     end
 
     outputs do
@@ -91,8 +91,8 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :description, :json, null: false
+      field :goal_id, :id, null: true
+      field :description, :json, null: true
     end
 
     outputs do
@@ -123,7 +123,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
+      field :goal_id, :id, null: true
       field :due_date, :date
     end
 
@@ -155,7 +155,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
+      field :goal_id, :id, null: true
       field :parent_goal_id, :id
     end
 
@@ -178,8 +178,8 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :space_id, :id, null: false
+      field :goal_id, :id, null: true
+      field :space_id, :id, null: true
     end
 
     outputs do
@@ -201,11 +201,11 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :name, :string, null: false
-      field :start_value, :float, null: false
-      field :target_value, :float, null: false
-      field :unit, :string, null: false
+      field :goal_id, :id, null: true
+      field :name, :string, null: true
+      field :start_value, :float, null: true
+      field :target_value, :float, null: true
+      field :unit, :string, null: true
     end
 
     outputs do
@@ -241,8 +241,8 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :target_id, :id, null: false
+      field :goal_id, :id, null: true
+      field :target_id, :id, null: true
     end
 
     outputs do
@@ -274,8 +274,8 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :target_id, :id, null: false
+      field :goal_id, :id, null: true
+      field :target_id, :id, null: true
 
       field? :name, :string
       field? :start_value, :float
@@ -319,9 +319,9 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :target_id, :id, null: false
-      field :value, :float, null: false
+      field :goal_id, :id, null: true
+      field :target_id, :id, null: true
+      field :value, :float, null: true
     end
 
     outputs do
@@ -354,9 +354,9 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
-      field :target_id, :id, null: false
-      field :index, :integer, null: false
+      field :goal_id, :id, null: true
+      field :target_id, :id, null: true
+      field :index, :integer, null: true
     end
 
     outputs do
@@ -389,7 +389,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
+      field :goal_id, :id, null: true
       field :champion_id, :id
     end
 
@@ -421,7 +421,7 @@ defmodule OperatelyWeb.Api.Goals do
     use TurboConnect.Mutation
 
     inputs do
-      field :goal_id, :id, null: false
+      field :goal_id, :id, null: true
       field :reviewer_id, :id
     end
 
