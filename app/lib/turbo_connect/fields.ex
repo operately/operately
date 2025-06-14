@@ -21,6 +21,8 @@ defmodule TurboConnect.Fields do
       TurboConnect.Fields.validate_field_scope(@field_scope)
       TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
 
+      # TODO: add null
+
       @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: false]}
     end
   end
@@ -29,6 +31,8 @@ defmodule TurboConnect.Fields do
     quote do
       TurboConnect.Fields.validate_field_scope(@field_scope)
       TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
+
+      # TODO: add null
 
       @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: true]}
     end
