@@ -35,6 +35,6 @@ export function truncateString(str: string, limit: number, suffix: string = "...
 
 export const joinStr = (...args: string[]) => args.join("");
 
-export function capitalize(word: string) {
+function capitalize(word: string) {
   return word.charAt(0).toUpperCase() + word.slice(1);
 }
