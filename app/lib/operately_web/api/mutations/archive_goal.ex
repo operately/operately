@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.ArchiveGoal do
   alias Operately.Repo
 
   inputs do
-    field? :goal_id, :string
+    field? :goal_id, :string, null: true
   end
 
   outputs do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   def call(conn, inputs) do

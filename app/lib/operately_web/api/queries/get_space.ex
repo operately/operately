@@ -6,17 +6,17 @@ defmodule OperatelyWeb.Api.Queries.GetSpace do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :id
-    field? :include_permissions, :boolean
-    field? :include_members, :boolean
-    field? :include_access_levels, :boolean
-    field? :include_members_access_levels, :boolean
-    field? :include_potential_subscribers, :boolean
-    field? :include_unread_notifications, :boolean
+    field? :id, :id, null: true
+    field? :include_permissions, :boolean, null: true
+    field? :include_members, :boolean, null: true
+    field? :include_access_levels, :boolean, null: true
+    field? :include_members_access_levels, :boolean, null: true
+    field? :include_potential_subscribers, :boolean, null: true
+    field? :include_unread_notifications, :boolean, null: true
   end
 
   outputs do
-    field? :space, :space
+    field? :space, :space, null: true
   end
 
   def call(conn, inputs) do

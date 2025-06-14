@@ -9,12 +9,12 @@ defmodule OperatelyWeb.Api.Queries.GetNotifications do
   import Ecto.Query, only: [from: 2]
 
   inputs do
-    field? :page, :integer
-    field? :per_page, :integer
+    field? :page, :integer, null: true
+    field? :per_page, :integer, null: true
   end
 
   outputs do
-    field? :notifications, list_of(:notification)
+    field? :notifications, list_of(:notification), null: true
   end
 
   @default_per_page 100

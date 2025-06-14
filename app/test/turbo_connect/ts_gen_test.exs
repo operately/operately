@@ -116,33 +116,33 @@ defmodule TurboConnect.TsGenTest do
   export type Id = number;
 
   export interface Address {
-    street?: string | null;
-    city?: string | null;
+    street?: string;
+    city?: string;
   }
 
   export interface Event {
-    insertedAt?: string | null;
-    content?: EventContent | null;
+    insertedAt?: string;
+    content?: EventContent;
   }
 
   export interface Post {
-    title?: string | null;
-    content?: string | null;
-    status?: PostStatus | null;
+    title?: string;
+    content?: string;
+    status?: PostStatus;
   }
 
   export interface User {
     fullName: string;
-    address: Address | null;
-    posts?: Post[] | null;
+    address: Address;
+    posts?: Post[];
   }
 
   export interface UserAddedEvent {
-    userId?: number | null;
+    userId?: number;
   }
 
   export interface UserRemovedEvent {
-    userId?: number | null;
+    userId?: number;
   }
 
   export type EventContent = UserAddedEvent | UserRemovedEvent;
@@ -150,39 +150,39 @@ defmodule TurboConnect.TsGenTest do
   export type PostStatus = "draft" | "published";
 
   export interface GetUserInput {
-    userId?: number | null;
+    userId?: number;
   }
 
   export interface GetUserResult {
-    user?: User | null;
+    user?: User;
   }
 
 
   export interface UsersGetUserInput {
-    userId?: number | null;
+    userId?: number;
   }
 
   export interface UsersGetUserResult {
-    user?: User | null;
+    user?: User;
   }
 
   export interface CreateUserInput {
-    fullName?: string | null;
-    address?: Address | null;
+    fullName?: string;
+    address?: Address;
   }
 
   export interface CreateUserResult {
-    user?: User | null;
+    user?: User;
   }
 
 
   export interface UsersCreateUserInput {
-    fullName?: string | null;
-    address?: Address | null;
+    fullName?: string;
+    address?: Address;
   }
 
   export interface UsersCreateUserResult {
-    user?: User | null;
+    user?: User;
   }
   """
 

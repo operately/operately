@@ -7,24 +7,24 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :string
-    field? :include_author, :boolean
-    field? :include_acknowledged_by, :boolean
-    field? :include_reactions, :boolean
-    field? :include_goal, :boolean
-    field? :include_goal_space, :boolean
-    field? :include_goal_targets, :boolean
-    field? :include_reviewer, :boolean
-    field? :include_champion, :boolean
-    field? :include_space_members, :boolean
-    field? :include_subscriptions_list, :boolean
-    field? :include_potential_subscribers, :boolean
-    field? :include_unread_notifications, :boolean
-    field? :include_permissions, :boolean
+    field? :id, :string, null: true
+    field? :include_author, :boolean, null: true
+    field? :include_acknowledged_by, :boolean, null: true
+    field? :include_reactions, :boolean, null: true
+    field? :include_goal, :boolean, null: true
+    field? :include_goal_space, :boolean, null: true
+    field? :include_goal_targets, :boolean, null: true
+    field? :include_reviewer, :boolean, null: true
+    field? :include_champion, :boolean, null: true
+    field? :include_space_members, :boolean, null: true
+    field? :include_subscriptions_list, :boolean, null: true
+    field? :include_potential_subscribers, :boolean, null: true
+    field? :include_unread_notifications, :boolean, null: true
+    field? :include_permissions, :boolean, null: true
   end
 
   outputs do
-    field? :update, :goal_progress_update
+    field? :update, :goal_progress_update, null: true
   end
 
   def call(conn, inputs) do

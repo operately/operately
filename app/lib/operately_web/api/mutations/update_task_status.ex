@@ -7,13 +7,13 @@ defmodule OperatelyWeb.Api.Mutations.UpdateTaskStatus do
   alias Operately.Operations.TaskStatusChange
 
   inputs do
-    field? :task_id, :string
-    field? :status, :string
-    field? :column_index, :integer
+    field? :task_id, :string, null: true
+    field? :status, :string, null: true
+    field? :column_index, :integer, null: true
   end
 
   outputs do
-    field? :task, :task
+    field? :task, :task, null: true
   end
 
   def call(conn, inputs) do

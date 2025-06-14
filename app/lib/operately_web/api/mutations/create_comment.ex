@@ -17,13 +17,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   alias Operately.Operations.CommentAdding
 
   inputs do
-    field? :entity_id, :string
-    field? :entity_type, :string
-    field? :content, :string
+    field? :entity_id, :string, null: true
+    field? :entity_type, :string, null: true
+    field? :content, :string, null: true
   end
 
   outputs do
-    field? :comment, :comment
+    field? :comment, :comment, null: true
   end
 
   def call(conn, inputs) do

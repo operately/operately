@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.Mutations.RenameResourceHubFolder do
   alias Operately.ResourceHubs.{Folder, Permissions}
 
   inputs do
-    field? :folder_id, :id
-    field? :new_name, :string
+    field? :folder_id, :id, null: true
+    field? :new_name, :string, null: true
   end
 
   outputs do
-    field? :success, :boolean
+    field? :success, :boolean, null: true
   end
 
   def call(conn, inputs) do

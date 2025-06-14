@@ -6,14 +6,14 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResource do
   alias Operately.Operations.ProjectKeyResourceAdding
 
   inputs do
-    field? :project_id, :string
-    field? :title, :string
-    field? :link, :string
-    field? :resource_type, :string
+    field? :project_id, :string, null: true
+    field? :title, :string, null: true
+    field? :link, :string, null: true
+    field? :resource_type, :string, null: true
   end
 
   outputs do
-    field? :key_resource, :project_key_resource
+    field? :key_resource, :project_key_resource, null: true
   end
 
   def call(conn, inputs) do

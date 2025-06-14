@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.PublishDiscussion do
   alias Operately.Operations.DiscussionPublishing
 
   inputs do
-    field? :id, :id
+    field? :id, :id, null: true
   end
 
   outputs do
-    field? :discussion, :discussion
+    field? :discussion, :discussion, null: true
   end
 
   def call(conn, inputs) do

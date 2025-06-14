@@ -7,15 +7,15 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectContributor do
   alias Operately.Operations.ProjectContributorEdited
 
   inputs do
-    field? :contrib_id, :string
-    field? :person_id, :string
-    field? :responsibility, :string
-    field? :permissions, :integer
-    field? :role, :string
+    field? :contrib_id, :string, null: true
+    field? :person_id, :string, null: true
+    field? :responsibility, :string, null: true
+    field? :permissions, :integer, null: true
+    field? :role, :string, null: true
   end
 
   outputs do
-    field? :contributor, :project_contributor
+    field? :contributor, :project_contributor, null: true
   end
 
   def call(conn, inputs) do

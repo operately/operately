@@ -6,14 +6,14 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   alias Operately.Operations.ProjectClosed
 
   inputs do
-    field? :project_id, :string
-    field? :retrospective, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:string)
+    field? :project_id, :string, null: true
+    field? :retrospective, :string, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:string), null: true
   end
 
   outputs do
-    field? :retrospective, :project_retrospective
+    field? :retrospective, :project_retrospective, null: true
   end
 
   def call(conn, inputs) do

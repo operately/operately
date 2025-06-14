@@ -3,12 +3,12 @@ defmodule OperatelyWeb.Api.Queries.GetBindedPeople do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :resourse_type, :string
-    field? :resourse_id, :string
+    field? :resourse_type, :string, null: true
+    field? :resourse_id, :string, null: true
   end
 
   outputs do
-    field? :people, list_of(:person)
+    field? :people, list_of(:person), null: true
   end
 
   def call(conn, inputs) do

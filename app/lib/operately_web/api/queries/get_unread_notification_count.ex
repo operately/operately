@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetUnreadNotificationCount do
   use OperatelyWeb.Api.Helpers
 
   outputs do
-    field? :unread, :integer
+    field? :unread, :integer, null: true
   end
 
   def call(conn, _inputs) do
