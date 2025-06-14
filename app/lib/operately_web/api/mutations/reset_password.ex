@@ -2,10 +2,10 @@ defmodule OperatelyWeb.Api.Mutations.ResetPassword do
   use TurboConnect.Mutation
 
   inputs do
-    field? :email, :string
-    field? :password, :string
-    field? :password_confirmation, :string
-    field? :reset_password_token, :string
+    field? :email, :string, null: true
+    field? :password, :string, null: true
+    field? :password_confirmation, :string, null: true
+    field? :reset_password_token, :string, null: true
   end
 
   def call(_conn, inputs) do

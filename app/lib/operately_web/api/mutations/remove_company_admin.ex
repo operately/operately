@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveCompanyAdmin do
   import Operately.Access.Filters, only: [filter_by_full_access: 3, forbidden_or_not_found: 3]
 
   inputs do
-    field? :person_id, :id
+    field? :person_id, :id, null: true
   end
 
   outputs do
-    field? :person, :person
+    field? :person, :person, null: true
   end
 
   def call(conn, inputs) do

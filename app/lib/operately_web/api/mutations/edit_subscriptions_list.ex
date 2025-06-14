@@ -6,10 +6,10 @@ defmodule OperatelyWeb.Api.Mutations.EditSubscriptionsList do
   alias Operately.Operations.SubscriptionsListEditing
 
   inputs do
-    field? :id, :string
-    field? :type, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:string)
+    field? :id, :string, null: true
+    field? :type, :string, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:string), null: true
   end
 
   def call(conn, inputs) do

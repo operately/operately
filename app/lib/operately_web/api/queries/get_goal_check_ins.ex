@@ -9,7 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalCheckIns do
   end
 
   outputs do
-    field? :check_ins, list_of(:goal_progress_update)
+    field? :check_ins, list_of(:goal_progress_update), null: true
   end
 
   def call(conn, inputs) do

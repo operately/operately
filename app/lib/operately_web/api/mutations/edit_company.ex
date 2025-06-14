@@ -7,11 +7,11 @@ defmodule OperatelyWeb.Api.Mutations.EditCompany do
   alias Operately.Operations.CompanyEditing
 
   inputs do
-    field? :name, :string
+    field? :name, :string, null: true
   end
 
   outputs do
-    field? :company, :company
+    field? :company, :company, null: true
   end
 
   def call(conn, inputs) do

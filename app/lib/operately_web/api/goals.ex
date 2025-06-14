@@ -14,7 +14,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :discussions, list_of(:discussion)
+      field :discussions, list_of(:discussion), null: true
     end
 
     def call(conn, inputs) do
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -96,7 +96,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -124,11 +124,11 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, null: false
-      field :due_date, :date
+      field :due_date, :date, null: true
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -156,11 +156,11 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, null: false
-      field :parent_goal_id, :id
+      field :parent_goal_id, :id, null: true
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -183,7 +183,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -209,8 +209,8 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :target_id, :id
-      field :success, :boolean
+      field :target_id, :id, null: true
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -246,7 +246,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -277,14 +277,14 @@ defmodule OperatelyWeb.Api.Goals do
       field :goal_id, :id, null: false
       field :target_id, :id, null: false
 
-      field? :name, :string
-      field? :start_value, :float
-      field? :target_value, :float
-      field? :unit, :string
+      field? :name, :string, null: true
+      field? :start_value, :float, null: true
+      field? :target_value, :float, null: true
+      field? :unit, :string, null: true
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -325,7 +325,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -360,7 +360,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -390,11 +390,11 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, null: false
-      field :champion_id, :id
+      field :champion_id, :id, null: true
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do
@@ -422,11 +422,11 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, null: false
-      field :reviewer_id, :id
+      field :reviewer_id, :id, null: true
     end
 
     outputs do
-      field :success, :boolean
+      field :success, :boolean, null: true
     end
 
     def call(conn, inputs) do

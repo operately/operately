@@ -8,8 +8,8 @@ defmodule OperatelyWeb.Api.Mutations.MoveProjectToSpace do
   alias Operately.Operations.ProjectSpaceMoving
 
   inputs do
-    field? :project_id, :string
-    field? :space_id, :string
+    field? :project_id, :string, null: true
+    field? :space_id, :string, null: true
   end
 
   def call(conn, inputs) do

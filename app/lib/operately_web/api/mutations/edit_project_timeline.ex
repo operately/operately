@@ -7,17 +7,17 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
   alias Operately.Projects.EditTimelineOperation
 
   inputs do
-    field? :project_id, :string
+    field? :project_id, :string, null: true
 
-    field? :project_start_date, :date
-    field? :project_due_date, :date
+    field? :project_start_date, :date, null: true
+    field? :project_due_date, :date, null: true
 
-    field? :milestone_updates, list_of(:edit_project_timeline_milestone_update_input)
-    field? :new_milestones, list_of(:edit_project_timeline_new_milestone_input)
+    field? :milestone_updates, list_of(:edit_project_timeline_milestone_update_input), null: true
+    field? :new_milestones, list_of(:edit_project_timeline_new_milestone_input), null: true
   end
 
   outputs do
-    field? :project, :project
+    field? :project, :project, null: true
   end
 
   def call(conn, inputs) do

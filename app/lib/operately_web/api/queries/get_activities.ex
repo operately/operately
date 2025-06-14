@@ -11,13 +11,13 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
   inputs do
-    field? :scope_id, :string
-    field? :scope_type, :string
-    field? :actions, list_of(:string)
+    field? :scope_id, :string, null: true
+    field? :scope_type, :string, null: true
+    field? :actions, list_of(:string), null: true
   end
 
   outputs do
-    field? :activities, list_of(:activity)
+    field? :activities, list_of(:activity), null: true
   end
 
   def call(conn, inputs) do

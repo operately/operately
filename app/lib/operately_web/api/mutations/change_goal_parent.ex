@@ -7,12 +7,12 @@ defmodule OperatelyWeb.Api.Mutations.ChangeGoalParent do
   alias Operately.Repo
 
   inputs do
-    field? :goal_id, :string
-    field? :parent_goal_id, :string
+    field? :goal_id, :string, null: true
+    field? :parent_goal_id, :string, null: true
   end
 
   outputs do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   def call(conn, inputs) do

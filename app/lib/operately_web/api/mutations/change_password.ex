@@ -3,9 +3,9 @@ defmodule OperatelyWeb.Api.Mutations.ChangePassword do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :current_password, :string
-    field? :new_password, :string
-    field? :new_password_confirmation, :string
+    field? :current_password, :string, null: true
+    field? :new_password, :string, null: true
+    field? :new_password_confirmation, :string, null: true
   end
 
   def call(conn, inputs) do

@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneComment do
   alias Operately.Projects.Permissions
 
   inputs do
-    field? :milestone_id, :string
-    field? :content, :string
-    field? :action, :string
+    field? :milestone_id, :string, null: true
+    field? :content, :string, null: true
+    field? :action, :string, null: true
   end
 
   outputs do
-    field? :comment, :milestone_comment
+    field? :comment, :milestone_comment, null: true
   end
 
   def call(conn, inputs) do

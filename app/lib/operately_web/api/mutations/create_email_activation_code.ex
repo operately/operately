@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateEmailActivationCode do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :email, :string
+    field? :email, :string, null: true
   end
 
   def call(_conn, inputs) do

@@ -7,12 +7,12 @@ defmodule OperatelyWeb.Api.Mutations.EditSpaceMembersPermissions do
   alias Operately.Operations.GroupMembersPermissionsEditing
 
   inputs do
-    field? :space_id, :id
-    field? :members, list_of(:edit_member_permissions_input)
+    field? :space_id, :id, null: true
+    field? :members, list_of(:edit_member_permissions_input), null: true
   end
 
   outputs do
-    field? :success, :boolean
+    field? :success, :boolean, null: true
   end
 
   def call(conn, inputs) do

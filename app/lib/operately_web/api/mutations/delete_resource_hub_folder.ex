@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubFolder do
   alias Operately.Operations.ResourceHubFolderDeleting
 
   inputs do
-    field? :folder_id, :id
+    field? :folder_id, :id, null: true
   end
 
   outputs do
-    field? :success, :boolean
+    field? :success, :boolean, null: true
   end
 
   def call(conn, inputs) do

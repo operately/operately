@@ -7,25 +7,25 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :id
+    field? :id, :id, null: true
 
-    field? :include_champion, :boolean
-    field? :include_closed_by, :boolean
-    field? :include_last_check_in, :boolean
-    field? :include_permissions, :boolean
-    field? :include_projects, :boolean
-    field? :include_reviewer, :boolean
-    field? :include_space, :boolean
-    field? :include_space_members, :boolean
-    field? :include_access_levels, :boolean
-    field? :include_privacy, :boolean
-    field? :include_potential_subscribers, :boolean
-    field? :include_unread_notifications, :boolean
-    field? :include_retrospective, :boolean
+    field? :include_champion, :boolean, null: true
+    field? :include_closed_by, :boolean, null: true
+    field? :include_last_check_in, :boolean, null: true
+    field? :include_permissions, :boolean, null: true
+    field? :include_projects, :boolean, null: true
+    field? :include_reviewer, :boolean, null: true
+    field? :include_space, :boolean, null: true
+    field? :include_space_members, :boolean, null: true
+    field? :include_access_levels, :boolean, null: true
+    field? :include_privacy, :boolean, null: true
+    field? :include_potential_subscribers, :boolean, null: true
+    field? :include_unread_notifications, :boolean, null: true
+    field? :include_retrospective, :boolean, null: true
   end
 
   outputs do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   def call(conn, %{id: _id} = inputs) do
