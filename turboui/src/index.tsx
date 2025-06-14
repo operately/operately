@@ -18,6 +18,7 @@ export * from "./WorkMap";
 export { DateField } from "./DateField";
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
+export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { showErrorToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
