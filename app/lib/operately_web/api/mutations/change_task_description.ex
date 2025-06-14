@@ -8,12 +8,12 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescription do
   alias Operately.Repo
 
   inputs do
-    field? :task_id, :string
-    field? :description, :string
+    field? :task_id, :string, null: true
+    field? :description, :string, null: true
   end
 
   outputs do
-    field? :task, :task
+    field? :task, :task, null: true
   end
 
   def call(conn, inputs) do

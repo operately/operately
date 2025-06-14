@@ -6,13 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateResourceHubFolder do
   alias Operately.Operations.ResourceHubFolderCreating
 
   inputs do
-    field? :resource_hub_id, :string
-    field? :folder_id, :string
-    field? :name, :string
+    field? :resource_hub_id, :string, null: true
+    field? :folder_id, :string, null: true
+    field? :name, :string, null: true
   end
 
   outputs do
-    field? :folder, :resource_hub_folder
+    field? :folder, :resource_hub_folder, null: true
   end
 
   def call(conn, inputs) do

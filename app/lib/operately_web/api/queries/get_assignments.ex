@@ -6,7 +6,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
 
 
   outputs do
-    field? :assignments, list_of(:review_assignment)
+    field? :assignments, list_of(:review_assignment), null: true
   end
 
   def call(conn, _inputs) do

@@ -4,11 +4,11 @@ defmodule OperatelyWeb.Api.Queries.GetCompanies do
   alias Operately.Companies.Company
 
   inputs do
-    field? :include_member_count, :boolean
+    field? :include_member_count, :boolean, null: true
   end
 
   outputs do
-    field? :companies, list_of(:company)
+    field? :companies, list_of(:company), null: true
   end
 
   def call(conn, inputs) do

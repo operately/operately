@@ -6,12 +6,12 @@ defmodule OperatelyWeb.Api.Queries.GetProjectContributor do
   alias OperatelyWeb.Api.Serializer
 
   inputs do
-    field? :id, :string
-    field? :include_project, :boolean
+    field? :id, :string, null: true
+    field? :include_project, :boolean, null: true
   end
 
   outputs do
-    field? :contributor, :project_contributor
+    field? :contributor, :project_contributor, null: true
   end
 
   def call(conn, inputs) do

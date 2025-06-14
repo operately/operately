@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.DeleteResourceHubLink do
   alias Operately.Operations.ResourceHubLinkDeleting
 
   inputs do
-    field? :link_id, :id
+    field? :link_id, :id, null: true
   end
 
   outputs do
-    field? :success, :boolean
+    field? :success, :boolean, null: true
   end
 
   def call(conn, inputs) do

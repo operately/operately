@@ -8,15 +8,15 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
 
   inputs do
     field :id, :id, null: false
-    field :due_date, :date
+    field :due_date, :date, null: true
 
-    field? :status, :string
-    field? :content, :json
-    field? :new_target_values, :string
+    field? :status, :string, null: true
+    field? :content, :json, null: true
+    field? :new_target_values, :string, null: true
   end
 
   outputs do
-    field? :update, :goal_progress_update
+    field? :update, :goal_progress_update, null: true
   end
 
   def call(conn, inputs) do

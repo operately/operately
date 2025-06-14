@@ -7,14 +7,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateTask do
   alias Operately.Repo
 
   inputs do
-    field? :name, :string
-    field? :assignee_ids, list_of(:string)
-    field? :description, :string
-    field? :milestone_id, :string
+    field? :name, :string, null: true
+    field? :assignee_ids, list_of(:string), null: true
+    field? :description, :string, null: true
+    field? :milestone_id, :string, null: true
   end
 
   outputs do
-    field? :task, :task
+    field? :task, :task, null: true
   end
 
   def call(conn, inputs) do

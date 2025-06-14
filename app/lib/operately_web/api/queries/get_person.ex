@@ -5,15 +5,15 @@ defmodule OperatelyWeb.Api.Queries.GetPerson do
   alias Operately.People.Person
 
   inputs do
-    field? :id, :id
-    field? :include_manager, :boolean
-    field? :include_reports, :boolean
-    field? :include_peers, :boolean
-    field? :include_permissions, :boolean
+    field? :id, :id, null: true
+    field? :include_manager, :boolean, null: true
+    field? :include_reports, :boolean, null: true
+    field? :include_peers, :boolean, null: true
+    field? :include_permissions, :boolean, null: true
   end
 
   outputs do
-    field? :person, :person
+    field? :person, :person, null: true
   end
 
   def call(conn, inputs) do

@@ -20,93 +20,93 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :account do
-    field? :full_name, :string
-    field? :site_admin, :boolean
+    field? :full_name, :string, null: true
+    field? :site_admin, :boolean, null: true
   end
 
   object :access_levels do
-    field? :public, :integer
-    field? :company, :integer
-    field? :space, :integer
+    field? :public, :integer, null: true
+    field? :company, :integer, null: true
+    field? :space, :integer, null: true
   end
 
   object :activity_content_message_archiving do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :space, :space
-    field? :message_id, :string
-    field? :title, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :space, :space, null: true
+    field? :message_id, :string, null: true
+    field? :title, :string, null: true
   end
 
   object :activity_content_company_member_restoring do
-    field? :person, :person
+    field? :person, :person, null: true
   end
 
   object :activity_content_company_owner_removing do
-    field? :company_id, :string
-    field? :person_id, :string
-    field? :person, :person
+    field? :company_id, :string, null: true
+    field? :person_id, :string, null: true
+    field? :person, :person, null: true
   end
 
   object :activity_content_space_added do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :space, :space
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :space, :space, null: true
   end
 
   object :activity_content_space_joining do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :space, :space
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :space, :space, null: true
   end
 
   object :activity_content_space_member_removed do
-    field? :space, :space
-    field? :member, :person
+    field? :space, :space, null: true
+    field? :member, :person, null: true
   end
 
   object :activity_content_space_members_added do
-    field? :space, :space
-    field? :members, list_of(:person)
+    field? :space, :space, null: true
+    field? :members, list_of(:person), null: true
   end
 
   object :activity_content_goal_archived do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   object :activity_content_project_check_in_edit do
-    field? :company_id, :string
-    field? :project_id, :string
-    field? :check_in_id, :string
+    field? :company_id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :check_in_id, :string, null: true
   end
 
   object :activity_content_project_check_in_submitted do
-    field? :project_id, :string
-    field? :check_in_id, :string
-    field? :project, :project
-    field? :check_in, :project_check_in
+    field? :project_id, :string, null: true
+    field? :check_in_id, :string, null: true
+    field? :project, :project, null: true
+    field? :check_in, :project_check_in, null: true
   end
 
   object :activity_content_company_adding do
-    field? :company, :company
-    field? :creator, :person
+    field? :company, :company, null: true
+    field? :creator, :person, null: true
   end
 
   object :activity_content_company_editing do
-    field? :company_id, :string
-    field? :company, :company
-    field? :new_name, :string
-    field? :old_name, :string
+    field? :company_id, :string, null: true
+    field? :company, :company, null: true
+    field? :new_name, :string, null: true
+    field? :old_name, :string, null: true
   end
 
   object :review_assignment do
-    field? :resource_id, :string
-    field? :name, :string
-    field? :due, :date
-    field? :type, :string
-    field? :author_id, :string
-    field? :author_name, :string
-    field? :path, :string
+    field? :resource_id, :string, null: true
+    field? :name, :string, null: true
+    field? :due, :date, null: true
+    field? :type, :string, null: true
+    field? :author_id, :string, null: true
+    field? :author_name, :string, null: true
+    field? :path, :string, null: true
   end
 
   union(:update_content,
@@ -128,251 +128,251 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_project_goal_connection do
-    field? :project, :project
-    field? :goal, :goal
+    field? :project, :project, null: true
+    field? :goal, :goal, null: true
   end
 
   object :update_content_project_discussion do
-    field? :title, :string
-    field? :body, :string
+    field? :title, :string, null: true
+    field? :body, :string, null: true
   end
 
   object :project_key_resource do
-    field? :id, :string
-    field? :project_id, :string
-    field? :title, :string
-    field? :link, :string
-    field? :resource_type, :string
+    field? :id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :title, :string, null: true
+    field? :link, :string, null: true
+    field? :resource_type, :string, null: true
   end
 
   object :activity_content_project_moved do
-    field? :project, :project
-    field? :old_space, :space
-    field? :new_space, :space
+    field? :project, :project, null: true
+    field? :old_space, :space, null: true
+    field? :new_space, :space, null: true
   end
 
   object :update_content_project_contributor_removed do
-    field? :contributor, :person
-    field? :contributor_id, :string
-    field? :contributor_role, :string
+    field? :contributor, :person, null: true
+    field? :contributor_id, :string, null: true
+    field? :contributor_role, :string, null: true
   end
 
   object :update_content_project_milestone_created do
-    field? :milestone, :milestone
+    field? :milestone, :milestone, null: true
   end
 
   object :update_content_project_milestone_deleted do
-    field? :milestone, :milestone
+    field? :milestone, :milestone, null: true
   end
 
   object :reaction do
-    field? :id, :string
-    field? :emoji, :string
-    field? :reaction_type, :string
-    field? :person, :person
+    field? :id, :string, null: true
+    field? :emoji, :string, null: true
+    field? :reaction_type, :string, null: true
+    field? :person, :person, null: true
   end
 
   object :activity_content_project_pausing do
-    field? :company_id, :string
-    field? :project_id, :string
-    field? :project, :project
+    field? :company_id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :activity_content_project_key_resource_added do
-    field? :project_id, :string
-    field? :project, :project
-    field? :title, :string
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
+    field? :title, :string, null: true
   end
 
   object :activity_content_project_key_resource_deleted do
-    field? :project_id, :string
-    field? :project, :project
-    field? :title, :string
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
+    field? :title, :string, null: true
   end
 
   object :activity_content_task_name_editing do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
-    field? :old_name, :string
-    field? :new_name, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :old_name, :string, null: true
+    field? :new_name, :string, null: true
   end
 
   object :activity_content_task_priority_change do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
-    field? :old_priority, :string
-    field? :new_priority, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :old_priority, :string, null: true
+    field? :new_priority, :string, null: true
   end
 
   object :goal_editing_updated_target do
-    field? :id, :string
-    field? :old_name, :string
-    field? :new_name, :string
+    field? :id, :string, null: true
+    field? :old_name, :string, null: true
+    field? :new_name, :string, null: true
   end
 
   object :project do
-    field? :id, :string
-    field? :name, :string
-    field? :inserted_at, :date
-    field? :updated_at, :date
-    field? :started_at, :date
-    field? :deadline, :date
-    field? :next_update_scheduled_at, :date
-    field? :next_check_in_scheduled_at, :date
-    field? :privacy, :string
-    field? :status, :string
-    field? :closed_at, :date
-    field? :retrospective, :project_retrospective
-    field? :description, :string
-    field? :goal_id, :string
-    field? :goal, :goal
-    field? :last_check_in, :project_check_in
-    field? :milestones, list_of(:milestone)
-    field? :contributors, list_of(:project_contributor)
-    field? :key_resources, list_of(:project_key_resource)
-    field? :is_outdated, :boolean
-    field? :space_id, :string
-    field? :space, :space
-    field? :my_role, :string
-    field? :permissions, :project_permissions
-    field? :next_milestone, :milestone
-    field? :is_pinned, :boolean
-    field? :is_archived, :boolean
-    field? :archived_at, :date
-    field? :champion, :person
-    field? :reviewer, :person
-    field? :access_levels, :access_levels
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :updated_at, :date, null: true
+    field? :started_at, :date, null: true
+    field? :deadline, :date, null: true
+    field? :next_update_scheduled_at, :date, null: true
+    field? :next_check_in_scheduled_at, :date, null: true
+    field? :privacy, :string, null: true
+    field? :status, :string, null: true
+    field? :closed_at, :date, null: true
+    field? :retrospective, :project_retrospective, null: true
+    field? :description, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :goal, :goal, null: true
+    field? :last_check_in, :project_check_in, null: true
+    field? :milestones, list_of(:milestone), null: true
+    field? :contributors, list_of(:project_contributor), null: true
+    field? :key_resources, list_of(:project_key_resource), null: true
+    field? :is_outdated, :boolean, null: true
+    field? :space_id, :string, null: true
+    field? :space, :space, null: true
+    field? :my_role, :string, null: true
+    field? :permissions, :project_permissions, null: true
+    field? :next_milestone, :milestone, null: true
+    field? :is_pinned, :boolean, null: true
+    field? :is_archived, :boolean, null: true
+    field? :archived_at, :date, null: true
+    field? :champion, :person, null: true
+    field? :reviewer, :person, null: true
+    field? :access_levels, :access_levels, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
   end
 
   object :project_retrospective do
-    field? :id, :string
-    field? :author, :person
-    field? :project, :project
-    field? :content, :string
-    field? :closed_at, :date
-    field? :permissions, :project_permissions
-    field? :reactions, list_of(:reaction)
-    field? :subscription_list, :subscription_list
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
+    field? :id, :string, null: true
+    field? :author, :person, null: true
+    field? :project, :project, null: true
+    field? :content, :string, null: true
+    field? :closed_at, :date, null: true
+    field? :permissions, :project_permissions, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
   end
 
   object :messages_board do
-    field? :id, :string
-    field? :name, :string
-    field? :description, :string
-    field? :messages, list_of(:discussion)
-    field? :space, :space
-    field? :inserted_at, :datetime
-    field? :updated_at, :datetime
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :description, :string, null: true
+    field? :messages, list_of(:discussion), null: true
+    field? :space, :space, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
   end
 
   object :discussion do
-    field? :id, :string
-    field? :name, :string
-    field? :inserted_at, :date
-    field? :updated_at, :date
-    field? :published_at, :date
-    field? :state, :string
-    field? :author, :person
-    field? :title, :string
-    field? :body, :string
-    field? :space, :space
-    field? :reactions, list_of(:reaction)
-    field? :comments, list_of(:comment)
-    field? :comments_count, :integer
-    field? :subscription_list, :subscription_list
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
-    field? :permissions, :space_permissions
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :updated_at, :date, null: true
+    field? :published_at, :date, null: true
+    field? :state, :string, null: true
+    field? :author, :person, null: true
+    field? :title, :string, null: true
+    field? :body, :string, null: true
+    field? :space, :space, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :comments, list_of(:comment), null: true
+    field? :comments_count, :integer, null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
+    field? :permissions, :space_permissions, null: true
   end
 
   object :activity do
-    field? :id, :string
-    field? :scope_type, :string
-    field? :scope_id, :string
-    field? :resource_id, :string
-    field? :resource_type, :string
-    field? :action, :string
-    field? :inserted_at, :datetime
-    field? :updated_at, :datetime
-    field? :comment_thread, :comment_thread
-    field? :author, :person
-    field? :resource, :activity_resource_union
-    field? :person, :person
-    field? :event_data, :activity_data_union
-    field? :content, :activity_content
-    field? :notifications, list_of(:notification)
-    field? :permissions, :activity_permissions
+    field? :id, :string, null: true
+    field? :scope_type, :string, null: true
+    field? :scope_id, :string, null: true
+    field? :resource_id, :string, null: true
+    field? :resource_type, :string, null: true
+    field? :action, :string, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
+    field? :comment_thread, :comment_thread, null: true
+    field? :author, :person, null: true
+    field? :resource, :activity_resource_union, null: true
+    field? :person, :person, null: true
+    field? :event_data, :activity_data_union, null: true
+    field? :content, :activity_content, null: true
+    field? :notifications, list_of(:notification), null: true
+    field? :permissions, :activity_permissions, null: true
   end
 
   object :activity_permissions do
-    field? :can_comment_on_thread, :boolean
-    field? :can_view, :boolean
+    field? :can_comment_on_thread, :boolean, null: true
+    field? :can_view, :boolean, null: true
   end
 
   object :activity_event_data_project_create do
-    field? :champion, :person
+    field? :champion, :person, null: true
   end
 
   object :activity_content_project_review_commented do
-    field? :project_id, :string
-    field? :review_id, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :review_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :assignment do
-    field? :type, :string
-    field? :due, :date
-    field? :resource, :assignment_resource
+    field? :type, :string, null: true
+    field? :due, :date, null: true
+    field? :resource, :assignment_resource, null: true
   end
 
   object :target do
-    field? :id, :id
-    field? :index, :integer
-    field? :name, :string
-    field? :from, :float
-    field? :to, :float
-    field? :unit, :string
-    field? :value, :float
+    field? :id, :id, null: true
+    field? :index, :integer, null: true
+    field? :name, :string, null: true
+    field? :from, :float, null: true
+    field? :to, :float, null: true
+    field? :unit, :string, null: true
+    field? :value, :float, null: true
   end
 
   object :milestone_comment do
-    field? :id, :string
-    field? :action, :string
-    field? :comment, :comment
+    field? :id, :string, null: true
+    field? :action, :string, null: true
+    field? :comment, :comment, null: true
   end
 
   object :space do
     field :id, :string, null: false
     field :name, :string, null: false
 
-    field? :mission, :string
-    field? :is_member, :boolean
-    field? :is_company_space, :boolean
-    field? :private_space, :boolean
-    field? :icon, :string
-    field? :color, :string
-    field? :permissions, :space_permissions
-    field? :members, list_of(:person)
-    field? :access_levels, :access_levels
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
+    field? :mission, :string, null: true
+    field? :is_member, :boolean, null: true
+    field? :is_company_space, :boolean, null: true
+    field? :private_space, :boolean, null: true
+    field? :icon, :string, null: true
+    field? :color, :string, null: true
+    field? :permissions, :space_permissions, null: true
+    field? :members, list_of(:person), null: true
+    field? :access_levels, :access_levels, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
   end
 
   object :panel do
-    field? :id, :string
-    field? :type, :string
-    field? :index, :integer
-    field? :linked_resource, :panel_linked_resource
+    field? :id, :string, null: true
+    field? :type, :string, null: true
+    field? :index, :integer, null: true
+    field? :linked_resource, :panel_linked_resource, null: true
   end
 
   object :update_content_message do
-    field? :message, :string
+    field? :message, :string, null: true
   end
 
   union(:activity_content,
@@ -436,396 +436,396 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_resource_hub_folder_copied do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :folder, :resource_hub_folder
-    field? :original_folder, :resource_hub_folder
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :folder, :resource_hub_folder, null: true
+    field? :original_folder, :resource_hub_folder, null: true
   end
 
   object :activity_content_resource_hub_folder_created do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :folder, :resource_hub_folder
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :folder, :resource_hub_folder, null: true
   end
 
   object :activity_content_resource_hub_folder_deleted do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :folder, :resource_hub_folder
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :folder, :resource_hub_folder, null: true
   end
 
   object :activity_content_resource_hub_folder_renamed do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :folder, :resource_hub_folder
-    field? :old_name, :string
-    field? :new_name, :string
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :folder, :resource_hub_folder, null: true
+    field? :old_name, :string, null: true
+    field? :new_name, :string, null: true
   end
 
   object :activity_content_resource_hub_file_created do
-    field? :resource_hub, :resource_hub
-    field? :space, :space
-    field? :files, list_of(:resource_hub_file)
+    field? :resource_hub, :resource_hub, null: true
+    field? :space, :space, null: true
+    field? :files, list_of(:resource_hub_file), null: true
   end
 
   object :activity_content_resource_hub_file_deleted do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :file, :resource_hub_file
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :file, :resource_hub_file, null: true
   end
 
   object :activity_content_resource_hub_file_edited do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :file, :resource_hub_file
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :file, :resource_hub_file, null: true
   end
 
   object :activity_content_resource_hub_file_commented do
-    field? :space, :space
-    field? :file, :resource_hub_file
-    field? :comment, :comment
+    field? :space, :space, null: true
+    field? :file, :resource_hub_file, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_resource_hub_document_created do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :document, :resource_hub_document
-    field? :copied_document, :resource_hub_document
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
+    field? :copied_document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_edited do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :document, :resource_hub_document
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_deleted do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :document, :resource_hub_document
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :document, :resource_hub_document, null: true
   end
 
   object :activity_content_resource_hub_document_commented do
-    field? :space, :space
-    field? :document, :resource_hub_document
-    field? :comment, :comment
+    field? :space, :space, null: true
+    field? :document, :resource_hub_document, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_resource_hub_link_created do
-    field? :space, :space
-    field? :resource_hub, :resource_hub
-    field? :link, :resource_hub_link
+    field? :space, :space, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :link, :resource_hub_link, null: true
   end
 
   object :activity_content_resource_hub_link_edited do
-    field? :resource_hub, :resource_hub
-    field? :space, :space
-    field? :link, :resource_hub_link
+    field? :resource_hub, :resource_hub, null: true
+    field? :space, :space, null: true
+    field? :link, :resource_hub_link, null: true
 
-    field? :previous_name, :string
-    field? :previous_type, :string
-    field? :previous_url, :string
+    field? :previous_name, :string, null: true
+    field? :previous_type, :string, null: true
+    field? :previous_url, :string, null: true
   end
 
   object :activity_content_resource_hub_link_deleted do
-    field? :resource_hub, :resource_hub
-    field? :space, :space
-    field? :link, :resource_hub_link
+    field? :resource_hub, :resource_hub, null: true
+    field? :space, :space, null: true
+    field? :link, :resource_hub_link, null: true
   end
 
   object :activity_content_resource_hub_link_commented do
-    field? :space, :space
-    field? :link, :resource_hub_link
-    field? :comment, :comment
+    field? :space, :space, null: true
+    field? :link, :resource_hub_link, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_project_discussion_submitted do
-    field? :project_id, :string
-    field? :discussion_id, :string
-    field? :title, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :discussion_id, :string, null: true
+    field? :title, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :activity_content_project_review_acknowledged do
-    field? :project_id, :string
-    field? :review_id, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :review_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :activity_content_project_timeline_edited do
-    field? :project, :project
-    field? :old_start_date, :date
-    field? :new_start_date, :date
-    field? :old_end_date, :date
-    field? :new_end_date, :date
-    field? :new_milestones, list_of(:milestone)
-    field? :updated_milestones, list_of(:milestone)
+    field? :project, :project, null: true
+    field? :old_start_date, :date, null: true
+    field? :new_start_date, :date, null: true
+    field? :old_end_date, :date, null: true
+    field? :new_end_date, :date, null: true
+    field? :new_milestones, list_of(:milestone), null: true
+    field? :updated_milestones, list_of(:milestone), null: true
   end
 
   object :update_content_project_milestone_deadline_changed do
-    field? :old_deadline, :string
-    field? :new_deadline, :string
-    field? :milestone, :milestone
+    field? :old_deadline, :string, null: true
+    field? :new_deadline, :string, null: true
+    field? :milestone, :milestone, null: true
   end
 
   object :activity_content_goal_check_in do
-    field? :goal_id, :string
-    field? :goal, :goal
-    field? :update, :goal_progress_update
+    field? :goal_id, :string, null: true
+    field? :goal, :goal, null: true
+    field? :update, :goal_progress_update, null: true
 
-    field? :old_timeframe, :timeframe
-    field? :new_timeframe, :timeframe
+    field? :old_timeframe, :timeframe, null: true
+    field? :new_timeframe, :timeframe, null: true
   end
 
   object :activity_content_discussion_posting do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :title, :string
-    field? :discussion_id, :string
-    field? :space, :space
-    field? :discussion, :discussion
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :title, :string, null: true
+    field? :discussion_id, :string, null: true
+    field? :space, :space, null: true
+    field? :discussion, :discussion, null: true
   end
 
   object :activity_content_task_description_change do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
   end
 
   object :update do
-    field? :id, :string
-    field? :title, :string
-    field? :inserted_at, :datetime
-    field? :updated_at, :datetime
-    field? :acknowledged, :boolean
-    field? :acknowledged_at, :datetime
-    field? :updatable_id, :string
-    field? :project, :project
-    field? :acknowledging_person, :person
-    field? :message, :string
-    field? :message_type, :string
-    field? :comments, list_of(:comment)
-    field? :author, :person
-    field? :reactions, list_of(:reaction)
-    field? :content, :update_content
-    field? :comments_count, :integer
+    field? :id, :string, null: true
+    field? :title, :string, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :updated_at, :datetime, null: true
+    field? :acknowledged, :boolean, null: true
+    field? :acknowledged_at, :datetime, null: true
+    field? :updatable_id, :string, null: true
+    field? :project, :project, null: true
+    field? :acknowledging_person, :person, null: true
+    field? :message, :string, null: true
+    field? :message_type, :string, null: true
+    field? :comments, list_of(:comment), null: true
+    field? :author, :person, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :content, :update_content, null: true
+    field? :comments_count, :integer, null: true
   end
 
   object :activity_content_goal_created do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   object :activity_content_project_check_in_acknowledged do
-    field? :project_id, :string
-    field? :check_in_id, :string
-    field? :project, :project
-    field? :check_in, :project_check_in
+    field? :project_id, :string, null: true
+    field? :check_in_id, :string, null: true
+    field? :project, :project, null: true
+    field? :check_in, :project_check_in, null: true
   end
 
   object :update_content_project_contributor_added do
-    field? :contributor_id, :string
-    field? :contributor_role, :string
-    field? :contributor, :person
+    field? :contributor_id, :string, null: true
+    field? :contributor_role, :string, null: true
+    field? :contributor, :person, null: true
   end
 
   object :space_tools do
-    field? :projects, list_of(:project)
-    field? :goals, list_of(:goal)
-    field? :messages_boards, list_of(:messages_board)
-    field? :resource_hubs, list_of(:resource_hub)
+    field? :projects, list_of(:project), null: true
+    field? :goals, list_of(:goal), null: true
+    field? :messages_boards, list_of(:messages_board), null: true
+    field? :resource_hubs, list_of(:resource_hub), null: true
   end
 
   object :blob_creation_input do
-    field? :filename, :string
-    field? :size, :integer
-    field? :content_type, :string
-    field? :width, :integer
-    field? :height, :integer
+    field? :filename, :string, null: true
+    field? :size, :integer, null: true
+    field? :content_type, :string, null: true
+    field? :width, :integer, null: true
+    field? :height, :integer, null: true
   end
 
   object :blob_creation_output do
-    field? :id, :string
-    field? :url, :string
-    field? :signed_upload_url, :string
+    field? :id, :string, null: true
+    field? :url, :string, null: true
+    field? :signed_upload_url, :string, null: true
     # "direct", "multipart"
-    field? :upload_strategy, :string
+    field? :upload_strategy, :string, null: true
   end
 
   object :blob do
-    field? :id, :string
-    field? :status, :string
-    field? :filename, :string
-    field? :size, :integer
-    field? :content_type, :string
-    field? :height, :integer
-    field? :width, :integer
-    field? :url, :string
+    field? :id, :string, null: true
+    field? :status, :string, null: true
+    field? :filename, :string, null: true
+    field? :size, :integer, null: true
+    field? :content_type, :string, null: true
+    field? :height, :integer, null: true
+    field? :width, :integer, null: true
+    field? :url, :string, null: true
   end
 
   object :resource_hub do
-    field? :id, :string
-    field? :name, :string
-    field? :description, :string
-    field? :space, :space
-    field? :nodes, list_of(:resource_hub_node)
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :permissions, :resource_hub_permissions
-    field? :inserted_at, :date
-    field? :updated_at, :date
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :description, :string, null: true
+    field? :space, :space, null: true
+    field? :nodes, list_of(:resource_hub_node), null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :permissions, :resource_hub_permissions, null: true
+    field? :inserted_at, :date, null: true
+    field? :updated_at, :date, null: true
   end
 
   object :resource_hub_permissions do
-    field? :can_comment_on_document, :boolean
-    field? :can_comment_on_file, :boolean
-    field? :can_comment_on_link, :boolean
-    field? :can_copy_folder, :boolean
-    field? :can_create_document, :boolean
-    field? :can_create_folder, :boolean
-    field? :can_create_file, :boolean
-    field? :can_create_link, :boolean
-    field? :can_delete_document, :boolean
-    field? :can_delete_file, :boolean
-    field? :can_delete_folder, :boolean
-    field? :can_delete_link, :boolean
-    field? :can_edit_document, :boolean
-    field? :can_edit_parent_folder, :boolean
-    field? :can_edit_file, :boolean
-    field? :can_edit_link, :boolean
-    field? :can_rename_folder, :boolean
-    field? :can_view, :boolean
+    field? :can_comment_on_document, :boolean, null: true
+    field? :can_comment_on_file, :boolean, null: true
+    field? :can_comment_on_link, :boolean, null: true
+    field? :can_copy_folder, :boolean, null: true
+    field? :can_create_document, :boolean, null: true
+    field? :can_create_folder, :boolean, null: true
+    field? :can_create_file, :boolean, null: true
+    field? :can_create_link, :boolean, null: true
+    field? :can_delete_document, :boolean, null: true
+    field? :can_delete_file, :boolean, null: true
+    field? :can_delete_folder, :boolean, null: true
+    field? :can_delete_link, :boolean, null: true
+    field? :can_edit_document, :boolean, null: true
+    field? :can_edit_parent_folder, :boolean, null: true
+    field? :can_edit_file, :boolean, null: true
+    field? :can_edit_link, :boolean, null: true
+    field? :can_rename_folder, :boolean, null: true
+    field? :can_view, :boolean, null: true
   end
 
   object :resource_hub_folder do
-    field? :id, :string
-    field? :resource_hub_id, :string
-    field? :resource_hub, :resource_hub
-    field? :name, :string
-    field? :description, :string
-    field? :nodes, list_of(:resource_hub_node)
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :permissions, :resource_hub_permissions
-    field? :path_to_folder, list_of(:resource_hub_folder)
-    field? :children_count, :integer
-    field? :parent_folder_id, :string
+    field? :id, :string, null: true
+    field? :resource_hub_id, :string, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :name, :string, null: true
+    field? :description, :string, null: true
+    field? :nodes, list_of(:resource_hub_node), null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :permissions, :resource_hub_permissions, null: true
+    field? :path_to_folder, list_of(:resource_hub_folder), null: true
+    field? :children_count, :integer, null: true
+    field? :parent_folder_id, :string, null: true
   end
 
   object :resource_hub_document do
-    field? :id, :string
-    field? :author, :person
-    field? :resource_hub_id, :string
-    field? :resource_hub, :resource_hub
-    field? :parent_folder, :resource_hub_folder
-    field? :parent_folder_id, :string
-    field? :name, :string
-    field? :content, :string
-    field? :state, :string
-    field? :inserted_at, :string
-    field? :updated_at, :date
-    field? :permissions, :resource_hub_permissions
-    field? :reactions, list_of(:reaction)
-    field? :comments_count, :integer
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :subscription_list, :subscription_list
-    field? :notifications, list_of(:notification)
-    field? :path_to_document, list_of(:resource_hub_folder)
+    field? :id, :string, null: true
+    field? :author, :person, null: true
+    field? :resource_hub_id, :string, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :parent_folder, :resource_hub_folder, null: true
+    field? :parent_folder_id, :string, null: true
+    field? :name, :string, null: true
+    field? :content, :string, null: true
+    field? :state, :string, null: true
+    field? :inserted_at, :string, null: true
+    field? :updated_at, :date, null: true
+    field? :permissions, :resource_hub_permissions, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :comments_count, :integer, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :notifications, list_of(:notification), null: true
+    field? :path_to_document, list_of(:resource_hub_folder), null: true
   end
 
   object :resource_hub_file do
-    field? :id, :string
-    field? :author, :person
-    field? :resource_hub_id, :string
-    field? :resource_hub, :resource_hub
-    field? :parent_folder, :resource_hub_folder
-    field? :parent_folder_id, :string
-    field? :name, :string
-    field? :description, :string
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :subscription_list, :subscription_list
-    field? :inserted_at, :string
-    field? :permissions, :resource_hub_permissions
-    field? :reactions, list_of(:reaction)
-    field? :comments_count, :integer
-    field? :type, :string
-    field? :size, :integer
-    field? :blob, :blob
-    field? :path_to_file, list_of(:resource_hub_folder)
+    field? :id, :string, null: true
+    field? :author, :person, null: true
+    field? :resource_hub_id, :string, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :parent_folder, :resource_hub_folder, null: true
+    field? :parent_folder_id, :string, null: true
+    field? :name, :string, null: true
+    field? :description, :string, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :inserted_at, :string, null: true
+    field? :permissions, :resource_hub_permissions, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :comments_count, :integer, null: true
+    field? :type, :string, null: true
+    field? :size, :integer, null: true
+    field? :blob, :blob, null: true
+    field? :path_to_file, list_of(:resource_hub_folder), null: true
   end
 
   object :resource_hub_uploaded_file do
-    field? :blob_id, :string
-    field? :preview_blob_id, :string
-    field? :name, :string
-    field? :description, :string
+    field? :blob_id, :string, null: true
+    field? :preview_blob_id, :string, null: true
+    field? :name, :string, null: true
+    field? :description, :string, null: true
   end
 
   object :resource_hub_link do
-    field? :id, :string
-    field? :author, :person
-    field? :resource_hub_id, :string
-    field? :resource_hub, :resource_hub
-    field? :parent_folder, :resource_hub_folder
-    field? :parent_folder_id, :string
-    field? :name, :string
-    field? :url, :string
-    field? :description, :string
-    field? :type, :string
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :subscription_list, :subscription_list
-    field? :inserted_at, :string
-    field? :permissions, :resource_hub_permissions
-    field? :reactions, list_of(:reaction)
-    field? :path_to_link, list_of(:resource_hub_folder)
-    field? :notifications, list_of(:notification)
-    field? :comments_count, :integer
+    field? :id, :string, null: true
+    field? :author, :person, null: true
+    field? :resource_hub_id, :string, null: true
+    field? :resource_hub, :resource_hub, null: true
+    field? :parent_folder, :resource_hub_folder, null: true
+    field? :parent_folder_id, :string, null: true
+    field? :name, :string, null: true
+    field? :url, :string, null: true
+    field? :description, :string, null: true
+    field? :type, :string, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :inserted_at, :string, null: true
+    field? :permissions, :resource_hub_permissions, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :path_to_link, list_of(:resource_hub_folder), null: true
+    field? :notifications, list_of(:notification), null: true
+    field? :comments_count, :integer, null: true
   end
 
   object :resource_hub_node do
-    field? :id, :string
-    field? :name, :string
-    field? :type, :string
-    field? :folder, :resource_hub_folder
-    field? :document, :resource_hub_document
-    field? :file, :resource_hub_file
-    field? :link, :resource_hub_link
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :type, :string, null: true
+    field? :folder, :resource_hub_folder, null: true
+    field? :document, :resource_hub_document, null: true
+    field? :file, :resource_hub_file, null: true
+    field? :link, :resource_hub_link, null: true
   end
 
   object :project_permissions do
-    field? :can_view, :boolean
-    field? :can_create_milestone, :boolean
-    field? :can_delete_milestone, :boolean
-    field? :can_edit_contributors, :boolean
-    field? :can_edit_milestone, :boolean
-    field? :can_edit_description, :boolean
-    field? :can_edit_timeline, :boolean
-    field? :can_edit_resources, :boolean
-    field? :can_edit_goal, :boolean
-    field? :can_edit_name, :boolean
-    field? :can_edit_space, :boolean
-    field? :can_edit_retrospective, :boolean
-    field? :can_edit_permissions, :boolean
-    field? :can_close, :boolean
-    field? :can_pause, :boolean
-    field? :can_check_in, :boolean
-    field? :can_acknowledge_check_in, :boolean
-    field? :can_comment_on_check_in, :boolean
-    field? :can_comment_on_retrospective, :boolean
-    field? :can_comment_on_milestone, :boolean
+    field? :can_view, :boolean, null: true
+    field? :can_create_milestone, :boolean, null: true
+    field? :can_delete_milestone, :boolean, null: true
+    field? :can_edit_contributors, :boolean, null: true
+    field? :can_edit_milestone, :boolean, null: true
+    field? :can_edit_description, :boolean, null: true
+    field? :can_edit_timeline, :boolean, null: true
+    field? :can_edit_resources, :boolean, null: true
+    field? :can_edit_goal, :boolean, null: true
+    field? :can_edit_name, :boolean, null: true
+    field? :can_edit_space, :boolean, null: true
+    field? :can_edit_retrospective, :boolean, null: true
+    field? :can_edit_permissions, :boolean, null: true
+    field? :can_close, :boolean, null: true
+    field? :can_pause, :boolean, null: true
+    field? :can_check_in, :boolean, null: true
+    field? :can_acknowledge_check_in, :boolean, null: true
+    field? :can_comment_on_check_in, :boolean, null: true
+    field? :can_comment_on_retrospective, :boolean, null: true
+    field? :can_comment_on_milestone, :boolean, null: true
   end
 
   object :space_permissions do
-    field? :can_create_goal, :boolean
-    field? :can_create_project, :boolean
-    field? :can_comment_on_discussions, :boolean
-    field? :can_edit, :boolean
-    field? :can_edit_discussions, :boolean
-    field? :can_edit_members_permissions, :boolean
-    field? :can_edit_permissions, :boolean
-    field? :can_join, :boolean
-    field? :can_post_discussions, :boolean
-    field? :can_remove_member, :boolean
-    field? :can_view, :boolean
-    field? :can_view_message, :boolean
-    field? :can_add_members, :boolean
+    field? :can_create_goal, :boolean, null: true
+    field? :can_create_project, :boolean, null: true
+    field? :can_comment_on_discussions, :boolean, null: true
+    field? :can_edit, :boolean, null: true
+    field? :can_edit_discussions, :boolean, null: true
+    field? :can_edit_members_permissions, :boolean, null: true
+    field? :can_edit_permissions, :boolean, null: true
+    field? :can_join, :boolean, null: true
+    field? :can_post_discussions, :boolean, null: true
+    field? :can_remove_member, :boolean, null: true
+    field? :can_view, :boolean, null: true
+    field? :can_view_message, :boolean, null: true
+    field? :can_add_members, :boolean, null: true
   end
 
   union(:activity_data_union,
@@ -837,39 +837,39 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :notification do
-    field? :id, :string
-    field? :read, :boolean
-    field? :read_at, :datetime
-    field? :activity, :activity
+    field? :id, :string, null: true
+    field? :read, :boolean, null: true
+    field? :read_at, :datetime, null: true
+    field? :activity, :activity, null: true
   end
 
   object :subscriber do
-    field? :role, :string
-    field? :priority, :boolean
-    field? :is_subscribed, :boolean
-    field? :person, :person
+    field? :role, :string, null: true
+    field? :priority, :boolean, null: true
+    field? :is_subscribed, :boolean, null: true
+    field? :person, :person, null: true
   end
 
   object :task do
-    field? :id, :string
-    field? :name, :string
-    field? :inserted_at, :date
-    field? :updated_at, :date
-    field? :due_date, :date
-    field? :size, :string
-    field? :priority, :string
-    field? :status, :string
-    field? :milestone, :milestone
-    field? :project, :project
-    field? :description, :string
-    field? :assignees, list_of(:person)
-    field? :creator, :person
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :updated_at, :date, null: true
+    field? :due_date, :date, null: true
+    field? :size, :string, null: true
+    field? :priority, :string, null: true
+    field? :status, :string, null: true
+    field? :milestone, :milestone, null: true
+    field? :project, :project, null: true
+    field? :description, :string, null: true
+    field? :assignees, list_of(:person), null: true
+    field? :creator, :person, null: true
   end
 
   object :activity_content_discussion_editing do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :discussion_id, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :discussion_id, :string, null: true
   end
 
   union(:panel_linked_resource,
@@ -879,108 +879,108 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_group_edited do
-    field? :example_field, :string
+    field? :example_field, :string, null: true
   end
 
   object :activity_content_project_review_request_submitted do
-    field? :project_id, :string
-    field? :request_id, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :request_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :activity_content_task_assignee_assignment do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
-    field? :person_id, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :person_id, :string, null: true
   end
 
   object :goal_permissions do
-    field? :can_edit, :boolean
-    field? :can_check_in, :boolean
-    field? :can_close, :boolean
-    field? :can_archive, :boolean
-    field? :can_delete, :boolean
+    field? :can_edit, :boolean, null: true
+    field? :can_check_in, :boolean, null: true
+    field? :can_close, :boolean, null: true
+    field? :can_archive, :boolean, null: true
+    field? :can_delete, :boolean, null: true
   end
 
   object :goal_update_permissions do
-    field? :can_view, :boolean
-    field? :can_edit, :boolean
-    field? :can_delete, :boolean
-    field? :can_acknowledge, :boolean
-    field? :can_comment, :boolean
+    field? :can_view, :boolean, null: true
+    field? :can_edit, :boolean, null: true
+    field? :can_delete, :boolean, null: true
+    field? :can_acknowledge, :boolean, null: true
+    field? :can_comment, :boolean, null: true
   end
 
   object :activity_content_project_contributor_addition do
-    field? :company_id, :string
-    field? :project_id, :string
-    field? :person_id, :string
-    field? :person, :person
-    field? :project, :project
+    field? :company_id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :person_id, :string, null: true
+    field? :person, :person, null: true
+    field? :project, :project, null: true
   end
 
   object :activity_content_project_contributors_addition do
-    field? :project, :project
-    field? :contributors, list_of(:project_contributors_addition_contributor)
+    field? :project, :project, null: true
+    field? :contributors, list_of(:project_contributors_addition_contributor), null: true
   end
 
   object :project_contributors_addition_contributor do
-    field? :person, :person
-    field? :responsibility, :string
+    field? :person, :person, null: true
+    field? :responsibility, :string, null: true
   end
 
   object :activity_content_project_contributor_edited do
-    field? :company_id, :string
-    field? :project_id, :string
-    field? :person_id, :string
-    field? :project, :project
-    field? :previous_contributor, :activity_content_project_contributor_edited_contributor
-    field? :updated_contributor, :activity_content_project_contributor_edited_contributor
+    field? :company_id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :person_id, :string, null: true
+    field? :project, :project, null: true
+    field? :previous_contributor, :activity_content_project_contributor_edited_contributor, null: true
+    field? :updated_contributor, :activity_content_project_contributor_edited_contributor, null: true
   end
 
   object :activity_content_project_contributor_edited_contributor do
-    field? :person_id, :string
-    field? :person, :person
-    field? :role, :string
-    field? :permissions, :integer
+    field? :person_id, :string, null: true
+    field? :person, :person, null: true
+    field? :role, :string, null: true
+    field? :permissions, :integer, null: true
   end
 
   object :activity_content_project_contributor_removed do
-    field? :company_id, :string
-    field? :project_id, :string
-    field? :person_id, :string
-    field? :person, :person
-    field? :project, :project
+    field? :company_id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :person_id, :string, null: true
+    field? :person, :person, null: true
+    field? :project, :project, null: true
   end
 
   object :invitation do
-    field? :id, :string
-    field? :admin, :person
-    field? :member, :person
-    field? :company, :company
-    field? :token, :string
-    field? :expires_at, :datetime
+    field? :id, :string, null: true
+    field? :admin, :person, null: true
+    field? :member, :person, null: true
+    field? :company, :company, null: true
+    field? :token, :string, null: true
+    field? :expires_at, :datetime, null: true
   end
 
   object :activity_content_task_adding do
-    field? :name, :string
-    field? :task_id, :string
-    field? :company_id, :string
-    field? :space_id, :string
+    field? :name, :string, null: true
+    field? :task_id, :string, null: true
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
   end
 
   object :activity_event_data_milestone_create do
-    field? :title, :string
+    field? :title, :string, null: true
   end
 
   object :activity_content_goal_check_in_acknowledgement do
-    field? :goal, :goal
-    field? :update, :goal_progress_update
+    field? :goal, :goal, null: true
+    field? :update, :goal_progress_update, null: true
   end
 
   object :activity_content_project_archived do
-    field? :project_id, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   enum(:goal_privacy_values,
@@ -1014,35 +1014,35 @@ defmodule OperatelyWeb.Api.Types do
     field :status, :goal_status, null: false
     field :due_date, :date, null: true
 
-    field? :inserted_at, :date
-    field? :updated_at, :date
-    field? :next_update_scheduled_at, :date
-    field? :parent_goal_id, :string
-    field? :closed_at, :date
-    field? :timeframe, :timeframe
-    field? :description, :string
-    field? :champion, :person
-    field? :reviewer, :person
-    field? :closed_by, :person
-    field? :targets, list_of(:target)
-    field? :projects, list_of(:project)
-    field? :parent_goal, :goal
-    field? :progress_percentage, :float
-    field? :last_check_in_id, :id
-    field? :last_check_in, :goal_progress_update
-    field? :permissions, :goal_permissions
-    field? :is_archived, :boolean
-    field? :is_closed, :boolean
-    field? :archived_at, :date
-    field? :is_outdated, :boolean
-    field? :space, :space
-    field? :my_role, :string
-    field? :access_levels, :access_levels
-    field? :privacy, :goal_privacy_values
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
-    field? :success, :boolean
-    field? :retrospective, :goal_retrospective
+    field? :inserted_at, :date, null: true
+    field? :updated_at, :date, null: true
+    field? :next_update_scheduled_at, :date, null: true
+    field? :parent_goal_id, :string, null: true
+    field? :closed_at, :date, null: true
+    field? :timeframe, :timeframe, null: true
+    field? :description, :string, null: true
+    field? :champion, :person, null: true
+    field? :reviewer, :person, null: true
+    field? :closed_by, :person, null: true
+    field? :targets, list_of(:target), null: true
+    field? :projects, list_of(:project), null: true
+    field? :parent_goal, :goal, null: true
+    field? :progress_percentage, :float, null: true
+    field? :last_check_in_id, :id, null: true
+    field? :last_check_in, :goal_progress_update, null: true
+    field? :permissions, :goal_permissions, null: true
+    field? :is_archived, :boolean, null: true
+    field? :is_closed, :boolean, null: true
+    field? :archived_at, :date, null: true
+    field? :is_outdated, :boolean, null: true
+    field? :space, :space, null: true
+    field? :my_role, :string, null: true
+    field? :access_levels, :access_levels, null: true
+    field? :privacy, :goal_privacy_values, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
+    field? :success, :boolean, null: true
+    field? :retrospective, :goal_retrospective, null: true
   end
 
   object :goal_discussion do
@@ -1064,58 +1064,58 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_resuming do
-    field? :company_id, :string
-    field? :project_id, :string
-    field? :project, :project
+    field? :company_id, :string, null: true
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :activity_content_task_reopening do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
   end
 
   object :activity_content_discussion_comment_submitted do
-    field? :space_id, :string
-    field? :discussion_id, :string
-    field? :discussion, :discussion
-    field? :comment, :comment
-    field? :space, :space
-    field? :title, :string
+    field? :space_id, :string, null: true
+    field? :discussion_id, :string, null: true
+    field? :discussion, :discussion, null: true
+    field? :comment, :comment, null: true
+    field? :space, :space, null: true
+    field? :title, :string, null: true
   end
 
   object :update_content_project_created do
-    field? :creator_role, :string
-    field? :creator, :person
-    field? :champion, :person
+    field? :creator_role, :string, null: true
+    field? :creator, :person, null: true
+    field? :champion, :person, null: true
   end
 
   object :activity_content_goal_discussion_editing do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :goal_id, :string
-    field? :activity_id, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :activity_id, :string, null: true
   end
 
   object :activity_content_task_status_change do
-    field? :company_id, :string
-    field? :task_id, :string
-    field? :status, :string
+    field? :company_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :status, :string, null: true
   end
 
   object :activity_content_task_update do
-    field? :company_id, :string
-    field? :task_id, :string
-    field? :name, :string
+    field? :company_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :name, :string, null: true
   end
 
   object :activity_event_data_comment_post do
-    field? :update_id, :string
+    field? :update_id, :string, null: true
   end
 
   object :activity_content_project_goal_disconnection do
-    field? :project, :project
-    field? :goal, :goal
+    field? :project, :project, null: true
+    field? :goal, :goal, null: true
   end
 
   object :person do
@@ -1125,102 +1125,102 @@ defmodule OperatelyWeb.Api.Types do
     field :avatar_url, :string, null: true
     field :email, :string, null: false
 
-    field? :timezone, :string
-    field? :send_daily_summary, :boolean
-    field? :notify_on_mention, :boolean
-    field? :notify_about_assignments, :boolean
-    field? :suspended, :boolean
-    field? :company, :company
-    field? :manager, :person
-    field? :reports, list_of(:person)
-    field? :peers, list_of(:person)
-    field? :theme, :string
-    field? :access_level, :integer
-    field? :has_open_invitation, :boolean
-    field? :invitation, :invitation
-    field? :show_dev_bar, :boolean
-    field? :permissions, :person_permissions
+    field? :timezone, :string, null: true
+    field? :send_daily_summary, :boolean, null: true
+    field? :notify_on_mention, :boolean, null: true
+    field? :notify_about_assignments, :boolean, null: true
+    field? :suspended, :boolean, null: true
+    field? :company, :company, null: true
+    field? :manager, :person, null: true
+    field? :reports, list_of(:person), null: true
+    field? :peers, list_of(:person), null: true
+    field? :theme, :string, null: true
+    field? :access_level, :integer, null: true
+    field? :has_open_invitation, :boolean, null: true
+    field? :invitation, :invitation, null: true
+    field? :show_dev_bar, :boolean, null: true
+    field? :permissions, :person_permissions, null: true
   end
 
   object :person_permissions do
-    field :can_edit_profile, :boolean
+    field :can_edit_profile, :boolean, null: true
   end
 
   object :project_health do
-    field? :status, :string
-    field? :status_comments, :string
-    field? :schedule, :string
-    field? :schedule_comments, :string
-    field? :budget, :string
-    field? :budget_comments, :string
-    field? :team, :string
-    field? :team_comments, :string
-    field? :risks, :string
-    field? :risks_comments, :string
+    field? :status, :string, null: true
+    field? :status_comments, :string, null: true
+    field? :schedule, :string, null: true
+    field? :schedule_comments, :string, null: true
+    field? :budget, :string, null: true
+    field? :budget_comments, :string, null: true
+    field? :team, :string, null: true
+    field? :team_comments, :string, null: true
+    field? :risks, :string, null: true
+    field? :risks_comments, :string, null: true
   end
 
   object :activity_content_goal_closing do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :goal_id, :string
-    field? :success, :string
-    field? :goal, :goal
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :success, :string, null: true
+    field? :goal, :goal, null: true
   end
 
   object :activity_content_goal_editing do
-    field? :goal, :goal
-    field? :company_id, :string
-    field? :goal_id, :string
-    field? :old_name, :string
-    field? :new_name, :string
-    field? :old_timeframe, :timeframe
-    field? :new_timeframe, :timeframe
-    field? :old_champion_id, :string
-    field? :new_champion_id, :string
-    field? :old_reviewer_id, :string
-    field? :new_reviewer_id, :string
-    field? :new_champion, :person
-    field? :new_reviewer, :person
-    field? :added_targets, list_of(:target)
-    field? :updated_targets, list_of(:goal_editing_updated_target)
-    field? :deleted_targets, list_of(:target)
+    field? :goal, :goal, null: true
+    field? :company_id, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :old_name, :string, null: true
+    field? :new_name, :string, null: true
+    field? :old_timeframe, :timeframe, null: true
+    field? :new_timeframe, :timeframe, null: true
+    field? :old_champion_id, :string, null: true
+    field? :new_champion_id, :string, null: true
+    field? :old_reviewer_id, :string, null: true
+    field? :new_reviewer_id, :string, null: true
+    field? :new_champion, :person, null: true
+    field? :new_reviewer, :person, null: true
+    field? :added_targets, list_of(:target), null: true
+    field? :updated_targets, list_of(:goal_editing_updated_target), null: true
+    field? :deleted_targets, list_of(:target), null: true
   end
 
   object :activity_content_task_closing do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
   end
 
   object :update_content_review do
-    field? :survey, :string
-    field? :previous_phase, :string
-    field? :new_phase, :string
-    field? :review_reason, :string
-    field? :review_request_id, :string
+    field? :survey, :string, null: true
+    field? :previous_phase, :string, null: true
+    field? :new_phase, :string, null: true
+    field? :review_reason, :string, null: true
+    field? :review_request_id, :string, null: true
   end
 
   object :update_content_status_update do
-    field? :message, :string
-    field? :old_health, :string
-    field? :new_health, :string
-    field? :next_milestone_id, :string
-    field? :next_milestone_title, :string
-    field? :next_milestone_due_date, :string
-    field? :phase, :string
-    field? :phase_start, :string
-    field? :phase_end, :string
-    field? :project_start_time, :string
-    field? :project_end_time, :string
-    field? :health, :project_health
+    field? :message, :string, null: true
+    field? :old_health, :string, null: true
+    field? :new_health, :string, null: true
+    field? :next_milestone_id, :string, null: true
+    field? :next_milestone_title, :string, null: true
+    field? :next_milestone_due_date, :string, null: true
+    field? :phase, :string, null: true
+    field? :phase_start, :string, null: true
+    field? :phase_end, :string, null: true
+    field? :project_start_time, :string, null: true
+    field? :project_end_time, :string, null: true
+    field? :health, :project_health, null: true
   end
 
   object :activity_content_project_closed do
-    field? :project, :project
+    field? :project, :project, null: true
   end
 
   object :update_content_project_milestone_completed do
-    field? :milestone, :milestone
+    field? :milestone, :milestone, null: true
   end
 
   union(:activity_resource_union,
@@ -1233,112 +1233,112 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_goal_discussion_creation do
-    field? :company_id, :string
-    field? :goal_id, :string
-    field? :goal, :goal
+    field? :company_id, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :goal, :goal, null: true
   end
 
   object :milestone do
-    field? :id, :string
-    field? :project, :project
-    field? :title, :string
-    field? :status, :string
-    field? :inserted_at, :date
-    field? :deadline_at, :date
-    field? :completed_at, :date
-    field? :description, :string
-    field? :comments, list_of(:milestone_comment)
-    field? :tasks_kanban_state, :string
-    field? :permissions, :project_permissions
+    field? :id, :string, null: true
+    field? :project, :project, null: true
+    field? :title, :string, null: true
+    field? :status, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :deadline_at, :date, null: true
+    field? :completed_at, :date, null: true
+    field? :description, :string, null: true
+    field? :comments, list_of(:milestone_comment), null: true
+    field? :tasks_kanban_state, :string, null: true
+    field? :permissions, :project_permissions, null: true
   end
 
   object :activity_content_goal_check_in_edit do
-    field? :company_id, :string
-    field? :goal_id, :string
-    field? :check_in_id, :string
+    field? :company_id, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :check_in_id, :string, null: true
   end
 
   object :assignments do
-    field? :assignments, list_of(:assignment)
+    field? :assignments, list_of(:assignment), null: true
   end
 
   object :company do
-    field? :id, :string
-    field? :name, :string
-    field? :mission, :string
-    field? :trusted_email_domains, list_of(:string)
-    field? :enabled_experimental_features, list_of(:string)
-    field? :company_space_id, :string
-    field? :admins, list_of(:person)
-    field? :owners, list_of(:person)
-    field? :people, list_of(:person)
-    field? :member_count, :integer
-    field? :permissions, :company_permissions
+    field? :id, :string, null: true
+    field? :name, :string, null: true
+    field? :mission, :string, null: true
+    field? :trusted_email_domains, list_of(:string), null: true
+    field? :enabled_experimental_features, list_of(:string), null: true
+    field? :company_space_id, :string, null: true
+    field? :admins, list_of(:person), null: true
+    field? :owners, list_of(:person), null: true
+    field? :people, list_of(:person), null: true
+    field? :member_count, :integer, null: true
+    field? :permissions, :company_permissions, null: true
   end
 
   object :company_permissions do
-    field? :can_edit_trusted_email_domains, :boolean
-    field? :can_invite_members, :boolean
-    field? :can_remove_members, :boolean
-    field? :can_create_space, :boolean
-    field? :can_manage_admins, :boolean
-    field? :can_manage_owners, :boolean
+    field? :can_edit_trusted_email_domains, :boolean, null: true
+    field? :can_invite_members, :boolean, null: true
+    field? :can_remove_members, :boolean, null: true
+    field? :can_create_space, :boolean, null: true
+    field? :can_manage_admins, :boolean, null: true
+    field? :can_manage_owners, :boolean, null: true
   end
 
   object :activity_content_goal_timeframe_editing do
-    field? :goal, :goal
-    field? :old_timeframe, :timeframe
-    field? :new_timeframe, :timeframe
+    field? :goal, :goal, null: true
+    field? :old_timeframe, :timeframe, null: true
+    field? :new_timeframe, :timeframe, null: true
   end
 
   object :activity_content_task_size_change do
-    field? :company_id, :string
-    field? :space_id, :string
-    field? :task_id, :string
-    field? :old_size, :string
-    field? :new_size, :string
+    field? :company_id, :string, null: true
+    field? :space_id, :string, null: true
+    field? :task_id, :string, null: true
+    field? :old_size, :string, null: true
+    field? :new_size, :string, null: true
   end
 
   object :timeframe do
-    field? :start_date, :date
-    field? :end_date, :date
-    field? :type, :string
+    field? :start_date, :date, null: true
+    field? :end_date, :date, null: true
+    field? :type, :string, null: true
   end
 
   object :activity_content_project_milestone_commented do
-    field? :project_id, :string
-    field? :project, :project
-    field? :milestone, :milestone
-    field? :comment_action, :string
-    field? :comment, :comment
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
+    field? :milestone, :milestone, null: true
+    field? :comment_action, :string, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_project_review_submitted do
-    field? :project_id, :string
-    field? :review_id, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :review_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :comment_thread do
-    field? :id, :string
-    field? :inserted_at, :date
-    field? :title, :string
-    field? :message, :string
-    field? :reactions, list_of(:reaction)
-    field? :comments, list_of(:comment)
-    field? :comments_count, :integer
-    field? :author, :person
-    field? :subscription_list, :subscription_list
-    field? :potential_subscribers, list_of(:subscriber)
+    field? :id, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :title, :string, null: true
+    field? :message, :string, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :comments, list_of(:comment), null: true
+    field? :comments_count, :integer, null: true
+    field? :author, :person, null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
   end
 
   object :comment do
-    field? :id, :string
-    field? :inserted_at, :datetime
-    field? :content, :string
-    field? :author, :person
-    field? :reactions, list_of(:reaction)
-    field? :notification, :notification
+    field? :id, :string, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :content, :string, null: true
+    field? :author, :person, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :notification, :notification, null: true
   end
 
   union(:assignment_resource,
@@ -1349,206 +1349,206 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_comment_added do
-    field? :comment, :comment
-    field? :activity, :activity
+    field? :comment, :comment, null: true
+    field? :activity, :activity, null: true
   end
 
   object :activity_content_company_admin_added do
-    field? :company, :company
-    field? :people, list_of(:person)
+    field? :company, :company, null: true
+    field? :people, list_of(:person), null: true
   end
 
   object :activity_content_company_owners_adding do
-    field? :company, :company
-    field? :people, list_of(:activity_content_company_owners_adding_person)
+    field? :company, :company, null: true
+    field? :people, list_of(:activity_content_company_owners_adding_person), null: true
   end
 
   object :activity_content_company_owners_adding_person do
-    field? :person, :person
+    field? :person, :person, null: true
   end
 
   object :activity_content_company_admin_removed do
-    field? :company, :company
-    field? :person, :person
+    field? :company, :company, null: true
+    field? :person, :person, null: true
   end
 
   object :activity_content_project_renamed do
-    field? :project, :project
-    field? :old_name, :string
-    field? :new_name, :string
+    field? :project, :project, null: true
+    field? :old_name, :string, null: true
+    field? :new_name, :string, null: true
   end
 
   object :project_review_request do
-    field? :id, :string
-    field? :inserted_at, :date
-    field? :updated_at, :date
-    field? :status, :string
-    field? :review_id, :string
-    field? :content, :string
-    field? :author, :person
+    field? :id, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :updated_at, :date, null: true
+    field? :status, :string, null: true
+    field? :review_id, :string, null: true
+    field? :content, :string, null: true
+    field? :author, :person, null: true
   end
 
   object :update_content_project_end_time_changed do
-    field? :old_end_time, :string
-    field? :new_end_time, :string
+    field? :old_end_time, :string, null: true
+    field? :new_end_time, :string, null: true
   end
 
   object :activity_content_goal_reopening do
-    field? :company_id, :string
-    field? :goal_id, :string
-    field? :message, :string
-    field? :goal, :goal
+    field? :company_id, :string, null: true
+    field? :goal_id, :string, null: true
+    field? :message, :string, null: true
+    field? :goal, :goal, null: true
   end
 
   object :activity_content_goal_reparent do
-    field? :goal, :goal
-    field? :old_parent_goal, :goal
-    field? :new_parent_goal, :goal
+    field? :goal, :goal, null: true
+    field? :old_parent_goal, :goal, null: true
+    field? :new_parent_goal, :goal, null: true
   end
 
   object :activity_content_project_created do
-    field? :project_id, :string
-    field? :project, :project
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
   end
 
   object :project_check_in do
-    field? :id, :string
-    field? :status, :string
-    field? :inserted_at, :date
-    field? :description, :string
-    field? :author, :person
-    field? :project, :project
-    field? :acknowledged_at, :datetime
-    field? :acknowledged_by, :person
-    field? :reactions, list_of(:reaction)
-    field? :subscription_list, :subscription_list
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
+    field? :id, :string, null: true
+    field? :status, :string, null: true
+    field? :inserted_at, :date, null: true
+    field? :description, :string, null: true
+    field? :author, :person, null: true
+    field? :project, :project, null: true
+    field? :acknowledged_at, :datetime, null: true
+    field? :acknowledged_by, :person, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
   end
 
   object :activity_content_project_check_in_commented do
-    field? :project_id, :string
-    field? :check_in_id, :string
-    field? :project, :project
-    field? :check_in, :project_check_in
-    field? :comment, :comment
+    field? :project_id, :string, null: true
+    field? :check_in_id, :string, null: true
+    field? :project, :project, null: true
+    field? :check_in, :project_check_in, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_goal_check_in_commented do
-    field? :goal_id, :string
-    field? :goal, :goal
-    field? :update, :goal_progress_update
-    field? :comment, :comment
+    field? :goal_id, :string, null: true
+    field? :goal, :goal, null: true
+    field? :update, :goal_progress_update, null: true
+    field? :comment, :comment, null: true
   end
 
   object :activity_content_project_retrospective_commented do
-    field? :project_id, :string
-    field? :project, :project
-    field? :comment, :comment
+    field? :project_id, :string, null: true
+    field? :project, :project, null: true
+    field? :comment, :comment, null: true
   end
 
   object :update_content_project_start_time_changed do
-    field? :old_start_time, :string
-    field? :new_start_time, :string
+    field? :old_start_time, :string, null: true
+    field? :new_start_time, :string, null: true
   end
 
   object :project_contributor do
-    field? :id, :string
-    field? :responsibility, :string
-    field? :role, :string
-    field? :person, :person
-    field? :access_level, :integer
-    field? :project, :project
+    field? :id, :string, null: true
+    field? :responsibility, :string, null: true
+    field? :role, :string, null: true
+    field? :person, :person, null: true
+    field? :access_level, :integer, null: true
+    field? :project, :project, null: true
   end
 
   object :create_target_input do
-    field? :name, :string
-    field? :from, :float
-    field? :to, :float
-    field? :unit, :string
-    field? :index, :integer
+    field? :name, :string, null: true
+    field? :from, :float, null: true
+    field? :to, :float, null: true
+    field? :unit, :string, null: true
+    field? :index, :integer, null: true
   end
 
   object :update_target_input do
-    field? :id, :id
-    field? :name, :string
-    field? :from, :float
-    field? :to, :float
-    field? :unit, :string
-    field? :index, :integer
+    field? :id, :id, null: true
+    field? :name, :string, null: true
+    field? :from, :float, null: true
+    field? :to, :float, null: true
+    field? :unit, :string, null: true
+    field? :index, :integer, null: true
   end
 
   object :add_member_input do
-    field? :id, :id
-    field? :access_level, :integer
+    field? :id, :id, null: true
+    field? :access_level, :integer, null: true
   end
 
   object :edit_member_permissions_input do
-    field? :id, :id
-    field? :access_level, :integer
+    field? :id, :id, null: true
+    field? :access_level, :integer, null: true
   end
 
   object :edit_project_timeline_milestone_update_input do
-    field? :id, :string
-    field? :title, :string
-    field? :description, :string
-    field? :due_time, :date
+    field? :id, :string, null: true
+    field? :title, :string, null: true
+    field? :description, :string, null: true
+    field? :due_time, :date, null: true
   end
 
   object :edit_project_timeline_new_milestone_input do
-    field? :title, :string
-    field? :description, :string
-    field? :due_time, :date
+    field? :title, :string, null: true
+    field? :description, :string, null: true
+    field? :due_time, :date, null: true
   end
 
   object :goal_progress_update do
-    field? :id, :string
-    field? :status, :string
-    field? :message, :string
-    field? :inserted_at, :datetime
-    field? :author, :person
-    field? :acknowledged, :boolean
-    field? :acknowledged_at, :datetime
-    field? :acknowledging_person, :person
-    field? :reactions, list_of(:reaction)
-    field? :goal_target_updates, list_of(:goal_target_updates)
-    field? :comments_count, :integer
-    field? :goal, :goal
-    field? :subscription_list, :subscription_list
-    field? :potential_subscribers, list_of(:subscriber)
-    field? :notifications, list_of(:notification)
-    field? :timeframe, :timeframe
-    field? :permissions, :goal_update_permissions
+    field? :id, :string, null: true
+    field? :status, :string, null: true
+    field? :message, :string, null: true
+    field? :inserted_at, :datetime, null: true
+    field? :author, :person, null: true
+    field? :acknowledged, :boolean, null: true
+    field? :acknowledged_at, :datetime, null: true
+    field? :acknowledging_person, :person, null: true
+    field? :reactions, list_of(:reaction), null: true
+    field? :goal_target_updates, list_of(:goal_target_updates), null: true
+    field? :comments_count, :integer, null: true
+    field? :goal, :goal, null: true
+    field? :subscription_list, :subscription_list, null: true
+    field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :notifications, list_of(:notification), null: true
+    field? :timeframe, :timeframe, null: true
+    field? :permissions, :goal_update_permissions, null: true
   end
 
   object :goal_target_updates do
-    field? :id, :string
-    field? :index, :integer
-    field? :name, :string
-    field? :from, :float
-    field? :to, :float
-    field? :unit, :string
-    field? :value, :float
-    field? :previous_value, :float
+    field? :id, :string, null: true
+    field? :index, :integer, null: true
+    field? :name, :string, null: true
+    field? :from, :float, null: true
+    field? :to, :float, null: true
+    field? :unit, :string, null: true
+    field? :value, :float, null: true
+    field? :previous_value, :float, null: true
   end
 
   object :subscription_list do
-    field? :id, :string
-    field? :parent_type, :string
-    field? :send_to_everyone, :boolean
-    field? :subscriptions, list_of(:subscription)
+    field? :id, :string, null: true
+    field? :parent_type, :string, null: true
+    field? :send_to_everyone, :boolean, null: true
+    field? :subscriptions, list_of(:subscription), null: true
   end
 
   object :subscription do
-    field? :id, :string
-    field? :type, :string
-    field? :person, :person
+    field? :id, :string, null: true
+    field? :type, :string, null: true
+    field? :person, :person, null: true
   end
 
   object :project_contributor_input do
-    field? :person_id, :string
-    field? :responsibility, :string
-    field? :access_level, :integer
+    field? :person_id, :string, null: true
+    field? :responsibility, :string, null: true
+    field? :access_level, :integer, null: true
   end
 
   enum(:work_map_item_type, values: [:project, :goal])
@@ -1592,6 +1592,6 @@ defmodule OperatelyWeb.Api.Types do
     field :item_path, :string, null: false
     field :privacy, :work_map_item_privacy, null: false
 
-    field? :assignees, list_of(:person)
+    field? :assignees, list_of(:person), null: true
   end
 end

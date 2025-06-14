@@ -21,7 +21,10 @@ defmodule TurboConnect.Fields do
       TurboConnect.Fields.validate_field_scope(@field_scope)
       TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
 
-      @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: false]}
+      opts = TurboConnect.Fields.default_field_opts()
+      opts = Keyword.merge(opts, unquote(opts))
+
+      @fields {@field_scope, unquote(name), unquote(type), opts}
     end
   end
 
@@ -30,7 +33,11 @@ defmodule TurboConnect.Fields do
       TurboConnect.Fields.validate_field_scope(@field_scope)
       TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
 
-      @fields {@field_scope, unquote(name), unquote(type), unquote(opts) ++ [optional: true]}
+      opts = TurboConnect.Fields.default_field_opts()
+      opts = Keyword.merge(opts, optional: true)
+      opts = Keyword.merge(opts, unquote(opts))
+
+      @fields {@field_scope, unquote(name), unquote(type), opts}
     end
   end
 
@@ -109,4 +116,6 @@ defmodule TurboConnect.Fields do
       raise "Invalid options for field: #{inspect(opts)}. Valid options are: #{inspect(valid_opts)}"
     end
   end
+
+  def default_field_opts, do: [null: false, optional: false]
 end

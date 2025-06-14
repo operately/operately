@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.CreateSpace do
   alias Operately.Companies.Permissions
 
   inputs do
-    field? :name, :string
-    field? :mission, :string
+    field? :name, :string, null: true
+    field? :mission, :string, null: true
 
-    field? :company_permissions, :integer
-    field? :public_permissions, :integer
+    field? :company_permissions, :integer, null: true
+    field? :public_permissions, :integer, null: true
   end
 
   outputs do
-    field? :space, :space
+    field? :space, :space, null: true
   end
 
   def call(conn, inputs) do

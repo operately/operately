@@ -18,14 +18,14 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   alias Operately.Operations.ReactionAdding
 
   inputs do
-    field? :entity_id, :id
-    field? :entity_type, :string
-    field? :parent_type, :string
-    field? :emoji, :string
+    field? :entity_id, :id, null: true
+    field? :entity_type, :string, null: true
+    field? :parent_type, :string, null: true
+    field? :emoji, :string, null: true
   end
 
   outputs do
-    field? :reaction, :reaction
+    field? :reaction, :reaction, null: true
   end
 
   def call(conn, inputs) do

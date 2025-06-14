@@ -3,13 +3,13 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompany do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :token, :string
-    field? :password, :string
-    field? :password_confirmation, :string
+    field? :token, :string, null: true
+    field? :password, :string, null: true
+    field? :password_confirmation, :string, null: true
   end
 
   outputs do
-    field? :result, :string
+    field? :result, :string, null: true
   end
 
   def call(_conn, inputs) do

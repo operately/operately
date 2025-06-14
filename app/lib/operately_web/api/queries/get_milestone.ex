@@ -5,14 +5,14 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   alias Operately.Projects.{Milestone, Permissions}
 
   inputs do
-    field? :id, :string
-    field? :include_comments, :boolean
-    field? :include_project, :boolean
-    field? :include_permissions, :boolean
+    field? :id, :string, null: true
+    field? :include_comments, :boolean, null: true
+    field? :include_project, :boolean, null: true
+    field? :include_permissions, :boolean, null: true
   end
 
   outputs do
-    field? :milestone, :milestone
+    field? :milestone, :milestone, null: true
   end
 
   def call(conn, inputs) do

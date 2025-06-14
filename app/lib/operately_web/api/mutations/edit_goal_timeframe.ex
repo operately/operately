@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalTimeframe do
   alias Operately.Operations.GoalTimeframeEditing
 
   inputs do
-    field? :id, :id
-    field? :timeframe, :timeframe
-    field? :comment, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:id)
+    field? :id, :id, null: true
+    field? :timeframe, :timeframe, null: true
+    field? :comment, :string, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   def call(conn, inputs) do
