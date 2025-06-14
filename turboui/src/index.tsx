@@ -15,7 +15,7 @@ export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./WorkMap";
 
-export { DateDisplayField } from "./DateDisplayField";
+export { DateField } from "./DateField";
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { ProfilePage } from "./ProfilePage";
