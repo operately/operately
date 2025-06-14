@@ -9,7 +9,7 @@ defmodule TurboConnect.ApiTest do
 
     object :user do
       field? :full_name, :string
-      field? :address, :address
+      field? :address, :address, null: true
     end
 
     object :address do
@@ -90,14 +90,14 @@ defmodule TurboConnect.ApiTest do
              objects: %{
                address: %{
                  fields: [
-                   {:street, :string, [optional: true]},
-                   {:city, :string, [optional: true]}
+                   {:street, :string, [null: false, optional: true]},
+                   {:city, :string, [null: false, optional: true]}
                  ]
                },
                user: %{
                  fields: [
-                   {:full_name, :string, [optional: true]},
-                   {:address, :address, [optional: true]}
+                   {:full_name, :string, [null: false, optional: true]},
+                   {:address, :address, [null: true, optional: true]}
                  ]
                }
              },
@@ -117,15 +117,15 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, [optional: true]},
-                   {:include_address, :boolean, [default: true, optional: true]}
+                   {:id, :id, [null: false, optional: true]},
+                   {:include_address, :boolean, [null: false, optional: true, default: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, [optional: true]},
-                   {:echod_id, :id, [optional: true]},
-                   {:echod_include_address, :boolean, [optional: true]}
+                   {:user, :user, [null: false, optional: true]},
+                   {:echod_id, :id, [null: false, optional: true]},
+                   {:echod_include_address, :boolean, [null: false, optional: true]}
                  ]
                }
              },
@@ -136,15 +136,15 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleQuery,
                inputs: %{
                  fields: [
-                   {:id, :id, [optional: true]},
-                   {:include_address, :boolean, [default: true, optional: true]}
+                   {:id, :id, [null: false, optional: true]},
+                   {:include_address, :boolean, [null: false, optional: true, default: true]}
                  ]
                },
                outputs: %{
                  fields: [
                    {:user, :user, [optional: true]},
                    {:echod_id, :id, [optional: true]},
-                   {:echod_include_address, :boolean, [optional: true]}
+                   {:echod_include_address, :boolean, [null: false, optional: true]}
                  ]
                }
              }
