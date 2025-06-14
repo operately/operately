@@ -5,28 +5,28 @@ export type Target = api.Target;
 export type Timeframe = api.Timeframe;
 
 export {
+  createGoalDiscussion,
   getGoal,
   getGoals,
   listGoalContributors,
-  useGetGoals,
-  useCreateGoal,
-  useEditGoal,
-  useConnectGoalToProject,
-  useDisconnectGoalFromProject,
-  useEditGoalTimeframe,
-  useEditGoalDiscussion,
-  useCloseGoal,
   useArchiveGoal,
   useChangeGoalParent,
-  useReopenGoal,
+  useCloseGoal,
+  useConnectGoalToProject,
+  useCreateGoal,
   useDeleteGoal,
-  createGoalDiscussion,
+  useDisconnectGoalFromProject,
+  useEditGoal,
+  useEditGoalDiscussion,
+  useEditGoalTimeframe,
+  useGetGoals,
+  useReopenGoal,
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
 export { findGoalChildren } from "./findGoalChildren";
 
-export type GoalActivities =
+type GoalActivities =
   | "goal_timeframe_editing"
   | "goal_closing"
   | "goal_check_in"
