@@ -4,7 +4,6 @@ import { GoalPage } from ".";
 import EditableText from "../EditableText";
 import { IconGoal } from "../icons";
 import { BlackLink } from "../Link";
-import { PrivacyIndicator } from "../PrivacyIndicator";
 import { StatusBadge } from "../StatusBadge";
 
 export function PageHeader(props: GoalPage.State) {
@@ -27,13 +26,6 @@ export function PageHeader(props: GoalPage.State) {
             onSave={props.updateGoalName}
             readonly={!props.canEdit}
             trimBeforeSave
-          />
-
-          <PrivacyIndicator
-            resourceType="goal"
-            privacyLevel={props.privacyLevel}
-            spaceName={props.space.name}
-            className="inline-block ml-3 align-[-2px]"
           />
 
           <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
