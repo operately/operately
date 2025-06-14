@@ -34,8 +34,8 @@ defmodule TurboConnect.Fields do
       TurboConnect.Fields.validate_field_opts(@field_scope, unquote(opts))
 
       opts = TurboConnect.Fields.default_field_opts()
-      opts = Keyword.merge(opts, unquote(opts))
       opts = Keyword.merge(opts, optional: true)
+      opts = Keyword.merge(opts, unquote(opts))
 
       @fields {@field_scope, unquote(name), unquote(type), opts}
     end

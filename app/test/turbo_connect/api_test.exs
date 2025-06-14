@@ -97,7 +97,7 @@ defmodule TurboConnect.ApiTest do
                user: %{
                  fields: [
                    {:full_name, :string, [null: false, optional: true]},
-                   {:address, :address, [null: true, optional: true]}
+                   {:address, :address, [optional: true, null: true]}
                  ]
                }
              },
@@ -142,8 +142,8 @@ defmodule TurboConnect.ApiTest do
                },
                outputs: %{
                  fields: [
-                   {:user, :user, [optional: true]},
-                   {:echod_id, :id, [optional: true]},
+                   {:user, :user, [null: false, optional: true]},
+                   {:echod_id, :id, [null: false, optional: true]},
                    {:echod_include_address, :boolean, [null: false, optional: true]}
                  ]
                }
@@ -160,13 +160,13 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [null: false, optional: false]},
-                   {:email, :string, [optional: true]}
+                   {:name, :string, [optional: false, null: false]},
+                   {:email, :string, [null: false, optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, [optional: true]}
+                   {:user, :user, [null: false, optional: true]}
                  ]
                }
              },
@@ -177,13 +177,13 @@ defmodule TurboConnect.ApiTest do
                handler: ExampleMutation,
                inputs: %{
                  fields: [
-                   {:name, :string, [null: false, optional: false]},
-                   {:email, :string, [optional: true]}
+                   {:name, :string, [optional: false, null: false]},
+                   {:email, :string, [null: false, optional: true]}
                  ]
                },
                outputs: %{
                  fields: [
-                   {:user, :user, [optional: true]}
+                   {:user, :user, [null: false, optional: true]}
                  ]
                }
              }
