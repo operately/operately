@@ -1,6 +1,6 @@
-import * as Time from "@/utils/time";
 import * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
+import * as Time from "@/utils/time";
 
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
@@ -9,56 +9,22 @@ export type ProjectRetrospective = api.ProjectRetrospective;
 
 export {
   getProject,
-  getProjects,
-  useGetProjects,
   getProjectRetrospective,
-  useMoveProjectToSpace,
-  useCreateProject,
-  useCloseProject,
-  useEditProjectName,
-  useUpdateProjectDescription,
-  useEditProjectTimeline,
+  getProjects,
   useArchiveProject,
-  useUpdateProjectContributor,
-  useResumeProject,
+  useCloseProject,
+  useCreateProject,
+  useEditProjectName,
+  useEditProjectRetrospective,
+  useEditProjectTimeline,
+  useGetProjects,
+  useMoveProjectToSpace,
   usePauseProject,
   useRemoveProjectContributor,
-  useEditProjectRetrospective,
+  useResumeProject,
+  useUpdateProjectContributor,
+  useUpdateProjectDescription,
 } from "@/api";
-
-export function getPeople(project: Project) {
-  assertPresent(project.contributors, "project contributors must be present");
-
-  return project.contributors.map((contributor) => {
-    assertPresent(contributor, "project contributor must be present");
-    assertPresent(contributor!.person, "project contributor person must be present");
-
-    return {
-      id: contributor.person.id!,
-      fullName: contributor.person.fullName!,
-      avatarUrl: contributor.person.avatarUrl!,
-    }
-  });
-}
-
-export function isClosed(project: Project) : boolean {
-  assertPresent(project.status, "project status must be present");
-
-  return project.status === "closed";
-}
-
-export function getProgress(project: Project) {
-  assertPresent(project.milestones, "milestones must be present in project");
-
-  const completedMilestones = project.milestones.filter((m) => m!.status === "done").length;
-  const totalMilestones = project.milestones.length;
-
-  if (totalMilestones === 0) {
-    return 0;
-  } else {
-    return (completedMilestones / totalMilestones) * 100;
-  }
-}
 
 export function sortByName(projects: Project[]) {
   return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));

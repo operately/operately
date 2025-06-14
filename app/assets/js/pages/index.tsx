@@ -39,7 +39,6 @@ import GoalEditTimeframePage from "./GoalEditTimeframePage";
 import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
 import GoalSubgoalsPage from "./GoalSubgoalsPage";
-import GoalV2Page from "./GoalV2Page";
 import GoalV3Page from "./GoalV3Page";
 import GoalsAndProjectsPage from "./GoalsAndProjectsPage";
 import HomePage from "./HomePage";
@@ -150,7 +149,6 @@ export default {
   GoalPage,
   GoalReopenPage,
   GoalSubgoalsPage,
-  GoalV2Page,
   GoalV3Page,
   GoalsAndProjectsPage,
   HomePage,

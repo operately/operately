@@ -5,48 +5,25 @@ export type Target = api.Target;
 export type Timeframe = api.Timeframe;
 
 export {
+  createGoalDiscussion,
   getGoal,
   getGoals,
   listGoalContributors,
-  useGetGoals,
-  useCreateGoal,
-  useEditGoal,
-  useConnectGoalToProject,
-  useDisconnectGoalFromProject,
-  useEditGoalTimeframe,
-  useEditGoalDiscussion,
-  useCloseGoal,
   useArchiveGoal,
   useChangeGoalParent,
-  useReopenGoal,
+  useCloseGoal,
+  useConnectGoalToProject,
+  useCreateGoal,
   useDeleteGoal,
-  createGoalDiscussion,
+  useDisconnectGoalFromProject,
+  useEditGoal,
+  useEditGoalDiscussion,
+  useEditGoalTimeframe,
+  useGetGoals,
+  useReopenGoal,
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
-export { findGoalChildren } from "./findGoalChildren";
-
-export type GoalActivities =
-  | "goal_timeframe_editing"
-  | "goal_closing"
-  | "goal_check_in"
-  | "goal_reopening"
-  | "goal_discussion_creation";
-
-export const GOAL_ACTIVITIES: GoalActivities[] = [
-  "goal_timeframe_editing",
-  "goal_closing",
-  "goal_check_in",
-  "goal_reopening",
-  "goal_discussion_creation",
-];
-
-export function getPeople(goal: Goal) {
-  const champion = goal.champion;
-  const reviewer = goal.reviewer;
-
-  return [champion, reviewer].filter((person) => person !== null);
-}
 
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;
