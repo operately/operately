@@ -24,29 +24,6 @@ export {
 } from "@/api";
 
 export { filterPossibleParentGoals } from "./filterPossibleParentGoals";
-export { findGoalChildren } from "./findGoalChildren";
-
-type GoalActivities =
-  | "goal_timeframe_editing"
-  | "goal_closing"
-  | "goal_check_in"
-  | "goal_reopening"
-  | "goal_discussion_creation";
-
-export const GOAL_ACTIVITIES: GoalActivities[] = [
-  "goal_timeframe_editing",
-  "goal_closing",
-  "goal_check_in",
-  "goal_reopening",
-  "goal_discussion_creation",
-];
-
-export function getPeople(goal: Goal) {
-  const champion = goal.champion;
-  const reviewer = goal.reviewer;
-
-  return [champion, reviewer].filter((person) => person !== null);
-}
 
 export function targetProgressPercentage(target: Target, clamped: boolean = true): number {
   const from = target.from!;
