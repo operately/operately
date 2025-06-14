@@ -29,11 +29,6 @@ async function loader({ params }): Promise<LoaderResult> {
     path: paths.goalV3Path(params.id),
   });
 
-  await redirectIfFeatureEnabled(params, {
-    feature: "new_goal_page",
-    path: paths.goalV2Path(params.id),
-  });
-
   return {
     goal: await Goals.getGoal({
       id: params.id,
