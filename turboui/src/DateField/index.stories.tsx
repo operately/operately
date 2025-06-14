@@ -1,30 +1,30 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { Page } from "../Page";
-import { DateDisplayField } from "./index";
+import { DateField } from "./index";
 
 /**
- * DateDisplayField combines date display and date selection.
+ * DateField combines date display and date selection.
  * - Shows date in a readable format with calendar icon
  * - Can be configured as read-only or editable
  * - Supports setting a new date or editing an existing date
  * - Provides visual indicators for overdue dates
  * - Offers two display variants: inline (default) and form-field (with border)
  */
-const meta: Meta<typeof DateDisplayField> = {
-  title: "Components/Fields/DateDisplayField",
-  component: DateDisplayField,
+const meta: Meta<typeof DateField> = {
+  title: "Components/Fields/DateField",
+  component: DateField,
   parameters: {
     layout: "fullscreen",
   },
-} satisfies Meta<typeof DateDisplayField>;
+} satisfies Meta<typeof DateField>;
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const Commponent = (args: Partial<DateDisplayField.Props>) => {
+const Commponent = (args: Partial<DateField.Props>) => {
   const [date, setDate] = React.useState<Date | null>(args.date || null);
-  return <DateDisplayField {...args} date={date} setDate={setDate} />;
+  return <DateField {...args} date={date} setDate={setDate} />;
 };
 
 export const AllStates: Story = {
@@ -35,7 +35,7 @@ export const AllStates: Story = {
     const nextYear = new Date(+new Date() + 365 * 24 * 60 * 60 * 1000);
 
     return (
-      <Page title="DateDisplayField All States" size="medium">
+      <Page title="DateField All States" size="medium">
         <div className="space-y-12 p-12">
           <div>
             <h2 className="text-lg font-bold mb-8">Inline Variant (Default)</h2>

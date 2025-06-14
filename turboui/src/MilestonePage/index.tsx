@@ -24,10 +24,10 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-// Using DateDisplayField instead of DueDateDisplay
+// Using DateField instead of DueDateDisplay
 import { IconMessageCircle, IconPlus } from "@tabler/icons-react";
 import { GhostButton } from "../Button";
-import { DateDisplayField } from "../DateDisplayField";
+import { DateField } from "../DateField";
 import * as Types from "../TaskBoard/types";
 
 interface MilestonePageProps {
@@ -141,7 +141,7 @@ export function MilestonePage({
 
             {/* Due date or Set target date affordance */}
             <div className="ml-4 flex items-center text-content-subtle">
-              <DateDisplayField
+              <DateField
                 date={milestone.dueDate || null}
                 setDate={(date) => {
                   if (onDueDateChange) {
@@ -189,8 +189,8 @@ export function MilestonePage({
               }}
             >
               <div className="px-8">
-                <TaskList 
-                  tasks={filteredTasks} 
+                <TaskList
+                  tasks={filteredTasks}
                   milestoneId={milestone.id}
                   onTaskUpdate={onTaskUpdate}
                   searchPeople={searchPeople}
