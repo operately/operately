@@ -3,9 +3,6 @@ import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import * as Spaces from "@/models/spaces";
 
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
-
 interface LoadedData {
   space: Spaces.Space;
   goals: Goals.Goal[];
@@ -13,13 +10,6 @@ interface LoadedData {
 }
 
 export async function loader({ params }): Promise<LoadedData> {
-  const paths = new Paths({ companyId: params.companyId });
-
-  await redirectIfFeatureEnabled(params, {
-    feature: "space_work_map",
-    path: paths.spaceWorkMapPath(params.id),
-  });
-
   const spacePromise = Spaces.getSpace({
     id: params.id,
     includePermissions: true,

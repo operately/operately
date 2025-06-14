@@ -389,7 +389,7 @@ function createCancelPath(paths: Paths, config: FormConfig): string {
   if (config.mode === "edit") {
     return paths.goalPath(config.goal!.id!);
   } else if (config.allowSpaceSelection) {
-    return paths.goalsPath();
+    return paths.workMapPath();
   } else {
     return paths.spacePath(config.space!.id!);
   }

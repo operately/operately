@@ -4,18 +4,27 @@ defmodule Operately.Support.Features.NotificationsSteps do
   alias Operately.Support.Features.UI
   alias Operately.People.Person
   alias OperatelyWeb.Paths
+  alias Operately.Access.Binding
 
   step :given_a_project_creation_notification_exists, ctx do
+    project_attrs = %Operately.Operations.ProjectCreation{
+      name: "my project",
+      champion_id: ctx.champion.id,
+      reviewer_id: ctx.reviewer.id,
+      creator_is_contributor: "yes",
+      creator_role: "developer",
+      visibility: "everyone",
+      creator_id: ctx.reviewer.id,
+      company_id: ctx.company.id,
+      group_id: ctx.group.id,
+      anonymous_access_level: Binding.view_access(),
+      company_access_level: Binding.comment_access(),
+      space_access_level: Binding.edit_access(),
+    }
+
+    {:ok, _} = Operately.Operations.ProjectCreation.run(project_attrs)
+
     ctx
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.click(testid: "goals-and-projects")
-    |> UI.click(testid: "add-options")
-    |> UI.click(testid: "add-project")
-    |> UI.fill(testid: "name", with: "Website Redesign")
-    |> UI.select_person_in(id: "champion", name: ctx.champion.full_name)
-    |> UI.select_person_in(id: "reviewer", name: ctx.reviewer.full_name)
-    |> UI.click(testid: "submit")
-    |> UI.assert_text("Website Redesign")
   end
 
   def visit_notifications_page(ctx) do

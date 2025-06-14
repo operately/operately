@@ -33,15 +33,16 @@ export function Page() {
 
 function Header() {
   const paths = usePaths();
+
   const newGoalPath = paths.newGoalPath({ companyWide: true });
   const newProjectPath = paths.newProjectPath({
-    backPath: paths.goalsPath(),
-    backPathName: "Back to Goal Map",
+    backPath: paths.workMapPath(),
+    backPathName: "Back to Work Map",
   });
 
   return (
     <Paper.Header
-      title="Goal Map"
+      title="Work Map"
       actions={<AddGoalOrProjectButton newGoalPath={newGoalPath} newProjectPath={newProjectPath} />}
       layout="title-center-actions-left"
       underline

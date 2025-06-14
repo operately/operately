@@ -160,7 +160,7 @@ defmodule Operately.Features.GoalTest do
 
     feature "given goal has no subgoals and projects, it can be deleted", ctx do
       ctx
-      |> Steps.visit_goals_page()
+      |> Steps.visit_work_map_page()
       |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
       |> Steps.visit_page()
       |> Steps.delete_goal()
@@ -173,7 +173,7 @@ defmodule Operately.Features.GoalTest do
       |> Steps.given_goal_has_checkins()
       |> Steps.given_goal_has_discussions()
 
-      |> Steps.visit_goals_page()
+      |> Steps.visit_work_map_page()
       |> Steps.assert_goal_exists(goal_name: ctx.goal.name)
       |> Steps.visit_page()
       |> Steps.delete_goal()

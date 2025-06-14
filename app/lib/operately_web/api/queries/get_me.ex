@@ -13,8 +13,6 @@ defmodule OperatelyWeb.Api.Queries.GetMe do
   end
 
   def call(conn, inputs) do
-    IO.inspect(inputs, label: "GetMe inputs")
-
     me(conn)
     |> preload_manager(inputs[:include_manager])
     |> serialize(inputs[:include_manager])

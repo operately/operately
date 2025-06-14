@@ -164,8 +164,8 @@ defmodule Operately.Support.Features.GoalSteps do
     UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
   end
 
-  step :visit_goals_page, ctx do
-    UI.visit(ctx, Paths.goals_path(ctx.company))
+  step :visit_work_map_page, ctx do
+    UI.visit(ctx, Paths.work_map_path(ctx.company))
   end
 
   step :delete_goal, ctx do
@@ -174,7 +174,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.click(testid: "delete-goal")
     |> UI.assert_text("Are you sure you want to delete this goal?")
     |> UI.click(testid: "confirm-delete-goal")
-    |> UI.assert_page(Paths.goals_path(ctx.company))
+    |> UI.assert_page(Paths.work_map_path(ctx.company))
   end
 
   step :assert_goal_deleted, ctx, goal_name: goal_name do

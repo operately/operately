@@ -2,22 +2,12 @@ import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 
-import { Paths } from "@/routes/paths";
-import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
-
 interface LoaderResult {
   goals: Goals.Goal[];
   projects: Projects.Project[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
-
-  await redirectIfFeatureEnabled(params, {
-    feature: "work_map_page",
-    path: paths.workMapPath(),
-  });
-
+export async function loader(): Promise<LoaderResult> {
   const [goals, projects] = await Promise.all([
     Goals.getGoals({
       includeSpace: true,
