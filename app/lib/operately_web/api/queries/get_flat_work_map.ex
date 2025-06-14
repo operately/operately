@@ -5,17 +5,17 @@ defmodule OperatelyWeb.Api.Queries.GetFlatWorkMap do
   alias Operately.WorkMaps.GetWorkMapQuery
 
   inputs do
-    field? :space_id, :id
-    field? :parent_goal_id, :id
-    field? :champion_id, :id
-    field? :reviewer_id, :id
-    field? :contributor_id, :id
-    field? :only_completed, :boolean
-    field? :include_assignees, :boolean
+    field? :space_id, :id, null: true
+    field? :parent_goal_id, :id, null: true
+    field? :champion_id, :id, null: true
+    field? :reviewer_id, :id, null: true
+    field? :contributor_id, :id, null: true
+    field? :only_completed, :boolean, null: true
+    field? :include_assignees, :boolean, null: true
   end
 
   outputs do
-    field? :work_map, list_of(:work_map_item)
+    field? :work_map, list_of(:work_map_item), null: true
   end
 
   def call(conn, inputs) do

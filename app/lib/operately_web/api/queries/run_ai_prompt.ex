@@ -5,11 +5,11 @@ defmodule OperatelyWeb.Api.Queries.RunAiPrompt do
   alias Operately.AI
 
   inputs do
-    field? :prompt, :string
+    field? :prompt, :string, null: true
   end
 
   outputs do
-    field? :result, :string
+    field? :result, :string, null: true
   end
 
   def call(conn, inputs) do

@@ -7,13 +7,13 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectCheckIn do
   alias Operately.Operations.ProjectCheckInEdit
 
   inputs do
-    field? :check_in_id, :string
-    field? :status, :string
-    field? :description, :string
+    field? :check_in_id, :string, null: true
+    field? :status, :string, null: true
+    field? :description, :string, null: true
   end
 
   outputs do
-    field? :check_in, :project_check_in
+    field? :check_in, :project_check_in, null: true
   end
 
   def call(conn, inputs) do

@@ -10,16 +10,16 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
   inputs do
     field :goal_id, :id, null: false
     field :status, :string, null: false
-    field :due_date, :date
+    field :due_date, :date, null: true
 
-    field? :content, :json
-    field? :new_target_values, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:string)
+    field? :content, :json, null: true
+    field? :new_target_values, :string, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:string), null: true
   end
 
   outputs do
-    field? :update, :goal_progress_update
+    field? :update, :goal_progress_update, null: true
   end
 
   def call(conn, inputs) do

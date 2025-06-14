@@ -3,7 +3,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCount do
   use OperatelyWeb.Api.Helpers
 
   outputs do
-    field? :count, :integer
+    field? :count, :integer, null: true
   end
 
   def call(conn, _inputs) do

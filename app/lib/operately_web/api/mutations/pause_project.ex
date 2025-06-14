@@ -3,11 +3,11 @@ defmodule OperatelyWeb.Api.Mutations.PauseProject do
   use OperatelyWeb.Api.Helpers
 
   inputs do
-    field? :project_id, :string
+    field? :project_id, :string, null: true
   end
 
   outputs do
-    field? :project, :project
+    field? :project, :project, null: true
   end
 
   def call(conn, inputs) do

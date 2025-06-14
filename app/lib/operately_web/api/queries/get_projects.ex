@@ -8,26 +8,26 @@ defmodule OperatelyWeb.Api.Queries.GetProjects do
   alias Operately.Projects.Project
 
   inputs do
-    field? :only_my_projects, :boolean
-    field? :only_reviewed_by_me, :boolean
+    field? :only_my_projects, :boolean, null: true
+    field? :only_reviewed_by_me, :boolean, null: true
 
-    field? :space_id, :string
-    field? :goal_id, :string
+    field? :space_id, :string, null: true
+    field? :goal_id, :string, null: true
 
-    field? :include_space, :boolean
-    field? :include_milestones, :boolean
-    field? :include_contributors, :boolean
-    field? :include_last_check_in, :boolean
-    field? :include_champion, :boolean
-    field? :include_reviewer, :boolean
-    field? :include_goal, :boolean
-    field? :include_archived, :boolean
-    field? :include_privacy, :boolean
-    field? :include_retrospective, :boolean
+    field? :include_space, :boolean, null: true
+    field? :include_milestones, :boolean, null: true
+    field? :include_contributors, :boolean, null: true
+    field? :include_last_check_in, :boolean, null: true
+    field? :include_champion, :boolean, null: true
+    field? :include_reviewer, :boolean, null: true
+    field? :include_goal, :boolean, null: true
+    field? :include_archived, :boolean, null: true
+    field? :include_privacy, :boolean, null: true
+    field? :include_retrospective, :boolean, null: true
   end
 
   outputs do
-    field? :projects, list_of(:project)
+    field? :projects, list_of(:project), null: true
   end
 
   def call(conn, inputs) do

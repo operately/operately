@@ -6,15 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
   alias Operately.Operations.GoalClosing
 
   inputs do
-    field? :goal_id, :id
-    field? :success, :string
-    field? :retrospective, :string
-    field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:id)
+    field? :goal_id, :id, null: true
+    field? :success, :string, null: true
+    field? :retrospective, :string, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
-    field? :goal, :goal
+    field? :goal, :goal, null: true
   end
 
   def call(conn, inputs) do

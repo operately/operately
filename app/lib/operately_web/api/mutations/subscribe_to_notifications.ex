@@ -6,8 +6,8 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotifications do
   alias Operately.Operations.NotificationsSubscribing
 
   inputs do
-    field? :id, :string
-    field? :type, :string
+    field? :id, :string, null: true
+    field? :type, :string, null: true
   end
 
   def call(conn, inputs) do
