@@ -8,7 +8,7 @@ import { StatusBadge } from "../StatusBadge";
 
 import { IconAlertTriangleFilled } from "@tabler/icons-react";
 import { match } from "ts-pattern";
-import { DateDisplayField } from "../DateDisplayField";
+import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { GoalField } from "../GoalField";
 import { PersonField } from "../PersonField";
@@ -34,7 +34,7 @@ function DueDate(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Due Date">
-      <DateDisplayField
+      <DateField
         date={props.dueDate}
         setDate={props.setDueDate}
         readonly={isReadonly}
@@ -51,7 +51,7 @@ function CompletedOn(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Completed On">
-      <DateDisplayField date={props.closedAt} readonly showOverdueWarning={false} />
+      <DateField date={props.closedAt} readonly showOverdueWarning={false} />
     </SidebarSection>
   );
 }

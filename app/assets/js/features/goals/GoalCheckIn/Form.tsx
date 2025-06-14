@@ -13,7 +13,7 @@ import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { IconInfoCircle } from "@tabler/icons-react";
 import { match } from "ts-pattern";
-import { DateDisplayField, Tooltip } from "turboui";
+import { DateField, Tooltip } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {
@@ -231,7 +231,7 @@ function DueDateSelector() {
   return (
     <div>
       <Label text="Due Date" info="Set a new due date for the goal." />
-      <DateDisplayField date={value} setDate={setValue} variant="form-field" emptyStateText="No due date set" />
+      <DateField date={value} setDate={setValue} variant="form-field" emptyStateText="No due date set" />
     </div>
   );
 }

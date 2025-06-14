@@ -1,14 +1,14 @@
-import React, { useState, useCallback } from "react";
+import { IconFileText, IconMessageCircle } from "@tabler/icons-react";
+import React, { useCallback, useState } from "react";
+import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PersonField } from "../../PersonField";
-import { DateDisplayField } from "../../DateDisplayField";
-import { IconFileText, IconMessageCircle } from "@tabler/icons-react";
 import { useDraggable } from "../../utils/DragAndDrop";
 import classNames from "../../utils/classnames";
 import { StatusSelector } from "./StatusSelector";
 
 // Using shared types
-import { TaskWithIndex, Person } from "../types";
+import { Person, TaskWithIndex } from "../types";
 
 interface TaskItemProps {
   task: TaskWithIndex;
@@ -22,49 +22,58 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
   // Local state for the assignee and due date
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<Date | null>(task.dueDate || null);
-  
+
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
 
   const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
 
   // Handle assignee change locally and notify parent
-  const handleAssigneeChange = useCallback((newAssignee: Person | null) => {
-    setCurrentAssignee(newAssignee);
-    
-    // Notify parent component if callback is provided
-    if (onTaskUpdate && task.id) {
-      onTaskUpdate(task.id, { 
-        assignees: newAssignee ? [newAssignee] : [] 
-      });
-    }
-  }, [task.id, onTaskUpdate]);
+  const handleAssigneeChange = useCallback(
+    (newAssignee: Person | null) => {
+      setCurrentAssignee(newAssignee);
+
+      // Notify parent component if callback is provided
+      if (onTaskUpdate && task.id) {
+        onTaskUpdate(task.id, {
+          assignees: newAssignee ? [newAssignee] : [],
+        });
+      }
+    },
+    [task.id, onTaskUpdate],
+  );
 
   // Handle due date change locally and notify parent
-  const handleDueDateChange = useCallback((newDueDate: Date | null) => {
-    setCurrentDueDate(newDueDate);
-    
-    // Notify parent component if callback is provided
-    if (onTaskUpdate && task.id) {
-      onTaskUpdate(task.id, { 
-        dueDate: newDueDate || undefined // Convert null to undefined for Task type compatibility
-      });
-    }
-  }, [task.id, onTaskUpdate]);
+  const handleDueDateChange = useCallback(
+    (newDueDate: Date | null) => {
+      setCurrentDueDate(newDueDate);
+
+      // Notify parent component if callback is provided
+      if (onTaskUpdate && task.id) {
+        onTaskUpdate(task.id, {
+          dueDate: newDueDate || undefined, // Convert null to undefined for Task type compatibility
+        });
+      }
+    },
+    [task.id, onTaskUpdate],
+  );
 
   // Handle status change
-  const handleStatusChange = useCallback((newStatus: string) => {
-    // Notify parent component if callback is provided
-    if (onTaskUpdate && task.id) {
-      onTaskUpdate(task.id, { status: newStatus as any });
-    }
-    
-    // Also dispatch event for backward compatibility
-    const changeEvent = new CustomEvent("statusChange", {
-      detail: { taskId: task.id, newStatus },
-    });
-    document.dispatchEvent(changeEvent);
-  }, [task.id, onTaskUpdate]);
+  const handleStatusChange = useCallback(
+    (newStatus: string) => {
+      // Notify parent component if callback is provided
+      if (onTaskUpdate && task.id) {
+        onTaskUpdate(task.id, { status: newStatus as any });
+      }
+
+      // Also dispatch event for backward compatibility
+      const changeEvent = new CustomEvent("statusChange", {
+        detail: { taskId: task.id, newStatus },
+      });
+      document.dispatchEvent(changeEvent);
+    },
+    [task.id, onTaskUpdate],
+  );
 
   return (
     <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
@@ -73,12 +82,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
         <div className="flex-1 flex items-center gap-2 min-w-0">
           {/* Status icon */}
           <div className="flex-shrink-0 flex items-center">
-            <StatusSelector
-              status={task.status}
-              onChange={handleStatusChange}
-              size="md"
-              readonly={!onTaskUpdate}
-            />
+            <StatusSelector status={task.status} onChange={handleStatusChange} size="md" readonly={!onTaskUpdate} />
           </div>
 
           {/* Task title with inline meta indicators */}
@@ -112,9 +116,9 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
         <div className="flex items-center gap-3 flex-shrink-0 ml-4">
           {/* Due date */}
           <div className="flex items-center group/due-date">
-            {/* Show DateDisplayField when there's a date OR on hover when no date */}
-            {(currentDueDate || !onTaskUpdate) ? (
-              <DateDisplayField
+            {/* Show DateField when there's a date OR on hover when no date */}
+            {currentDueDate || !onTaskUpdate ? (
+              <DateField
                 date={currentDueDate}
                 setDate={handleDueDateChange}
                 variant="inline"
@@ -128,7 +132,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
             ) : (
               /* Empty state that appears on hover */
               <div className="opacity-0 group-hover/due-date:opacity-100 transition-opacity">
-                <DateDisplayField
+                <DateField
                   date={null}
                   setDate={handleDueDateChange}
                   variant="inline"

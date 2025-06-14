@@ -1,19 +1,19 @@
 import {
   IconAlertTriangleFilled,
+  IconArchive,
   IconBell,
   IconBellOff,
   IconCalendar,
   IconLink,
   IconTrash,
-  IconArchive,
 } from "@tabler/icons-react";
 import React from "react";
 import { TaskPage } from ".";
-import { DateDisplayField } from "../DateDisplayField";
-import FormattedTime from "../FormattedTime";
-import { PersonField } from "../PersonField";
-import { MilestoneField } from "../MilestoneField";
 import { AvatarWithName } from "../Avatar";
+import { DateField } from "../DateField";
+import FormattedTime from "../FormattedTime";
+import { MilestoneField } from "../MilestoneField";
+import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
 
 export function Sidebar(props: TaskPage.State) {
@@ -34,7 +34,7 @@ function DueDate(props: TaskPage.State) {
 
   return (
     <SidebarSection title="Due Date">
-      <DateDisplayField
+      <DateField
         date={props.dueDate ?? null}
         setDate={props.onDueDateChange}
         readonly={!props.canEdit}

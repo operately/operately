@@ -6,7 +6,7 @@ import { SecondaryButton } from "../Button";
 import classNames from "../utils/classnames";
 import { isCurrentYear, isOverdue } from "../utils/time";
 
-export namespace DateDisplayField {
+export namespace DateField {
   export interface Props {
     date: Date | null;
     setDate?: (date: Date | null) => void;
@@ -27,7 +27,7 @@ export namespace DateDisplayField {
   }
 }
 
-export function DateDisplayField({
+export function DateField({
   date,
   setDate = () => {},
   readonly = false,
@@ -40,7 +40,7 @@ export function DateDisplayField({
   showIcon = true,
   emptyStateText = "Set date",
   emptyStateReadonlyText = "No date set",
-}: DateDisplayField.Props) {
+}: DateField.Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleChange = (newDate: Date | null) => {
@@ -77,7 +77,8 @@ export function DateDisplayField({
     const triggerClassName = classNames(
       {
         "inline-block focus:outline-none hover:bg-surface-dimmed rounded-lg": variant === "inline",
-        "inline-block border border-surface-outline rounded-lg w-full focus:outline-none hover:bg-surface-dimmed": variant === "form-field",
+        "inline-block border border-surface-outline rounded-lg w-full focus:outline-none hover:bg-surface-dimmed":
+          variant === "form-field",
       },
       className,
     );
@@ -101,9 +102,9 @@ const DatePickerPopover = React.forwardRef<
     setNewDate: (date: Date | null) => void;
   }
 >(({ date, clearDate, setNewDate }, ref) => (
-  <Popover.Content 
+  <Popover.Content
     ref={ref}
-    className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50" 
+    className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50"
     sideOffset={5}
   >
     <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
