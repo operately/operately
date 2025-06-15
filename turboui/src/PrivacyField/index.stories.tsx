@@ -86,30 +86,6 @@ export const AllStates: Story = {
                 <h3 className="text-sm font-bold mb-2">Empty + Read-Only</h3>
                 <Component privacyLevel={null} spaceName="Marketing" resourceType="project" readonly variant="inline" />
               </div>
-
-              <div>
-                <h3 className="text-sm font-bold mb-2">Empty + As Button</h3>
-                <Component
-                  privacyLevel={null}
-                  spaceName="Marketing"
-                  resourceType="project"
-                  showEmptyStateAsButton
-                  variant="inline"
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-bold mb-2">Empty + As Button + Read-Only</h3>
-                <Component
-                  privacyLevel={null}
-                  spaceName="Marketing"
-                  resourceType="project"
-                  showEmptyStateAsButton
-                  readonly
-                  variant="inline"
-                />
-                <span className="text-xs text-content-dimmed">(It is invisible)</span>
-              </div>
             </div>
           </div>
 
