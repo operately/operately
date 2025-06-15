@@ -109,7 +109,7 @@ function Component(props: Partial<GoalPage.Props>) {
       setReviewer={setReviewer}
       dueDate={dueDate}
       setDueDate={setDueDate}
-      canEdit={true}
+      canEdit={props.canEdit ?? true}
       mentionedPersonLookup={async (_id: string) => null}
       peopleSearch={searchPeopleFn}
       championSearch={searchPeopleFn}

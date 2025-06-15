@@ -286,6 +286,11 @@ function Actions(props: GoalPage.State) {
     },
   ];
 
+  const visibleCount = actions.filter((action) => !action.hidden).length;
+  if (visibleCount === 0) {
+    return null;
+  }
+
   return (
     <div className="border-t pt-4">
       <ActionList actions={actions} />
