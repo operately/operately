@@ -1,20 +1,29 @@
-import { IconUserCheck, IconUserStar } from "@tabler/icons-react";
 import React from "react";
-import { GoalPage } from ".";
-import { Avatar } from "../Avatar";
-import { DivLink } from "../Link";
-import { Summary } from "../RichContent";
-import { StatusBadge } from "../StatusBadge";
-
-import { IconAlertTriangleFilled } from "@tabler/icons-react";
-import { match } from "ts-pattern";
-import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
+import classNames from "../utils/classnames";
+
+import { match } from "ts-pattern";
+import { GoalPage } from ".";
+import { ActionList } from "../ActionList";
+import { Avatar } from "../Avatar";
+import { DateField } from "../DateField";
 import { GoalField } from "../GoalField";
+import { DivLink } from "../Link";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
-import classNames from "../utils/classnames";
+import { Summary } from "../RichContent";
+import { StatusBadge } from "../StatusBadge";
 import { durationHumanized, isOverdue } from "../utils/time";
+
+import {
+  IconAlertTriangleFilled,
+  IconCircleArrowRight,
+  IconCircleCheck,
+  IconRotateDot,
+  IconTrash,
+  IconUserCheck,
+  IconUserStar,
+} from "@tabler/icons-react";
 
 export function Sidebar(props: GoalPage.State) {
   return (
@@ -27,6 +36,7 @@ export function Sidebar(props: GoalPage.State) {
       <Champion {...props} />
       <Reviewer {...props} />
       <Privacy {...props} />
+      <Actions {...props} />
     </div>
   );
 }
@@ -239,6 +249,45 @@ function Privacy(props: GoalPage.State) {
   return (
     <SidebarSection title="Privacy">
       <PrivacyField privacyLevel={props.privacyLevel} readonly={true} />
+    </SidebarSection>
+  );
+}
+
+function Actions(props: GoalPage.State) {
+  const actions = [
+    {
+      type: "link" as const,
+      label: "Close Goal",
+      link: props.closeLink,
+      icon: IconCircleCheck,
+      hidden: !props.canEdit || props.state === "closed",
+    },
+    {
+      type: "link" as const,
+      label: "Re-open Goal",
+      link: props.reopenLink,
+      icon: IconRotateDot,
+      hidden: !props.canEdit || props.state !== "closed",
+    },
+    {
+      type: "action" as const,
+      label: "Move to another space",
+      onClick: props.openMoveModal,
+      icon: IconCircleArrowRight,
+      hidden: !props.canEdit,
+    },
+    {
+      type: "action" as const,
+      label: "Delete",
+      onClick: props.openDeleteModal,
+      icon: IconTrash,
+      hidden: !props.canEdit,
+    },
+  ];
+
+  return (
+    <SidebarSection title="Actions">
+      <ActionList actions={actions} />
     </SidebarSection>
   );
 }
