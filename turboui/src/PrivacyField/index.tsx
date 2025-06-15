@@ -19,7 +19,6 @@ interface PrivacyFieldProps {
   iconSize?: number;
   textSize?: string;
 
-  showEmptyStateAsButton?: boolean;
   showIcon?: boolean;
   emptyStateText?: string;
   emptyStateReadonlyText?: string;
@@ -37,7 +36,6 @@ export function PrivacyField({
   textSize = "text-sm",
   variant = "inline",
   className = "",
-  showEmptyStateAsButton = false,
   showIcon = true,
   emptyStateText = "Set privacy",
   emptyStateReadonlyText = "No privacy set",
@@ -51,49 +49,42 @@ export function PrivacyField({
     }
   };
 
-  const display = (
-    <PrivacyDisplay
-      privacyLevel={privacyLevel}
-      spaceName={spaceName}
-      resourceType={resourceType}
-      className={className}
-      readonly={readonly}
-      showEmptyStateAsButton={showEmptyStateAsButton}
-      showIcon={showIcon}
-      emptyStateText={emptyStateText}
-      emptyStateReadonlyText={emptyStateReadonlyText}
-      iconSize={iconSize}
-      textSize={textSize}
-      variant={variant}
-    />
+  const triggerClassName = classNames(
+    "inline-block focus:outline-none",
+    {
+      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": variant === "inline" && !readonly,
+      "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": variant === "form-field",
+    },
+    className,
   );
 
-  if (readonly) {
-    return display;
-  } else {
-    const triggerClassName = classNames(
-      {
-        "inline-block focus:outline-none hover:bg-surface-dimmed rounded-lg": variant === "inline",
-        "inline-block border border-surface-outline rounded-lg w-full focus:outline-none hover:bg-surface-dimmed":
-          variant === "form-field",
-      },
-      className,
-    );
-
-    return (
-      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Popover.Trigger className={triggerClassName}>{display}</Popover.Trigger>
-        <Popover.Portal>
-          <PrivacyPickerPopover
-            privacyLevel={privacyLevel}
-            setNewPrivacyLevel={handleChange}
-            spaceName={spaceName}
-            resourceType={resourceType}
-          />
-        </Popover.Portal>
-      </Popover.Root>
-    );
-  }
+  return (
+    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Popover.Trigger className={triggerClassName} disabled={readonly}>
+        <PrivacyDisplay
+          privacyLevel={privacyLevel}
+          spaceName={spaceName}
+          resourceType={resourceType}
+          className={className}
+          readonly={readonly}
+          showIcon={showIcon}
+          emptyStateText={emptyStateText}
+          emptyStateReadonlyText={emptyStateReadonlyText}
+          iconSize={iconSize}
+          textSize={textSize}
+          variant={variant}
+        />
+      </Popover.Trigger>
+      <Popover.Portal>
+        <PrivacyPickerPopover
+          privacyLevel={privacyLevel}
+          setNewPrivacyLevel={handleChange}
+          spaceName={spaceName}
+          resourceType={resourceType}
+        />
+      </Popover.Portal>
+    </Popover.Root>
+  );
 }
 
 const PrivacyPickerPopover = React.forwardRef<
@@ -172,8 +163,6 @@ interface PrivacyDisplayProps {
 
   iconSize: number;
   textSize: string;
-
-  showEmptyStateAsButton: boolean;
   showIcon: boolean;
 
   emptyStateText: string;
@@ -191,8 +180,6 @@ function PrivacyDisplay(props: PrivacyDisplayProps) {
     {
       "flex items-center": true,
       "gap-1.5": props.showIcon,
-      "px-1.5 py-1": variant === "inline",
-      "px-2 py-1.5": variant === "form-field",
       "text-content-dimmed": !props.privacyLevel,
       "w-full": variant === "form-field",
       "justify-between": variant === "form-field" && !props.readonly,
