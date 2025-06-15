@@ -58,7 +58,7 @@ export function DateField({
   const triggerClassName = classNames(
     "inline-block focus:outline-none",
     {
-      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": variant === "inline",
+      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": variant === "inline" && !readonly,
       "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": variant === "form-field",
     },
     className,
@@ -66,7 +66,7 @@ export function DateField({
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger className={triggerClassName}>
+      <Popover.Trigger className={triggerClassName} disabled={readonly}>
         <DateDisplay
           date={date}
           className={className}
