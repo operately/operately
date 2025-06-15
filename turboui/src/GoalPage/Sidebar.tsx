@@ -282,12 +282,13 @@ function Actions(props: GoalPage.State) {
       onClick: props.openDeleteModal,
       icon: IconTrash,
       hidden: !props.canEdit,
+      danger: true,
     },
   ];
 
   return (
-    <SidebarSection title="Actions">
+    <div className="border-t pt-4">
       <ActionList actions={actions} />
-    </SidebarSection>
+    </div>
   );
 }
