@@ -55,43 +55,38 @@ export function DateField({
     setIsOpen(false);
   };
 
-  const display = (
-    <DateDisplay
-      date={date}
-      className={className}
-      readonly={readonly}
-      showOverdueWarning={showOverdueWarning}
-      showEmptyStateAsButton={showEmptyStateAsButton}
-      showIcon={showIcon}
-      emptyStateText={emptyStateText}
-      emptyStateReadonlyText={emptyStateReadonlyText}
-      iconSize={iconSize}
-      textSize={textSize}
-      variant={variant}
-    />
+  const triggerClassName = classNames(
+    "inline-block focus:outline-none",
+    {
+      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": variant === "inline",
+      "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": variant === "form-field",
+    },
+    className,
   );
 
-  if (readonly) {
-    return display;
-  } else {
-    const triggerClassName = classNames(
-      {
-        "inline-block focus:outline-none hover:bg-surface-dimmed rounded-lg": variant === "inline",
-        "inline-block border border-surface-outline rounded-lg w-full focus:outline-none hover:bg-surface-dimmed":
-          variant === "form-field",
-      },
-      className,
-    );
+  return (
+    <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
+      <Popover.Trigger className={triggerClassName}>
+        <DateDisplay
+          date={date}
+          className={className}
+          readonly={readonly}
+          showOverdueWarning={showOverdueWarning}
+          showEmptyStateAsButton={showEmptyStateAsButton}
+          showIcon={showIcon}
+          emptyStateText={emptyStateText}
+          emptyStateReadonlyText={emptyStateReadonlyText}
+          iconSize={iconSize}
+          textSize={textSize}
+          variant={variant}
+        />
+      </Popover.Trigger>
 
-    return (
-      <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-        <Popover.Trigger className={triggerClassName}>{display}</Popover.Trigger>
-        <Popover.Portal>
-          <DatePickerPopover date={date} setNewDate={handleChange} clearDate={clearDate} />
-        </Popover.Portal>
-      </Popover.Root>
-    );
-  }
+      <Popover.Portal>
+        <DatePickerPopover date={date} setNewDate={handleChange} clearDate={clearDate} />
+      </Popover.Portal>
+    </Popover.Root>
+  );
 }
 
 const DatePickerPopover = React.forwardRef<
@@ -153,8 +148,6 @@ function DateDisplay(props: DateDisplayProps) {
 
   const iconSize = props.iconSize;
   const textSize = props.textSize;
-  // Always use span since this component is wrapped in Popover.Trigger when interactive
-  const Elem = "span";
   const isDateOverdue = props.date && isOverdue(props.date);
   const variant = props.variant || "inline";
 
@@ -162,8 +155,6 @@ function DateDisplay(props: DateDisplayProps) {
     {
       "flex items-center": true,
       "gap-1.5": props.showIcon,
-      "px-1.5 py-1": variant === "inline",
-      "px-2 py-1.5": variant === "form-field",
       "text-content-error": isDateOverdue && props.showOverdueWarning,
       "text-content-dimmed": !props.date,
       "w-full": variant === "form-field",
@@ -182,10 +173,10 @@ function DateDisplay(props: DateDisplayProps) {
   }
 
   return (
-    <Elem className={elemClass}>
+    <span className={elemClass}>
       {props.showIcon && <IconCalendarEvent size={iconSize} className="-mt-[1px]" />}
       <span>{text}</span>
-    </Elem>
+    </span>
   );
 }
 
