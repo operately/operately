@@ -17,7 +17,6 @@ import { Discussions } from "./Discussions";
 import { MoveModal } from "./MoveModal";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
-import { pageOptions } from "./PageOptions";
 
 export namespace GoalPage {
   export interface Space {
@@ -183,7 +182,7 @@ export function GoalPage(props: GoalPage.Props) {
   ]);
 
   return (
-    <PageNew title={[state.goalName]} options={pageOptions(state)} size="fullwidth">
+    <PageNew title={[state.goalName]} size="fullwidth">
       <PageHeader {...state} />
       <Tabs tabs={tabs} />
 
