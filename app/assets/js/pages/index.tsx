@@ -23,6 +23,7 @@ import DiscussionNewPage from "./DiscussionNewPage";
 import DiscussionPage from "./DiscussionPage";
 import FeedPage from "./FeedPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
+import GoalActivityPage from "./GoalActivityPage";
 import GoalAddPage from "./GoalAddPage";
 import GoalCheckInNewPage from "./GoalCheckInNewPage";
 import GoalCheckInPage from "./GoalCheckInPage";
@@ -119,6 +120,7 @@ export default {
   DiscussionPage,
   FeedPage,
   ForgotPasswordPage,
+  GoalActivityPage,
   GoalAddPage,
   GoalCheckInNewPage,
   GoalCheckInPage,
