@@ -320,14 +320,6 @@ export class Paths {
     return this.createCompanyPath(["goals", goalId]);
   }
 
-  // Temporary path
-  goalV2Path(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "v2"]);
-  }
-  goalV3Path(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "v3"]);
-  }
-
   newGoalPath(params?: GoalAddPage.UrlParams) {
     return this.createCompanyPath(["goals", "new"]) + encodeUrlParams(params);
   }
@@ -338,14 +330,6 @@ export class Paths {
 
   newProjectPath(params?: ProjectAddPage.UrlParams) {
     return this.createCompanyPath(["projects", "new"]) + encodeUrlParams(params);
-  }
-
-  goalAboutPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "about"]);
-  }
-
-  goalSubgoalsPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "subgoals"]);
   }
 
   goalNewPath({ parentGoalId }: { parentGoalId: string }) {
@@ -362,10 +346,6 @@ export class Paths {
 
   newGoalDiscussionPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "discussions", "new"]);
-  }
-
-  goalDiscussionsPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "discussions"]);
   }
 
   goalDiscussionPath(id: string) {
@@ -386,22 +366,6 @@ export class Paths {
 
   goalReopenPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "reopen"]);
-  }
-
-  goalArchivePath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "archive"]);
-  }
-
-  goalEditParentPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "edit", "parent"]);
-  }
-
-  goalEditTimeframePath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "edit", "timeframe"]);
-  }
-
-  goalEditPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "edit"]);
   }
 
   profilePath(personId: string, tab?: string) {

@@ -1,18 +1,13 @@
-import Api, { Activity, GetActivitiesInput, GetActivityInput } from "@/api";
-export type { Activity, CommentThread, ActivityContentGoalCheckIn, ActivityContentGoalTimeframeEditing } from "@/api";
+import Api, { Activity, GetActivityInput } from "@/api";
+export type { Activity, ActivityContentGoalCheckIn, ActivityContentGoalTimeframeEditing, CommentThread } from "@/api";
 
-import * as Time from "@/utils/time";
 import * as api from "@/api";
+import * as Time from "@/utils/time";
 import { match } from "ts-pattern";
 
 export const getActivity = async (input: GetActivityInput) => {
   const response = await Api.getActivity(input);
   return response.activity!;
-};
-
-export const getActivities = async (input: GetActivitiesInput) => {
-  const response = await Api.getActivities(input);
-  return response.activities!;
 };
 
 export interface ActivityGroup {
