@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { GoalPage } from ".";
 import { MiniWorkMap } from "../MiniWorkMap";
+import { PrivacyField } from "../PrivacyField";
 import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
@@ -67,10 +68,15 @@ function Component(props: Partial<GoalPage.Props>) {
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
   const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
   const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);
+  const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>(
+    props.accessLevels || {
+      company: "view",
+      space: "view",
+    },
+  );
 
   const defaults = {
     description,
-    privacyLevel: "internal" as const,
     status: "on_track" as const,
     state: "active" as const,
     goalName: "Launch AI Platform",
@@ -92,6 +98,8 @@ function Component(props: Partial<GoalPage.Props>) {
       space={space}
       setSpace={setSpace}
       spaceSearch={spaceSearch}
+      accessLevels={accessLevels}
+      setAccessLevels={setAccessLevels}
       workmapLink="#"
       closeLink="#"
       reopenLink="#"
@@ -516,7 +524,10 @@ export const ClosedGoal: Story = {
 
 export const PrivateGoal: Story = {
   args: {
-    privacyLevel: "confidential",
+    accessLevels: {
+      company: "no_access",
+      space: "no_access",
+    },
   },
 };
 
