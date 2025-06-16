@@ -42,7 +42,7 @@ export function Form({ goal }: { goal: Goals.Goal }) {
           Post Discussion
         </PrimaryButton>
 
-        <DimmedLink to={paths.goalDiscussionsPath(goal.id!)}>Cancel</DimmedLink>
+        <DimmedLink to={paths.goalPath(goal.id!, { tab: "discussions" })}>Cancel</DimmedLink>
       </div>
     </>
   );
