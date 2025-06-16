@@ -2166,7 +2166,7 @@ export interface ListGoalContributorsResult {
 }
 
 export interface ListPossibleManagersInput {
-  userId: Id;
+  userId?: Id;
 }
 
 export interface ListPossibleManagersResult {

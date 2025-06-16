@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Queries.ListPossibleManagers do
   alias Operately.People.Person
 
   inputs do
-    field :user_id, :id
+    field? :user_id, :id
   end
 
   outputs do

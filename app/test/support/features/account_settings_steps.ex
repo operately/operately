@@ -73,7 +73,13 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :given_a_person_exists_in_company, ctx, manager_name do
-    ctx |> Factory.add_company_member(:manager, full_name: manager_name)
+    {:ok, _} =
+      ctx.person
+      |> Operately.People.get_peers()
+      |> hd()
+      |> Operately.People.update_person(%{full_name: manager_name})
+
+    ctx
   end
 
   step :set_manager, ctx, manager_name do
