@@ -68,10 +68,6 @@ defmodule Operately.Support.Features.GoalTreeSteps do
     ctx
   end
 
-  step :visit_goal_tree_page, ctx do
-    UI.visit(ctx, Paths.goals_path(ctx.company))
-  end
-
   step :visit_goal_page, ctx, goal do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, goal))
