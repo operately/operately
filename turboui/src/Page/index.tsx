@@ -23,6 +23,7 @@ export namespace Page {
     options?: Option[];
     children?: React.ReactNode;
     navigation?: Navigation.Item[];
+    testId?: string;
   }
 }
 
@@ -73,7 +74,7 @@ export function PageNew(props: Page.Props) {
   );
 
   return (
-    <div className={containerClass}>
+    <div className={containerClass} data-test-id={props.testId}>
       {props.navigation && <Navigation items={props.navigation} />}
 
       <div className={innerClass}>

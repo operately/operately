@@ -17,7 +17,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   step :given_a_goal_exists, ctx, goal_params do
     ctx
-    |> Factory.add_goal(:goal, :space, [name: goal_params.name, champion: :champion, reviewer: :reviewer, space: :space])
+    |> Factory.add_goal(:goal, :space, name: goal_params.name, champion: :champion, reviewer: :reviewer, space: :space)
   end
 
   step :add_goal, ctx, goal_params do
@@ -115,5 +115,4 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
       action: "added the #{goal_name} goal"
     })
   end
-
 end
