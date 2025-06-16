@@ -86,7 +86,6 @@ export function createAppRoutes() {
         pageRoute("people", pages.PeoplePage),
         pageRoute("people/org-chart", pages.PeopleOrgChartPage),
         pageRoute("people/:id", pages.ProfilePage),
-        pageRoute("people/:id/goals", pages.ProfileGoalsPage),
         pageRoute("people/:id/profile/edit", pages.ProfileEditPage),
 
         pageRoute("spaces/new", pages.SpaceAddPage),
@@ -97,7 +96,6 @@ export function createAppRoutes() {
         pageRoute("spaces/:id/discussions/new", pages.DiscussionNewPage),
         pageRoute("spaces/:id/discussions/drafts", pages.DiscussionDraftsPage),
         pageRoute("spaces/:id/goals/new", pages.GoalAddPage),
-        pageRoute("spaces/:id/goals", pages.SpaceGoalsPage),
         pageRoute("spaces/:id/access", pages.SpaceAccessManagementPage),
         pageRoute("spaces/:id/edit/general-access", pages.SpaceEditGeneralAccessPage),
         pageRoute("spaces/:id/add-members", pages.SpaceAddMembersPage),
@@ -122,7 +120,6 @@ export function createAppRoutes() {
 
         pageRoute("work-map", pages.CompanyWorkMapPage),
 
-        pageRoute("goals", pages.GoalsAndProjectsPage),
         pageRoute("goals/new", pages.GoalAddPage),
         pageRoute("goals/:id", pages.GoalPage),
         pageRoute("goals/:id/v3", pages.GoalV3Page),
@@ -145,7 +142,6 @@ export function createAppRoutes() {
         pageRoute("goal-activities/:id", pages.GoalActivityPage),
         pageRoute("goal-activities/:id/edit", pages.GoalDiscussionEditPage),
 
-        pageRoute("projects", pages.ProjectsPage),
         pageRoute("projects/new", pages.ProjectAddPage),
         pageRoute("projects/:projectID/pause", pages.ProjectPausePage),
         pageRoute("projects/:projectID/resume", pages.ProjectResumePage),
