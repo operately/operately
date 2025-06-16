@@ -2,7 +2,6 @@ import { match } from "ts-pattern";
 
 import * as api from "@/api";
 import * as Time from "@/utils/time";
-import plurarize from "./plurarize";
 
 //
 // Type definitions
@@ -147,46 +146,6 @@ export function fourthQuarterOfYear(year: number): Timeframe {
 //
 // Duration calculations
 //
-
-export function isStarted(timeframe: Timeframe): boolean {
-  return !!timeframe.startDate && Time.isPast(timeframe.startDate);
-}
-
-export function isOverdue(timeframe: Timeframe): boolean {
-  if (!timeframe.endDate) return false;
-
-  return !Time.isToday(timeframe.endDate) && Time.isPast(timeframe.endDate);
-}
-
-export function remainingDays(timeframe: Timeframe): number {
-  if (isOverdue(timeframe)) return 0;
-  if (!timeframe.endDate) return 0;
-
-  return Time.daysBetween(Time.today(), timeframe.endDate);
-}
-
-export function formatRemainingTime(days: number): string {
-  if (days <= 13) {
-    return plurarize(days, "day", "days");
-  }
-
-  const weeks = Math.round(days / 7);
-  return plurarize(weeks, "week", "weeks");
-}
-
-export function overdueDays(timeframe: Timeframe): number {
-  if (!isOverdue(timeframe)) return 0;
-  if (!timeframe.endDate) return 0;
-
-  return Time.daysBetween(timeframe.endDate, Time.today());
-}
-
-export function startsInDays(timeframe: Timeframe): number {
-  if (isStarted(timeframe)) return 0;
-  if (!timeframe.startDate) return 0;
-
-  return Time.daysBetween(Time.today(), timeframe.startDate);
-}
 
 export function dayCount(timeframe: Timeframe): number {
   if (!timeframe.startDate) return 0;
