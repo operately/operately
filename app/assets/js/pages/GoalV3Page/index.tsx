@@ -1,6 +1,7 @@
-import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
-import * as People from "@/models/people";
+import Api, { AccessLevels, GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
 import { PageModule } from "@/routes/types";
+
+import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
@@ -139,7 +140,7 @@ function Page() {
     neglectedGoal: false,
     deleteGoal,
 
-    accessLevels: { company: "edit" as const, space: "edit" as const },
+    accessLevels: prepareAccessLevels(goal.accessLevels!),
     setAccessLevels: () => {
       throw new Error("Access levels are not implmented in GoalV3Page");
     },
@@ -500,5 +501,29 @@ function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
       name: space.name!,
       link: paths.spacePath(space.id!),
     }));
+  };
+}
+
+function parseAccessLevel(level: number): "no_access" | "view" | "comment" | "edit" | "full" {
+  switch (level) {
+    case 0:
+      return "no_access";
+    case 10:
+      return "view";
+    case 40:
+      return "comment";
+    case 70:
+      return "edit";
+    case 100:
+      return "full";
+    default:
+      return "no_access";
+  }
+}
+
+function prepareAccessLevels(levels: AccessLevels): GoalPage.Props["accessLevels"] {
+  return {
+    company: parseAccessLevel(levels.company!),
+    space: parseAccessLevel(levels.space!),
   };
 }
