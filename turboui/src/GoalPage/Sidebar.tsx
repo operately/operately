@@ -248,7 +248,13 @@ function SidebarSection({ title, children }: { title: string; children: React.Re
 function Privacy(props: GoalPage.State) {
   return (
     <SidebarSection title="Privacy">
-      <PrivacyField privacyLevel={props.privacyLevel} readonly={true} />
+      <PrivacyField
+        accessLevels={props.accessLevels}
+        spaceName={props.space.name}
+        setAccessLevels={props.setAccessLevels}
+        resourceType={"goal"}
+        readonly={true} // TODO: Make this editable in the future
+      />
     </SidebarSection>
   );
 }
