@@ -253,7 +253,7 @@ function Privacy(props: GoalPage.State) {
         spaceName={props.space.name}
         setAccessLevels={props.setAccessLevels}
         resourceType={"goal"}
-        readonly={true} // TODO: Make this editable in the future
+        readonly={!props.canEdit}
       />
     </SidebarSection>
   );

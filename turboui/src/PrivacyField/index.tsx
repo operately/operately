@@ -224,10 +224,10 @@ function AccessLevelOptions(props: PrivacyField.State) {
   const visibleCompanyAccessLevels = ["no_access", "view", "comment", "edit", "full"] as const;
 
   const visibleSpaceAccessLevels = match(props.accessLevels.company)
-    .with("no_access", () => ["no_access", "view", "comment", "edit"])
-    .with("view", () => ["view", "comment", "edit"])
-    .with("comment", () => ["comment", "edit"])
-    .with("edit", () => ["edit"])
+    .with("no_access", () => ["no_access", "view", "comment", "edit", "full"])
+    .with("view", () => ["view", "comment", "edit", "full"])
+    .with("comment", () => ["comment", "edit", "full"])
+    .with("edit", () => ["edit", "full"])
     .with("full", () => ["full"])
     .exhaustive();
 
