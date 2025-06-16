@@ -74,7 +74,7 @@ export function PageNew(props: Page.Props) {
   );
 
   return (
-    <div className={containerClass} data-testid={props.testId}>
+    <div className={containerClass} data-test-id={props.testId}>
       {props.navigation && <Navigation items={props.navigation} />}
 
       <div className={innerClass}>
