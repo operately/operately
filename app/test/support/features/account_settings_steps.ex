@@ -73,7 +73,13 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :given_a_person_exists_in_company, ctx, manager_name do
-    ctx |> Factory.add_company_member(:manager, full_name: manager_name)
+    {:ok, _} =
+      ctx.person
+      |> Operately.People.get_peers()
+      |> hd()
+      |> Operately.People.update_person(%{full_name: manager_name})
+
+    ctx
   end
 
   step :set_manager, ctx, manager_name do
@@ -92,7 +98,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   step :given_that_i_have_a_manager, ctx do
     ctx
     |> Factory.add_company_member(:manager, full_name: "John Adams")
-    |> then(fn ctx -> 
+    |> then(fn ctx ->
       Operately.People.update_person(ctx.person, %{manager_id: ctx.manager.id})
       ctx
     end)
@@ -111,7 +117,7 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :navigate_to_password_reset_page, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "account-menu")
     |> UI.click(testid: "password-link")
     |> UI.click(testid: "change-password")
@@ -119,14 +125,14 @@ defmodule Operately.Support.Features.AccountSettingsSteps do
   end
 
   step :fill_in_reset_password_form, ctx do
-    ctx 
+    ctx
     |> UI.fill(testid: "currentPassword", with: "abcd1234ABCD")
     |> UI.fill(testid: "newPassword", with: "new-password-123")
     |> UI.fill(testid: "confirmPassword", with: "new-password-123")
   end
 
   step :submit_reset_password_form, ctx do
-    ctx 
+    ctx
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "account-security-page")
   end

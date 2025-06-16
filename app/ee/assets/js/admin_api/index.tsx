@@ -119,62 +119,62 @@ export function useMutation<InputT, ResultT>(
 export type CompanyId = string;
 
 export interface Activity {
-  id?: string | null;
-  action?: string | null;
-  insertedAt?: string | null;
+  id?: string;
+  action?: string;
+  insertedAt?: string;
 }
 
 export interface Company {
-  id?: string | null;
-  name?: string | null;
-  owners?: Person[] | null;
-  peopleCount?: number | null;
-  goalsCount?: number | null;
-  spacesCount?: number | null;
-  projectsCount?: number | null;
-  lastActivityAt?: string | null;
-  insertedAt?: string | null;
-  uuid?: string | null;
-  shortId?: string | null;
-  enabledFeatures?: string[] | null;
+  id?: string;
+  name?: string;
+  owners?: Person[];
+  peopleCount?: number;
+  goalsCount?: number;
+  spacesCount?: number;
+  projectsCount?: number;
+  lastActivityAt?: string;
+  insertedAt?: string;
+  uuid?: string;
+  shortId?: string;
+  enabledFeatures?: string[];
 }
 
 export interface Person {
-  id?: string | null;
-  fullName?: string | null;
-  email?: string | null;
-  avatarUrl?: string | null;
+  id?: string;
+  fullName?: string;
+  email?: string;
+  avatarUrl?: string;
 }
 
 export interface GetActivitiesInput {
-  companyId: CompanyId | null;
+  companyId: CompanyId;
 }
 
 export interface GetActivitiesResult {
-  activities: Activity[] | null;
+  activities: Activity[];
 }
 
 export interface GetCompaniesInput {}
 
 export interface GetCompaniesResult {
-  companies: Company[] | null;
+  companies: Company[];
 }
 
 export interface GetCompanyInput {
-  id: CompanyId | null;
+  id: CompanyId;
 }
 
 export interface GetCompanyResult {
-  company: Company | null;
+  company: Company;
 }
 
 export interface EnableFeatureInput {
-  companyId: CompanyId | null;
-  feature: string | null;
+  companyId: CompanyId;
+  feature: string;
 }
 
 export interface EnableFeatureResult {
-  success: boolean | null;
+  success: boolean;
 }
 
 class ApiNamespaceRoot {
