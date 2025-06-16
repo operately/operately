@@ -140,7 +140,7 @@ function Page() {
     neglectedGoal: false,
     deleteGoal,
 
-    accessLevels: prepareAccessLevels(goal.accessLevels),
+    accessLevels: prepareAccessLevels(goal.accessLevels!),
     setAccessLevels: () => {
       throw new Error("Access levels are not implmented in GoalV3Page");
     },
