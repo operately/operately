@@ -36,6 +36,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_target_index, OperatelyWeb.Api.Goals.UpdateTargetIndex)
     mutation(:update_champion, OperatelyWeb.Api.Goals.UpdateChampion)
     mutation(:update_reviewer, OperatelyWeb.Api.Goals.UpdateReviewer)
+    mutation(:update_access_levels, OperatelyWeb.Api.Goals.UpdateAccessLevels)
   end
 
   namespace(:spaces) do
