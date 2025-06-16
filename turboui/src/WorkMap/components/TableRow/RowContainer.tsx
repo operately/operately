@@ -1,6 +1,7 @@
 import React from "react";
 import WorkMap from "..";
 import classNames from "../../../utils/classnames";
+import { createTestId } from "../../../TestableElement";
 
 interface Props {
   item: WorkMap.Item;
@@ -13,9 +14,10 @@ export function RowContainer({ item, children }: Props) {
     Boolean(item.isNew) && "bg-amber-50/70 dark:bg-amber-900/20",
     "bg-surface-base hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
   );
+  const testId = createTestId(item.type, item.name)
 
   return (
-    <tr data-workmap-selectable="true" className={className}>
+    <tr data-workmap-selectable="true" className={className} data-test-id={testId}>
       {children}
     </tr>
   );
