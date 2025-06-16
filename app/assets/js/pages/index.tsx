@@ -23,23 +23,15 @@ import DiscussionNewPage from "./DiscussionNewPage";
 import DiscussionPage from "./DiscussionPage";
 import FeedPage from "./FeedPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
-import GoalAboutPage from "./GoalAboutPage";
 import GoalActivityPage from "./GoalActivityPage";
 import GoalAddPage from "./GoalAddPage";
-import GoalArchivePage from "./GoalArchivePage";
 import GoalCheckInNewPage from "./GoalCheckInNewPage";
 import GoalCheckInPage from "./GoalCheckInPage";
 import GoalClosingPage from "./GoalClosingPage";
 import GoalDiscussionEditPage from "./GoalDiscussionEditPage";
 import GoalDiscussionNewPage from "./GoalDiscussionNewPage";
-import GoalDiscussionsPage from "./GoalDiscussionsPage";
-import GoalEditPage from "./GoalEditPage";
-import GoalEditParentPage from "./GoalEditParentPage";
-import GoalEditTimeframePage from "./GoalEditTimeframePage";
 import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
-import GoalSubgoalsPage from "./GoalSubgoalsPage";
-import GoalV3Page from "./GoalV3Page";
 import HomePage from "./HomePage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
@@ -128,23 +120,15 @@ export default {
   DiscussionPage,
   FeedPage,
   ForgotPasswordPage,
-  GoalAboutPage,
   GoalActivityPage,
   GoalAddPage,
-  GoalArchivePage,
   GoalCheckInNewPage,
   GoalCheckInPage,
   GoalClosingPage,
   GoalDiscussionEditPage,
   GoalDiscussionNewPage,
-  GoalDiscussionsPage,
-  GoalEditPage,
-  GoalEditParentPage,
-  GoalEditTimeframePage,
   GoalPage,
   GoalReopenPage,
-  GoalSubgoalsPage,
-  GoalV3Page,
   HomePage,
   JoinPage,
   LobbyPage,

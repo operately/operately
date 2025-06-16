@@ -14,7 +14,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
     |> Factory.log_in_person(:champion)
     |> then(fn ctx ->
-      UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+      UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal, tab: "check-ins"))
     end)
   end
 
@@ -30,7 +30,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :assert_check_in_feed_item, ctx, %{message: message} do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: [message])
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_goal_checked_in(
@@ -75,7 +75,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :assert_check_in_acknowledged_in_feed, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_goal_check_in_acknowledgement(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_goal_check_in_acknowledgement(
@@ -214,7 +214,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   step :given_a_reviewer_submitted_check_in, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "check-ins"))
     |> UI.click(testid: "check-in-button")
     |> select_status("on_track")
     |> UI.fill_rich_text("Check-in by reviewer")
