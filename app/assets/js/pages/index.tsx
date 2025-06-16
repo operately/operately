@@ -40,7 +40,6 @@ import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
 import GoalSubgoalsPage from "./GoalSubgoalsPage";
 import GoalV3Page from "./GoalV3Page";
-import GoalsAndProjectsPage from "./GoalsAndProjectsPage";
 import HomePage from "./HomePage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
@@ -51,7 +50,6 @@ import NotificationsPage from "./NotificationsPage";
 import PeopleOrgChartPage from "./PeopleOrgChartPage";
 import PeoplePage from "./PeoplePage";
 import ProfileEditPage from "./ProfileEditPage";
-import ProfileGoalsPage from "./ProfileGoalsPage";
 import ProfilePage from "./ProfilePage";
 import ProjectAddPage from "./ProjectAddPage";
 import ProjectAddResourcePage from "./ProjectAddResourcePage";
@@ -79,7 +77,6 @@ import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import ProjectRetrospectivePage from "./ProjectRetrospectivePage";
-import ProjectsPage from "./ProjectsPage";
 import ResetPasswordPage from "./ResetPasswordPage";
 import ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import ResourceHubDraftsPage from "./ResourceHubDraftsPage";
@@ -102,7 +99,6 @@ import SpaceAddPage from "./SpaceAddPage";
 import SpaceDiscussionsPage from "./SpaceDiscussionsPage";
 import SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import SpaceEditPage from "./SpaceEditPage";
-import SpaceGoalsPage from "./SpaceGoalsPage";
 import SpacePage from "./SpacePage";
 import SpaceWorkMapPage from "./SpaceWorkMapPage";
 import TaskPage from "./TaskPage";
@@ -149,7 +145,6 @@ export default {
   GoalReopenPage,
   GoalSubgoalsPage,
   GoalV3Page,
-  GoalsAndProjectsPage,
   HomePage,
   JoinPage,
   LobbyPage,
@@ -160,7 +155,6 @@ export default {
   PeopleOrgChartPage,
   PeoplePage,
   ProfileEditPage,
-  ProfileGoalsPage,
   ProfilePage,
   ProjectAddPage,
   ProjectAddResourcePage,
@@ -188,7 +182,6 @@ export default {
   ProjectResumePage,
   ProjectRetrospectiveEditPage,
   ProjectRetrospectivePage,
-  ProjectsPage,
   ResetPasswordPage,
   ResourceHubDocumentPage,
   ResourceHubDraftsPage,
@@ -211,7 +204,6 @@ export default {
   SpaceDiscussionsPage,
   SpaceEditGeneralAccessPage,
   SpaceEditPage,
-  SpaceGoalsPage,
   SpacePage,
   SpaceWorkMapPage,
   TaskPage,
