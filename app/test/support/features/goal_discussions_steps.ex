@@ -72,7 +72,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :assert_discussion_submitted_feed_posted, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "posted #{last_comment_thread().title}",
@@ -142,7 +142,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :assert_comment_submitted_feed_posted, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "commented on the #{last_comment_thread().title}",

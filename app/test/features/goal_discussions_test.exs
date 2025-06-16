@@ -38,5 +38,4 @@ defmodule Operately.Features.GoalDiscussionsTest do
     |> Steps.assert_comment_submitted_feed_posted()
     |> Steps.assert_comment_submitted_notification_sent()
   end
-
 end
