@@ -26,23 +26,6 @@ export {
   useUpdateProjectDescription,
 } from "@/api";
 
-export function sortByName(projects: Project[]) {
-  return [...projects].sort((a, b) => a.name!.localeCompare(b.name!));
-}
-
-export function sortByClosedAt(projects: Project[]) {
-  return [...projects].sort((a, b) => {
-    const closedAtA = Time.parseDate(a.closedAt);
-    const closedAtB = Time.parseDate(b.closedAt);
-
-    if (!closedAtA && !closedAtB) return 0;
-    if (!closedAtA) return 1;
-    if (!closedAtB) return -1;
-
-    return Time.compareAsc(closedAtB, closedAtA);
-  });
-}
-
 export function isOverdue(project: Project) {
   assertPresent(project.deadline, "project deadlineAt must be defined");
 
