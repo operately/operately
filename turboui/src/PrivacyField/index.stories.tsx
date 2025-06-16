@@ -23,45 +23,74 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 const Component = (args: Partial<PrivacyField.Props>) => {
-  const [privacyLevel, setPrivacyLevel] = React.useState<PrivacyField.PrivacyLevels | null>(args.privacyLevel || null);
-  return <PrivacyField {...args} privacyLevel={privacyLevel} setPrivacyLevel={setPrivacyLevel} />;
+  const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>(args.accessLevels!);
+
+  return (
+    <PrivacyField
+      {...args}
+      accessLevels={accessLevels}
+      setAccessLevels={setAccessLevels}
+      spaceName={args.spaceName ?? "Marketing"}
+      resourceType={args.resourceType ?? "goal"}
+    />
+  );
 };
 
 export const AllStates: Story = {
   render: () => {
     return (
-      <Page title="PrivacyField All States" size="medium">
+      <Page title="PrivacyField All States" size="large">
         <div className="space-y-12 p-12">
           <div>
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Privacy</h3>
-                <Component privacyLevel="internal" spaceName="Marketing" resourceType="project" variant="inline" />
+                <Component accessLevels={{ company: "full", space: "full" }} />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Privacy</h3>
-                <Component privacyLevel="confidential" spaceName="Marketing" resourceType="project" variant="inline" />
+                <Component accessLevels={{ company: "edit", space: "edit" }} />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Privacy</h3>
-                <Component privacyLevel="secret" spaceName="Marketing" resourceType="project" variant="inline" />
+                <Component accessLevels={{ company: "comment", space: "comment" }} />
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Read-Only Privacy</h3>
-                <Component privacyLevel="secret" spaceName="Marketing" resourceType="project" readonly />
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "view", space: "view" }} />
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Empty</h3>
-                <Component privacyLevel={null} spaceName="Marketing" resourceType="project" variant="inline" />
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "no_access", space: "no_access" }} />
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Empty + Read-Only</h3>
-                <Component privacyLevel={null} spaceName="Marketing" resourceType="project" readonly variant="inline" />
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "no_access", space: "full" }} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "no_access", space: "edit" }} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "no_access", space: "comment" }} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "no_access", space: "view" }} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Privacy</h3>
+                <Component accessLevels={{ company: "no_access", space: "no_access" }} />
               </div>
             </div>
           </div>

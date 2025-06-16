@@ -139,7 +139,11 @@ function Page() {
     neglectedGoal: false,
     deleteGoal,
 
-    privacyLevel: goal.privacy,
+    accessLevels: { company: "edit" as const, space: "edit" as const },
+    setAccessLevels: () => {
+      throw new Error("Access levels are not implmented in GoalV3Page");
+    },
+
     canEdit: goal.permissions.canEdit,
 
     space,

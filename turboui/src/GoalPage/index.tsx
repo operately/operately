@@ -6,6 +6,7 @@ import { PageNew } from "../Page";
 
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "@tabler/icons-react";
 
+import { PrivacyField } from "../PrivacyField";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
@@ -119,7 +120,9 @@ export namespace GoalPage {
     retrospective: Retrospective | null;
 
     canEdit: boolean;
-    privacyLevel: "public" | "internal" | "confidential" | "secret";
+    accessLevels: PrivacyField.AccessLevels;
+    setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
+
     neglectedGoal: boolean;
 
     mentionedPersonLookup: MentionedPersonLookupFn;
