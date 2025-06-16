@@ -43,3 +43,57 @@ export function targetProgressPercentage(target: Target, clamped: boolean = true
 
   return percentage;
 }
+
+export function accessLevelsAsStrings(levels: api.AccessLevels): {
+  company: "no_access" | "view" | "comment" | "edit" | "full";
+  space: "no_access" | "view" | "comment" | "edit" | "full";
+} {
+  return {
+    company: accessLevelAsString(levels.company!),
+    space: accessLevelAsString(levels.space!),
+  };
+}
+
+function accessLevelAsString(level: number): "no_access" | "view" | "comment" | "edit" | "full" {
+  switch (level) {
+    case 0:
+      return "no_access";
+    case 10:
+      return "view";
+    case 40:
+      return "comment";
+    case 70:
+      return "edit";
+    case 100:
+      return "full";
+    default:
+      throw new Error(`Unknown access level: ${level}`);
+  }
+}
+
+function accessLevelAsNumber(level: "no_access" | "view" | "comment" | "edit" | "full"): number {
+  switch (level) {
+    case "no_access":
+      return 0;
+    case "view":
+      return 10;
+    case "comment":
+      return 40;
+    case "edit":
+      return 70;
+    case "full":
+      return 100;
+    default:
+      throw new Error(`Unknown access level: ${level}`);
+  }
+}
+
+export function accessLevelsAsNumbers(levels: {
+  company: "no_access" | "view" | "comment" | "edit" | "full";
+  space: "no_access" | "view" | "comment" | "edit" | "full";
+}): api.AccessLevels {
+  return {
+    company: accessLevelAsNumber(levels.company),
+    space: accessLevelAsNumber(levels.space),
+  };
+}

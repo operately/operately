@@ -1,4 +1,4 @@
-import Api, { AccessLevels, GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
+import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
 import { PageModule } from "@/routes/types";
 
 import * as People from "@/models/people";
@@ -6,7 +6,7 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { getGoal, Goal, Target } from "@/models/goals";
+import { accessLevelsAsNumbers, accessLevelsAsStrings, getGoal, Goal, Target } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
 import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast } from "turboui";
@@ -68,6 +68,12 @@ function Page() {
   assertPresent(goal.space);
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
+
+  const [accessLevels, setAccessLevels] = usePageField({
+    value: (data) => accessLevelsAsStrings(data.goal.accessLevels),
+    update: (v) => Api.goals.updateAccessLevels({ goalId: goal.id!, accessLevels: accessLevelsAsNumbers(v) }),
+    onError: () => showErrorToast("Network Error", "Reverted the access levels to their previous values."),
+  });
 
   const [space, setSpace] = usePageField({
     value: (data) => prepareSpace(paths, data.goal.space),
@@ -140,10 +146,8 @@ function Page() {
     neglectedGoal: false,
     deleteGoal,
 
-    accessLevels: prepareAccessLevels(goal.accessLevels!),
-    setAccessLevels: () => {
-      throw new Error("Access levels are not implmented in GoalV3Page");
-    },
+    accessLevels,
+    setAccessLevels,
 
     canEdit: goal.permissions.canEdit,
 
@@ -501,29 +505,5 @@ function useSpaceSearch(): GoalPage.Props["spaceSearch"] {
       name: space.name!,
       link: paths.spacePath(space.id!),
     }));
-  };
-}
-
-function parseAccessLevel(level: number): "no_access" | "view" | "comment" | "edit" | "full" {
-  switch (level) {
-    case 0:
-      return "no_access";
-    case 10:
-      return "view";
-    case 40:
-      return "comment";
-    case 70:
-      return "edit";
-    case 100:
-      return "full";
-    default:
-      return "no_access";
-  }
-}
-
-function prepareAccessLevels(levels: AccessLevels): GoalPage.Props["accessLevels"] {
-  return {
-    company: parseAccessLevel(levels.company!),
-    space: parseAccessLevel(levels.space!),
   };
 }
