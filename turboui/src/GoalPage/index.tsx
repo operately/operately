@@ -82,7 +82,6 @@ export namespace GoalPage {
     workmapLink: string;
     closeLink: string;
     reopenLink: string;
-    editGoalLink: string;
     newCheckInLink: string;
     newDiscussionLink: string;
     addSubgoalLink: string;
