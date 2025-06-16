@@ -1,5 +1,5 @@
 import * as Popover from "@radix-ui/react-popover";
-import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconWorld } from "@tabler/icons-react";
+import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconTent, IconWorld } from "@tabler/icons-react";
 import React, { useState } from "react";
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
@@ -76,12 +76,7 @@ export function PrivacyField({
         />
       </Popover.Trigger>
       <Popover.Portal>
-        <PrivacyPickerPopover
-          privacyLevel={privacyLevel}
-          setNewPrivacyLevel={handleChange}
-          spaceName={spaceName}
-          resourceType={resourceType}
-        />
+        <PrivacyPickerPopover privacyLevel={privacyLevel} setNewPrivacyLevel={handleChange} />
       </Popover.Portal>
     </Popover.Root>
   );
@@ -92,67 +87,26 @@ const PrivacyPickerPopover = React.forwardRef<
   {
     privacyLevel?: PrivacyLevels | null;
     setNewPrivacyLevel: (level: PrivacyLevels | null) => void;
-    spaceName: string;
-    resourceType: "goal" | "project";
   }
->(({ privacyLevel, setNewPrivacyLevel, spaceName, resourceType }, ref) => (
-  <Popover.Content
-    ref={ref}
-    className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50 w-80"
-    sideOffset={5}
-  >
-    <div className="p-3">
-      <div className="text-sm font-medium mb-3">Privacy Settings</div>
-
-      <div className="space-y-2">
-        {PRIVACY_LEVELS.map((level) => (
-          <PrivacyOption
-            key={level}
-            level={level}
-            isSelected={privacyLevel === level}
-            onClick={() => setNewPrivacyLevel(level)}
-            spaceName={spaceName}
-            resourceType={resourceType}
-          />
-        ))}
-      </div>
-    </div>
-
-    <Popover.Arrow />
-  </Popover.Content>
-));
-
-interface PrivacyOptionProps {
-  level: PrivacyLevels;
-  isSelected: boolean;
-  onClick: () => void;
-  spaceName: string;
-  resourceType: "goal" | "project";
-}
-
-function PrivacyOption({ level, isSelected, onClick, spaceName, resourceType }: PrivacyOptionProps) {
-  const icon = getPrivacyIcon(level, 18);
-  const title = getPrivacyTitle(level, spaceName);
-  const description = getPrivacyDescription(level, spaceName, resourceType);
-
+>(({ privacyLevel, setNewPrivacyLevel }, ref) => {
   return (
-    <button
-      onClick={onClick}
-      className={classNames("w-full text-left p-3 rounded-lg border transition-colors", {
-        "border-accent-1 bg-accent-1/5": isSelected,
-        "border-surface-outline hover:bg-surface-dimmed": !isSelected,
-      })}
+    <Popover.Content
+      ref={ref}
+      className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50 w-80"
+      sideOffset={5}
     >
-      <div className="flex items-start gap-3">
-        <div className="mt-0.5">{icon}</div>
-        <div className="flex-1 min-w-0">
-          <div className="font-medium text-sm">{title}</div>
-          <div className="text-xs text-content-dimmed mt-1">{description}</div>
+      <div className="p-4">
+        <div className="mb-3">
+          <div className="text-sm font-medium">Privacy Settings</div>
         </div>
+
+        <AccessLevelOptions privacyLevel={privacyLevel} setNewPrivacyLevel={setNewPrivacyLevel} />
       </div>
-    </button>
+
+      <Popover.Arrow />
+    </Popover.Content>
   );
-}
+});
 
 interface PrivacyDisplayProps {
   privacyLevel: PrivacyLevels | null | undefined;
@@ -238,6 +192,122 @@ function getPrivacyDescription(level: PrivacyLevels, spaceName: string, resource
     .with("confidential", () => `Only members of the ${spaceName} space can view this ${resourceType}.`)
     .with("secret", () => `Only people explicitly invited can view this ${resourceType}.`)
     .exhaustive();
+}
+
+interface AccessLevelOptionsProps {
+  privacyLevel: PrivacyLevels | null | undefined;
+  setNewPrivacyLevel: (level: PrivacyLevels | null) => void;
+}
+
+function AccessLevelOptions({ privacyLevel, setNewPrivacyLevel }: AccessLevelOptionsProps) {
+  // Create mapping from privacy levels to access levels
+  const publicAccessMapping = {
+    public: "View Access",
+    internal: "No Access",
+    confidential: "No Access",
+    secret: "No Access",
+  };
+
+  const companyAccessMapping = {
+    public: "View Access",
+    internal: "View Access",
+    confidential: "No Access",
+    secret: "No Access",
+  };
+
+  const spaceAccessMapping = {
+    public: "View Access",
+    internal: "View Access",
+    confidential: "View Access",
+    secret: "No Access",
+  };
+
+  // Get the current access levels based on privacyLevel
+  const publicAccess = privacyLevel ? publicAccessMapping[privacyLevel] : "No Access";
+  const companyAccess = privacyLevel ? companyAccessMapping[privacyLevel] : "No Access";
+  const spaceAccess = privacyLevel ? spaceAccessMapping[privacyLevel] : "No Access";
+
+  // Function to map from access selections back to a privacy level
+  const handleAccessChange = (accessType: string, newValue: string) => {
+    if (accessType === "public") {
+      if (newValue === "View Access") {
+        setNewPrivacyLevel("public");
+      } else {
+        // If public access is turned off, default to internal
+        setNewPrivacyLevel("internal");
+      }
+    } else if (accessType === "company") {
+      if (newValue === "View Access") {
+        // If company has view access but public doesn't, it's internal
+        setNewPrivacyLevel("internal");
+      } else if (newValue === "No Access") {
+        // If company has no access, it's confidential or secret
+        setNewPrivacyLevel("confidential");
+      }
+    } else if (accessType === "space") {
+      if (newValue === "No Access") {
+        // If space has no access, it's secret
+        setNewPrivacyLevel("secret");
+      } else if (companyAccess === "No Access" && newValue === "View Access") {
+        // If space has access but company doesn't, it's confidential
+        setNewPrivacyLevel("confidential");
+      }
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <IconWorld size={18} className="-mt-[1px]" />
+          <label className="text-sm">Public Access</label>
+        </div>
+        <select
+          className="w-full px-2 py-1.5 border border-surface-outline rounded-md text-sm bg-surface-base"
+          value={publicAccess}
+          onChange={(e) => handleAccessChange("public", e.target.value)}
+        >
+          <option value="No Access">No Access</option>
+          <option value="View Access">View Access</option>
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <IconBuilding size={18} className="-mt-[1px]" />
+          <label className="text-sm">Company Members</label>
+        </div>
+        <select
+          className="w-full px-2 py-1.5 border border-surface-outline rounded-md text-sm bg-surface-base"
+          value={companyAccess}
+          onChange={(e) => handleAccessChange("company", e.target.value)}
+        >
+          <option value="No Access">No Access</option>
+          <option value="View Access">View Access</option>
+          <option value="Comment Access">Comment Access</option>
+          <option value="Edit Access">Edit Access</option>
+        </select>
+      </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <IconTent size={18} className="-mt-[1px]" />
+          <label className="text-sm">Space Members</label>
+        </div>
+        <select
+          className="w-full px-2 py-1.5 border border-surface-outline rounded-md text-sm bg-surface-base"
+          value={spaceAccess}
+          onChange={(e) => handleAccessChange("space", e.target.value)}
+        >
+          <option value="No Access">No Access</option>
+          <option value="View Access">View Access</option>
+          <option value="Comment Access">Comment Access</option>
+          <option value="Edit Access">Edit Access</option>
+          <option value="Full Access">Full Access</option>
+        </select>
+      </div>
+    </div>
+  );
 }
 
 export namespace PrivacyField {
