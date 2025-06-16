@@ -449,6 +449,37 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule UpdateAccessLevels do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id
+      field :access_levels, :access_levels
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_access_levels(inputs.access_levels)
+      # |> Steps.save_activity(:goal_access_levels_updated, fn changes ->
+      #   %{
+      #     company_id: changes.goal.company_id,
+      #     space_id: changes.goal.group_id,
+      #     goal_id: changes.goal.id,
+      #     access_levels: inputs.access_levels
+      #   }
+      # end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -490,6 +521,24 @@ defmodule OperatelyWeb.Api.Goals do
     def update_goal_description(multi, new_description) do
       Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
         Operately.Goals.Goal.changeset(goal, %{description: new_description})
+      end)
+    end
+
+    def update_access_levels(multi, access_levels) do
+      multi
+      |> Ecto.Multi.run(:updated_company_binding, fn _repo, %{goal: goal} ->
+        context = Access.get_context(goal_id: goal.id)
+        company_members = Access.get_group!(company_id: goal.company_id, tag: :standard)
+        company_binding = Access.get_binding(context_id: context.id, group_id: company_members.id)
+
+        Access.update_binding(company_binding, %{access_level: access_levels.company})
+      end)
+      |> Ecto.Multi.run(:update_space_binding, fn _repo, %{goal: goal} ->
+        context = Access.get_context(goal_id: goal.id)
+        space_members = Access.get_group!(group_id: goal.group_id, tag: :standard)
+        space_binding = Access.get_binding(context_id: context.id, group_id: space_members.id)
+
+        Access.update_binding(space_binding, %{access_level: access_levels.space})
       end)
     end
 
