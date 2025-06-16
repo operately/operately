@@ -184,7 +184,7 @@ export function GoalPage(props: GoalPage.Props) {
   ]);
 
   return (
-    <PageNew title={[state.goalName]} size="fullwidth">
+    <PageNew title={[state.goalName]} size="fullwidth" testId="goal-page">
       <PageHeader {...state} />
       <Tabs tabs={tabs} />
 
