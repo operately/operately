@@ -340,10 +340,6 @@ export class Paths {
     return this.createCompanyPath(["projects", "new"]) + encodeUrlParams(params);
   }
 
-  projectsPath() {
-    return this.createCompanyPath(["projects"]);
-  }
-
   goalAboutPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "about"]);
   }
@@ -406,10 +402,6 @@ export class Paths {
 
   goalEditPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "edit"]);
-  }
-
-  profileV2Path(personId: string) {
-    return this.createCompanyPath(["people", personId, "v2"]);
   }
 
   profilePath(personId: string, tab?: string) {

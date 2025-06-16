@@ -12,7 +12,7 @@ import { IconPencil } from "@tabler/icons-react";
 import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
-export default { name: "ProfileV2Page", loader, Page } as PageModule;
+export default { name: "ProfilePage", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();

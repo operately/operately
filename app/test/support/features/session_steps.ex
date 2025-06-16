@@ -2,12 +2,12 @@ defmodule Operately.Support.Features.SessionTestSteps do
   use Operately.FeatureCase
 
   step :given_i_have_an_account, ctx, account_info do
-    Factory.add_company_member(ctx, :member, email: account_info[:email], password: account_info[:password])  
+    Factory.add_company_member(ctx, :member, email: account_info[:email], password: account_info[:password])
   end
 
   step :given_im_logged_in, ctx, account_info do
     ctx
-    |> Factory.add_company_member(:member, email: account_info[:email], password: account_info[:password])  
+    |> Factory.add_company_member(:member, email: account_info[:email], password: account_info[:password])
     |> Factory.log_in_person(:member)
   end
 
@@ -42,8 +42,8 @@ defmodule Operately.Support.Features.SessionTestSteps do
   end
 
   step :visit_a_protected_page, ctx do
-    ctx 
-    |> UI.visit(Paths.goals_path(ctx.company))
+    ctx
+    |> UI.visit(Paths.work_map_path(ctx.company))
   end
 
   step :assert_i_am_redirected_to_login_page, ctx do
@@ -51,7 +51,7 @@ defmodule Operately.Support.Features.SessionTestSteps do
   end
 
   step :assert_on_the_protected_page, ctx do
-    ctx |> UI.click(testid: "goals-and-projects-page")
+    UI.assert_page(ctx, Paths.work_map_path(ctx.company))
   end
 
   step :click_forgot_password_link, ctx do
@@ -59,8 +59,8 @@ defmodule Operately.Support.Features.SessionTestSteps do
   end
 
   step :fill_out_forgot_password_form_and_submit, ctx, account_info do
-    ctx 
-    |> UI.fill(testid: "email", with: account_info[:email]) 
+    ctx
+    |> UI.fill(testid: "email", with: account_info[:email])
     |> UI.click(testid: "submit")
     |> UI.assert_text("Password reset instructions have been sent to your email.")
   end
@@ -74,7 +74,7 @@ defmodule Operately.Support.Features.SessionTestSteps do
   end
 
   step :fill_out_reset_password_form, ctx, account_info do
-    ctx 
+    ctx
     |> UI.fill(testid: "email", with: account_info[:email])
     |> UI.fill(testid: "password", with: "new-password-123-ABC")
     |> UI.fill(testid: "confirmPassword", with: "new-password-123-ABC")

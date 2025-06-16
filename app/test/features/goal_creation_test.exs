@@ -22,7 +22,7 @@ defmodule Operately.Features.GoalCreationTest do
 
   feature "add a company wide goal", ctx do
     ctx
-    |> Steps.initialize_goal_creation_from_global_goals_page()
+    |> Steps.initialize_goal_creation()
     |> Steps.add_goal(@goal_params)
     |> Steps.assert_company_goal_added(@goal_params)
     |> Steps.assert_company_goal_created_email_sent(@goal_params.name)
@@ -33,7 +33,7 @@ defmodule Operately.Features.GoalCreationTest do
 
     ctx
     |> Steps.given_a_goal_exists(@parent_goal_params)
-    |> Steps.initialize_goal_creation_from_global_new_navigation()
+    |> Steps.initialize_goal_creation()
     |> Steps.add_goal(params)
     |> Steps.assert_subgoal_added(params)
     |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
@@ -44,7 +44,7 @@ defmodule Operately.Features.GoalCreationTest do
 
     ctx
     |> Steps.given_a_goal_exists(@parent_goal_params)
-    |> Steps.initialize_goal_creation_from_goals_page_via_parent_goal(@parent_goal_params.name)
+    |> Steps.initialize_goal_creation()
     |> Steps.add_goal(params)
     |> Steps.assert_subgoal_added(params)
     |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
