@@ -55,7 +55,7 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
 
   step :go_to_goal_check_in_page, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "check-ins"))
     |> UI.click(testid: "check-in-button")
   end
 
