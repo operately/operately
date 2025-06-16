@@ -16,7 +16,7 @@ import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
-export default { name: "GoalV3Page", loader, Page } as PageModule;
+export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
   return `v24-GoalPage.goal-${id}`;
