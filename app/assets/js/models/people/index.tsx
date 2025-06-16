@@ -130,26 +130,18 @@ export interface PersonWithLink extends Person {
 
 /**
  * Converts a Person or array of Person objects to include profile links
- *
- * @param personOrPeople - A Person object or array of Person objects
- * @param useV2 - Whether to use V2 profile paths (optional, defaults to false)
- * @returns Person(s) with added link property
  */
-export function toPersonWithLink(paths: Paths, person: Person, useV2?: boolean): PersonWithLink;
-export function toPersonWithLink(paths: Paths, people: Person[], useV2?: boolean): PersonWithLink[];
-export function toPersonWithLink(
-  paths: Paths,
-  personOrPeople: Person | Person[],
-  useV2 = false,
-): PersonWithLink | PersonWithLink[] {
+export function toPersonWithLink(paths: Paths, person: Person): PersonWithLink;
+export function toPersonWithLink(paths: Paths, people: Person[]): PersonWithLink[];
+export function toPersonWithLink(paths: Paths, personOrPeople: Person | Person[]) {
   if (Array.isArray(personOrPeople)) {
-    return personOrPeople.map((person) => toPersonWithLink(paths, person, useV2));
+    return personOrPeople.map((person) => toPersonWithLink(paths, person));
   }
 
   const person = personOrPeople;
 
   return {
     ...person,
-    link: useV2 ? paths.profileV2Path(person.id!) : paths.profilePath(person.id!),
+    link: paths.profilePath(person.id!),
   };
 }
