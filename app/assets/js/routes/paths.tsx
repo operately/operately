@@ -316,8 +316,8 @@ export class Paths {
     return this.createCompanyPath(["goals", goalId, "complete"]);
   }
 
-  goalPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId]);
+  goalPath(goalId: string, params?: { tab?: string }) {
+    return this.createCompanyPath(["goals", goalId]) + (params?.tab ? "?tab=" + params.tab : "");
   }
 
   newGoalPath(params?: GoalAddPage.UrlParams) {
