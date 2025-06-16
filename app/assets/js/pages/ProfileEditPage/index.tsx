@@ -70,6 +70,7 @@ function ProfileForm({ person }: { person: People.Person }) {
   const paths = usePaths();
   const me = useMe()!;
   const navigate = useNavigate();
+  const managersLoader = People.usePossibleManagersSearch(person.id);
 
   const managerStatus = person.manager ? "select-from-list" : "no-manager";
   const managerLabel = me.id === person.id ? "Who is your manager?" : "Who is their manager?";
@@ -116,6 +117,7 @@ function ProfileForm({ person }: { person: People.Person }) {
             field={"manager"}
             hidden={form.values.managerStatus !== "select-from-list"}
             default={person.manager}
+            searchFn={managersLoader}
           />
         </Forms.FieldGroup>
       </Forms.FieldGroup>

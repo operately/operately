@@ -55,6 +55,15 @@ export function usePeopleSearch(scope: SearchScope) {
   };
 }
 
+export function usePossibleManagersSearch(personId: string) {
+  return async (): Promise<Person[]> => {
+    const res = await Api.listPossibleManagers({
+      userId: personId,
+    });
+    return res.people as Person[];
+  };
+}
+
 export function firstName(person: Pick<Person, "fullName">): string {
   return person.fullName!.split(" ")[0]!;
 }
