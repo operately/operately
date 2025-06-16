@@ -9,6 +9,34 @@ defmodule OperatelyWeb.Api.GoalsTest do
     |> Factory.add_goal(:goal, :marketing)
   end
 
+  describe "update access levels" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_access_levels], %{})
+    end
+
+    test "it requires a goal_id and access_levels", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_access_levels], %{})
+      assert res.message == "Missing required fields: goal_id, access_levels"
+    end
+
+    test "it updates access levels", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        access_levels: %{
+          company: 0,
+          space: 100
+        }
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_access_levels], inputs)
+      assert res.success == true
+    end
+  end
+
   describe "update space" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:goals, :update_space], %{})
