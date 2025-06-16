@@ -43,27 +43,12 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     |> UI.assert_has(testid: "goal-page")
   end
 
-  step :initialize_goal_creation_from_goals_page_via_parent_goal, ctx, parent_goal_name do
+  step :initialize_goal_creation, ctx do
     ctx
-    |> UI.visit(Paths.goals_path(ctx.company))
-    |> UI.hover(testid: "goal-#{UI.testid(parent_goal_name)}")
-    |> UI.click(testid: "add-subgoal")
-    |> UI.assert_has(testid: "goal-add-page")
-  end
-
-  step :initialize_goal_creation_from_global_goals_page, ctx do
-    ctx
-    |> UI.visit(Paths.goals_path(ctx.company))
-    |> UI.click(testid: "add-options")
-    |> UI.click(testid: "add-goal")
-    |> UI.assert_has(testid: "goal-add-page")
-  end
-
-  step :initialize_goal_creation_from_global_new_navigation, ctx do
-    ctx
+    |> UI.visit(Paths.home_path(ctx.company))
     |> UI.click(testid: "new-dropdown")
     |> UI.click(testid: "new-dropdown-new-goal")
-    |> UI.assert_has(testid: "goal-add-page")
+    |> UI.assert_page(Paths.new_goal_path(ctx.company))
   end
 
   step :assert_company_goal_added, ctx, %{name: name, target_name: target_name, from: current, to: target, unit: unit} do
@@ -83,7 +68,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     assert Enum.at(goal.targets, 0).unit == unit
 
     ctx
-    |> UI.visit(Paths.goals_path(ctx.company))
+    |> UI.visit(Paths.work_map_path(ctx.company))
     |> UI.assert_text(name)
   end
 
