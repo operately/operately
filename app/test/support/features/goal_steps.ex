@@ -614,10 +614,6 @@ defmodule Operately.Support.Features.GoalSteps do
     })
   end
 
-  step :visit_goal_list_page, ctx do
-    UI.visit(ctx, Paths.space_goals_path(ctx.company, ctx.product))
-  end
-
   step :assert_goal_is_not_editable, ctx do
     ctx
     |> UI.refute_text("Check-In Now")
