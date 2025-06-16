@@ -2908,6 +2908,15 @@ export interface GoalsDeleteTargetResult {
   success: boolean | null;
 }
 
+export interface GoalsUpdateAccessLevelsInput {
+  goalId: Id;
+  accessLevels: AccessLevels;
+}
+
+export interface GoalsUpdateAccessLevelsResult {
+  success: boolean | null;
+}
+
 export interface GoalsUpdateChampionInput {
   goalId: Id;
   championId: Id | null;
@@ -3964,6 +3973,10 @@ class ApiNamespaceGoals {
 
   async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
     return this.client.post("/goals/delete_target", input);
+  }
+
+  async updateAccessLevels(input: GoalsUpdateAccessLevelsInput): Promise<GoalsUpdateAccessLevelsResult> {
+    return this.client.post("/goals/update_access_levels", input);
   }
 
   async updateChampion(input: GoalsUpdateChampionInput): Promise<GoalsUpdateChampionResult> {
@@ -6381,6 +6394,13 @@ export default {
     addTarget: (input: GoalsAddTargetInput) => defaultApiClient.apiNamespaceGoals.addTarget(input),
     useAddTarget: () =>
       useMutation<GoalsAddTargetInput, GoalsAddTargetResult>(defaultApiClient.apiNamespaceGoals.addTarget),
+
+    updateAccessLevels: (input: GoalsUpdateAccessLevelsInput) =>
+      defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
+    useUpdateAccessLevels: () =>
+      useMutation<GoalsUpdateAccessLevelsInput, GoalsUpdateAccessLevelsResult>(
+        defaultApiClient.apiNamespaceGoals.updateAccessLevels,
+      ),
 
     updateParentGoal: (input: GoalsUpdateParentGoalInput) => defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
     useUpdateParentGoal: () =>
