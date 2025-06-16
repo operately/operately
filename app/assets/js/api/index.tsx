@@ -2165,6 +2165,14 @@ export interface ListGoalContributorsResult {
   contributors?: Person[] | null;
 }
 
+export interface ListPossibleManagersInput {
+  userId: Id;
+}
+
+export interface ListPossibleManagersResult {
+  people: Person[];
+}
+
 export interface ListResourceHubNodesInput {
   resourceHubId?: Id | null;
   folderId?: Id | null;
@@ -3478,6 +3486,10 @@ class ApiNamespaceRoot {
     return this.client.get("/list_goal_contributors", input);
   }
 
+  async listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
+    return this.client.get("/list_possible_managers", input);
+  }
+
   async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
     return this.client.get("/list_resource_hub_nodes", input);
   }
@@ -4200,6 +4212,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.listGoalContributors(input);
   }
 
+  listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
+    return this.apiNamespaceRoot.listPossibleManagers(input);
+  }
+
   listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
     return this.apiNamespaceRoot.listResourceHubNodes(input);
   }
@@ -4765,6 +4781,9 @@ export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResu
 export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
   return defaultApiClient.listGoalContributors(input);
 }
+export async function listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
+  return defaultApiClient.listPossibleManagers(input);
+}
 export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
   return defaultApiClient.listResourceHubNodes(input);
 }
@@ -5323,6 +5342,12 @@ export function useListGoalContributors(
   input: ListGoalContributorsInput,
 ): UseQueryHookResult<ListGoalContributorsResult> {
   return useQuery<ListGoalContributorsResult>(() => defaultApiClient.listGoalContributors(input));
+}
+
+export function useListPossibleManagers(
+  input: ListPossibleManagersInput,
+): UseQueryHookResult<ListPossibleManagersResult> {
+  return useQuery<ListPossibleManagersResult>(() => defaultApiClient.listPossibleManagers(input));
 }
 
 export function useListResourceHubNodes(
@@ -6106,6 +6131,8 @@ export default {
   useGetWorkMap,
   listGoalContributors,
   useListGoalContributors,
+  listPossibleManagers,
+  useListPossibleManagers,
   listResourceHubNodes,
   useListResourceHubNodes,
   listSpaceTools,
