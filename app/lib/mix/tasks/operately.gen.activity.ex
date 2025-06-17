@@ -8,7 +8,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity do
     ctx = initialize_context(resource, action, action_gerund)
 
     IO.puts("")
-    IO.puts("Generating activity: #{ctx.operation_module_name}")
+    IO.puts("Generating activity: #{ctx.activity_item_name}")
     IO.puts("")
 
     IO.puts("This will generate the following:")
@@ -22,9 +22,6 @@ defmodule Mix.Tasks.Operately.Gen.Activity do
 
     IO.puts("")
     IO.puts("A few more questions:")
-
-    api_inputs = get_api_inputs()
-    ctx = Map.put(ctx, :api_inputs, api_inputs)
 
     activity_fields = get_activity_fields()
     ctx = Map.put(ctx, :activity_fields, activity_fields)
