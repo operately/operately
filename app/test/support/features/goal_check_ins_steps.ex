@@ -31,6 +31,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   step :assert_check_in_feed_item, ctx, %{message: message} do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
+    |> UI.sleep(1000)
     |> FeedSteps.assert_goal_checked_in(author: ctx.champion, texts: [message])
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_goal_checked_in(
@@ -49,6 +50,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
   step :assert_check_in_notifications, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
+    |> UI.sleep(1000)
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
@@ -113,7 +115,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
 
   step :assert_check_in_commented_in_feed, ctx, message do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_goal_check_in_commented(author: ctx.champion, comment: message)
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_goal_check_in_commented(
@@ -171,6 +173,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "post-comment")
+    |> UI.sleep(1000)
   end
 
   step :assert_check_in_commented_notification_redirects_on_click, ctx do
