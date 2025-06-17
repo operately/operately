@@ -23,8 +23,8 @@ gen.page:
 	./devenv bash -c "cd app && mix operately.gen.page $(NAME)"
 	$(MAKE) gen
 
-gen.operation:
-	./devenv bash -c "cd app && ERL_FLAGS=+B mix operately.gen.operation"
+gen.activity:
+	./devenv bash -c "cd app && ERL_FLAGS=+B mix operately.gen.activity"
 
 js.fmt.fix:
 	./devenv bash -c "cd app && npx prettier --write assets/js && npx prettier --write ee/assets/js"
