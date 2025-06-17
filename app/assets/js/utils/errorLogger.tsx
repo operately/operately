@@ -17,5 +17,24 @@ export function setupTestErrorLogger() {
 
       return false;
     });
+
+    window.addEventListener("unhandledrejection", function (e) {
+      console.log("                                ");
+      console.log("                                ");
+      console.log("     Unhandled promise rejection:");
+      console.log("       " + e.reason);
+      console.log("                                ");
+      console.log("     Stack trace:               ");
+      console.log("                                ");
+
+      if (e.reason && e.reason.stack) {
+        const stackLines = e.reason.stack.split("\n");
+        stackLines.forEach(function (line: string) {
+          console.log("       " + line);
+        });
+      }
+
+      return false;
+    });
   }
 }
