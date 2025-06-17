@@ -24,7 +24,7 @@ export function Discussions(props: GoalPage.State) {
         </div>
 
         {showNewDiscussionButton && (
-          <PrimaryButton linkTo={props.newDiscussionLink} size="xs">
+          <PrimaryButton linkTo={props.newDiscussionLink} size="xs" testId="start-discussion">
             Start discussion
           </PrimaryButton>
         )}
