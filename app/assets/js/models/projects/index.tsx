@@ -34,15 +34,6 @@ export function isOverdue(project: Project) {
   return Time.compareAsc(deadline, Time.today()) === -1;
 }
 
-export function sortContributorsByRole(contributors: ProjectContributor[]): ProjectContributor[] {
-  return [...contributors].sort((a, b) => {
-    if (a!.role === "champion") return -2;
-    if (b!.role === "reviewer") return 1;
-
-    return 0;
-  });
-}
-
 export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadlineAt">) {
   if (milestone.status !== "pending") return false;
 

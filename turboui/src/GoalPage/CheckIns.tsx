@@ -23,7 +23,7 @@ export function CheckIns(props: GoalPage.State) {
         </div>
 
         {showCheckInButton && (
-          <PrimaryButton linkTo={props.newCheckInLink} size="xs">
+          <PrimaryButton linkTo={props.newCheckInLink} size="xs" testId="check-in-button">
             Check-In Now
           </PrimaryButton>
         )}
