@@ -404,15 +404,15 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_goal_champion(inputs.champion_id)
-      # |> Steps.save_activity(:goal_champion_updated, fn changes ->
-      #   %{
-      #     company_id: changes.goal.company_id,
-      #     space_id: changes.goal.group_id,
-      #     goal_id: changes.goal.id,
-      #     old_champion_id: changes.goal.champion_id,
-      #     new_champion_id: inputs.champion_id
-      #   }
-      # end)
+      |> Steps.save_activity(:goal_champion_updated, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_champion_id: changes.goal.champion_id,
+          new_champion_id: inputs.champion_id
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
