@@ -133,10 +133,12 @@ defmodule Operately.Support.Features.FeedSteps do
   end
 
   def assert_project_timeline_edited(ctx, attrs) do
-    title = case Keyword.get(attrs, :project_name, nil) do
-      nil -> "edited the timeline"
-      name -> "edited the timeline on the #{name} project"
-    end
+    title =
+      case Keyword.get(attrs, :project_name, nil) do
+        nil -> "edited the timeline"
+        name -> "edited the timeline on the #{name} project"
+      end
+
     author = Keyword.get(attrs, :author)
     messages = Keyword.get(attrs, :messages)
 
@@ -192,6 +194,12 @@ defmodule Operately.Support.Features.FeedSteps do
 
   def assert_feed_item_exists(ctx, %{author: author, title: title, subtitle: subtitle}) do
     ctx |> assert_feed_item_exists(author, title, subtitle)
+  end
+
+  def assert_feed_item_exists(ctx, author, title) do
+    ctx
+    |> UI.assert_text(Person.first_name(author))
+    |> UI.assert_text(title)
   end
 
   def assert_feed_item_exists(ctx, author, title, subtitle) do
