@@ -60,6 +60,42 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Changing the reviewer
+  #
+
+  step :change_reviewer, ctx do
+    ctx
+    |> Factory.add_space_member(:new_reviewer, :product, name: "Alfred Newfield")
+    |> UI.click(testid: "reviewer-field")
+    |> UI.click(testid: "reviewer-field-assign-another")
+    |> UI.click(testid: "reviewer-field-search-result-alfred-newfield")
+  end
+
+  step :assert_reviewer_changed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.reviewer_id == ctx.new_reviewer.id
+    end)
+  end
+
+  #
+  # Removing the reviewer
+  #
+
+  step :remove_reviewer, ctx do
+    ctx
+    |> UI.click(testid: "reviewer-field")
+    |> UI.click(testid: "reviewer-field-clear-assignment")
+  end
+
+  step :assert_reviewer_removed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.reviewer_id == nil
+    end)
+  end
+
+  #
   # Utility functions
   #
 

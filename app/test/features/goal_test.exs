@@ -17,6 +17,18 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_champion_removed()
   end
 
+  feature "changing the reviewer", ctx do
+    ctx
+    |> Steps.change_reviewer()
+    |> Steps.assert_reviewer_changed()
+  end
+
+  feature "removing the reviewer", ctx do
+    ctx
+    |> Steps.remove_reviewer()
+    |> Steps.assert_reviewer_removed()
+  end
+
   # feature "editing goals", ctx do
   #   ctx
   #   |> Steps.edit_goal()
