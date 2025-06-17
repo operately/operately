@@ -1,7 +1,9 @@
-import * as People from "@/models/people";
+import React from "react";
 
-import type { Activity } from "@/models/activities";
+import { Paths } from "@/routes/paths";
+
 import type { ActivityContentGoalChampionUpdating } from "@/api";
+import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
 const GoalChampionUpdating: ActivityHandler = {
@@ -9,7 +11,7 @@ const GoalChampionUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_activity: Activity) {
+  pagePath(_paths: Paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 
@@ -46,7 +48,7 @@ const GoalChampionUpdating: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return null;
+    return <></>;
   },
 
   NotificationLocation(_props: { activity: Activity }) {
