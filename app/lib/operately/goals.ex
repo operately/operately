@@ -89,6 +89,12 @@ defmodule Operately.Goals do
     |> Repo.insert()
   end
 
+  def update_target(%Target{} = target, attrs) do
+    target
+    |> Target.changeset(attrs)
+    |> Repo.update()
+  end
+
   def outdated?(goal) do
     if goal.next_update_scheduled_at do
       today = Date.utc_today()
