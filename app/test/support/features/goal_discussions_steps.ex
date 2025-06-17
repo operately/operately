@@ -17,12 +17,14 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
     reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
-    goal = goal_fixture(champion, %{
-      company_id: company.id,
-      space_id: group.id,
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
-    })
+
+    goal =
+      goal_fixture(champion, %{
+        company_id: company.id,
+        space_id: group.id,
+        champion_id: champion.id,
+        reviewer_id: reviewer.id
+      })
 
     ctx = Map.merge(ctx, %{company: company, champion: champion, reviewer: reviewer, group: group, goal: goal})
     ctx = UI.login_based_on_tag(ctx)
@@ -32,7 +34,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
 
   step :start_new_discussion, ctx, params do
     ctx
-    |> UI.visit(Paths.goal_discussions_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "discussions"))
     |> UI.click(testid: "start-discussion")
     |> UI.fill(testid: "discussion-title", with: params.title)
     |> UI.fill_rich_text(params.message)
@@ -41,9 +43,10 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   end
 
   step :assert_discussion_submitted, ctx, params do
-    ctx 
+    ctx
     |> UI.assert_text(params.title)
-    |> UI.sleep(100) # give it a moment to load the discussion
+    # give it a moment to load the discussion
+    |> UI.sleep(100)
 
     activity = last_activity()
     comment_thread = last_comment_thread()
@@ -63,17 +66,17 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
       where: ctx.goal.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "posted: #{last_comment_thread().title}",
+      action: "posted: #{last_comment_thread().title}"
     })
   end
 
   step :assert_discussion_submitted_feed_posted, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "posted #{last_comment_thread().title}",
-      subtitle: last_comment_thread().message,
+      subtitle: last_comment_thread().message
     })
   end
 
@@ -82,7 +85,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "posted: #{last_comment_thread().title}",
+      action: "posted: #{last_comment_thread().title}"
     })
   end
 
@@ -113,7 +116,8 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "post-comment")
-    |> UI.sleep(500) # give it a moment for the comment to be submitted
+    # give it a moment for the comment to be submitted
+    |> UI.sleep(500)
   end
 
   step :assert_comment_submitted, ctx, message do
@@ -132,17 +136,17 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
       where: ctx.goal.name,
       to: ctx.champion,
       author: ctx.reviewer,
-      action: "commented on: #{last_comment_thread().title}",
+      action: "commented on: #{last_comment_thread().title}"
     })
   end
 
   step :assert_comment_submitted_feed_posted, ctx do
     ctx
-    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.champion,
       title: "commented on the #{last_comment_thread().title}",
-      subtitle: last_comment_thread().message,
+      subtitle: last_comment_thread().message
     })
   end
 
@@ -151,7 +155,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "commented on #{last_comment_thread().title}",
+      action: "commented on #{last_comment_thread().title}"
     })
   end
 
@@ -160,11 +164,12 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
   #
 
   defp last_activity do
-    query = from a in Operately.Activities.Activity,
-      where: a.action == "goal_discussion_creation",
-      order_by: [desc: a.inserted_at],
-      preload: [:author],
-      limit: 1
+    query =
+      from a in Operately.Activities.Activity,
+        where: a.action == "goal_discussion_creation",
+        order_by: [desc: a.inserted_at],
+        preload: [:author],
+        limit: 1
 
     Operately.Repo.one(query)
   end
@@ -178,5 +183,4 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     comment_thread = last_comment_thread()
     Operately.Updates.list_comments(comment_thread.id, :comment_thread) |> Enum.at(-1)
   end
-
 end
