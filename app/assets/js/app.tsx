@@ -1,3 +1,6 @@
+import { setupTestErrorLogger } from "@/utils/errorLogger";
+setupTestErrorLogger();
+
 import React from "react";
 import { createRoot } from "react-dom/client";
 
@@ -17,13 +20,9 @@ import Api from "@/api";
 import AdminApi from "@/ee/admin_api";
 import "./i18n";
 
-import { setupTestErrorLogger } from "@/utils/errorLogger";
-
 import "@/api/socket";
 import ReactModal from "react-modal";
 import { ToasterBar } from "turboui";
-
-setupTestErrorLogger();
 
 Api.default.setBasePath("/api/v2");
 AdminApi.default.setBasePath("/admin/api/v1");
