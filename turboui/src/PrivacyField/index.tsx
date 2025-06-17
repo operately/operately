@@ -194,7 +194,7 @@ function getPrivacyTitle(levels: PrivacyField.AccessLevels, spaceName: string) {
     .with(["edit", "full"], () => `Everyone in the company can edit, ${spaceName} members have full access`)
     .with(["full", "full"], () => `Everyone in the company has full access`)
     .otherwise(() => {
-      throw new Error("Invalid access levels");
+      throw new Error("Invalid access levels: " + JSON.stringify(levels));
     });
 }
 
