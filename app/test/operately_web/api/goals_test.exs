@@ -49,6 +49,19 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert res.message == "Missing required fields: goal_id, space_id"
     end
 
+    test "it does no action if the space didn't change", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      space = Repo.preload(ctx.goal, [:group]).group
+
+      inputs = %{
+        goal_id: Paths.goal_id(ctx.goal),
+        space_id: Paths.space_id(space)
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_space], inputs)
+      assert res.success == true
+    end
+
     test "it updates the space", ctx do
       ctx = Factory.add_space(ctx, :product)
       ctx = Factory.log_in_person(ctx, :creator)
