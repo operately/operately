@@ -26,6 +26,8 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> UI.fill_rich_text(message)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "goal-check-in-page")
+    |> UI.sleep(1000)
+    |> UI.take_screenshot()
   end
 
   step :assert_check_in_feed_item, ctx, %{message: message} do
