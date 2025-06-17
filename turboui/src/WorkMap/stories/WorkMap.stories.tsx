@@ -84,7 +84,9 @@ export const Empty: Story = {
     items: [],
   },
   play: async ({ canvasElement, step }) => {
-    await Steps.assertRowsNumber(canvasElement, step, 0);
+    await Steps.assertRowsNumber(canvasElement, step, 1);
+
+    await Steps.assertZeroState(canvasElement, step);
   },
 };
 
