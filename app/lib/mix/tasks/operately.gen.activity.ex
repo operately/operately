@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Operately.Gen.Operation do
+defmodule Mix.Tasks.Operately.Gen.Activity do
   alias Mix.Tasks.Operately.Utils.StringUtils
 
   def run(_) do
