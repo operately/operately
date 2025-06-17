@@ -122,12 +122,20 @@ export const assertChildrenHidden = async (canvasElement, step, names) => {
   });
 };
 
+export const assertZeroState = async (canvasElement, step) => {
+  await step("Assert that 'Nothing here' text is present", async () => {
+    const canvas = within(canvasElement);
+    const emptyStateText = canvas.getByText("🍃 Nothing here");
+    expect(emptyStateText).toBeInTheDocument();
+  });
+};
+
 export const assertItemHasLineThrough = async (canvasElement, step, name) => {
   const canvas = within(canvasElement);
 
   await step(`Assert that "${name}" has line-through style`, async () => {
     const item = canvas.getByText(name);
-    expect(item.className).toContain("line-through");
+    expect(item.style.textDecoration).toContain("line-through");
   });
 };
 
@@ -136,7 +144,7 @@ export const refuteItemHasLineThrough = async (canvasElement, step, name) => {
 
   await step(`Assert that "${name}" does not have line-through style`, async () => {
     const item = canvas.getByText(name);
-    expect(item.className).not.toContain("line-through");
+    expect(item.style.textDecoration).not.toContain("line-through");
   });
 };
 
