@@ -191,6 +191,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
+      |> Sptes.check_idempotency(fn %{goal: goal} -> goal.space_id == inputs.space_id end)
       |> Steps.update_space(inputs.space_id)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -577,11 +578,7 @@ defmodule OperatelyWeb.Api.Goals do
 
     def update_space(multi, space_id) do
       Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
-        if goal.group_id == space_id do
-          {:ok, goal}
-        else
-          Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
-        end
+        Operately.Goals.Goal.changeset(goal, %{group_id: space_id})
       end)
     end
 
@@ -695,13 +692,26 @@ defmodule OperatelyWeb.Api.Goals do
       end)
     end
 
+    defp check_idempotency(multi, check_fn) do
+      Ecto.Multi.run(multi, :idempotency_check, fn _repo, changes ->
+        if check_fn.(changes) do
+          {:error, :idempotent}
+        else
+          {:ok, nil}
+        end
+      end)
+    end
+
     def commit(multi) do
       Operately.Repo.transaction(multi)
     end
 
-    def respond(multi, ok_callback, error_callback \\ &handle_error/1) do
-      case multi do
+    def respond(result, ok_callback, error_callback \\ &handle_error/1) do
+      case result do
         {:ok, changes} ->
+          {:ok, ok_callback.(changes)}
+
+        {:error, _, :idempotent, changes} ->
           {:ok, ok_callback.(changes)}
 
         e ->
