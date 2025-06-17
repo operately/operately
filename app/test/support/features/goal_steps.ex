@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
+  alias Operately.Support.Features.FeedSteps
 
   def setup(ctx) do
     ctx
@@ -27,21 +28,28 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> Factory.add_space_member(:new_champion, :product, name: "Alfred Newfield")
     |> UI.click(testid: "champion-field")
-    |> UI.click(testid: "champion-search")
-    |> UI.click(testid: "champion-alfred-newfield")
+    |> UI.click(testid: "champion-field-assign-another")
+    |> UI.click(testid: "champion-field-search-result-alfred-newfield")
   end
 
   step :assert_champion_changed, ctx do
-    attempts(3, fn ->
+    attempts(ctx, 3, fn ->
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.champion_id == ctx.new_champion.id
     end)
   end
 
-  defp attempts(n, fun) do
+  step :assert_champion_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
+    |> FeedSteps.assert_feed_item_exists(ctx.creator, "changed the champion")
+  end
+
+  defp attempts(ctx, n, fun) do
     Enum.reduce(1..n, nil, fn i, _ ->
       try do
         fun.()
+        ctx
       rescue
         e in [ExUnit.AssertionError] ->
           if i < n, do: Process.sleep(100)

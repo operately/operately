@@ -9,9 +9,7 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.change_champion()
     |> Steps.assert_champion_changed()
-
-    # |> Steps.assert_champion_changed_feed_posted()
-    # |> Steps.assert_champion_changed_email_sent()
+    |> Steps.assert_champion_changed_feed_posted()
   end
 
   # feature "editing goals", ctx do
