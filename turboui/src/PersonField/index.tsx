@@ -4,6 +4,7 @@ import * as React from "react";
 import { IconCircleX, IconExternalLink, IconSearch, IconUser, IconUserPlus } from "@tabler/icons-react";
 import { Avatar } from "../Avatar";
 import { DivLink } from "../Link";
+import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
 interface Person {
@@ -27,6 +28,7 @@ export interface PersonFieldProps {
   emptyStateReadOnlyMessage?: string;
   searchPeople: (params: { query: string }) => Promise<Person[]>;
   extraDialogMenuOptions?: DialogMenuOptionProps[];
+  testId?: string;
 }
 
 export interface State {
@@ -50,6 +52,7 @@ export interface State {
   searchQuery: string;
   setSearchQuery: (query: string) => void;
   searchResults: Person[];
+  testId: string;
 }
 
 export function PersonField(props: PersonFieldProps) {
@@ -126,12 +129,14 @@ export function useState(props: PersonFieldProps): State {
     searchQuery,
     setSearchQuery,
     searchResults,
+
+    testId: props.testId || "person-field",
   };
 }
 
 function Trigger({ state }: { state: State }) {
   return (
-    <Popover.Trigger className={calcTriggerClass(state)}>
+    <Popover.Trigger className={calcTriggerClass(state)} data-test-id={state.testId}>
       <TriggerIcon state={state} />
       <TriggerText state={state} />
     </Popover.Trigger>
@@ -234,8 +239,15 @@ function Dialog({ state }: { state: State }) {
 function DialogMenu({ state }: { state: State }) {
   return (
     <div className="p-1">
-      <DialogMenuOption icon={IconExternalLink} label="See profile" linkTo={state.person?.profileLink || "#"} />
       <DialogMenuOption
+        testId={`${state.testId}-view-profile`}
+        icon={IconExternalLink}
+        label="See profile"
+        linkTo={state.person?.profileLink || "#"}
+      />
+
+      <DialogMenuOption
+        testId={`${state.testId}-assign-another`}
         icon={IconSearch}
         label="Choose someone else"
         onClick={() => {
@@ -258,6 +270,7 @@ function DialogMenu({ state }: { state: State }) {
       ))}
 
       <DialogMenuOption
+        testId={`${state.testId}-clear-assignment`}
         icon={IconCircleX}
         label="Clear assignment"
         onClick={() => {
@@ -274,9 +287,10 @@ interface DialogMenuOptionProps {
   label: string;
   linkTo?: string;
   onClick?: () => void;
+  testId?: string;
 }
 
-function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProps) {
+function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOptionProps) {
   const wrapperClass = "flex items-center gap-2 px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
   const Icon = icon;
 
@@ -288,9 +302,9 @@ function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProp
   );
 
   if (linkTo) {
-    return <DivLink className={wrapperClass} to={linkTo} children={content} />;
+    return <DivLink className={wrapperClass} to={linkTo} children={content} testId={testId} />;
   } else if (onClick) {
-    return <div className={wrapperClass} onClick={onClick} children={content} />;
+    return <div className={wrapperClass} onClick={onClick} children={content} data-test-id={testId} />;
   } else {
     throw new Error("Either linkTo or onClick must be provided");
   }
@@ -367,6 +381,7 @@ function DialogSearch({ state }: { state: State }) {
               state.setIsOpen(false);
             }}
             onMouseEnter={() => setSelectedIndex(index)}
+            data-test-id={createTestId(state.testId, `search-result`, person.fullName)}
           >
             <div className="flex items-center gap-1.5 truncate">
               <Avatar person={person} size={18} />
