@@ -3,7 +3,7 @@ defmodule Operately.Features.GoalTest do
 
   alias Operately.Support.Features.GoalSteps, as: Steps
 
-  setup ctx, do: ctx = Steps.setup(ctx)
+  setup ctx, do: Steps.setup(ctx)
 
   feature "changing the champion", ctx do
     ctx
