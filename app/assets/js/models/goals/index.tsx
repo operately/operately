@@ -48,9 +48,12 @@ export function accessLevelsAsStrings(levels: api.AccessLevels): {
   company: "no_access" | "view" | "comment" | "edit" | "full";
   space: "no_access" | "view" | "comment" | "edit" | "full";
 } {
+  // space level is always at least as high as company level
+  const spaceLevel = levels.company! > levels.space! ? levels.company! : levels.space!;
+
   return {
     company: accessLevelAsString(levels.company!),
-    space: accessLevelAsString(levels.space!),
+    space: accessLevelAsString(spaceLevel),
   };
 }
 
