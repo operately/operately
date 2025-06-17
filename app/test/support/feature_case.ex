@@ -23,11 +23,10 @@ defmodule Operately.FeatureCase do
 
         screenshots_before = Path.wildcard("/tmp/screenshots/*")
 
-        on_exit fn ->
+        on_exit(fn ->
           screenshots_after = Path.wildcard("/tmp/screenshots/*")
-
           list_screenshots(screenshots_before, screenshots_after)
-        end
+        end)
 
         :ok
       end
