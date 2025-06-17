@@ -3,12 +3,16 @@ defmodule Operately.Features.GoalTest do
 
   alias Operately.Support.Features.GoalSteps, as: Steps
 
-  # setup ctx do
-  #   ctx = Steps.setup(ctx)
-  #   ctx = Steps.visit_page(ctx)
+  setup ctx, do: ctx = Steps.setup(ctx)
 
-  #   {:ok, ctx}
-  # end
+  feature "changing the champion", ctx do
+    ctx
+    |> Steps.change_champion()
+    |> Steps.assert_champion_changed()
+
+    # |> Steps.assert_champion_changed_feed_posted()
+    # |> Steps.assert_champion_changed_email_sent()
+  end
 
   # feature "editing goals", ctx do
   #   ctx
