@@ -86,6 +86,7 @@ function Champion(props: GoalPage.State) {
   return (
     <SidebarSection title="Champion">
       <PersonField
+        testId="champion-field"
         person={props.champion}
         setPerson={props.setChampion}
         readonly={!props.canEdit}
@@ -111,6 +112,7 @@ function Reviewer(props: GoalPage.State) {
   return (
     <SidebarSection title="Reviewer">
       <PersonField
+        testId="reviewer-field"
         person={props.reviewer}
         setPerson={props.setReviewer}
         readonly={!props.canEdit}
