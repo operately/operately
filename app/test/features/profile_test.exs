@@ -32,11 +32,23 @@ defmodule Operately.Features.ProfileTest do
     |> Steps.assert_person_listed_as_report_on_manager_profile()
   end
 
-  feature "view goals", ctx do
+  feature "view assigned goals and projects", ctx do
     ctx
     |> Steps.given_goals_exist_for_person()
+    |> Steps.given_projects_exist_for_person()
     |> Steps.visit_profile_page()
-    |> Steps.assert_goals_visible()
+    |> Steps.assert_assinged_goals_and_projects_visible()
+    |> Steps.refute_reviewing_goals_and_projects_visible()
+  end
+
+  feature "view reviewing goals and projects", ctx do
+    ctx
+    |> Steps.given_goals_exist_for_person()
+    |> Steps.given_projects_exist_for_person()
+    |> Steps.visit_profile_page()
+    |> Steps.click_reviewing_tab()
+    |> Steps.assert_reviewing_goals_and_projects_visible()
+    |> Steps.refute_assinged_goals_and_projects_visible()
   end
 
 end

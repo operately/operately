@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.ProfileSteps do
   import Operately.PeopleFixtures
   import Operately.CompaniesFixtures
   import Operately.GoalsFixtures
+  import Operately.ProjectsFixtures
 
   step :given_a_person_exists_with_manager_reports_and_peers, ctx do
     company = company_fixture()
@@ -59,28 +60,79 @@ defmodule Operately.Support.Features.ProfileSteps do
   end
 
   step :given_goals_exist_for_person, ctx do
+    peer = hd(ctx.peers)
+
     goal1 = goal_fixture(ctx.person, %{
       company_id: ctx.company.id,
       space_id: ctx.company.company_space_id,
+      reviewer_id: peer.id,
       name: "Improve support first response time",
     })
 
     goal2 = goal_fixture(ctx.person, %{
       company_id: ctx.company.id,
       space_id: ctx.company.company_space_id,
-      champion_id: hd(ctx.peers).id,
+      champion_id: peer.id,
+      reviewer_id: ctx.person.id,
       name: "Increase customer satisfaction",
     })
 
     Map.merge(ctx, %{goals: [goal1, goal2]})
   end
 
+  step :given_projects_exist_for_person, ctx do
+    peer = hd(ctx.peers)
+
+    project1 = project_fixture(%{
+      company_id: ctx.company.id,
+      group_id: ctx.company.company_space_id,
+      creator_id: ctx.person.id,
+      champion_id: ctx.person.id,
+      reviewer_id: peer.id,
+      name: "Project 1",
+    })
+
+    project2 = project_fixture(%{
+      company_id: ctx.company.id,
+      group_id: ctx.company.company_space_id,
+      creator_id: ctx.person.id,
+      champion_id: peer.id,
+      reviewer_id: ctx.person.id,
+      name: "Project 2",
+    })
+
+    Map.merge(ctx, %{projects: [project1, project2]})
+  end
+
   step :click_about_tab, ctx do
     UI.click(ctx, testid: "tab-about")
   end
 
-  step :assert_goals_visible, ctx do
-    UI.assert_text(ctx, Enum.at(ctx.goals, 0).name)
+  step :click_reviewing_tab, ctx do
+    UI.click(ctx, testid: "tab-reviewing")
   end
 
+  step :assert_assinged_goals_and_projects_visible, ctx do
+    ctx
+    |> UI.assert_text(Enum.at(ctx.goals, 0).name)
+    |> UI.assert_text(Enum.at(ctx.projects, 0).name)
+  end
+
+  step :assert_reviewing_goals_and_projects_visible, ctx do
+    ctx
+    |> UI.assert_text(Enum.at(ctx.goals, 1).name)
+    |> UI.assert_text(Enum.at(ctx.projects, 1).name)
+  end
+
+  step :refute_assinged_goals_and_projects_visible, ctx do
+    ctx
+    |> UI.refute_text(Enum.at(ctx.goals, 0).name)
+    |> UI.refute_text(Enum.at(ctx.projects, 0).name)
+  end
+
+  step :refute_reviewing_goals_and_projects_visible, ctx do
+    ctx
+    |> UI.refute_text(Enum.at(ctx.goals, 1).name)
+    |> UI.refute_text(Enum.at(ctx.projects, 1).name)
+  end
 end
