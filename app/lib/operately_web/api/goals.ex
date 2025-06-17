@@ -191,20 +191,10 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.start_transaction()
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
-      |> halt_if_space_not_changed(inputs.space_id)
+      |> Sptes.check_idempotency(fn %{goal: goal} -> goal.space_id == inputs.space_id end)
       |> Steps.update_space(inputs.space_id)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
-    end
-
-    defp halt_if_space_not_changed(multi, space_id) do
-      Ecto.Multi.run(multi, :check_space_change, fn _repo, %{goal: goal} ->
-        if goal.group_id == space_id do
-          {:error, :idempotent}
-        else
-          {:ok, nil}
-        end
-      end)
     end
   end
 
@@ -699,6 +689,16 @@ defmodule OperatelyWeb.Api.Goals do
     def update_target_value(multi, value) do
       Ecto.Multi.update(multi, :updated_targets, fn %{target: target} ->
         Operately.Goals.Target.changeset(target, %{value: value})
+      end)
+    end
+
+    defp check_idempotency(multi, check_fn) do
+      Ecto.Multi.run(multi, :idempotency_check, fn _repo, changes ->
+        if check_fn.(changes) do
+          {:error, :idempotent}
+        else
+          {:ok, nil}
+        end
       end)
     end
 
