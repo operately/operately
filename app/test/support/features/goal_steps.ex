@@ -96,6 +96,40 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Changing the due date
+  #
+
+  step :change_due_date, ctx do
+    ctx
+    |> UI.click(testid: "due-date-field")
+    |> UI.select_day_in_datepicker(testid: "due-date-datepicker", Operately.Time.days_from_now(3))
+  end
+
+  step :assert_due_date_changed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.timeframe.end_date == ~D[2024-12-31]
+    end)
+  end
+
+  #
+  # Removing the due date
+  #
+
+  step :remove_due_date, ctx do
+    ctx
+    |> UI.click(testid: "due-date-field")
+    |> UI.click(testid: "due-date-clear")
+  end
+
+  step :assert_due_date_removed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.timeframe == nil
+    end)
+  end
+
+  #
   # Utility functions
   #
 
