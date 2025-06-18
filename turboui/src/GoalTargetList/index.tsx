@@ -231,6 +231,7 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
+          testId="target-value"
           autoFocus
           label="New Value"
           error={errors.value?.message as string}
@@ -242,10 +243,10 @@ function TargetUpdate({ state, target }: { state: State; target: TargetState }) 
           })}
         />
         <div className="flex items-center gap-2 justify-end mt-4">
-          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button">
+          <SecondaryButton size="xs" onClick={() => state.cancelEdit(target.id)} type="button" testId="cancel">
             Cancel
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit">
+          <PrimaryButton size="xs" type="submit" testId="save">
             Save
           </PrimaryButton>
         </div>
