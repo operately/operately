@@ -88,18 +88,12 @@ export function useGoalFieldState(p: GoalField.Props): GoalField.State {
   }, [isOpen, props.goal]);
 
   React.useEffect(() => {
-    let active = true;
+    if (!isOpen || dialogMode !== "search") return;
 
     props.searchGoals({ query: searchQuery }).then((goals: GoalField.Goal[]) => {
-      if (active) {
-        setSearchResults(goals);
-      }
+      setSearchResults(goals);
     });
-
-    return () => {
-      active = false;
-    };
-  }, [searchQuery, props.searchGoals]);
+  }, [searchQuery, props.searchGoals, isOpen, dialogMode]);
 
   const setIsOpen = (open: boolean) => {
     if (props.readonly) {
