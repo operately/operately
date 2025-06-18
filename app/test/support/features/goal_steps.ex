@@ -24,6 +24,22 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Changing the goal name
+  #
+
+  step :change_goal_name, ctx do
+    ctx
+    |> UI.fill_text_field(testid: "goal-name-field", with: "New Goal Name")
+  end
+
+  step :assert_goal_name_changed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.name == "New Goal Name"
+    end)
+  end
+
+  #
   # Changing the champion
   #
 

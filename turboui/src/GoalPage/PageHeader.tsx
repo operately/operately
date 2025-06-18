@@ -27,6 +27,7 @@ export function PageHeader(props: GoalPage.State) {
             onSave={props.updateGoalName}
             readonly={!props.canEdit}
             trimBeforeSave
+            testId="goal-name-field"
           />
 
           <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />
