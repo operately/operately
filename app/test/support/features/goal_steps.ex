@@ -239,12 +239,13 @@ defmodule Operately.Support.Features.GoalSteps do
   #
 
   step :delete_target, ctx do
-    first_target = Operately.Repo.preload(ctx.goal, [:targets]).targets |> List.first()
+    target = Operately.Repo.preload(ctx.goal, [:targets]).targets |> List.first()
 
     ctx
-    |> Map.put(:target, first_target)
-    |> UI.click(testid: UI.testid(["target", first_target.name]))
+    |> Map.put(:target, target)
+    |> UI.click(testid: UI.testid(["target", target.name]))
     |> UI.click(testid: "delete-target")
+    |> UI.click(testid: "confirm")
   end
 
   step :assert_target_deleted, ctx do
@@ -252,7 +253,7 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       targets = Operately.Repo.preload(goal, [:targets]).targets
 
-      refute Enum.any?(targets, fn t -> t.name == ctx.first_target.name end)
+      refute Enum.any?(targets, fn t -> t.name == ctx.target.name end)
     end)
   end
 

@@ -17,6 +17,7 @@ import { UpdateButton } from "./UpdateButton";
 
 import { Textarea } from "../forms/Textarea";
 import { Textfield } from "../forms/Textfield";
+import { createTestId } from "../TestableElement";
 
 export namespace GoalTargetList {
   export type Target = {
@@ -332,7 +333,7 @@ function TargetDelete({ state, target }: { state: State; target: TargetState }) 
           Cancel
         </SecondaryButton>
 
-        <DangerButton size="xs" onClick={() => state.deleteTarget(target.id)}>
+        <DangerButton size="xs" onClick={() => state.deleteTarget(target.id)} testId="confirm">
           Yes, Delete
         </DangerButton>
       </div>
@@ -394,6 +395,7 @@ function TargetView({ state, target }: { state: State; target: TargetState }) {
       className="group flex items-start w-[calc(100% + 16px)] -ml-[16px]"
       ref={ref}
       style={isDragging ? draggedStyle : undraggedStyle}
+      data-test-id={createTestId("target", target.name)}
     >
       <IconGripVertical size={16} className={dragGripClass} />
 
