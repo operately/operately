@@ -27,8 +27,12 @@ This document captures the architecture principles, patterns, and workflow for d
 ### Setup
 
 1. **Storybook development**: Components are developed and tested in Storybook
-2. **TypeScript checking**: Run `npx tsc --noEmit -p app/tsconfig.lint.json` regularly
+2. **TypeScript checking**: Run `make turboui.build && make turboui.test` regularly
 3. **Component stories**: Create comprehensive stories showing all component states
+
+### Tips
+
+- **Ask, do not assume**: If requirements are not 100% clear do not jump into implementation with assumptions but ask for clarifications and present options if possible.
 
 ### File Organization
 
@@ -60,7 +64,7 @@ src/
 Always run before committing:
 
 ```bash
-npx tsc --noEmit -p app/tsconfig.lint.json
+make turboui.build && make turboui.test
 ```
 
 ### Common Issues
@@ -75,7 +79,7 @@ npx tsc --noEmit -p app/tsconfig.lint.json
 ### Visual Consistency
 
 - **Icons**: Use Tabler icons consistently, hide in list contexts to reduce clutter
-- **Colors**: Follow existing color tokens (content-subtle, content-error, etc.)
+- **Colors**: Use existing color classes (content-subtle, content-error, etc.) defined in tailwind config and outlined in turboui/src/Colors
 - **Spacing**: Use consistent gap and padding patterns
 - **Typography**: Use text-xs for compact contexts, text-sm for normal contexts
 
