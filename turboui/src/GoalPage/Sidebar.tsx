@@ -271,6 +271,7 @@ function Actions(props: GoalPage.State) {
       link: props.closeLink,
       icon: IconCircleCheck,
       hidden: !props.canEdit || props.state === "closed",
+      testId: "close-goal",
     },
     {
       type: "link" as const,
@@ -278,6 +279,7 @@ function Actions(props: GoalPage.State) {
       link: props.reopenLink,
       icon: IconRotateDot,
       hidden: !props.canEdit || props.state !== "closed",
+      testId: "reopen-goal",
     },
     {
       type: "action" as const,
@@ -285,6 +287,7 @@ function Actions(props: GoalPage.State) {
       onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
       hidden: !props.canEdit,
+      testId: "move-to-another-space",
     },
     {
       type: "action" as const,
@@ -293,6 +296,7 @@ function Actions(props: GoalPage.State) {
       icon: IconTrash,
       hidden: !props.canEdit,
       danger: true,
+      testId: "delete-goal",
     },
   ];
 

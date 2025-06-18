@@ -25,6 +25,7 @@ namespace ActionList {
     icon: React.ComponentType<{ size?: number | string; className?: string }>;
     hidden?: boolean;
     danger?: boolean;
+    testId?: string;
   }
 }
 
@@ -60,7 +61,8 @@ function ActionItem({ item }: { item: ActionList.Item }) {
 
   if (item.type === "link" && item.link) {
     return (
-      <DivLink to={item.link} className={className}>
+      <DivLink to={item.link} className={className} testId={item.testId}>
+        "
         <Icon size={16} className="shrink-0" />
         <span>{item.label}</span>
       </DivLink>
@@ -69,7 +71,7 @@ function ActionItem({ item }: { item: ActionList.Item }) {
 
   if (item.type === "action" && item.onClick) {
     return (
-      <div onClick={item.onClick} className={className}>
+      <div onClick={item.onClick} className={className} data-test-id={item.testId}>
         <Icon size={16} className="shrink-0" />
         <span>{item.label}</span>
       </div>
