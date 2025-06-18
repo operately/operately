@@ -1,11 +1,11 @@
 import { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { Page } from "../Page";
-import EditableText from "./index";
+import { TextField } from "./index";
 
 export default {
-  title: "Components/EditableText",
-  component: EditableText,
+  title: "Components/TextField",
+  component: TextField,
   decorators: [
     (Story) => (
       <div className="sm:mt-12">
@@ -17,9 +17,9 @@ export default {
       </div>
     ),
   ],
-} as Meta<typeof EditableText>;
+} as Meta<typeof TextField>;
 
-export const Default: StoryObj<typeof EditableText> = {
+export const Default: StoryObj<typeof TextField> = {
   render: () => {
     const onSave = (newText: string): Promise<boolean> => {
       return new Promise((resolve) => {
@@ -34,12 +34,12 @@ export const Default: StoryObj<typeof EditableText> = {
       <div className="space-y-8">
         <div>
           <div className="uppercase text-xs mb-2">Example 1: Default</div>
-          <EditableText text="Project Alpha" onSave={onSave} className="" placeholder="Enter project name" />
+          <TextField text="Project Alpha" onSave={onSave} className="" placeholder="Enter project name" />
         </div>
 
         <div>
           <div className="uppercase text-xs mb-2">Example 2: Custom Class</div>
-          <EditableText
+          <TextField
             text="Project Beta"
             onSave={onSave}
             className="font-bold text-xl"
@@ -49,12 +49,12 @@ export const Default: StoryObj<typeof EditableText> = {
 
         <div>
           <div className="uppercase text-xs mb-2">Example 3: Read Only</div>
-          <EditableText text="Project Gamma" onSave={onSave} readonly placeholder="This is read-only" />
+          <TextField text="Project Gamma" onSave={onSave} readonly placeholder="This is read-only" />
         </div>
 
         <div>
           <div className="uppercase text-xs mb-2">Example 4: Placeholder</div>
-          <EditableText text="" onSave={onSave} placeholder="This is a placeholder" />
+          <TextField text="" onSave={onSave} placeholder="This is a placeholder" />
         </div>
       </div>
     );
