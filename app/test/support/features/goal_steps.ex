@@ -12,9 +12,9 @@ defmodule Operately.Support.Features.GoalSteps do
       champion: :champion,
       reviewer: :reviewer,
       timeframe: %{
-        start_date: ~D[2023-01-01],
-        end_date: ~D[2023-12-31],
-        type: "year"
+        start_date: Operately.Time.days_ago(10) |> Operately.Time.as_date(),
+        end_date: Operately.Time.days_from_now(10) |> Operately.Time.as_date(),
+        type: "days"
       }
     )
     |> Factory.log_in_person(:champion)
@@ -96,19 +96,57 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Changing the due date
+  #
+
+  step :change_due_date, ctx do
+    new_date = Operately.Time.days_from_now(3) |> Operately.Time.as_date()
+
+    ctx
+    |> Map.put(:selected_date, new_date)
+    |> UI.select_day_in_datepicker(testid: "due-date-field", date: new_date)
+  end
+
+  step :assert_due_date_changed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.timeframe.end_date == ctx.selected_date
+    end)
+  end
+
+  #
+  # Removing the due date
+  #
+
+  step :remove_due_date, ctx do
+    ctx
+    |> UI.click(testid: "due-date-field")
+    |> UI.click(testid: "due-date-field-clear")
+  end
+
+  step :assert_due_date_removed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.timeframe == nil
+    end)
+  end
+
+  #
   # Utility functions
   #
 
   defp attempts(ctx, n, fun) do
-    Enum.reduce(1..n, nil, fn i, _ ->
-      try do
-        fun.()
-        ctx
-      rescue
-        e in [ExUnit.AssertionError] ->
-          if i < n, do: Process.sleep(100)
-          e
-      end
-    end)
+    try do
+      fun.()
+      ctx
+    rescue
+      e in [ExUnit.AssertionError] ->
+        if n > 0 do
+          Process.sleep(100)
+          attempts(ctx, n - 1, fun)
+        else
+          raise e
+        end
+    end
   end
 end
