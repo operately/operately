@@ -284,6 +284,24 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Deleting a goal
+  #
+
+  step :delete_goal, ctx do
+    ctx
+    |> UI.click(testid: "delete-goal")
+    |> UI.click(testid: "delete")
+  end
+
+  step :assert_goal_deleted, ctx do
+    attempts(ctx, 3, fn ->
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Repo.reload(ctx.goal)
+      end
+    end)
+  end
+
+  #
   # Utility functions
   #
 

@@ -163,18 +163,18 @@ defmodule Operately.Features.GoalTest do
   #   |> Steps.assert_comment_on_the_goal_reopening_notification_sent()
   # end
 
-  # describe "deletion" do
-  #   feature "deleting a goal with no subitems", ctx do
-  #     ctx
-  #     |> Steps.delete_goal()
-  #     |> Steps.assert_goal_deleted()
-  #   end
+  describe "deletion" do
+    feature "deleting a goal with no subitems", ctx do
+      ctx
+      |> Steps.delete_goal()
+      |> Steps.assert_goal_deleted()
+    end
 
-  #   feature "attemping to delete a goal with subitems" do
-  #     ctx
-  #     |> Steps.given_goal_has_subgoals()
-  #     |> Steps.visit_page()
-  #     |> Steps.assert_goal_cannot_be_deleted()
-  #   end
-  # end
+    # feature "attemping to delete a goal with subitems" do
+    #   ctx
+    #   |> Steps.given_goal_has_subgoals()
+    #   |> Steps.visit_page()
+    #   |> Steps.assert_goal_cannot_be_deleted()
+    # end
+  end
 end
