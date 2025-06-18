@@ -5,10 +5,12 @@ import classNames from "../../utils/classnames";
 interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, "style"> {
   label?: string;
   error?: string;
+  testId?: string;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((props, ref) => {
   const { label, error, className, ...rest } = props;
+  const testId = props.testId || "textarea";
 
   const cn = classNames(
     "flex items-center gap-1",
@@ -21,7 +23,13 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((pr
     <div className={className}>
       {label && <label className="font-bold text-sm mb-1 block">{label}</label>}
       <div className={cn}>
-        <TextareaAutosize ref={ref} className="w-full border-0 p-0 focus:ring-0" style={{ resize: "none" }} {...rest} />
+        <TextareaAutosize
+          data-test-id={testId}
+          ref={ref}
+          className="w-full border-0 p-0 focus:ring-0"
+          style={{ resize: "none" }}
+          {...rest}
+        />
       </div>
       {error && <div className="text-red-500 text-xs mb-1">{error}</div>}
     </div>

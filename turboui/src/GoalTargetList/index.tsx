@@ -160,6 +160,7 @@ function TargetAdd({ state }: { state: State }) {
     <InlineModal index={100}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
+          testId="target-name"
           label="Name"
           autoFocus
           placeholder="e.g. Increase monthly signup count"
@@ -168,6 +169,7 @@ function TargetAdd({ state }: { state: State }) {
         />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-2">
           <Textfield
+            testId={"target-from"}
             label="Start"
             error={errors.from?.message as string}
             {...register("from", {
@@ -177,6 +179,7 @@ function TargetAdd({ state }: { state: State }) {
             placeholder="e.g. 10000"
           />
           <Textfield
+            testId={"target-to"}
             label="Target"
             error={errors.to?.message as string}
             {...register("to", {
@@ -186,6 +189,7 @@ function TargetAdd({ state }: { state: State }) {
             placeholder="e.g. 15000"
           />
           <Textfield
+            testId={"target-unit"}
             label="Unit"
             error={errors.unit?.message as string}
             {...register("unit", { required: "Can't be empty" })}
@@ -193,10 +197,10 @@ function TargetAdd({ state }: { state: State }) {
           />
         </div>
         <div className="flex items-center gap-2 justify-end mt-4">
-          <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button">
+          <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button" testId="cancel">
             Cancel
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit">
+          <PrimaryButton size="xs" type="submit" testId="save">
             Add Target
           </PrimaryButton>
         </div>
