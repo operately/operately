@@ -1,9 +1,9 @@
 import { IconChevronRight } from "@tabler/icons-react";
 import React from "react";
 import { TaskPage } from ".";
-import EditableText from "../EditableText";
 import { BlackLink } from "../Link";
 import { StatusSelector } from "../TaskBoard/components/StatusSelector";
+import { TextField } from "../TextField";
 
 export function PageHeader(props: TaskPage.State) {
   const navigation = buildNavigation(props);
@@ -14,7 +14,7 @@ export function PageHeader(props: TaskPage.State) {
         <Breadcrumbs navigation={navigation} />
 
         <div className="flex items-center gap-3">
-          <EditableText
+          <TextField
             className="font-semibold text-2xl"
             text={props.name}
             onSave={props.onNameChange}

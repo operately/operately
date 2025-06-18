@@ -1,10 +1,10 @@
 import { IconChevronRight } from "@tabler/icons-react";
 import React from "react";
 import { ProjectPage } from ".";
-import EditableText from "../EditableText";
 import { IconProject } from "../icons";
 import { BlackLink } from "../Link";
 import { StatusBadge } from "../StatusBadge";
+import { TextField } from "../TextField";
 
 export function PageHeader(props: ProjectPage.State) {
   const navigation = [
@@ -20,7 +20,7 @@ export function PageHeader(props: ProjectPage.State) {
         <Breadcrumbs navigation={navigation} />
 
         <div className="flex items-center gap-2">
-          <EditableText
+          <TextField
             className="font-semibold text-lg"
             text={props.projectName}
             onSave={props.updateProjectName}
