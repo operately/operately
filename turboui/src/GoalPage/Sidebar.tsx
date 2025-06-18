@@ -253,6 +253,7 @@ function Privacy(props: GoalPage.State) {
   return (
     <SidebarSection title="Privacy">
       <PrivacyField
+        testId="goal-privacy-field"
         accessLevels={props.accessLevels}
         spaceName={props.space.name}
         setAccessLevels={props.setAccessLevels}

@@ -319,6 +319,23 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Changing the access level
+  #
+
+  step :change_access_level, ctx do
+    ctx
+    |> UI.click(testid: "goal-privacy-field")
+    |> UI.select(testid: "goal-privacy-field-company-select", option: "No Access")
+    |> UI.click(testid: "save")
+  end
+
+  step :assert_access_level_changed, ctx do
+    attempts(ctx, 3, fn ->
+      true
+    end)
+  end
+
+  #
   # Utility functions
   #
 
