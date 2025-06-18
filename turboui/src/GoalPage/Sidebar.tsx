@@ -73,6 +73,7 @@ function ParentGoal(props: GoalPage.State) {
   return (
     <SidebarSection title="Parent Goal">
       <GoalField
+        testId="parent-goal-field"
         goal={props.parentGoal}
         setGoal={props.setParentGoal}
         searchGoals={props.parentGoalSearch}
