@@ -27,16 +27,17 @@
     "@storybook/react": "^8.6.14",
     "@storybook/react-vite": "^8.6.14",
     "@storybook/test": "^8.6.14",
+    "@testing-library/react": "^16.3.0",
     "@types/jest": "^29.5.12",
     "autoprefixer": "^10.4.21",
+    "esbuild": "0.25.2",
     "jest": "^29.6.1",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.14",
     "storybook": "^8.6.14",
     "tailwindcss": "^3.4.17",
     "ts-jest": "^29.1.2",
-    "typescript": "^5.4.3",
-    "esbuild": "0.25.2"
+    "typescript": "^5.4.3"
   },
   "peerDependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.1",
@@ -64,8 +65,8 @@
     "@tiptap/react": "^2.3.0",
     "@tiptap/starter-kit": "^2.3.0",
     "@tiptap/suggestion": "^2.3.0",
-    "react-hot-toast": "^2.5.2",
     "lucide-react": "^0.475.0",
-    "react-hook-form": "^7.56.1"
+    "react-hook-form": "^7.56.1",
+    "react-hot-toast": "^2.5.2"
   }
 }
