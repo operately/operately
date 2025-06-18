@@ -59,6 +59,12 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_parent_goal_removed()
   end
 
+  feature "move to another space", ctx do
+    ctx
+    |> Steps.move_goal_to_another_space()
+    |> Steps.assert_goal_moved_to_another_space()
+  end
+
   # feature "editing goals", ctx do
   #   ctx
   #   |> Steps.edit_goal()
