@@ -3,6 +3,7 @@ import { IconCalendarEvent, IconCalendarPlus, IconX } from "@tabler/icons-react"
 import React, { useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { SecondaryButton } from "../Button";
+import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 import { isCurrentYear, isOverdue } from "../utils/time";
 
@@ -24,6 +25,7 @@ export namespace DateField {
     emptyStateReadonlyText?: string;
 
     variant?: "inline" | "form-field";
+    testId?: string;
   }
 }
 
@@ -40,6 +42,7 @@ export function DateField({
   showIcon = true,
   emptyStateText = "Set date",
   emptyStateReadonlyText = "No date set",
+  testId = "date-field",
 }: DateField.Props) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -66,7 +69,7 @@ export function DateField({
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger className={triggerClassName} disabled={readonly}>
+      <Popover.Trigger className={triggerClassName} disabled={readonly} data-test-id={testId}>
         <DateDisplay
           date={date}
           className={className}
@@ -83,45 +86,38 @@ export function DateField({
       </Popover.Trigger>
 
       <Popover.Portal>
-        <DatePickerPopover date={date} setNewDate={handleChange} clearDate={clearDate} />
+        <Popover.Content
+          className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50"
+          sideOffset={5}
+        >
+          <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
+            <div className="text-sm font-medium">Select date</div>
+            {date && <ClearButton clearDate={clearDate} testId={testId} />}
+          </div>
+
+          <div className="p-2 pt-1" data-test-id={createTestId(testId, "datepicker")}>
+            <ReactDatePicker selected={date || undefined} onChange={handleChange} inline />
+          </div>
+
+          <Popover.Arrow />
+        </Popover.Content>
       </Popover.Portal>
     </Popover.Root>
   );
 }
 
-const DatePickerPopover = React.forwardRef<
-  HTMLDivElement,
-  {
-    date?: Date | null;
-    clearDate: () => void;
-    setNewDate: (date: Date | null) => void;
-  }
->(({ date, clearDate, setNewDate }, ref) => (
-  <Popover.Content
-    ref={ref}
-    className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50"
-    sideOffset={5}
-  >
-    <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
-      <div className="text-sm font-medium">Select date</div>
-      {date && (
-        <button
-          onClick={clearDate}
-          className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-dimmed"
-        >
-          <IconX size={14} className="mr-1" />
-          Clear
-        </button>
-      )}
-    </div>
-
-    <div className="p-2 pt-1">
-      <ReactDatePicker selected={date || undefined} onChange={setNewDate} inline />
-    </div>
-
-    <Popover.Arrow />
-  </Popover.Content>
-));
+function ClearButton({ clearDate, testId }: { clearDate: () => void; testId: string }) {
+  return (
+    <button
+      onClick={clearDate}
+      className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-dimmed"
+      data-test-id={createTestId(testId, "clear")}
+    >
+      <IconX size={14} className="mr-1" />
+      Clear
+    </button>
+  );
+}
 
 interface DateDisplayProps {
   date: Date | null | undefined;
