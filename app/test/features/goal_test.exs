@@ -47,6 +47,18 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_due_date_removed()
   end
 
+  feature "changing the parent goal", ctx do
+    ctx
+    |> Steps.change_parent_goal()
+    |> Steps.assert_parent_goal_changed()
+  end
+
+  feature "removing the parent goal", ctx do
+    ctx
+    |> Steps.remove_parent_goal()
+    |> Steps.assert_parent_goal_removed()
+  end
+
   # feature "editing goals", ctx do
   #   ctx
   #   |> Steps.edit_goal()

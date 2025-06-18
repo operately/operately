@@ -4,6 +4,7 @@ import * as React from "react";
 import { IconCircleX, IconExternalLink, IconSearch } from "@tabler/icons-react";
 import { IconGoal } from "../icons";
 import { DivLink } from "../Link";
+import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
 export namespace GoalField {
@@ -27,6 +28,7 @@ export namespace GoalField {
     emptyStateReadOnlyMessage?: string;
     searchGoals: (params: { query: string }) => Promise<Goal[]>;
     extraDialogMenuOptions?: DialogMenuOptionProps[];
+    testId?: string;
   }
 
   //
@@ -117,6 +119,7 @@ export function useGoalFieldState(p: GoalField.Props): GoalField.State {
     searchQuery,
     setSearchQuery,
     searchResults,
+    testId: props.testId || "goal-field",
   };
 }
 
@@ -131,7 +134,7 @@ function Trigger({ state }: { state: GoalField.State }) {
 
   if (state.goal) {
     return (
-      <Popover.Trigger className={triggerClass}>
+      <Popover.Trigger className={triggerClass} data-test-id={state.testId}>
         <IconGoal size={state.iconSize} />
         <div className="text-sm font-medium">{state.goal.name}</div>
       </Popover.Trigger>
@@ -171,8 +174,19 @@ function Dialog({ state }: { state: GoalField.State }) {
 function DialogMenu({ state }: { state: GoalField.State }) {
   return (
     <div className="p-1">
-      <DialogMenuOption icon={IconExternalLink} label="See goal" linkTo={state.goal?.link || "#"} />
-      <DialogMenuOption icon={IconSearch} label="Choose another goal" onClick={() => state.setDialogMode("search")} />
+      <DialogMenuOption
+        testId={`${state.testId}-view-goal`}
+        icon={IconExternalLink}
+        label="See goal"
+        linkTo={state.goal?.link || "#"}
+      />
+
+      <DialogMenuOption
+        testId={`${state.testId}-search`}
+        icon={IconSearch}
+        label="Choose another goal"
+        onClick={() => state.setDialogMode("search")}
+      />
 
       {state.extraDialogMenuOptions.map((option, index) => (
         <DialogMenuOption
@@ -188,6 +202,7 @@ function DialogMenu({ state }: { state: GoalField.State }) {
       ))}
 
       <DialogMenuOption
+        testId={`${state.testId}-clear`}
         icon={IconCircleX}
         label="Clear goal"
         onClick={() => {
@@ -204,9 +219,10 @@ interface DialogMenuOptionProps {
   label: string;
   linkTo?: string;
   onClick?: () => void;
+  testId?: string;
 }
 
-function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProps) {
+function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOptionProps) {
   const wrapperClass = "flex items-center gap-2 px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
   const Icon = icon;
 
@@ -218,9 +234,9 @@ function DialogMenuOption({ icon, label, linkTo, onClick }: DialogMenuOptionProp
   );
 
   if (linkTo) {
-    return <DivLink className={wrapperClass} to={linkTo} children={content} />;
+    return <DivLink className={wrapperClass} to={linkTo} children={content} testId={testId} />;
   } else if (onClick) {
-    return <div className={wrapperClass} onClick={onClick} children={content} />;
+    return <div className={wrapperClass} onClick={onClick} children={content} data-test-id={testId} />;
   } else {
     throw new Error("Either linkTo or onClick must be provided");
   }
@@ -250,7 +266,9 @@ function DialogSearch({ state }: { state: GoalField.State }) {
             }}
           >
             <div className="flex items-center gap-1.5 truncate">
-              <div className="text-sm truncate">{goal.name}</div>
+              <div className="text-sm truncate" data-test-id={createTestId(state.testId, goal.name)}>
+                {goal.name}
+              </div>
             </div>
           </div>
         ))}
