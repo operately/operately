@@ -10,6 +10,7 @@ export namespace TextField {
     readonly?: boolean;
     placeholder?: string;
     trimBeforeSave?: boolean;
+    testId?: string;
   }
 }
 
@@ -20,6 +21,7 @@ export function TextField({
   readonly = false,
   placeholder,
   trimBeforeSave = false,
+  testId = "text-field",
 }: TextField.Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentText, setCurrentText] = useState(text);
@@ -119,6 +121,7 @@ export function TextField({
 
       {isEditing ? (
         <input
+          data-test-id={testId}
           ref={inputRef}
           type="text"
           value={currentText}
