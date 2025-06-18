@@ -235,6 +235,29 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Deleting a target
+  #
+
+  step :delete_target, ctx do
+    target = Operately.Repo.preload(ctx.goal, [:targets]).targets |> List.first()
+
+    ctx
+    |> Map.put(:target, target)
+    |> UI.click(testid: UI.testid(["target", target.name]))
+    |> UI.click(testid: "delete-target")
+    |> UI.click(testid: "confirm")
+  end
+
+  step :assert_target_deleted, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      targets = Operately.Repo.preload(goal, [:targets]).targets
+
+      refute Enum.any?(targets, fn t -> t.name == ctx.target.name end)
+    end)
+  end
+
+  #
   # Utility functions
   #
 
