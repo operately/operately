@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
+  alias Operately.Access
 
   def setup(ctx) do
     ctx
@@ -316,6 +317,27 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.click(testid: "delete-goal")
     |> UI.assert_text("Cannot delete")
+  end
+
+  #
+  # Changing the access level
+  #
+
+  step :change_access_level, ctx do
+    ctx
+    |> UI.click(testid: "goal-privacy-field")
+    |> UI.select(testid: "goal-privacy-field-company-select", option: "No Access")
+    |> UI.click(testid: "save")
+  end
+
+  step :assert_access_level_changed, ctx do
+    attempts(ctx, 3, fn ->
+      context = Access.get_context(goal_id: ctx.goal.id)
+      company_members = Access.get_group!(company_id: ctx.goal.company_id, tag: :standard)
+      company_binding = Access.get_binding(context_id: context.id, group_id: company_members.id)
+
+      assert company_binding.access_level == 0
+    end)
   end
 
   #
