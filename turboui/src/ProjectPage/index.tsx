@@ -2,11 +2,13 @@ import React from "react";
 
 import { PageNew } from "../Page";
 
-import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconSubtask } from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "@tabler/icons-react";
 
 import { PrivacyField } from "../PrivacyField";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
+import { TaskBoard } from "../TaskBoard";
+import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageHeader } from "./PageHeader";
 
 export namespace ProjectPage {
@@ -51,6 +53,15 @@ export namespace ProjectPage {
     updateDescription: (description: string | null) => Promise<boolean>;
 
     activityFeed: React.ReactNode;
+
+    // TaskBoard props
+    tasks: TaskBoardTypes.Task[];
+    onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
+    onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
+    onMilestoneCreate?: (milestone: Omit<TaskBoardTypes.Milestone, "id">) => void;
+    onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
+    onMilestoneUpdate?: (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => void;
+    searchPeople?: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
   }
 
   export interface State extends Props {}
@@ -67,7 +78,12 @@ export function ProjectPage(props: ProjectPage.Props) {
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "tasks", label: "Tasks", icon: <IconSubtask size={14} /> },
+    {
+      id: "tasks",
+      label: "Tasks",
+      icon: <IconListCheck size={14} />,
+      count: state.tasks.filter((task) => !task._isHelperTask).length,
+    },
     { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
     { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
@@ -80,7 +96,17 @@ export function ProjectPage(props: ProjectPage.Props) {
 
       <div className="flex-1 overflow-scroll">
         {tabs.active === "overview" && <div className="p-4">Overview content will go here</div>}
-        {tabs.active === "tasks" && <div className="p-4">Tasks content will go here</div>}
+        {tabs.active === "tasks" && (
+          <TaskBoard
+            tasks={state.tasks}
+            onStatusChange={state.onTaskStatusChange}
+            onTaskCreate={state.onTaskCreate}
+            onMilestoneCreate={state.onMilestoneCreate}
+            onTaskUpdate={state.onTaskUpdate}
+            onMilestoneUpdate={state.onMilestoneUpdate}
+            searchPeople={state.searchPeople}
+          />
+        )}
         {tabs.active === "check-ins" && <div className="p-4">Check-ins content will go here</div>}
         {tabs.active === "discussions" && <div className="p-4">Discussions content will go here</div>}
         {tabs.active === "activity" && <div className="p-4">Activity content will go here</div>}

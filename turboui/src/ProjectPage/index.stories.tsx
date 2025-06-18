@@ -3,6 +3,7 @@ import React from "react";
 
 import { ProjectPage } from "./index";
 import { genPeople } from "../utils/storybook/genPeople";
+import { mockTasks, mockEmptyTasks } from "../TaskBoard/tests/mockData";
 
 const people = genPeople(5);
 
@@ -53,6 +54,28 @@ const defaultProps: ProjectPage.Props = {
   updateDescription: async () => true,
 
   activityFeed: <div>Activity feed content</div>,
+
+  // TaskBoard props
+  tasks: mockTasks,
+  onTaskStatusChange: (taskId, newStatus) => {
+    console.log("Task status change:", taskId, newStatus);
+  },
+  onTaskCreate: (task) => {
+    console.log("Task created:", task);
+  },
+  onMilestoneCreate: (milestone) => {
+    console.log("Milestone created:", milestone);
+  },
+  onTaskUpdate: (taskId, updates) => {
+    console.log("Task updated:", taskId, updates);
+  },
+  onMilestoneUpdate: (milestoneId, updates) => {
+    console.log("Milestone updated:", milestoneId, updates);
+  },
+  searchPeople: async (params) => {
+    console.log("Searching people:", params);
+    return [];
+  },
 };
 
 export const Default: Story = {
@@ -86,5 +109,12 @@ export const Issue: Story = {
   args: {
     ...defaultProps,
     status: "issue",
+  },
+};
+
+export const EmptyTasks: Story = {
+  args: {
+    ...defaultProps,
+    tasks: mockEmptyTasks,
   },
 };
