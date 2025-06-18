@@ -77,6 +77,12 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_target_deleted()
   end
 
+  feature "update target value", ctx do
+    ctx
+    |> Steps.update_target_value()
+    |> Steps.assert_target_value_updated()
+  end
+
   # feature "editing goals", ctx do
   #   ctx
   #   |> Steps.edit_goal()
