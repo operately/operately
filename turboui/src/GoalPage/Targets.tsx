@@ -13,7 +13,7 @@ export function Targets(props: GoalPage.Props) {
       <SectionHeader
         title="Targets"
         buttons={
-          <SecondaryButton size="xxs" onClick={() => setAddActive(true)}>
+          <SecondaryButton size="xxs" onClick={() => setAddActive(true)} testId="add-target">
             Add
           </SecondaryButton>
         }

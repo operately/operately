@@ -62,7 +62,6 @@ function ActionItem({ item }: { item: ActionList.Item }) {
   if (item.type === "link" && item.link) {
     return (
       <DivLink to={item.link} className={className} testId={item.testId}>
-        "
         <Icon size={16} className="shrink-0" />
         <span>{item.label}</span>
       </DivLink>
