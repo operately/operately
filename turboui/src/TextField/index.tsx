@@ -1,23 +1,26 @@
 import React, { useEffect, useRef, useState } from "react";
 import classNames from "../utils/classnames";
 
-type EditableTextProps = {
-  text: string;
-  onSave: (newText: string) => Promise<boolean>;
-  className?: string;
-  readonly?: boolean;
-  placeholder?: string;
-  trimBeforeSave?: boolean;
-};
+export namespace TextField {
+  export interface Props {
+    text: string;
+    onSave: (newText: string) => Promise<boolean>;
 
-const EditableText: React.FC<EditableTextProps> = ({
+    className?: string;
+    readonly?: boolean;
+    placeholder?: string;
+    trimBeforeSave?: boolean;
+  }
+}
+
+export function TextField({
   text,
   onSave,
   className,
   readonly = false,
   placeholder,
   trimBeforeSave = false,
-}) => {
+}: TextField.Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentText, setCurrentText] = useState(text);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -146,6 +149,4 @@ const EditableText: React.FC<EditableTextProps> = ({
       )}
     </div>
   );
-};
-
-export default EditableText;
+}
