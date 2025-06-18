@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { SecondaryButton } from "../../Button";
+import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
@@ -181,8 +181,8 @@ export function TaskBoard({
       console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
 
       // Get all milestone objects for the utility function
-      const allMilestones = milestones.map(m => m.milestone);
-      
+      const allMilestones = milestones.map((m) => m.milestone);
+
       // Use the utility function to handle reordering
       const updatedTasks = reorderTasks(
         internalTasks,
@@ -190,7 +190,7 @@ export function TaskBoard({
         draggedId,
         indexInDropZone,
         { addHelperTasks: true },
-        allMilestones
+        allMilestones,
       );
 
       // Update state with the reordered tasks
@@ -225,22 +225,22 @@ export function TaskBoard({
       <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-2 border-b border-surface-outline">
         <div className="flex flex-row items-center gap-4">
           <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
-          <SecondaryButton
+          <PrimaryButton
             size="xxs"
             onClick={() => {
               setActiveTaskMilestoneId(null as unknown as string | undefined);
               setIsTaskModalOpen(true);
             }}
           >
-            + Add Task
-          </SecondaryButton>
+            + New task
+          </PrimaryButton>
           <SecondaryButton
             size="xxs"
             onClick={() => {
               setIsMilestoneModalOpen(true);
             }}
           >
-            + Add Milestone
+            + New milestone
           </SecondaryButton>
         </div>
         <div className="flex mt-2 sm:mt-0">
@@ -287,7 +287,7 @@ export function TaskBoard({
                     onTaskUpdate={onTaskUpdate}
                     onMilestoneUpdate={onMilestoneUpdate}
                     searchPeople={searchPeople}
-                    availableMilestones={milestones.map(m => m.milestone)}
+                    availableMilestones={milestones.map((m) => m.milestone)}
                     availablePeople={internalTasks
                       .flatMap((task) => task.assignees || [])
                       .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
@@ -295,7 +295,7 @@ export function TaskBoard({
                 ))}
 
                 {/* Tasks with no milestone */}
-                {groupedTasks["no_milestone"] &&groupedTasks["no_milestone"].length > 0 && (
+                {groupedTasks["no_milestone"] && groupedTasks["no_milestone"].length > 0 && (
                   <li>
                     {/* No milestone header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
@@ -316,8 +316,8 @@ export function TaskBoard({
                     </div>
 
                     {/* Tasks with no milestone */}
-                    <TaskList 
-                      tasks={groupedTasks["no_milestone"] || []} 
+                    <TaskList
+                      tasks={groupedTasks["no_milestone"] || []}
                       milestoneId="no-milestone"
                       onTaskUpdate={onTaskUpdate}
                       searchPeople={searchPeople}
