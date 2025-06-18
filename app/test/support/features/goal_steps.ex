@@ -295,10 +295,27 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :assert_goal_deleted, ctx do
     attempts(ctx, 3, fn ->
-      assert_raise Ecto.NoResultsError, fn ->
-        Operately.Repo.reload(ctx.goal)
-      end
+      assert Operately.Repo.reload(ctx.goal) == nil
     end)
+  end
+
+  #
+  # Goal with subgoals cannot be deleted
+  #
+
+  step :given_goal_has_subgoals, ctx do
+    ctx
+    |> Factory.add_goal(:subgoal, :product, parent_goal: :goal)
+  end
+
+  step :visit_page, ctx do
+    UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :assert_goal_cannot_be_deleted, ctx do
+    ctx
+    |> UI.click(testid: "delete-goal")
+    |> UI.assert_text("Cannot delete")
   end
 
   #
