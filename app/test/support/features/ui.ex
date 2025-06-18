@@ -202,6 +202,33 @@ defmodule Operately.Support.Features.UI do
     fill(ctx, query(testid: id), with: value)
   end
 
+  def fill_text_field(state, testid: id, with: message) do
+    #
+    # Filling a text field is more compolicated than it seems.
+    #
+    # Usually, we would use the clear to clear the content
+    # and then fill it with the new value. However, in some cases.
+    #
+    # However, when the text field is blurred (which is triggered by the clear),
+    # the react component will revert the value to the previous one.
+    #
+    # So, we need to clear the field. When the field is focused, the carrot
+    # is around the middle of the field, so we need to backspace a lot to
+    # remove the content on the left side, and then delete a lot to remove
+    # the content on the right side.
+    #
+    # Finally, we click on the body to blur the field.
+    #
+    execute("fill_text_field", state, fn session ->
+      backspaces = Enum.map(1..150, fn _ -> :backspace end)
+      deletes = Enum.map(1..150, fn _ -> :delete end)
+
+      session
+      |> Browser.click(query(testid: id))
+      |> Browser.send_keys(backspaces ++ deletes ++ [message] ++ [:enter])
+    end)
+  end
+
   def fill_rich_text(state, message) when is_binary(message) do
     query = Query.css(".ProseMirror[contenteditable=true]")
 

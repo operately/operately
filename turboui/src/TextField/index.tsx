@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
 export namespace TextField {
@@ -104,7 +105,7 @@ export function TextField({
   };
 
   return (
-    <div className={outerClass} onClick={startEditing}>
+    <div className={outerClass} onClick={startEditing} data-test-id={testId}>
       {/* Hidden span to measure text width */}
       <span
         ref={hiddenSpanRef}
@@ -121,7 +122,7 @@ export function TextField({
 
       {isEditing ? (
         <input
-          data-test-id={testId}
+          data-test-id={createTestId(testId, "input")}
           ref={inputRef}
           type="text"
           value={currentText}

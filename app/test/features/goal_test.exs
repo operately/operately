@@ -5,6 +5,12 @@ defmodule Operately.Features.GoalTest do
 
   setup ctx, do: Steps.setup(ctx)
 
+  feature "changing goal name", ctx do
+    ctx
+    |> Steps.change_goal_name()
+    |> Steps.assert_goal_name_changed()
+  end
+
   feature "changing the champion", ctx do
     ctx
     |> Steps.change_champion()
