@@ -26,10 +26,10 @@ function CantDeleteHasSubitems(props: GoalPage.State) {
       <MiniWorkMap items={props.relatedWorkItems} />
 
       <div className="flex items-center gap-2 mt-8">
-        <DangerButton size="sm" disabled>
+        <DangerButton size="sm" disabled testId="delete">
           Delete Forever
         </DangerButton>
-        <SecondaryButton size="sm" onClick={props.closeDeleteModal}>
+        <SecondaryButton size="sm" onClick={props.closeDeleteModal} testId="cancel">
           Cancel
         </SecondaryButton>
       </div>
@@ -60,10 +60,10 @@ function DeleteForm(props: GoalPage.State) {
         />
 
         <div className="flex items-center gap-2">
-          <DangerButton size="sm" type="submit" loading={isDeleting} disabled={isDeleting}>
+          <DangerButton size="sm" type="submit" loading={isDeleting} disabled={isDeleting} testId="delete">
             Delete Forever
           </DangerButton>
-          <SecondaryButton size="sm" onClick={props.closeDeleteModal}>
+          <SecondaryButton size="sm" onClick={props.closeDeleteModal} testId="cancel">
             Cancel
           </SecondaryButton>
         </div>

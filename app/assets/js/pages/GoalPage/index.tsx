@@ -123,8 +123,8 @@ function Page() {
   const deleteGoal = async () => {
     try {
       await Api.deleteGoal({ goalId: goal.id! });
-      PageCache.invalidate(pageCacheKey(goal.id!));
       navigate(paths.spaceWorkMapPath(goal.space!.id, "goals"));
+      PageCache.invalidate(pageCacheKey(goal.id!));
     } catch (error) {
       console.error("Failed to delete goal:", error);
       showErrorToast("Something went wrong", "Failed to delete the goal. Please try again.");
