@@ -59,6 +59,12 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def click(state, css: css) do
+    execute("click", state, fn session ->
+      Browser.click(session, Query.css(css))
+    end)
+  end
+
   def click(state, opts) do
     {_, opts} = Keyword.pop(opts, :in)
     css_query = compose_css_query(opts)

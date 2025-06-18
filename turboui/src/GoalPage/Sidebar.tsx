@@ -51,6 +51,7 @@ function DueDate(props: GoalPage.State) {
         setDate={props.setDueDate}
         readonly={isReadonly}
         showOverdueWarning={!props.closedAt}
+        testId="due-date-field"
       />
 
       <OverdueWarning {...props} />
