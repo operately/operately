@@ -34,7 +34,7 @@ const defaultProps: ProjectPage.Props = {
   setSpace: () => {},
   spaceSearch: async () => [],
 
-  champion: people[0],
+  champion: people[0] || null,
   setChampion: () => {},
 
   status: "on_track",
@@ -43,10 +43,8 @@ const defaultProps: ProjectPage.Props = {
 
   canEdit: true,
   accessLevels: {
-    public: false,
-    company: true,
-    space: false,
-    members: false,
+    company: "edit",
+    space: "view",
   },
   setAccessLevels: () => {},
 

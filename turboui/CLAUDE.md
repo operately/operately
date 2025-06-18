@@ -27,7 +27,7 @@ This document captures the architecture principles, patterns, and workflow for d
 ### Setup
 
 1. **Storybook development**: Components are developed and tested in Storybook
-2. **TypeScript checking**: Run `npx tsc --noEmit -p app/tsconfig.lint.json` regularly
+2. **TypeScript checking**: Run `make turboui.build && make turboui.test` regularly
 3. **Component stories**: Create comprehensive stories showing all component states
 
 ### Tips
@@ -64,7 +64,7 @@ src/
 Always run before committing:
 
 ```bash
-npx tsc --noEmit -p app/tsconfig.lint.json
+make turboui.build && make turboui.test
 ```
 
 ### Common Issues

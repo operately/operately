@@ -15,7 +15,7 @@ export const groupTasksByMilestone = (tasks: Types.Task[]): Record<string, Types
       groupedTasks[milestoneId] = [];
     }
     
-    groupedTasks[milestoneId].push(task);
+    groupedTasks[milestoneId]!.push(task);
   });
 
   return groupedTasks;
