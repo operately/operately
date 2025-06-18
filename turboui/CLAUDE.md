@@ -82,7 +82,6 @@ make turboui.build && make turboui.test
 - **Icons**: Use Tabler icons consistently, hide in list contexts to reduce clutter
 - **Colors**: Use existing color classes (content-subtle, content-error, etc.) defined in tailwind config and outlined in turboui/src/Colors
 - **Spacing**: Use consistent gap and padding patterns
-- **Typography**: Use text-xs for compact contexts, text-sm for normal contexts
 
 ### Interaction Patterns
 

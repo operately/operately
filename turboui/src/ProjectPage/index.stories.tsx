@@ -38,6 +38,7 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoard
 export const Default: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockTasks]);
+    const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
       console.log("Task status change:", taskId, newStatus);
@@ -117,6 +118,8 @@ export const Default: Story = {
         onTaskUpdate={handleTaskUpdate}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
+        filters={filters}
+        onFiltersChange={setFilters}
       />
     );
   },
@@ -153,6 +156,8 @@ export const ReadOnly: Story = {
         onTaskUpdate={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
+        filters={[]}
+        onFiltersChange={() => {}}
       />
     );
   },
@@ -161,6 +166,7 @@ export const ReadOnly: Story = {
 export const EmptyTasks: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockEmptyTasks]);
+    const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
 
     const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -211,6 +217,8 @@ export const EmptyTasks: Story = {
         onTaskUpdate={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
+        filters={filters}
+        onFiltersChange={setFilters}
       />
     );
   },

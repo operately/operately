@@ -105,8 +105,32 @@ export interface TaskBoardCallbacks {
 /**
  * Props for the TaskBoard component
  */
+/**
+ * Filter types for TaskBoard
+ */
+export type FilterType = 
+  | "status" 
+  | "assignee" 
+  | "creator" 
+  | "milestone" 
+  | "content"
+  | "due_date"
+  | "created_date"
+  | "updated_date"
+  | "started_date"
+  | "completed_date";
+
+export type FilterOperator = "is" | "is_not" | "contains" | "before" | "after" | "between";
+
+export interface FilterCondition {
+  id: string;
+  type: FilterType;
+  operator: FilterOperator;
+  value: any;
+  label: string;
+}
+
 export interface TaskBoardProps {
-  title?: string;
   tasks: Task[];
   viewMode?: ViewMode;
   onStatusChange?: (taskId: string, newStatus: Status) => void;
@@ -115,4 +139,8 @@ export interface TaskBoardProps {
   onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
+  
+  // Filter functionality
+  filters?: FilterCondition[];
+  onFiltersChange?: (filters: FilterCondition[]) => void;
 }

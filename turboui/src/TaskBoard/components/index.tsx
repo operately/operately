@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { PrimaryButton, SecondaryButton } from "../../Button";
+import { PrimaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
@@ -8,10 +8,10 @@ import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
 import { MilestoneCard } from "./MilestoneCard";
+import { TaskFilter, FilterBadges } from "./TaskFilter";
 
 export function TaskBoard({
   tasks: externalTasks,
-  title = "Tasks",
   viewMode = "table",
   onStatusChange,
   onTaskCreate,
@@ -19,6 +19,8 @@ export function TaskBoard({
   onTaskUpdate,
   onMilestoneUpdate,
   searchPeople,
+  filters = [],
+  onFiltersChange,
 }: Types.TaskBoardProps) {
   const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
@@ -202,7 +204,7 @@ export function TaskBoard({
   );
 
   return (
-    <div className="flex flex-col w-full h-full bg-surface-base rounded-lg">
+    <div className="flex flex-col flex-1 bg-surface-base rounded-lg overflow-hidden">
       {/* Task Creation Modal */}
       <TaskCreationModal
         isOpen={isTaskModalOpen}
@@ -222,11 +224,11 @@ export function TaskBoard({
         onCreateMilestone={handleCreateMilestone}
       />
 
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-2 border-b border-surface-outline">
+      {/* Sticky action bar */}
+      <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline bg-surface-base">
         <div className="flex flex-row items-center gap-4">
-          <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
           <PrimaryButton
-            size="xxs"
+            size="xs"
             onClick={() => {
               setActiveTaskMilestoneId(null as unknown as string | undefined);
               setIsTaskModalOpen(true);
@@ -234,14 +236,21 @@ export function TaskBoard({
           >
             + New task
           </PrimaryButton>
-          <SecondaryButton
-            size="xxs"
+          {/* not yet sure but 'New milestone' button is probably not needed here */}
+          {/* <SecondaryButton
+            size="xs"
             onClick={() => {
               setIsMilestoneModalOpen(true);
             }}
           >
             + New milestone
-          </SecondaryButton>
+          </SecondaryButton> */}
+
+          {/* Filter widget */}
+          {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
+
+          {/* Filter badges */}
+          {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
         </div>
         <div className="flex mt-2 sm:mt-0">
           <div className="flex space-x-2">
@@ -268,6 +277,7 @@ export function TaskBoard({
           </div>
         </div>
       </header>
+
       <div className="flex-1 overflow-auto">
         {currentViewMode === "table" && (
           <DragAndDropProvider onDrop={handleTaskReorder}>
