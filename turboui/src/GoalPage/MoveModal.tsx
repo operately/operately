@@ -40,6 +40,7 @@ export function MoveModal(props: GoalPage.State) {
         <div>
           <label className="font-bold text-sm mb-1.5 block">Select destination space</label>
           <SpaceField
+            testId="space-field"
             space={selectedSpace}
             setSpace={setSelectedSpace}
             search={props.spaceSearch}
@@ -48,10 +49,10 @@ export function MoveModal(props: GoalPage.State) {
         </div>
 
         <div className="flex items-center gap-2">
-          <PrimaryButton size="sm" type="submit" loading={isMoving} disabled={isMoving}>
+          <PrimaryButton size="sm" type="submit" loading={isMoving} disabled={isMoving} testId="save">
             Move
           </PrimaryButton>
-          <SecondaryButton size="sm" onClick={props.closeMoveModal}>
+          <SecondaryButton size="sm" onClick={props.closeMoveModal} testId="cancel">
             Cancel
           </SecondaryButton>
         </div>
