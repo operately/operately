@@ -4,7 +4,7 @@ import { Page } from "../Page";
 import { TextField } from "./index";
 
 export default {
-  title: "Components/TextField",
+  title: "Components/Fields/TextField",
   component: TextField,
   decorators: [
     (Story) => (
