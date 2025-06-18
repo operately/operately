@@ -6,6 +6,7 @@ import classNames from "../utils/classnames";
 
 import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconTent } from "@tabler/icons-react";
 import { PrimaryButton, SecondaryButton } from "../Button";
+import { createTestId } from "../TestableElement";
 
 export const ACCESS_LEVELS = ["no_access", "view", "comment", "edit", "full"] as const;
 
@@ -28,6 +29,8 @@ export namespace PrivacyField {
 
     emptyStateText?: string;
     emptyStateReadonlyText?: string;
+
+    testId?: string;
   }
 
   export interface State extends Required<Props> {
@@ -53,6 +56,7 @@ function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
     textSize: props.textSize || "text-sm",
     emptyStateText: props.emptyStateText || "Set privacy",
     emptyStateReadonlyText: props.emptyStateReadonlyText || "No privacy set",
+    testId: props.testId || "privacy-field",
   };
 }
 
@@ -69,7 +73,7 @@ export function PrivacyField(props: PrivacyField.Props) {
 
   return (
     <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
-      <Popover.Trigger className={triggerClassName} disabled={state.readonly}>
+      <Popover.Trigger className={triggerClassName} disabled={state.readonly} data-test-id={state.testId}>
         <PrivacyDisplay {...state} />
       </Popover.Trigger>
 
@@ -132,10 +136,10 @@ function PrivacyPickerPopover(props: PrivacyField.State) {
         <AccessLevelOptions {...props} accessLevels={tempAccessLevels} setAccessLevels={setTempAccessLevels} />
 
         <div className="flex justify-end gap-2 mt-4">
-          <SecondaryButton size="xs" onClick={handleCancel}>
+          <SecondaryButton size="xs" onClick={handleCancel} testId="cancel">
             Cancel
           </SecondaryButton>
-          <PrimaryButton size="xs" onClick={handleSave}>
+          <PrimaryButton size="xs" onClick={handleSave} testId="save">
             Save
           </PrimaryButton>
         </div>
@@ -242,6 +246,7 @@ function AccessLevelOptions(props: PrivacyField.State) {
 
           <div className="w-40">
             <SelectBox
+              testId={createTestId(props.testId, "company-select")}
               value={props.accessLevels.company}
               onChange={setCompanyLevel}
               options={visibleCompanyAccessLevels.map((level) => ({
@@ -262,6 +267,7 @@ function AccessLevelOptions(props: PrivacyField.State) {
 
           <div className="w-40">
             <SelectBox
+              testId={createTestId(props.testId, "space-select")}
               value={props.accessLevels.space}
               onChange={setSpaceLevel}
               options={visibleSpaceAccessLevels.map((level) => ({
@@ -280,14 +286,17 @@ function SelectBox({
   value,
   onChange,
   options,
+  testId,
 }: {
   value: string;
   onChange: (value: string) => void;
   options: { value: string; label: string }[];
+  testId: string;
 }) {
   return (
     <div className="px-2 py-1 border border-surface-outline rounded-md text-sm bg-surface-base grid items-center">
       <select
+        data-test-id={testId}
         className="appearance-none col-start-1 row-start-1"
         value={value}
         onChange={(e) => onChange(e.target.value)}

@@ -83,6 +83,12 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_target_value_updated()
   end
 
+  feature "changing the access level", ctx do
+    ctx
+    |> Steps.change_access_level()
+    |> Steps.assert_access_level_changed()
+  end
+
   # describe "closing a goal" do
   # feature "closing goal", ctx do
   #   ctx
