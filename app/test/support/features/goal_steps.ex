@@ -7,6 +7,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> Factory.add_space(:product)
     |> Factory.add_space_member(:champion, :product)
     |> Factory.add_space_member(:reviewer, :product)
+    |> Factory.add_goal(:parent_goal, :product)
     |> Factory.add_goal(:goal, :product,
       name: "Improve support first response time",
       champion: :champion,
@@ -15,11 +16,48 @@ defmodule Operately.Support.Features.GoalSteps do
         start_date: Operately.Time.days_ago(10) |> Operately.Time.as_date(),
         end_date: Operately.Time.days_from_now(10) |> Operately.Time.as_date(),
         type: "days"
-      }
+      },
+      parent_goal: :parent_goal
     )
     |> Factory.log_in_person(:champion)
     |> then(fn ctx ->
       UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+    end)
+  end
+
+  #
+  # Changing the parent goal
+  #
+
+  step :change_parent_goal, ctx do
+    ctx
+    |> Factory.add_goal(:new_parent, :product, name: "Example Goal")
+    |> UI.click(testid: "parent-goal-field")
+    |> UI.click(testid: "parent-goal-field-search")
+    |> UI.click(testid: "parent-goal-field-example-goal")
+  end
+
+  step :assert_parent_goal_changed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.parent_goal_id == ctx.new_parent.id
+    end)
+  end
+
+  #
+  # Removing the parent goal
+  #
+
+  step :remove_parent_goal, ctx do
+    ctx
+    |> UI.click(testid: "parent-goal-field")
+    |> UI.click(testid: "parent-goal-field-clear")
+  end
+
+  step :assert_parent_goal_removed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.parent_goal_id == nil
     end)
   end
 
