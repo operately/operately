@@ -2,6 +2,7 @@ import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
 import { IconChevronDown, IconCircleX, IconSearch, IconTent } from "@tabler/icons-react";
+import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
 export namespace SpaceField {
@@ -25,6 +26,7 @@ export namespace SpaceField {
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
     variant?: "inline" | "form-field";
+    testId?: string;
   }
 
   export interface State extends Required<Props> {
@@ -51,6 +53,7 @@ const DefaultProps = {
   emptyStateMessage: "Select space",
   emptyStateReadOnlyMessage: "No space selected",
   variant: "inline",
+  testId: "space-field",
 } as const;
 
 export function SpaceField(props: SpaceField.Props) {
@@ -118,7 +121,7 @@ function Trigger({ state }: { state: SpaceField.State }) {
   const text = getSpaceFieldText(state);
 
   return (
-    <Popover.Trigger asChild disabled={state.readonly}>
+    <Popover.Trigger asChild disabled={state.readonly} data-test-id={state.testId}>
       <button type="button" className={elemClass} aria-label={text}>
         <div className="flex items-center gap-1.5 flex-grow">
           <IconTent size={iconSize} className="-mt-[1px]" />
@@ -232,6 +235,7 @@ function SearchResult({ space, state }: { space: SpaceField.Space; state: SpaceF
     <button
       onClick={handleSelect}
       className="text-left w-full text-sm px-1.5 py-1 rounded hover:bg-surface-dimmed flex items-center gap-2 cursor-pointer"
+      data-test-id={createTestId(state.testId, "search-result", space.name)}
     >
       <IconTent size={14} />
       <span>{space.name}</span>

@@ -191,17 +191,18 @@ defmodule Operately.Support.Features.GoalSteps do
 
   step :move_goal_to_another_space, ctx do
     ctx
-    |> Factory.add_space(:new_space, name: "New Space")
     |> UI.click(testid: "move-to-another-space")
     |> UI.click(testid: "space-field")
-    |> UI.click(testid: "space-field-new-space")
+    |> UI.click(testid: "space-field-search-result-general")
     |> UI.click(testid: "save")
   end
 
   step :assert_goal_moved_to_another_space, ctx do
     attempts(ctx, 3, fn ->
       goal = Operately.Repo.reload(ctx.goal)
-      assert goal.space_id == ctx.new_space.id
+      space = Operately.Repo.preload(goal, [:group]).group
+
+      assert space.name == "General"
     end)
   end
 
