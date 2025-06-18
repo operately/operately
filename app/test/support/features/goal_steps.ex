@@ -258,6 +258,32 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Updating a target value
+  #
+
+  step :update_target_value, ctx do
+    target = Operately.Repo.preload(ctx.goal, [:targets]).targets |> List.first()
+
+    ctx
+    |> Map.put(:target, target)
+    |> UI.click(testid: UI.testid(["update-target", target.name]))
+    |> UI.fill(testid: "target-value", with: "200")
+    |> UI.click(testid: "save")
+  end
+
+  step :assert_target_value_updated, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      targets = Operately.Repo.preload(goal, [:targets]).targets
+
+      target = Enum.find(targets, fn t -> t.id == ctx.target.id end)
+
+      assert target != nil
+      assert target.value == 200
+    end)
+  end
+
+  #
   # Utility functions
   #
 
