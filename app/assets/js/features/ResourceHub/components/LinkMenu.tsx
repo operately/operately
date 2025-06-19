@@ -1,6 +1,8 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
 
 import { useNodesContext } from "@/features/ResourceHub";
 import { useBoolState } from "@/hooks/useBoolState";
@@ -16,6 +18,7 @@ interface Props {
 export function LinkMenu({ link }: Props) {
   const { permissions } = useNodesContext();
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
+  const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   const relevantPermissions = [permissions.canEditParentFolder, permissions.canEditLink, permissions.canDeleteLink];
   const menuId = createTestId("menu", link.id!);
@@ -27,10 +30,11 @@ export function LinkMenu({ link }: Props) {
       <Menu size="medium" testId={menuId}>
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={link} showModal={toggleMoveForm} />}
         {permissions.canEditLink && <EditLinkMenuItem link={link} />}
-        {permissions.canDeleteLink && <DeleteLinkMenuItem link={link} />}
+        {permissions.canDeleteLink && <DeleteLinkMenuItem link={link} toggleDeleteModal={toggleDeleteModal} />}
       </Menu>
 
       <MoveResourceModal resource={link} resourceType="link" isOpen={showMoveForm} hideModal={toggleMoveForm} />
+      <DeleteLinkModal link={link} isOpen={showDeleteModal} hideModal={toggleDeleteModal} />
     </>
   );
 }
@@ -47,19 +51,51 @@ function EditLinkMenuItem({ link }: Props) {
   );
 }
 
-function DeleteLinkMenuItem({ link }: Props) {
+interface DeleteLinkMenuItemProps {
+  link: Hub.ResourceHubLink;
+  toggleDeleteModal: () => void;
+}
+
+function DeleteLinkMenuItem({ link, toggleDeleteModal }: DeleteLinkMenuItemProps) {
+  const deleteId = createTestId("delete", link.id!);
+
+  return (
+    <MenuActionItem onClick={toggleDeleteModal} testId={deleteId} danger>
+      Delete
+    </MenuActionItem>
+  );
+}
+
+interface DeleteLinkModalProps {
+  link: Hub.ResourceHubLink;
+  isOpen: boolean;
+  hideModal: () => void;
+}
+
+function DeleteLinkModal({ link, isOpen, hideModal }: DeleteLinkModalProps) {
   const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubLink();
 
   const handleDelete = async () => {
     await remove({ linkId: link.id });
     refetch();
+    hideModal();
   };
-  const deleteId = createTestId("delete", link.id!);
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: hideModal,
+    submit: handleDelete,
+  });
 
   return (
-    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete
-    </MenuActionItem>
+    <Modal isOpen={isOpen} hideModal={hideModal}>
+      <Forms.Form form={form}>
+        <p>
+          Are you sure you want to delete the link "<b>{link.name}</b>"?
+        </p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }

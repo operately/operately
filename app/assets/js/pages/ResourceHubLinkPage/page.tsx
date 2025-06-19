@@ -1,8 +1,15 @@
 import React from "react";
 
+import { usePaths } from "@/routes/paths";
+import { useBoolState } from "@/hooks/useBoolState";
+import { useNavigate } from "react-router-dom";
+import { useDeleteResourceHubLink } from "@/models/resourceHubs";
+
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
 
 import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
@@ -23,6 +30,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 export function Page() {
   const { link } = useLoadedData();
+  const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   assertPresent(link.notifications, "notifications must be present in link");
   useClearNotificationsOnLoad(link.notifications);
@@ -33,7 +41,7 @@ export function Page() {
         <ResourcePageNavigation resource={link} />
 
         <Paper.Body className="lg:px-28">
-          <Options />
+          <Options showDeleteModal={toggleDeleteModal} />
 
           <Title />
           <Actions />
@@ -42,6 +50,8 @@ export function Page() {
           <LinkReactions />
           <LinkComments />
           <LinkSubscriptions />
+
+          <DeleteLinkModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} linkName={link.name || ""} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -139,6 +149,47 @@ function LinkComments() {
         canComment={link.permissions.canCommentOnLink}
       />
     </>
+  );
+}
+
+interface DeleteLinkModalProps {
+  isOpen: boolean;
+  hideModal: () => void;
+  linkName: string;
+}
+
+function DeleteLinkModal({ isOpen, hideModal, linkName }: DeleteLinkModalProps) {
+  const { link } = useLoadedData();
+  const navigate = useNavigate();
+  const [remove] = useDeleteResourceHubLink();
+  const paths = usePaths();
+
+  const handleDeleteLink = async () => {
+    await remove({ linkId: link.id });
+
+    if (link.parentFolder) {
+      navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
+    } else {
+      assertPresent(link.resourceHub, "resourceHub must be present in link");
+      navigate(paths.resourceHubPath(link.resourceHub.id!));
+    }
+  };
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: hideModal,
+    submit: handleDeleteLink,
+  });
+
+  return (
+    <Modal isOpen={isOpen} hideModal={hideModal}>
+      <Forms.Form form={form}>
+        <p>
+          Are you sure you want to delete the link "<b>{linkName}</b>"?
+        </p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }
 

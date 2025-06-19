@@ -161,7 +161,7 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
       |> Steps.visit_resource_hub_page()
-      |> delete_resource_from_nodes_list(@link.title)
+      |> delete_resource_from_nodes_list(@link.title, :with_confirmation)
       |> Steps.assert_link_deleted_on_space_feed()
       |> Steps.assert_link_deleted_on_company_feed()
     end
@@ -171,7 +171,7 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
       |> Steps.visit_resource_hub_page()
-      |> delete_resource_from_nodes_list(@link.title)
+      |> delete_resource_from_nodes_list(@link.title, :with_confirmation)
       |> Steps.assert_link_deleted_notification_sent()
       |> Steps.assert_link_deleted_email_sent()
     end
@@ -181,21 +181,21 @@ defmodule Operately.Features.ResourceHubLinkTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_link(@link)
       |> Steps.visit_resource_hub_page()
-      |> delete_resource_from_nodes_list(@link.title)
+      |> delete_resource_from_nodes_list(@link.title, :with_confirmation)
     end
 
     feature "deleting link from link page redirects to resource hub", ctx do
       ctx
       |> Steps.given_link_exists()
       |> Steps.visit_link_page()
-      |> delete_resource_redirects_to_resource_hub()
+      |> delete_resource_redirects_to_resource_hub("Resource hub", :with_confirmation)
     end
 
     feature "deleting link within folder from link page redirects to folder", ctx do
       ctx
       |> Steps.given_link_within_folder_exists()
       |> Steps.visit_link_page()
-      |> delete_resource_redirects_to_folder()
+      |> delete_resource_redirects_to_folder(:with_confirmation)
     end
   end
 
