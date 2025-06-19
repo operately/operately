@@ -64,6 +64,7 @@ const ActivityHandler: interfaces.ActivityHandler = {
 export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
+  "goal_due_date_update",
   "goal_reviewer_updating",
   "company_owners_adding",
   "company_owner_removing",
@@ -208,6 +209,7 @@ import GoalChampionUpdating from "./GoalChampionUpdating";
 
 import { Paths } from "../../routes/paths";
 import GoalReviewerUpdating from './GoalReviewerUpdating';
+import GoalDueDateUpdate from './GoalDueDateUpdate';
 
 function handler(activity: Activity) {
   return match(activity.action)
@@ -276,6 +278,7 @@ function handler(activity: Activity) {
     .with("space_members_added", () => SpaceMembersAdded)
     .with("goal_champion_updating", () => GoalChampionUpdating)
     .with("goal_reviewer_updating", () => GoalReviewerUpdating)
+    .with("goal_due_date_update", () => GoalDueDateUpdate)
     .otherwise(() => {
       throw new Error("Unknown activity action: " + activity.action);
     });

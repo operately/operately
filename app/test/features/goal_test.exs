@@ -39,7 +39,7 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_reviewer_removed_feed_posted()
   end
 
-  feature "changing due date", ctx do
+  feature "changing the due date", ctx do
     ctx
     |> Steps.change_due_date()
     |> Steps.assert_due_date_changed()
