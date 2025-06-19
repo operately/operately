@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
+
   alias Operately.Access
 
   def setup(ctx) do
@@ -95,6 +96,18 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.champion_id == ctx.new_champion.id
     end)
+  end
+
+  step :assert_champion_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "assigned Alfred N. as the champion")
+  end
+
+  step :assert_champion_removed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "removed the champion")
   end
 
   #

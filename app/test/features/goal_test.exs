@@ -15,12 +15,14 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.change_champion()
     |> Steps.assert_champion_changed()
+    |> Steps.assert_champion_changed_feed_posted()
   end
 
   feature "removing the champion", ctx do
     ctx
     |> Steps.remove_champion()
     |> Steps.assert_champion_removed()
+    |> Steps.assert_champion_removed_feed_posted()
   end
 
   feature "changing the reviewer", ctx do

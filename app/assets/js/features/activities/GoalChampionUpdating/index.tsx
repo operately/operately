@@ -63,7 +63,7 @@ const GoalChampionUpdating: ActivityHandler = {
   },
 
   NotificationTitle(_props: { activity: Activity }) {
-    return null;
+    return <></>;
   },
 
   NotificationLocation(_props: { activity: Activity }) {
