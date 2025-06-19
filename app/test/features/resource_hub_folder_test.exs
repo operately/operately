@@ -100,7 +100,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_folder(name)
       |> Steps.assert_folder_created(%{name: name, index: 0})
-      |> delete_resource_from_nodes_list(name, :with_confirmation)
+      |> delete_resource_from_nodes_list(name)
       |> Steps.assert_folder_deleted_on_space_feed(name)
       |> Steps.assert_folder_deleted_on_company_feed(name)
     end
@@ -112,7 +112,7 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_folder(name)
       |> Steps.assert_folder_created(%{name: name, index: 0})
-      |> delete_resource_from_nodes_list(name, :with_confirmation)
+      |> delete_resource_from_nodes_list(name)
     end
   end
 

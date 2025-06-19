@@ -1,8 +1,15 @@
 import React from "react";
 
+import { useBoolState } from "@/hooks/useBoolState";
+import { useNavigate } from "react-router-dom";
+import { useDeleteResourceHubFile } from "@/models/resourceHubs";
+import { usePaths } from "@/routes/paths";
+
 import * as Reactions from "@/models/reactions";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
 
 import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
@@ -22,6 +29,7 @@ import { Options } from "./Options";
 
 export function Page() {
   const { file } = useLoadedData();
+  const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
 
   return (
     <Pages.Page title={file.name!}>
@@ -30,7 +38,7 @@ export function Page() {
 
         <Paper.Body>
           <Title />
-          <Options />
+          <Options showDeleteModal={toggleDeleteModal} />
 
           <Content />
           <Spacer size={1} />
@@ -41,6 +49,8 @@ export function Page() {
           <FileReactions />
           <FileComments />
           <FileSubscriptions />
+
+          <DeleteFileModal isOpen={showDeleteModal} hideModal={toggleDeleteModal} fileName={file.name || ""} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
@@ -142,6 +152,47 @@ function FileComments() {
         canComment={file.permissions.canCommentOnFile}
       />
     </>
+  );
+}
+
+interface DeleteFileModalProps {
+  isOpen: boolean;
+  hideModal: () => void;
+  fileName: string;
+}
+
+function DeleteFileModal({ isOpen, hideModal, fileName }: DeleteFileModalProps) {
+  const { file } = useLoadedData();
+  const navigate = useNavigate();
+  const [remove] = useDeleteResourceHubFile();
+  const paths = usePaths();
+
+  const handleDeleteFile = async () => {
+    await remove({ fileId: file.id });
+
+    if (file.parentFolder) {
+      navigate(paths.resourceHubFolderPath(file.parentFolder.id!));
+    } else {
+      assertPresent(file.resourceHub, "resourceHub must be present in file");
+      navigate(paths.resourceHubPath(file.resourceHub.id!));
+    }
+  };
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: hideModal,
+    submit: handleDeleteFile,
+  });
+
+  return (
+    <Modal isOpen={isOpen} hideModal={hideModal}>
+      <Forms.Form form={form}>
+        <p>
+          Are you sure you want to delete the file "<b>{fileName}</b>"?
+        </p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }
 
