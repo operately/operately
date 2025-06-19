@@ -436,15 +436,15 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_goal_reviewer(inputs.reviewer_id)
-      # |> Steps.save_activity(:goal_reviewer_updated, fn changes ->
-      #   %{
-      #     company_id: changes.goal.company_id,
-      #     space_id: changes.goal.group_id,
-      #     goal_id: changes.goal.id,
-      #     old_reviewer_id: changes.goal.reviewer_id,
-      #     new_reviewer_id: inputs.reviewer_id
-      #   }
-      # end)
+      |> Steps.save_activity(:goal_reviewer_updating, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_reviewer_id: changes.goal.reviewer_id,
+          new_reviewer_id: inputs.reviewer_id
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end

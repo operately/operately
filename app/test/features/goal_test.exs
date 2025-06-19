@@ -29,12 +29,14 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.change_reviewer()
     |> Steps.assert_reviewer_changed()
+    |> Steps.assert_reviewer_changed_feed_posted()
   end
 
   feature "removing the reviewer", ctx do
     ctx
     |> Steps.remove_reviewer()
     |> Steps.assert_reviewer_removed()
+    |> Steps.assert_reviewer_removed_feed_posted()
   end
 
   feature "changing due date", ctx do
