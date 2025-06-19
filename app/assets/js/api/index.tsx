@@ -226,6 +226,14 @@ export interface ActivityContentGoalArchived {
   goal?: Goal | null;
 }
 
+export interface ActivityContentGoalChampionUpdating {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  oldChampion: Person;
+  newChampion: Person;
+}
+
 export interface ActivityContentGoalCheckIn {
   goalId?: string | null;
   goal?: Goal | null;
