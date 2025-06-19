@@ -1,6 +1,8 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
 
 import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
@@ -19,6 +21,7 @@ interface Props {
 export function FileMenu({ file }: Props) {
   const { permissions } = useNodesContext();
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
+  const [showDeleteModal, toggleDeleteModal] = useBoolState(false);
   const menuId = createTestId("menu", file.id!);
 
   const relevantPermissions = [permissions.canView, permissions.canEditParentFolder, permissions.canDeleteFile];
@@ -31,10 +34,11 @@ export function FileMenu({ file }: Props) {
         {permissions.canView && <DownloadFileMenuItem file={file} />}
         {permissions.canEditFile && <EditFileMenuItem file={file} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={file} showModal={toggleMoveForm} />}
-        {permissions.canDeleteFile && <DeleteFileMenuItem file={file} />}
+        {permissions.canDeleteFile && <DeleteFileMenuItem file={file} toggleDeleteModal={toggleDeleteModal} />}
       </Menu>
 
       <MoveResourceModal resource={file} resourceType="file" isOpen={showMoveForm} hideModal={toggleMoveForm} />
+      <DeleteFileModal file={file} isOpen={showDeleteModal} hideModal={toggleDeleteModal} />
     </>
   );
 }
@@ -60,19 +64,51 @@ function EditFileMenuItem({ file }: Props) {
   );
 }
 
-function DeleteFileMenuItem({ file }: Props) {
+interface DeleteFileMenuItemProps {
+  file: Hub.ResourceHubFile;
+  toggleDeleteModal: () => void;
+}
+
+function DeleteFileMenuItem({ file, toggleDeleteModal }: DeleteFileMenuItemProps) {
+  const deleteId = createTestId("delete", file.id!);
+
+  return (
+    <MenuActionItem onClick={toggleDeleteModal} testId={deleteId} danger>
+      Delete
+    </MenuActionItem>
+  );
+}
+
+interface DeleteFileModalProps {
+  file: Hub.ResourceHubFile;
+  isOpen: boolean;
+  hideModal: () => void;
+}
+
+function DeleteFileModal({ file, isOpen, hideModal }: DeleteFileModalProps) {
   const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubFile();
 
   const handleDelete = async () => {
     await remove({ fileId: file.id });
     refetch();
+    hideModal();
   };
-  const deleteId = createTestId("delete", file.id!);
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: hideModal,
+    submit: handleDelete,
+  });
 
   return (
-    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete
-    </MenuActionItem>
+    <Modal isOpen={isOpen} hideModal={hideModal}>
+      <Forms.Form form={form}>
+        <p>
+          Are you sure you want to delete the file "<b>{file.name}</b>"?
+        </p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }

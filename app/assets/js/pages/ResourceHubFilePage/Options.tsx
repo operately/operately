@@ -1,16 +1,18 @@
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Icons from "@tabler/icons-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
 import { useDownloadFile } from "@/models/blobs";
-import { useDeleteResourceHubFile } from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
-export function Options() {
+interface Props {
+  showDeleteModal: () => void;
+}
+
+export function Options({ showDeleteModal }: Props) {
   const { file } = useLoadedData();
   const paths = usePaths();
   assertPresent(file.permissions, "permissions must be present in file");
@@ -28,7 +30,7 @@ export function Options() {
         />
       )}
 
-      {file.permissions.canDeleteFile && <DeleteAction />}
+      {file.permissions.canDeleteFile && <DeleteAction onClick={showDeleteModal} />}
     </PageOptions.Root>
   );
 }
@@ -45,27 +47,6 @@ function DownloadAction() {
   );
 }
 
-function DeleteAction() {
-  const { file } = useLoadedData();
-  const [remove] = useDeleteResourceHubFile();
-  const navigate = useNavigate();
-  const paths = usePaths();
-
-  const redirect = () => {
-    if (file.parentFolder) {
-      navigate(paths.resourceHubFolderPath(file.parentFolder.id!));
-    } else {
-      assertPresent(file.resourceHub, "resourceHub must be present in file");
-      navigate(paths.resourceHubPath(file.resourceHub.id!));
-    }
-  };
-
-  const handleDelete = async () => {
-    await remove({ fileId: file.id });
-    redirect();
-  };
-
-  return (
-    <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />
-  );
+function DeleteAction({ onClick }: { onClick: () => void }) {
+  return <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
 }
