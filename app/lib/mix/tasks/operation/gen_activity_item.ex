@@ -1,5 +1,10 @@
 defmodule Mix.Tasks.Operation.GenActivityItem do
   def gen(ctx) do
+    gen_file(ctx)
+    gen_import(ctx)
+  end
+
+  def gen_file(ctx) do
     Mix.Operately.generate_file(ctx.activity_item_file_path, fn _ ->
       """
       import * as People from "@/models/people";
@@ -14,7 +19,7 @@ defmodule Mix.Tasks.Operation.GenActivityItem do
           throw new Error("Not implemented");
         },
 
-        pagePath(paths: Paths, _activity: Activity) {
+        pagePath(_paths: Paths, _activity: Activity) {
           throw new Error("Not implemented");
         },
 
@@ -51,7 +56,7 @@ defmodule Mix.Tasks.Operation.GenActivityItem do
         },
 
         NotificationTitle(_props: { activity: Activity }) {
-          return null;
+          return <></>;
         },
 
         NotificationLocation(_props: { activity: Activity }) {
@@ -66,5 +71,45 @@ defmodule Mix.Tasks.Operation.GenActivityItem do
       export default #{ctx.activity_item_handler_name};
       """
     end)
+  end
+
+  defp gen_import(ctx) do
+    file = "assets/js/features/activities/index.tsx"
+
+    # import handler
+
+    Mix.Operately.inject_into_file(
+      file,
+      "import #{ctx.activity_item_name} from './#{ctx.activity_item_name}';",
+      last_index_of(file, "import ")
+    )
+
+    # connect handler to the activity item
+    Mix.Operately.inject_into_file(
+      file,
+      "    .with(\"#{ctx.activity_action_name}\", () => #{ctx.activity_item_name})",
+      last_index_of(file, ".with")
+    )
+
+    # add to loaded activities
+
+    Mix.Operately.inject_into_file(
+      file,
+      "  \"#{ctx.activity_action_name}\",",
+      last_index_of(file, "DISPLAYED_IN_FEED = [")
+    )
+  end
+
+  defp last_index_of(file, str) do
+    file
+    |> File.read!()
+    |> String.split("\n")
+    |> Enum.with_index()
+    |> Enum.reverse()
+    |> Enum.find(fn {line, _index} -> String.contains?(line, str) end)
+    |> case do
+      nil -> raise "Could not find the last index of '#{str}' in #{file}"
+      {_, index} -> index + 1
+    end
   end
 end
