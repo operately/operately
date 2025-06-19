@@ -62,6 +62,8 @@ export namespace ProjectPage {
     onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => void;
     searchPeople?: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
+    filters?: TaskBoardTypes.FilterCondition[];
+    onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
   }
 
   export interface State extends Props {}
@@ -94,22 +96,28 @@ export function ProjectPage(props: ProjectPage.Props) {
       <PageHeader {...state} />
       <Tabs tabs={tabs} />
 
-      <div className="flex-1 overflow-scroll">
-        {tabs.active === "overview" && <div className="p-4">Overview content will go here</div>}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {tabs.active === "overview" && <div className="flex-1 overflow-auto p-4">Overview content will go here</div>}
         {tabs.active === "tasks" && (
-          <TaskBoard
-            tasks={state.tasks}
-            onStatusChange={state.onTaskStatusChange}
-            onTaskCreate={state.onTaskCreate}
-            onMilestoneCreate={state.onMilestoneCreate}
-            onTaskUpdate={state.onTaskUpdate}
-            onMilestoneUpdate={state.onMilestoneUpdate}
-            searchPeople={state.searchPeople}
-          />
+          <div className="flex-1 flex flex-col overflow-hidden pt-1">
+            <TaskBoard
+              tasks={state.tasks}
+              onStatusChange={state.onTaskStatusChange}
+              onTaskCreate={state.onTaskCreate}
+              onMilestoneCreate={state.onMilestoneCreate}
+              onTaskUpdate={state.onTaskUpdate}
+              onMilestoneUpdate={state.onMilestoneUpdate}
+              searchPeople={state.searchPeople}
+              filters={state.filters}
+              onFiltersChange={state.onFiltersChange}
+            />
+          </div>
         )}
-        {tabs.active === "check-ins" && <div className="p-4">Check-ins content will go here</div>}
-        {tabs.active === "discussions" && <div className="p-4">Discussions content will go here</div>}
-        {tabs.active === "activity" && <div className="p-4">Activity content will go here</div>}
+        {tabs.active === "check-ins" && <div className="flex-1 overflow-auto p-4">Check-ins content will go here</div>}
+        {tabs.active === "discussions" && (
+          <div className="flex-1 overflow-auto p-4">Discussions content will go here</div>
+        )}
+        {tabs.active === "activity" && <div className="flex-1 overflow-auto p-4">Activity content will go here</div>}
       </div>
     </PageNew>
   );

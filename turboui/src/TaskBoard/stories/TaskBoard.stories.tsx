@@ -19,9 +19,9 @@ const meta: Meta<typeof TaskBoard> = {
     viewMode: { control: "select", options: ["table", "kanban", "timeline"] },
   },
   decorators: [
-    (Story, context) => (
+    (Story) => (
       <div className="h-[800px] py-[4.5rem] px-2">
-        <Page title={context.args.title || "Tasks"} size="fullwidth">
+        <Page title="Tasks" size="fullwidth">
           <Story />
         </Page>
       </div>
@@ -66,6 +66,7 @@ export const Default: Story = {
   render: () => {
     // Create state for tasks and task creation
     const [tasks, setTasks] = useState([...mockTasks]);
+    const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
 
     // Add the standalone milestone task and empty milestone to our tasks
     useEffect(() => {
@@ -182,7 +183,6 @@ export const Default: Story = {
 
     return (
       <TaskBoard
-        title="Tasks"
         tasks={tasks}
         viewMode="table"
         onStatusChange={handleStatusChange}
@@ -191,6 +191,8 @@ export const Default: Story = {
         onTaskUpdate={handleTaskUpdate}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
+        filters={filters}
+        onFiltersChange={setFilters}
       />
     );
   },
