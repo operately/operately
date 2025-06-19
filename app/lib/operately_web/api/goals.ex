@@ -137,7 +137,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_goal_due_date(inputs.due_date)
-      |> Steps.save_activity(:goal_due_date_changed, fn changes ->
+      |> Steps.save_activity(:goal_due_date_updating, fn changes ->
         %{
           company_id: changes.goal.company_id,
           space_id: changes.goal.group_id,
