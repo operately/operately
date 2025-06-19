@@ -128,6 +128,7 @@ export const DISPLAYED_IN_FEED = [
   "space_members_added",
   "message_archiving",
   "discussion_comment_submitted",
+  "goal_champion_updating",
 ];
 
 //
@@ -202,6 +203,8 @@ import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
+import GoalChampionUpdating from "./GoalChampionUpdating";
+
 import { Paths } from "../../routes/paths";
 
 function handler(activity: Activity) {
@@ -269,6 +272,7 @@ function handler(activity: Activity) {
     .with("space_joining", () => SpaceJoining)
     .with("space_member_removed", () => SpaceMemberRemoved)
     .with("space_members_added", () => SpaceMembersAdded)
+    .with("goal_champion_updating", () => GoalChampionUpdating)
     .otherwise(() => {
       throw new Error("Unknown activity action: " + activity.action);
     });
