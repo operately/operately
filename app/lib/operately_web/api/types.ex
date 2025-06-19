@@ -30,6 +30,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :integer, null: true
   end
 
+  object :activity_content_goal_reviewer_updating do
+    field :company, :company
+    field :space, :space
+    field :goal, :goal
+    field :old_reviewer, :person
+    field :new_reviewer, :person
+  end
+
   object :activity_content_goal_champion_updating do
     field :company, :company
     field :space, :space

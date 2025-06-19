@@ -317,6 +317,14 @@ export interface ActivityContentGoalReparent {
   newParentGoal?: Goal | null;
 }
 
+export interface ActivityContentGoalReviewerUpdating {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  oldReviewer: Person;
+  newReviewer: Person;
+}
+
 export interface ActivityContentGoalTimeframeEditing {
   goal?: Goal | null;
   oldTimeframe?: Timeframe | null;

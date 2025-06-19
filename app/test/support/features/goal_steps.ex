@@ -104,12 +104,6 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_feed_item(ctx.creator, "assigned Alfred N. as the champion")
   end
 
-  step :assert_champion_removed_feed_posted, ctx do
-    ctx
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "removed the champion")
-  end
-
   #
   # Removing the champion
   #
@@ -125,6 +119,12 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.champion_id == nil
     end)
+  end
+
+  step :assert_champion_removed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "removed the champion")
   end
 
   #
@@ -146,6 +146,12 @@ defmodule Operately.Support.Features.GoalSteps do
     end)
   end
 
+  step :assert_reviewer_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "assigned Alfred N. as the reviewer")
+  end
+
   #
   # Removing the reviewer
   #
@@ -161,6 +167,12 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.reviewer_id == nil
     end)
+  end
+
+  step :assert_reviewer_removed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "removed the reviewer")
   end
 
   #
