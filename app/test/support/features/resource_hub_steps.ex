@@ -106,6 +106,11 @@ defmodule Operately.Support.Features.ResourceHubSteps do
     |> UI.click(testid: "delete-resource-link")
   end
 
+  step :confirm_deletion, ctx do
+    ctx
+    |> UI.click(testid: "submit")
+  end
+
   step :assert_resource_deleted, ctx, resource_name do
     ctx
     |> UI.refute_text(resource_name)

@@ -14,6 +14,14 @@ defmodule Operately.Support.ResourceHub.Deletion do
     |> Steps.assert_resource_deleted(resource_name)
   end
 
+  def delete_resource_from_nodes_list(ctx, resource_name, :with_confirmation) do
+    ctx
+    |> Steps.visit_resource_hub_page()
+    |> Steps.delete_resource(resource_name)
+    |> Steps.confirm_deletion()
+    |> Steps.assert_resource_deleted(resource_name)
+  end
+
   def delete_resource_redirects_to_resource_hub(ctx, hub_name \\ "Resource hub") do
     ctx
     |> Steps.delete_resource()
