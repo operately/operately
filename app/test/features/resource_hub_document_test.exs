@@ -208,7 +208,7 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
       |> Steps.assert_document_content(@document)
-      |> delete_resource_from_nodes_list(@document.name, :with_confirmation)
+      |> delete_resource_from_nodes_list(@document.name)
       |> Steps.assert_document_deleted_on_space_feed(@document.name)
       |> Steps.assert_document_deleted_on_company_feed(@document.name)
     end
@@ -218,7 +218,7 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
       |> Steps.assert_document_content(@document)
-      |> delete_resource_from_nodes_list(@document.name, :with_confirmation)
+      |> delete_resource_from_nodes_list(@document.name)
       |> Steps.assert_document_deleted_notification_sent(@document.name)
       |> Steps.assert_document_deleted_email_sent(@document.name)
     end
@@ -228,21 +228,21 @@ defmodule Operately.Features.ResourceHubDocumentTest do
       |> Steps.visit_resource_hub_page()
       |> Steps.create_document(@document)
       |> Steps.assert_document_content(@document)
-      |> delete_resource_from_nodes_list(@document.name, :with_confirmation)
+      |> delete_resource_from_nodes_list(@document.name)
     end
 
     feature "deleting document from document page redirects to resource hub", ctx do
       ctx
       |> Steps.given_document_within_resource_hub_root_exists()
       |> Steps.visit_document_page()
-      |> delete_resource_redirects_to_resource_hub("Resource hub", :with_confirmation)
+      |> delete_resource_redirects_to_resource_hub("Resource hub")
     end
 
     feature "deleting document within folder from document page redirects to folder", ctx do
       ctx
       |> Steps.given_document_within_folder_exists()
       |> Steps.visit_document_page()
-      |> delete_resource_redirects_to_folder(:with_confirmation)
+      |> delete_resource_redirects_to_folder()
     end
   end
 

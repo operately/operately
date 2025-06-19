@@ -63,7 +63,7 @@ defmodule Operately.Features.ResourceHubFileTest do
     feature "deleting file adds event to feed", ctx do
       ctx
       |> Steps.given_file_exists()
-      |> delete_resource_from_nodes_list("Some File", :with_confirmation)
+      |> delete_resource_from_nodes_list("Some File")
       |> Steps.assert_file_deleted_on_space_feed()
       |> Steps.assert_file_deleted_on_company_feed()
     end
@@ -71,7 +71,7 @@ defmodule Operately.Features.ResourceHubFileTest do
     feature "deleting file sends notifications", ctx do
       ctx
       |> Steps.given_file_exists()
-      |> delete_resource_from_nodes_list("Some File", :with_confirmation)
+      |> delete_resource_from_nodes_list("Some File")
       |> Steps.assert_file_deleted_notification_sent()
       |> Steps.assert_file_deleted_email_sent()
     end
@@ -79,21 +79,21 @@ defmodule Operately.Features.ResourceHubFileTest do
     feature "delete file from content list", ctx do
       ctx
       |> Steps.given_file_exists()
-      |> delete_resource_from_nodes_list("Some File", :with_confirmation)
+      |> delete_resource_from_nodes_list("Some File")
     end
 
     feature "deleting file from file page redirects to resource hub", ctx do
       ctx
       |> Steps.given_file_exists()
       |> Steps.visit_file_page()
-      |> delete_resource_redirects_to_resource_hub("Documents & Files", :with_confirmation)
+      |> delete_resource_redirects_to_resource_hub("Documents & Files")
     end
 
     feature "deleting document within folder from document page redirects to folder", ctx do
       ctx
       |> Steps.given_file_within_folder_exists()
       |> Steps.visit_file_page()
-      |> delete_resource_redirects_to_folder(:with_confirmation)
+      |> delete_resource_redirects_to_folder()
     end
   end
 
