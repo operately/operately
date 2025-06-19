@@ -1,10 +1,10 @@
 defmodule Mix.Tasks.Operation.GenActivityItem do
-
   def gen(ctx) do
     Mix.Operately.generate_file(ctx.activity_item_file_path, fn _ ->
       """
       import * as People from "@/models/people";
 
+      import { Paths } from "@/routes/paths";
       import type { Activity } from "@/models/activities";
       import type { ActivityContent#{ctx.activity_item_handler_name} } from "@/api";
       import type { ActivityHandler } from "../interfaces";
@@ -14,7 +14,7 @@ defmodule Mix.Tasks.Operation.GenActivityItem do
           throw new Error("Not implemented");
         },
 
-        pagePath(_activity: Activity) {
+        pagePath(paths: Paths, _activity: Activity) {
           throw new Error("Not implemented");
         },
 
@@ -67,5 +67,4 @@ defmodule Mix.Tasks.Operation.GenActivityItem do
       """
     end)
   end
-
 end
