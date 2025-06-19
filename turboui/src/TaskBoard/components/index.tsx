@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { PrimaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
+import { applyFilters } from "../utils/taskFilterUtils";
 import * as Types from "../types";
 import { IconPlus } from "@tabler/icons-react";
 import TaskCreationModal from "./TaskCreationModal";
@@ -32,6 +33,11 @@ export function TaskBoard({
   useEffect(() => {
     setInternalTasks(externalTasks);
   }, [externalTasks]);
+
+  // Apply filters to tasks
+  const filteredTasks = useMemo(() => {
+    return applyFilters(internalTasks, filters);
+  }, [internalTasks, filters]);
 
   // Group tasks by milestone, filtering out helper tasks
   const groupTasksByMilestone = (tasks: Types.Task[]) => {
@@ -69,7 +75,7 @@ export function TaskBoard({
   };
 
   // Get all unique milestones from tasks with completion statistics
-  const getMilestones = () => {
+  const getMilestones = (tasks: Types.Task[]) => {
     type MilestoneStats = Types.MilestoneStats;
 
     const milestoneMap = new Map<
@@ -82,7 +88,7 @@ export function TaskBoard({
     >();
 
     // Build the map of all milestones from tasks
-    internalTasks.forEach((task) => {
+    tasks.forEach((task) => {
       if (task.milestone) {
         const milestoneId = task.milestone.id;
 
@@ -174,8 +180,8 @@ export function TaskBoard({
   };
 
   // Group tasks by milestone and get milestone stats
-  const groupedTasks = groupTasksByMilestone(internalTasks);
-  const milestones = getMilestones();
+  const groupedTasks = groupTasksByMilestone(filteredTasks);
+  const milestones = getMilestones(filteredTasks);
 
   // Handle task reordering via drag and drop
   const handleTaskReorder = useCallback(
@@ -284,7 +290,7 @@ export function TaskBoard({
             <div className="overflow-x-auto bg-surface-base">
               <ul className="w-full">
                 {/* If no tasks at all */}
-                {internalTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
+                {filteredTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
                 {/* Milestones */}
                 {milestones.map((milestoneData) => (
