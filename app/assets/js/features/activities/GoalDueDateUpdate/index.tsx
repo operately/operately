@@ -1,8 +1,9 @@
-import * as People from "@/models/people";
-
-import { Paths } from "@/routes/paths";
-import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalDueDateUpdate } from "@/api";
+import type { Activity } from "@/models/activities";
+import { Paths } from "@/routes/paths";
+import React from "react";
+import { FormattedTime } from "turboui";
+import { feedTitle, goalLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const GoalDueDateUpdate: ActivityHandler = {
@@ -26,12 +27,40 @@ const GoalDueDateUpdate: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    return null;
+  FeedItemTitle(props: { activity: Activity; page: string }) {
+    const { goal, newDueDate } = content(props.activity);
+
+    const message = newDueDate ? (
+      <>
+        changed the due date to <FormattedTime time={newDueDate} format="short-date" />
+      </>
+    ) : (
+      "cleared the due date"
+    );
+
+    if (props.page === "goal") {
+      return feedTitle(props.activity, message);
+    } else {
+      return feedTitle(props.activity, message, " on the", goalLink(goal!));
+    }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent(props: { activity: Activity; page: any }) {
+    const { goal, oldDueDate } = content(props.activity);
+
+    const message = oldDueDate ? (
+      <>
+        Previously the due date was <FormattedTime time={oldDueDate} format="short-date" />
+      </>
+    ) : (
+      "Previously had no due date"
+    );
+
+    if (props.page === "goal") {
+      return feedTitle(props.activity, message);
+    } else {
+      return feedTitle(props.activity, message, " on the", goalLink(goal!));
+    }
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

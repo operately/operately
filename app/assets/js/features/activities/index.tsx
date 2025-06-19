@@ -208,8 +208,8 @@ import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 import GoalChampionUpdating from "./GoalChampionUpdating";
 
 import { Paths } from "../../routes/paths";
-import GoalReviewerUpdating from './GoalReviewerUpdating';
-import GoalDueDateUpdate from './GoalDueDateUpdate';
+import GoalDueDateUpdate from "./GoalDueDateUpdate";
+import GoalReviewerUpdating from "./GoalReviewerUpdating";
 
 function handler(activity: Activity) {
   return match(activity.action)
