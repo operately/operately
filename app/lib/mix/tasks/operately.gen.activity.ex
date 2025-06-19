@@ -35,6 +35,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity do
     Mix.Tasks.Operation.GenActivitySchema.gen(ctx)
     Mix.Tasks.Operation.GenNotificationHandler.gen(ctx)
     Mix.Tasks.Operation.GenActivityItem.gen(ctx)
+    Mix.Tasks.Operation.GenApiTypes.gen(ctx)
     Mix.Tasks.Operation.GenSerializer.gen(ctx)
   end
 
@@ -59,7 +60,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity do
   end
 
   defp get_resource_name do
-    name = IO.gets("Enter resource name: (e.g goal): ")
+    name = IO.gets("Enter resource name: (e.g goal_champion): ")
     name = String.trim(name)
 
     StringUtils.verify_snake_case(name, "goal")
@@ -87,25 +88,10 @@ defmodule Mix.Tasks.Operately.Gen.Activity do
     [action, gerund]
   end
 
-  def get_api_inputs do
-    IO.puts("")
-    IO.puts("1. What are the inputs for the api mutation?")
-    IO.puts("   e.g company_id:string space_id:string name:string")
-    IO.puts("")
-
-    IO.gets(">  ")
-    |> String.trim()
-    |> String.split(~r/\s+/)
-    |> Enum.map(fn field ->
-      [name, fieldType] = String.split(field, ":")
-      {name, fieldType}
-    end)
-  end
-
   def get_activity_fields do
     IO.puts("")
     IO.puts("2. What data should be stored in the activity?")
-    IO.puts("   e.g company_id:string space_id:string name:string")
+    IO.puts("   e.g company_id:comany space_id:space name:string")
     IO.puts("")
 
     IO.gets(">  ")

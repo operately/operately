@@ -4,7 +4,7 @@ defmodule Mix.Tasks.Operation.GenNotificationHandler do
       """
       defmodule Operately.Activities.Notifications.#{ctx.activity_item_name} do
         def dispatch(_activity) do
-          Operately.Notifications.bulk_create([])
+          {:ok, []}
         end
       end
       """
