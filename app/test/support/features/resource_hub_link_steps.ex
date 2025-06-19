@@ -53,13 +53,18 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> UI.fill(testid: "link", with: attrs.url)
     |> then(fn ctx ->
       if type_testid do
-        ctx
-        |> UI.click(testid: type_testid)
+        UI.click(ctx, testid: type_testid)
       else
         ctx
       end
     end)
-    |> UI.fill_rich_text(attrs.notes)
+    |> then(fn ctx ->
+      if attrs[:notes] do
+        UI.fill_rich_text(ctx, attrs.notes)
+      else
+        ctx
+      end
+    end)
     |> UI.click(testid: "submit")
     |> UI.refute_has(testid: "submit")
     |> then(fn ctx ->
@@ -147,7 +152,13 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     ctx
     |> UI.assert_page(Paths.link_path(ctx.company, node.link))
     |> UI.assert_text(attrs.title)
-    |> UI.assert_text(attrs.notes)
+    |> then(fn ctx ->
+      if attrs[:notes] do
+        UI.assert_text(ctx, attrs.notes)
+      else
+        ctx
+      end
+    end)
   end
 
   defp assert_link_type(link_name, type) do

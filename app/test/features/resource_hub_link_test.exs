@@ -13,6 +13,15 @@ defmodule Operately.Features.ResourceHubLinkTest do
   setup ctx, do: Steps.setup(ctx)
 
   describe "Create links" do
+    feature "create link with empty description", ctx do
+      data = %{ title: "Link", url: "http://localhost:4000" }
+
+      ctx
+      |> Steps.visit_resource_hub_page()
+      |> Steps.create_link(data)
+      |> Steps.assert_link_content(data)
+    end
+
     feature "general link", ctx do
       ctx
       |> Steps.visit_resource_hub_page()

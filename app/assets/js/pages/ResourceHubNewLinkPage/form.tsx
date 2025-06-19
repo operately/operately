@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useCreateResourceHubLink } from "@/models/resourceHubs";
+import { emptyContent } from "turboui/RichContent";
 
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
@@ -30,7 +31,7 @@ export function Form() {
       title: "",
       link: "",
       type: linkType,
-      description: null,
+      description: emptyContent(),
     },
     validate: (addError) => {
       if (!isValidURL(form.values.link)) {
