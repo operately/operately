@@ -12,7 +12,7 @@ const GoalChampionUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(paths: Paths, _activity: Activity) {
+  pagePath(_paths: Paths, _activity: Activity) {
     throw new Error("Not implemented");
   },
 
