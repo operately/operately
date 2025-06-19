@@ -57,6 +57,9 @@ defmodule Mix.Tasks.Operation.GenActivitySchema do
       :boolean ->
         "field :#{name}, :boolean"
 
+      :date ->
+        "field :#{name}, :date"
+
       _ ->
         raise "Unsupported field type: #{type} for field #{name}. Supported types are: :company, :space, :person, :project, :goal, :string, :integer, :float, :boolean."
     end
