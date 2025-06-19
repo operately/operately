@@ -1,15 +1,16 @@
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Icons from "@tabler/icons-react";
 import React from "react";
-import { useNavigate } from "react-router-dom";
-
-import { useDeleteResourceHubLink } from "@/models/resourceHubs";
 
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
-export function Options() {
+interface Props {
+  showDeleteModal: () => void;
+}
+
+export function Options({ showDeleteModal }: Props) {
   const { link } = useLoadedData();
   const paths = usePaths();
   assertPresent(link.permissions, "permissions must be present in link");
@@ -24,32 +25,15 @@ export function Options() {
           testId="edit-link-link"
         />
       )}
-      {link.permissions.canDeleteLink && <DeleteAction />}
+      {link.permissions.canDeleteLink && <DeleteAction onClick={showDeleteModal} />}
     </PageOptions.Root>
   );
 }
 
-function DeleteAction() {
-  const { link } = useLoadedData();
-  const [remove] = useDeleteResourceHubLink();
-  const navigate = useNavigate();
-  const paths = usePaths();
+interface DeleteActionProps {
+  onClick: () => void;
+}
 
-  const redirect = () => {
-    if (link.parentFolder) {
-      navigate(paths.resourceHubFolderPath(link.parentFolder.id!));
-    } else {
-      assertPresent(link.resourceHub, "resourceHub must be present in link");
-      navigate(paths.resourceHubPath(link.resourceHub.id!));
-    }
-  };
-
-  const handleDelete = async () => {
-    await remove({ linkId: link.id });
-    redirect();
-  };
-
-  return (
-    <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />
-  );
+function DeleteAction({ onClick }: DeleteActionProps) {
+  return <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
 }
