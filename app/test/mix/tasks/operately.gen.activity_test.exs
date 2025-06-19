@@ -29,7 +29,7 @@ defmodule Mix.Tasks.Operately.Gen.Activity.Task do
 
   defp gets("Enter resource name: (e.g goal_champion): "), do: "project\n"
   defp gets("Enter action name: (e.g create): "), do: "edit\n"
-  defp gets(">  "), do: "company_id:company space_id:space name:string\n"
+  defp gets(">  "), do: "company_id:company space_id:space name:string due:date\n"
   defp gets("Continue? (y/n): "), do: "y\n"
 
   # A mock function. Instead of injecting into the file, we display the context
