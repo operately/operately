@@ -1,9 +1,14 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Reactions from "@/models/reactions";
-import { usePublishResourceHubDocument } from "@/models/resourceHubs";
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
+
+import { usePublishResourceHubDocument, useDeleteResourceHubDocument } from "@/models/resourceHubs";
+import { usePaths } from "@/routes/paths";
 
 import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
@@ -20,10 +25,10 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
 
-import { usePaths } from "@/routes/paths";
 export function Page() {
   const { document, folder, resourceHub } = useLoadedData();
   const [isCopyFormOpen, _, openCopyForm, closeCopyForm] = useBoolState(false);
+  const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
   assertPresent(document.notifications, "notifications must be present in document");
   useClearNotificationsOnLoad(document.notifications);
@@ -36,7 +41,7 @@ export function Page() {
         <ResourcePageNavigation resource={document} />
 
         <Paper.Body minHeight="600px" className="lg:px-28">
-          <Options showCopyModal={openCopyForm} />
+          <Options showCopyModal={openCopyForm} showDeleteModal={toggleDeleteConfirmModal} />
 
           <ContinueEditingDraft />
 
@@ -45,6 +50,8 @@ export function Page() {
           <DocumentReactions />
           <DocumentComments />
           <DocumentSubscriptions />
+
+          <DeleteDocumentModal isOpen={showDeleteConfirmModal} toggleModal={toggleDeleteConfirmModal} />
 
           <CopyDocumentModal
             parent={folder ?? resourceHub}
@@ -117,6 +124,43 @@ function DocumentComments() {
         canComment={document.permissions.canCommentOnDocument}
       />
     </>
+  );
+}
+
+interface DeleteDocumentModalProps {
+  isOpen: boolean;
+  toggleModal: () => void;
+}
+
+function DeleteDocumentModal({ isOpen, toggleModal }: DeleteDocumentModalProps) {
+  const navigate = useNavigate();
+  const { document, folder, resourceHub } = useLoadedData();
+  const [remove] = useDeleteResourceHubDocument();
+  const paths = usePaths();
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: toggleModal,
+    submit: async () => {
+      await remove({ documentId: document.id });
+
+      if (folder) {
+        navigate(paths.resourceHubFolderPath(folder.id!));
+      } else {
+        navigate(paths.resourceHubPath(resourceHub.id!));
+      }
+    },
+  });
+
+  return (
+    <Modal isOpen={isOpen} hideModal={toggleModal}>
+      <Forms.Form form={form}>
+        <p>
+          Are you sure you want to delete the document "<b>{document.name}</b>"?
+        </p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }
 

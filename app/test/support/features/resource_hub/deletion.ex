@@ -29,9 +29,25 @@ defmodule Operately.Support.ResourceHub.Deletion do
     |> Steps.assert_zero_state(hub_name)
   end
 
+  def delete_resource_redirects_to_resource_hub(ctx, hub_name, :with_confirmation) do
+    ctx
+    |> Steps.delete_resource()
+    |> Steps.confirm_deletion()
+    |> Steps.assert_page_is_resource_hub_root(name: hub_name)
+    |> Steps.assert_zero_state(hub_name)
+  end
+
   def delete_resource_redirects_to_folder(ctx) do
     ctx
     |> Steps.delete_resource()
+    |> Steps.assert_page_is_folder_root(folder_key: :folder)
+    |> Steps.assert_zero_folder_state()
+  end
+
+  def delete_resource_redirects_to_folder(ctx, :with_confirmation) do
+    ctx
+    |> Steps.delete_resource()
+    |> Steps.confirm_deletion()
     |> Steps.assert_page_is_folder_root(folder_key: :folder)
     |> Steps.assert_zero_folder_state()
   end
