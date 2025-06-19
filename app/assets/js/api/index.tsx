@@ -285,6 +285,14 @@ export interface ActivityContentGoalDiscussionEditing {
   activityId?: string | null;
 }
 
+export interface ActivityContentGoalDueDateUpdate {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  oldDueDate: string | null;
+  newDueDate: string | null;
+}
+
 export interface ActivityContentGoalEditing {
   goal?: Goal | null;
   companyId?: string | null;
