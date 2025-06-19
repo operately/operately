@@ -102,7 +102,7 @@ function DeleteFolderModal({ folder, isOpen, hideModal }: { folder: Hub.Resource
   return (
     <Modal isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
-        <p className="mb-4">Are you sure you want to delete the folder "<b>{folder.name}</b>"?</p>
+        <p>Are you sure you want to delete the folder "<b>{folder.name}</b>"?</p>
         <Forms.Submit saveText="Delete" cancelText="Cancel" />
       </Forms.Form>
     </Modal>
