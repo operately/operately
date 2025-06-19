@@ -2,6 +2,8 @@ import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
+import Modal from "@/components/Modal";
+import Forms from "@/components/Forms";
 import { useNodesContext } from "@/features/ResourceHub";
 import { useBoolState } from "@/hooks/useBoolState";
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
@@ -21,6 +23,7 @@ export function DocumentMenu({ document }: Props) {
 
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
   const [showCopyForm, toggleCopyForm] = useBoolState(false);
+  const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
   const relevantPermissions = [
     permissions.canEditDocument,
@@ -39,11 +42,12 @@ export function DocumentMenu({ document }: Props) {
         {permissions.canCreateDocument && <CopyResourceMenuItem resource={document} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} showModal={toggleMoveForm} />}
         {permissions.canView && <ExportMarkdownMenuItem document={document} />}
-        {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} />}
+        {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} showConfirmModal={toggleDeleteConfirmModal} />}
       </Menu>
 
       <MoveResourceModal resource={document} resourceType="document" isOpen={showMoveForm} hideModal={toggleMoveForm} />
       <CopyDocumentModal parent={parent} resource={document} isOpen={showCopyForm} hideModal={toggleCopyForm} />
+      <DeleteDocumentModal document={document} isOpen={showDeleteConfirmModal} hideModal={toggleDeleteConfirmModal} />
     </>
   );
 }
@@ -60,20 +64,39 @@ function EditDocumentMenuItem({ document }: Props) {
   );
 }
 
-function DeleteDocumentMenuItem({ document }: Props) {
+function DeleteDocumentMenuItem({ document, showConfirmModal }: { document: Hub.ResourceHubDocument; showConfirmModal: () => void }) {
+  const deleteId = createTestId("delete", document.id!);
+
+  return (
+    <MenuActionItem onClick={showConfirmModal} testId={deleteId} danger>
+      Delete
+    </MenuActionItem>
+  );
+}
+
+function DeleteDocumentModal({ document, isOpen, hideModal }: { document: Hub.ResourceHubDocument; isOpen: boolean; hideModal: () => void }) {
   const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubDocument();
 
   const handleDelete = async () => {
     await remove({ documentId: document.id });
     refetch();
+    hideModal();
   };
-  const deleteId = createTestId("delete", document.id!);
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: hideModal,
+    submit: handleDelete,
+  });
 
   return (
-    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
-      Delete
-    </MenuActionItem>
+    <Modal isOpen={isOpen} hideModal={hideModal}>
+      <Forms.Form form={form}>
+        <p>Are you sure you want to delete the document "<b>{document.name}</b>"?</p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
   );
 }
 

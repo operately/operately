@@ -1,20 +1,19 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 
+import { usePaths } from "@/routes/paths";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import { useDeleteResourceHubDocument } from "@/models/resourceHubs";
 import { assertPresent } from "@/utils/assertions";
 
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
 import { IconCopy, IconEdit, IconFileExport, IconTrash } from "@tabler/icons-react";
 import { useLoadedData } from "./loader";
 
-import { usePaths } from "@/routes/paths";
 interface Props {
   showCopyModal: () => void;
+  showDeleteModal: () => void;
 }
 
-export function Options({ showCopyModal }: Props) {
+export function Options({ showCopyModal, showDeleteModal }: Props) {
   const paths = usePaths();
   const { document } = useLoadedData();
   assertPresent(document.permissions, "permissions must be present in document");
@@ -32,7 +31,7 @@ export function Options({ showCopyModal }: Props) {
       )}
       {document.permissions.canCreateDocument && <CopyLink showCopyModal={showCopyModal} />}
       {document.permissions.canView && <ExportMarkdownAction />}
-      {document.permissions.canDeleteDocument && <DeleteAction />}
+      {document.permissions.canDeleteDocument && <DeleteAction onClick={showDeleteModal} />}
     </PageOptions.Root>
   );
 }
@@ -41,26 +40,8 @@ function CopyLink({ showCopyModal }) {
   return <PageOptions.Action icon={IconCopy} title="Copy" onClick={showCopyModal} testId="copy-document-link" />;
 }
 
-function DeleteAction() {
-  const paths = usePaths();
-  const { document, folder, resourceHub } = useLoadedData();
-  const [remove] = useDeleteResourceHubDocument();
-  const navigate = useNavigate();
-
-  const redirect = () => {
-    if (folder) {
-      navigate(paths.resourceHubFolderPath(folder.id!));
-    } else {
-      navigate(paths.resourceHubPath(resourceHub.id!));
-    }
-  };
-
-  const handleDelete = async () => {
-    await remove({ documentId: document.id });
-    redirect();
-  };
-
-  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-resource-link" />;
+function DeleteAction({ onClick }: { onClick: () => void }) {
+  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
 }
 
 function ExportMarkdownAction() {
