@@ -1,11 +1,10 @@
-defmodule Operately.Activities.Content.GoalDueDateChanged do
+defmodule Operately.Activities.Content.GoalDueDateUpdating do
   use Operately.Activities.Content
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :goal, Operately.Goals.Goal
-
     field :old_due_date, :date
     field :new_due_date, :date
   end

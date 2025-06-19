@@ -194,6 +194,12 @@ defmodule Operately.Support.Features.GoalSteps do
     end)
   end
 
+  step :assert_due_date_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "changed the due date")
+  end
+
   #
   # Removing the due date
   #
@@ -209,6 +215,12 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.timeframe == nil
     end)
+  end
+
+  step :assert_due_date_removed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "cleared the due date")
   end
 
   #

@@ -1,14 +1,14 @@
 import React from "react";
 import { match } from "ts-pattern";
 
-import TimeOnly from "./TimeOnly";
-import LongDate from "./LongDate";
-import ShortDate from "./ShortDate";
-import RelativeTime from "./RelativeTime";
-import ShortDateWithWeekday from "./ShortDateWithWeekday";
-import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
-import RelativeTimeOrDate from "./RelativeTimeOrDate";
 import * as Time from "../utils/time";
+import LongDate from "./LongDate";
+import RelativeTime from "./RelativeTime";
+import RelativeTimeOrDate from "./RelativeTimeOrDate";
+import RelativeWeekdayOrDate from "./RelativeWeekdayOrDate";
+import ShortDate from "./ShortDate";
+import ShortDateWithWeekday from "./ShortDateWithWeekday";
+import TimeOnly from "./TimeOnly";
 
 export type Format =
   | "relative"
@@ -37,7 +37,7 @@ export interface FormattedTimeProps {
   timezone?: string;
 }
 
-export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
+export function FormattedTime(props: FormattedTimeProps): JSX.Element {
   const timezone = props.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const parsedTime = match(props.format)
@@ -73,3 +73,5 @@ export default function FormattedTime(props: FormattedTimeProps): JSX.Element {
 function applyTimezone(time: Date, timezone: string): Date {
   return new Date(time.toLocaleString("en-US", { timeZone: timezone }));
 }
+
+export default FormattedTime;
