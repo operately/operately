@@ -21,6 +21,7 @@ export function FolderMenu({ folder }: Props) {
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
   const [showCopyForm, toggleCopyForm] = useBoolState(false);
+  const [showDeleteConfirmModal, toggleDeleteConfirmModal] = useBoolState(false);
 
   const relevantPermissions = [
     permissions.canRenameFolder,
@@ -38,7 +39,7 @@ export function FolderMenu({ folder }: Props) {
         {permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
         {permissions.canCopyFolder && <CopyResourceMenuItem resource={folder} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
-        {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} />}
+        {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} showConfirmModal={toggleDeleteConfirmModal} />}
       </Menu>
 
       <RenameFolderModal
@@ -51,22 +52,16 @@ export function FolderMenu({ folder }: Props) {
       />
       <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
       <CopyFolderModal resource={folder} isOpen={showCopyForm} hideModal={toggleCopyForm} />
+      <DeleteFolderModal folder={folder} isOpen={showDeleteConfirmModal} hideModal={toggleDeleteConfirmModal} />
     </>
   );
 }
 
-function DeleteFolderMenuItem({ folder }: Props) {
-  const { refetch } = useNodesContext();
-  const [remove] = Hub.useDeleteResourceHubFolder();
-
-  const handleDelete = async () => {
-    await remove({ folderId: folder.id });
-    refetch();
-  };
+function DeleteFolderMenuItem({ folder, showConfirmModal }: { folder: Hub.ResourceHubFolder; showConfirmModal: () => void }) {
   const deleteId = createTestId("delete", folder.id!);
 
   return (
-    <MenuActionItem onClick={handleDelete} testId={deleteId} danger>
+    <MenuActionItem onClick={showConfirmModal} testId={deleteId} danger>
       Delete
     </MenuActionItem>
   );
@@ -86,6 +81,32 @@ interface FormProps {
   folder: Hub.ResourceHubFolder;
   showForm: boolean;
   toggleForm: () => void;
+}
+
+function DeleteFolderModal({ folder, isOpen, hideModal }: { folder: Hub.ResourceHubFolder; isOpen: boolean; hideModal: () => void }) {
+  const { refetch } = useNodesContext();
+  const [remove] = Hub.useDeleteResourceHubFolder();
+
+  const handleDelete = async () => {
+    await remove({ folderId: folder.id });
+    refetch();
+    hideModal();
+  };
+
+  const form = Forms.useForm({
+    fields: {},
+    cancel: hideModal,
+    submit: handleDelete,
+  });
+
+  return (
+    <Modal isOpen={isOpen} hideModal={hideModal}>
+      <Forms.Form form={form}>
+        <p className="mb-4">Are you sure you want to delete the folder "<b>{folder.name}</b>"?</p>
+        <Forms.Submit saveText="Delete" cancelText="Cancel" />
+      </Forms.Form>
+    </Modal>
+  );
 }
 
 function RenameFolderModal({ folder, showForm, toggleForm }: FormProps) {
