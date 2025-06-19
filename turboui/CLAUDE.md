@@ -21,6 +21,7 @@ This document captures the architecture principles, patterns, and workflow for d
 - **Strict mode**: Ensure all TypeScript types are properly defined with no implicit any
 - **Shared types**: Use centralized type files to avoid circular dependencies
 - **Interface consistency**: Match callback signatures across similar components
+- **Prefer named exports over default exports**: Vite and other bundlers have a harder time working with default exports (slower compile speed, flaky name lookup in IDEs)
 
 ## Development Workflow
 
@@ -81,7 +82,6 @@ make turboui.build && make turboui.test
 - **Icons**: Use Tabler icons consistently, hide in list contexts to reduce clutter
 - **Colors**: Use existing color classes (content-subtle, content-error, etc.) defined in tailwind config and outlined in turboui/src/Colors
 - **Spacing**: Use consistent gap and padding patterns
-- **Typography**: Use text-xs for compact contexts, text-sm for normal contexts
 
 ### Interaction Patterns
 
