@@ -16,6 +16,7 @@ export * from "./Timeline";
 export * from "./WorkMap";
 
 export { DateField } from "./DateField";
+export { FormattedTime } from "./FormattedTime";
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { PrivacyField } from "./PrivacyField";
