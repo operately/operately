@@ -7,7 +7,12 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.GoalRev
       space_id: Serializer.serialize(content["space_id"], level: :essential),
       goal_id: Serializer.serialize(content["goal_id"], level: :essential),
       old_reviewer_id: Serializer.serialize(content["old_reviewer_id"], level: :essential),
-      new_reviewer_id: Serializer.serialize(content["new_reviewer_id"], level: :essential)
+      new_reviewer_id: Serializer.serialize(content["new_reviewer_id"], level: :essential),
+      company: Serializer.serialize(content["company"], level: :essential),
+      space: Serializer.serialize(content["space"], level: :essential),
+      goal: Serializer.serialize(content["goal"], level: :essential),
+      old_reviewer: Serializer.serialize(content["old_reviewer"], level: :essential),
+      new_reviewer: Serializer.serialize(content["new_reviewer"], level: :essential)
     }
   end
 end
