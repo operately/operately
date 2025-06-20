@@ -28,6 +28,28 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   #
+  # Changing the goal name
+  #
+
+  step :change_goal_name, ctx do
+    ctx
+    |> UI.fill_text_field(testid: "goal-name-field", with: "New Goal Name")
+  end
+
+  step :assert_goal_name_changed, ctx do
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.reload(ctx.goal)
+      assert goal.name == "New Goal Name"
+    end)
+  end
+
+  step :assert_goal_name_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "renamed the goal")
+  end
+
+  #
   # Changing the parent goal
   #
 
@@ -60,22 +82,6 @@ defmodule Operately.Support.Features.GoalSteps do
     attempts(ctx, 3, fn ->
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.parent_goal_id == nil
-    end)
-  end
-
-  #
-  # Changing the goal name
-  #
-
-  step :change_goal_name, ctx do
-    ctx
-    |> UI.fill_text_field(testid: "goal-name-field", with: "New Goal Name")
-  end
-
-  step :assert_goal_name_changed, ctx do
-    attempts(ctx, 3, fn ->
-      goal = Operately.Repo.reload(ctx.goal)
-      assert goal.name == "New Goal Name"
     end)
   end
 
