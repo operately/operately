@@ -6,7 +6,7 @@ defmodule OperatelyEmail.Emails.GoalReparentEmail do
     author = Repo.preload(activity, :author).author
     company = Repo.preload(author, :company).company
     goal = Goals.get_goal!(activity.content["goal_id"])
-    new_parent_goal = Goals.get_goal!(activity.content["new_parent_goal_id"])
+    new_parent_goal = activity.content["new_parent_goal_id"] && Goals.get_goal!(activity.content["new_parent_goal_id"])
 
     company
     |> new()

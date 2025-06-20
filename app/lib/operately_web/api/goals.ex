@@ -169,6 +169,15 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_parent_goal(inputs.parent_goal_id)
+      |> Steps.save_activity(:goal_reparent, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_parent_goal_id: changes.goal.parent_goal_id,
+          new_parent_goal_id: inputs.parent_goal_id
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end

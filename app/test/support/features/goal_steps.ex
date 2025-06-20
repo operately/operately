@@ -68,6 +68,12 @@ defmodule Operately.Support.Features.GoalSteps do
     end)
   end
 
+  step :assert_parent_goal_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "changed the parent goal")
+  end
+
   #
   # Removing the parent goal
   #
@@ -83,6 +89,12 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       assert goal.parent_goal_id == nil
     end)
+  end
+
+  step :assert_parent_goal_removed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "Removed the parent goal")
   end
 
   #
