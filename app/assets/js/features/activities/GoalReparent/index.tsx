@@ -1,4 +1,5 @@
 import * as People from "@/models/people";
+import React from "react";
 
 import { Activity, ActivityContentGoalReparent } from "@/api";
 
@@ -30,25 +31,42 @@ const GoalReparent: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle({ activity }: { activity: Activity }) {
+  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const data = content(activity);
-
     assertPresent(data.goal, "goal must be present in activity");
-    assertPresent(data.newParentGoal, "newParentGoal must be present in activity");
 
     const goal = goalLink(data.goal);
-    const newParent = goalLink(data.newParentGoal);
 
-    if (data.oldParentGoal) {
-      const oldParent = goalLink(data.oldParentGoal);
-      return feedTitle(activity, "changed the parent goal of", goal, "from", oldParent, "to", newParent);
+    if (page === "goal") {
+      return feedTitle(activity, "changed the parent goal");
     } else {
-      return feedTitle(activity, "changed the parent goal of", goal, "to", newParent);
+      return feedTitle(activity, "changed the parent goal of", goal);
     }
   },
 
-  FeedItemContent(_props: { activity: Activity }) {
-    return null;
+  FeedItemContent(props: { activity: Activity }) {
+    const { newParentGoal, oldParentGoal } = content(props.activity);
+
+    const oldParentLink = oldParentGoal ? goalLink(oldParentGoal) : null;
+    const newParentLink = newParentGoal ? goalLink(newParentGoal) : null;
+
+    if (newParentGoal && oldParentGoal) {
+      return (
+        <>
+          Changed the parent goal from {oldParentLink} to {newParentLink}.
+        </>
+      );
+    }
+
+    if (newParentGoal) {
+      return <>Changed the parent goal to {newParentLink}.</>;
+    }
+
+    if (oldParentGoal) {
+      return <>Removed the parent goal {oldParentLink}.</>;
+    }
+
+    return <>No parent goal was set.</>;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
