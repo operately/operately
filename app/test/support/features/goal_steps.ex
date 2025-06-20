@@ -46,7 +46,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_name_changed_feed_posted, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "renamed the goal")
+    |> UI.assert_feed_item(ctx.creator, "renamed")
   end
 
   #

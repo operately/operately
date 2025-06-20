@@ -36,7 +36,7 @@ defmodule Mix.Tasks.Operation.GenApiTypes do
       :person -> "field :#{remove_id(name)}, :person"
       :project -> "field :#{remove_id(name)}, :project"
       :goal -> "field :#{remove_id(name)}, :goal"
-      _ -> "field :#{name}, #{type}"
+      type -> "field :#{name}, #{type}"
     end
   end
 
