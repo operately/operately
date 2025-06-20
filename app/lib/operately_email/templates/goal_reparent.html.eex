@@ -2,11 +2,16 @@
 
 <%= spacer() %>
 
-<%= row do %>
-  The parent goal of <%= @goal.name %> was changed to <%= @new_parent_goal.name %>
+<%= if @new_parent_goal do %>
+  <%= row do %>
+    The parent goal of <%= @goal.name %> was changed to <%= @new_parent_goal.name %>
+  <% end %>
+<% else %>
+  <%= row do %>
+    The parent goal was removed from <%= @goal.name %>
+  <% end %>
 <% end %>
 
-<%= spacer() %>
 <%= spacer() %>
 
 <%= row do %>
