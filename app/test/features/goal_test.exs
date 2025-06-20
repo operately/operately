@@ -58,12 +58,14 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.change_parent_goal()
     |> Steps.assert_parent_goal_changed()
+    |> Steps.assert_parent_goal_changed_feed_posted()
   end
 
   feature "removing the parent goal", ctx do
     ctx
     |> Steps.remove_parent_goal()
     |> Steps.assert_parent_goal_removed()
+    |> Steps.assert_parent_goal_removed_feed_posted()
   end
 
   feature "move to another space", ctx do
