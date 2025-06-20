@@ -1,5 +1,5 @@
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
+import { IconQuestionMark } from "turboui";
 import * as React from "react";
 
 import { Tooltip } from "@/components/Tooltip";
@@ -120,7 +120,7 @@ export function PlaceholderAvatar({ size }: { size: Size }) {
 
   return (
     <div className={className} style={style}>
-      <Icons.IconQuestionMark size={DIMENSIONS[size].icon} className={iconColor} stroke={3} />
+      <IconQuestionMark size={DIMENSIONS[size].icon} className={iconColor} stroke={3} />
     </div>
   );
 }

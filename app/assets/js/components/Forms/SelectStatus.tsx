@@ -3,7 +3,7 @@ import React from "react";
 import { InputField } from "./FieldGroup";
 import classNames from "classnames";
 
-import * as Icons from "@tabler/icons-react";
+import { IconChevronDown } from "turboui";
 import * as Popover from "@radix-ui/react-popover";
 import * as People from "@/models/people";
 
@@ -56,7 +56,7 @@ export function SelectStatus({ field, options, reviewer, label }: Props) {
             <StatusOrPlaceholder status={value} reviewer={reviewer} />
 
             <div className="p-4">
-              <Icons.IconChevronDown size={24} />
+              <IconChevronDown size={24} />
             </div>
           </div>
         </Popover.Trigger>

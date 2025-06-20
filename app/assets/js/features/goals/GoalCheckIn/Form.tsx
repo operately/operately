@@ -11,9 +11,8 @@ import RichContent from "@/components/RichContent";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
-import { IconInfoCircle } from "@tabler/icons-react";
 import { match } from "ts-pattern";
-import { DateField, Tooltip } from "turboui";
+import { DateField, Tooltip, IconInfoCircle } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {

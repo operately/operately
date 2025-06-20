@@ -10,8 +10,7 @@ import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
-import { IconEdit } from "@tabler/icons-react";
-import { AvatarWithName } from "turboui";
+import { AvatarWithName, IconEdit } from "turboui";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { RetrospectiveContent } from "@/features/ProjectRetrospective";

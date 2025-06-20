@@ -1,7 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { IconCircleX, IconExternalLink, IconSearch, IconFlag, IconPlus } from "@tabler/icons-react";
+import { IconCircleX, IconExternalLink, IconSearch, IconFlag, IconPlus } from "../icons";
 import { DivLink } from "../Link";
 import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";

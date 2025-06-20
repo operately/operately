@@ -1,4 +1,4 @@
-import * as Icons from "@tabler/icons-react";
+import { IconPaperclip } from "../../icons";
 import * as React from "react";
 
 import { AddBlobsEditorCommand } from "../Blob/AddBlobsEditorCommand";
@@ -40,7 +40,7 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element {
   return (
     <>
       <ToolbarButton onClick={handleClick} title="Add an Image or File">
-        <Icons.IconPaperclip size={iconSize} />
+        <IconPaperclip size={iconSize} />
       </ToolbarButton>
 
       <input

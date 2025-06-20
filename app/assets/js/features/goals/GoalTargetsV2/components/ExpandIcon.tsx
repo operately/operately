@@ -1,6 +1,6 @@
 import React from "react";
 import classNames from "classnames";
-import { IconChevronDown } from "@tabler/icons-react";
+import { IconChevronDown } from "turboui";
 
 interface Props {
   expanded: boolean;

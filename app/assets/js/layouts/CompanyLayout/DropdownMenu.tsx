@@ -1,8 +1,7 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Popover from "@radix-ui/react-popover";
 
-import { DivLink } from "turboui";
+import { DivLink, IconChevronDown } from "turboui";
 
 import classNames from "classnames";
 
@@ -57,7 +56,7 @@ export function DropdownMenu(props: DropdownMenuProps) {
         <div className={triggerClassName} data-test-id={props.testId}>
           {React.createElement(props.icon, { size: 16 })}
           <div className="font-semibold">{props.name}</div>
-          {props.showDropdownIcon && <Icons.IconChevronDown size={16} />}
+          {props.showDropdownIcon && <IconChevronDown size={16} />}
         </div>
       </Popover.Trigger>
 

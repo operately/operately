@@ -3,7 +3,6 @@ import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Discussions from "@/models/discussions";
 import * as Reactions from "@/models/reactions";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import RichContent from "@/components/RichContent";
@@ -22,6 +21,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
+import { IconEdit, IconTrash } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Page() {
@@ -142,14 +142,14 @@ function Options() {
   return (
     <PageOptions.Root testId="options-button">
       <PageOptions.Link
-        icon={Icons.IconEdit}
+        icon={IconEdit}
         title="Edit"
         to={paths.discussionEditPath(discussion.id!)}
         testId="edit-discussion"
         keepOutsideOnBigScreen
       />
 
-      <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={handleArchive} testId="archive-discussion" />
+      <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleArchive} testId="archive-discussion" />
     </PageOptions.Root>
   );
 }

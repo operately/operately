@@ -1,11 +1,10 @@
 import * as Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as People from "@/models/people";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink, Link } from "turboui";
+import { DivLink, Link, IconBuildingEstate, IconSparkles } from "turboui";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -87,7 +86,7 @@ function CompanyCard({ company }: { company: Api.Company }) {
 
   return (
     <DivLink to={Paths.companyHomePath(company.id!)} className={className}>
-      <Icons.IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
+      <IconBuildingEstate size={40} className="text-cyan-500" strokeWidth={1} />
       <div className="font-medium mt-2">{company.name}</div>
       <div className="text-xs">{plurarize(company.memberCount!, "member", "members")}</div>
     </DivLink>
@@ -111,7 +110,7 @@ function AddCompanyCard() {
       <div className="font-bold sm:text-lg">+ Create new</div>
       <div className="text-xs sm:text-sm font-medium">Add new organization</div>
       <div className="flex justify-end mt-3">
-        <Icons.IconSparkles size={32} className="text-white-1" strokeWidth={1} />
+        <IconSparkles size={32} className="text-white-1" strokeWidth={1} />
       </div>
     </DivLink>
   );

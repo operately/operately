@@ -1,4 +1,4 @@
-import { IconExclamationCircleFilled } from "@tabler/icons-react";
+import { IconExclamationCircleFilled } from "../icons";
 import React from "react";
 import toast, { Toaster } from "react-hot-toast";
 

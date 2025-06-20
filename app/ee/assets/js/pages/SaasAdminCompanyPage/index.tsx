@@ -6,8 +6,7 @@ import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
 
 import FormattedTime from "@/components/FormattedTime";
-import { IconFlare } from "@tabler/icons-react";
-import { Avatar } from "turboui";
+import { Avatar, IconFlare } from "turboui";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { useLoadedData } from "./loader";
