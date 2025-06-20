@@ -12,7 +12,7 @@ defmodule Operately.Activities.Content.GoalReparent do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required([:company_id, :goal_id, :new_parent_goal_id])
+    |> validate_required([:company_id, :goal_id, :space_id])
   end
 
   def build(params) do

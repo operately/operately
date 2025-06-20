@@ -94,7 +94,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_parent_goal_removed_feed_posted, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "removed the parent goal")
+    |> UI.assert_feed_item(ctx.creator, "Removed the parent goal")
   end
 
   #
