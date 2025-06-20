@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import {
   IconFilter,
@@ -102,20 +102,25 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
   // Content filter modal state
   const [contentModalOpen, setContentModalOpen] = useState(false);
   const [contentSearchTerm, setContentSearchTerm] = useState("");
+  const [contentOperator, setContentOperator] = useState<Types.FilterOperator>("contains");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hoveredOptionRef = useRef<HTMLButtonElement>(null);
 
-  // Get unique people from tasks for assignee/creator filters
-  const availablePeople = tasks
-    .flatMap((task) => task.assignees || [])
-    .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id));
+  // Get unique people from tasks for assignee/creator filters (memoized)
+  const availablePeople = useMemo(() => {
+    return tasks
+      .flatMap((task) => task.assignees || [])
+      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id));
+  }, [tasks]);
 
-  // Get unique milestones from tasks
-  const availableMilestones = tasks
-    .filter((task) => task.milestone)
-    .map((task) => task.milestone!)
-    .filter((milestone, index, self) => index === self.findIndex((m) => m.id === milestone.id));
+  // Get unique milestones from tasks (memoized)
+  const availableMilestones = useMemo(() => {
+    return tasks
+      .filter((task) => task.milestone)
+      .map((task) => task.milestone!)
+      .filter((milestone, index, self) => index === self.findIndex((m) => m.id === milestone.id));
+  }, [tasks]);
 
   // Focus search input when dropdown opens
   useEffect(() => {
@@ -233,20 +238,22 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
       const newFilter: Types.FilterCondition = {
         id: `filter-${Date.now()}`,
         type: "content",
-        operator: "contains",
+        operator: contentOperator,
         value: contentSearchTerm.trim(),
-        label: `Content ${operatorLabels["contains"]} "${contentSearchTerm.trim()}"`,
+        label: `Content ${operatorLabels[contentOperator]} "${contentSearchTerm.trim()}"`,
       };
 
       onFiltersChange([...filters, newFilter]);
     }
     setContentModalOpen(false);
     setContentSearchTerm("");
+    setContentOperator("contains");
   };
 
   const handleContentFilterCancel = () => {
     setContentModalOpen(false);
     setContentSearchTerm("");
+    setContentOperator("contains");
   };
 
   // Handle keyboard events for content modal
@@ -386,124 +393,101 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
           </Popover.Content>
         </Popover.Portal>
 
-        {/* Submenu for Status options */}
-        {submenuVisible && hoveredOption === "status" && submenuPosition && (
-          <div
-            data-submenu="status"
-            className="fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2 min-w-48"
-            style={{
-              top: submenuPosition.top,
-              left: submenuPosition.left,
-            }}
-            onMouseEnter={() => setSubmenuVisible(true)}
-            onMouseLeave={() => {
-              setSubmenuVisible(false);
-              setHoveredOption(null);
-            }}
-          >
-            {Object.entries(taskStatusConfig).map(([status, config]) => (
-              <button
-                key={status}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
-                onClick={() => handleStatusSelect(status as Types.Status)}
-              >
-                <span className={config.color}>{config.icon}</span>
-                <span>{config.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Submenus */}
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "status"}
+          position={submenuPosition}
+          type="status"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {Object.entries(taskStatusConfig).map(([status, config]) => (
+            <button
+              key={status}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
+              onClick={() => handleStatusSelect(status as Types.Status)}
+            >
+              <span className={config.color}>{config.icon}</span>
+              <span>{config.label}</span>
+            </button>
+          ))}
+        </FilterSubmenu>
 
-        {/* Submenu for Assignee options */}
-        {submenuVisible && hoveredOption === "assignee" && submenuPosition && (
-          <div
-            data-submenu="assignee"
-            className="fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2 w-fit max-w-64"
-            style={{
-              top: submenuPosition.top,
-              left: submenuPosition.left,
-            }}
-            onMouseEnter={() => setSubmenuVisible(true)}
-            onMouseLeave={() => {
-              setSubmenuVisible(false);
-              setHoveredOption(null);
-            }}
-          >
-            {availablePeople.map((person) => (
-              <button
-                key={person.id}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent whitespace-nowrap"
-                onClick={() => handlePersonSelect(person, "assignee")}
-              >
-                <AvatarWithName person={person} size="tiny" nameFormat="full" />
-              </button>
-            ))}
-            {availablePeople.length === 0 && (
-              <div className="px-2 py-1.5 text-sm text-content-subtle">No assignees found</div>
-            )}
-          </div>
-        )}
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "assignee"}
+          position={submenuPosition}
+          type="assignee"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {availablePeople.map((person) => (
+            <button
+              key={person.id}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent whitespace-nowrap"
+              onClick={() => handlePersonSelect(person, "assignee")}
+            >
+              <AvatarWithName person={person} size="tiny" nameFormat="full" />
+            </button>
+          ))}
+          {availablePeople.length === 0 && (
+            <div className="px-2 py-1.5 text-sm text-content-subtle">No assignees found</div>
+          )}
+        </FilterSubmenu>
 
-        {/* Submenu for Creator options */}
-        {submenuVisible && hoveredOption === "creator" && submenuPosition && (
-          <div
-            data-submenu="creator"
-            className="fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2 w-fit max-w-64"
-            style={{
-              top: submenuPosition.top,
-              left: submenuPosition.left,
-            }}
-            onMouseEnter={() => setSubmenuVisible(true)}
-            onMouseLeave={() => {
-              setSubmenuVisible(false);
-              setHoveredOption(null);
-            }}
-          >
-            {availablePeople.map((person) => (
-              <button
-                key={person.id}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent whitespace-nowrap"
-                onClick={() => handlePersonSelect(person, "creator")}
-              >
-                <AvatarWithName person={person} size="tiny" nameFormat="full" />
-              </button>
-            ))}
-            {availablePeople.length === 0 && (
-              <div className="px-2 py-1.5 text-sm text-content-subtle">No people found</div>
-            )}
-          </div>
-        )}
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "creator"}
+          position={submenuPosition}
+          type="creator"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {availablePeople.map((person) => (
+            <button
+              key={person.id}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent whitespace-nowrap"
+              onClick={() => handlePersonSelect(person, "creator")}
+            >
+              <AvatarWithName person={person} size="tiny" nameFormat="full" />
+            </button>
+          ))}
+          {availablePeople.length === 0 && (
+            <div className="px-2 py-1.5 text-sm text-content-subtle">No people found</div>
+          )}
+        </FilterSubmenu>
 
-        {/* Submenu for Milestone options */}
-        {submenuVisible && hoveredOption === "milestone" && submenuPosition && (
-          <div
-            data-submenu="milestone"
-            className="fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2 min-w-48"
-            style={{
-              top: submenuPosition.top,
-              left: submenuPosition.left,
-            }}
-            onMouseEnter={() => setSubmenuVisible(true)}
-            onMouseLeave={() => {
-              setSubmenuVisible(false);
-              setHoveredOption(null);
-            }}
-          >
-            {availableMilestones.map((milestone) => (
-              <button
-                key={milestone.id}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
-                onClick={() => handleMilestoneSelect(milestone)}
-              >
-                <IconFlag size={14} className="text-blue-500" />
-                <span>{milestone.name}</span>
-              </button>
-            ))}
-            {availableMilestones.length === 0 && (
-              <div className="px-2 py-1.5 text-sm text-content-subtle">No milestones found</div>
-            )}
-          </div>
-        )}
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "milestone"}
+          position={submenuPosition}
+          type="milestone"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {availableMilestones.map((milestone) => (
+            <button
+              key={milestone.id}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
+              onClick={() => handleMilestoneSelect(milestone)}
+            >
+              <IconFlag size={14} className="text-blue-500" />
+              <span>{milestone.name}</span>
+            </button>
+          ))}
+          {availableMilestones.length === 0 && (
+            <div className="px-2 py-1.5 text-sm text-content-subtle">No milestones found</div>
+          )}
+        </FilterSubmenu>
       </Popover.Root>
 
       {/* Content Filter Modal */}
@@ -511,7 +495,34 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-surface-base border border-surface-outline rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-semibold text-content-base mb-4">Search content</h3>
-            
+
+            {/* Operator selection */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-content-base mb-2">Filter type</label>
+              <div className="flex gap-2">
+                <button
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                    contentOperator === "contains"
+                      ? "bg-primary-base text-white border-primary-base"
+                      : "bg-surface-base text-content-base border-surface-outline hover:bg-surface-accent"
+                  }`}
+                  onClick={() => setContentOperator("contains")}
+                >
+                  Contains
+                </button>
+                <button
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
+                    contentOperator === "does_not_contain"
+                      ? "bg-primary-base text-white border-primary-base"
+                      : "bg-surface-base text-content-base border-surface-outline hover:bg-surface-accent"
+                  }`}
+                  onClick={() => setContentOperator("does_not_contain")}
+                >
+                  Does not contain
+                </button>
+              </div>
+            </div>
+
             <input
               type="text"
               value={contentSearchTerm}
@@ -527,17 +538,57 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
               <SecondaryButton size="sm" onClick={handleContentFilterCancel}>
                 Cancel
               </SecondaryButton>
-              <PrimaryButton
-                size="sm"
-                onClick={handleContentFilterApply}
-                disabled={!contentSearchTerm.trim()}
-              >
+              <PrimaryButton size="sm" onClick={handleContentFilterApply} disabled={!contentSearchTerm.trim()}>
                 Apply Filter
               </PrimaryButton>
             </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// Reusable submenu component
+interface FilterSubmenuProps {
+  visible: boolean;
+  position: { top: number; left: number } | null;
+  type: string;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  children: React.ReactNode;
+}
+
+function FilterSubmenu({ visible, position, type, onMouseEnter, onMouseLeave, children }: FilterSubmenuProps) {
+  if (!visible || !position) return null;
+
+  // Determine appropriate styling based on type
+  const getSubmenuClassName = () => {
+    const baseClass = "fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2";
+
+    switch (type) {
+      case "assignee":
+      case "creator":
+        return `${baseClass} w-fit max-w-64`;
+      case "status":
+      case "milestone":
+      default:
+        return `${baseClass} min-w-48`;
+    }
+  };
+
+  return (
+    <div
+      data-submenu={type}
+      className={getSubmenuClassName()}
+      style={{
+        top: position.top,
+        left: position.left,
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
     </div>
   );
 }
