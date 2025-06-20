@@ -120,7 +120,7 @@ export function MilestoneCard({
             <div className="flex items-center gap-1 ml-1">
               {/* Description indicator */}
               {milestone.hasDescription && (
-                <span className="text-content-dimmed">
+                <span className="text-content-dimmed flex items-center">
                   <IconFileText size={12} />
                 </span>
               )}
@@ -136,7 +136,7 @@ export function MilestoneCard({
               )}
 
               {/* Due date indicator */}
-              <div className="ml-1 group/milestone-due-date">
+              <div className="pl-1 group/milestone-due-date flex items-center">
                 {/* Show DateField when there's a date OR on hover when no date */}
                 {milestone.dueDate || !onMilestoneUpdate ? (
                   <DateField

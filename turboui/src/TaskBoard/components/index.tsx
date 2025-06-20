@@ -75,7 +75,7 @@ export function TaskBoard({
   };
 
   // Get all unique milestones from tasks with completion statistics
-  const getMilestones = (tasks: Types.Task[]) => {
+  const getMilestones = (allTasks: Types.Task[], filteredTasks: Types.Task[]) => {
     type MilestoneStats = Types.MilestoneStats;
 
     const milestoneMap = new Map<
@@ -87,8 +87,8 @@ export function TaskBoard({
       }
     >();
 
-    // Build the map of all milestones from tasks
-    tasks.forEach((task) => {
+    // First, collect all milestones from unfiltered tasks to ensure we show all milestones
+    allTasks.forEach((task) => {
       if (task.milestone) {
         const milestoneId = task.milestone.id;
 
@@ -96,17 +96,26 @@ export function TaskBoard({
           milestoneMap.set(milestoneId, {
             milestone: task.milestone,
             stats: { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 },
-            hasTasks: false, // Initialize as false, we'll set to true only if non-helper tasks exist
+            hasTasks: false,
           });
         }
 
-        // Don't count helper tasks toward milestone statistics
+        // Check if this milestone has any real tasks (not helper tasks) in the original task list
         if (!task._isHelperTask) {
-          // Only set hasTasks to true if there's at least one real (non-helper) task
           milestoneMap.get(milestoneId)!.hasTasks = true;
+        }
+      }
+    });
 
+    // Then, calculate statistics from filtered tasks only
+    filteredTasks.forEach((task) => {
+      if (task.milestone && !task._isHelperTask) {
+        const milestoneId = task.milestone.id;
+        const milestoneData = milestoneMap.get(milestoneId);
+
+        if (milestoneData) {
           // Update statistics
-          const stats = milestoneMap.get(milestoneId)!.stats;
+          const stats = milestoneData.stats;
           stats.total++;
 
           switch (task.status) {
@@ -181,7 +190,10 @@ export function TaskBoard({
 
   // Group tasks by milestone and get milestone stats
   const groupedTasks = groupTasksByMilestone(filteredTasks);
-  const milestones = getMilestones(filteredTasks);
+  const milestones = getMilestones(internalTasks, filteredTasks);
+
+  // Check if there are any tasks without milestones in the original task list
+  const hasTasksWithoutMilestone = internalTasks.some((task) => !task.milestone && !task._isHelperTask);
 
   // Handle task reordering via drag and drop
   const handleTaskReorder = useCallback(
@@ -311,7 +323,7 @@ export function TaskBoard({
                 ))}
 
                 {/* Tasks with no milestone */}
-                {groupedTasks["no_milestone"] && groupedTasks["no_milestone"].length > 0 && (
+                {hasTasksWithoutMilestone && (
                   <li>
                     {/* No milestone header */}
                     <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
