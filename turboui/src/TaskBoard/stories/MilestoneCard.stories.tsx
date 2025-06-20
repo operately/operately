@@ -141,6 +141,8 @@ const meta: Meta<typeof MilestoneCard> = {
             <MilestoneCard
               milestone={milestone} 
               tasks={tasks}
+              hiddenTasks={context.args.hiddenTasks || []}
+              showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
               onTaskCreate={handleTaskCreate}
               onTaskUpdate={handleTaskUpdate}
               onMilestoneUpdate={handleMilestoneUpdate}
@@ -322,5 +324,89 @@ export const OverdueMilestone: Story = {
     },
     tasks: sampleTasks.slice(0, 2), // Just a couple tasks
     onTaskCreate: () => console.log("Create new task for overdue milestone"),
+  },
+};
+
+/**
+ * Milestone with hidden completed tasks - demonstrates the ghost row functionality
+ * Shows only pending tasks by default, with a "Show X completed tasks" row to reveal hidden tasks
+ */
+export const MilestoneWithHiddenCompletedTasks: Story = {
+  args: {
+    milestone: {
+      ...sampleMilestone,
+      name: "Feature Complete - Click to reveal completed tasks",
+    },
+    // Only show pending and in-progress tasks
+    tasks: [
+      {
+        id: "task-pending-1",
+        title: "Final testing phase",
+        status: "pending" as Types.Status,
+        milestone: sampleMilestone,
+        assignees: [
+          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+        ],
+        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2 days from now
+        hasDescription: true,
+      },
+      {
+        id: "task-in-progress-1",
+        title: "User acceptance testing",
+        status: "in_progress" as Types.Status,
+        milestone: sampleMilestone,
+        assignees: [
+          { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+        ],
+        hasComments: true,
+        commentCount: 1,
+      },
+    ],
+    // Hidden completed tasks that can be revealed
+    hiddenTasks: [
+      {
+        id: "task-done-1",
+        title: "Implement core functionality",
+        status: "done" as Types.Status,
+        milestone: sampleMilestone,
+        assignees: [
+          { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+        ],
+        dueDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+        hasDescription: true,
+        hasComments: true,
+        commentCount: 3,
+      },
+      {
+        id: "task-done-2",
+        title: "Set up CI/CD pipeline",
+        status: "done" as Types.Status,
+        milestone: sampleMilestone,
+        assignees: [
+          { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+        ],
+        dueDate: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      },
+      {
+        id: "task-done-3",
+        title: "Create user documentation",
+        status: "done" as Types.Status,
+        milestone: sampleMilestone,
+        assignees: [
+          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+        ],
+        hasDescription: true,
+      },
+      {
+        id: "task-canceled-1",
+        title: "Old approach that was scrapped",
+        status: "canceled" as Types.Status,
+        milestone: sampleMilestone,
+        hasComments: true,
+        commentCount: 2,
+      },
+    ],
+    showHiddenTasksToggle: true, // Enable hidden tasks toggle functionality
+    onTaskCreate: () => console.log("Create new task for milestone with hidden completed tasks"),
   },
 };

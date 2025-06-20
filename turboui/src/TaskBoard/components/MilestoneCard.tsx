@@ -20,6 +20,16 @@ export interface MilestoneCardProps {
   tasks: Types.Task[];
 
   /**
+   * The hidden tasks (completed/canceled) for this milestone
+   */
+  hiddenTasks?: Types.Task[];
+
+  /**
+   * Whether to show the hidden tasks toggle (ghost row)
+   */
+  showHiddenTasksToggle?: boolean;
+
+  /**
    * Called when a new task is created for this milestone
    */
   onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
@@ -62,6 +72,8 @@ export interface MilestoneCardProps {
 export function MilestoneCard({
   milestone,
   tasks,
+  hiddenTasks = [],
+  showHiddenTasksToggle = false,
   onTaskCreate,
   onTaskUpdate,
   onMilestoneUpdate,
@@ -174,9 +186,16 @@ export function MilestoneCard({
           </button>
         </div>
 
-        {/* Tasks in this milestone - show empty state when no tasks */}
-        {tasks && tasks.length > 0 ? (
-          <TaskList tasks={tasks} milestoneId={milestone.id} onTaskUpdate={onTaskUpdate} searchPeople={searchPeople} />
+        {/* Tasks in this milestone - show empty state when no tasks at all */}
+        {(tasks && tasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
+          <TaskList 
+            tasks={tasks} 
+            hiddenTasks={hiddenTasks}
+            showHiddenTasksToggle={showHiddenTasksToggle}
+            milestoneId={milestone.id} 
+            onTaskUpdate={onTaskUpdate} 
+            searchPeople={searchPeople} 
+          />
         ) : (
           <EmptyMilestoneDropZone milestoneId={milestone.id} onTaskCreation={() => setIsTaskModalOpen(true)} />
         )}

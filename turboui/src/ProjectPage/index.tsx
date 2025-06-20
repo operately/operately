@@ -56,6 +56,7 @@ export namespace ProjectPage {
 
     // TaskBoard props
     tasks: TaskBoardTypes.Task[];
+    milestones?: TaskBoardTypes.Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
     onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
     onMilestoneCreate?: (milestone: Omit<TaskBoardTypes.Milestone, "id">) => void;
@@ -102,6 +103,7 @@ export function ProjectPage(props: ProjectPage.Props) {
           <div className="flex-1 flex flex-col overflow-hidden pt-1">
             <TaskBoard
               tasks={state.tasks}
+              milestones={state.milestones}
               onStatusChange={state.onTaskStatusChange}
               onTaskCreate={state.onTaskCreate}
               onMilestoneCreate={state.onMilestoneCreate}
