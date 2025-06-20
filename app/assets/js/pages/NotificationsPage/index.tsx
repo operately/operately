@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Notifications from "@/models/notifications";
 import * as Signals from "@/signals";
-import * as Icons from "@tabler/icons-react";
+import { IconSparkles, IconX } from "turboui";
 import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -66,7 +66,7 @@ function UnreadNotifications() {
 
       {unread.length === 0 && (
         <div className="px-12 pt-16 py-20 text-content-accent font-medium flex items-center flex-col gap-2">
-          <Icons.IconSparkles className="text-yellow-500" />
+          <IconSparkles className="text-yellow-500" />
           Nothing new for you.
         </div>
       )}
@@ -155,7 +155,7 @@ function NotificationItem({ notification }: any) {
 
       {notification.read ? null : (
         <div className="shrink-0 group-hover:opacity-100 opacity-0 cursor-pointer mb-4 mr-1" onClick={closeHandler}>
-          <Icons.IconX size={16} className="hover:text-content-accent" />
+          <IconX size={16} className="hover:text-content-accent" />
         </div>
       )}
     </div>

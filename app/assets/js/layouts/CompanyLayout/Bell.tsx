@@ -1,7 +1,6 @@
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
-import { DivLink } from "turboui";
+import { DivLink, IconBell } from "turboui";
 
 import * as Notifications from "@/models/notifications";
 import classNames from "classnames";
@@ -26,7 +25,7 @@ export function Bell() {
 
   return (
     <DivLink to={path} className={className} style={style} testId="notifications-bell">
-      <Icons.IconBell size={20} stroke={1.5} className={iconClassName} />
+      <IconBell size={20} stroke={1.5} className={iconClassName} />
       <UnreadIndicator count={count} />
     </DivLink>
   );

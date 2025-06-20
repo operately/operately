@@ -1,8 +1,9 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
+
+import { IconSun, IconMoon, IconDeviceLaptop } from "turboui";
 
 import Forms from "@/components/Forms";
 import classnames from "classnames";
@@ -55,9 +56,9 @@ function Form() {
       </p>
 
       <div className="grid grid-cols-3 gap-4 mt-4 h-32">
-        <ColorModeOption icon={Icons.IconSun} title="Always Light" theme="light" />
-        <ColorModeOption icon={Icons.IconMoon} title="Always Dark" theme="dark" />
-        <ColorModeOption icon={Icons.IconDeviceLaptop} title="Same as System" theme="system" />
+        <ColorModeOption icon={IconSun} title="Always Light" theme="light" />
+        <ColorModeOption icon={IconMoon} title="Always Dark" theme="dark" />
+        <ColorModeOption icon={IconDeviceLaptop} title="Same as System" theme="system" />
       </div>
 
       <Forms.Submit saveText="Save Changes" />

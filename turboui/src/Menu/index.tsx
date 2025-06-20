@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import * as Icons from "@tabler/icons-react";
+import { IconDots, IconChevronRight } from "../icons";
 
 import { TestableElement, createTestId } from "../TestableElement";
 import { DivLink } from "../Link";
@@ -67,7 +67,7 @@ function Trigger(props: MenuProps) {
   } else {
     return (
       <DropdownMenu.Trigger className={menuTriggerClass} data-test-id={props.testId}>
-        <Icons.IconDots size={20} />
+        <IconDots size={20} />
       </DropdownMenu.Trigger>
     );
   }
@@ -81,7 +81,7 @@ export function SubMenu({ label, icon, children, hidden }: SubMenuProps) {
       <DropdownMenu.SubTrigger asChild>
         <div className={menuItemClass} data-test-id={createTestId(label)}>
           <MenuItemIconAndTitle icon={icon}>{label}</MenuItemIconAndTitle>
-          <Icons.IconChevronRight size={16} />
+          <IconChevronRight size={16} />
         </div>
       </DropdownMenu.SubTrigger>
 

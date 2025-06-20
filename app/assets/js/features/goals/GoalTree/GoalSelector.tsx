@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
-import * as Icons from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight } from "turboui";
 
 import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
@@ -106,7 +106,7 @@ function NodeExpandCollapseToggle({ node }: { node: GoalNode }) {
 
   const handleClick = () => toggleExpanded(node.id);
   const size = 16;
-  const ChevronIcon = expanded[node.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
+  const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
   const className = classNames(
     "absolute flex items-center flex-row-reverse gap-1",

@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconCheck, IconCircleFilled } from "turboui";
 
 import classNames from "classnames";
 import { validatePassword } from "./validatePassword";
@@ -22,7 +22,7 @@ export function PasswordStrength({ password }) {
 }
 
 function CheckMark({ title, ok }) {
-  const icon = ok ? <Icons.IconCheck size={16} className="w-4" /> : <Icons.IconCircleFilled size={8} className="w-4" />;
+  const icon = ok ? <IconCheck size={16} className="w-4" /> : <IconCircleFilled size={8} className="w-4" />;
 
   const className = classNames("flex items-center gap-2", {
     "text-accent-1": ok,

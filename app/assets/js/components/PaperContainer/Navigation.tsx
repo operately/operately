@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconArrowLeft, IconDots, IconSlash } from "turboui";
 import * as Pages from "@/components/Pages";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 
@@ -11,7 +11,7 @@ export function NavigateBack({ to, title }) {
   return (
     <div className="flex items-center justify-center mb-4">
       <Link to={to}>
-        <Icons.IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
+        <IconArrowLeft className="text-content-dimmed inline mr-2" size={16} />
         {title}
       </Link>
     </div>
@@ -60,7 +60,7 @@ function HiddenItems({ items, hiddenCount }: { items: Item[]; hiddenCount: numbe
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className="border border-surface-outline px-1 rounded">
-        <Icons.IconDots className="cursor-pointer shrink-0" size={18} />
+        <IconDots className="cursor-pointer shrink-0" size={18} />
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
@@ -101,7 +101,7 @@ function NavSeparator() {
 
   return (
     <div className="shrink-0">
-      <Icons.IconSlash size={iconSize} />
+      <IconSlash size={iconSize} />
     </div>
   );
 }

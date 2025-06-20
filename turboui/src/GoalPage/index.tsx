@@ -4,7 +4,7 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { PageNew } from "../Page";
 
-import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { PrivacyField } from "../PrivacyField";
 import { MentionedPersonLookupFn } from "../RichEditor";

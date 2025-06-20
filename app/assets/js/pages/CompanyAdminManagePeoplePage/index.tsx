@@ -6,7 +6,7 @@ import * as Companies from "@/models/companies";
 import * as Invitations from "@/models/invitations";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import * as Icons from "@tabler/icons-react";
+import { IconAlertTriangle, IconId, IconRefresh, IconUserX } from "turboui";
 import * as React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
@@ -162,7 +162,7 @@ function ExpiredInvitationAndRenewButton({ person }: { person: People.Person }) 
       <RenewInvitationModal person={person} state={modal} />
 
       <div className="text-content-error font-semibold flex items-center gap-2">
-        <Icons.IconAlertTriangle size={20} />
+        <IconAlertTriangle size={20} />
         Invitation Expired
       </div>
 
@@ -210,7 +210,7 @@ function PersonOptions({ person }: { person: People.Person }) {
 function PersonOptionViewProfile({ person }: { person: People.Person }) {
   const paths = usePaths();
   return (
-    <MenuLinkItem icon={Icons.IconId} testId="view-profile" to={paths.profilePath(person.id!)}>
+    <MenuLinkItem icon={IconId} testId="view-profile" to={paths.profilePath(person.id!)}>
       View Profile
     </MenuLinkItem>
   );
@@ -220,7 +220,7 @@ function PersonOptionReissueInvitation({ person, onClick }: { person: People.Per
   if (!person.hasOpenInvitation) return null;
 
   return (
-    <MenuActionItem icon={Icons.IconRefresh} onClick={onClick} testId={createTestId("reissue-token", person.id!)}>
+    <MenuActionItem icon={IconRefresh} onClick={onClick} testId={createTestId("reissue-token", person.id!)}>
       Re-Issue Invitation
     </MenuActionItem>
   );
@@ -231,7 +231,7 @@ function PersonOptionRemove({ person, onClick }: { person: People.Person; onClic
   if (me!.id === person.id) return null;
 
   return (
-    <MenuActionItem icon={Icons.IconUserX} onClick={onClick} danger testId={createTestId("remove-person", person.id!)}>
+    <MenuActionItem icon={IconUserX} onClick={onClick} danger testId={createTestId("remove-person", person.id!)}>
       {person.hasOpenInvitation ? "Revoke Invitation" : "Deactivate Account"}
     </MenuActionItem>
   );

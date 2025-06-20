@@ -14,7 +14,7 @@ import {
   IconMessage,
   IconFlag,
   IconX,
-} from "@tabler/icons-react";
+} from "../../icons";
 import classNames from "../../utils/classnames";
 import * as Types from "../types";
 import { AvatarWithName } from "../../Avatar";

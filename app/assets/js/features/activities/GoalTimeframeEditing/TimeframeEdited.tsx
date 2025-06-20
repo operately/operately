@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconArrowRight } from "@tabler/icons-react";
+import { IconArrowRight } from "turboui";
 import * as Timeframes from "@/utils/timeframes";
 import * as Goals from "@/models/goals";
 

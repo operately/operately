@@ -1,8 +1,8 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 
 import { GhostButton } from "turboui";
 import classNames from "classnames";
+import { IconSpeakerphone, IconBulb, IconMessage } from "turboui";
 
 export function ZeroState() {
   return (
@@ -30,9 +30,9 @@ function ExplanationAndButton() {
 function Examples() {
   return (
     <div className="relative w-full h-[170px] mt-10 opacity-75 px-[65px] flex flex-col gap-3">
-      <Example icon={Icons.IconSpeakerphone} title="Post Announcements" body="We have a new team member..." />
-      <Example icon={Icons.IconBulb} title="Pitch Ideas" body="I have an idea to expand..." />
-      <Example icon={Icons.IconMessage} title="Discuss ideas" body="We need to make a decision..." />
+      <Example icon={IconSpeakerphone} title="Post Announcements" body="We have a new team member..." />
+      <Example icon={IconBulb} title="Pitch Ideas" body="I have an idea to expand..." />
+      <Example icon={IconMessage} title="Discuss ideas" body="We need to make a decision..." />
     </div>
   );
 }

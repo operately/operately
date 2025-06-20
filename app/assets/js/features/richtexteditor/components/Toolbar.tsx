@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
-import * as Icons from "@tabler/icons-react";
+
+import { IconChevronDown } from "turboui";
 
 import { AttachmentButton } from "./AttachmentButton";
 import { BlockquoteButton } from "./BlockquoteButton";
@@ -120,7 +121,7 @@ function MobilePopupTools({ children }: { children: React.ReactNode }): JSX.Elem
   return (
     <Popover.Root>
       <Popover.Trigger className="mr-2">
-        <Icons.IconChevronDown size={20} />
+        <IconChevronDown size={20} />
       </Popover.Trigger>
       <Popover.Content className="z-10 p-2 bg-surface-base rounded-lg shadow-lg border border-stroke-base">
         <div className="flex flex-wrap gap-1">{children}</div>

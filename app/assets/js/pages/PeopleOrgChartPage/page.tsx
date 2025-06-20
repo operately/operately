@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as React from "react";
 
-import * as Icons from "@tabler/icons-react";
+import { IconChevronUp, IconChevronDown } from "turboui";
 import { Avatar, Link } from "turboui";
 import { useLoadedData } from "./loader";
 
@@ -66,7 +66,7 @@ function Subtree({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
         className="text-xs text-content-dimmed text-right cursor-pointer flex items-center gap-1 justify-end -mt-5 px-2"
         onClick={() => chart.collapse(node.person.id!)}
       >
-        Collapse <Icons.IconChevronUp size={14} />
+        Collapse <IconChevronUp size={14} />
       </div>
 
       <div className="px-8 mt-4 mb-4">
@@ -115,9 +115,9 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
         >
           {node.totalReports}
           {chart.expanded.includes(person.id!) ? (
-            <Icons.IconChevronUp size={14} />
+            <IconChevronUp size={14} />
           ) : (
-            <Icons.IconChevronDown size={14} />
+            <IconChevronDown size={14} />
           )}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight } from "../../../icons";
 import { BlackLink } from "../../../Link";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
