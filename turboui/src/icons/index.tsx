@@ -147,7 +147,17 @@ import IconGripVertical from "@tabler/icons-react/dist/esm/icons/IconGripVertica
 
 import type { IconProps as TablerIconProps } from "@tabler/icons-react";
 
+import { Link as LucideLink } from "lucide-react";
+import { Code as LucideCode } from "lucide-react";
+import { PaintBucket as LucidePaintBucket } from "lucide-react";
+import { Minus as LucideMinus } from "lucide-react";
+
 export {
+  LucideLink,
+  LucideCode,
+  LucidePaintBucket,
+  LucideMinus,
+
   IconTarget,
   IconHexagons,
   IconAlertTriangleFilled,

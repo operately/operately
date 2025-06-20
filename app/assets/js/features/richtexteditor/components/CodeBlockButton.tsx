@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Code } from "lucide-react";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
+import { LucideCode } from "turboui";
 
 export function CodeBlockButton({ editor, iconSize }): JSX.Element {
   return (
@@ -10,7 +10,7 @@ export function CodeBlockButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("codeblock")}
       title="Code Block"
     >
-      <Code size={iconSize - 2} />
+      <LucideCode size={iconSize - 2} />
     </ToolbarToggleButton>
   );
 }
