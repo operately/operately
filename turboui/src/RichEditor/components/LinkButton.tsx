@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
-import { LucideLink } from "../../icons";
+import { IconLink2 } from "../../icons";
 import { useLinkState } from "../EditorContext";
 
 export function LinkButton({ editor, iconSize }): JSX.Element {
@@ -22,7 +22,7 @@ export function LinkButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("link") || linkEditActive}
       title="Add/Edit Links"
     >
-      <LucideLink size={iconSize - 2} />
+      <IconLink2 size={iconSize - 2} />
     </ToolbarToggleButton>
   );
 }
