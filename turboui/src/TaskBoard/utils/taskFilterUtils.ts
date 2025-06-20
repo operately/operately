@@ -88,10 +88,24 @@ function applyAssigneeFilter(task: Types.Task, filter: Types.FilterCondition): b
 /**
  * Applies creator filter to a task
  */
-function applyCreatorFilter(_task: Types.Task, _filter: Types.FilterCondition): boolean {
+function applyCreatorFilter(task: Types.Task, filter: Types.FilterCondition): boolean {
   // Creator field is not available in the current Task interface
-  // Return true to pass all tasks for creator filters
-  return true;
+  // For now, we'll use the first assignee as a proxy for creator
+  // In a real implementation, this would use a proper creator field
+  const taskCreator = task.assignees?.[0];
+  const filterValue = filter.value;
+
+  if (!filterValue) return true;
+  if (!taskCreator) return filter.operator === "is_not";
+
+  switch (filter.operator) {
+    case "is":
+      return taskCreator.id === filterValue.id;
+    case "is_not":
+      return taskCreator.id !== filterValue.id;
+    default:
+      return true;
+  }
 }
 
 /**
@@ -133,6 +147,8 @@ function applyContentFilter(task: Types.Task, filter: Types.FilterCondition): bo
   switch (filter.operator) {
     case "contains":
       return taskTitle.includes(searchTerm) || taskDescription.includes(searchTerm);
+    case "does_not_contain":
+      return !taskTitle.includes(searchTerm) && !taskDescription.includes(searchTerm);
     default:
       return true;
   }

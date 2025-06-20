@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import {
   IconFilter,
@@ -12,11 +12,13 @@ import {
   IconUser,
   IconCalendar,
   IconMessage,
-  IconTarget,
+  IconFlag,
   IconX,
 } from "@tabler/icons-react";
 import classNames from "../../utils/classnames";
 import * as Types from "../types";
+import { AvatarWithName } from "../../Avatar";
+import { PrimaryButton, SecondaryButton } from "../../Button";
 
 // Status configuration matching StatusSelector
 const taskStatusConfig: Record<Types.Status, { label: string; icon: React.ReactNode; color?: string }> = {
@@ -41,11 +43,11 @@ const filterOptions: FilterOption[] = [
   {
     type: "milestone",
     label: "Milestone",
-    icon: <IconTarget size={14} />,
+    icon: <IconFlag size={14} />,
     operators: ["is", "is_not"],
     hasSubmenu: true,
   },
-  { type: "content", label: "Content", icon: <IconMessage size={14} />, operators: ["contains"] },
+  { type: "content", label: "Content", icon: <IconMessage size={14} />, operators: ["contains", "does_not_contain"] },
   { type: "due_date", label: "Due date", icon: <IconCalendar size={14} />, operators: ["before", "after", "between"] },
   {
     type: "created_date",
@@ -77,6 +79,7 @@ const operatorLabels: Record<Types.FilterOperator, string> = {
   is: "is",
   is_not: "is not",
   contains: "contains",
+  does_not_contain: "does not contain",
   before: "before",
   after: "after",
   between: "between",
@@ -88,15 +91,35 @@ interface TaskFilterProps {
   tasks: Types.Task[];
 }
 
-export function TaskFilter({ filters, onFiltersChange }: TaskFilterProps) {
+export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [hoveredOption, setHoveredOption] = useState<Types.FilterType | null>(null);
   const [submenuVisible, setSubmenuVisible] = useState(false);
   const [submenuPosition, setSubmenuPosition] = useState<{ top: number; left: number } | null>(null);
   const [selectedOption, setSelectedOption] = useState<FilterOption | null>(null);
+
+  // Content filter modal state
+  const [contentModalOpen, setContentModalOpen] = useState(false);
+  const [contentSearchTerm, setContentSearchTerm] = useState("");
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hoveredOptionRef = useRef<HTMLButtonElement>(null);
+
+  // Get unique people from tasks for assignee/creator filters (memoized)
+  const availablePeople = useMemo(() => {
+    return tasks
+      .flatMap((task) => task.assignees || [])
+      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id));
+  }, [tasks]);
+
+  // Get unique milestones from tasks (memoized)
+  const availableMilestones = useMemo(() => {
+    return tasks
+      .filter((task) => task.milestone)
+      .map((task) => task.milestone!)
+      .filter((milestone, index, self) => index === self.findIndex((m) => m.id === milestone.id));
+  }, [tasks]);
 
   // Focus search input when dropdown opens
   useEffect(() => {
@@ -122,10 +145,18 @@ export function TaskFilter({ filters, onFiltersChange }: TaskFilterProps) {
   const handleOptionLeave = () => {
     // Use timeout to allow moving to submenu
     setTimeout(() => {
-      // Check if we're still hovering over the main option or the submenu
+      // Check if we're still hovering over the main option or any submenu
       const isHoveringMainOption = hoveredOptionRef.current?.matches(":hover");
-      const submenuElement = document.querySelector('[data-submenu="status"]');
-      const isHoveringSubmenu = submenuElement?.matches(":hover");
+      const statusSubmenu = document.querySelector('[data-submenu="status"]');
+      const assigneeSubmenu = document.querySelector('[data-submenu="assignee"]');
+      const creatorSubmenu = document.querySelector('[data-submenu="creator"]');
+      const milestoneSubmenu = document.querySelector('[data-submenu="milestone"]');
+
+      const isHoveringSubmenu =
+        statusSubmenu?.matches(":hover") ||
+        assigneeSubmenu?.matches(":hover") ||
+        creatorSubmenu?.matches(":hover") ||
+        milestoneSubmenu?.matches(":hover");
 
       if (!isHoveringMainOption && !isHoveringSubmenu) {
         setSubmenuVisible(false);
@@ -144,6 +175,14 @@ export function TaskFilter({ filters, onFiltersChange }: TaskFilterProps) {
       // Don't close menu for options with submenu
       return;
     }
+
+    if (option.type === "content") {
+      // Open content filter modal
+      setContentModalOpen(true);
+      setIsOpen(false);
+      return;
+    }
+
     setSelectedOption(option);
     setSearchQuery("");
   };
@@ -161,6 +200,68 @@ export function TaskFilter({ filters, onFiltersChange }: TaskFilterProps) {
     setIsOpen(false);
     setSubmenuVisible(false);
     setHoveredOption(null);
+  };
+
+  const handlePersonSelect = (person: Types.Person, filterType: "assignee" | "creator") => {
+    const newFilter: Types.FilterCondition = {
+      id: `filter-${Date.now()}`,
+      type: filterType,
+      operator: "is",
+      value: person,
+      label: `${filterType === "assignee" ? "Assignee" : "Creator"} is ${person.fullName}`,
+    };
+
+    onFiltersChange([...filters, newFilter]);
+    setIsOpen(false);
+    setSubmenuVisible(false);
+    setHoveredOption(null);
+  };
+
+  const handleMilestoneSelect = (milestone: Types.Milestone) => {
+    const newFilter: Types.FilterCondition = {
+      id: `filter-${Date.now()}`,
+      type: "milestone",
+      operator: "is",
+      value: milestone,
+      label: `Milestone is ${milestone.name}`,
+    };
+
+    onFiltersChange([...filters, newFilter]);
+    setIsOpen(false);
+    setSubmenuVisible(false);
+    setHoveredOption(null);
+  };
+
+  const handleContentFilterApply = () => {
+    if (contentSearchTerm.trim()) {
+      const newFilter: Types.FilterCondition = {
+        id: `filter-${Date.now()}`,
+        type: "content",
+        operator: "contains",
+        value: contentSearchTerm.trim(),
+        label: `Content ${operatorLabels["contains"]} "${contentSearchTerm.trim()}"`,
+      };
+
+      onFiltersChange([...filters, newFilter]);
+    }
+    setContentModalOpen(false);
+    setContentSearchTerm("");
+  };
+
+  const handleContentFilterCancel = () => {
+    setContentModalOpen(false);
+    setContentSearchTerm("");
+  };
+
+  // Handle keyboard events for content modal
+  const handleContentKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleContentFilterApply();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      handleContentFilterCancel();
+    }
   };
 
   const handleOperatorSelect = (operator: Types.FilterOperator) => {
@@ -289,34 +390,175 @@ export function TaskFilter({ filters, onFiltersChange }: TaskFilterProps) {
           </Popover.Content>
         </Popover.Portal>
 
-        {/* Submenu for Status options */}
-        {submenuVisible && hoveredOption === "status" && submenuPosition && (
-          <div
-            data-submenu="status"
-            className="fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2 min-w-48"
-            style={{
-              top: submenuPosition.top,
-              left: submenuPosition.left,
-            }}
-            onMouseEnter={() => setSubmenuVisible(true)}
-            onMouseLeave={() => {
-              setSubmenuVisible(false);
-              setHoveredOption(null);
-            }}
-          >
-            {Object.entries(taskStatusConfig).map(([status, config]) => (
-              <button
-                key={status}
-                className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
-                onClick={() => handleStatusSelect(status as Types.Status)}
-              >
-                <span className={config.color}>{config.icon}</span>
-                <span>{config.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Submenus */}
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "status"}
+          position={submenuPosition}
+          type="status"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {Object.entries(taskStatusConfig).map(([status, config]) => (
+            <button
+              key={status}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
+              onClick={() => handleStatusSelect(status as Types.Status)}
+            >
+              <span className={config.color}>{config.icon}</span>
+              <span>{config.label}</span>
+            </button>
+          ))}
+        </FilterSubmenu>
+
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "assignee"}
+          position={submenuPosition}
+          type="assignee"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {availablePeople.map((person) => (
+            <button
+              key={person.id}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent whitespace-nowrap"
+              onClick={() => handlePersonSelect(person, "assignee")}
+            >
+              <AvatarWithName person={person} size="tiny" nameFormat="full" />
+            </button>
+          ))}
+          {availablePeople.length === 0 && (
+            <div className="px-2 py-1.5 text-sm text-content-subtle">No assignees found</div>
+          )}
+        </FilterSubmenu>
+
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "creator"}
+          position={submenuPosition}
+          type="creator"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {availablePeople.map((person) => (
+            <button
+              key={person.id}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent whitespace-nowrap"
+              onClick={() => handlePersonSelect(person, "creator")}
+            >
+              <AvatarWithName person={person} size="tiny" nameFormat="full" />
+            </button>
+          ))}
+          {availablePeople.length === 0 && (
+            <div className="px-2 py-1.5 text-sm text-content-subtle">No people found</div>
+          )}
+        </FilterSubmenu>
+
+        <FilterSubmenu
+          visible={submenuVisible && hoveredOption === "milestone"}
+          position={submenuPosition}
+          type="milestone"
+          onMouseEnter={() => setSubmenuVisible(true)}
+          onMouseLeave={() => {
+            setSubmenuVisible(false);
+            setHoveredOption(null);
+          }}
+        >
+          {availableMilestones.map((milestone) => (
+            <button
+              key={milestone.id}
+              className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-left rounded hover:bg-surface-accent"
+              onClick={() => handleMilestoneSelect(milestone)}
+            >
+              <IconFlag size={14} className="text-blue-500" />
+              <span>{milestone.name}</span>
+            </button>
+          ))}
+          {availableMilestones.length === 0 && (
+            <div className="px-2 py-1.5 text-sm text-content-subtle">No milestones found</div>
+          )}
+        </FilterSubmenu>
       </Popover.Root>
+
+      {/* Content Filter Modal */}
+      {contentModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-surface-base border border-surface-outline rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold text-content-base mb-4">Search content</h3>
+            
+            <input
+              type="text"
+              value={contentSearchTerm}
+              onChange={(e) => setContentSearchTerm(e.target.value)}
+              onKeyDown={handleContentKeyDown}
+              placeholder="Enter text to search for..."
+              className="w-full px-3 py-2 text-sm border border-surface-outline rounded-md bg-surface-base text-content-base placeholder-content-subtle focus:outline-none focus:ring-1 focus:ring-primary-base mb-6"
+              autoFocus
+            />
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-2">
+              <SecondaryButton size="sm" onClick={handleContentFilterCancel}>
+                Cancel
+              </SecondaryButton>
+              <PrimaryButton size="sm" onClick={handleContentFilterApply} disabled={!contentSearchTerm.trim()}>
+                Apply Filter
+              </PrimaryButton>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Reusable submenu component
+interface FilterSubmenuProps {
+  visible: boolean;
+  position: { top: number; left: number } | null;
+  type: string;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  children: React.ReactNode;
+}
+
+function FilterSubmenu({ visible, position, type, onMouseEnter, onMouseLeave, children }: FilterSubmenuProps) {
+  if (!visible || !position) return null;
+
+  // Determine appropriate styling based on type
+  const getSubmenuClassName = () => {
+    const baseClass = "fixed z-[60] bg-surface-base border border-surface-outline rounded-lg shadow-lg p-2";
+
+    switch (type) {
+      case "assignee":
+      case "creator":
+        return `${baseClass} w-fit max-w-64`;
+      case "status":
+      case "milestone":
+      default:
+        return `${baseClass} min-w-48`;
+    }
+  };
+
+  return (
+    <div
+      data-submenu={type}
+      className={getSubmenuClassName()}
+      style={{
+        top: position.top,
+        left: position.left,
+      }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
     </div>
   );
 }
@@ -377,6 +619,15 @@ export function FilterBadges({
       const statusConfig = taskStatusConfig[filter.value as Types.Status];
       return statusConfig.label;
     }
+    if (filter.type === "assignee" || filter.type === "creator") {
+      return filter.value?.fullName || "";
+    }
+    if (filter.type === "milestone") {
+      return filter.value?.name || "";
+    }
+    if (filter.type === "content") {
+      return `"${filter.value}"` || "";
+    }
     return filter.value?.toString() || "";
   };
 
@@ -384,6 +635,9 @@ export function FilterBadges({
     if (filter.type === "status") {
       const statusConfig = taskStatusConfig[filter.value as Types.Status];
       return <span className={statusConfig.color}>{statusConfig.icon}</span>;
+    }
+    if (filter.type === "milestone") {
+      return <IconFlag size={12} className="text-blue-500" />;
     }
     return null;
   };
