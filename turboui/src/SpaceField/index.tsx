@@ -27,6 +27,7 @@ export namespace SpaceField {
     emptyStateReadOnlyMessage?: string;
     variant?: "inline" | "form-field";
     testId?: string;
+    showIcon?: boolean;
   }
 
   export interface State extends Required<Props> {
@@ -54,6 +55,7 @@ const DefaultProps = {
   emptyStateReadOnlyMessage: "No space selected",
   variant: "inline",
   testId: "space-field",
+  showIcon: true,
 } as const;
 
 export function SpaceField(props: SpaceField.Props) {
@@ -124,7 +126,7 @@ function Trigger({ state }: { state: SpaceField.State }) {
     <Popover.Trigger asChild disabled={state.readonly} data-test-id={state.testId}>
       <button type="button" className={elemClass} aria-label={text}>
         <div className="flex items-center gap-1.5 flex-grow">
-          <IconTent size={iconSize} className="-mt-[1px]" />
+          {state.showIcon && <IconTent size={iconSize} className="-mt-[1px]" />}
           <span>{text}</span>
         </div>
         {state.variant === "form-field" && <IconChevronDown size={16} className="text-content-subtle" />}
