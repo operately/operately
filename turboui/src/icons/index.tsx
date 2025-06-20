@@ -144,20 +144,11 @@ import IconUserStar from "@tabler/icons-react/dist/esm/icons/IconUserStar.mjs";
 import IconFilter from "@tabler/icons-react/dist/esm/icons/IconFilter.mjs";
 import IconCircleDot from "@tabler/icons-react/dist/esm/icons/IconCircleDot.mjs";
 import IconGripVertical from "@tabler/icons-react/dist/esm/icons/IconGripVertical.mjs";
+import IconMinus from "@tabler/icons-react/dist/esm/icons/IconMinus.mjs";
 
 import type { IconProps as TablerIconProps } from "@tabler/icons-react";
 
-import { Link as LucideLink } from "lucide-react";
-import { Code as LucideCode } from "lucide-react";
-import { PaintBucket as LucidePaintBucket } from "lucide-react";
-import { Minus as LucideMinus } from "lucide-react";
-
 export {
-  LucideLink,
-  LucideCode,
-  LucidePaintBucket,
-  LucideMinus,
-
   IconTarget,
   IconHexagons,
   IconAlertTriangleFilled,
@@ -300,6 +291,7 @@ export {
   IconCircleDot,
   IconFilter,
   IconGripVertical,
+  IconMinus,
 };
 
 export interface IconProps {
@@ -338,5 +330,91 @@ export function IconProject({ size = 16, className = "" }: IconProps) {
     <div className={outer} style={{ width: size, height: size }}>
       <IconChecklist size={innerSize} />
     </div>
+  );
+}
+
+export function IconPaintBucket({
+  size = 24,
+  color = "currentColor",
+  strokeWidth = 2,
+  className = "",
+  ...props
+}: TablerIconProps) {
+  const { stroke, ...otherProps } = props;
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      stroke={color}
+      {...otherProps}
+    >
+      <path d="m19 11-8-8-8.6 8.6a2 2 0 0 0 0 2.8l5.2 5.2c.8.8 2 .8 2.8 0L19 11Z" />
+      <path d="m5 2 5 5" />
+      <path d="M2 13h15" />
+      <path d="M22 20a2 2 0 1 1-4 0c0-1.6 1.7-2.4 2-4 .3 1.6 2 2.4 2 4Z" />
+    </svg>
+  );
+}
+
+export function IconCode({
+  size = 24,
+  color = "currentColor",
+  strokeWidth = 2,
+  className = "",
+  ...props
+}: TablerIconProps) {
+  const { stroke, ...otherProps } = props;
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      stroke={color}
+      {...otherProps}
+    >
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </svg>
+  );
+}
+
+export function IconLink2({
+  size = 24,
+  color = "currentColor",
+  strokeWidth = 2,
+  className = "",
+  ...props
+}: TablerIconProps) {
+  const { stroke, ...otherProps } = props;
+
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      stroke={color}
+      {...otherProps}
+    >
+      <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+      <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+    </svg>
   );
 }
