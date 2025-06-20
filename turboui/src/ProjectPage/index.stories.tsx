@@ -3,7 +3,7 @@ import React, { useState } from "react";
 
 import { ProjectPage } from "./index";
 import { genPeople } from "../utils/storybook/genPeople";
-import { mockTasks, mockEmptyTasks } from "../TaskBoard/tests/mockData";
+import { mockTasks, mockEmptyTasks, mockMilestones } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 
 const people = genPeople(5);
@@ -38,6 +38,7 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoard
 export const Default: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockTasks]);
+    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
@@ -58,15 +59,8 @@ export const Default: Story = {
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
       
-      // Create helper task to make milestone visible
-      const helperTask = {
-        id: `task-helper-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        title: `Hidden helper task for ${newMilestone.name}`,
-        status: "pending" as TaskBoardTypes.Status,
-        milestone: newMilestone,
-        _isHelperTask: true,
-      };
-      setTasks([...tasks, helperTask]);
+      // Add the new milestone to the milestones array
+      setMilestones(prev => [...prev, newMilestone]);
     };
 
     const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
@@ -79,6 +73,15 @@ export const Default: Story = {
 
     const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
       console.log("Milestone updated:", milestoneId, updates);
+      
+      // Update the milestone in the milestones array
+      const updatedMilestones = milestones.map(milestone => 
+        milestone.id === milestoneId 
+          ? { ...milestone, ...updates }
+          : milestone
+      );
+      setMilestones(updatedMilestones);
+      
       const updatedTasks = tasks.map(task => {
         if (task.milestone?.id === milestoneId) {
           return {
@@ -112,6 +115,7 @@ export const Default: Story = {
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        milestones={milestones}
         onTaskStatusChange={handleTaskStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
@@ -128,6 +132,7 @@ export const Default: Story = {
 export const ReadOnly: Story = {
   render: () => {
     const [tasks] = useState([...mockTasks]);
+    const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
 
     return (
       <ProjectPage
@@ -150,6 +155,7 @@ export const ReadOnly: Story = {
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        milestones={milestones}
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
@@ -166,6 +172,7 @@ export const ReadOnly: Story = {
 export const EmptyTasks: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockEmptyTasks]);
+    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
 
     const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
@@ -180,14 +187,8 @@ export const EmptyTasks: Story = {
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
       
-      const helperTask = {
-        id: `task-helper-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        title: `Hidden helper task for ${newMilestone.name}`,
-        status: "pending" as TaskBoardTypes.Status,
-        milestone: newMilestone,
-        _isHelperTask: true,
-      };
-      setTasks([...tasks, helperTask]);
+      // Add the new milestone to the milestones array
+      setMilestones(prev => [...prev, newMilestone]);
     };
 
     return (
@@ -211,6 +212,7 @@ export const EmptyTasks: Story = {
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
+        milestones={milestones}
         onTaskStatusChange={() => {}}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}

@@ -223,10 +223,10 @@ export const mockTasks: Types.Task[] = [
   },
   {
     id: "task-17",
-    title: "Research new features - milestone has no due date, hover header to set",
+    title: "Research new features for next quarter",
     status: "pending",
     assignees: [mockPeople.bob!],
-    milestone: mockMilestones.emptyMilestone,
+    milestone: mockMilestones.marketExpansion,
     points: 3,
     hasDescription: true,
     hasComments: false,

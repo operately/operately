@@ -125,7 +125,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                 iconSize={14}
                 textSize="text-xs"
                 showIcon={false}
-                showOverdueWarning={true}
+                showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
                 emptyStateText="Set due date"
                 readonly={!onTaskUpdate}
               />
@@ -139,7 +139,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                   iconSize={14}
                   textSize="text-xs"
                   showIcon={false}
-                  showOverdueWarning={true}
+                  showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
                   emptyStateText="Set due date"
                   readonly={false}
                 />

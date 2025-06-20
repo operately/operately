@@ -18,8 +18,10 @@ const meta: Meta<typeof TaskList> = {
   decorators: [
     (_, context) => {
       // Create a wrapper component with state for the story
-      const TaskListWithReordering = ({ initialTasks, onTaskUpdate, searchPeople }: { 
+      const TaskListWithReordering = ({ initialTasks, hiddenTasks, showHiddenTasksToggle, onTaskUpdate, searchPeople }: { 
         initialTasks: Types.Task[];
+        hiddenTasks?: Types.Task[];
+        showHiddenTasksToggle?: boolean;
         onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
         searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
       }) => {
@@ -70,6 +72,8 @@ const meta: Meta<typeof TaskList> = {
           <DragAndDropProvider onDrop={handleDrop}>
             <TaskList 
               tasks={tasks} 
+              hiddenTasks={hiddenTasks}
+              showHiddenTasksToggle={showHiddenTasksToggle}
               milestoneId="milestone-1" 
               onTaskUpdate={onTaskUpdate}
               searchPeople={searchPeople}
@@ -85,6 +89,8 @@ const meta: Meta<typeof TaskList> = {
         <div className="m-4 w-[500px]">
           <TaskListWithReordering 
             initialTasks={args.tasks || []} 
+            hiddenTasks={args.hiddenTasks}
+            showHiddenTasksToggle={args.showHiddenTasksToggle}
             onTaskUpdate={args.onTaskUpdate}
             searchPeople={args.searchPeople}
           />
@@ -262,4 +268,91 @@ export const MixedStatusTaskList: Story = {
     searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
+};
+
+/**
+ * TaskList with hidden completed tasks - demonstrates the ghost row functionality
+ * Shows only pending/in-progress tasks by default, with a ghost row to reveal hidden completed tasks
+ */
+export const TaskListWithHiddenCompletedTasks: Story = {
+  args: {
+    tasks: [
+      {
+        id: "task-visible-1",
+        title: "Review user feedback",
+        status: "pending" as Types.Status,
+        assignees: [
+          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
+        ],
+        dueDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Due tomorrow
+        hasDescription: true,
+      },
+      {
+        id: "task-visible-2", 
+        title: "Update documentation",
+        status: "in_progress" as Types.Status,
+        assignees: [
+          { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
+        ],
+        hasComments: true,
+        commentCount: 2,
+      },
+    ],
+    hiddenTasks: [
+      {
+        id: "task-hidden-1",
+        title: "Set up project repository",
+        status: "done" as Types.Status,
+        assignees: [
+          { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
+        ],
+        dueDate: new Date(new Date().setDate(new Date().getDate() - 3)), // 3 days ago
+        hasDescription: true,
+        hasComments: true,
+        commentCount: 1,
+      },
+      {
+        id: "task-hidden-2",
+        title: "Configure CI/CD pipeline",
+        status: "done" as Types.Status,
+        assignees: [
+          { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
+        ],
+        dueDate: new Date(new Date().setDate(new Date().getDate() - 5)), // 5 days ago
+      },
+      {
+        id: "task-hidden-3",
+        title: "Old approach that was canceled",
+        status: "canceled" as Types.Status,
+        hasComments: true,
+        commentCount: 3,
+      },
+    ],
+    showHiddenTasksToggle: true, // Enable hidden tasks toggle functionality
+    milestoneId,
+    onTaskUpdate: handleTaskUpdate,
+    searchPeople: mockSearchPeople,
+  },
+  render: (args) => {
+    // Set up status change listener
+    React.useEffect(() => {
+      const handleStatusChangeEvent = (event: CustomEvent) => {
+        const { taskId, newStatus } = event.detail;
+        handleStatusChange(taskId, newStatus);
+      };
+      document.addEventListener("statusChange" as any, handleStatusChangeEvent as any);
+      return () => {
+        document.removeEventListener("statusChange" as any, handleStatusChangeEvent as any);
+      };
+    }, []);
+
+    return <TaskList 
+      tasks={args.tasks} 
+      hiddenTasks={args.hiddenTasks}
+      showHiddenTasksToggle={args.showHiddenTasksToggle}
+      milestoneId={args.milestoneId} 
+      onTaskUpdate={args.onTaskUpdate}
+      searchPeople={args.searchPeople}
+    />;
+  },
 };
