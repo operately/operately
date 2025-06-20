@@ -120,7 +120,7 @@ export type FilterType =
   | "started_date"
   | "completed_date";
 
-export type FilterOperator = "is" | "is_not" | "contains" | "before" | "after" | "between";
+export type FilterOperator = "is" | "is_not" | "contains" | "does_not_contain" | "before" | "after" | "between";
 
 export interface FilterCondition {
   id: string;
