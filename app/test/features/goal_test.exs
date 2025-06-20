@@ -9,6 +9,7 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.change_goal_name()
     |> Steps.assert_goal_name_changed()
+    |> Steps.assert_goal_name_changed_feed_posted()
   end
 
   feature "changing the champion", ctx do

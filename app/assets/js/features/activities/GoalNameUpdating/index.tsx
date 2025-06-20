@@ -1,12 +1,12 @@
-import type { ActivityContentGoalDueDateUpdating } from "@/api";
+import React from "react";
+
+import type { ActivityContentGoalNameUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import React from "react";
-import { FormattedTime } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
-const GoalDueDateUpdating: ActivityHandler = {
+const GoalNameUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     throw new Error("Not implemented");
   },
@@ -28,33 +28,23 @@ const GoalDueDateUpdating: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
-    const { goal, newDueDate } = content(props.activity);
-
-    const message = newDueDate ? (
-      <>
-        changed the due date to <FormattedTime time={newDueDate} format="short-date" />
-      </>
-    ) : (
-      "cleared the due date"
-    );
+    const { goal } = content(props.activity);
 
     if (props.page === "goal") {
-      return feedTitle(props.activity, message);
+      return feedTitle(props.activity, "renamed the goal");
     } else {
-      return feedTitle(props.activity, message, " on the", goalLink(goal!));
+      return feedTitle(props.activity, "renamed", goalLink(goal!));
     }
   },
 
   FeedItemContent(props: { activity: Activity; page: any }) {
-    const { oldDueDate } = content(props.activity);
+    const { newName, oldName } = content(props.activity);
 
-    if (oldDueDate) {
-      const time = <FormattedTime time={oldDueDate} format="short-date" />;
-
-      return <>Previously the due date was {time}</>;
-    } else {
-      return <>Previously had no due date</>;
-    }
+    return (
+      <>
+        Previously it was {oldName}, now it is {newName}.
+      </>
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -78,8 +68,8 @@ const GoalDueDateUpdating: ActivityHandler = {
   },
 };
 
-function content(activity: Activity): ActivityContentGoalDueDateUpdating {
-  return activity.content as ActivityContentGoalDueDateUpdating;
+function content(activity: Activity): ActivityContentGoalNameUpdating {
+  return activity.content as ActivityContentGoalNameUpdating;
 }
 
-export default GoalDueDateUpdating;
+export default GoalNameUpdating;

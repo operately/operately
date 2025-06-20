@@ -73,7 +73,7 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.update_goal_name(inputs.name)
-      |> Steps.save_activity(:goal_name_changed, fn changes ->
+      |> Steps.save_activity(:goal_name_updating, fn changes ->
         %{
           company_id: changes.goal.company_id,
           space_id: changes.goal.group_id,
