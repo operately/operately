@@ -186,7 +186,7 @@ export function TaskFilter({ filters, onFiltersChange }: TaskFilterProps) {
       {/* Filter dropdown */}
       <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
         <Popover.Trigger asChild>
-          <button className="inline-flex items-center gap-1.5 px-2 py-1 text-sm bg-surface-accent text-content-base rounded-md hover:bg-surface-accent-hover transition-colors">
+          <button className="inline-flex items-center gap-1.5 px-2 py-1 text-sm bg-surface-accent text-content-base border border-surface-outline rounded-md hover:bg-surface-accent-hover transition-colors">
             <IconFilter size={14} />
             Filter
             <IconChevronDown size={12} />
