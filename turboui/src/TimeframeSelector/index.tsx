@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
-import * as Icons from "@tabler/icons-react";
+import { IconCalendar, IconChevronDown, IconX } from "../icons";
 
 import { TimeframeSelectorDialog } from "../TimeframeSelectorDialog";
 
@@ -120,12 +120,12 @@ function TimeframeSelectorTrigger(props: TimeframeSelectorTriggerProps) {
   return (
     <Popover.Trigger asChild>
       <button type="button" className={className} onClick={handleClick}>
-        <Icons.IconCalendar size={iconSize} className="shrink-0" />
+        <IconCalendar size={iconSize} className="shrink-0" />
         <span className="truncate">{formatTimeframe(props.timeframe)}</span>
         {props.isDefaultTimeframe ? (
-          <Icons.IconChevronDown size={iconSize} className="shrink-0 ml-1" />
+          <IconChevronDown size={iconSize} className="shrink-0 ml-1" />
         ) : (
-          <Icons.IconX size={iconSize} className="shrink-0 ml-1 cursor-pointer" />
+          <IconX size={iconSize} className="shrink-0 ml-1 cursor-pointer" />
         )}
       </button>
     </Popover.Trigger>

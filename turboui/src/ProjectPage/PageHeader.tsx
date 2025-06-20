@@ -1,4 +1,4 @@
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight } from "../icons";
 import React from "react";
 import { ProjectPage } from ".";
 import { IconProject } from "../icons";

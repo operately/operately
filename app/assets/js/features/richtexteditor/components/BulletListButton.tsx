@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconList } from "turboui";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -10,7 +10,7 @@ export function BulletListButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("bulletList")}
       title="Bullet List"
     >
-      <Icons.IconList size={iconSize} />
+      <IconList size={iconSize} />
     </ToolbarToggleButton>
   );
 }

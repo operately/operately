@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import { PageModule } from "@/routes/types";
-import * as Icons from "@tabler/icons-react";
+import { IconCheck, IconX } from "turboui";
 import * as React from "react";
 
 import { usePaths } from "@/routes/paths";
@@ -58,9 +58,9 @@ function Row({ permission, members, admins, owners }) {
 }
 
 function Yes() {
-  return <Icons.IconCheck />;
+  return <IconCheck />;
 }
 
 function No() {
-  return <Icons.IconX className="text-content-subtle" size={16} />;
+  return <IconX className="text-content-subtle" size={16} />;
 }

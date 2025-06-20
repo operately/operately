@@ -4,7 +4,7 @@ import * as React from "react";
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
 
-import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconTent } from "@tabler/icons-react";
+import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconTent } from "../icons";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { createTestId } from "../TestableElement";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import ReactModal from "react-modal";
-import * as Icons from "@tabler/icons-react";
+import { IconX } from "turboui";
 
 import { useColorMode } from "@/contexts/ThemeContext";
 
@@ -69,7 +69,7 @@ function CloseButton({ hideModal }) {
       className="hover:cursor-pointer text-content-dimmed hover:text-content-accent transition-colors"
       onClick={hideModal}
     >
-      <Icons.IconX size={20} />
+      <IconX size={20} />
     </div>
   );
 }

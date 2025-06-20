@@ -3,11 +3,10 @@ import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Tasks from "@/models/tasks";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import RichContent from "@/components/RichContent";
-import { Avatar, PrimaryButton, SecondaryButton } from "turboui";
+import { Avatar, PrimaryButton, SecondaryButton, IconPencil, IconChecks } from "turboui";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
@@ -124,7 +123,7 @@ function HeaderIcon({ form }: { form: FormState }) {
 
   return (
     <div className="">
-      <Icons.IconChecks size={48} className="text-accent-1" />
+      <IconChecks size={48} className="text-accent-1" />
     </div>
   );
 }
@@ -250,7 +249,7 @@ function EditDescription({ form, color }: { form: FormState; color: string }) {
         onClick={form.descriptionForm.startEditing}
         data-test-id="edit-description"
       >
-        <Icons.IconPencil size={12} />
+        <IconPencil size={12} />
       </div>
     </>
   );

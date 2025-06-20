@@ -1,6 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { IconHome, IconSearch, IconSettings, IconStar, IconUser } from "@tabler/icons-react";
+import { IconHome, IconSearch, IconSettings, IconStar, IconUser } from "../icons";
 import { DangerButton, GhostButton, PrimaryButton, SecondaryButton } from "./index";
 
 const meta = {
