@@ -26,7 +26,7 @@ export namespace GoalField {
 
     emptyStateMessage?: string;
     emptyStateReadOnlyMessage?: string;
-    searchGoals: (params: { query: string }) => Promise<Goal[]>;
+    searchGoals: SearchGoalFn;
     extraDialogMenuOptions?: DialogMenuOptionProps[];
     testId?: string;
   }

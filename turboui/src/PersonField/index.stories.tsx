@@ -3,7 +3,7 @@ import { IconUserCheck } from "@tabler/icons-react";
 import React from "react";
 import { Page } from "../Page";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";
-import { PersonField, PersonFieldProps } from "./index";
+import { PersonField } from "./index";
 
 /**
  * PersonField is a component for displaying and selecting a person within a popover interface.
@@ -42,8 +42,8 @@ const searchPeople = async ({ query }) => {
   return potentialPeople.filter((p) => p.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
-const Component = (args: Partial<PersonFieldProps>) => {
-  const [person, setPerson] = React.useState<PersonFieldProps["person"]>(args.person || null);
+const Component = (args: Partial<PersonField.Props>) => {
+  const [person, setPerson] = React.useState<PersonField.Props["person"]>(args.person || null);
 
   return <PersonField {...args} person={person} setPerson={setPerson} searchPeople={searchPeople} />;
 };
@@ -154,7 +154,7 @@ export const AvatarOnlyMode: Story = {
               </div>
               <div className="text-center">
                 <div className="mb-2 text-sm">No Avatar</div>
-                <Component person={{...person, avatarUrl: null}} avatarOnly={true} avatarSize={32} />
+                <Component person={{ ...person, avatarUrl: null }} avatarOnly={true} avatarSize={32} />
               </div>
               <div className="text-center">
                 <div className="mb-2 text-sm">Read-only</div>
