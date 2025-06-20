@@ -3,7 +3,7 @@ import React from "react";
 import { PieChart } from "../PieChart";
 import { ExpandIcon } from "./ExpandIcon";
 
-import { IconGripVertical } from "@tabler/icons-react";
+import { IconGripVertical } from "../icons";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
 

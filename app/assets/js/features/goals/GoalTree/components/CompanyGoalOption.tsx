@@ -1,7 +1,6 @@
 import React from "react";
 import { TableRow } from "./TableRow";
-import { IconBuildingEstate } from "@tabler/icons-react";
-import { PrimaryButton } from "turboui";
+import { PrimaryButton, IconBuildingEstate } from "turboui";
 
 export function CompanyGoalOption({ handleSelect }: { handleSelect: () => void }) {
   return (

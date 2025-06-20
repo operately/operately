@@ -1,5 +1,5 @@
 import * as Popover from "@radix-ui/react-popover";
-import { IconCalendarEvent, IconCalendarPlus, IconX } from "@tabler/icons-react";
+import { IconCalendarEvent, IconCalendarPlus, IconX } from "../icons";
 import React, { useState } from "react";
 import ReactDatePicker from "react-datepicker";
 import { SecondaryButton } from "../Button";

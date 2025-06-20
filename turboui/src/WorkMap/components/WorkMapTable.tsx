@@ -3,7 +3,7 @@ import { WorkMap } from "..";
 import { TableRow } from "./TableRow";
 import classNames from "../../utils/classnames";
 import { Tooltip } from "../../Tooltip";
-import { IconInfoCircle } from "@tabler/icons-react";
+import { IconInfoCircle } from "../../icons";
 
 interface Props {
   items: WorkMap.Item[];

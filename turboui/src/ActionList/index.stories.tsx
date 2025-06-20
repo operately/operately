@@ -6,7 +6,7 @@ import {
   IconRotateDot,
   IconSettings,
   IconTrash,
-} from "@tabler/icons-react";
+} from "../icons";
 import React from "react";
 import { ActionList } from ".";
 

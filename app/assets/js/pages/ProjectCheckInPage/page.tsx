@@ -2,11 +2,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Reactions from "@/models/reactions";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar } from "turboui";
+import { Avatar, IconEdit, IconSquareCheckFilled } from "turboui";
 
 import { TextSeparator } from "@/components/TextSeparator";
 import { compareIds } from "@/routes/paths";
@@ -132,7 +131,7 @@ function Acknowledgement() {
   if (checkIn.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
-        <Icons.IconSquareCheckFilled size={16} className="text-accent-1" />
+        <IconSquareCheckFilled size={16} className="text-accent-1" />
         Acknowledged by {checkIn.acknowledgedBy!.fullName}
       </span>
     );
@@ -151,7 +150,7 @@ function Options() {
   return (
     <PageOptions.Root testId="options-button">
       <PageOptions.Link
-        icon={Icons.IconEdit}
+        icon={IconEdit}
         title="Edit check-in"
         to={paths.projectCheckInEditPath(checkIn.id!)}
         testId="edit-check-in"

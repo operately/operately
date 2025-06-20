@@ -1,7 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { IconChevronDown, IconCircleX, IconSearch, IconTent } from "@tabler/icons-react";
+import { IconChevronDown, IconCircleX, IconSearch, IconTent } from "../icons";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 

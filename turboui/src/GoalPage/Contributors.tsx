@@ -1,5 +1,5 @@
 import React from "react";
-import { IconInfoCircle } from "@tabler/icons-react";
+import { IconInfoCircle } from "../icons";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
 import { BlackLink, Link } from "../Link";

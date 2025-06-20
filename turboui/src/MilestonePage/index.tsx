@@ -25,7 +25,7 @@ function calculateCompletionPercentage(stats: {
   return (stats.done / activeTasks) * 100;
 }
 // Using DateField instead of DueDateDisplay
-import { IconMessageCircle, IconPlus } from "@tabler/icons-react";
+import { IconMessageCircle, IconPlus } from "../icons";
 import { GhostButton } from "../Button";
 import { DateField } from "../DateField";
 import * as Types from "../TaskBoard/types";

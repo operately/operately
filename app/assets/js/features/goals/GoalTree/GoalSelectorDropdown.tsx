@@ -1,13 +1,12 @@
 import * as React from "react";
 import * as Goals from "@/models/goals";
-import * as Icons from "@tabler/icons-react";
 
 import { buildTree, GoalNode, Node, TreeOptions } from "./tree";
 
 import { NodeIcon } from "./components/NodeIcon";
 import { TableRow } from "./components/TableRow";
 import { CompanyGoalOption } from "./components/CompanyGoalOption";
-import { PrimaryButton } from "turboui";
+import { PrimaryButton, IconChevronDown, IconChevronRight } from "turboui";
 import { ExpandableProvider, useExpandable } from "./context/Expandable";
 
 import classNames from "classnames";
@@ -64,7 +63,7 @@ export function GoalSelectorDropdown(props: GoalSelectorDropdownProps) {
           ) : (
             <div className="text-content-dimmed">Select a goal &hellip;</div>
           )}
-          <Icons.IconChevronDown size={20} />
+          <IconChevronDown size={20} />
         </div>
 
         {open && (
@@ -140,7 +139,7 @@ function NodeExpandCollapseToggle({ node }: { node: GoalNode }) {
 
   const handleClick = () => toggleExpanded(node.id);
   const size = 16;
-  const ChevronIcon = expanded[node.id] ? Icons.IconChevronDown : Icons.IconChevronRight;
+  const ChevronIcon = expanded[node.id] ? IconChevronDown : IconChevronRight;
 
   const className = classNames("flex items-center flex-row-reverse gap-1 w-5");
 

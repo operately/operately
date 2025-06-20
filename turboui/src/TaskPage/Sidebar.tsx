@@ -6,7 +6,7 @@ import {
   IconCalendar,
   IconLink,
   IconTrash,
-} from "@tabler/icons-react";
+} from "../icons";
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";

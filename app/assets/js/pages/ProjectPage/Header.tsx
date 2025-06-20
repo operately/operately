@@ -1,10 +1,9 @@
 import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
 
 import { PrivacyIndicator } from "@/features/Permissions";
-import { DimmedLink, DivLink } from "turboui";
+import { DimmedLink, DivLink, IconHexagons, IconTarget } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function Header({ project }: { project: Projects.Project }) {
@@ -28,7 +27,7 @@ function ProjectName({ project }) {
 function ProjectIcon() {
   return (
     <div className="bg-indigo-500/10 p-1.5 rounded-lg">
-      <Icons.IconHexagons size={24} className="text-indigo-500" />
+      <IconHexagons size={24} className="text-indigo-500" />
     </div>
   );
 }
@@ -58,7 +57,7 @@ function ParentGoalLinked({ goal }: { goal: Goals.Goal }) {
   const paths = usePaths();
   return (
     <>
-      <Icons.IconTarget size={14} className="text-red-500" />
+      <IconTarget size={14} className="text-red-500" />
       <DivLink
         to={paths.goalPath(goal.id!)}
         className="text-sm text-content-dimmed mx-1 hover:underline font-medium"

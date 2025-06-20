@@ -1,12 +1,10 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 
 import { ResourceHubPermissions } from "@/models/resourceHubs";
 
 import { Airtable, Dropbox, Figma, GoogleLogo, Notion } from "@/components/Brands";
-import { PrimaryButton } from "turboui";
-import { MenuActionItem, SubMenu } from "turboui";
+import { MenuActionItem, SubMenu, IconFile, IconFolderFilled, IconUpload, PrimaryButton, IconLink } from "turboui";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 
@@ -28,7 +26,7 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
   return [
     <MenuActionItem
       key={1}
-      icon={Icons.IconFile}
+      icon={IconFile}
       onClick={navigateToNewDocument}
       testId="new-document"
       hidden={!permissions.canCreateDocument}
@@ -36,7 +34,7 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
     />,
     <MenuActionItem
       key={2}
-      icon={Icons.IconFolderFilled}
+      icon={IconFolderFilled}
       onClick={toggleShowAddFolder}
       testId="new-folder"
       hidden={!permissions.canCreateFolder}
@@ -44,7 +42,7 @@ function Options({ permissions }: { permissions: ResourceHubPermissions }) {
     />,
     <MenuActionItem
       key={3}
-      icon={Icons.IconUpload}
+      icon={IconUpload}
       onClick={selectFiles}
       testId="upload-files"
       hidden={!permissions.canCreateFile}
@@ -60,7 +58,7 @@ function NewLinkSubMenu({ permissions }: { permissions: ResourceHubPermissions }
   if (!permissions.canCreateLink) return <></>;
 
   return (
-    <SubMenu label="Add link" icon={Icons.IconLink}>
+    <SubMenu label="Add link" icon={IconLink}>
       <MenuActionItem
         onClick={() => navigateToNewLink("airtable")}
         testId="link-to-airtable"
@@ -89,7 +87,7 @@ function NewLinkSubMenu({ permissions }: { permissions: ResourceHubPermissions }
       <MenuActionItem
         onClick={() => navigateToNewLink()}
         testId="link-to-other-resource"
-        icon={Icons.IconLink}
+        icon={IconLink}
         children="Other"
       />
     </SubMenu>
