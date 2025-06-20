@@ -32,7 +32,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       project: Repo.preload(project, :access_context),
       update: update_fixture(%{author_id: author.id, updatable_id: Ecto.UUID.generate(), updatable_type: :goal}),
       comment: comment_fixture(author, %{entity_id: project.id, entity_type: :project_check_in}),
-      check_in: check_in_fixture(%{author_id: author.id, project_id: project.id}),
+      check_in: check_in_fixture(%{author_id: author.id, project_id: project.id})
     }
   end
 
@@ -41,7 +41,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "company_member_removed",
         author_id: ctx.author.id,
-        content: %{ company_id: ctx.company.id, name: "-", email: "-", title: "-" }
+        content: %{company_id: ctx.company.id, name: "-", email: "-", title: "-"}
       }
 
       create_activity(attrs)
@@ -52,7 +52,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "password_first_time_changed",
         author_id: ctx.author.id,
-        content: %{ company_id: ctx.company.id, invitatition_id: "-", admin_name: "-", admin_email: "-", member_name: "-", member_email: "-" }
+        content: %{company_id: ctx.company.id, invitatition_id: "-", admin_name: "-", admin_email: "-", member_name: "-", member_email: "-"}
       }
 
       create_activity(attrs)
@@ -63,7 +63,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "company_invitation_token_created",
         author_id: ctx.author.id,
-        content: %{ company_id: ctx.company.id, invitation_id: "-", name: "-", email: "-", title: "-" }
+        content: %{company_id: ctx.company.id, invitation_id: "-", name: "-", email: "-", title: "-"}
       }
 
       create_activity(attrs)
@@ -74,7 +74,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "company_member_added",
         author_id: ctx.author.id,
-        content: %{ company_id: ctx.company.id, invitatition_id: "-", name: "-", email: "-", title: "-" }
+        content: %{company_id: ctx.company.id, invitatition_id: "-", name: "-", email: "-", title: "-"}
       }
 
       create_activity(attrs)
@@ -87,7 +87,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "space_joining",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-"}
       }
 
       create_activity(attrs)
@@ -98,7 +98,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_archived",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", goal_id: ctx.goal.id }
+        content: %{space_id: ctx.group.id, company_id: "-", goal_id: ctx.goal.id}
       }
 
       create_activity(attrs)
@@ -109,7 +109,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "discussion_posting",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", title: "-", discussion_id: ctx.update.id }
+        content: %{space_id: ctx.group.id, company_id: "-", title: "-", discussion_id: ctx.update.id}
       }
 
       create_activity(attrs)
@@ -120,7 +120,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "discussion_editing",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", discussion_id: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", discussion_id: "-"}
       }
 
       create_activity(attrs)
@@ -131,7 +131,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "discussion_comment_submitted",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", discussion_id: ctx.update.id, comment_id: ctx.comment.id }
+        content: %{space_id: ctx.group.id, company_id: "-", discussion_id: ctx.update.id, comment_id: ctx.comment.id}
       }
 
       create_activity(attrs)
@@ -142,7 +142,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_assignee_assignment",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", task_id: "-", person_id: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", person_id: "-"}
       }
 
       create_activity(attrs)
@@ -153,7 +153,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_description_change",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", task_id: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-"}
       }
 
       create_activity(attrs)
@@ -164,7 +164,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_name_editing",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", task_id: "-", old_name: "-", new_name: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_name: "-", new_name: "-"}
       }
 
       create_activity(attrs)
@@ -175,7 +175,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_priority_change",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", task_id: "-", old_priority: "-", new_priority: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_priority: "-", new_priority: "-"}
       }
 
       create_activity(attrs)
@@ -186,7 +186,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_reopening",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", task_id: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-"}
       }
 
       create_activity(attrs)
@@ -197,7 +197,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_size_change",
         author_id: ctx.author.id,
-        content: %{ space_id: ctx.group.id, company_id: "-", task_id: "-", old_size: "-", new_size: "-" }
+        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-", old_size: "-", new_size: "-"}
       }
 
       create_activity(attrs)
@@ -208,7 +208,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "group_edited",
         author_id: ctx.author.id,
-        content: %{ group_id: ctx.group.id, company_id: "-", old_name: "-", old_mission: "-", new_name: "-", new_mission: "-" }
+        content: %{group_id: ctx.group.id, company_id: "-", old_name: "-", old_mission: "-", new_name: "-", new_mission: "-"}
       }
 
       create_activity(attrs)
@@ -221,7 +221,12 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_reparent",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, new_parent_goal_id: "-", company_id: "-" }
+        content: %{
+          goal_id: ctx.goal.id,
+          new_parent_goal_id: "-",
+          company_id: "-",
+          space_id: ctx.group.id
+        }
       }
 
       create_activity(attrs)
@@ -232,7 +237,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id }
+        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id}
       }
 
       create_activity(attrs)
@@ -243,7 +248,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in_acknowledgement",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id }
+        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id}
       }
 
       create_activity(attrs)
@@ -254,7 +259,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in_commented",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_check_in_id: ctx.check_in.id, comment_id: ctx.comment.id }
+        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_check_in_id: ctx.check_in.id, comment_id: ctx.comment.id}
       }
 
       create_activity(attrs)
@@ -265,7 +270,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in_edit",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
+        content: %{goal_id: ctx.goal.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id}
       }
 
       create_activity(attrs)
@@ -276,7 +281,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_closing",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.comment.id, space_id: ctx.group.id, success: "-" }
+        content: %{goal_id: ctx.goal.id, company_id: ctx.comment.id, space_id: ctx.group.id, success: "-"}
       }
 
       create_activity(attrs)
@@ -288,8 +293,14 @@ defmodule Operately.AccessActivityContextAssignerTest do
         action: "goal_created",
         author_id: ctx.author.id,
         content: %{
-          goal_id: ctx.goal.id, company_id: ctx.company.id, space_id: ctx.group.id, creator_id: ctx.author.id, champion_id: ctx.author.id, reviewer_id: ctx.author.id, goal_name: "-",
-          new_timeframe: %{ type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2) },
+          goal_id: ctx.goal.id,
+          company_id: ctx.company.id,
+          space_id: ctx.group.id,
+          creator_id: ctx.author.id,
+          champion_id: ctx.author.id,
+          reviewer_id: ctx.author.id,
+          goal_name: "-",
+          new_timeframe: %{type: "days", start_date: Date.utc_today(), end_date: Date.add(Date.utc_today(), 2)}
         }
       }
 
@@ -298,13 +309,14 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "goal_discussion_creation action", ctx do
-      {:ok, activity} = Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, %{
-        title: "some title",
-        content: %{},
-        subscription_parent_type: :comment_thread,
-        send_notifications_to_everyone: false,
-        subscriber_ids: []
-      })
+      {:ok, activity} =
+        Operately.Operations.GoalDiscussionCreation.run(ctx.author, ctx.goal, %{
+          title: "some title",
+          content: %{},
+          subscription_parent_type: :comment_thread,
+          send_notifications_to_everyone: false,
+          subscriber_ids: []
+        })
 
       activity = Repo.reload(activity)
 
@@ -315,7 +327,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_discussion_editing",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, company_id: ctx.company.id, space_id: ctx.group.id, activity_id: "-" }
+        content: %{goal_id: ctx.goal.id, company_id: ctx.company.id, space_id: ctx.group.id, activity_id: "-"}
       }
 
       create_activity(attrs)
@@ -326,7 +338,17 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_editing",
         author_id: ctx.author.id,
-        content: %{ goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, old_name: "-", new_name: "-", old_champion_id: ctx.author.id, new_champion_id: ctx.author.id, old_reviewer_id: ctx.author.id, new_reviewer_id: ctx.author.id, }
+        content: %{
+          goal_id: ctx.goal.id,
+          space_id: ctx.group.id,
+          company_id: ctx.company.id,
+          old_name: "-",
+          new_name: "-",
+          old_champion_id: ctx.author.id,
+          new_champion_id: ctx.author.id,
+          old_reviewer_id: ctx.author.id,
+          new_reviewer_id: ctx.author.id
+        }
       }
 
       create_activity(attrs)
@@ -334,17 +356,19 @@ defmodule Operately.AccessActivityContextAssignerTest do
     end
 
     test "goal_reopening action", ctx do
-      {:ok, _} = Operately.Operations.GoalReopening.run(ctx.author, ctx.goal, %{
-        content: %{},
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-        subscription_parent_type: :comment_thread
-      })
+      {:ok, _} =
+        Operately.Operations.GoalReopening.run(ctx.author, ctx.goal, %{
+          content: %{},
+          send_notifications_to_everyone: false,
+          subscriber_ids: [],
+          subscription_parent_type: :comment_thread
+        })
 
-      activity = from(a in Activities.Activity,
-        where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_reopening"
-      )
-      |> Repo.one()
+      activity =
+        from(a in Activities.Activity,
+          where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_reopening"
+        )
+        |> Repo.one()
 
       assert activity.access_context_id == ctx.goal.access_context.id
     end
@@ -366,10 +390,11 @@ defmodule Operately.AccessActivityContextAssignerTest do
         }
       )
 
-      activity = from(a in Activities.Activity,
-        where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_timeframe_editing"
-      )
-      |> Repo.one()
+      activity =
+        from(a in Activities.Activity,
+          where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_timeframe_editing"
+        )
+        |> Repo.one()
 
       assert activity.access_context_id == ctx.goal.access_context.id
     end
@@ -380,7 +405,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_created",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id}
       }
 
       create_activity(attrs)
@@ -391,7 +416,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_archived",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id}
       }
 
       create_activity(attrs)
@@ -402,7 +427,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_acknowledged",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id}
       }
 
       create_activity(attrs)
@@ -413,7 +438,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_commented",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id, comment_id: ctx.comment.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id, comment_id: ctx.comment.id}
       }
 
       create_activity(attrs)
@@ -424,7 +449,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_edit",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
+        content: %{project_id: ctx.project.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id}
       }
 
       create_activity(attrs)
@@ -435,7 +460,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_check_in_submitted",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, check_in_id: ctx.check_in.id}
       }
 
       create_activity(attrs)
@@ -444,6 +469,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
 
     test "project_closed action", ctx do
       retrospective = retrospective_fixture(%{author_id: ctx.author.id, project_id: ctx.project.id})
+
       attrs = %{
         action: "project_closed",
         author_id: ctx.author.id,
@@ -451,7 +477,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
           project_id: ctx.project.id,
           space_id: ctx.group.id,
           company_id: ctx.company.id,
-          retrospective_id: retrospective.id,
+          retrospective_id: retrospective.id
         }
       }
 
@@ -465,7 +491,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_contributor_addition",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, person_id: ctx.author.id, contributor_id: contributor.id, responsibility: "-", role: "-", space_id: ctx.group.id }
+        content: %{project_id: ctx.project.id, company_id: ctx.company.id, person_id: ctx.author.id, contributor_id: contributor.id, responsibility: "-", role: "-", space_id: ctx.group.id}
       }
 
       create_activity(attrs)
@@ -476,7 +502,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_discussion_submitted",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, discussion_id: ctx.update.id, title: "some title" }
+        content: %{project_id: ctx.project.id, company_id: ctx.company.id, discussion_id: ctx.update.id, title: "some title"}
       }
 
       create_activity(attrs)
@@ -487,7 +513,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_goal_connection",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_id: ctx.goal.id}
       }
 
       create_activity(attrs)
@@ -498,7 +524,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_goal_disconnection",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_id: ctx.goal.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, goal_id: ctx.goal.id}
       }
 
       create_activity(attrs)
@@ -509,7 +535,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_milestone_commented",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, milestone_id: "-", comment_id: ctx.comment.id, comment_action: "-" }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, milestone_id: "-", comment_id: ctx.comment.id, comment_action: "-"}
       }
 
       create_activity(attrs)
@@ -520,7 +546,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_moved",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, company_id: ctx.company.id, old_space_id: ctx.group.id, new_space_id: ctx.group.id }
+        content: %{project_id: ctx.project.id, company_id: ctx.company.id, old_space_id: ctx.group.id, new_space_id: ctx.group.id}
       }
 
       create_activity(attrs)
@@ -531,7 +557,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_pausing",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id}
       }
 
       create_activity(attrs)
@@ -542,7 +568,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_renamed",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, old_name: "-", new_name: "-" }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, old_name: "-", new_name: "-"}
       }
 
       create_activity(attrs)
@@ -553,7 +579,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_resuming",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id }
+        content: %{project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id}
       }
 
       create_activity(attrs)
@@ -564,7 +590,15 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_timeline_edited",
         author_id: ctx.author.id,
-        content: %{ project_id: ctx.project.id, space_id: ctx.group.id, company_id: ctx.company.id, old_start_date: DateTime.utc_now(), new_start_date: DateTime.utc_now(), old_end_date: DateTime.utc_now(), new_end_date: DateTime.utc_now() }
+        content: %{
+          project_id: ctx.project.id,
+          space_id: ctx.group.id,
+          company_id: ctx.company.id,
+          old_start_date: DateTime.utc_now(),
+          new_start_date: DateTime.utc_now(),
+          old_end_date: DateTime.utc_now(),
+          new_end_date: DateTime.utc_now()
+        }
       }
 
       create_activity(attrs)
@@ -575,7 +609,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
   describe "assigns access_context to task activities" do
     setup ctx do
       milestone = milestone_fixture(ctx.author, %{project_id: ctx.project.id})
-      task = task_fixture(%{ space_id: ctx.group.id, creator_id: ctx.author.id, milestone_id: milestone.id})
+      task = task_fixture(%{space_id: ctx.group.id, creator_id: ctx.author.id, milestone_id: milestone.id})
 
       Map.merge(ctx, %{milestone: milestone, task: task})
     end
@@ -584,7 +618,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_adding",
         author_id: ctx.author.id,
-        content: %{ task_id: ctx.task.id, company_id: ctx.company.id, milestone_id: ctx.milestone.id, name: "-" }
+        content: %{task_id: ctx.task.id, company_id: ctx.company.id, milestone_id: ctx.milestone.id, name: "-"}
       }
 
       create_activity(attrs)
@@ -595,7 +629,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_closing",
         author_id: ctx.author.id,
-        content: %{ task_id: ctx.task.id, company_id: ctx.company.id }
+        content: %{task_id: ctx.task.id, company_id: ctx.company.id}
       }
 
       create_activity(attrs)
@@ -606,7 +640,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_status_change",
         author_id: ctx.author.id,
-        content: %{ task_id: ctx.task.id, company_id: ctx.company.id, old_status: "-", new_status: "-" }
+        content: %{task_id: ctx.task.id, company_id: ctx.company.id, old_status: "-", new_status: "-"}
       }
 
       create_activity(attrs)
@@ -617,7 +651,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_update",
         author_id: ctx.author.id,
-        content: %{ task_id: ctx.task.id, company_id: ctx.company.id, old_name: "-", new_name: "-" }
+        content: %{task_id: ctx.task.id, company_id: ctx.company.id, old_name: "-", new_name: "-"}
       }
 
       create_activity(attrs)
@@ -631,9 +665,9 @@ defmodule Operately.AccessActivityContextAssignerTest do
         action: "project_created",
         author_id: ctx.author.id,
         content: %{
-          project_id: ctx.project.id,
+          project_id: ctx.project.id
         },
-        access_context_id: ctx.project.access_context.id,
+        access_context_id: ctx.project.access_context.id
       }
 
       parent_activity = activity_fixture(attrs)
@@ -648,7 +682,15 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "comment_added",
         author_id: ctx.author.id,
-        content: %{ comment_id: comment.id, company_id: ctx.company.id, project_id: ctx.project.id, space_id: ctx.group.id, goal_id: ctx.goal.id, comment_thread_id: ctx.thread.id, activity_id: ctx.parent_activity.id }
+        content: %{
+          comment_id: comment.id,
+          company_id: ctx.company.id,
+          project_id: ctx.project.id,
+          space_id: ctx.group.id,
+          goal_id: ctx.goal.id,
+          comment_thread_id: ctx.thread.id,
+          activity_id: ctx.parent_activity.id
+        }
       }
 
       create_activity(attrs)
@@ -661,7 +703,15 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "comment_added",
         author_id: ctx.author.id,
-        content: %{ comment_id: comment.id, company_id: ctx.company.id, project_id: ctx.project.id, space_id: ctx.group.id, goal_id: ctx.goal.id, comment_thread_id: ctx.thread.id, activity_id: ctx.parent_activity.id }
+        content: %{
+          comment_id: comment.id,
+          company_id: ctx.company.id,
+          project_id: ctx.project.id,
+          space_id: ctx.group.id,
+          goal_id: ctx.goal.id,
+          comment_thread_id: ctx.thread.id,
+          activity_id: ctx.parent_activity.id
+        }
       }
 
       create_activity(attrs)
@@ -674,7 +724,15 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "comment_added",
         author_id: ctx.author.id,
-        content: %{ comment_id: comment.id, company_id: ctx.company.id, project_id: ctx.project.id, space_id: ctx.group.id, goal_id: ctx.goal.id, comment_thread_id: ctx.thread.id, activity_id: ctx.parent_activity.id }
+        content: %{
+          comment_id: comment.id,
+          company_id: ctx.company.id,
+          project_id: ctx.project.id,
+          space_id: ctx.group.id,
+          goal_id: ctx.goal.id,
+          comment_thread_id: ctx.thread.id,
+          activity_id: ctx.parent_activity.id
+        }
       }
 
       create_activity(attrs)
