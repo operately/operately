@@ -1,9 +1,9 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
 import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
 
+import { IconFileFilled, IconFileZip, IconPdf, IconTrash } from "../../icons";
 import classNames from "../../utils/classnames";
 
 //
@@ -69,7 +69,7 @@ function VideoView({ node, deleteNode, view, updateAttributes }) {
 
       {view.editable && (
         <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
-          <Icons.IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
+          <IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
         </div>
       )}
     </NodeViewWrapper>
@@ -156,7 +156,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
 
       {view.editable && (
         <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
-          <Icons.IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
+          <IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
         </div>
       )}
     </NodeViewWrapper>
@@ -201,7 +201,7 @@ function FileView({ node, deleteNode, view }) {
 
       {view.editable && (
         <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
-          <Icons.IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
+          <IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
         </div>
       )}
     </NodeViewWrapper>
@@ -218,13 +218,13 @@ function HumanFilesize({ size }: { size: number }) {
 function FileIcon({ filetype }: { filetype: string }) {
   switch (filetype) {
     case "application/pdf":
-      return <Icons.IconPdf className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconPdf className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
     case "application/zip":
-      return <Icons.IconFileZip className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconFileZip className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
     case "text/plain":
-      return <Icons.IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
     default:
-      return <Icons.IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
+      return <IconFileFilled className="text-content-accent" size={48} data-drag-handle strokeWidth={1} />;
   }
 }
 

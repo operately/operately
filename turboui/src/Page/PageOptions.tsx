@@ -4,7 +4,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { Page } from ".";
 import { match } from "ts-pattern";
 import { DivLink } from "../Link";
-import { IconX, IconDots } from "@tabler/icons-react";
+import { IconX, IconDots } from "../icons";
 import { createTestId } from "../TestableElement";
 
 import classNames from "classnames";

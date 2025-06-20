@@ -1,7 +1,7 @@
 import React from "react";
 
 import classNames from "classnames";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck } from "turboui";
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
   field?: string;

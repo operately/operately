@@ -1,5 +1,5 @@
 import React from "react";
-import { IconFile } from "@tabler/icons-react";
+import { IconFile } from "turboui";
 
 export function HubZeroNodes() {
   return (

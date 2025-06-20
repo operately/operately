@@ -1,7 +1,7 @@
 import React from "react";
-import * as Icons from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { Tooltip } from "../Tooltip";
+import { IconLockFilled, IconWorld } from "../icons";
 
 const DEFAULT_SIZE = 24;
 
@@ -20,9 +20,9 @@ export function PrivacyIndicator(props: PrivacyIndicator.Props) {
   );
 
   const icon = match(props.privacyLevel)
-    .with("public", () => <Icons.IconWorld size={props.iconSize!} />)
-    .with("confidential", () => <Icons.IconLockFilled size={props.iconSize!} />)
-    .with("secret", () => <Icons.IconLockFilled size={props.iconSize!} className="text-content-error" />)
+    .with("public", () => <IconWorld size={props.iconSize!} />)
+    .with("confidential", () => <IconLockFilled size={props.iconSize!} />)
+    .with("secret", () => <IconLockFilled size={props.iconSize!} className="text-content-error" />)
     .exhaustive();
 
   return (

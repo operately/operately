@@ -1,7 +1,7 @@
 import * as Milestones from "@/models/milestones";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import * as Icons from "@tabler/icons-react";
+import { IconFlag3Filled } from "turboui";
 import * as React from "react";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -165,7 +165,7 @@ function MilestoneLink({ milestone }: { milestone: Milestones.Milestone }) {
 
   return (
     <div className="font-medium">
-      <Icons.IconFlag3Filled size={14} className="inline-block mr-1" />
+      <IconFlag3Filled size={14} className="inline-block mr-1" />
       <Link to={path}>{title}</Link> <span className="">&middot;</span> Due date on{" "}
       <FormattedTime time={milestone.deadlineAt!} format="long-date" />
     </div>

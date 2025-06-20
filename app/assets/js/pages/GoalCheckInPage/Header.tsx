@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconSquareCheckFilled } from "turboui";
 
 import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
@@ -56,7 +56,7 @@ function Acknowledgement({ update }) {
   if (update.acknowledgedAt) {
     return (
       <span className="flex items-center gap-1">
-        <Icons.IconSquareCheckFilled size={16} className="text-accent-1" />
+        <IconSquareCheckFilled size={16} className="text-accent-1" />
         <span className="hidden sm:inline">Acknowledged by</span>
         <span className="truncate">{update.acknowledgingPerson.fullName}</span>
       </span>

@@ -1,6 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { IconHome, IconUser, IconSettings, IconBell, IconHeart, IconStar } from "@tabler/icons-react";
+import { IconHome, IconUser, IconSettings, IconBell, IconHeart, IconStar } from "../icons";
 import { Page } from "../Page";
 
 const meta = {

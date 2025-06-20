@@ -1,15 +1,15 @@
 {
-  "_vendor-DYFCo7zV.js": {
-    "file": "assets/vendor-DYFCo7zV.js",
+  "_vendor-6mcE7grO.js": {
+    "file": "assets/vendor-6mcE7grO.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-BXVym5pl.js",
+    "file": "assets/app-Cs8iBAN9.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-DYFCo7zV.js"
+      "_vendor-6mcE7grO.js"
     ]
   }
 }

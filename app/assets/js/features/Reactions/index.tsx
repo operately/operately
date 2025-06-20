@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconMoodPlus, IconX } from "turboui";
 import * as Reactions from "@/models/reactions";
 import * as Popover from "@radix-ui/react-popover";
 import * as api from "@/api";
@@ -117,7 +117,7 @@ function AddReaction({ form, size }) {
     <Popover.Root open={open} onOpenChange={setOpen}>
       <Popover.Trigger asChild>
         <div className="text-content-accent cursor-pointer bg-surface-dimmed rounded-full p-1">
-          <Icons.IconMoodPlus size={size - 2} />
+          <IconMoodPlus size={size - 2} />
         </div>
       </Popover.Trigger>
 
@@ -145,7 +145,7 @@ function ReactionPallete({ size, close, onSelected }) {
       <div className="flex items-start justify-between text-content-dimmed w-full">
         <div className="text-sm mb-2 font-medium">Add Reaction</div>
         <div className="">
-          <Icons.IconX size={16} onClick={close} className="cursor-pointer" />
+          <IconX size={16} onClick={close} className="cursor-pointer" />
         </div>
       </div>
 

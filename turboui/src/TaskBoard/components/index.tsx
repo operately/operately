@@ -4,7 +4,7 @@ import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import { applyFilters } from "../utils/taskFilterUtils";
 import * as Types from "../types";
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus } from "../../icons";
 import TaskCreationModal from "./TaskCreationModal";
 import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";

@@ -2,11 +2,11 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Signals from "@/signals";
-import * as Icons from "@tabler/icons-react";
 
 import { useLoadedData } from "./loader";
 import { AssignmentsList } from "./AssignmentsList";
 import classNames from "classnames";
+import { IconCoffee, IconMailFast, IconSparkles } from "turboui";
 
 export function Page() {
   const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshReviewCount);
@@ -47,7 +47,7 @@ function Title() {
 function TitleIcon() {
   return (
     <div className="flex items-center justify-center">
-      <Icons.IconCoffee size={24} className="text-content-dimmed" />
+      <IconCoffee size={24} className="text-content-dimmed" />
     </div>
   );
 }
@@ -65,7 +65,7 @@ function SendingEmailsBanner() {
   return (
     <div className={className}>
       Sending you an email every morning
-      <Icons.IconMailFast size={20} className="inline-block ml-2" />
+      <IconMailFast size={20} className="inline-block ml-2" />
     </div>
   );
 }
@@ -119,7 +119,7 @@ function ForReview() {
 function MyWorkEmpty() {
   return (
     <div className="px-4 mt-4 flex items-center justify-center py-20 gap-2">
-      <Icons.IconSparkles size={20} className="text-yellow-500" />
+      <IconSparkles size={20} className="text-yellow-500" />
       All caught up!
     </div>
   );
@@ -128,7 +128,7 @@ function MyWorkEmpty() {
 function ForReviewEmpty() {
   return (
     <div className="px-4 mt-4 flex items-center justify-center py-28 gap-2">
-      <Icons.IconSparkles size={20} className="text-yellow-500" />
+      <IconSparkles size={20} className="text-yellow-500" />
       Nothing to review.
     </div>
   );

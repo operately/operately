@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { IconTarget } from "@tabler/icons-react";
+import { IconTarget } from "../icons";
 import React from "react";
 import { Page } from "../Page";
 import { GoalField } from "./index";

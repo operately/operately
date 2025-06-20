@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconBlockquote } from "turboui";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -10,7 +10,7 @@ export function BlockquoteButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("blockquote")}
       title="Quote"
     >
-      <Icons.IconBlockquote size={iconSize} />
+      <IconBlockquote size={iconSize} />
     </ToolbarToggleButton>
   );
 }
