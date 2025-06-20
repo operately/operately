@@ -102,7 +102,6 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
   // Content filter modal state
   const [contentModalOpen, setContentModalOpen] = useState(false);
   const [contentSearchTerm, setContentSearchTerm] = useState("");
-  const [contentOperator, setContentOperator] = useState<Types.FilterOperator>("contains");
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const hoveredOptionRef = useRef<HTMLButtonElement>(null);
@@ -238,22 +237,20 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
       const newFilter: Types.FilterCondition = {
         id: `filter-${Date.now()}`,
         type: "content",
-        operator: contentOperator,
+        operator: "contains",
         value: contentSearchTerm.trim(),
-        label: `Content ${operatorLabels[contentOperator]} "${contentSearchTerm.trim()}"`,
+        label: `Content ${operatorLabels["contains"]} "${contentSearchTerm.trim()}"`,
       };
 
       onFiltersChange([...filters, newFilter]);
     }
     setContentModalOpen(false);
     setContentSearchTerm("");
-    setContentOperator("contains");
   };
 
   const handleContentFilterCancel = () => {
     setContentModalOpen(false);
     setContentSearchTerm("");
-    setContentOperator("contains");
   };
 
   // Handle keyboard events for content modal
@@ -495,34 +492,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-surface-base border border-surface-outline rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-semibold text-content-base mb-4">Search content</h3>
-
-            {/* Operator selection */}
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-content-base mb-2">Filter type</label>
-              <div className="flex gap-2">
-                <button
-                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                    contentOperator === "contains"
-                      ? "bg-primary-base text-white border-primary-base"
-                      : "bg-surface-base text-content-base border-surface-outline hover:bg-surface-accent"
-                  }`}
-                  onClick={() => setContentOperator("contains")}
-                >
-                  Contains
-                </button>
-                <button
-                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors ${
-                    contentOperator === "does_not_contain"
-                      ? "bg-primary-base text-white border-primary-base"
-                      : "bg-surface-base text-content-base border-surface-outline hover:bg-surface-accent"
-                  }`}
-                  onClick={() => setContentOperator("does_not_contain")}
-                >
-                  Does not contain
-                </button>
-              </div>
-            </div>
-
+            
             <input
               type="text"
               value={contentSearchTerm}
