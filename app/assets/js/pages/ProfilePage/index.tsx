@@ -6,9 +6,8 @@ import { toPersonWithLink } from "@/models/people";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
-import { ProfilePage } from "turboui";
+import { ProfilePage, IconPencil } from "turboui";
 
-import { IconPencil } from "@tabler/icons-react";
 import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";

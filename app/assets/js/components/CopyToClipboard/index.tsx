@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { IconCopy, IconCheck, IconProps } from "@tabler/icons-react";
+import { IconCopy, IconCheck, TablerIconProps as IconProps } from "turboui";
 
 interface CopyToClipboardProps {
   text: string;

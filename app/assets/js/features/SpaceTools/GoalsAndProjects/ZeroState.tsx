@@ -1,7 +1,6 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 
-import { GhostButton } from "turboui";
+import { GhostButton, IconTargetArrow, IconHexagons } from "turboui";
 import classNames from "classnames";
 
 export function ZeroState() {
@@ -64,7 +63,7 @@ function WorkItem({ indent = 0, progress = 20, title, type = "goal" }) {
 }
 
 function WorkItemIcon({ type }) {
-  const iconType = type === "goal" ? Icons.IconTargetArrow : Icons.IconHexagons;
+  const iconType = type === "goal" ? IconTargetArrow : IconHexagons;
 
   const klass = classNames(
     "p-1",

@@ -1,4 +1,4 @@
-import { IconFileText, IconMessageCircle, IconPlus } from "@tabler/icons-react";
+import { IconFileText, IconMessageCircle, IconPlus } from "../../icons";
 import React, { useState } from "react";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";

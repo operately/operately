@@ -1,5 +1,5 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import * as Icons from "@tabler/icons-react";
+import { IconDots, IconSlash } from "../icons";
 import * as React from "react";
 
 import { Link } from "../Link";
@@ -54,7 +54,7 @@ function HiddenItems({ items, hiddenCount }: { items: Navigation.Item[]; hiddenC
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger className="border border-surface-outline px-1 rounded">
-        <Icons.IconDots className="cursor-pointer shrink-0" size={18} />
+        <IconDots className="cursor-pointer shrink-0" size={18} />
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
@@ -94,7 +94,7 @@ function NavSeparator() {
 
   return (
     <div className="shrink-0">
-      <Icons.IconSlash size={iconSize} />
+      <IconSlash size={iconSize} />
     </div>
   );
 }

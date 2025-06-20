@@ -1,5 +1,6 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+
+import { IconBuilding } from "turboui";
 
 import { PermissionLevels } from "@/features/Permissions";
 
@@ -16,7 +17,7 @@ export function AccessSelectors() {
         <Forms.SelectBox
           field={"access.companyMembers"}
           label="Company members"
-          labelIcon={<Icons.IconBuilding size={20} />}
+          labelIcon={<IconBuilding size={20} />}
           options={companyMembersOptions}
           hidden={shouldHide(companyMembersOptions)}
         />

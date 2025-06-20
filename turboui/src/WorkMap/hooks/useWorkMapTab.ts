@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconPlayerPause } from "@tabler/icons-react";
+import { IconLayoutGrid, IconTarget, IconChecklist, IconCircleCheck, IconPlayerPause } from "../../icons";
 
 import * as sort from "../utils/sort";
 import { processItems, processPersonalItems } from "../utils/itemProcessor";

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconPlus } from "@tabler/icons-react";
+import { IconPlus } from "turboui";
 import { useTargetsContext } from "./TargetsContext";
 
 export function AddTargetButton({ display }: { display: boolean }) {

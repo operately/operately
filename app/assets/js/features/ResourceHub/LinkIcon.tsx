@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as BrandIcons from "@/components/Brands";
-import * as Icons from "@tabler/icons-react";
+import { IconLink } from "turboui";
 import { LinkOptions } from ".";
 
 interface Props {
@@ -29,6 +29,6 @@ export function LinkIcon({ type, size }: Props) {
       return <BrandIcons.Notion size={size} />;
     case "other":
     default:
-      return <Icons.IconLink size={size} />;
+      return <IconLink size={size} />;
   }
 }

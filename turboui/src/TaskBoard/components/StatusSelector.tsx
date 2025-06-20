@@ -1,7 +1,7 @@
 import React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import classNames from "../../utils/classnames";
-import { IconCircleDashed, IconCircleDot, IconCircleCheck, IconX, IconChevronDown } from "@tabler/icons-react";
+import { IconCircleDashed, IconCircleDot, IconCircleCheck, IconX, IconChevronDown } from "../../icons";
 
 // Import types from the shared types module
 import * as Types from "../types";

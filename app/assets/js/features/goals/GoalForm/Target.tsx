@@ -1,12 +1,12 @@
 import React from "react";
 import classnames from "classnames";
-import * as Icons from "@tabler/icons-react";
+import { IconHash, IconX } from "turboui";
 import { FormState } from "./useForm";
 
 export function TargetHeader() {
   return (
     <Row
-      icon={<Icons.IconHash className="text-content-base ml-1.5" size={12} />}
+      icon={<IconHash className="text-content-base ml-1.5" size={12} />}
       name={<div className="text-xs font-bold">NAME</div>}
       from={<div className="text-xs font-bold">START</div>}
       to={<div className="text-xs font-bold">TARGET</div>}
@@ -110,7 +110,7 @@ export function Target({ form, target, placeholders = [], index }: TargetProps) 
   );
 
   const removeButton = (
-    <Icons.IconX
+    <IconX
       className="text-content-dimmed cursor-pointer"
       size={16}
       onClick={() => form.fields.removeTarget(target.id)}

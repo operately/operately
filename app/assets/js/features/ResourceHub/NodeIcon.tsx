@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
-import * as Icons from "@tabler/icons-react";
+import { IconLink, IconAlignJustified, IconVideo, IconChartColumn, IconFolderFilled, IconLogs } from "turboui";
 
 import classNames from "classnames";
 import { assertPresent } from "@/utils/assertions";
@@ -18,7 +18,7 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
     if (node.link?.type && node.link.type !== "other") {
       return <LinkIcon type={node.link.type as LinkOptions} size={size} />;
     } else {
-      return <FileIcon size={size} icon={Icons.IconLink} />;
+      return <FileIcon size={size} icon={IconLink} />;
     }
   }
 
@@ -27,15 +27,15 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
   }
 
   if (Hub.isDocument(node)) {
-    return <FileIcon size={size} icon={Icons.IconAlignJustified} color="bg-sky-500" />;
+    return <FileIcon size={size} icon={IconAlignJustified} color="bg-sky-500" />;
   }
 
   if (Hub.hasContentType(node, "pdf")) {
-    return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={Icons.IconAlignJustified} />;
+    return <FileIcon size={size} filetype="pdf" color="bg-red-500" icon={IconAlignJustified} />;
   }
 
   if (Hub.hasContentType(node, "video")) {
-    return <FileIcon size={size} icon={Icons.IconVideo} />;
+    return <FileIcon size={size} icon={IconVideo} />;
   }
 
   if (Hub.hasContentType(node, "audio")) {
@@ -43,18 +43,18 @@ export function NodeIcon({ node, size }: { node: Hub.ResourceHubNode; size: numb
   }
 
   if (Hub.hasContentType(node, "zip")) {
-    return <FileIcon size={size} filetype="zip" icon={Icons.IconChartColumn} />;
+    return <FileIcon size={size} filetype="zip" icon={IconChartColumn} />;
   }
 
   if (Hub.hasContentType(node, "mov")) {
-    return <FileIcon size={size} filetype="mov" icon={Icons.IconVideo} />;
+    return <FileIcon size={size} filetype="mov" icon={IconVideo} />;
   }
 
-  return <FileIcon size={size} icon={Icons.IconAlignJustified} />;
+  return <FileIcon size={size} icon={IconAlignJustified} />;
 }
 
 function FolderIcon({ size }: { size: number }) {
-  return <Icons.IconFolderFilled size={size} className="text-sky-500" />;
+  return <IconFolderFilled size={size} className="text-sky-500" />;
 }
 
 interface FileIconProps {
@@ -77,7 +77,7 @@ export function FileIcon({ size, filetype, color, icon }: FileIconProps) {
     "flex flex-col items-center justify-between gap-0.5",
   );
 
-  icon = icon || Icons.IconLogs;
+  icon = icon || IconLogs;
 
   return (
     <div style={wrapperStyle} className="flex items-center justify-center relative">

@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconListNumbers } from "turboui";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -10,7 +10,7 @@ export function NumberListButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("orderedList")}
       title="Numbered List"
     >
-      <Icons.IconListNumbers size={iconSize} />
+      <IconListNumbers size={iconSize} />
     </ToolbarToggleButton>
   );
 }

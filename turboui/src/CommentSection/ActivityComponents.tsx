@@ -1,7 +1,7 @@
 import React from "react";
 import { AvatarWithName } from "../Avatar";
 import FormattedTime from "../FormattedTime";
-import * as Icons from "@tabler/icons-react";
+import { IconSquareCheckFilled, IconSquareChevronsLeftFilled } from "../icons";
 import { ActivityProps, AcknowledgmentProps } from "./types";
 
 export function MilestoneCompletedActivity({ activity }: ActivityProps) {
@@ -17,7 +17,7 @@ export function MilestoneCompletedActivity({ activity }: ActivityProps) {
               link={activity.author.profileLink}
               className="font-semibold"
             />
-            <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
+            <IconSquareCheckFilled size={20} className="text-accent-1" />
             <div className="pr-2 font-semibold text-content-accent">
               completed the milestone
             </div>
@@ -47,7 +47,7 @@ export function MilestoneReopenedActivity({ activity }: ActivityProps) {
               link={activity.author.profileLink}
               className="font-semibold"
             />
-            <Icons.IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
+            <IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
             <div className="pr-2 font-semibold text-content-accent">
               re-opened the milestone
             </div>
@@ -77,7 +77,7 @@ export function AcknowledgmentActivity({ person, ackAt }: AcknowledgmentProps) {
             className="font-semibold"
           />
           <span>acknowledged this Check-In</span>
-          <Icons.IconSquareCheckFilled size={24} className="text-accent-1" />
+          <IconSquareCheckFilled size={24} className="text-accent-1" />
         </div>
 
         <div className="flex items-center justify-between">

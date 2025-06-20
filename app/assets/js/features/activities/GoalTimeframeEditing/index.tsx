@@ -2,7 +2,7 @@ import * as People from "@/models/people";
 import * as React from "react";
 
 import * as Timeframes from "@/utils/timeframes";
-import * as Icons from "@tabler/icons-react";
+import { IconArrowRight } from "turboui";
 
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 
@@ -46,7 +46,7 @@ const GoalTimeframeEditing: ActivityHandler = {
             </div>
           </div>
 
-          <Icons.IconArrowRight size={16} />
+          <IconArrowRight size={16} />
 
           <div className="flex items-center gap-1 font-medium">
             <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">

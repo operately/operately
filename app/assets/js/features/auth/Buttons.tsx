@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconMail } from "turboui";
 
 import classNames from "classnames";
 import { DivLink } from "turboui";
@@ -10,7 +10,7 @@ export function SignUpWithEmail() {
     <SignUpButton
       title="Sign up with email"
       link="/sign_up/email"
-      icon={<Icons.IconMail size={24} className="text-content-dimmed" />}
+      icon={<IconMail size={24} className="text-content-dimmed" />}
       testId="sign-up-with-email"
     />
   );
