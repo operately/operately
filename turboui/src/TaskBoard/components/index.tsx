@@ -13,6 +13,7 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 
 export function TaskBoard({
   tasks: externalTasks,
+  milestones: externalMilestones = [],
   viewMode = "table",
   onStatusChange,
   onTaskCreate,
@@ -34,10 +35,46 @@ export function TaskBoard({
     setInternalTasks(externalTasks);
   }, [externalTasks]);
 
-  // Apply filters to tasks
-  const filteredTasks = useMemo(() => {
-    return applyFilters(internalTasks, filters);
-  }, [internalTasks, filters]);
+  // Check if any filters are applied
+  const hasAnyFilters = useMemo(() => {
+    return filters.length > 0;
+  }, [filters]);
+
+  // Apply filters to tasks and track hidden tasks
+  const { filteredTasks, hiddenTasksByMilestone } = useMemo(() => {
+    let tasksToFilter = internalTasks;
+    let hiddenTasks: Types.Task[] = [];
+
+    // If no filters are applied, hide completed/canceled tasks by default
+    if (!hasAnyFilters) {
+      hiddenTasks = internalTasks.filter((task) => task.status === "done" || task.status === "canceled");
+      tasksToFilter = internalTasks.filter((task) => task.status !== "done" && task.status !== "canceled");
+    }
+
+    const filtered = applyFilters(tasksToFilter, filters);
+
+    // Group hidden tasks by milestone
+    const hiddenByMilestone: Record<string, Types.Task[]> = {
+      no_milestone: [],
+    };
+
+    hiddenTasks.forEach((task) => {
+      if (task.milestone) {
+        const milestoneId = task.milestone.id;
+        if (!hiddenByMilestone[milestoneId]) {
+          hiddenByMilestone[milestoneId] = [];
+        }
+        hiddenByMilestone[milestoneId]!.push(task);
+      } else {
+        hiddenByMilestone["no_milestone"]!.push(task);
+      }
+    });
+
+    return {
+      filteredTasks: filtered,
+      hiddenTasksByMilestone: hiddenByMilestone,
+    };
+  }, [internalTasks, filters, hasAnyFilters]);
 
   // Group tasks by milestone, filtering out helper tasks
   const groupTasksByMilestone = (tasks: Types.Task[]) => {
@@ -74,48 +111,32 @@ export function TaskBoard({
     return grouped;
   };
 
-  // Get all unique milestones from tasks with completion statistics
-  const getMilestones = (originalTasks: Types.Task[], filteredTasks: Types.Task[]) => {
+  // Get milestone stats from tasks for each milestone
+  const getMilestones = (allMilestones: Types.Milestone[] | undefined, originalTasks: Types.Task[]) => {
     type MilestoneStats = Types.MilestoneStats;
 
-    const milestoneMap = new Map<
-      string,
-      {
-        milestone: Types.Milestone;
-        stats: MilestoneStats;
-        hasTasks: boolean;
-      }
-    >();
-
-    // First, collect all milestones from unfiltered tasks to ensure we show all milestones
-    originalTasks.forEach((task) => {
-      if (task.milestone) {
-        const milestoneId = task.milestone.id;
-
-        if (!milestoneMap.has(milestoneId)) {
-          milestoneMap.set(milestoneId, {
-            milestone: task.milestone,
-            stats: { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 },
-            hasTasks: false,
-          });
+    // If no milestones provided, derive them from tasks (backward compatibility)
+    let milestonesToProcess: Types.Milestone[];
+    if (!allMilestones || allMilestones.length === 0) {
+      const milestoneMap = new Map<string, Types.Milestone>();
+      originalTasks.forEach(task => {
+        if (task.milestone && !milestoneMap.has(task.milestone.id)) {
+          milestoneMap.set(task.milestone.id, task.milestone);
         }
+      });
+      milestonesToProcess = Array.from(milestoneMap.values());
+    } else {
+      milestonesToProcess = allMilestones;
+    }
 
-        // Check if this milestone has any real tasks (not helper tasks) in the original task list
-        if (!task._isHelperTask) {
-          milestoneMap.get(milestoneId)!.hasTasks = true;
-        }
-      }
-    });
+    return milestonesToProcess.map(milestone => {
+      const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
+      let hasTasks = false;
 
-    // Then, calculate statistics from filtered tasks only
-    filteredTasks.forEach((task) => {
-      if (task.milestone && !task._isHelperTask) {
-        const milestoneId = task.milestone.id;
-        const milestoneData = milestoneMap.get(milestoneId);
-
-        if (milestoneData) {
-          // Update statistics
-          const stats = milestoneData.stats;
+      // Calculate statistics from ALL original tasks for this milestone
+      originalTasks.forEach((task) => {
+        if (task.milestone?.id === milestone.id && !task._isHelperTask) {
+          hasTasks = true;
           stats.total++;
 
           switch (task.status) {
@@ -133,11 +154,14 @@ export function TaskBoard({
               break;
           }
         }
-      }
-    });
+      });
 
-    // Return milestones sorted by ID to maintain consistent ordering
-    return Array.from(milestoneMap.values()).sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
+      return {
+        milestone,
+        stats,
+        hasTasks,
+      };
+    }).sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
   };
 
   // Handle status change
@@ -190,12 +214,12 @@ export function TaskBoard({
 
   // Group tasks by milestone and get milestone stats (memoized for performance)
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
-  const milestones = useMemo(() => getMilestones(internalTasks, filteredTasks), [internalTasks, filteredTasks]);
+  const milestones = useMemo(() => getMilestones(externalMilestones, internalTasks), [externalMilestones, internalTasks]);
 
   // Check if there are any tasks without milestones in the original task list (memoized)
   const hasTasksWithoutMilestone = useMemo(
     () => internalTasks.some((task) => !task.milestone && !task._isHelperTask),
-    [internalTasks]
+    [internalTasks],
   );
 
   // Handle task reordering via drag and drop
@@ -313,6 +337,8 @@ export function TaskBoard({
                     key={milestoneData.milestone.id}
                     milestone={milestoneData.milestone}
                     tasks={groupedTasks[milestoneData.milestone.id] || []}
+                    hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
+                    showHiddenTasksToggle={!hasAnyFilters}
                     stats={milestoneData.stats}
                     onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
                     onTaskUpdate={onTaskUpdate}
@@ -349,6 +375,8 @@ export function TaskBoard({
                     {/* Tasks with no milestone */}
                     <TaskList
                       tasks={groupedTasks["no_milestone"] || []}
+                      hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
+                      showHiddenTasksToggle={!hasAnyFilters}
                       milestoneId="no-milestone"
                       onTaskUpdate={onTaskUpdate}
                       searchPeople={searchPeople}

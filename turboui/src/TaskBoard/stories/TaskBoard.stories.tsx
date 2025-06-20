@@ -66,11 +66,14 @@ export const Default: Story = {
   render: () => {
     // Create state for tasks and task creation
     const [tasks, setTasks] = useState([...mockTasks]);
+    const [milestones, setMilestones] = useState<Types.Milestone[]>([
+      ...Object.values(mockMilestones),
+      standaloneTestMilestone
+    ]);
     const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
 
-    // Add the standalone milestone task and empty milestone to our tasks
+    // Add a task with the standalone milestone for demonstration
     useEffect(() => {
-      // Add a task with the standalone milestone
       const taskWithStandaloneMilestone = {
         id: "task-minimal-milestone",
         title: "This task demonstrates a minimal milestone",
@@ -78,18 +81,8 @@ export const Default: Story = {
         milestone: standaloneTestMilestone,
       };
 
-      // Create a helper task with the Empty Milestone from mockMilestones
-      // This will make the empty milestone appear in the component
-      const emptyMilestoneHelperTask = {
-        id: "task-empty-milestone-helper",
-        title: "Hidden helper task for Empty Milestone",
-        status: "pending" as Types.Status,
-        milestone: mockMilestones.emptyMilestone,
-        _isHelperTask: true, // This flag tells the TaskBoard to hide this task
-      };
-
-      // Update tasks array with both our new tasks
-      setTasks((prev) => [...prev, taskWithStandaloneMilestone, emptyMilestoneHelperTask]);
+      // Update tasks array with our new task
+      setTasks((prev) => [...prev, taskWithStandaloneMilestone]);
     }, []);
 
     const handleStatusChange = (taskId, newStatus) => {
@@ -141,28 +134,20 @@ export const Default: Story = {
 
       console.log("=== Created new milestone ===\n", JSON.stringify(newMilestone, null, 2));
 
-      // For our Storybook demonstration, we need a way to make the new
-      // milestone appear in the TaskBoard without automatically creating a task for it.
-      // To do this, we'll create a special task that will make the milestone visible in the UI
-      // but will be filtered out from display using the _isHelperTask flag
-
-      // In a real application, this could be done by adding empty milestones to a separate
-      // milestones array, but for now we'll use a hidden helper task to make it appear
-      const helperTask = {
-        id: `task-helper-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
-        title: `Hidden helper task for ${newMilestone.name}`,
-        status: "pending" as Types.Status,
-        milestone: newMilestone,
-        _isHelperTask: true, // This flag tells the TaskBoard to not display this task
-      };
-
-      // Add the helper task to the tasks array so the milestone appears
-      const updatedTasks = [...tasks, helperTask];
-      setTasks(updatedTasks);
+      // Add the new milestone to the milestones array
+      setMilestones(prev => [...prev, newMilestone]);
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: Partial<Types.Milestone>) => {
       console.log(`Updating milestone ${milestoneId}:`, updates);
+      
+      // Update the milestone in the milestones array
+      const updatedMilestones = milestones.map(milestone => 
+        milestone.id === milestoneId 
+          ? { ...milestone, ...updates }
+          : milestone
+      );
+      setMilestones(updatedMilestones);
       
       // Update all tasks that have this milestone
       const updatedTasks = tasks.map(task => {
@@ -184,6 +169,7 @@ export const Default: Story = {
     return (
       <TaskBoard
         tasks={tasks}
+        milestones={milestones}
         viewMode="table"
         onStatusChange={handleStatusChange}
         onTaskCreate={handleTaskCreate}

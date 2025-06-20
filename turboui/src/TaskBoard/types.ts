@@ -132,6 +132,7 @@ export interface FilterCondition {
 
 export interface TaskBoardProps {
   tasks: Task[];
+  milestones?: Milestone[];
   viewMode?: ViewMode;
   onStatusChange?: (taskId: string, newStatus: Status) => void;
   onTaskCreate?: (task: Omit<Task, "id">) => void;
