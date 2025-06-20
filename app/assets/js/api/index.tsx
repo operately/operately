@@ -285,7 +285,7 @@ export interface ActivityContentGoalDiscussionEditing {
   activityId?: string | null;
 }
 
-export interface ActivityContentGoalDueDateUpdate {
+export interface ActivityContentGoalDueDateUpdating {
   company: Company;
   space: Space;
   goal: Goal;
@@ -310,6 +310,14 @@ export interface ActivityContentGoalEditing {
   addedTargets?: Target[] | null;
   updatedTargets?: GoalEditingUpdatedTarget[] | null;
   deletedTargets?: Target[] | null;
+}
+
+export interface ActivityContentGoalNameUpdating {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  oldName: string;
+  newName: string;
 }
 
 export interface ActivityContentGoalReopening {

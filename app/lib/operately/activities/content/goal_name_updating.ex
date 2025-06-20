@@ -1,11 +1,10 @@
-defmodule Operately.Activities.Content.GoalNameChanged do
+defmodule Operately.Activities.Content.GoalNameUpdating do
   use Operately.Activities.Content
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
     belongs_to :goal, Operately.Goals.Goal
-
     field :old_name, :string
     field :new_name, :string
   end
