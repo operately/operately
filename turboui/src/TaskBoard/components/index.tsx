@@ -75,7 +75,7 @@ export function TaskBoard({
   };
 
   // Get all unique milestones from tasks with completion statistics
-  const getMilestones = (allTasks: Types.Task[], filteredTasks: Types.Task[]) => {
+  const getMilestones = (originalTasks: Types.Task[], filteredTasks: Types.Task[]) => {
     type MilestoneStats = Types.MilestoneStats;
 
     const milestoneMap = new Map<
@@ -88,7 +88,7 @@ export function TaskBoard({
     >();
 
     // First, collect all milestones from unfiltered tasks to ensure we show all milestones
-    allTasks.forEach((task) => {
+    originalTasks.forEach((task) => {
       if (task.milestone) {
         const milestoneId = task.milestone.id;
 
@@ -188,12 +188,15 @@ export function TaskBoard({
     }
   };
 
-  // Group tasks by milestone and get milestone stats
-  const groupedTasks = groupTasksByMilestone(filteredTasks);
-  const milestones = getMilestones(internalTasks, filteredTasks);
+  // Group tasks by milestone and get milestone stats (memoized for performance)
+  const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
+  const milestones = useMemo(() => getMilestones(internalTasks, filteredTasks), [internalTasks, filteredTasks]);
 
-  // Check if there are any tasks without milestones in the original task list
-  const hasTasksWithoutMilestone = internalTasks.some((task) => !task.milestone && !task._isHelperTask);
+  // Check if there are any tasks without milestones in the original task list (memoized)
+  const hasTasksWithoutMilestone = useMemo(
+    () => internalTasks.some((task) => !task.milestone && !task._isHelperTask),
+    [internalTasks]
+  );
 
   // Handle task reordering via drag and drop
   const handleTaskReorder = useCallback(
