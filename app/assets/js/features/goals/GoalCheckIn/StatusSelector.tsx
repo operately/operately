@@ -9,38 +9,26 @@ import { createTestId } from "@/utils/testid";
 import { IconCheck } from "turboui";
 import classNames from "classnames";
 
-type Status = "pending" | "on_track" | "concern" | "issue";
-type LegacyStatus = "caution";
+type Status = "on_track" | "caution" | "off_track";
 
-type AnyStatus = Status | LegacyStatus;
+const STATUS_OPTIONS = ["on_track", "caution", "off_track"] as const;
 
-const STATUS_OPTIONS = ["pending", "on_track", "concern", "issue"] as const;
-
-const LEGACY_STATUS_MAP: Record<LegacyStatus, Status> = {
-  caution: "concern",
-};
-
-const STATUS_COLORS: Record<AnyStatus, string> = {
-  pending: "bg-stone-500",
+const STATUS_COLORS: Record<Status, string> = {
   on_track: "bg-accent-1",
-  concern: "bg-yellow-500",
   caution: "bg-yellow-500",
-  issue: "bg-red-500",
+  off_track: "bg-red-500",
 };
 
-const STATUS_LABELS: Record<AnyStatus, string> = {
-  pending: "Pending",
+const STATUS_LABELS: Record<Status, string> = {
   on_track: "On track",
-  concern: "Needs attention",
-  caution: "Needs attention",
-  issue: "At risk",
+  caution: "Caution",
+  off_track: "Off track",
 };
 
 const STATUS_DESCRIPTIONS_TEMPLATE = (reviewer: string) => ({
-  pending: "Work has not started yet.",
-  on_track: "Progressing well. No blockers.",
-  concern: `There are emerging risks. ${reviewer} should be aware.`,
-  issue: `Blocked or significantly behind. ${reviewer}'s help is needed.`,
+  on_track: "Progressing as planned. No blockers.",
+  caution: `Emerging risks or delays. ${reviewer} should be aware.`,
+  off_track: `Significant problems affecting success. ${reviewer}'s help is needed.`,
 });
 
 interface SelectGoalStatusProps {
@@ -86,7 +74,7 @@ export function StatusSelector(props: SelectGoalStatusProps) {
 
 type StatusPickerProps = {
   value: Status | null;
-  rawValue: AnyStatus;
+  rawValue: Status;
   setValue: (value: Status) => void;
   reviewerFirstName: string;
   error: boolean;
@@ -144,7 +132,7 @@ function StatusPickerOption({ status, description, color, isSelected, onClick, t
   );
 }
 
-function StatusTrigger({ value, error }: { value: AnyStatus | null; error?: boolean }) {
+function StatusTrigger({ value, error }: { value: Status | null; error?: boolean }) {
   const className = classNames(
     "border rounded-lg",
     "px-2 py-1.5",
@@ -184,17 +172,13 @@ function normalizeStatus(value: string | null) {
     return value as Status;
   }
 
-  if (value in LEGACY_STATUS_MAP) {
-    return LEGACY_STATUS_MAP[value as LegacyStatus];
-  }
-
   throw new Error(`Invalid status value: ${value}`);
 }
 
-function assertValidStatus(value: string | null): asserts value is AnyStatus | null {
+function assertValidStatus(value: string | null): asserts value is Status | null {
   if (value === null) return;
 
-  if (STATUS_OPTIONS.includes(value as Status) || value in LEGACY_STATUS_MAP) {
+  if (STATUS_OPTIONS.includes(value as Status)) {
     return;
   }
 

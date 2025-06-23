@@ -95,6 +95,7 @@ function OverviewStatus({ goal }: { goal: Goals.Goal }) {
     .with("concern", () => <OverviewConcern goal={goal} />)
     .with("caution", () => <OverviewConcern goal={goal} />)
     .with("issue", () => <OverviewIssue goal={goal} />)
+    .with("off_track", () => <OverviewIssue goal={goal} />)
     .run();
 }
 
