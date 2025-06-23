@@ -9,7 +9,7 @@ defmodule Operately.Projects.CheckIn do
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id, where: [deleted_at: nil]
     belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
-    field :status, :string
+    field :status, Ecto.Enum, values: [:on_track, :caution, :off_track]
     field :description, :map
 
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
