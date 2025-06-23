@@ -6,7 +6,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
 import { PageHeader } from "../ProjectPage/PageHeader";
-import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
 
 const people = genPeople(5);
 

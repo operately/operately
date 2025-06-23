@@ -35,7 +35,7 @@ import {
   IconLink,
   IconArchive,
   IconTrash,
-} from "@tabler/icons-react";
+} from "../icons";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
 import { AvatarWithName } from "../Avatar";
