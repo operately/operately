@@ -5,7 +5,7 @@ defmodule Operately.Projects.Project do
   alias Operately.Repo
   alias Operately.Access.AccessLevels
   alias Operately.WorkMaps.WorkMapItem
-  alias Operately.Projects.{Contributor, Permissions}
+  alias Operately.Projects.{Contributor, Permissions, CheckIn}
 
   @behaviour WorkMapItem
 
@@ -15,11 +15,11 @@ defmodule Operately.Projects.Project do
     belongs_to :group, Operately.Groups.Group, foreign_key: :group_id
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
 
-    has_many :contributors, Operately.Projects.Contributor, foreign_key: :project_id
+    has_many :contributors, Contributor, foreign_key: :project_id
     has_many :contributing_people, through: [:contributors, :person]
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
-    has_many :check_ins, Operately.Projects.CheckIn, foreign_key: :project_id
+    has_many :check_ins, CheckIn, foreign_key: :project_id
 
     has_one :champion_contributor, Contributor, foreign_key: :project_id, where: [role: "champion"]
     has_one :reviewer_contributor, Contributor, foreign_key: :project_id, where: [role: "reviewer"]
@@ -35,8 +35,8 @@ defmodule Operately.Projects.Project do
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
 
-    belongs_to :last_check_in, Operately.Projects.CheckIn, foreign_key: :last_check_in_id
-    field :last_check_in_status, :string
+    belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
+    field :last_check_in_status, Ecto.Enum, values: CheckIn.validate_status()
     field :next_check_in_scheduled_at, :utc_datetime
 
     field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused, :unknown], default: :on_track
