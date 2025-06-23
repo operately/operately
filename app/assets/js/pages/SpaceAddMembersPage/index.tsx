@@ -2,8 +2,9 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
+
+import { IconPlus, IconX } from "turboui";
 
 import { PERMISSIONS_LIST, PermissionLevels } from "@/features/Permissions";
 
@@ -118,7 +119,7 @@ function AddMoreMembersButton({ onClick }: { onClick: () => void }) {
   return (
     <div className="flex justify-center" style={{ marginTop: "-18px" }} data-test-id={createTestId("add-more")}>
       <SecondaryButton onClick={onClick}>
-        <Icons.IconPlus size={16} />
+        <IconPlus size={16} />
       </SecondaryButton>
     </div>
   );
@@ -140,7 +141,7 @@ function RemoveMemberButton({ index }) {
         className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface-base"
         onClick={onClick}
       >
-        <Icons.IconX size={16} />
+        <IconX size={16} />
       </div>
     </div>
   );

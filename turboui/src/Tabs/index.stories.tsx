@@ -1,4 +1,4 @@
-import { IconHome, IconSettings, IconUser } from "@tabler/icons-react";
+import { IconHome, IconSettings, IconUser } from "../icons";
 import React from "react";
 import { Tabs, useTabs } from ".";
 

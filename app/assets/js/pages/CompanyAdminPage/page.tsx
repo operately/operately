@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
+import { IconUsers, IconUser, IconLetterCase, IconShieldLock, IconLock } from "turboui";
 import * as React from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -68,15 +68,15 @@ function AdminsMenu() {
   return (
     <Paper.Section title="As an admin or owner, you can:">
       <div>
-        <OptionsMenuItem linkTo={managePeople} icon={Icons.IconUsers} title="Manage team members" />
+        <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Manage team members" />
 
         <OptionsMenuItem
           linkTo={restorePath}
-          icon={Icons.IconUser}
+          icon={IconUser}
           title="Restore access for deactivated team members"
         />
 
-        <OptionsMenuItem linkTo={renameCompanyPath} icon={Icons.IconLetterCase} title="Rename the company" />
+        <OptionsMenuItem linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
       </div>
     </Paper.Section>
   );
@@ -100,8 +100,8 @@ function OwnersMenu() {
   return (
     <Paper.Section title="As an owner, you can:">
       <div>
-        <OptionsMenuItem linkTo={manageAdmins} icon={Icons.IconShieldLock} title="Manage administrators and owners" />
-        <OptionsMenuItem linkTo={manageTrustedDomains} icon={Icons.IconLock} title="Manage trusted email domains" />
+        <OptionsMenuItem linkTo={manageAdmins} icon={IconShieldLock} title="Manage administrators and owners" />
+        <OptionsMenuItem linkTo={manageTrustedDomains} icon={IconLock} title="Manage trusted email domains" />
       </div>
     </Paper.Section>
   );

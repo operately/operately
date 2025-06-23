@@ -1,5 +1,5 @@
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Icons from "@tabler/icons-react";
+import { IconEdit, IconDownload, IconTrash } from "turboui";
 import React from "react";
 
 import { useDownloadFile } from "@/models/blobs";
@@ -23,7 +23,7 @@ export function Options({ showDeleteModal }: Props) {
 
       {file.permissions.canEditFile && (
         <PageOptions.Link
-          icon={Icons.IconEdit}
+          icon={IconEdit}
           title="Edit"
           to={paths.resourceHubEditFilePath(file.id!)}
           testId="edit-file-link"
@@ -43,10 +43,10 @@ function DownloadAction() {
   const [downloadFile] = useDownloadFile(file.blob.url, file.name);
 
   return (
-    <PageOptions.Action icon={Icons.IconDownload} title="Download" onClick={downloadFile} testId="download-file-link" />
+    <PageOptions.Action icon={IconDownload} title="Download" onClick={downloadFile} testId="download-file-link" />
   );
 }
 
 function DeleteAction({ onClick }: { onClick: () => void }) {
-  return <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
+  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
 }

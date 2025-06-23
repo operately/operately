@@ -1,7 +1,7 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Spaces from "@/models/spaces";
 
+import { IconWorld, IconLockFilled } from "turboui";
 import { Tooltip } from "@/components/Tooltip";
 import { assertPresent } from "@/utils/assertions";
 
@@ -40,7 +40,7 @@ function PublicSpace({ size }: { size: number }) {
 
   return (
     <Tooltip content={content} testId="public-project-tooltip" delayDuration={100}>
-      <Icons.IconWorld size={size} />
+      <IconWorld size={size} />
     </Tooltip>
   );
 }
@@ -55,7 +55,7 @@ function InviteOnly({ size }: { size: number }) {
 
   return (
     <Tooltip content={content} testId="secret-space-tooltip" delayDuration={100} className="z-50">
-      <Icons.IconLockFilled size={size} />
+      <IconLockFilled size={size} />
     </Tooltip>
   );
 }

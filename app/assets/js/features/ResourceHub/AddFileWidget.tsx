@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { IconX } from "@tabler/icons-react";
+import { IconX } from "turboui";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFile, ResourceHubFolder, createResourceHubFile } from "@/models/resourceHubs";
 

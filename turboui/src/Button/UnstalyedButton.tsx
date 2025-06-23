@@ -1,7 +1,7 @@
 import React from "react";
 
-import type { IconProps } from "@tabler/icons-react";
-import { IconChevronDown } from "@tabler/icons-react";
+import type { IconProps } from "../icons";
+import { IconChevronDown } from "../icons";
 import { match } from "ts-pattern";
 import { DivLink } from "../Link";
 import { Menu } from "../Menu";

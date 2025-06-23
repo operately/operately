@@ -14,6 +14,7 @@ export * from "./StatusBadge";
 export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./WorkMap";
+export * from "./icons";
 
 export { DateField } from "./DateField";
 export { FormattedTime } from "./FormattedTime";

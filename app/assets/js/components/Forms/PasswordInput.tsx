@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconCheck } from "turboui";
 
 import classNames from "classnames";
 import { InputField } from "./FieldGroup";
@@ -50,7 +50,7 @@ export function PasswordInput(props: PasswordInputProps) {
 
         {!error && props.okSign && (
           <div className="absolute inset-y-0 right-0 flex items-center pr-4 text-accent-1">
-            <Icons.IconCheck size={20} />
+            <IconCheck size={20} />
           </div>
         )}
       </div>
