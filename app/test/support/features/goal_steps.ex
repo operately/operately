@@ -265,7 +265,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :assert_goal_moved_to_another_space_feed_posted, ctx do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.assert_feed_item(ctx.creator, "moved the #{ctx.goal.name} to General")
+    |> UI.assert_feed_item(ctx.creator, "moved the #{ctx.goal.name} goal to General")
   end
 
   #
