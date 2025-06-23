@@ -5,6 +5,8 @@ defmodule Operately.Goals.Update do
   alias Operately.Notifications
   alias Operately.Goals.Update.Permissions
 
+  @valid_statuses [:on_track, :caution, :off_track]
+
   schema "goal_updates" do
     belongs_to :goal, Operately.Goals.Goal, foreign_key: :goal_id
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
@@ -15,7 +17,7 @@ defmodule Operately.Goals.Update do
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :goal_update]
 
     field :message, :map
-    field :status, Ecto.Enum, values: [:on_track, :concern, :caution, :issue, :pending]
+    field :status, Ecto.Enum, values: @valid_statuses
     embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
 
     field :acknowledged_at, :utc_datetime
@@ -58,6 +60,8 @@ defmodule Operately.Goals.Update do
       :subscription_list_id
     ])
   end
+
+  def valid_statuses, do: @valid_statuses
 
   #
   # After load hooks
