@@ -56,33 +56,21 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
     case "on_track":
       return (
         <>
-          Work is progressing as planned.
-          <br />
-          No involvement by {reviewerName || "the reviewer"} is needed at this time.
+          Progressing as planned. No blockers.
         </>
       );
     case "caution":
-      return (
-        <>
-          A potential problem may exist, perhaps in the future, if not monitored.
-          <br />
-          {reviewerName || "The reviewer"} should be aware, but no action is needed.
-        </>
-      );
     case "concern":
       return (
         <>
-          A potential problem may exist, perhaps in the future, if not monitored.
-          <br />
-          {reviewerName || "The reviewer"} should be aware, but no action is needed.
+          Emerging risks or delays. {reviewerName || "The reviewer"} should be aware.
         </>
       );
     case "issue":
+    case "off_track":
       return (
         <>
-          There’s a problem that may significantly affect time, cost, quality, or scope.
-          <br />
-          {reviewerName || "The reviewer"}’s involvement is necessary.
+          Significant problems affecting success. {reviewerName || "The reviewer"}’s help is needed.
         </>
       );
     case "pending":
