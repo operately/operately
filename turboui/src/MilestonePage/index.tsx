@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { Page } from "../Page";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { PieChart } from "../PieChart";
 import { calculateMilestoneStats } from "../TaskBoard/components/MilestoneCard";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 import { TaskList } from "../TaskBoard/components/TaskList";
+import { TaskFilter, FilterBadges } from "../TaskBoard/components/TaskFilter";
 import { reorderTasksInList } from "../TaskBoard/utils/taskReorderingUtils";
 import { DragAndDropProvider } from "../utils/DragAndDrop";
+import { Timeline } from "../Timeline";
 
 // Calculate completion percentage for a milestone, excluding canceled tasks
 function calculateCompletionPercentage(stats: {
@@ -24,10 +25,26 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-// Using DateField instead of DueDateDisplay
-import { IconMessageCircle, IconPlus } from "../icons";
-import { GhostButton } from "../Button";
+import {
+  IconMessageCircle,
+  IconPlus,
+  IconFlag,
+  IconCalendar,
+  IconBell,
+  IconBellOff,
+  IconLink,
+  IconArchive,
+  IconTrash,
+} from "@tabler/icons-react";
+import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
+import { AvatarWithName } from "../Avatar";
+import FormattedTime from "../FormattedTime";
+import RichContent, { countCharacters, shortenContent } from "../RichContent";
+import { isContentEmpty } from "../RichContent/isContentEmpty";
+import { Editor, useEditor } from "../RichEditor";
+import { TextField } from "../TextField";
+import { Link } from "../Link";
 import * as Types from "../TaskBoard/types";
 
 interface MilestonePageProps {
@@ -37,11 +54,11 @@ interface MilestonePageProps {
   // Tasks for this milestone
   tasks: Types.Task[];
 
-  // Space and project context for breadcrumbs
-  spaceName: string;
-  spaceUrl: string;
-  projectName: string;
-  projectUrl: string;
+  // All milestones for context
+  milestones?: Types.Milestone[];
+
+  // Navigation link to go back to all milestones view
+  milestonesLink?: string;
 
   // Optional callbacks
   onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
@@ -50,48 +67,107 @@ interface MilestonePageProps {
   onCommentCreate?: (comment: string) => void;
   onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  onMilestoneNameChange?: (name: string) => Promise<boolean>;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+
+  // Filtering
+  filters?: Types.FilterCondition[];
+  onFiltersChange?: (filters: Types.FilterCondition[]) => void;
+
+  // Timeline data
+  timelineItems?: any[];
+  currentUser?: Types.Person;
+  canComment?: boolean;
+  onAddComment?: (comment: string) => void;
+  onEditComment?: (commentId: string, content: string) => void;
+
+  // Milestone metadata
+  createdBy?: Types.Person;
+  createdAt?: Date;
+  isSubscribed?: boolean;
+  onSubscriptionToggle?: (subscribed: boolean) => void;
+  onCopyUrl?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
+  canEdit?: boolean;
+
+  // Rich editor support for description
+  description?: any; // Rich content description
+  onDescriptionChange?: (newDescription: any) => Promise<boolean>;
+  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
 }
 
 export function MilestonePage({
   milestone,
   tasks,
-  spaceName,
-  spaceUrl,
-  projectName,
-  projectUrl,
+  milestones,
+  milestonesLink,
   onTaskCreate,
   onTaskReorder,
   onDueDateChange,
   onTaskUpdate,
+  onMilestoneUpdate,
+  onMilestoneNameChange,
   searchPeople,
+  filters = [],
+  onFiltersChange,
+  timelineItems = [],
+  currentUser,
+  canComment = false,
+  onAddComment,
+  onEditComment,
+  createdBy,
+  createdAt,
+  isSubscribed = false,
+  onSubscriptionToggle,
+  onCopyUrl,
+  onArchive,
+  onDelete,
+  canEdit = true,
+  description,
+  onDescriptionChange,
+  mentionedPersonLookup,
+  peopleSearch,
 }: MilestonePageProps) {
   // State
-  const [showCompleted, setShowCompleted] = useState(false);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   // Calculate stats
   const stats = calculateMilestoneStats(tasks);
   const completionPercentage = calculateCompletionPercentage(stats);
 
-  // Filter tasks based on showCompleted state
-  const filteredTasks = tasks.filter((task) => {
-    if (showCompleted) {
-      return true; // Show all tasks
-    } else {
-      // Only show pending and in-progress tasks
-      return task.status === "pending" || task.status === "in_progress";
-    }
-  });
+  // Apply filters to tasks
+  const applyFilters = (tasks: Types.Task[], filters: Types.FilterCondition[]) => {
+    return tasks.filter((task) => {
+      return filters.every((filter) => {
+        switch (filter.type) {
+          case "status":
+            return filter.operator === "is" ? task.status === filter.value : task.status !== filter.value;
+          case "assignee":
+            const hasAssignee = task.assignees?.some((assignee) => assignee.id === filter.value?.id);
+            return filter.operator === "is" ? hasAssignee : !hasAssignee;
+          case "content":
+            const searchTerm = filter.value?.toLowerCase() || "";
+            const taskContent = `${task.title} ${task.description || ""}`.toLowerCase();
+            return filter.operator === "contains"
+              ? taskContent.includes(searchTerm)
+              : !taskContent.includes(searchTerm);
+          default:
+            return true;
+        }
+      });
+    });
+  };
 
-  // Count of completed tasks for the "show completed" link
-  const completedCount = stats.done;
+  // Filter tasks based on current filters
+  const baseFilteredTasks = applyFilters(tasks, filters);
 
-  // Navigation for breadcrumbs
-  const navigation = [
-    { to: spaceUrl, label: spaceName },
-    { to: projectUrl, label: projectName },
-  ];
+  // Separate visible tasks from hidden (completed) tasks
+  const visibleTasks = baseFilteredTasks.filter((task) => task.status === "pending" || task.status === "in_progress");
+
+  const hiddenTasks = baseFilteredTasks.filter((task) => task.status === "done" || task.status === "canceled");
 
   // Handle task creation
   const handleCreateTask = (newTask: Omit<Types.Task, "id">) => {
@@ -106,144 +182,636 @@ export function MilestonePage({
   };
 
   return (
-    <Page
-      title={milestone.name}
-      size="large"
-      navigation={navigation}
-      options={[
-        {
-          type: "action",
-          icon: IconPlus,
-          label: "Add Task",
-          onClick: () => setIsTaskModalOpen(true),
-        },
-      ]}
-    >
-      <div className="space-y-6 max-w-4xl mx-auto p-4">
-        {/* Header section with milestone info */}
-        <div className="flex items-center justify-between px-4 mt-4">
-          <div className="flex items-center gap-4">
-            {/* Progress pie chart */}
-            <div className="h-12 w-12">
-              <PieChart
-                size={48}
-                slices={[
-                  {
-                    percentage: completionPercentage,
-                    color: "var(--color-callout-success-icon)",
-                  },
-                ]}
+    <div className="flex flex-col h-full bg-surface-base">
+      <div className="flex-1 overflow-auto">
+        <div className="px-4 py-6">
+          <div className="sm:grid sm:grid-cols-12">
+            {/* Main content - left column (8 columns) */}
+            <div className="sm:col-span-8 sm:px-4 space-y-6">
+              {/* Header section with milestone info */}
+              <div className="space-y-2">
+                {/* Milestone label line: flag icon + "Milestones" link */}
+                <div className="flex items-center gap-2">
+                  <IconFlag size={16} className="text-blue-500" />
+                  {milestonesLink ? (
+                    <Link to={milestonesLink} className="text-sm font-medium" underline="hover">
+                      Milestones
+                    </Link>
+                  ) : (
+                    <span className="text-sm font-medium text-content-base">Milestones</span>
+                  )}
+                </div>
+                
+                {/* Title line: milestone name only */}
+                <div>
+                  <TextField
+                    className="font-semibold text-xl"
+                    text={milestone.name}
+                    onSave={onMilestoneNameChange || (async () => true)}
+                    readonly={!canEdit}
+                    trimBeforeSave
+                  />
+                </div>
+              </div>
+
+              {/* Description section */}
+              <MilestoneDescription
+                description={description}
+                onDescriptionChange={onDescriptionChange}
+                mentionedPersonLookup={mentionedPersonLookup}
+                peopleSearch={peopleSearch}
+                canEdit={canEdit}
               />
+
+              {/* Tasks section */}
+              <div className="space-y-4">
+                {/* Task header container - visually groups all task-related controls */}
+                <div className="bg-surface-dimmed rounded-lg border border-surface-outline">
+                  {/* Header bar with title, pie chart, and primary action */}
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-surface-outline">
+                    <div className="flex items-center gap-3">
+                      <div className="h-4 w-6 flex items-center justify-center">
+                        <PieChart
+                          size={24}
+                          slices={[
+                            {
+                              percentage: completionPercentage,
+                              color: "var(--color-callout-success-icon)",
+                            },
+                          ]}
+                        />
+                      </div>
+                      <h2 className="font-bold">Tasks</h2>
+                    </div>
+                    <PrimaryButton size="xs" icon={IconPlus} onClick={() => setIsTaskModalOpen(true)}>
+                      Add Task
+                    </PrimaryButton>
+                  </div>
+
+                  {/* Filter controls */}
+                  {onFiltersChange && (
+                    <div className="flex items-center gap-3 px-4 py-2 border-b border-surface-outline">
+                      <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={tasks} />
+                      {filters.length > 0 && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
+                    </div>
+                  )}
+
+                  {/* Task list content */}
+                  <div className="bg-surface-base">
+                    {visibleTasks.length === 0 && hiddenTasks.length === 0 ? (
+                      /* Empty state */
+                      <div className="px-4 py-8 text-center text-content-subtle">
+                        <p className="text-sm">No tasks yet. Click "Add Task" to get started.</p>
+                      </div>
+                    ) : (
+                      /* Task list with drag and drop */
+                      <DragAndDropProvider
+                        onDrop={(_, draggedId, index) => {
+                          if (onTaskReorder) {
+                            onTaskReorder(reorderTasksInList(visibleTasks, draggedId, index));
+                            return true;
+                          }
+                          return false;
+                        }}
+                      >
+                        <TaskList
+                          tasks={visibleTasks}
+                          hiddenTasks={hiddenTasks}
+                          showHiddenTasksToggle={hiddenTasks.length > 0}
+                          milestoneId={milestone.id}
+                          onTaskUpdate={onTaskUpdate}
+                          searchPeople={searchPeople}
+                        />
+                      </DragAndDropProvider>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Timeline section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <IconMessageCircle className="w-5 h-5 text-content-subtle" />
+                  <h2 className="font-bold">Activity & Comments</h2>
+                </div>
+
+                <div className="bg-surface-dimmed rounded-lg p-4">
+                  <Timeline
+                    items={timelineItems}
+                    currentUser={
+                      currentUser
+                        ? {
+                            id: currentUser.id,
+                            fullName: currentUser.fullName,
+                            avatarUrl: currentUser.avatarUrl || undefined,
+                          }
+                        : { id: "", fullName: "", avatarUrl: undefined }
+                    }
+                    canComment={canComment}
+                    commentParentType="milestone"
+                    onAddComment={onAddComment}
+                    onEditComment={onEditComment}
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Milestone title */}
-            <h1 className="text-2xl font-bold">{milestone.name}</h1>
+            {/* Sidebar - right column (4 columns) */}
+            <div className="sm:col-span-4 hidden sm:block sm:pl-8">
+              {/* Add spacing to align with description section */}
+              <div className="space-y-2 mb-6">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-xl font-semibold opacity-0">{milestone.name}</h1>
+                </div>
+              </div>
 
-            {/* Due date or Set target date affordance */}
-            <div className="ml-4 flex items-center text-content-subtle">
-              <DateField
-                date={milestone.dueDate || null}
-                setDate={(date) => {
-                  if (onDueDateChange) {
-                    // Handle both setting a date and clearing a date (null)
-                    onDueDateChange(milestone.id, date);
-                  }
-                }}
-                placeholder="Set target date"
-                readonly={!!onDueDateChange}
-                showOverdueWarning
-                showEmptyStateAsButton
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Description section */}
-        {milestone.hasDescription && (
-          <div className="p-6 bg-surface-dimmed rounded-md">
-            <div className="prose max-w-none pl-7">
-              {/* This would be a rich text renderer component in a real app */}
-              <p className="text-content-subtle">Milestone description would go here, rendered as rich text.</p>
-            </div>
-          </div>
-        )}
-
-        {/* Tasks section */}
-        <div>
-          <div className="flex items-center justify-between mb-4 px-4">
-            <h2 className="text-lg font-semibold">Tasks</h2>
-            <GhostButton size="xs" icon={IconPlus} onClick={() => setIsTaskModalOpen(true)}>
-              Add Task
-            </GhostButton>
-          </div>
-
-          {/* Task list */}
-          <div className="rounded-md border border-surface-outline overflow-hidden">
-            <DragAndDropProvider
-              onDrop={(_, draggedId, index) => {
-                if (onTaskReorder) {
-                  onTaskReorder(reorderTasksInList(filteredTasks, draggedId, index));
-                  return true;
-                }
-                return false;
-              }}
-            >
-              <div className="px-8">
-                <TaskList
-                  tasks={filteredTasks}
-                  milestoneId={milestone.id}
-                  onTaskUpdate={onTaskUpdate}
-                  searchPeople={searchPeople}
+              <div className="space-y-6">
+                <MilestoneSidebar
+                  milestone={milestone}
+                  onDueDateChange={onDueDateChange}
+                  onMilestoneUpdate={onMilestoneUpdate}
+                  createdBy={createdBy}
+                  createdAt={createdAt}
+                  isSubscribed={isSubscribed}
+                  onSubscriptionToggle={onSubscriptionToggle}
+                  onCopyUrl={onCopyUrl}
+                  onArchive={onArchive}
+                  onDelete={onDelete}
+                  canEdit={canEdit}
                 />
               </div>
-            </DragAndDropProvider>
-
-            {/* Show completed link */}
-            {!showCompleted && completedCount > 0 && (
-              <div className="p-2 text-center border-t border-surface-outline">
-                <button onClick={() => setShowCompleted(true)} className="text-sm text-brand-1 hover:underline">
-                  Show {completedCount} completed {completedCount === 1 ? "task" : "tasks"}
-                </button>
-              </div>
-            )}
-
-            {/* Hide completed link */}
-            {showCompleted && completedCount > 0 && (
-              <div className="p-4 text-center border-t border-surface-outline">
-                <button onClick={() => setShowCompleted(false)} className="text-sm text-brand-1 hover:underline">
-                  Hide completed tasks
-                </button>
-              </div>
-            )}
+            </div>
           </div>
         </div>
-
-        {/* Comments section placeholder */}
-        {milestone.hasComments && (
-          <div className="p-6 bg-surface-dimmed rounded-md">
-            <div className="flex items-center mb-3">
-              <IconMessageCircle className="mr-2 w-5 h-5 text-content-subtle" />
-              <h2 className="text-lg font-semibold">
-                Comments {milestone.commentCount && `(${milestone.commentCount})`}
-              </h2>
-            </div>
-            <div className="pl-7">
-              <p className="text-content-subtle">Comments would go here in a real implementation.</p>
-            </div>
-          </div>
-        )}
       </div>
-
       {/* Task creation modal */}
       <TaskCreationModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
         currentMilestoneId={milestone.id}
-        milestones={[milestone]}
+        milestones={milestones || [milestone]}
       />
-    </Page>
+    </div>
   );
+}
+
+// Sidebar component for milestone details
+interface MilestoneSidebarProps {
+  milestone: Types.Milestone;
+  onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  createdBy?: Types.Person;
+  createdAt?: Date;
+  isSubscribed?: boolean;
+  onSubscriptionToggle?: (subscribed: boolean) => void;
+  onCopyUrl?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
+  canEdit?: boolean;
+}
+
+function MilestoneSidebar({
+  milestone,
+  onDueDateChange,
+  onMilestoneUpdate,
+  createdBy,
+  createdAt,
+  isSubscribed = false,
+  onSubscriptionToggle,
+  onCopyUrl,
+  onArchive,
+  onDelete,
+  canEdit = true,
+}: MilestoneSidebarProps) {
+  return (
+    <>
+      <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
+      <SidebarStatus milestone={milestone} onMilestoneUpdate={onMilestoneUpdate} canEdit={canEdit} />
+      {createdBy && createdAt && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
+      <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
+      <SidebarActions onCopyUrl={onCopyUrl} onArchive={onArchive} onDelete={onDelete} canEdit={canEdit} />
+    </>
+  );
+}
+
+function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-2">
+      <div className="font-bold text-sm">{title}</div>
+      {children}
+    </div>
+  );
+}
+
+function SidebarDueDate({
+  milestone,
+  onDueDateChange,
+  canEdit,
+}: {
+  milestone: Types.Milestone;
+  onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  canEdit: boolean;
+}) {
+  return (
+    <SidebarSection title="Due Date">
+      <DateField
+        date={milestone.dueDate || null}
+        setDate={(date) => {
+          if (onDueDateChange) {
+            onDueDateChange(milestone.id, date);
+          }
+        }}
+        readonly={!canEdit}
+        showOverdueWarning={true}
+        emptyStateText="Set due date"
+        emptyStateReadonlyText="No due date set"
+      />
+    </SidebarSection>
+  );
+}
+
+function SidebarStatus({
+  milestone,
+  onMilestoneUpdate,
+  canEdit,
+}: {
+  milestone: Types.Milestone;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  canEdit: boolean;
+}) {
+  // Assume milestone has a status field (you may need to add this to Types.Milestone)
+  const isCompleted = (milestone as any).status === "completed";
+
+  const handleStatusToggle = () => {
+    if (onMilestoneUpdate) {
+      // Toggle the completion status (stored as any property for demo)
+      const newStatus = isCompleted ? "active" : "completed";
+      // Pass status info through the callback - parent would handle this
+      onMilestoneUpdate(milestone.id, { ...milestone, status: newStatus } as any);
+    }
+  };
+
+  if (!canEdit) {
+    return (
+      <SidebarSection title="Status">
+        <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
+      </SidebarSection>
+    );
+  }
+
+  return (
+    <SidebarSection title="Status">
+      <div className="space-y-2">
+        <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
+        <GhostButton size="xs" onClick={handleStatusToggle}>
+          {isCompleted ? "Reopen milestone" : "Mark as completed"}
+        </GhostButton>
+      </div>
+    </SidebarSection>
+  );
+}
+
+function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: Types.Person; createdAt: Date }) {
+  return (
+    <SidebarSection title="Created">
+      <div className="space-y-2 text-sm">
+        <AvatarWithName person={createdBy} size="tiny" nameFormat="short" link={`/people/${createdBy.id}`} />
+        <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
+          <IconCalendar size={14} />
+          <FormattedTime time={createdAt} format="short-date" />
+        </div>
+      </div>
+    </SidebarSection>
+  );
+}
+
+function SidebarNotifications({
+  isSubscribed,
+  onSubscriptionToggle,
+}: {
+  isSubscribed: boolean;
+  onSubscriptionToggle?: (subscribed: boolean) => void;
+}) {
+  const handleToggle = () => {
+    if (onSubscriptionToggle) {
+      onSubscriptionToggle(!isSubscribed);
+    }
+  };
+
+  return (
+    <SidebarSection title="Notifications">
+      <div className="space-y-2">
+        <SecondaryButton size="xs" onClick={handleToggle} icon={isSubscribed ? IconBell : IconBellOff}>
+          {isSubscribed ? "Unsubscribe" : "Subscribe"}
+        </SecondaryButton>
+
+        <div className="text-xs text-content-dimmed">
+          {isSubscribed
+            ? "You're receiving notifications because you're subscribed to this milestone."
+            : "You're not receiving notifications from this milestone."}
+        </div>
+      </div>
+    </SidebarSection>
+  );
+}
+
+function SidebarActions({
+  onCopyUrl,
+  onArchive,
+  onDelete,
+  canEdit,
+}: {
+  onCopyUrl?: () => void;
+  onArchive?: () => void;
+  onDelete?: () => void;
+  canEdit: boolean;
+}) {
+  const actions = [
+    {
+      label: "Copy URL",
+      onClick: onCopyUrl,
+      icon: IconLink,
+      show: !!onCopyUrl,
+    },
+    {
+      label: "Archive",
+      onClick: onArchive,
+      icon: IconArchive,
+      show: !!onArchive,
+    },
+    {
+      label: "Delete",
+      onClick: onDelete,
+      icon: IconTrash,
+      show: canEdit && !!onDelete,
+      danger: true,
+    },
+  ].filter((action) => action.show);
+
+  if (actions.length === 0) return null;
+
+  return (
+    <SidebarSection title="Actions">
+      <div className="space-y-1">
+        {actions.map((action, index) => (
+          <button
+            key={index}
+            onClick={action.onClick}
+            className={`flex items-center gap-2 text-xs hover:bg-surface-highlight rounded px-2 py-1 -mx-2 w-full text-left ${
+              action.danger ? "text-content-error hover:bg-red-50" : ""
+            }`}
+          >
+            <action.icon size={16} className={action.danger ? "text-content-error" : "text-content-dimmed"} />
+            <span>{action.label}</span>
+          </button>
+        ))}
+      </div>
+    </SidebarSection>
+  );
+}
+
+// TaskPage-style description component for milestones
+interface MilestoneDescriptionProps {
+  description?: any;
+  onDescriptionChange?: (newDescription: any) => Promise<boolean>;
+  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
+  canEdit: boolean;
+}
+
+function MilestoneDescription({
+  description,
+  onDescriptionChange,
+  mentionedPersonLookup,
+  peopleSearch,
+  canEdit,
+}: MilestoneDescriptionProps) {
+  const descriptionState = useMilestoneDescriptionState({
+    description,
+    onDescriptionChange,
+    mentionedPersonLookup,
+    peopleSearch,
+  });
+
+  if (descriptionState.mode === "zero" && !canEdit) return null;
+
+  if (descriptionState.mode === "zero") {
+    return (
+      <div>
+        <button
+          onClick={descriptionState.startEdit}
+          className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
+        >
+          Add details about this milestone...
+        </button>
+      </div>
+    );
+  }
+
+  const editButton = (
+    <SecondaryButton size="xxs" onClick={descriptionState.startEdit}>
+      Edit
+    </SecondaryButton>
+  );
+
+  return (
+    <div>
+      <SectionHeader title="Notes" buttons={editButton} showButtons={canEdit && descriptionState.mode !== "edit"} />
+
+      {descriptionState.mode === "view" && <MilestoneDescriptionContent state={descriptionState} />}
+      {descriptionState.mode === "edit" && <MilestoneDescriptionEditor state={descriptionState} />}
+    </div>
+  );
+}
+
+function SectionHeader({
+  title,
+  buttons,
+  showButtons,
+}: {
+  title: string;
+  buttons?: React.ReactNode;
+  showButtons?: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <h2 className="font-bold">{title}</h2>
+      {showButtons && buttons}
+    </div>
+  );
+}
+
+function MilestoneDescriptionContent({ state }: { state: MilestoneDescriptionState }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const length = useMemo(() => {
+    return state.description ? countCharacters(state.description, { skipParse: true }) : 0;
+  }, [state.description]);
+
+  const displayedDescription = useMemo(() => {
+    if (length <= 200) {
+      return state.description;
+    } else if (isExpanded) {
+      return state.description;
+    } else {
+      return shortenContent(state.description!, 200, { suffix: "...", skipParse: true });
+    }
+  }, [state.description, length, isExpanded]);
+
+  return (
+    <div className="mt-2">
+      <RichContent
+        content={displayedDescription}
+        mentionedPersonLookup={async (id: string) => {
+          const person = state.mentionedPersonLookup?.(id);
+          if (!person) return null;
+          return {
+            id: person.id,
+            fullName: person.fullName,
+            avatarUrl: person.avatarUrl,
+            title: "",
+            profileLink: `/people/${person.id}`,
+          };
+        }}
+      />
+
+      {length > 200 && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
+        >
+          {isExpanded ? "Collapse" : "Expand"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+function MilestoneDescriptionEditor({ state }: { state: MilestoneDescriptionState }) {
+  return (
+    <div className="mt-2">
+      <Editor editor={state.editor} />
+      <div className="flex gap-2 mt-2">
+        <PrimaryButton size="xs" onClick={state.save}>
+          Save
+        </PrimaryButton>
+        <SecondaryButton size="xs" onClick={state.cancel}>
+          Cancel
+        </SecondaryButton>
+      </div>
+    </div>
+  );
+}
+
+interface MilestoneDescriptionState {
+  description: string | null;
+  mode: "view" | "edit" | "zero";
+  setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
+  setDescription: React.Dispatch<React.SetStateAction<string | null>>;
+  editor: ReturnType<typeof useEditor>;
+  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  startEdit: () => void;
+  save: () => void;
+  cancel: () => void;
+}
+
+function useMilestoneDescriptionState({
+  description: initialDescription,
+  onDescriptionChange,
+  mentionedPersonLookup,
+  peopleSearch,
+}: {
+  description?: any;
+  onDescriptionChange?: (newDescription: any) => Promise<boolean>;
+  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
+}): MilestoneDescriptionState {
+  const initialMode = isContentEmpty(initialDescription) ? "zero" : "view";
+
+  const [description, setDescription] = useState<string | null>(initialDescription || null);
+  const [mode, setMode] = useState<"view" | "edit" | "zero">(initialMode);
+
+  useEffect(() => {
+    setDescription(initialDescription || null);
+  }, [initialDescription]);
+
+  // Convert TaskBoard Person to RichEditor Person format
+  const editorMentionLookup = async (id: string) => {
+    const person = mentionedPersonLookup?.(id);
+    if (!person) return null;
+    return {
+      id: person.id,
+      fullName: person.fullName,
+      avatarUrl: person.avatarUrl,
+      title: "", // TaskBoard Person doesn't have title
+      profileLink: `/people/${person.id}`, // Generate profile link
+    };
+  };
+
+  // Convert TaskBoard peopleSearch to RichEditor format
+  const editorPeopleSearch = async (params: { query: string }) => {
+    if (!peopleSearch) return [];
+    const people = await peopleSearch(params);
+    return people.map((person) => ({
+      id: person.id,
+      fullName: person.fullName,
+      avatarUrl: person.avatarUrl,
+      title: "", // TaskBoard Person doesn't have title
+      profileLink: `/people/${person.id}`, // Generate profile link
+    }));
+  };
+
+  const editor = useEditor({
+    content: initialDescription,
+    editable: true,
+    placeholder: "Describe the milestone...",
+    mentionedPersonLookup: editorMentionLookup,
+    peopleSearch: editorPeopleSearch,
+  });
+
+  const save = useCallback(async () => {
+    if (!onDescriptionChange) return;
+
+    const content = editor.getJson();
+    const success = await onDescriptionChange(content);
+
+    if (success) {
+      setDescription(content);
+
+      if (isContentEmpty(content)) {
+        setMode("zero");
+      } else {
+        setMode("view");
+      }
+    }
+  }, [editor, setDescription, setMode, onDescriptionChange]);
+
+  const cancel = useCallback(() => {
+    if (isContentEmpty(description)) {
+      setMode("zero");
+    } else {
+      setMode("view");
+    }
+  }, [setMode, description]);
+
+  const startEdit = useCallback(() => {
+    editor.setContent(initialDescription);
+    editor.setFocused(true);
+    setMode("edit");
+  }, [setMode, editor, initialDescription]);
+
+  return {
+    description,
+    mode,
+    editor,
+    mentionedPersonLookup,
+    startEdit,
+    setMode,
+    setDescription,
+    save,
+    cancel,
+  };
 }
 
 export default MilestonePage;
