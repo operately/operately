@@ -5,7 +5,7 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import { assertPresent } from "@/utils/assertions";
 
 import { downloadMarkdown, exportToMarkdown } from "@/utils/markdown";
-import { IconCopy, IconEdit, IconFileExport, IconTrash } from "@tabler/icons-react";
+import { IconCopy, IconEdit, IconFileExport, IconTrash } from "turboui";
 import { useLoadedData } from "./loader";
 
 interface Props {

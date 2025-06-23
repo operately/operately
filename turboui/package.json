@@ -42,7 +42,6 @@
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-popover": "^1.0.5",
     "@radix-ui/react-tooltip": "^1.0.6",
-    "@tabler/icons-react": "^3.14.0",
     "@types/react": "^18.3.5",
     "@types/react-datepicker": "^4.19.6",
     "date-fns": "^2.30.0",
@@ -64,8 +63,8 @@
     "@tiptap/react": "^2.3.0",
     "@tiptap/starter-kit": "^2.3.0",
     "@tiptap/suggestion": "^2.3.0",
+    "@tabler/icons-react": "^3.14.0",
     "react-hot-toast": "^2.5.2",
-    "lucide-react": "^0.475.0",
     "react-hook-form": "^7.56.1"
   }
 }

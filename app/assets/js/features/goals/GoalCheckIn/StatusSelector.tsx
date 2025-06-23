@@ -6,7 +6,7 @@ import { useFieldError, useFieldValue } from "@/components/Forms/FormContext";
 import { AddErrorFn } from "@/components/Forms/useForm/errors";
 import { useValidation } from "@/components/Forms/validations/hook";
 import { createTestId } from "@/utils/testid";
-import { IconCheck } from "@tabler/icons-react";
+import { IconCheck } from "turboui";
 import classNames from "classnames";
 
 type Status = "pending" | "on_track" | "concern" | "issue";

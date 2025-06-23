@@ -1,6 +1,6 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 
+import { IconH1 } from "turboui";
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
 export function H1Button({ editor, iconSize }): JSX.Element {
@@ -10,7 +10,7 @@ export function H1Button({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("heading", { level: 1 })}
       title="Heading 1"
     >
-      <Icons.IconH1 size={iconSize} />
+      <IconH1 size={iconSize} />
     </ToolbarToggleButton>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as Icons from "@tabler/icons-react";
+import { IconSquareCheckFilled, IconSquareChevronsLeftFilled, IconEdit } from "turboui";
 import * as TipTapEditor from "@/components/Editor";
 import * as Reactions from "@/models/reactions";
 
@@ -127,7 +127,7 @@ function MilestoneCompleted({ comment }) {
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <Icons.IconSquareCheckFilled size={20} className="text-accent-1" />
+            <IconSquareCheckFilled size={20} className="text-accent-1" />
             <div className="flex-1 pr-2 font-semibold text-content-accent">Completed the Milestone</div>
           </div>
 
@@ -152,7 +152,7 @@ function MilestoneReopened({ comment }) {
       <div className="flex-1">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
-            <Icons.IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
+            <IconSquareChevronsLeftFilled size={20} className="text-yellow-500" />
             <div className="flex-1 pr-2 font-semibold text-content-accent">Re-Opened the Milestone</div>
           </div>
 
@@ -219,7 +219,7 @@ function CommentDropdownMenu({ comment, onEdit }) {
 
   return (
     <Menu size="small" testId="comment-options">
-      <MenuActionItem onClick={onEdit} testId="edit-comment" icon={Icons.IconEdit}>
+      <MenuActionItem onClick={onEdit} testId="edit-comment" icon={IconEdit}>
         Edit
       </MenuActionItem>
     </Menu>
@@ -236,7 +236,7 @@ function AckComment({ person, ackAt }) {
       <div className="flex items-center justify-between flex-1">
         <div className="flex items-center gap-2 font-bold flex-1">
           {person.fullName} acknowledged this Check-In
-          <Icons.IconSquareCheckFilled size={24} className="text-accent-1" />
+          <IconSquareCheckFilled size={24} className="text-accent-1" />
         </div>
 
         <div className="flex items-center justify-between">

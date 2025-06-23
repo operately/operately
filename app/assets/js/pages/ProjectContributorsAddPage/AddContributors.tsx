@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
+import { IconPlus, IconX } from "turboui";
 import * as React from "react";
 
 import { useAddProjectContributors } from "@/api";
@@ -139,7 +139,7 @@ function AddMoreContributorsButton({ onClick }: { onClick: () => void }) {
   return (
     <div className="flex justify-center" style={{ marginTop: "-18px" }} data-test-id={createTestId("add-more")}>
       <SecondaryButton onClick={onClick}>
-        <Icons.IconPlus size={16} />
+        <IconPlus size={16} />
       </SecondaryButton>
     </div>
   );
@@ -161,7 +161,7 @@ function RemoveContributorButton({ index }) {
         className="border border-surface-outline rounded-full p-2 cursor-pointer text-content-subtle hover:text-content-accent bg-surface-base"
         onClick={onClick}
       >
-        <Icons.IconX size={16} />
+        <IconX size={16} />
       </div>
     </div>
   );

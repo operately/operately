@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 
-import * as Icons from "@tabler/icons-react";
+import { IconFlag3Filled } from "turboui";
 import * as Projects from "@/models/projects";
 
 interface MilestoneIconProps {
@@ -28,5 +28,5 @@ export function MilestoneIcon({ milestone, className, size = 16 }: MilestoneIcon
     return classNames(color, className);
   }, [milestone.status, milestone.deadlineAt, className]);
 
-  return <Icons.IconFlag3Filled size={size} className={classNameFinal} />;
+  return <IconFlag3Filled size={size} className={classNameFinal} />;
 }

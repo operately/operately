@@ -1,5 +1,5 @@
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as Icons from "@tabler/icons-react";
+import { IconEdit, IconTrash } from "turboui";
 import React from "react";
 
 import { usePaths } from "@/routes/paths";
@@ -19,7 +19,7 @@ export function Options({ showDeleteModal }: Props) {
     <PageOptions.Root testId="options-button">
       {link.permissions.canEditLink && (
         <PageOptions.Link
-          icon={Icons.IconEdit}
+          icon={IconEdit}
           title="Edit"
           to={paths.resourceHubEditLinkPath(link.id!)}
           testId="edit-link-link"
@@ -35,5 +35,5 @@ interface DeleteActionProps {
 }
 
 function DeleteAction({ onClick }: DeleteActionProps) {
-  return <PageOptions.Action icon={Icons.IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
+  return <PageOptions.Action icon={IconTrash} title="Delete" onClick={onClick} testId="delete-resource-link" />;
 }

@@ -1,9 +1,8 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 
-import { PaintBucket } from "lucide-react";
 import classNames from "classnames";
-import { SecondaryButton } from "turboui";
+import { SecondaryButton, IconPaintBucket } from "turboui";
 import { createTestId } from "@/utils/testid";
 
 const DROPDOWN_CLASS = classNames(
@@ -70,7 +69,7 @@ function BucketIcon({ iconSize, editor }): React.ReactElement {
   return (
     <div className="ProseMirror">
       <mark data-highlight={highlight} className="block px-1 py-0.5 rounded">
-        <PaintBucket size={iconSize - 1} />
+        <IconPaintBucket size={iconSize - 1} />
       </mark>
     </div>
   );

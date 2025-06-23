@@ -1,7 +1,8 @@
+import * as React from "react";
+
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Projects from "@/models/projects";
-import * as Icons from "@tabler/icons-react";
-import * as React from "react";
+import { IconPlayerPlayFilled, IconEdit, IconPlayerPauseFilled, IconExchange, IconReplace, IconCircleCheck } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function ProjectOptions({ project }) {
@@ -10,7 +11,7 @@ export function ProjectOptions({ project }) {
     <PageOptions.Root testId="project-options-button">
       {project.permissions.canPause && Projects.isResumable(project) && (
         <PageOptions.Link
-          icon={Icons.IconPlayerPlayFilled}
+          icon={IconPlayerPlayFilled}
           title="Resume the project"
           to={paths.resumeProjectPath(project.id)}
           testId="resume-project-link"
@@ -19,7 +20,7 @@ export function ProjectOptions({ project }) {
 
       {project.permissions.canEditName && (
         <PageOptions.Link
-          icon={Icons.IconEdit}
+          icon={IconEdit}
           title="Edit project name"
           to={paths.editProjectNamePath(project.id)}
           testId="edit-project-name-button"
@@ -28,7 +29,7 @@ export function ProjectOptions({ project }) {
 
       {project.permissions.canPause && Projects.isPausable(project) && (
         <PageOptions.Link
-          icon={Icons.IconPlayerPauseFilled}
+          icon={IconPlayerPauseFilled}
           title="Pause the project"
           to={paths.pauseProjectPath(project.id)}
           testId="pause-project-link"
@@ -37,7 +38,7 @@ export function ProjectOptions({ project }) {
 
       {project.permissions.canEditGoal && (
         <PageOptions.Link
-          icon={Icons.IconExchange}
+          icon={IconExchange}
           title="Change Parent Goal"
           to={paths.editProjectGoalPath(project.id)}
           testId="connect-project-to-goal-link"
@@ -46,7 +47,7 @@ export function ProjectOptions({ project }) {
 
       {project.permissions.canEditSpace && (
         <PageOptions.Link
-          icon={Icons.IconReplace}
+          icon={IconReplace}
           title="Move project to another space"
           to={paths.moveProjectPath(project.id)}
           testId="move-project-link"
@@ -55,7 +56,7 @@ export function ProjectOptions({ project }) {
 
       {project.permissions.canClose && project.status !== "closed" && (
         <PageOptions.Link
-          icon={Icons.IconCircleCheck}
+          icon={IconCircleCheck}
           title="Close the project"
           to={paths.projectClosePath(project.id)}
           testId="close-project"

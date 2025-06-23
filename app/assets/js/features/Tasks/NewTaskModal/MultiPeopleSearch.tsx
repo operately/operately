@@ -3,9 +3,8 @@ import * as React from "react";
 import classNames from "classnames";
 
 import * as People from "@/models/people";
-import * as Icons from "@tabler/icons-react";
 
-import { Avatar } from "turboui";
+import { Avatar, IconX } from "turboui";
 import { createTestId } from "@/utils/testid";
 import { match } from "ts-pattern";
 
@@ -167,7 +166,7 @@ function PeopleList({ people, onRemove }: { people: People.Person[]; onRemove: (
 
       <div>{person.fullName}</div>
 
-      <Icons.IconX
+      <IconX
         size={12}
         onClick={() => onRemove(person)}
         className="cursor-pointer ml-1"

@@ -4,12 +4,10 @@ import { Discussion } from "@/models/discussions";
 import { ResourceHubDocument } from "@/models/resourceHubs";
 
 import { match } from "ts-pattern";
-import { IconX } from "@tabler/icons-react";
 
 import FormattedTime from "@/components/FormattedTime";
-import { ActionLink } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { GhostButton, PrimaryButton } from "turboui";
+import { GhostButton, PrimaryButton, IconX, ActionLink } from "turboui";
 
 type Resource = Discussion | ResourceHubDocument;
 type State = "actions" | "link";

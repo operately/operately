@@ -2,12 +2,12 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { logOut } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
 import { BurgerActionsGroup, BurgerButton, BurgerLink } from "./BurgerActions";
+import { IconUserCircle, IconPalette, IconLockPassword, IconDoorExit } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "AccountPage", loader: Pages.emptyLoader, Page } as PageModule;
@@ -41,7 +41,7 @@ function ProfileLink() {
   const me = useMe()!;
 
   return (
-    <BurgerLink icon={Icons.IconUserCircle} to={paths.profileEditPath(me.id!)} testId="profile-link">
+    <BurgerLink icon={IconUserCircle} to={paths.profileEditPath(me.id!)} testId="profile-link">
       Profile
     </BurgerLink>
   );
@@ -50,7 +50,7 @@ function ProfileLink() {
 function AppearanceLink() {
   const paths = usePaths();
   return (
-    <BurgerLink icon={Icons.IconPalette} to={paths.accountAppearancePath()} testId="appearance-link">
+    <BurgerLink icon={IconPalette} to={paths.accountAppearancePath()} testId="appearance-link">
       Appearance
     </BurgerLink>
   );
@@ -59,7 +59,7 @@ function AppearanceLink() {
 function PasswordLink() {
   const paths = usePaths();
   return (
-    <BurgerLink icon={Icons.IconLockPassword} to={paths.accountSecurityPath()} testId="password-link">
+    <BurgerLink icon={IconLockPassword} to={paths.accountSecurityPath()} testId="password-link">
       Password &amp; Security
     </BurgerLink>
   );
@@ -75,7 +75,7 @@ function LogOutButton() {
   };
 
   return (
-    <BurgerButton onClick={handleClick} testId="log-out-button" icon={Icons.IconDoorExit}>
+    <BurgerButton onClick={handleClick} testId="log-out-button" icon={IconDoorExit}>
       Sign Out
     </BurgerButton>
   );

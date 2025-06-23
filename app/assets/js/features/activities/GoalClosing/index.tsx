@@ -1,15 +1,13 @@
 import * as People from "@/models/people";
 import * as React from "react";
 
-import * as Icons from "@tabler/icons-react";
-
 import { ActivityContentGoalClosing } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Activity } from "@/models/activities";
 
 import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { Link, IconCheck, IconX } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
@@ -106,7 +104,7 @@ function content(activity: Activity): ActivityContentGoalClosing {
 function AcomplishedBadge() {
   return (
     <div className="flex items-center gap-1 bg-green-500/20 rounded-xl py-0.5 px-2 pr-3 text-green-800">
-      <Icons.IconCheck size={16} />
+      <IconCheck size={16} />
       <div className="text-sm font-medium">Marked as accomplished</div>
     </div>
   );
@@ -115,7 +113,7 @@ function AcomplishedBadge() {
 function FailedBadge() {
   return (
     <div className="flex items-center gap-1 bg-red-500/20 rounded-xl py-0.5 px-2 pr-3 text-red-800">
-      <Icons.IconX size={16} />
+      <IconX size={16} />
       <div className="text-sm font-medium">Marked as not accomplished</div>
     </div>
   );

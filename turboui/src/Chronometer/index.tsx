@@ -2,7 +2,7 @@ import React from "react";
 
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
-import { IconAlertTriangleFilled } from "@tabler/icons-react";
+import { IconAlertTriangleFilled } from "../icons";
 import { Tooltip } from "../Tooltip";
 import { durationHumanized, overdueDays } from "../utils/time";
 

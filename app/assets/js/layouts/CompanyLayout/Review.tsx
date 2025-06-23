@@ -2,7 +2,7 @@ import React from "react";
 
 import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignments";
 
-import { IconCoffee } from "@tabler/icons-react";
+import { IconCoffee } from "turboui";
 import { DivLink } from "turboui";
 
 import { usePaths } from "@/routes/paths";

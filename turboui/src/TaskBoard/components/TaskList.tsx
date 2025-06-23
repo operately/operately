@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
 import { TaskItem } from "./TaskItem";
-import { IconChevronDown, IconChevronRight } from "@tabler/icons-react";
+import { IconChevronDown, IconChevronRight } from "../../icons";
 import * as Types from "../types";
 
 // Using TaskWithIndex from our shared types
