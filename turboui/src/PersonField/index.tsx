@@ -7,55 +7,57 @@ import { DivLink } from "../Link";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
-interface Person {
-  id: string;
-  fullName: string;
-  avatarUrl: string | null;
-  title?: string;
-  profileLink?: string;
+export namespace PersonField {
+  export interface Person {
+    id: string;
+    fullName: string;
+    avatarUrl: string | null;
+    title?: string;
+    profileLink?: string;
+  }
+
+  export interface Props {
+    person: Person | null;
+    setPerson: (person: Person | null) => void;
+
+    isOpen?: boolean;
+    avatarSize?: number;
+    readonly?: boolean;
+    showTitle?: boolean;
+    avatarOnly?: boolean;
+    emptyStateMessage?: string;
+    emptyStateReadOnlyMessage?: string;
+    searchPeople: (params: { query: string }) => Promise<Person[]>;
+    extraDialogMenuOptions?: DialogMenuOptionProps[];
+    testId?: string;
+  }
+
+  export interface State {
+    isOpen: boolean;
+    setIsOpen: (isOpen: boolean) => void;
+
+    dialogMode: "menu" | "search";
+    setDialogMode: (mode: "menu" | "search") => void;
+
+    person: Person | null;
+    setPerson: (person: Person | null) => void;
+
+    readonly: boolean;
+    avatarSize: number;
+    showTitle: boolean;
+    avatarOnly: boolean;
+    emptyStateMessage: string;
+    emptyStateReadOnlyMessage: string;
+    extraDialogMenuOptions: DialogMenuOptionProps[];
+
+    searchQuery: string;
+    setSearchQuery: (query: string) => void;
+    searchResults: Person[];
+    testId: string;
+  }
 }
 
-export interface PersonFieldProps {
-  person: Person | null;
-  setPerson: (person: Person | null) => void;
-
-  isOpen?: boolean;
-  avatarSize?: number;
-  readonly?: boolean;
-  showTitle?: boolean;
-  avatarOnly?: boolean;
-  emptyStateMessage?: string;
-  emptyStateReadOnlyMessage?: string;
-  searchPeople: (params: { query: string }) => Promise<Person[]>;
-  extraDialogMenuOptions?: DialogMenuOptionProps[];
-  testId?: string;
-}
-
-export interface State {
-  isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
-
-  dialogMode: "menu" | "search";
-  setDialogMode: (mode: "menu" | "search") => void;
-
-  person: Person | null;
-  setPerson: (person: Person | null) => void;
-
-  readonly: boolean;
-  avatarSize: number;
-  showTitle: boolean;
-  avatarOnly: boolean;
-  emptyStateMessage: string;
-  emptyStateReadOnlyMessage: string;
-  extraDialogMenuOptions: DialogMenuOptionProps[];
-
-  searchQuery: string;
-  setSearchQuery: (query: string) => void;
-  searchResults: Person[];
-  testId: string;
-}
-
-export function PersonField(props: PersonFieldProps) {
+export function PersonField(props: PersonField.Props) {
   const state = useState(props);
 
   return (
@@ -66,12 +68,12 @@ export function PersonField(props: PersonFieldProps) {
   );
 }
 
-export function useState(props: PersonFieldProps): State {
+export function useState(props: PersonField.Props): PersonField.State {
   const [isOpen, changeOpen] = React.useState(!!props.isOpen);
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
-  const [searchResults, setSearchResults] = React.useState<Person[]>([]);
+  const [searchResults, setSearchResults] = React.useState<PersonField.Person[]>([]);
 
   const readonly = props.readonly ?? false;
   const avatarSize = props.avatarSize ?? 32;
@@ -92,7 +94,7 @@ export function useState(props: PersonFieldProps): State {
   React.useEffect(() => {
     let active = true;
 
-    props.searchPeople({ query: searchQuery }).then((people: Person[]) => {
+    props.searchPeople({ query: searchQuery }).then((people: PersonField.Person[]) => {
       if (active) {
         setSearchResults(people);
       }
@@ -134,7 +136,7 @@ export function useState(props: PersonFieldProps): State {
   };
 }
 
-function Trigger({ state }: { state: State }) {
+function Trigger({ state }: { state: PersonField.State }) {
   return (
     <Popover.Trigger className={calcTriggerClass(state)} data-test-id={state.testId}>
       <TriggerIcon state={state} />
@@ -143,7 +145,7 @@ function Trigger({ state }: { state: State }) {
   );
 }
 
-function calcTriggerClass(state: State) {
+function calcTriggerClass(state: PersonField.State) {
   if (state.avatarOnly) {
     return classNames({
       "flex items-center justify-center": true,
@@ -163,7 +165,7 @@ function calcTriggerClass(state: State) {
   }
 }
 
-function TriggerIcon({ state }: { state: State }) {
+function TriggerIcon({ state }: { state: PersonField.State }) {
   if (state.person) {
     return (
       <Avatar
@@ -196,7 +198,7 @@ function TriggerIcon({ state }: { state: State }) {
   }
 }
 
-function TriggerText({ state }: { state: State }) {
+function TriggerText({ state }: { state: PersonField.State }) {
   if (state.avatarOnly) return null;
 
   if (state.person) {
@@ -217,7 +219,7 @@ function TriggerText({ state }: { state: State }) {
   }
 }
 
-function Dialog({ state }: { state: State }) {
+function Dialog({ state }: { state: PersonField.State }) {
   if (state.readonly) return null;
 
   return (
@@ -236,7 +238,7 @@ function Dialog({ state }: { state: State }) {
   );
 }
 
-function DialogMenu({ state }: { state: State }) {
+function DialogMenu({ state }: { state: PersonField.State }) {
   return (
     <div className="p-1">
       <DialogMenuOption
@@ -310,7 +312,7 @@ function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOp
   }
 }
 
-function DialogSearch({ state }: { state: State }) {
+function DialogSearch({ state }: { state: PersonField.State }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
 
