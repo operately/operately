@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.UI do
   use ExUnit.CaseTemplate
+  require Wallaby.Browser
   alias Wallaby.Query
 
   alias Wallaby.{Browser, Element}
@@ -549,6 +550,14 @@ defmodule Operately.Support.Features.UI do
           |> click(css: ".react-datepicker__navigation.react-datepicker__navigation--next")
           |> click(css: ".react-datepicker__day.react-datepicker__day--#{day}:not(.react-datepicker__day--disabled)")
       end
+    end)
+  end
+
+  def select_date(ctx, testid: testid, date: date) do
+    ctx = assert_has(ctx, testid: testid)
+
+    execute("select_date", ctx, fn session ->
+      Browser.execute_script(session, "window.__tests.components['#{testid}'].setDate(new Date('#{Date.to_iso8601(date)}'))")
     end)
   end
 
