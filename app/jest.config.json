@@ -11,6 +11,9 @@
   "moduleNameMapper": {
     "^turboui$": "<rootDir>/../turboui/src",
     "^@/ee/(.*)$": "<rootDir>/ee/assets/js/$1",
-    "^@/(.*)$": "<rootDir>/assets/js/$1"
+    "^@/(.*)$": "<rootDir>/assets/js/$1",
+    "^@tabler/icons-react/dist/esm/icons/(.+)\\.mjs$": "<rootDir>/assets/js/__tests__/mocks/tabler-icons-react.js",
+    "^@tabler/icons-react/dist/esm/(.+)\\.mjs$": "<rootDir>/assets/js/__tests__/mocks/tabler-icons-react.js",
+    "^@tabler/icons-react$": "<rootDir>/assets/js/__tests__/mocks/tabler-icons-react.js"
   }
 }
