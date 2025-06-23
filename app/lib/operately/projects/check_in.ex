@@ -4,12 +4,14 @@ defmodule Operately.Projects.CheckIn do
 
   alias Operately.Notifications
 
+  @valid_statuses [:on_track, :caution, :off_track]
+
   schema "project_check_ins" do
     belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :project, Operately.Projects.Project, foreign_key: :project_id, where: [deleted_at: nil]
     belongs_to :subscription_list, Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
-    field :status, :string
+    field :status, Ecto.Enum, values: @valid_statuses
     field :description, :map
 
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
@@ -53,4 +55,6 @@ defmodule Operately.Projects.CheckIn do
 
     %{check_in | potential_subscribers: subs}
   end
+
+  def validate_status, do: @valid_statuses
 end
