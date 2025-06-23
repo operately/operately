@@ -30,6 +30,7 @@ declare global {
 
   interface Window {
     appConfig: AppConfig;
+    __tests?: any;
   }
 }
 
