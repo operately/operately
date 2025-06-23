@@ -15,7 +15,7 @@ const meta: Meta<typeof Timeline> = {
     (Story) => (
       <Page title="Task Timeline" size="medium">
         <div className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Comments & Activity</h2>
+          <h2 className="font-bold mb-4">Comments & Activity</h2>
           <Story />
         </div>
       </Page>
