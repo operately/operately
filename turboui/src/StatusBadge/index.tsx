@@ -1,4 +1,4 @@
-import { IconCheck, IconCircleDashed, IconCircleFilled, IconX } from "@tabler/icons-react";
+import { IconCheck, IconCircleDashed, IconCircleFilled, IconX } from "../icons";
 import React from "react";
 import { BadgeStatus, StatusBadgeProps } from "./types";
 

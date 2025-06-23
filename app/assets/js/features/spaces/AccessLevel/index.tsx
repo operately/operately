@@ -1,7 +1,7 @@
 import React from "react";
 import { PermissionLevels } from "@/features/Permissions";
 import { match } from "ts-pattern";
-import * as Icons from "@tabler/icons-react";
+import { IconBuilding, IconLockFilled, IconWorld } from "turboui";
 
 interface AccessLevelProps {
   tense: "present" | "future";
@@ -26,14 +26,14 @@ export function AccessLevel(props: AccessLevelProps) {
 
 function Icon(props: AccessLevelProps) {
   if (props.anonymous >= PermissionLevels.VIEW_ACCESS) {
-    return <Icons.IconWorld className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
+    return <IconWorld className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
   }
 
   if (props.company >= PermissionLevels.VIEW_ACCESS) {
-    return <Icons.IconBuilding className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
+    return <IconBuilding className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
   }
 
-  return <Icons.IconLockFilled className="ml-1.5 mr-3 text-callout-error-icon" size={30} strokeWidth={2} />;
+  return <IconLockFilled className="ml-1.5 mr-3 text-callout-error-icon" size={30} strokeWidth={2} />;
 }
 
 function calcTitle(props: AccessLevelProps) {

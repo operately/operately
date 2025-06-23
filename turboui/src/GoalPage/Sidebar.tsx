@@ -23,7 +23,7 @@ import {
   IconTrash,
   IconUserCheck,
   IconUserStar,
-} from "@tabler/icons-react";
+} from "../icons";
 
 export function Sidebar(props: GoalPage.State) {
   return (

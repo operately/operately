@@ -1,4 +1,4 @@
-import { IconCopy, IconTrash, IconCopy as IconDuplicate, IconArchive } from "@tabler/icons-react";
+import { IconCopy, IconTrash, IconCopy as IconDuplicate, IconArchive } from "../icons";
 import { TaskPage } from ".";
 
 export function pageOptions(props: TaskPage.State) {

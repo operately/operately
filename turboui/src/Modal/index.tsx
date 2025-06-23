@@ -1,6 +1,7 @@
-import { IconX } from "@tabler/icons-react";
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+
+import { IconX } from "../icons";
 
 export interface ModalProps {
   /**

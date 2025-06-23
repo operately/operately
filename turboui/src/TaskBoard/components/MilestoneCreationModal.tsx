@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
 import Modal from "../../Modal";
-import { IconCalendar } from "@tabler/icons-react";
+import { IconCalendar } from "../../icons";
 
 interface MilestoneCreationModalProps {
   isOpen: boolean;

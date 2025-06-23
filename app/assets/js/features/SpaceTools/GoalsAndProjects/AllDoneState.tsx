@@ -1,5 +1,4 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Time from "@/utils/time";
 
 import { Space } from "@/models/spaces";
@@ -8,6 +7,7 @@ import { Project } from "@/models/projects";
 
 import { Title } from "../components";
 import plurarize from "@/utils/plurarize";
+import { IconTrophy } from "turboui";
 
 interface Props {
   title: string;
@@ -22,7 +22,7 @@ export function AllDoneState(props: Props) {
       <Title title={props.title} />
 
       <div className="bg-surface-dimmed rounded mx-2 flex-1 flex flex-col px-2 py-4 items-center">
-        <Icons.IconTrophy size={35} />
+        <IconTrophy size={35} />
         <div className="text-sm font-bold mt-3 mb-1">All done!</div>
         <div className="text-xs mb-1">{message(props)}</div>
       </div>

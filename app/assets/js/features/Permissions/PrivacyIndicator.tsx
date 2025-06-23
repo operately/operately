@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconWorld, IconLockFilled } from "turboui";
 
 import { Project } from "@/models/projects";
 import { Goal } from "@/models/goals";
@@ -52,7 +52,7 @@ function PrivacyPublic({ size, type, disabled }: PrivacyProps) {
 
   return (
     <Tooltip content={content} testId="public-project-tooltip" delayDuration={100} disabled={disabled}>
-      <Icons.IconWorld size={size} />
+      <IconWorld size={size} />
     </Tooltip>
   );
 }
@@ -67,7 +67,7 @@ function PrivacyInternal({ size, type, disabled }: PrivacyProps) {
 
   return (
     <Tooltip content={content} testId="internal-project-tooltip" delayDuration={100} disabled={disabled}>
-      <Icons.IconLockFilled size={size} />
+      <IconLockFilled size={size} />
     </Tooltip>
   );
 }
@@ -84,7 +84,7 @@ function PrivacyConfidential({ space, size, type, disabled }: PrivacyProps & { s
 
   return (
     <Tooltip content={content} testId="confidential-project-tooltip" delayDuration={100} disabled={disabled}>
-      <Icons.IconLockFilled size={size} />
+      <IconLockFilled size={size} />
     </Tooltip>
   );
 }
@@ -99,7 +99,7 @@ function PrivacySecret({ size, type, disabled }: PrivacyProps) {
 
   return (
     <Tooltip content={content} testId="secret-project-tooltip" delayDuration={100} disabled={disabled}>
-      <Icons.IconLockFilled size={size} className="text-content-error" />
+      <IconLockFilled size={size} className="text-content-error" />
     </Tooltip>
   );
 }

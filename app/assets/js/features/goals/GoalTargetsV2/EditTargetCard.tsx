@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Goals from "@/models/goals";
-import { IconTrash } from "@tabler/icons-react";
+import { IconTrash } from "turboui";
 
 import classNames from "classnames";
 import { PrimaryButton, SecondaryButton } from "turboui";

@@ -1,8 +1,7 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
 import * as Pages from "@/components/Pages";
 
-import { DivLink } from "turboui";
+import { DivLink, IconDots, IconX } from "turboui";
 import classNames from "classnames";
 import { TestableElement } from "@/utils/testid";
 import { SecondaryButton } from "turboui";
@@ -152,7 +151,7 @@ function Trigger({ testId }) {
 
   return (
     <div className={className} onClick={open} data-test-id={testId}>
-      <Icons.IconDots size={20} />
+      <IconDots size={20} />
     </div>
   );
 }
@@ -165,7 +164,7 @@ function Close({ onClick }) {
         onClick={onClick}
         data-test-id="project-options-button"
       >
-        <Icons.IconX size={20} />
+        <IconX size={20} />
       </div>
     </div>
   );

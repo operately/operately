@@ -6,7 +6,7 @@ import {
   IconCircleCheckFilled,
   IconCircleXFilled,
   IconInfoCircleFilled,
-} from "@tabler/icons-react";
+} from "../icons";
 
 interface Props extends TestableElement {
   message: string | JSX.Element;

@@ -1,6 +1,6 @@
 import React from "react";
 import classnames from "classnames";
-import * as Icons from "@tabler/icons-react";
+import { IconCalendar } from "turboui";
 
 import * as Popover from "@radix-ui/react-popover";
 import DatePicker from "react-datepicker";
@@ -46,7 +46,7 @@ export function DateSelector(props: DateSelectorProps) {
         <Popover.Root open={open} onOpenChange={setOpen}>
           <Popover.Trigger asChild>
             <div className={className}>
-              <Icons.IconCalendar size={20} />
+              <IconCalendar size={20} />
               <FormattedTime time={date} format="short-date-with-weekday" />
             </div>
           </Popover.Trigger>
