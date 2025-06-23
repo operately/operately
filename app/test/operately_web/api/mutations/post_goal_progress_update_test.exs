@@ -122,7 +122,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
       assert {200, res} =
                mutation(ctx.conn, :post_goal_progress_update, %{
                  goal_id: Paths.goal_id(ctx.goal),
-                 status: "issue",
+                 status: "off_track",
                  content: RichText.rich_text("Content", :as_string),
                  new_target_values: new_target_values(ctx.goal),
                  send_notifications_to_everyone: true,
@@ -152,7 +152,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
       assert {200, res} =
                mutation(ctx.conn, :post_goal_progress_update, %{
                  goal_id: Paths.goal_id(ctx.goal),
-                 status: "pending",
+                 status: "on_track",
                  content: content,
                  new_target_values: new_target_values(ctx.goal),
                  send_notifications_to_everyone: false,
