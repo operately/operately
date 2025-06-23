@@ -348,6 +348,13 @@ export interface ActivityContentGoalSpaceUpdating {
   oldSpace: Space;
 }
 
+export interface ActivityContentGoalTargetAdding {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  targetName: string;
+}
+
 export interface ActivityContentGoalTimeframeEditing {
   goal?: Goal | null;
   oldTimeframe?: Timeframe | null;
