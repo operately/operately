@@ -202,6 +202,14 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.check_permissions(:can_edit)
       |> Steps.check_idempotency(fn %{goal: goal} -> goal.group_id == inputs.space_id end)
       |> Steps.update_space(inputs.space_id)
+      |> Steps.save_activity(:goal_space_updating, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.updated_goal.group_id,
+          goal_id: changes.goal.id,
+          old_space_id: changes.goal.group_id
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
@@ -229,17 +237,14 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.add_target(inputs.name, inputs.start_value, inputs.target_value, inputs.unit)
-      # |> Steps.save_activity(:goal_target_added, fn changes ->
-      #   %{
-      #     company_id: changes.goal.company_id,
-      #     space_id: changes.goal.group_id,
-      #     goal_id: changes.goal.id,
-      #     target_id: changes.added_target.id,
-      #     target_name: changes.added_target.name,
-      #     start_value: changes.added_target.start_value,
-      #     target_value: changes.added_target.target_value
-      #   }
-      # end)
+      |> Steps.save_activity(:goal_target_adding, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_name: changes.added_target.name
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{success: true, target_id: changes.added_target.id}

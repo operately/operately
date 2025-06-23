@@ -25,7 +25,9 @@ defmodule Operately.Goals do
     "goal_champion_updating",
     "goal_reviewer_updating",
     "goal_due_date_updating",
-    "goal_name_updating"
+    "goal_name_updating",
+    "goal_space_updating",
+    "goal_target_adding"
   ]
 
   def goal_actions, do: @goal_actions

@@ -1,7 +1,7 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { IconCircleX, IconExternalLink, IconSearch } from "@tabler/icons-react";
+import { IconCircleX, IconExternalLink, IconSearch } from "../icons";
 import { IconGoal } from "../icons";
 import { DivLink } from "../Link";
 import { createTestId } from "../TestableElement";

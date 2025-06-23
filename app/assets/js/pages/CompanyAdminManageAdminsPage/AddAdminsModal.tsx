@@ -6,7 +6,7 @@ import { PrimaryButton } from "turboui";
 
 import { Person } from "@/models/people";
 import PeopleSearch, { Option } from "@/components/PeopleSearch";
-import * as Icons from "@tabler/icons-react";
+import { IconX } from "turboui";
 import { FormState } from "./useForm";
 import * as People from "@/models/people";
 
@@ -95,7 +95,7 @@ function SearchField({ onSelect, loader, placeholder, alreadySelected }) {
 function RemoveIcon({ onClick }) {
   return (
     <div className="hover:cursor-pointer text-content-dimmed hover:text-content-accent" onClick={onClick}>
-      <Icons.IconX size={20} />
+      <IconX size={20} />
     </div>
   );
 }

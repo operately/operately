@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { BeatLoader } from "react-spinners";
 
-import { IconArrowLeft } from "@tabler/icons-react";
+import { IconArrowLeft } from "turboui";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 
 import { useViewModel, ViewModel, ViewModelNode, NotAllowedSelection } from "./viewModel";

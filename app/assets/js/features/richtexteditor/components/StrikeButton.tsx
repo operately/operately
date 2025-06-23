@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconStrikethrough } from "turboui";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -10,7 +10,7 @@ export function StrikeButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("strike")}
       title="Strikethrough"
     >
-      <Icons.IconStrikethrough size={iconSize} />
+      <IconStrikethrough size={iconSize} />
     </ToolbarToggleButton>
   );
 }

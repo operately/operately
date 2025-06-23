@@ -1,6 +1,7 @@
 import * as Companies from "@/models/companies";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
+
+import { IconBuildingEstate, IconRss, IconUserCircle, IconBinaryTree2, IconCircleKey, IconSwitch } from "turboui";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { DropdownLinkItem, DropdownMenu, DropdownSeparator } from "./DropdownMenu";
@@ -12,25 +13,25 @@ export function CompanyDropdown({ company }: { company: Companies.Company }) {
     <DropdownMenu
       testId="company-dropdown"
       name={company.name!}
-      icon={Icons.IconBuildingEstate}
+      icon={IconBuildingEstate}
       align="start"
       showDropdownIcon
     >
       <DropdownLinkItem
         path={paths.feedPath()}
-        icon={Icons.IconRss}
+        icon={IconRss}
         title="The Feed"
         testId="company-dropdown-company-feed"
       />
       <DropdownLinkItem
         path={paths.peoplePath()}
-        icon={Icons.IconUserCircle}
+        icon={IconUserCircle}
         title="People"
         testId="company-dropdown-people"
       />
       <DropdownLinkItem
         path={paths.orgChartPath()}
-        icon={Icons.IconBinaryTree2}
+        icon={IconBinaryTree2}
         title="Org Chart"
         testId="company-dropdown-org-chart"
       />
@@ -39,13 +40,13 @@ export function CompanyDropdown({ company }: { company: Companies.Company }) {
 
       <DropdownLinkItem
         path={paths.companyAdminPath()}
-        icon={Icons.IconCircleKey}
+        icon={IconCircleKey}
         title="Company Admin"
         testId="company-dropdown-company-admin"
       />
       <DropdownLinkItem
         path={Paths.lobbyPath()}
-        icon={Icons.IconSwitch}
+        icon={IconSwitch}
         title="Switch Company"
         testId="company-dropdown-switch"
       />

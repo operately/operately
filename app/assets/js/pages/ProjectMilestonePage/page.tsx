@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
+import { IconPencil, IconPlus } from "turboui";
 import * as Tasks from "@/models/tasks";
 
 import { useLoadedData, useRefresh } from "./loader";
@@ -76,7 +76,7 @@ function EditDescription({ form }) {
         className={"text-sm font-bold rounded-full p-1 hover:scale-110 transition cursor-pointer bg-sky-200"}
         onClick={() => form.description.startEditing()}
       >
-        <Icons.IconPencil size={14} />
+        <IconPencil size={14} />
       </div>
     </>
   );
@@ -90,7 +90,7 @@ function AddTask({ onClick }) {
         onClick={onClick}
         data-test-id="add-task"
       >
-        <Icons.IconPlus size={14} />
+        <IconPlus size={14} />
       </div>
     </>
   );

@@ -2,7 +2,6 @@ import React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as People from "@/models/people";
-import * as Icons from "@tabler/icons-react";
 
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
@@ -10,7 +9,7 @@ import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { Link, IconEdit } from "turboui";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, goalLink } from "./../feedItemLinks";
 
@@ -45,7 +44,7 @@ const GoalDiscussionCreation: ActivityHandler = {
       <PageOptions.Root testId="options">
         {activity.author!.id! === me?.id && (
           <PageOptions.Link
-            icon={Icons.IconEdit}
+            icon={IconEdit}
             title="Edit"
             to={paths.goalDiscussionEditPath(activity.id!)}
             testId="edit"

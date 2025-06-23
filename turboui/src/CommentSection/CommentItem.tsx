@@ -5,7 +5,7 @@ import { Menu, MenuActionItem } from "../Menu";
 import { BlackLink } from "../Link";
 import FormattedTime from "../FormattedTime";
 import RichContent from "../RichContent";
-import * as Icons from "@tabler/icons-react";
+import { IconEdit } from "../icons";
 import { CommentItemProps } from "./types";
 
 export function CommentItem({
@@ -45,7 +45,7 @@ export function CommentItem({
 
             {isOwnComment && onEdit && (
               <Menu size="small">
-                <MenuActionItem onClick={onEdit} icon={Icons.IconEdit}>
+                <MenuActionItem onClick={onEdit} icon={IconEdit}>
                   Edit
                 </MenuActionItem>
               </Menu>

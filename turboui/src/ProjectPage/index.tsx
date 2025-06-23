@@ -2,7 +2,7 @@ import React from "react";
 
 import { PageNew } from "../Page";
 
-import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "@tabler/icons-react";
+import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
 
 import { PrivacyField } from "../PrivacyField";
 import { BadgeStatus } from "../StatusBadge/types";

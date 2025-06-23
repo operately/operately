@@ -2,8 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Page } from "./index";
 import { PageFooter } from "./PageFooter";
-import { IconPencil } from "@tabler/icons-react";
-import { IconTrash } from "@tabler/icons-react";
+import { IconPencil, IconTrash } from "../icons";
 
 const meta = {
   title: "Components/Page",

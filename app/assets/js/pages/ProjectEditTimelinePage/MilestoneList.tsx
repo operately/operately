@@ -2,7 +2,7 @@ import * as React from "react";
 import * as Milestones from "@/models/milestones";
 import * as TipTapEditor from "@/components/Editor";
 import * as Time from "@/utils/time";
-import * as Icons from "@tabler/icons-react";
+import { IconPlus, IconFlag3Filled, IconPencil, IconTrash } from "turboui";
 
 import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
@@ -56,7 +56,7 @@ function AddMilestoneButton({ onClick }) {
     >
       <div className="flex flex-col flex-1">
         <div className="flex items-center gap-1 text-content-dimmed font-medium">
-          <Icons.IconPlus size={16} className="text-content-dimmed shrink-0" />
+          <IconPlus size={16} className="text-content-dimmed shrink-0" />
           Add milestone
         </div>
       </div>
@@ -118,7 +118,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
       <div className="flex items-start justify-between">
         <div className="flex flex-col flex-1">
           <div className="font-bold flex items-center gap-1">
-            <Icons.IconFlag3Filled size={16} className="shrink-0" />
+            <IconFlag3Filled size={16} className="shrink-0" />
             {milestone.title}
           </div>
 
@@ -138,7 +138,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
               onClick={edit}
               data-test-id={"edit-" + milestoneTestID(milestone)}
             >
-              <Icons.IconPencil size={16} />
+              <IconPencil size={16} />
             </div>
 
             {milestone.deletable && (
@@ -147,7 +147,7 @@ function MilestoneDisplay({ milestone, form, edit }) {
                 onClick={() => form.milestoneList.remove(milestone.id)}
                 data-test-id={"remove-" + milestoneTestID(milestone)}
               >
-                <Icons.IconTrash size={16} />
+                <IconTrash size={16} />
               </div>
             )}
           </div>
