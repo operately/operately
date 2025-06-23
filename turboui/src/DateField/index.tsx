@@ -58,6 +58,8 @@ export function DateField({
     setIsOpen(false);
   };
 
+  useExportedTestHelper(testId, { setDate: handleChange });
+
   const triggerClassName = classNames(
     "inline-block focus:outline-none",
     {
@@ -213,3 +215,28 @@ const formatDate = (date: Date) => {
     return date.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   }
 };
+
+//
+// This function allows tests to set the date programmatically
+// It uses useImperativeHandle to expose a method that can be called from tests
+//
+// To use this in tests, you would do something this:
+//
+// window.__tests.components["<testId>"].setDateFromTests(new Date("2023-10-01"));
+//
+
+function useExportedTestHelper(testId: string, api: any) {
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.__tests = window.__tests || {};
+      window.__tests.components = window.__tests.components || {};
+      window.__tests.components[testId] = api;
+    }
+
+    return () => {
+      if (window.__tests && window.__tests.components && window.__tests.components[testId]) {
+        delete window.__tests.components[testId];
+      }
+    };
+  }, [testId]);
+}
