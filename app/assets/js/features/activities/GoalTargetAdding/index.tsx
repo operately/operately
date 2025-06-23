@@ -29,8 +29,8 @@ const GoalTargetAdding: ActivityHandler = {
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
     const goal = content(props.activity).goal!;
-    const target_name = content(props.activity).targetName!;
-    const message = `added ${target_name} target`;
+    const targetName = content(props.activity).targetName!;
+    const message = `added the ${targetName} target`;
 
     if (props.page === "goal") {
       return feedTitle(props.activity, message);
