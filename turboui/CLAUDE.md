@@ -90,6 +90,43 @@ make turboui.build && make turboui.test
 - **Error states**: Clear error messaging and recovery paths
 - **Empty states**: Helpful guidance for first-time users
 
+## Design System Principles
+
+### Visual Cohesion and Grouping
+
+- **Container-based thinking**: When controls feel disconnected, wrap them in a unified container with consistent backgrounds, borders, and spacing
+- **Visual hierarchy through grouping**: Related functionality should be visually grouped together (e.g., header controls for a data section)
+- **Prevent layout drift**: Use containers to maintain visual structure even in empty states
+- **Follow established patterns**: Look to existing components for consistent container and header patterns
+
+### Empty State Design
+
+- **Always design for empty states**: Every list, collection, or data display needs a thoughtful empty state
+- **Actionable empty states**: Include clear instructions and prominent CTAs that guide users to the next step
+- **Maintain visual structure**: Empty states should preserve the same visual container as populated states
+- **Guide user intent**: Make the primary action obvious and accessible in empty states
+
+### Component Layout Principles
+
+- **Inline vs. stacked elements**: Related controls that act on the same data should flow together horizontally when possible
+- **Breathing room matters**: Use consistent spacing to prevent cramped layouts - increase spacing values when elements feel tight
+- **Primary action prominence**: Make the most important action visually prominent and contextually placed
+- **Visual weight balance**: Avoid layouts with unbalanced white space or heavy clustering in one area
+
+### Consistency Guidelines
+
+- **Match existing patterns**: When designing new sections, reference similar existing components for typography, spacing, and interaction patterns
+- **Standardize component variants**: Use consistent button types and component choices across similar use cases
+- **Typography consistency**: Match header sizes and styles across similar sections throughout the application
+- **Use standard components**: Always use design system components (Link variants, Button variants) instead of custom implementations
+
+### Interactive Design
+
+- **Contextual placement**: Place actions near the content they affect rather than in distant headers or sidebars
+- **State management**: Ensure interactive elements actually update state in stories and implementations for realistic behavior
+- **Progressive disclosure**: Show advanced controls contextually within their relevant sections rather than globally
+- **Clear affordances**: Make interactive elements obviously clickable and provide clear feedback on state changes
+
 ## Future Considerations
 
 ### Potential Extensions
