@@ -118,7 +118,7 @@ function OverviewOnTrack() {
 function OverviewConcern({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
-      The goal <mark data-highlight="bgYellow">needs attention</mark>, due to emerging risks.
+      The goal <mark data-highlight="bgYellow">needs caution</mark>, due to emerging risks.
       {goal.reviewer && <span> {People.firstName(goal.reviewer)} should be aware.</span>}
     </span>
   );
@@ -127,7 +127,7 @@ function OverviewConcern({ goal }: { goal: Goals.Goal }) {
 function OverviewIssue({ goal }: { goal: Goals.Goal }) {
   return (
     <span>
-      The goal is <mark data-highlight="bgRed">at risk</mark> due to blockers or significant delays.
+      The goal is <mark data-highlight="bgRed">off track</mark> due to blockers or significant delays.
       {goal.reviewer && <span> {People.firstName(goal.reviewer)}'s help is needed.</span>}
     </span>
   );
