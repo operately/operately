@@ -65,29 +65,24 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
       ])
     end
 
-    defp status_msg(:pending) do
-      [text("The goal is "), bg_gray("pending"), text(". Work has not started yet.")]
-    end
-
     defp status_msg(:on_track) do
-      [text("The goal is "), bg_green("on-track"), text(".")]
+      [text("The goal is "), bg_green("on-track"), text(". Progressing as planned.")]
     end
 
-    defp status_msg(:concern) do
-      [text("The goal "), bg_yellow("needs attention"), text(" due to emerging risks.")]
+    defp status_msg(:caution) do
+      [text("The goal "), bg_yellow("needs attention"), text(" due to emerging risks or delays.")]
     end
 
-    defp status_msg(:issue) do
-      [text("The goal is "), bg_red("at risk"), text(" due to blockers or significant delays.")]
+    defp status_msg(:off_track) do
+      [text("The goal is "), bg_red("off track"), text(" due to significant problems affecting success.")]
     end
 
-    def reviewer_note(:pending, _), do: []
     def reviewer_note(:on_track, _), do: []
 
-    def reviewer_note(:concern, reviewer),
+    def reviewer_note(:caution, reviewer),
       do: [text(" "), text(Person.first_name(reviewer)), text(" should be aware.")]
 
-    def reviewer_note(:issue, reviewer),
+    def reviewer_note(:off_track, reviewer),
       do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
 
     defp due_date(date) do
@@ -112,9 +107,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     defp human_duration(n), do: "#{div(n, 30)} months"
 
     defp normalize_status(:on_track), do: :on_track
-    defp normalize_status(:concern), do: :concern
-    defp normalize_status(:caution), do: :concern
-    defp normalize_status(:issue), do: :issue
-    defp normalize_status(:pending), do: :pending
+    defp normalize_status(:caution), do: :caution
+    defp normalize_status(:off_track), do: :off_track
   end
 end
