@@ -275,7 +275,7 @@ defmodule Operately.Support.Features.GoalSteps do
   step :add_new_target, ctx do
     ctx
     |> UI.click(testid: "add-target")
-    |> UI.fill(testid: "target-name", with: "New Target")
+    |> UI.fill(testid: "target-name", with: "Incoming Requests")
     |> UI.fill(testid: "target-from", with: "0")
     |> UI.fill(testid: "target-to", with: "100")
     |> UI.fill(testid: "target-unit", with: "Requests")
@@ -287,13 +287,19 @@ defmodule Operately.Support.Features.GoalSteps do
       goal = Operately.Repo.reload(ctx.goal)
       targets = Operately.Repo.preload(goal, [:targets]).targets
 
-      target = Enum.find(targets, fn t -> t.name == "New Target" end)
+      target = Enum.find(targets, fn t -> t.name == "Incoming Requests" end)
 
       assert target != nil
       assert target.from == 0
       assert target.to == 100
       assert target.unit == "Requests"
     end)
+  end
+
+  step :assert_target_added_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "added the Incoming Requests target")
   end
 
   #
