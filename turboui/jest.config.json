@@ -10,6 +10,10 @@
   ],
   "testEnvironment": "jsdom",
   "moduleNameMapper": {
-    "\\.css$": "<rootDir>/src/__mocks__/styleMock.js"
+    "\\.css$": "<rootDir>/src/__mocks__/styleMock.js",
+    "^@tabler/icons-react/dist/esm/icons/(.+)\\.mjs$": "<rootDir>/src/__mocks__/@tabler/icons-react.js",
+    "^@tabler/icons-react/dist/esm/(.+)\\.mjs$": "<rootDir>/src/__mocks__/@tabler/icons-react.js",
+    "^@tabler/icons-react$": "<rootDir>/src/__mocks__/@tabler/icons-react.js"
   }
 }
+
