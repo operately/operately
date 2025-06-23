@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Icons from "@tabler/icons-react";
+import { IconBold } from "turboui";
 
 import { ToolbarToggleButton } from "./ToolbarToggleButton";
 
@@ -10,7 +10,7 @@ export function BoldButton({ editor, iconSize }): JSX.Element {
       isActive={editor?.isActive("bold")}
       title="Bold"
     >
-      <Icons.IconBold size={iconSize} strokeWidth={2.2} />
+      <IconBold size={iconSize} strokeWidth={2.2} />
     </ToolbarToggleButton>
   );
 }

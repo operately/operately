@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { IconUserCheck } from "@tabler/icons-react";
+import { IconUserCheck } from "../icons";
 import React from "react";
 import { Page } from "../Page";
 import { genPeople, genPerson } from "../utils/storybook/genPeople";

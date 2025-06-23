@@ -2,7 +2,7 @@ import React from "react";
 
 import { Avatar } from "../../Avatar";
 import { ProfilePage } from "../index";
-import { IconMail } from "@tabler/icons-react";
+import { IconMail } from "../../icons";
 
 export { Colleagues } from "./Colleagues";
 

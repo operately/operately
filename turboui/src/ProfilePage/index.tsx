@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconLogs, IconEye, IconClipboardCheck, IconUserCircle, IconCircleCheck } from "@tabler/icons-react";
+import { IconLogs, IconEye, IconClipboardCheck, IconUserCircle, IconCircleCheck } from "../icons";
 
 import { Page } from "../Page";
 import { Tabs, useTabs } from "../Tabs";

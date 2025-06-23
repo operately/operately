@@ -1,4 +1,4 @@
-import { IconPencil } from "@tabler/icons-react";
+import { IconPencil } from "../icons";
 import React from "react";
 import { SecondaryButton } from "../Button";
 import { createTestId } from "../TestableElement";

@@ -1,6 +1,7 @@
 import * as Api from "@/api";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
+
+import { IconMenu2, IconHome2, IconBuildingEstate, IconBriefcase, IconCoffee, IconBell, IconUser, IconCircleKey, IconSwitch, IconDoorExit, IconUserCircle } from "turboui";
 
 import { logOut } from "@/routes/auth";
 import { useLoaderData } from "react-router-dom";
@@ -55,7 +56,7 @@ function MobileNavigation({ company }: { company: Api.Company }) {
         </div>
 
         <div className="">
-          <Icons.IconMenu2 size={24} onClick={() => setOpen(!open)} />
+          <IconMenu2 size={24} onClick={() => setOpen(!open)} />
         </div>
       </div>
 
@@ -64,43 +65,43 @@ function MobileNavigation({ company }: { company: Api.Company }) {
           className="flex flex-col bg-base absolute inset-0 top-10 bg-surface-bg border-t border-surface-outline"
           onClick={() => setOpen(false)}
         >
-          <MobileSectionLink to={paths.homePath()} icon={Icons.IconHome2}>
+          <MobileSectionLink to={paths.homePath()} icon={IconHome2}>
             Home
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.workMapPath()} icon={Icons.IconBuildingEstate}>
+          <MobileSectionLink to={paths.workMapPath()} icon={IconBuildingEstate}>
             Company
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.profilePath(me.id)} icon={Icons.IconBriefcase}>
+          <MobileSectionLink to={paths.profilePath(me.id)} icon={IconBriefcase}>
             My work
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.reviewPath()} icon={Icons.IconCoffee}>
+          <MobileSectionLink to={paths.reviewPath()} icon={IconCoffee}>
             Review
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.peoplePath()} icon={Icons.IconUserCircle}>
+          <MobileSectionLink to={paths.peoplePath()} icon={IconUserCircle}>
             People
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.notificationsPath()} icon={Icons.IconBell}>
+          <MobileSectionLink to={paths.notificationsPath()} icon={IconBell}>
             Notifications
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.accountPath()} icon={Icons.IconUser}>
+          <MobileSectionLink to={paths.accountPath()} icon={IconUser}>
             Account
           </MobileSectionLink>
 
-          <MobileSectionLink to={paths.companyAdminPath()} icon={Icons.IconCircleKey}>
+          <MobileSectionLink to={paths.companyAdminPath()} icon={IconCircleKey}>
             Company Admin
           </MobileSectionLink>
 
-          <MobileSectionLink to={Paths.lobbyPath()} icon={Icons.IconSwitch}>
+          <MobileSectionLink to={Paths.lobbyPath()} icon={IconSwitch}>
             Switch Company
           </MobileSectionLink>
 
-          <MobileSectionAction onClick={handleLogOut} icon={Icons.IconDoorExit}>
+          <MobileSectionAction onClick={handleLogOut} icon={IconDoorExit}>
             Log Out
           </MobileSectionAction>
         </div>
@@ -150,15 +151,15 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           </div>
 
           <div className="flex items-center gap-2.5 border-l border-surface-outline px-4">
-            <SectionLink to={paths.homePath()} icon={Icons.IconHome2}>
+            <SectionLink to={paths.homePath()} icon={IconHome2}>
               Home
             </SectionLink>
 
-            <SectionLink to={paths.workMapPath()} icon={Icons.IconBuildingEstate}>
+            <SectionLink to={paths.workMapPath()} icon={IconBuildingEstate}>
               Company
             </SectionLink>
 
-            <SectionLink to={paths.profilePath(me.id)} icon={Icons.IconBriefcase}>
+            <SectionLink to={paths.profilePath(me.id)} icon={IconBriefcase}>
               My work
             </SectionLink>
           </div>

@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 
 import { SelectBoxNoLabel } from "@/components/Form";
-import { IconBuildingCommunity, IconNetwork } from "@tabler/icons-react";
+import { IconBuildingCommunity, IconNetwork } from "turboui";
 import { ReducerActions } from "./usePermissionsState";
 import { PermissionLevels, PermissionOptions, PERMISSIONS_LIST, PUBLIC_PERMISSIONS_LIST } from ".";
 import { calculatePrivacyLevel } from "./utils";

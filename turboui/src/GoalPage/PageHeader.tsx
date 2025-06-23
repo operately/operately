@@ -1,6 +1,6 @@
 import React from "react";
 
-import { IconChevronRight } from "@tabler/icons-react";
+import { IconChevronRight } from "../icons";
 import { GoalPage } from ".";
 import { IconGoal } from "../icons";
 import { BlackLink } from "../Link";

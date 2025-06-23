@@ -2,7 +2,20 @@ import React from "react";
 import { shortName } from "../Avatar/AvatarWithName";
 import { BlackLink } from "../Link";
 import FormattedTime from "../FormattedTime";
-import * as Icons from "@tabler/icons-react";
+import {
+  IconUserPlus,
+  IconFlag,
+  IconFlagX,
+  IconCalendarPlus,
+  IconCalendarMinus,
+  IconFileText,
+  IconEdit,
+  IconPlus,
+  IconCircle,
+  IconActivity,
+  IconCircleCheck,
+  IconClockPlay,
+} from "../icons";
 import { TaskActivityProps, TaskActivity } from "./types";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
@@ -43,42 +56,42 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
 
   switch (activity.type) {
     case "task-assignment":
-      return <Icons.IconUserPlus {...iconProps} className="text-blue-500" />;
+      return <IconUserPlus {...iconProps} className="text-blue-500" />;
     case "task-status-change":
       return getStatusIcon(activity.toStatus);
     case "task-milestone":
       return activity.action === "attached" ? (
-        <Icons.IconFlag {...iconProps} className="text-green-500" />
+        <IconFlag {...iconProps} className="text-green-500" />
       ) : (
-        <Icons.IconFlagX {...iconProps} className="text-orange-500" />
+        <IconFlagX {...iconProps} className="text-orange-500" />
       );
     case "task-due-date":
       return activity.toDueDate ? (
-        <Icons.IconCalendarPlus {...iconProps} className="text-blue-500" />
+        <IconCalendarPlus {...iconProps} className="text-blue-500" />
       ) : (
-        <Icons.IconCalendarMinus {...iconProps} className="text-orange-500" />
+        <IconCalendarMinus {...iconProps} className="text-orange-500" />
       );
     case "task-description":
-      return <Icons.IconFileText {...iconProps} className="text-purple-500" />;
+      return <IconFileText {...iconProps} className="text-purple-500" />;
     case "task-title":
-      return <Icons.IconEdit {...iconProps} className="text-gray-500" />;
+      return <IconEdit {...iconProps} className="text-gray-500" />;
     case "task-creation":
-      return <Icons.IconPlus {...iconProps} className="text-green-500" />;
+      return <IconPlus {...iconProps} className="text-green-500" />;
     default:
-      return <Icons.IconActivity {...iconProps} />;
+      return <IconActivity {...iconProps} />;
   }
 }
 
 function getStatusIcon(status: string) {
   switch (status) {
     case "not_started":
-      return <Icons.IconCircle size={12} className="text-gray-500" />;
+      return <IconCircle size={12} className="text-gray-500" />;
     case "in_progress":
-      return <Icons.IconClockPlay size={12} className="text-blue-500" />;
+      return <IconClockPlay size={12} className="text-blue-500" />;
     case "done":
-      return <Icons.IconCircleCheck size={12} className="text-green-500" />;
+      return <IconCircleCheck size={12} className="text-green-500" />;
     default:
-      return <Icons.IconCircle size={12} className="text-gray-500" />;
+      return <IconCircle size={12} className="text-gray-500" />;
   }
 }
 

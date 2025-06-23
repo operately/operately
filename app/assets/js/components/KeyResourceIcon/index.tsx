@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Brands from "@/components/Brands";
-import * as Icons from "@tabler/icons-react";
+import { IconLink } from "turboui";
 
 export function ResourceIcon({ resourceType, size }: { resourceType: string; size: number }) {
   switch (resourceType) {
@@ -16,6 +16,6 @@ export function ResourceIcon({ resourceType, size }: { resourceType: string; siz
       return <Brands.Slack size={size} />;
     case "generic":
     default:
-      return <Icons.IconLink size={size} />;
+      return <IconLink size={size} />;
   }
 }

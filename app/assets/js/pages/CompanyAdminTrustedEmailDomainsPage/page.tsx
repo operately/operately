@@ -1,8 +1,9 @@
 import * as Forms from "@/components/Form";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Icons from "@tabler/icons-react";
 import * as React from "react";
+
+import { IconTrash } from "turboui";
 
 import { createTestId } from "@/utils/testid";
 import { GhostButton } from "turboui";
@@ -59,7 +60,7 @@ function TrustedEmailDomainItem({ domain, form }: { domain: string; form: FormSt
   return (
     <div className="flex items-center gap-2 bg-surface-dimmed border border-stroke-base px-3 py-2 rounded">
       <div className="flex-1 font-medium">{domain}</div>
-      <Icons.IconTrash
+      <IconTrash
         className="text-content-dimmed cursor-pointer hover:text-content-error shrink-0"
         size={16}
         onClick={() => form.removeDomain(domain)}
