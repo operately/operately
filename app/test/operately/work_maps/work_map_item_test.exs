@@ -22,7 +22,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
       assert item.status == :completed
     end
 
-    @status [:on_track, :caution, :issue]
+    @status [:on_track, :caution, :off_track]
 
     tabletest @status do
       test "given a project's last check-in is #{@test}, its status should also be #{@test}", ctx do

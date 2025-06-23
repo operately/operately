@@ -101,7 +101,7 @@ defmodule Operately.Projects.Project do
       project.status == "closed" -> :completed
       project.status == "paused" -> :paused
       Operately.Projects.outdated?(project) -> :outdated
-      project.last_check_in -> String.to_atom(project.last_check_in.status)
+      project.last_check_in -> project.last_check_in.status
       true -> :on_track
     end
   end
