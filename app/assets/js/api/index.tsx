@@ -341,6 +341,13 @@ export interface ActivityContentGoalReviewerUpdating {
   newReviewer: Person;
 }
 
+export interface ActivityContentGoalSpaceUpdating {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  oldSpace: Space;
+}
+
 export interface ActivityContentGoalTimeframeEditing {
   goal?: Goal | null;
   oldTimeframe?: Timeframe | null;

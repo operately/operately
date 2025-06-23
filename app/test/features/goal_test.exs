@@ -72,6 +72,7 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.move_goal_to_another_space()
     |> Steps.assert_goal_moved_to_another_space()
+    |> Steps.assert_goal_moved_to_another_space_feed_posted()
   end
 
   feature "adding a new target", ctx do
