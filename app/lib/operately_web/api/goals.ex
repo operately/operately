@@ -202,6 +202,14 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.check_permissions(:can_edit)
       |> Steps.check_idempotency(fn %{goal: goal} -> goal.group_id == inputs.space_id end)
       |> Steps.update_space(inputs.space_id)
+      |> Steps.save_activity(:goal_space_updating, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.updated_goal.group_id,
+          goal_id: changes.goal.id,
+          old_space_id: changes.goal.group_id
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
