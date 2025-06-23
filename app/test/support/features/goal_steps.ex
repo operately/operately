@@ -202,7 +202,7 @@ defmodule Operately.Support.Features.GoalSteps do
 
     ctx
     |> Map.put(:selected_date, new_date)
-    |> UI.select_day_in_datepicker(testid: "due-date-field", date: new_date)
+    |> UI.select_date(testid: "due-date-field", date: new_date)
   end
 
   step :assert_due_date_changed, ctx do
