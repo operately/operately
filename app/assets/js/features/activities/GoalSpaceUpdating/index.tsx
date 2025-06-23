@@ -1,8 +1,9 @@
-import * as People from "@/models/people";
+import React from "react";
 
-import { Paths } from "@/routes/paths";
-import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalSpaceUpdating } from "@/api";
+import type { Activity } from "@/models/activities";
+import { Paths } from "@/routes/paths";
+import { feedTitle, goalLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const GoalSpaceUpdating: ActivityHandler = {
@@ -26,12 +27,17 @@ const GoalSpaceUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    return null;
+  FeedItemTitle(props: { activity: Activity }) {
+    const goal = content(props.activity).goal!;
+    const space = content(props.activity).space!;
+
+    return feedTitle(props.activity, "moved the", goalLink(goal), "goal to", spaceLink(space));
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent(props: { activity: Activity }) {
+    const space = content(props.activity).oldSpace!;
+
+    return <>Previously, it was in the {spaceLink(space)} space.</>;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
