@@ -23,9 +23,10 @@ export interface Comment {
 
 export interface CommentActivity {
   id: string;
-  type: "milestone-completed" | "milestone-reopened" | "acknowledgment";
+  type: "milestone-completed" | "milestone-reopened" | "milestone-created" | "milestone-description-added" | "milestone_update" | "acknowledgment";
   author: Person;
   insertedAt: string;
+  content?: string; // For activities that have descriptive content
 }
 
 export type CommentItem = {

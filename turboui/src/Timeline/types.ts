@@ -17,6 +17,7 @@ export interface TaskStatusChangeActivity {
   insertedAt: string;
   fromStatus: TaskStatus;
   toStatus: TaskStatus;
+  task?: Task; // Optional for backward compatibility
 }
 
 export interface TaskMilestoneActivity {
@@ -79,6 +80,12 @@ export interface Milestone {
   title: string;
   dueDate?: string;
   status: "pending" | "complete";
+}
+
+export interface Task {
+  id: string;
+  title: string;
+  status?: TaskStatus;
 }
 
 // Union type for all activities

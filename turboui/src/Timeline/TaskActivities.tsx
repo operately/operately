@@ -20,29 +20,33 @@ import { TaskActivityProps, TaskActivity } from "./types";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
-    <div className="flex items-center gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
-      <div className="shrink-0">
+    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+      <div className="shrink-0 mt-0.5">
         <ActivityIcon activity={activity} />
       </div>
 
-      <div className="flex-1 flex items-center gap-1.5">
-        <div className="font-medium text-content-dimmed">
-          {activity.author.profileLink ? (
-            <BlackLink
-              to={activity.author.profileLink}
-              underline="hover"
-              className="text-content-dimmed hover:text-content-accent"
-            >
-              {shortName(activity.author.fullName)}
-            </BlackLink>
-          ) : (
-            shortName(activity.author.fullName)
-          )}
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-1.5">
+          <div className="font-medium text-content-dimmed shrink-0">
+            {activity.author.profileLink ? (
+              <BlackLink
+                to={activity.author.profileLink}
+                underline="hover"
+                className="text-content-dimmed hover:text-content-accent"
+              >
+                {shortName(activity.author.fullName)}
+              </BlackLink>
+            ) : (
+              shortName(activity.author.fullName)
+            )}
+          </div>
+          <div className="min-w-0">
+            <ActivityText activity={activity} />
+          </div>
         </div>
-        <ActivityText activity={activity} />
       </div>
 
-      <div className="shrink-0">
+      <div className="shrink-0 mt-0.5">
         <span className="text-content-subtle text-xs">
           <FormattedTime time={activity.insertedAt} format="relative" />
         </span>
@@ -138,7 +142,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task-status-change":
       return (
         <span className="text-content-dimmed">
-          changed status from{" "}
+          changed status{activity.task ? ` of "${activity.task.title}"` : ""} from{" "}
           <span className="font-medium text-content-dimmed">{formatStatus(activity.fromStatus)}</span> to{" "}
           <span className="font-medium text-content-dimmed">{formatStatus(activity.toStatus)}</span>
         </span>

@@ -1,7 +1,7 @@
 import React from "react";
 import { AvatarWithName } from "../Avatar";
 import FormattedTime from "../FormattedTime";
-import { IconSquareCheckFilled, IconSquareChevronsLeftFilled } from "../icons";
+import { IconSquareCheckFilled, IconSquareChevronsLeftFilled, IconFlag, IconFileText } from "../icons";
 import { ActivityProps, AcknowledgmentProps } from "./types";
 
 export function MilestoneCompletedActivity({ activity }: ActivityProps) {
@@ -59,6 +59,108 @@ export function MilestoneReopenedActivity({ activity }: ActivityProps) {
             </span>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function MilestoneCreatedActivity({ activity }: ActivityProps) {
+  return (
+    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+      <div className="shrink-0 mt-0.5">
+        <IconFlag size={16} className="text-blue-500" />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-1.5">
+          <div className="font-medium text-content-dimmed shrink-0">
+            {activity.author.profileLink ? (
+              <a 
+                href={activity.author.profileLink}
+                className="text-content-dimmed hover:text-content-accent hover:underline"
+              >
+                {activity.author.fullName.split(' ')[0]}
+              </a>
+            ) : (
+              activity.author.fullName.split(' ')[0]
+            )}
+          </div>
+          <span className="min-w-0">{activity.content || "created the milestone"}</span>
+        </div>
+      </div>
+
+      <div className="shrink-0 mt-0.5">
+        <span className="text-content-subtle text-xs">
+          <FormattedTime time={activity.insertedAt} format="relative" />
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function MilestoneDescriptionActivity({ activity }: ActivityProps) {
+  return (
+    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+      <div className="shrink-0 mt-0.5">
+        <IconFileText size={16} className="text-content-dimmed" />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-1.5">
+          <div className="font-medium text-content-dimmed shrink-0">
+            {activity.author.profileLink ? (
+              <a 
+                href={activity.author.profileLink}
+                className="text-content-dimmed hover:text-content-accent hover:underline"
+              >
+                {activity.author.fullName.split(' ')[0]}
+              </a>
+            ) : (
+              activity.author.fullName.split(' ')[0]
+            )}
+          </div>
+          <span className="min-w-0">{activity.content || "added a description"}</span>
+        </div>
+      </div>
+
+      <div className="shrink-0 mt-0.5">
+        <span className="text-content-subtle text-xs">
+          <FormattedTime time={activity.insertedAt} format="relative" />
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function MilestoneUpdateActivity({ activity }: ActivityProps) {
+  return (
+    <div className="flex gap-3 py-1.5 text-content-subtle text-sm relative ml-2">
+      <div className="shrink-0 mt-0.5">
+        <IconFlag size={16} className="text-content-dimmed" />
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-baseline gap-1.5">
+          <div className="font-medium text-content-dimmed shrink-0">
+            {activity.author.profileLink ? (
+              <a 
+                href={activity.author.profileLink}
+                className="text-content-dimmed hover:text-content-accent hover:underline"
+              >
+                {activity.author.fullName.split(' ')[0]}
+              </a>
+            ) : (
+              activity.author.fullName.split(' ')[0]
+            )}
+          </div>
+          <span className="min-w-0">{activity.content || "updated the milestone"}</span>
+        </div>
+      </div>
+
+      <div className="shrink-0 mt-0.5">
+        <span className="text-content-subtle text-xs">
+          <FormattedTime time={activity.insertedAt} format="relative" />
+        </span>
       </div>
     </div>
   );

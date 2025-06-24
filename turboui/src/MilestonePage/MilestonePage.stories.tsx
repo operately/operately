@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { MilestonePage } from "./index";
 import * as Types from "../TaskBoard/types";
-import { genPeople } from "../utils/storybook/genPeople";
 import { InProjectContextStory, EmptyMilestoneInProjectContextStory } from "./InProjectContextStory";
+import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 
 /**
  * MilestonePage displays a standalone page for a single milestone and its tasks.
@@ -21,14 +21,6 @@ const meta: Meta<typeof MilestonePage> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Generate a set of people for our mock data
-const mockPeople = genPeople(4);
-
-// Mock search function for people
-const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
-};
 
 // Create a sample milestone with various properties
 const sampleMilestone: Types.Milestone = {
@@ -38,6 +30,7 @@ const sampleMilestone: Types.Milestone = {
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
+  status: "active", // Add initial status
 };
 
 // Create a set of tasks for the milestone
@@ -90,6 +83,8 @@ const createSampleTasks = (): Types.Task[] => [
     commentCount: 1,
   },
 ];
+
+
 
 /**
  * Basic example with interactive task creation and reordering
@@ -170,7 +165,6 @@ export const Default: Story = {
         milestone={milestone}
         tasks={tasks}
         milestones={[milestone]}
-        milestonesLink="/projects/123/tasks"
         onTaskCreate={handleTaskCreate}
         onTaskReorder={handleTaskReorder}
         onStatusChange={handleStatusChange}
@@ -182,7 +176,7 @@ export const Default: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-        timelineItems={[]}
+        timelineItems={createMockTimelineItems()}
         currentUser={mockPeople[0]}
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
@@ -198,7 +192,7 @@ export const Default: Story = {
         onArchive={() => console.log("Milestone archived")}
         onDelete={() => console.log("Milestone deleted")}
         canEdit={true}
-        description={null}
+        description={mockDescription}
         onDescriptionChange={async (newDescription) => {
           console.log("Description changed:", newDescription);
           return true;
@@ -221,6 +215,7 @@ export const EmptyMilestone: Story = {
       name: "New Initiative Planning",
       hasDescription: true,
       hasComments: false,
+      status: "active", // Add initial status
     });
     const [isSubscribed, setIsSubscribed] = useState(true);
 
@@ -237,12 +232,25 @@ export const EmptyMilestone: Story = {
       }
     };
 
+    // Empty milestone timeline - should always have creation activity
+    const emptyMilestoneTimeline = [
+      {
+        type: "milestone-activity" as const,
+        value: {
+          id: "activity-1",
+          author: mockPeople[1], // Bob Smith created it
+          insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+          content: "created the milestone",
+          type: "milestone-created",
+        },
+      },
+    ];
+
     return (
       <MilestonePage
         milestone={milestone}
         tasks={[]}
         milestones={[milestone]}
-        milestonesLink="/projects/123/tasks"
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
         onDueDateChange={handleDueDateChange}
         onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
@@ -260,7 +268,7 @@ export const EmptyMilestone: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-        timelineItems={[]}
+        timelineItems={emptyMilestoneTimeline}
         currentUser={mockPeople[0]}
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
@@ -288,104 +296,6 @@ export const EmptyMilestone: Story = {
   },
 };
 
-/**
- * Milestone with many completed tasks
- */
-export const MostlyCompletedMilestone: Story = {
-  render: () => {
-    const [isSubscribed, setIsSubscribed] = useState(false);
-    
-    const completedMilestone: Types.Milestone = {
-      id: "milestone-completed",
-      name: "API Integration Phase",
-      dueDate: new Date(new Date().setDate(new Date().getDate() - 2)), // 2 days ago
-      hasDescription: true,
-      hasComments: true,
-      commentCount: 5,
-    };
-
-    // Create tasks with mostly completed status
-    const completedTasks: Types.Task[] = [
-      {
-        id: "task-c1",
-        title: "Define API endpoints",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c2",
-        title: "Create authentication service",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c3",
-        title: "Implement caching layer",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c4",
-        title: "Document API usage",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c5",
-        title: "Perform security audit",
-        status: "in_progress",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c6",
-        title: "Deploy to production",
-        status: "pending",
-        milestone: completedMilestone,
-      },
-    ];
-
-    return (
-      <MilestonePage
-        milestone={completedMilestone}
-        tasks={completedTasks}
-        milestones={[completedMilestone]}
-        milestonesLink="/projects/123/tasks"
-        onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
-        onMilestoneUpdate={(milestoneId, updates) => console.log("Milestone updated:", { milestoneId, updates })}
-        onMilestoneNameChange={async (newName) => {
-          console.log("Milestone name changed:", newName);
-          return true;
-        }}
-        searchPeople={mockSearchPeople}
-        filters={[]}
-        onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-        timelineItems={[]}
-        currentUser={mockPeople[0]}
-        canComment={true}
-        onAddComment={(comment) => console.log("Add comment:", comment)}
-        onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
-        createdBy={mockPeople[2]}
-        createdAt={new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)} // 10 days ago
-        isSubscribed={isSubscribed}
-        onSubscriptionToggle={(subscribed) => {
-          console.log("Subscription toggled:", subscribed);
-          setIsSubscribed(subscribed);
-        }}
-        onCopyUrl={() => console.log("URL copied")}
-        onArchive={() => console.log("Milestone archived")}
-        onDelete={() => console.log("Milestone deleted")}
-        canEdit={true}
-        description={null}
-        onDescriptionChange={async (newDescription) => {
-          console.log("Description changed:", newDescription);
-          return true;
-        }}
-        mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
-        peopleSearch={mockSearchPeople}
-      />
-    );
-  },
-};
 
 /**
  * Full Project Context - Shows MilestonePage within a complete ProjectPage experience
