@@ -10,14 +10,14 @@ defmodule Operately.Data.Change058UpdateProjectsLastCheckInStatusTest do
   end
 
   test "updates 'issue' status to 'off_track'", ctx do
-    projects = create_projects_with_statuses(ctx, ["on_track", "caution", "issue", "issue", "on_track", "caution"])
+    projects = create_projects_with_statuses(ctx, ["on_track", "caution", "issue", "issue", "on_track", "caution", "at_risk"])
 
     Operately.Data.Change058UpdateProjectsLastCheckInStatus.run()
 
     updated_projects = reload_projects(projects)
 
     assert_statuses(updated_projects, [
-      :on_track, :caution, :off_track, :off_track, :on_track, :caution
+      :on_track, :caution, :off_track, :off_track, :on_track, :caution, :off_track
     ])
   end
 
