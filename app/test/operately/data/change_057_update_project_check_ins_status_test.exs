@@ -11,14 +11,14 @@ defmodule Operately.Data.Change057UpdateProjectCheckInsStatusTest do
   end
 
   test "updates 'issue' status to 'off_track'", ctx do
-    check_ins = create_check_ins_with_statuses(ctx, ["on_track", "caution", "issue", "issue", "on_track", "caution"])
+    check_ins = create_check_ins_with_statuses(ctx, ["on_track", "caution", "issue", "issue", "on_track", "caution", "at_risk"])
 
     Operately.Data.Change057UpdateProjectCheckInsStatus.run()
 
     updated_check_ins = reload_check_ins(check_ins)
 
     assert_statuses(updated_check_ins, [
-      :on_track, :caution, :off_track, :off_track, :on_track, :caution
+      :on_track, :caution, :off_track, :off_track, :on_track, :caution, :off_track
     ])
   end
 
