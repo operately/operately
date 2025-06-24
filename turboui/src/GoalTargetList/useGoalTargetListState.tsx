@@ -150,7 +150,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
     // Drag and drop
     reorder: (_: any, id: string, newIndex: number) => {
       const oldIndex = targets.find((t) => t.id === id)?.index;
-      if (!oldIndex || oldIndex === newIndex) {
+      if (oldIndex === undefined || oldIndex === null || oldIndex === newIndex) {
         return false; // No change needed
       }
 
