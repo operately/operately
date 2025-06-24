@@ -20,26 +20,207 @@ const mockPeople: TaskBoardTypes.Person[] = [
 
 // Mock search function for people
 const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoardTypes.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
-// Get a specific milestone from mock data
-const targetMilestone = Object.values(mockMilestones)[0]!; // Q2 Feature Release
+// Get a specific milestone from mock data and add status
+const targetMilestone = { ...Object.values(mockMilestones)[0]!, status: "active" }; // Q2 Feature Release
 
 // Create an empty milestone for the empty story
-const emptyMilestone: TaskBoardTypes.Milestone = {
+const emptyMilestone: TaskBoardTypes.Milestone & { status?: string } = {
   id: "milestone-empty-project",
   name: "Q3 Planning Phase",
   dueDate: new Date(new Date().setDate(new Date().getDate() + 30)), // 30 days from now
   hasDescription: false,
   hasComments: false,
+  status: "active",
 };
 
 // Filter tasks for this milestone
-const milestoneTasks = mockTasks.filter(task => task.milestone?.id === targetMilestone.id);
+const milestoneTasks = mockTasks.filter((task) => task.milestone?.id === targetMilestone.id);
+
+// Mock timeline items for the stories
+const createMockTimelineItems = () => [
+  {
+    type: "milestone-activity" as const,
+    value: {
+      id: "activity-1",
+      author: mockPeople[1],
+      insertedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      content: "created the milestone",
+      type: "milestone-created",
+    },
+  },
+  {
+    type: "milestone-activity" as const,
+    value: {
+      id: "activity-2",
+      author: mockPeople[1],
+      insertedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // 6 days ago
+      content: "added a description",
+      type: "milestone-description-added",
+    },
+  },
+  {
+    type: "task-activity" as const,
+    value: {
+      id: "activity-3",
+      type: "task-status-change" as const,
+      author: mockPeople[0],
+      insertedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
+      fromStatus: "pending" as const,
+      toStatus: "done" as const,
+      task: {
+        id: "task-1",
+        title: "Implement user authentication",
+        status: "done" as const,
+      },
+    },
+  },
+  {
+    type: "task-activity" as const,
+    value: {
+      id: "activity-4",
+      type: "task-status-change" as const,
+      author: mockPeople[2],
+      insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+      fromStatus: "pending" as const,
+      toStatus: "done" as const,
+      task: {
+        id: "task-4",
+        title: "Add support for dark mode",
+        status: "done" as const,
+      },
+    },
+  },
+  {
+    type: "comment" as const,
+    value: {
+      id: "comment-1",
+      author: mockPeople[0],
+      insertedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+      content: JSON.stringify({
+        message:
+          "Just wanted to update everyone on the progress. We're making good headway on the authentication system.",
+      }),
+      reactions: [
+        { id: "reaction-1", emoji: "👍", count: 2, reacted: false },
+        { id: "reaction-2", emoji: "🎉", count: 1, reacted: true },
+      ],
+    },
+  },
+  {
+    type: "milestone-activity" as const,
+    value: {
+      id: "activity-5",
+      author: mockPeople[1],
+      insertedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+      content: "Milestone status changed to In Progress",
+      type: "milestone_update",
+    },
+  },
+  {
+    type: "comment" as const,
+    value: {
+      id: "comment-3",
+      author: mockPeople[2],
+      insertedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+      content: JSON.stringify({
+        message: "The dark mode implementation is looking great! Should be ready for review tomorrow.",
+      }),
+      reactions: [{ id: "reaction-3", emoji: "🔥", count: 3, reacted: false }],
+    },
+  },
+  {
+    type: "task-activity" as const,
+    value: {
+      id: "activity-6",
+      type: "task-status-change" as const,
+      author: mockPeople[0],
+      insertedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+      fromStatus: "in_progress" as const,
+      toStatus: "done" as const,
+      task: {
+        id: "task-6",
+        title: "Create presentation for stakeholders",
+        status: "done" as const,
+      },
+    },
+  },
+];
+
+// Mock description content
+const mockDescription = {
+  type: "doc",
+  content: [
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "This milestone represents our Q2 feature release, focusing on core user experience improvements and new functionality. The main goals include:",
+        },
+      ],
+    },
+    {
+      type: "bulletList",
+      content: [
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Implement robust user authentication system",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Add dark mode support across the application",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Improve navigation and user profile functionality",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "We expect this release to significantly improve user engagement and provide a foundation for future feature development.",
+        },
+      ],
+    },
+  ],
+};
 
 /**
  * Full Project Context - Shows MilestonePage within a ProjectPage-like structure
@@ -65,20 +246,21 @@ export function InProjectContextStory() {
 
   const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
     console.log("Task updated:", taskId, updates);
-    const updatedTasks = tasks.map((task) => 
-      task.id === taskId ? { ...task, ...updates } : task
-    );
+    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
     setTasks(updatedTasks);
+  };
+
+  const handleTaskReorder = (reorderedTasks: TaskBoardTypes.Task[]) => {
+    console.log("Tasks reordered:", reorderedTasks);
+    setTasks(reorderedTasks);
   };
 
   const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
     console.log("Milestone updated:", milestoneId, updates);
-    
+
     // Update the milestone in the milestones array
-    const updatedMilestones = milestones.map(milestone => 
-      milestone.id === milestoneId 
-        ? { ...milestone, ...updates }
-        : milestone
+    const updatedMilestones = milestones.map((milestone) =>
+      milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
     );
     setMilestones(updatedMilestones);
   };
@@ -88,7 +270,8 @@ export function InProjectContextStory() {
     closeLink: "#",
     reopenLink: "#",
     projectName: "Mobile App Redesign",
-    description: "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
+    description:
+      "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
     space: { id: "1", name: "Product", link: "#" },
     setSpace: () => {},
     spaceSearch: async () => [],
@@ -138,12 +321,12 @@ export function InProjectContextStory() {
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <MilestonePage
-              milestone={targetMilestone}
+              milestone={milestones.find((m) => m.id === targetMilestone.id) || targetMilestone}
               tasks={tasks}
               milestones={milestones}
-              milestonesLink="/projects/123/tasks"
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
+              onTaskReorder={handleTaskReorder}
               onTaskUpdate={handleTaskUpdate}
               onMilestoneUpdate={handleMilestoneUpdate}
               onMilestoneNameChange={async (newName) => {
@@ -153,13 +336,11 @@ export function InProjectContextStory() {
               searchPeople={mockSearchPeople}
               filters={filters}
               onFiltersChange={setFilters}
-              timelineItems={[]}
+              timelineItems={createMockTimelineItems()}
               currentUser={mockPeople[0]!}
               canComment={true}
               onAddComment={(comment) => console.log("Add comment:", comment)}
-              onEditComment={(commentId, content) => 
-                console.log("Edit comment:", { commentId, content })
-              }
+              onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
               createdBy={mockPeople[0]}
               createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
               isSubscribed={isSubscribed}
@@ -171,12 +352,12 @@ export function InProjectContextStory() {
               onArchive={() => console.log("Milestone archived")}
               onDelete={() => console.log("Milestone deleted")}
               canEdit={true}
-              description={null}
+              description={mockDescription}
               onDescriptionChange={async (newDescription) => {
                 console.log("Description changed:", newDescription);
                 return true;
               }}
-              mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
+              mentionedPersonLookup={(id) => mockPeople.find((p) => p.id === id)}
               peopleSearch={mockSearchPeople}
             />
           </div>
@@ -215,20 +396,21 @@ export function EmptyMilestoneInProjectContextStory() {
 
   const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
     console.log("Task updated:", taskId, updates);
-    const updatedTasks = tasks.map((task) => 
-      task.id === taskId ? { ...task, ...updates } : task
-    );
+    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
     setTasks(updatedTasks);
+  };
+
+  const handleTaskReorder = (reorderedTasks: TaskBoardTypes.Task[]) => {
+    console.log("Tasks reordered:", reorderedTasks);
+    setTasks(reorderedTasks);
   };
 
   const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
     console.log("Milestone updated:", milestoneId, updates);
-    
+
     // Update the milestone in the milestones array
-    const updatedMilestones = milestones.map(milestone => 
-      milestone.id === milestoneId 
-        ? { ...milestone, ...updates }
-        : milestone
+    const updatedMilestones = milestones.map((milestone) =>
+      milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
     );
     setMilestones(updatedMilestones);
   };
@@ -238,7 +420,8 @@ export function EmptyMilestoneInProjectContextStory() {
     closeLink: "#",
     reopenLink: "#",
     projectName: "Mobile App Redesign",
-    description: "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
+    description:
+      "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
     space: { id: "1", name: "Product", link: "#" },
     setSpace: () => {},
     spaceSearch: async () => [],
@@ -288,12 +471,12 @@ export function EmptyMilestoneInProjectContextStory() {
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <MilestonePage
-              milestone={emptyMilestone}
+              milestone={milestones.find((m) => m.id === emptyMilestone.id) || emptyMilestone}
               tasks={tasks}
               milestones={milestones}
-              milestonesLink="/projects/123/tasks"
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
+              onTaskReorder={handleTaskReorder}
               onTaskUpdate={handleTaskUpdate}
               onMilestoneUpdate={handleMilestoneUpdate}
               onMilestoneNameChange={async (newName) => {
@@ -303,13 +486,22 @@ export function EmptyMilestoneInProjectContextStory() {
               searchPeople={mockSearchPeople}
               filters={filters}
               onFiltersChange={setFilters}
-              timelineItems={[]}
+              timelineItems={[
+                {
+                  type: "milestone-activity" as const,
+                  value: {
+                    id: "activity-1",
+                    author: mockPeople[0], // Alice created the empty milestone
+                    insertedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+                    content: "created the milestone",
+                    type: "milestone-created",
+                  },
+                },
+              ]}
               currentUser={mockPeople[0]!}
               canComment={true}
               onAddComment={(comment) => console.log("Add comment:", comment)}
-              onEditComment={(commentId, content) => 
-                console.log("Edit comment:", { commentId, content })
-              }
+              onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
               createdBy={mockPeople[0]}
               createdAt={new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)} // 2 days ago
               isSubscribed={isSubscribed}
@@ -326,7 +518,7 @@ export function EmptyMilestoneInProjectContextStory() {
                 console.log("Description changed:", newDescription);
                 return true;
               }}
-              mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
+              mentionedPersonLookup={(id) => mockPeople.find((p) => p.id === id)}
               peopleSearch={mockSearchPeople}
             />
           </div>

@@ -1,6 +1,13 @@
 import React from "react";
 import { CommentItem } from "../CommentSection/CommentItem";
-import { MilestoneCompletedActivity, MilestoneReopenedActivity, AcknowledgmentActivity } from "../CommentSection/ActivityComponents";
+import { 
+  MilestoneCompletedActivity, 
+  MilestoneReopenedActivity, 
+  MilestoneCreatedActivity,
+  MilestoneDescriptionActivity,
+  MilestoneUpdateActivity,
+  AcknowledgmentActivity 
+} from "../CommentSection/ActivityComponents";
 import { TaskActivityItem } from "./TaskActivities";
 import { TimelineItemProps } from "./types";
 
@@ -34,6 +41,12 @@ export function TimelineItem({ item, currentUser, canComment, commentParentType,
         return <MilestoneCompletedActivity activity={item.value} />;
       } else if (item.value.type === "milestone-reopened") {
         return <MilestoneReopenedActivity activity={item.value} />;
+      } else if (item.value.type === "milestone-created") {
+        return <MilestoneCreatedActivity activity={item.value} />;
+      } else if (item.value.type === "milestone-description-added") {
+        return <MilestoneDescriptionActivity activity={item.value} />;
+      } else if (item.value.type === "milestone_update") {
+        return <MilestoneUpdateActivity activity={item.value} />;
       }
       return null;
 
