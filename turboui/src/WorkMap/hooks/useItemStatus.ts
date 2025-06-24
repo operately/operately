@@ -7,17 +7,14 @@ export function useItemStatus(status: WorkMap.Item["status"]) {
   const isCompleted =
     status === "completed" ||
     status === "achieved" ||
-    status === "partial" ||
     status === "missed";
 
   const isFailed = status === "missed";
-  const isDropped = status === "dropped";
   const isPending = status === "pending";
 
   return {
     isCompleted,
     isFailed,
-    isDropped,
     isPending,
   };
 }
