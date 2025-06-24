@@ -21,7 +21,7 @@ defmodule Operately.Data.Change058UpdateProjectsLastCheckInStatus do
     SELECT DISTINCT last_check_in_status
     FROM projects
     WHERE last_check_in_status IS NOT NULL
-    AND last_check_in_status NOT IN ('on_track', 'caution', 'issue')
+    AND last_check_in_status NOT IN ('on_track', 'caution', 'issue', 'at_risk')
     """
 
     %{rows: rows} = Repo.query!(sql)
@@ -33,6 +33,14 @@ defmodule Operately.Data.Change058UpdateProjectsLastCheckInStatus do
     UPDATE projects
     SET last_check_in_status = 'off_track'
     WHERE last_check_in_status = 'issue'
+    """
+
+    Repo.query!(sql)
+
+    sql = """
+    UPDATE projects
+    SET last_check_in_status = 'off_track'
+    WHERE last_check_in_status = 'at_risk'
     """
 
     Repo.query!(sql)
