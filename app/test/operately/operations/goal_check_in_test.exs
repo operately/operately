@@ -103,7 +103,7 @@ defmodule Operately.Operations.GoalCheckInTest do
       {:ok, update} =
         GoalCheckIn.run(ctx.champion, ctx.goal, %{
           goal_id: ctx.goal.id,
-          status: "issue",
+          status: "off_track",
           target_values: [],
           content: RichText.rich_text("Some content"),
           send_to_everyone: true,

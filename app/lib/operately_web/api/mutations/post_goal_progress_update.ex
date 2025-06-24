@@ -67,7 +67,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
            %{"id" => id, "value" => t["value"]}
          end),
        content: inputs.content,
-       status: inputs.status,
+       status: String.to_atom(inputs.status),
        due_date: inputs.due_date,
        send_to_everyone: inputs[:send_notifications_to_everyone] || false,
        subscription_parent_type: :goal_update,

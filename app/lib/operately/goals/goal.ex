@@ -18,15 +18,15 @@ defmodule Operately.Goals.Goal do
     belongs_to :reviewer, Operately.People.Person, foreign_key: :reviewer_id
     belongs_to :creator, Operately.People.Person, foreign_key: :creator_id
 
-    has_many :targets, Operately.Goals.Target
+    has_many :targets, Target
     has_many :projects, Operately.Projects.Project, foreign_key: :goal_id
 
     has_one :access_context, Operately.Access.Context, foreign_key: :goal_id
 
     # Check-Ins (they are called updates for historical reasons)
-    has_many :updates, Operately.Goals.Update
-    belongs_to :last_update, Operately.Goals.Update, foreign_key: :last_check_in_id
-    field :last_update_status, Ecto.Enum, values: [:on_track, :concern, :caution, :issue, :pending]
+    has_many :updates, Update
+    belongs_to :last_update, Update, foreign_key: :last_check_in_id
+    field :last_update_status, Ecto.Enum, values: Update.valid_statuses()
     field :next_update_scheduled_at, :utc_datetime
 
     embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
