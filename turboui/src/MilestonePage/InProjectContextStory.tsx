@@ -7,27 +7,13 @@ import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
 import { PageHeader } from "../ProjectPage/PageHeader";
 import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
+import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 
 const people = genPeople(5);
 
-// Mock people data for search
-const mockPeople: TaskBoardTypes.Person[] = [
-  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
-  { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
-];
 
-// Mock search function for people
-const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoardTypes.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
-};
-
-// Get a specific milestone from mock data
-const targetMilestone = Object.values(mockMilestones)[0]!; // Q2 Feature Release
+// Get a specific milestone from mock data and add status
+const targetMilestone = { ...Object.values(mockMilestones)[0]!, status: "active" }; // Q2 Feature Release
 
 // Create an empty milestone for the empty story
 const emptyMilestone: TaskBoardTypes.Milestone = {
@@ -36,10 +22,13 @@ const emptyMilestone: TaskBoardTypes.Milestone = {
   dueDate: new Date(new Date().setDate(new Date().getDate() + 30)), // 30 days from now
   hasDescription: false,
   hasComments: false,
+  status: "active",
 };
 
 // Filter tasks for this milestone
-const milestoneTasks = mockTasks.filter(task => task.milestone?.id === targetMilestone.id);
+const milestoneTasks = mockTasks.filter((task) => task.milestone?.id === targetMilestone.id);
+
+
 
 /**
  * Full Project Context - Shows MilestonePage within a ProjectPage-like structure
@@ -65,20 +54,21 @@ export function InProjectContextStory() {
 
   const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
     console.log("Task updated:", taskId, updates);
-    const updatedTasks = tasks.map((task) => 
-      task.id === taskId ? { ...task, ...updates } : task
-    );
+    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
     setTasks(updatedTasks);
+  };
+
+  const handleTaskReorder = (reorderedTasks: TaskBoardTypes.Task[]) => {
+    console.log("Tasks reordered:", reorderedTasks);
+    setTasks(reorderedTasks);
   };
 
   const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
     console.log("Milestone updated:", milestoneId, updates);
-    
+
     // Update the milestone in the milestones array
-    const updatedMilestones = milestones.map(milestone => 
-      milestone.id === milestoneId 
-        ? { ...milestone, ...updates }
-        : milestone
+    const updatedMilestones = milestones.map((milestone) =>
+      milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
     );
     setMilestones(updatedMilestones);
   };
@@ -88,7 +78,8 @@ export function InProjectContextStory() {
     closeLink: "#",
     reopenLink: "#",
     projectName: "Mobile App Redesign",
-    description: "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
+    description:
+      "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
     space: { id: "1", name: "Product", link: "#" },
     setSpace: () => {},
     spaceSearch: async () => [],
@@ -138,12 +129,12 @@ export function InProjectContextStory() {
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <MilestonePage
-              milestone={targetMilestone}
+              milestone={milestones.find((m) => m.id === targetMilestone.id) || targetMilestone}
               tasks={tasks}
               milestones={milestones}
-              milestonesLink="/projects/123/tasks"
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
+              onTaskReorder={handleTaskReorder}
               onTaskUpdate={handleTaskUpdate}
               onMilestoneUpdate={handleMilestoneUpdate}
               onMilestoneNameChange={async (newName) => {
@@ -153,13 +144,11 @@ export function InProjectContextStory() {
               searchPeople={mockSearchPeople}
               filters={filters}
               onFiltersChange={setFilters}
-              timelineItems={[]}
+              timelineItems={createMockTimelineItems()}
               currentUser={mockPeople[0]!}
               canComment={true}
               onAddComment={(comment) => console.log("Add comment:", comment)}
-              onEditComment={(commentId, content) => 
-                console.log("Edit comment:", { commentId, content })
-              }
+              onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
               createdBy={mockPeople[0]}
               createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
               isSubscribed={isSubscribed}
@@ -171,12 +160,12 @@ export function InProjectContextStory() {
               onArchive={() => console.log("Milestone archived")}
               onDelete={() => console.log("Milestone deleted")}
               canEdit={true}
-              description={null}
+              description={mockDescription}
               onDescriptionChange={async (newDescription) => {
                 console.log("Description changed:", newDescription);
                 return true;
               }}
-              mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
+              mentionedPersonLookup={(id) => mockPeople.find((p) => p.id === id)}
               peopleSearch={mockSearchPeople}
             />
           </div>
@@ -215,20 +204,21 @@ export function EmptyMilestoneInProjectContextStory() {
 
   const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
     console.log("Task updated:", taskId, updates);
-    const updatedTasks = tasks.map((task) => 
-      task.id === taskId ? { ...task, ...updates } : task
-    );
+    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
     setTasks(updatedTasks);
+  };
+
+  const handleTaskReorder = (reorderedTasks: TaskBoardTypes.Task[]) => {
+    console.log("Tasks reordered:", reorderedTasks);
+    setTasks(reorderedTasks);
   };
 
   const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
     console.log("Milestone updated:", milestoneId, updates);
-    
+
     // Update the milestone in the milestones array
-    const updatedMilestones = milestones.map(milestone => 
-      milestone.id === milestoneId 
-        ? { ...milestone, ...updates }
-        : milestone
+    const updatedMilestones = milestones.map((milestone) =>
+      milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
     );
     setMilestones(updatedMilestones);
   };
@@ -238,7 +228,8 @@ export function EmptyMilestoneInProjectContextStory() {
     closeLink: "#",
     reopenLink: "#",
     projectName: "Mobile App Redesign",
-    description: "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
+    description:
+      "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
     space: { id: "1", name: "Product", link: "#" },
     setSpace: () => {},
     spaceSearch: async () => [],
@@ -288,12 +279,12 @@ export function EmptyMilestoneInProjectContextStory() {
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <MilestonePage
-              milestone={emptyMilestone}
+              milestone={milestones.find((m) => m.id === emptyMilestone.id) || emptyMilestone}
               tasks={tasks}
               milestones={milestones}
-              milestonesLink="/projects/123/tasks"
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
+              onTaskReorder={handleTaskReorder}
               onTaskUpdate={handleTaskUpdate}
               onMilestoneUpdate={handleMilestoneUpdate}
               onMilestoneNameChange={async (newName) => {
@@ -303,13 +294,22 @@ export function EmptyMilestoneInProjectContextStory() {
               searchPeople={mockSearchPeople}
               filters={filters}
               onFiltersChange={setFilters}
-              timelineItems={[]}
+              timelineItems={[
+                {
+                  type: "milestone-activity" as const,
+                  value: {
+                    id: "activity-1",
+                    author: mockPeople[0], // Alice created the empty milestone
+                    insertedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+                    content: "created the milestone",
+                    type: "milestone-created",
+                  },
+                },
+              ]}
               currentUser={mockPeople[0]!}
               canComment={true}
               onAddComment={(comment) => console.log("Add comment:", comment)}
-              onEditComment={(commentId, content) => 
-                console.log("Edit comment:", { commentId, content })
-              }
+              onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
               createdBy={mockPeople[0]}
               createdAt={new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)} // 2 days ago
               isSubscribed={isSubscribed}
@@ -326,7 +326,7 @@ export function EmptyMilestoneInProjectContextStory() {
                 console.log("Description changed:", newDescription);
                 return true;
               }}
-              mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
+              mentionedPersonLookup={(id) => mockPeople.find((p) => p.id === id)}
               peopleSearch={mockSearchPeople}
             />
           </div>

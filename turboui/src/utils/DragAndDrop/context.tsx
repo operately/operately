@@ -1,6 +1,6 @@
 import React from "react";
 
-type OnDropFunction = (dropZoneId: string, draggedId: string, indexInDropZone: number) => void;
+type OnDropFunction = (dropZoneId: string, draggedId: string, indexInDropZone: number) => boolean;
 
 export interface DragAndDropContextValue {
   getIsDragging: () => boolean;
@@ -24,6 +24,10 @@ export interface DragAndDropContextValue {
 
   sourceZoneId: string | null;
   setSourceZoneId: (id: string | null) => void;
+
+  // Additional properties that are used in the implementation
+  getDropZoneItems: (id: string) => any[];
+  internalMutableState: any;
 }
 
 const DragAndDropContext = React.createContext<DragAndDropContextValue | null>(null);

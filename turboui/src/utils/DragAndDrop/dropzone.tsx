@@ -56,6 +56,7 @@ class DropZoneElement {
     this.mouseMove = this.onMouseMove.bind(this);
 
     this.el.setAttribute("drop-zone", "true");
+    this.el.id = this.id;
   }
 
   bindEvents() {
@@ -70,7 +71,11 @@ class DropZoneElement {
 
   onMouseUp() {
     if (this.context.getIsDragging()) {
-      this.context.onDrop(this.id, this.context.draggedIdRef.current!, this.indexInDropZone);
+      const dropSuccessful = this.context.onDrop(this.id, this.context.draggedIdRef.current!, this.indexInDropZone);
+      // Reset drag state regardless of success/failure
+      if (dropSuccessful) {
+        // Additional success handling could go here if needed
+      }
     }
   }
 

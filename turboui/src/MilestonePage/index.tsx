@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { PieChart } from "../PieChart";
 import { calculateMilestoneStats } from "../TaskBoard/components/MilestoneCard";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
@@ -26,7 +26,6 @@ function calculateCompletionPercentage(stats: {
   return (stats.done / activeTasks) * 100;
 }
 import {
-  IconMessageCircle,
   IconPlus,
   IconFlag,
   IconCalendar,
@@ -35,8 +34,10 @@ import {
   IconLink,
   IconArchive,
   IconTrash,
+  IconCheck,
 } from "../icons";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
+import { StatusBadge } from "../StatusBadge";
 import { DateField } from "../DateField";
 import { AvatarWithName } from "../Avatar";
 import FormattedTime from "../FormattedTime";
@@ -44,7 +45,6 @@ import RichContent, { countCharacters, shortenContent } from "../RichContent";
 import { isContentEmpty } from "../RichContent/isContentEmpty";
 import { Editor, useEditor } from "../RichEditor";
 import { TextField } from "../TextField";
-import { Link } from "../Link";
 import * as Types from "../TaskBoard/types";
 
 interface MilestonePageProps {
@@ -56,9 +56,6 @@ interface MilestonePageProps {
 
   // All milestones for context
   milestones?: Types.Milestone[];
-
-  // Navigation link to go back to all milestones view
-  milestonesLink?: string;
 
   // Optional callbacks
   onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
@@ -103,7 +100,6 @@ export function MilestonePage({
   milestone,
   tasks,
   milestones,
-  milestonesLink,
   onTaskCreate,
   onTaskReorder,
   onDueDateChange,
@@ -133,10 +129,36 @@ export function MilestonePage({
 }: MilestonePageProps) {
   // State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [isHeaderStuck, setIsHeaderStuck] = useState(false);
+
+  // Ref for the sentinel element (placed above sticky header)
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Calculate stats
   const stats = calculateMilestoneStats(tasks);
   const completionPercentage = calculateCompletionPercentage(stats);
+
+  // Set up intersection observer to detect when header becomes stuck
+  useEffect(() => {
+    const sentinelElement = sentinelRef.current;
+    if (!sentinelElement) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry) {
+          setIsHeaderStuck(!entry.isIntersecting);
+        }
+      },
+      {
+        threshold: 0,
+        rootMargin: "0px",
+      },
+    );
+
+    observer.observe(sentinelElement);
+    return () => observer.disconnect();
+  }, []);
 
   // Apply filters to tasks
   const applyFilters = (tasks: Types.Task[], filters: Types.FilterCondition[]) => {
@@ -184,32 +206,33 @@ export function MilestonePage({
   return (
     <div className="flex flex-col h-full bg-surface-base">
       <div className="flex-1 overflow-auto">
-        <div className="px-4 py-6">
+        <div className="px-4">
           <div className="sm:grid sm:grid-cols-12">
             {/* Main content - left column (8 columns) */}
             <div className="sm:col-span-8 sm:px-4 space-y-6">
+              {/* Sentinel element for intersection observer */}
+              <div ref={sentinelRef} className="h-0"></div>
+
               {/* Header section with milestone info */}
-              <div className="space-y-2">
-                {/* Milestone label line: flag icon + "Milestones" link */}
+              <div
+                className={`sticky top-0 bg-surface-base z-10 pb-2 pt-2 space-y-2 transition-all duration-200 ${
+                  isHeaderStuck ? "border-b border-surface-outline shadow-sm" : ""
+                }`}
+              >
+                {/* Title line: flag icon + milestone name + status badge */}
                 <div className="flex items-center gap-2">
-                  <IconFlag size={16} className="text-blue-500" />
-                  {milestonesLink ? (
-                    <Link to={milestonesLink} className="text-sm font-medium" underline="hover">
-                      Milestones
-                    </Link>
-                  ) : (
-                    <span className="text-sm font-medium text-content-base">Milestones</span>
-                  )}
-                </div>
-                
-                {/* Title line: milestone name only */}
-                <div>
+                  <IconFlag size={20} className="text-blue-500" />
                   <TextField
                     className="font-semibold text-xl"
                     text={milestone.name}
                     onSave={onMilestoneNameChange || (async () => true)}
                     readonly={!canEdit}
                     trimBeforeSave
+                  />
+                  <StatusBadge 
+                    status={milestone.status === "completed" ? "completed" : "in_progress"} 
+                    customLabel={milestone.status === "completed" ? undefined : "Active"}
+                    hideIcon={true}
                   />
                 </div>
               </div>
@@ -268,7 +291,11 @@ export function MilestonePage({
                       <DragAndDropProvider
                         onDrop={(_, draggedId, index) => {
                           if (onTaskReorder) {
-                            onTaskReorder(reorderTasksInList(visibleTasks, draggedId, index));
+                            // Reorder only the visible tasks
+                            const reorderedVisibleTasks = reorderTasksInList(visibleTasks, draggedId, index);
+                            // Merge reordered visible tasks with hidden tasks to maintain complete list
+                            const completeReorderedTasks = [...reorderedVisibleTasks, ...hiddenTasks];
+                            onTaskReorder(completeReorderedTasks);
                             return true;
                           }
                           return false;
@@ -291,28 +318,25 @@ export function MilestonePage({
               {/* Timeline section */}
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <IconMessageCircle className="w-5 h-5 text-content-subtle" />
                   <h2 className="font-bold">Activity & Comments</h2>
                 </div>
 
-                <div className="bg-surface-dimmed rounded-lg p-4">
-                  <Timeline
-                    items={timelineItems}
-                    currentUser={
-                      currentUser
-                        ? {
-                            id: currentUser.id,
-                            fullName: currentUser.fullName,
-                            avatarUrl: currentUser.avatarUrl || undefined,
-                          }
-                        : { id: "", fullName: "", avatarUrl: undefined }
-                    }
-                    canComment={canComment}
-                    commentParentType="milestone"
-                    onAddComment={onAddComment}
-                    onEditComment={onEditComment}
-                  />
-                </div>
+                <Timeline
+                  items={timelineItems}
+                  currentUser={
+                    currentUser
+                      ? {
+                          id: currentUser.id,
+                          fullName: currentUser.fullName,
+                          avatarUrl: currentUser.avatarUrl || undefined,
+                        }
+                      : { id: "", fullName: "", avatarUrl: undefined }
+                  }
+                  canComment={canComment}
+                  commentParentType="milestone"
+                  onAddComment={onAddComment}
+                  onEditComment={onEditComment}
+                />
               </div>
             </div>
 
@@ -395,7 +419,7 @@ function MilestoneSidebar({
   );
 }
 
-function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+function SidebarSection({ title, children }: { title: string | React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
       <div className="font-bold text-sm">{title}</div>
@@ -441,7 +465,7 @@ function SidebarStatus({
   canEdit: boolean;
 }) {
   // Assume milestone has a status field (you may need to add this to Types.Milestone)
-  const isCompleted = (milestone as any).status === "completed";
+  const isCompleted = milestone.status === "completed";
 
   const handleStatusToggle = () => {
     if (onMilestoneUpdate) {
@@ -454,19 +478,25 @@ function SidebarStatus({
 
   if (!canEdit) {
     return (
-      <SidebarSection title="Status">
+      <SidebarSection title="Milestone status">
         <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
       </SidebarSection>
     );
   }
 
   return (
-    <SidebarSection title="Status">
+    <SidebarSection title="Milestone status">
       <div className="space-y-2">
         <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
-        <GhostButton size="xs" onClick={handleStatusToggle}>
-          {isCompleted ? "Reopen milestone" : "Mark as completed"}
-        </GhostButton>
+        {isCompleted ? (
+          <SecondaryButton size="xs" onClick={handleStatusToggle}>
+            Reopen
+          </SecondaryButton>
+        ) : (
+          <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
+            Mark complete
+          </GhostButton>
+        )}
       </div>
     </SidebarSection>
   );
