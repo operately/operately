@@ -31,8 +31,8 @@ export function ItemNameCell({ item, level, expanded, setExpanded, showIndentati
 }
 
 function Name({ item }: { item: WorkMap.Item }) {
-  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
-  const isClosed = isCompleted || isFailed || isDropped;
+  const { isCompleted, isFailed, isPending } = useItemStatus(item.status);
+  const isClosed = isCompleted || isFailed;
 
   const textStyle = classNames(
     "font-medium text-xs md:text-sm transition-colors",
