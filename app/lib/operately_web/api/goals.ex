@@ -271,15 +271,14 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.check_permissions(:can_edit)
       |> Steps.find_target(inputs.target_id)
       |> Steps.delete_target()
-      # |> Steps.save_activity(:goal_target_deleted, fn changes ->
-      #   %{
-      #     company_id: changes.goal.company_id,
-      #     space_id: changes.goal.group_id,
-      #     goal_id: changes.goal.id,
-      #     target_id: changes.target.id,
-      #     target_name: changes.target.name
-      #   }
-      # end)
+      |> Steps.save_activity(:goal_target_deleting, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_name: changes.target.name
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
