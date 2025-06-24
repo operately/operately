@@ -325,6 +325,12 @@ defmodule Operately.Support.Features.GoalSteps do
     end)
   end
 
+  step :assert_target_deleted_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "deleted the #{ctx.target.name} target")
+  end
+
   #
   # Updating a target value
   #
