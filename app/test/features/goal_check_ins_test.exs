@@ -58,7 +58,7 @@ defmodule Operately.Features.GoalChecksInsTest do
 
   feature "edit a submitted check-in", ctx do
     params = %{
-      status: "at risk",
+      status: "off_track",
       message: "Checking-in on my goal",
       targets: %{
         "First response time" => 20,

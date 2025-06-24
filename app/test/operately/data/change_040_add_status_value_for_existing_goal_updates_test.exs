@@ -30,22 +30,19 @@ defmodule Operately.Data.Change040AddStatusValueForExistingGoalUpdatesTest do
   end
 
   test "migration ignores updates with status", ctx do
-    update1 = goal_update_fixture(ctx.creator, ctx.goal, status: :issue)
+    update1 = goal_update_fixture(ctx.creator, ctx.goal, status: :off_track)
     update2 = goal_update_fixture(ctx.creator, ctx.goal, status: :caution)
-    update3 = goal_update_fixture(ctx.creator, ctx.goal, status: :pending)
-    update4 = goal_update_fixture(ctx.creator, ctx.goal, status: :on_track)
+    update3 = goal_update_fixture(ctx.creator, ctx.goal, status: :on_track)
 
     Operately.Data.Change040AddStatusValueForExistingGoalUpdates.run()
 
     update1 = Repo.reload(update1)
     update2 = Repo.reload(update2)
     update3 = Repo.reload(update3)
-    update4 = Repo.reload(update4)
 
-    assert update1.status == :issue
+    assert update1.status == :off_track
     assert update2.status == :caution
-    assert update3.status == :pending
-    assert update4.status == :on_track
+    assert update3.status == :on_track
   end
 
   #

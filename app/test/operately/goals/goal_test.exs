@@ -28,7 +28,7 @@ defmodule Operately.Goals.GoalTest do
       assert Goal.status(ctx.goal) == :missed
     end
 
-    @status [:pending, :on_track, :concern, :issue]
+    @status [:on_track, :caution, :off_track]
 
     tabletest @status do
       test "given a goal's last update is #{@test}, its status should also be #{@test}", ctx do
