@@ -151,7 +151,7 @@ class DraggableElement {
     this.context.setIsDragging(this.isDragging);
     this.context.setDraggedId(this.id);
     this.context.setDraggedElementSize({ width: this.elementRect.width, height: this.elementRect.height });
-    this.context.setSourceZoneId(this.el.parentElement!.id);
+    this.context.setSourceZoneId(this.zoneId);
   }
 
   stopDragging() {

@@ -244,6 +244,8 @@ export function TaskBoard({
       setInternalTasks(updatedTasks);
 
       console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
+      
+      return true; // Successfully handled the reorder
     },
     [internalTasks, milestones, setInternalTasks],
   );

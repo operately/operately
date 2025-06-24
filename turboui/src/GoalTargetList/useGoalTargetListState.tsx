@@ -28,7 +28,7 @@ export interface State {
   deleteTarget: (id: string) => void;
   cancelDelete: (id: string) => void;
 
-  reorder: (item: any, targetId: string, indexInDropZone: number) => void;
+  reorder: (item: any, targetId: string, indexInDropZone: number) => boolean;
 }
 
 export function useGoalTargetListState(props: GoalTargetList.Props): State {
@@ -151,7 +151,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
     reorder: (_: any, id: string, newIndex: number) => {
       const oldIndex = targets.find((t) => t.id === id)?.index;
       if (!oldIndex || oldIndex === newIndex) {
-        return; // No change needed
+        return false; // No change needed
       }
 
       reorder(id, newIndex);
@@ -161,6 +161,8 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
           reorder(id, oldIndex); // Revert if the update fails
         }
       });
+      
+      return true; // Successfully initiated reorder
     },
   };
 

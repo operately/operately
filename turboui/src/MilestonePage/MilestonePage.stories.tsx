@@ -31,13 +31,14 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Per
 };
 
 // Create a sample milestone with various properties
-const sampleMilestone: Types.Milestone = {
+const sampleMilestone: Types.Milestone & { status?: string } = {
   id: "milestone-1",
   name: "Q2 Feature Release",
   dueDate: new Date(new Date().setDate(new Date().getDate() + 15)), // 15 days from now
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
+  status: "active", // Add initial status
 };
 
 // Create a set of tasks for the milestone
@@ -90,6 +91,185 @@ const createSampleTasks = (): Types.Task[] => [
     commentCount: 1,
   },
 ];
+
+// Mock timeline items for the default story
+const createMockTimelineItems = () => [
+  {
+    type: "milestone-activity" as const,
+    value: {
+      id: "activity-1",
+      author: mockPeople[1],
+      insertedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+      content: "created the milestone",
+      type: "milestone-created",
+    },
+  },
+  {
+    type: "milestone-activity" as const,
+    value: {
+      id: "activity-2",
+      author: mockPeople[1],
+      insertedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // 6 days ago
+      content: "added a description",
+      type: "milestone-description-added",
+    },
+  },
+  {
+    type: "task-activity" as const,
+    value: {
+      id: "activity-3",
+      type: "task-status-change" as const,
+      author: mockPeople[0],
+      insertedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
+      fromStatus: "pending" as const,
+      toStatus: "done" as const,
+      task: {
+        id: "task-1",
+        title: "Implement user authentication",
+        status: "done" as const,
+      },
+    },
+  },
+  {
+    type: "task-activity" as const,
+    value: {
+      id: "activity-4",
+      type: "task-status-change" as const,
+      author: mockPeople[2],
+      insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+      fromStatus: "pending" as const,
+      toStatus: "done" as const,
+      task: {
+        id: "task-4",
+        title: "Add support for dark mode",
+        status: "done" as const,
+      },
+    },
+  },
+  {
+    type: "comment" as const,
+    value: {
+      id: "comment-1",
+      author: mockPeople[0],
+      insertedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
+      content: JSON.stringify({ message: "Just wanted to update everyone on the progress. We're making good headway on the authentication system." }),
+      reactions: [
+        { id: "reaction-1", emoji: "👍", count: 2, reacted: false },
+        { id: "reaction-2", emoji: "🎉", count: 1, reacted: true },
+      ],
+    },
+  },
+  {
+    type: "milestone-activity" as const,
+    value: {
+      id: "activity-5",
+      author: mockPeople[1],
+      insertedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+      content: "Milestone status changed to In Progress",
+      type: "milestone_update",
+    },
+  },
+  {
+    type: "comment" as const,
+    value: {
+      id: "comment-3",
+      author: mockPeople[2],
+      insertedAt: new Date(Date.now() - 12 * 60 * 60 * 1000).toISOString(), // 12 hours ago
+      content: JSON.stringify({ message: "The dark mode implementation is looking great! Should be ready for review tomorrow." }),
+      reactions: [
+        { id: "reaction-3", emoji: "🔥", count: 3, reacted: false },
+      ],
+    },
+  },
+  {
+    type: "task-activity" as const,
+    value: {
+      id: "activity-6",
+      type: "task-status-change" as const,
+      author: mockPeople[0],
+      insertedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
+      fromStatus: "in_progress" as const,
+      toStatus: "done" as const,
+      task: {
+        id: "task-6",
+        title: "Create presentation for stakeholders",
+        status: "done" as const,
+      },
+    },
+  },
+];
+
+// Mock description content
+const mockDescription = {
+  type: "doc",
+  content: [
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "This milestone represents our Q2 feature release, focusing on core user experience improvements and new functionality. The main goals include:",
+        },
+      ],
+    },
+    {
+      type: "bulletList",
+      content: [
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Implement robust user authentication system",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "listItem", 
+          content: [
+            {
+              type: "paragraph",
+              content: [
+                {
+                  type: "text",
+                  text: "Add dark mode support across the application",
+                },
+              ],
+            },
+          ],
+        },
+        {
+          type: "listItem",
+          content: [
+            {
+              type: "paragraph", 
+              content: [
+                {
+                  type: "text",
+                  text: "Improve navigation and user profile functionality",
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+    {
+      type: "paragraph",
+      content: [
+        {
+          type: "text",
+          text: "We expect this release to significantly improve user engagement and provide a foundation for future feature development.",
+        },
+      ],
+    },
+  ],
+};
 
 /**
  * Basic example with interactive task creation and reordering
@@ -170,7 +350,6 @@ export const Default: Story = {
         milestone={milestone}
         tasks={tasks}
         milestones={[milestone]}
-        milestonesLink="/projects/123/tasks"
         onTaskCreate={handleTaskCreate}
         onTaskReorder={handleTaskReorder}
         onStatusChange={handleStatusChange}
@@ -182,7 +361,7 @@ export const Default: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-        timelineItems={[]}
+        timelineItems={createMockTimelineItems()}
         currentUser={mockPeople[0]}
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
@@ -198,7 +377,7 @@ export const Default: Story = {
         onArchive={() => console.log("Milestone archived")}
         onDelete={() => console.log("Milestone deleted")}
         canEdit={true}
-        description={null}
+        description={mockDescription}
         onDescriptionChange={async (newDescription) => {
           console.log("Description changed:", newDescription);
           return true;
@@ -216,11 +395,12 @@ export const Default: Story = {
 export const EmptyMilestone: Story = {
   render: () => {
     // Use state to manage the milestone with its due date
-    const [milestone, setMilestone] = useState<Types.Milestone>({
+    const [milestone, setMilestone] = useState<Types.Milestone & { status?: string }>({
       id: "milestone-empty",
       name: "New Initiative Planning",
       hasDescription: true,
       hasComments: false,
+      status: "active", // Add initial status
     });
     const [isSubscribed, setIsSubscribed] = useState(true);
 
@@ -237,12 +417,25 @@ export const EmptyMilestone: Story = {
       }
     };
 
+    // Empty milestone timeline - should always have creation activity
+    const emptyMilestoneTimeline = [
+      {
+        type: "milestone-activity" as const,
+        value: {
+          id: "activity-1",
+          author: mockPeople[1], // Bob Smith created it
+          insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+          content: "created the milestone",
+          type: "milestone-created",
+        },
+      },
+    ];
+
     return (
       <MilestonePage
         milestone={milestone}
         tasks={[]}
         milestones={[milestone]}
-        milestonesLink="/projects/123/tasks"
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
         onDueDateChange={handleDueDateChange}
         onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
@@ -260,7 +453,7 @@ export const EmptyMilestone: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-        timelineItems={[]}
+        timelineItems={emptyMilestoneTimeline}
         currentUser={mockPeople[0]}
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
@@ -288,104 +481,6 @@ export const EmptyMilestone: Story = {
   },
 };
 
-/**
- * Milestone with many completed tasks
- */
-export const MostlyCompletedMilestone: Story = {
-  render: () => {
-    const [isSubscribed, setIsSubscribed] = useState(false);
-    
-    const completedMilestone: Types.Milestone = {
-      id: "milestone-completed",
-      name: "API Integration Phase",
-      dueDate: new Date(new Date().setDate(new Date().getDate() - 2)), // 2 days ago
-      hasDescription: true,
-      hasComments: true,
-      commentCount: 5,
-    };
-
-    // Create tasks with mostly completed status
-    const completedTasks: Types.Task[] = [
-      {
-        id: "task-c1",
-        title: "Define API endpoints",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c2",
-        title: "Create authentication service",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c3",
-        title: "Implement caching layer",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c4",
-        title: "Document API usage",
-        status: "done",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c5",
-        title: "Perform security audit",
-        status: "in_progress",
-        milestone: completedMilestone,
-      },
-      {
-        id: "task-c6",
-        title: "Deploy to production",
-        status: "pending",
-        milestone: completedMilestone,
-      },
-    ];
-
-    return (
-      <MilestonePage
-        milestone={completedMilestone}
-        tasks={completedTasks}
-        milestones={[completedMilestone]}
-        milestonesLink="/projects/123/tasks"
-        onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
-        onMilestoneUpdate={(milestoneId, updates) => console.log("Milestone updated:", { milestoneId, updates })}
-        onMilestoneNameChange={async (newName) => {
-          console.log("Milestone name changed:", newName);
-          return true;
-        }}
-        searchPeople={mockSearchPeople}
-        filters={[]}
-        onFiltersChange={(filters) => console.log("Filters changed:", filters)}
-        timelineItems={[]}
-        currentUser={mockPeople[0]}
-        canComment={true}
-        onAddComment={(comment) => console.log("Add comment:", comment)}
-        onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
-        createdBy={mockPeople[2]}
-        createdAt={new Date(Date.now() - 10 * 24 * 60 * 60 * 1000)} // 10 days ago
-        isSubscribed={isSubscribed}
-        onSubscriptionToggle={(subscribed) => {
-          console.log("Subscription toggled:", subscribed);
-          setIsSubscribed(subscribed);
-        }}
-        onCopyUrl={() => console.log("URL copied")}
-        onArchive={() => console.log("Milestone archived")}
-        onDelete={() => console.log("Milestone deleted")}
-        canEdit={true}
-        description={null}
-        onDescriptionChange={async (newDescription) => {
-          console.log("Description changed:", newDescription);
-          return true;
-        }}
-        mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
-        peopleSearch={mockSearchPeople}
-      />
-    );
-  },
-};
 
 /**
  * Full Project Context - Shows MilestonePage within a complete ProjectPage experience
