@@ -5,17 +5,14 @@ export type BadgeStatus =
   // Progress states
   | 'on_track' 
   | 'caution'
-  | 'issue'
+  | 'off_track'
   | 'paused'
   | 'pending'
   // Completion states
   | 'achieved'   // Goal fully accomplished (green)
-  | 'partial'    // Goal partially accomplished (amber/yellow)
   | 'missed'     // Goal not accomplished (red)
   // Legacy/alternative states
   | 'completed'  // Legacy term for achieved
-  | 'dropped'    // Goal abandoned
-  | 'failed'     // Legacy term for missed
   | string;      // Allow custom status strings
 
 /**

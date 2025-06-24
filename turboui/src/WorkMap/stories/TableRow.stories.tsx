@@ -125,31 +125,6 @@ export const AchievedGoal: Story = {
 };
 
 /**
- * A goal that was partially achieved
- */
-export const PartiallyAchievedGoal: Story = {
-  render: (args) => (
-    <>
-      <TableHeader tab={args.tab} />
-      <tbody>
-        <TableRow {...args} />
-      </tbody>
-    </>
-  ),
-  args: {
-    item: data.mockGoalPartial,
-    level: 0,
-    isLast: false,
-    tab: "completed",
-  },
-  play: async ({ canvasElement, step }) => {
-    await Steps.assertItemHasLineThrough(canvasElement, step, "Reduce support tickets by 30%");
-
-    await Steps.assertStatusBadge(canvasElement, step, "Partial", "amber");
-  },
-};
-
-/**
  * A goal that missed its target
  */
 export const MissedGoal: Story = {
@@ -222,7 +197,7 @@ export const CautionGoal: Story = {
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Implement new CRM system");
 
-    await Steps.assertStatusBadge(canvasElement, step, "Attention", "amber");
+    await Steps.assertStatusBadge(canvasElement, step, "Caution", "amber");
 
     await Steps.assertProgressBar(canvasElement, step, 35, "amber");
   },
@@ -249,7 +224,7 @@ export const IssueGoal: Story = {
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Migrate legacy systems");
 
-    await Steps.assertStatusBadge(canvasElement, step, "At risk", "red");
+    await Steps.assertStatusBadge(canvasElement, step, "Off track", "red");
 
     await Steps.assertProgressBar(canvasElement, step, 15, "red");
   },

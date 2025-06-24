@@ -191,7 +191,7 @@ export const mockItems: WorkMap.Item[] = [
         parentId: "goal-2",
         type: "goal",
         name: "Reduce onboarding time by 30%",
-        status: "issue",
+        status: "off_track",
         progress: 15,
         space: { id: "space-cs", name: "Customer Success" },
         spacePath: "#",
@@ -538,7 +538,7 @@ export const onlyGoals: WorkMap.Item[] = [
     parentId: null,
     type: "goal",
     name: "Expand to APAC region",
-    status: "partial",
+    status: "missed",
     progress: 30,
     space: { id: "space-growth", name: "Growth" },
     spacePath: "#",
@@ -575,7 +575,7 @@ export const onlyGoals: WorkMap.Item[] = [
         parentId: "goal-g2",
         type: "goal",
         name: "APAC marketing campaign",
-        status: "dropped",
+        status: "achieved",
         progress: 25,
         space: { id: "space-growth", name: "Growth" },
         spacePath: "#",
@@ -599,7 +599,7 @@ export const onlyProjects: WorkMap.Item[] = [
     parentId: null,
     type: "project",
     name: "Mobile app v2",
-    status: "dropped",
+    status: "missed",
     progress: 70,
     space: { id: "space-mobile", name: "Mobile" },
     spacePath: "#",
@@ -807,11 +807,11 @@ export const createMockItem = (
 export const mockGoalOnTrack = createMockItem("goal-1", "Improve customer experience", "goal", "on_track", 45, true);
 export const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "completed", 100);
 export const mockGoalAchieved = createMockItem("goal-3", "Increase website traffic by 50%", "goal", "achieved", 100);
-export const mockGoalPartial = createMockItem("goal-4", "Reduce support tickets by 30%", "goal", "partial", 75);
+export const mockGoalPartial = createMockItem("goal-4", "Reduce support tickets by 30%", "goal", "missed", 75);
 export const mockGoalMissed = createMockItem("goal-5", "Launch mobile app by Q1", "goal", "missed", 60);
 export const mockGoalPaused = createMockItem("goal-6", "Expand to international markets", "goal", "paused", 20);
 export const mockGoalCaution = createMockItem("goal-7", "Implement new CRM system", "goal", "caution", 35);
-export const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "issue", 15);
+export const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "off_track", 15);
 export const mockGoalOutdated = createMockItem("goal-9", "Update legacy documentation", "goal", "outdated", 30);
 export const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
 export const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "completed", 100);
@@ -933,7 +933,7 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             parentId: "goal-feature-development",
             type: "project",
             name: "AI Assistant Integration",
-            status: "issue",
+            status: "off_track",
             progress: 25,
             space: { id: "space-product", name: "Product" },
             spacePath: "#",

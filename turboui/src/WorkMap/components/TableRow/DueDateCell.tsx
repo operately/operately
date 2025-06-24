@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props) {
-  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
+  const { isCompleted, isFailed, isPending } = useItemStatus(status);
 
   if (hide) return null;
 
@@ -24,10 +24,9 @@ export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props
   const isPastDueDate = useMemo(() => isDueDatePast(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
-    "text-content-error": isPastDueDate && !isCompleted && !isFailed && !isDropped && !isPending,
-    "text-content-base": !(isPastDueDate && !isCompleted && !isFailed && !isDropped && !isPending),
+    "text-content-error": isPastDueDate && !isCompleted && !isFailed  && !isPending,
+    "text-content-base": !(isPastDueDate && !isCompleted && !isFailed  && !isPending),
     "line-through text-content-dimmed": isCompleted || isFailed,
-    "line-through opacity-70 text-content-dimmed": isDropped,
     "text-content-dimmed": isPending,
   });
 
