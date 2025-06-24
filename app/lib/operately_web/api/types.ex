@@ -1621,12 +1621,10 @@ defmodule OperatelyWeb.Api.Types do
       :on_track,
       :completed,
       :achieved,
-      :partial,
       :missed,
       :paused,
       :caution,
-      :issue,
-      :dropped,
+      :off_track,
       :pending,
       :outdated
     ]
