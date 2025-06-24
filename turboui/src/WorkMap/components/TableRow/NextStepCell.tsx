@@ -10,8 +10,8 @@ interface Props {
 }
 
 export function NextStepCell({ nextStep, status, hide }: Props) {
-  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(status);
-  const isClosed = isCompleted || isFailed || isDropped;
+  const { isCompleted, isFailed, isPending } = useItemStatus(status);
+  const isClosed = isCompleted || isFailed;
 
   const className = classNames(
     "text-sm transition-colors duration-150",

@@ -10,12 +10,11 @@ interface Props {
 }
 
 export function OwnerCell({ item, hide }: Props) {
-  const { isCompleted, isFailed, isDropped, isPending } = useItemStatus(item.status);
+  const { isCompleted, isFailed, isPending } = useItemStatus(item.status);
 
   const className = classNames(
     "text-sm truncate hover:underline transition-colors whitespace-nowrap overflow-hidden text-ellipsis inline-block",
     isCompleted || isFailed ? "text-content-dimmed" : "text-content-base hover:text-link-hover",
-    isDropped && "opacity-70 text-content-dimmed",
     isPending && "text-content-dimmed",
   );
 
