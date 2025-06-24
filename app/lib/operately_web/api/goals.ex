@@ -349,16 +349,17 @@ defmodule OperatelyWeb.Api.Goals do
       |> Steps.check_permissions(:can_edit)
       |> Steps.find_target(inputs.target_id)
       |> Steps.update_target_value(inputs.value)
-      # |> Steps.save_activity(:goal_target_value_updated, fn changes ->
-      #   %{
-      #     company_id: changes.goal.company_id,
-      #     space_id: changes.goal.group_id,
-      #     goal_id: changes.goal.id,
-      #     target_id: changes.target.id,
-      #     old_value: changes.target.value,
-      #     new_value: changes.updated_target.value
-      #   }
-      # end)
+      |> Steps.save_activity(:goal_target_updating, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          target_name: changes.target.name,
+          old_value: to_string(changes.target.value),
+          new_value: to_string(changes.updated_target.value),
+          unit: changes.updated_target.unit
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
@@ -700,7 +701,7 @@ defmodule OperatelyWeb.Api.Goals do
     end
 
     def update_target_value(multi, value) do
-      Ecto.Multi.update(multi, :updated_targets, fn %{target: target} ->
+      Ecto.Multi.update(multi, :updated_target, fn %{target: target} ->
         Operately.Goals.Target.changeset(target, %{value: value})
       end)
     end

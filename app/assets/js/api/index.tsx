@@ -362,6 +362,16 @@ export interface ActivityContentGoalTargetDeleting {
   targetName: string;
 }
 
+export interface ActivityContentGoalTargetUpdating {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  targetName: string;
+  oldValue: string;
+  newValue: string;
+  unit: string;
+}
+
 export interface ActivityContentGoalTimeframeEditing {
   goal?: Goal | null;
   oldTimeframe?: Timeframe | null;
