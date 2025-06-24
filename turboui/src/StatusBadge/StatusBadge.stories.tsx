@@ -16,9 +16,8 @@ const meta = {
       control: 'select',
       options: [
         'on_track',
-        'pending',
         'caution',
-        'issue',
+        'off_track',
         'paused',
         'achieved',
         'completed',
@@ -52,19 +51,17 @@ export const Default: Story = {
 /**
  * Progress states indicate items that are currently in progress or awaiting action.
  * 
- * - **On Track**: Item is progressing as expected with no issues.
- * - **Pending**: Item is waiting to start or for approval.
- * - **Attention**: Item requires attention but is not at serious risk.
- * - **At Risk**: Item is at significant risk of not being completed successfully.
+ * - **On Track**: Item is progressing as planned with no issues.
+ * - **Caution**: Item requires attention due to emerging risks or delays.
+ * - **Off Track**: Item has significant problems affecting success.
  * - **Paused**: Work on the item has been temporarily halted.
  */
 export const ProgressStates: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4" style={{ width: '500px' }}>
       <StatusBadge status="on_track" />
-      <StatusBadge status="pending" />
       <StatusBadge status="caution" />
-      <StatusBadge status="issue" />
+      <StatusBadge status="off_track" />
       <StatusBadge status="paused" />
     </div>
   ),
@@ -83,9 +80,7 @@ export const CompletionStates: Story = {
     <div className="flex flex-wrap gap-4" style={{ width: '500px' }}>
       <StatusBadge status="achieved" />
       <StatusBadge status="completed" />
-      <StatusBadge status="partial" />
       <StatusBadge status="missed" />
-      <StatusBadge status="dropped" />
     </div>
   ),
 };
@@ -100,9 +95,9 @@ export const WithoutIcons: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4" style={{ width: '500px' }}>
       <StatusBadge status="on_track" hideIcon={true} />
-      <StatusBadge status="pending" hideIcon={true} />
+      <StatusBadge status="caution" hideIcon={true} />
+      <StatusBadge status="off_track" hideIcon={true} />
       <StatusBadge status="achieved" hideIcon={true} />
-      <StatusBadge status="partial" hideIcon={true} />
       <StatusBadge status="missed" hideIcon={true} />
     </div>
   ),
@@ -178,8 +173,8 @@ export const InteractiveBehaviors: Story = {
 export const AllStatuses: Story = {
   render: () => {
     // All possible status values
-    const progressStatuses: BadgeStatus[] = ['on_track', 'pending', 'caution', 'issue', 'paused'];
-    const completionStatuses: BadgeStatus[] = ['achieved', 'completed', 'partial', 'missed', 'dropped'];
+    const progressStatuses: BadgeStatus[] = ['on_track', 'caution', 'off_track', 'paused'];
+    const completionStatuses: BadgeStatus[] = ['achieved', 'completed', 'missed'];
     
     return (
       <div style={{ width: '500px' }}>

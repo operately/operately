@@ -65,7 +65,7 @@ const getStatusProperties = (status: BadgeStatus) => {
         textColor: "text-amber-800 dark:text-amber-300",
         dotColor: "bg-amber-500 dark:bg-amber-400",
         borderColor: "border-amber-200 dark:border-amber-800",
-        label: "Attention",
+        label: "Caution",
       };
     case "off_track":
       return {
