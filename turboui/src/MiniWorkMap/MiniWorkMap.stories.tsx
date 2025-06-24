@@ -71,7 +71,7 @@ export const Default: Story = {
             progress: 100,
             assignees: genPeople(3, { random: true }),
             children: [],
-            status: "issue",
+            status: "off_track",
           },
         ],
       },
