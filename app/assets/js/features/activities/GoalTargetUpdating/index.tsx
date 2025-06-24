@@ -1,8 +1,9 @@
-import * as People from "@/models/people";
+import React from "react";
 
-import { Paths } from "@/routes/paths";
-import type { Activity } from "@/models/activities";
 import type { ActivityContentGoalTargetUpdating } from "@/api";
+import type { Activity } from "@/models/activities";
+import { Paths } from "@/routes/paths";
+import { feedTitle, goalLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 
 const GoalTargetUpdating: ActivityHandler = {
@@ -26,12 +27,28 @@ const GoalTargetUpdating: ActivityHandler = {
     return null;
   },
 
-  FeedItemTitle(_props: { activity: Activity }) {
-    return null;
+  FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
+    const goal = content(activity).goal;
+    const targetName = content(activity).targetName;
+    const message = `updated the value for the ${targetName} target`;
+
+    if (page === "goal") {
+      return feedTitle(activity, message);
+    } else {
+      return feedTitle(activity, message, " on the", goalLink(goal));
+    }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent({ activity }: { activity: Activity }) {
+    const oldValue = content(activity).oldValue;
+    const newValue = content(activity).newValue;
+    const unit = content(activity).unit;
+
+    return (
+      <>
+        Previously, {oldValue} {unit}, now {newValue} {unit}.
+      </>
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
