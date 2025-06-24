@@ -93,6 +93,7 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.update_target_value()
     |> Steps.assert_target_value_updated()
+    |> Steps.assert_target_value_updated_feed_posted()
   end
 
   feature "changing the access level", ctx do
