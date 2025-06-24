@@ -86,6 +86,7 @@ defmodule Operately.Features.GoalTest do
     ctx
     |> Steps.delete_target()
     |> Steps.assert_target_deleted()
+    |> Steps.assert_target_deleted_feed_posted()
   end
 
   feature "update target value", ctx do
