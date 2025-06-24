@@ -20,7 +20,7 @@ defmodule Operately.Data.Change057UpdateProjectCheckInsStatus do
     sql = """
     SELECT DISTINCT status
     FROM project_check_ins
-    WHERE status NOT IN ('on_track', 'caution', 'issue')
+    WHERE status NOT IN ('on_track', 'caution', 'issue', 'at_risk')
     """
 
     %{rows: rows} = Repo.query!(sql)
@@ -32,6 +32,14 @@ defmodule Operately.Data.Change057UpdateProjectCheckInsStatus do
     UPDATE project_check_ins
     SET status = 'off_track'
     WHERE status = 'issue'
+    """
+
+    Repo.query!(sql)
+
+    sql = """
+    UPDATE project_check_ins
+    SET status = 'off_track'
+    WHERE status = 'at_risk'
     """
 
     Repo.query!(sql)
