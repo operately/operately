@@ -11,11 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
   alias Operately.Access.Binding
   alias Operately.Support.RichText
 
-  @retrospective_content %{
-    "whatWentWell" => RichText.rich_text("some content"),
-    "whatDidYouLearn" => RichText.rich_text("some content"),
-    "whatCouldHaveGoneBetter" => RichText.rich_text("some content"),
-  }
+  @retrospective_content RichText.rich_text("some content")
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -218,11 +214,9 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     end
 
     test "adds mentioned people to subscription list", ctx do
-      retrospective_content = %{
-        "whatWentWell" => RichText.rich_text(mentioned_people: [ctx.contrib1]) |> Jason.decode!(),
-        "whatDidYouLearn" => RichText.rich_text(mentioned_people: [ctx.contrib2]) |> Jason.decode!(),
-        "whatCouldHaveGoneBetter" => RichText.rich_text(mentioned_people: [ctx.contrib3, ctx.contrib4]) |> Jason.decode!(),
-      }
+      retrospective_content =
+        RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib2, ctx.contrib3, ctx.contrib4])
+        |> Jason.decode!()
 
       assert {200, res} = mutation(ctx.conn, :close_project, %{
         project_id: Paths.project_id(ctx.project),
@@ -245,12 +239,10 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     end
 
     test "doesn't create repeated subscription", ctx do
-      retrospective_content = %{
-        "whatWentWell" => RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib1]) |> Jason.decode!(),
-        "whatDidYouLearn" => RichText.rich_text(mentioned_people: [ctx.contrib1]) |> Jason.decode!(),
-        "whatCouldHaveGoneBetter" => RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib2]) |> Jason.decode!(),
-      }
       people = [ctx.creator, ctx.contrib1, ctx.contrib2]
+      retrospective_content =
+        RichText.rich_text(mentioned_people: [ctx.contrib1, ctx.contrib1, ctx.contrib2])
+        |> Jason.decode!()
 
       assert {200, res} = mutation(ctx.conn, :close_project, %{
         project_id: Paths.project_id(ctx.project),

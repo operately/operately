@@ -20,9 +20,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
 
   step :fill_in_retrospective, ctx, params do
     ctx
-    |> fill_rich_text("what-went-well", params["what-went-well"])
-    |> fill_rich_text("what-could-ve-gone-better", params["what-could-ve-gone-better"])
-    |> fill_rich_text("what-did-you-learn", params["what-did-you-learn"])
+    |> fill_rich_text("retrospective-notes", params["notes"])
   end
 
   step :submit_retrospective, ctx do
@@ -53,15 +51,13 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
     |> UI.assert_text("This project was closed on")
     |> UI.click(testid: "project-retrospective-link")
     |> UI.assert_text(params["author"].full_name)
-    |> UI.assert_text(params["what-went-well"])
-    |> UI.assert_text(params["what-could-ve-gone-better"])
-    |> UI.assert_text(params["what-did-you-learn"])
+    |> UI.assert_text(params["notes"])
+    # |> UI.assert_text(params["what-could-ve-gone-better"])
+    # |> UI.assert_text(params["what-did-you-learn"])
   end
 
   step :assert_email_sent, ctx do
     email = UI.Emails.last_sent_email()
-    assert email.html =~ "We built the thing"
-    assert email.html =~ "We learned the thing"
     assert email.html =~ "We built the thing"
 
     ctx
