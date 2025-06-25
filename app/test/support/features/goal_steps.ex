@@ -2,6 +2,8 @@ defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
 
   alias Operately.Access
+  alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.NotificationsSteps
 
   def setup(ctx) do
     ctx
@@ -122,6 +124,25 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_feed_item(ctx.creator, "assigned Alfred N. as the champion")
   end
 
+  step :assert_champion_changed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.creator,
+      action: "assigned you as the champion"
+    })
+  end
+
+  step :assert_champion_changed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "assigned you as the champion"
+    })
+  end
+
   #
   # Removing the champion
   #
@@ -168,6 +189,25 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.creator, "assigned Alfred N. as the reviewer")
+  end
+
+  step :assert_reviewer_changed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.champion,
+      author: ctx.creator,
+      action: "assigned you as the reviewer"
+    })
+  end
+
+  step :assert_reviewer_changed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "assigned you as the reviewer"
+    })
   end
 
   #

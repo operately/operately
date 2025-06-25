@@ -17,6 +17,8 @@ defmodule Operately.Features.GoalTest do
     |> Steps.change_champion()
     |> Steps.assert_champion_changed()
     |> Steps.assert_champion_changed_feed_posted()
+    |> Steps.assert_champion_changed_email_sent()
+    |> Steps.assert_champion_changed_notification_sent()
   end
 
   feature "removing the champion", ctx do
@@ -31,6 +33,8 @@ defmodule Operately.Features.GoalTest do
     |> Steps.change_reviewer()
     |> Steps.assert_reviewer_changed()
     |> Steps.assert_reviewer_changed_feed_posted()
+    |> Steps.assert_reviewer_changed_email_sent()
+    |> Steps.assert_champion_changed_notification_sent()
   end
 
   feature "removing the reviewer", ctx do
