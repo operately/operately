@@ -25,7 +25,7 @@ export function Form({ form }: { form: FormState }) {
 
 function RetrospectiveNotes({ editor, error }) {
   return (
-    <div className="" data-test-id="retrospective-notes">
+    <div data-test-id="retrospective-notes">
       <h2 className="text-content-accent text font-bold mb-1">Retrospective notes</h2>
       {error && <div className="text-sm text-content-error mb-2 font-medium">Please fill in this field</div>}
 
