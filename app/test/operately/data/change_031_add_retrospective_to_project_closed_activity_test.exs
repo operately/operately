@@ -19,8 +19,8 @@ defmodule Operately.Data.Change031AddRetrospectiveToProjectClosedActivityTest do
 
     projects = Enum.map(projects, fn p ->
       attrs = %{
-        retrospective: %{},
         content: %{},
+        success_status: "achieved",
         send_to_everyone: false,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: [],

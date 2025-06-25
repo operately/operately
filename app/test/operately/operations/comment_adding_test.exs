@@ -369,11 +369,7 @@ defmodule Operately.Operations.CommentAddingTest do
   end
 
   describe "Commenting on project retrospective" do
-    @retrospective_content %{
-      "whatWentWell" => RichText.rich_text("some content"),
-      "whatDidYouLearn" => RichText.rich_text("some content"),
-      "whatCouldHaveGoneBetter" => RichText.rich_text("some content")
-    }
+    @retrospective_content RichText.rich_text("some content")
 
     setup ctx do
       ctx
@@ -389,8 +385,8 @@ defmodule Operately.Operations.CommentAddingTest do
     test "Commenting on retrospective notifies everyone", ctx do
       {:ok, retrospective} =
         ProjectClosed.run(ctx.creator, ctx.project, %{
-          retrospective: @retrospective_content,
-          content: %{},
+          content: @retrospective_content,
+          success_status: "achieved",
           send_to_everyone: true,
           subscription_parent_type: :project_retrospective,
           subscriber_ids: []
@@ -423,8 +419,8 @@ defmodule Operately.Operations.CommentAddingTest do
     test "Commenting on retrospective notifies selected people", ctx do
       {:ok, retrospective} =
         ProjectClosed.run(ctx.creator, ctx.project, %{
-          retrospective: @retrospective_content,
-          content: %{},
+          content: @retrospective_content,
+          success_status: "achieved",
           send_to_everyone: false,
           subscription_parent_type: :project_retrospective,
           subscriber_ids: [ctx.reviewer.id, ctx.contrib1.id]

@@ -10,7 +10,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
   end
 
   def serialize(project, level: :full) do
-    serialize(project, level: :essential) 
+    serialize(project, level: :essential)
     |> Map.merge(%{
       next_check_in_scheduled_at: OperatelyWeb.Api.Serializer.serialize(project.next_check_in_scheduled_at),
       description: project.description && Jason.encode!(project.description),

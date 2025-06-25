@@ -2484,14 +2484,15 @@ export interface CloseGoalResult {
 }
 
 export interface CloseProjectInput {
-  projectId?: string | null;
-  retrospective?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: string[] | null;
+  projectId: string;
+  retrospective: string;
+  successStatus: string;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: string[];
 }
 
 export interface CloseProjectResult {
-  retrospective?: ProjectRetrospective | null;
+  retrospective: ProjectRetrospective;
 }
 
 export interface ConnectGoalToProjectInput {

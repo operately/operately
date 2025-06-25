@@ -21,6 +21,7 @@ defmodule Operately.Operations.ProjectClosed do
     |> Multi.update(:project, Project.changeset(project,%{
       status: "closed",
       closed_at: DateTime.utc_now(),
+      success_status: attrs.success_status,
     }))
     |> Activities.insert_sync(author.id, :project_closed, fn changes -> %{
       company_id: project.company_id,

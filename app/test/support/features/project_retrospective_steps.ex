@@ -74,7 +74,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   end
 
   step :assert_retrospective_error, ctx do
-    ctx |> UI.assert_text("Please fill in this field")
+    ctx |> UI.assert_text("Can't be empty")
   end
 
   defp fill_rich_text(ctx, testid, content) do

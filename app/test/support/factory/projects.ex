@@ -187,15 +187,10 @@ defmodule Operately.Support.Factory.Projects do
   def close_project(ctx, project_name) do
     project = Map.fetch!(ctx, project_name)
 
-    retrospective_content = %{
-      "whatWentWell" => RichText.rich_text("some content"),
-      "whatDidYouLearn" => RichText.rich_text("some content"),
-      "whatCouldHaveGoneBetter" => RichText.rich_text("some content"),
-    }
-
     {:ok, _} = Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
-        retrospective: retrospective_content,
+        retrospective: RichText.rich_text("some content"),
         content: %{},
+        success_status: "achieved",
         send_to_everyone: true,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: []

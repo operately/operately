@@ -46,6 +46,7 @@ defmodule Operately.Projects.Project do
     has_one :retrospective, Operately.Projects.Retrospective, foreign_key: :project_id
     field :status, :string, default: "active"
     field :closed_at, :utc_datetime
+    field :success_status, Ecto.Enum, values: [:achieved, :missed]
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true
@@ -82,6 +83,7 @@ defmodule Operately.Projects.Project do
       :deleted_at,
       :status,
       :closed_at,
+      :success_status,
       :last_check_in_id,
       :last_check_in_status,
       :next_update_scheduled_at
