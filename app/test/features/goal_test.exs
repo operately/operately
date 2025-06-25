@@ -34,7 +34,7 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_reviewer_changed()
     |> Steps.assert_reviewer_changed_feed_posted()
     |> Steps.assert_reviewer_changed_email_sent()
-    |> Steps.assert_champion_changed_notification_sent()
+    |> Steps.assert_reviewer_changed_notification_sent()
   end
 
   feature "removing the reviewer", ctx do

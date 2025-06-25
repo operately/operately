@@ -12,7 +12,7 @@ defmodule OperatelyEmail.Emails.GoalReviewerUpdatingEmail do
     |> new()
     |> from(author)
     |> to(person)
-    |> subject(where: goal.name, who: author, action: "assigned you as a reviewer")
+    |> subject(where: goal.name, who: author, action: "assigned you as the reviewer")
     |> assign(:author, author)
     |> assign(:goal, goal)
     |> assign(:link, OperatelyWeb.Paths.goal_path(company, goal) |> OperatelyWeb.Paths.to_url())

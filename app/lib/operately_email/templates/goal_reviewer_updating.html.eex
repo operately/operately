@@ -1,4 +1,4 @@
-<%= title("#{short_name(@author)} assigned you as a reviewer on #{@goal.name}") %>
+<%= title("#{short_name(@author)} assigned you as the reviewer on #{@goal.name}") %>
 
 <%= spacer() %>
 

@@ -1,3 +1,3 @@
-<%= "#{short_name(@author)} assigned you as a reviewer for the goal #{@goal.name}." %>
+<%= "#{short_name(@author)} assigned you as the reviewer for the goal #{@goal.name}." %>
 
 Link: <%= @link %>

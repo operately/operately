@@ -128,15 +128,15 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
-      to: ctx.champion,
-      author: ctx.creator,
+      to: ctx.new_champion,
+      author: ctx.champion,
       action: "assigned you as the champion"
     })
   end
 
   step :assert_champion_changed_notification_sent, ctx do
     ctx
-    |> UI.login_as(ctx.reviewer)
+    |> UI.login_as(ctx.new_champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
       action: "assigned you as the champion"
@@ -195,15 +195,15 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.goal.name,
-      to: ctx.champion,
-      author: ctx.creator,
+      to: ctx.new_reviewer,
+      author: ctx.champion,
       action: "assigned you as the reviewer"
     })
   end
 
   step :assert_reviewer_changed_notification_sent, ctx do
     ctx
-    |> UI.login_as(ctx.reviewer)
+    |> UI.login_as(ctx.new_reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
       action: "assigned you as the reviewer"
