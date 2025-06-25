@@ -89,6 +89,7 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussionsT
   defp close_goal(ctx, goal) do
     {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.creator, goal, %{
       success: "yes",
+      success_status: "achieved",
       content: Operately.Support.RichText.rich_text("content"),
       send_to_everyone: true,
       subscriber_ids: [],

@@ -177,6 +177,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       retrospective = RichText.rich_text("Writing a retrospective")
       {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.person, goal, %{
         success: "success",
+        success_status: "achieved",
         content: retrospective,
         send_notifications_to_everyone: false,
         subscriber_ids: [],

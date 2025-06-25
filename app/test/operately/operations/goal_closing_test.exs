@@ -87,6 +87,7 @@ defmodule Operately.Operations.GoalClosingTest do
   defp close_goal(ctx, send_to_everyone, subscriber_ids) do
     GoalClosing.run(ctx.creator, ctx.goal, %{
       success: "success",
+      success_status: "achieved",
       content: RichText.rich_text("Closing comments"),
       subscription_parent_type: :comment_thread,
       send_to_everyone: send_to_everyone,
