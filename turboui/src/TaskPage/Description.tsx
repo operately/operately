@@ -14,11 +14,11 @@ export function Description(props: TaskPage.Props) {
   if (state.mode === "zero") {
     return (
       <div>
-        <button 
+        <button
           onClick={state.startEdit}
           className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
         >
-          Add notes...
+          Add notes about this task...
         </button>
       </div>
     );
@@ -72,7 +72,6 @@ function DescriptionContent({ state }: { state: State }) {
     </div>
   );
 }
-
 
 function DescriptionEditor({ state }: { state: State }) {
   return (

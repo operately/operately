@@ -4,6 +4,8 @@ import { TaskPage } from ".";
 import { TaskActivity } from "../Timeline";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
+import { InProjectContextStory } from "./InProjectContextStory";
+import { PageNew } from "../Page";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -444,7 +446,11 @@ function Component(props: Partial<TaskPage.Props>) {
     },
   };
 
-  return <TaskPage {...defaults} />;
+  return (
+    <PageNew title={[defaults.name]} size="fullwidth">
+      <TaskPage {...defaults} />
+    </PageNew>
+  );
 }
 
 /**
@@ -544,6 +550,16 @@ export const LongContent: Story = {
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
     timelineItems: createLongContentTimeline(),
+  },
+};
+
+/**
+ * TaskPage shown within a project context with header and tabs
+ */
+export const InProjectContext: Story = {
+  render: () => <InProjectContextStory />,
+  parameters: {
+    layout: "fullscreen",
   },
 };
 
