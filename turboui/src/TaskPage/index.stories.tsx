@@ -1,9 +1,24 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { TaskPage } from ".";
-import { TaskActivity } from "../Timeline";
-import type { TimelineItem as TimelineItemType } from "../Timeline/types";
-import { Person as TimelinePerson } from "../CommentSection/types";
+import { InProjectContextStory } from "./InProjectContextStory";
+import { PageNew } from "../Page";
+import {
+  mockTaskPeople,
+  mockMilestones,
+  searchTaskPeople,
+  searchMilestones,
+  searchRichEditorPeople,
+  mockMentionedPersonLookup,
+  asRichText,
+  asRichTextWithList,
+  createActiveTaskTimeline,
+  createMinimalTaskTimeline,
+  createCompletedTaskTimeline,
+  createOverdueTaskTimeline,
+  createLongContentTimeline,
+  currentUser,
+} from "./mockData";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -16,304 +31,6 @@ const meta: Meta<typeof TaskPage> = {
 
 export default meta;
 type Story = StoryObj<typeof meta>;
-
-// Mock people data for TaskPage (simplified Person interface)
-const mockTaskPeople: TaskPage.Person[] = [
-  { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-  { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
-  { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
-];
-
-// Timeline people (with profile links)
-const timelinePeople: TimelinePerson[] = [
-  {
-    id: "user-1",
-    fullName: "Alice Johnson",
-    avatarUrl: "https://i.pravatar.cc/150?u=alice",
-    profileLink: "/people/alice",
-  },
-  { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
-  {
-    id: "user-3",
-    fullName: "Charlie Brown",
-    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
-    profileLink: "/people/charlie",
-  },
-  { id: "user-4", fullName: "Diana Prince", avatarUrl: undefined, profileLink: "/people/diana" },
-];
-
-const currentUser = timelinePeople[0]!;
-const alice = timelinePeople[0]!;
-const bob = timelinePeople[1]!;
-const charlie = timelinePeople[2]!;
-const diana = timelinePeople[3]!;
-
-// Mock milestone data for TaskPage - sorted by due date (earliest first), with some without due dates
-const mockMilestones: TaskPage.Milestone[] = [
-  {
-    id: "milestone-2",
-    title: "MVP Launch",
-    dueDate: new Date(2024, 0, 30), // January 30, 2024 (earliest)
-    status: "complete",
-    projectLink: "/projects/mobile-app/milestones/mvp",
-  },
-  {
-    id: "milestone-1",
-    title: "Beta Release",
-    dueDate: new Date(2024, 1, 15), // February 15, 2024
-    status: "pending",
-    projectLink: "/projects/mobile-app/milestones/beta",
-  },
-  {
-    id: "milestone-3",
-    title: "User Testing Phase",
-    dueDate: new Date(2024, 2, 10), // March 10, 2024
-    status: "pending",
-    projectLink: "/projects/mobile-app/milestones/testing",
-  },
-  {
-    id: "milestone-4",
-    title: "Performance Optimization",
-    dueDate: new Date(2024, 3, 5), // April 5, 2024
-    status: "pending",
-    projectLink: "/projects/mobile-app/milestones/performance",
-  },
-  {
-    id: "milestone-5",
-    title: "Code Review Process",
-    // No due date
-    status: "pending",
-    projectLink: "/projects/mobile-app/milestones/code-review",
-  },
-  {
-    id: "milestone-6",
-    title: "Documentation Update",
-    // No due date
-    status: "pending",
-    projectLink: "/projects/mobile-app/milestones/docs",
-  },
-];
-
-// Mock people data for RichEditor SearchFn (extended Person interface)
-const mockRichEditorPeople = [
-  {
-    id: "user-1",
-    fullName: "Alice Johnson",
-    avatarUrl: "https://i.pravatar.cc/150?u=alice",
-    title: "Senior Developer",
-    profileLink: "/people/alice",
-  },
-  {
-    id: "user-2",
-    fullName: "Bob Smith",
-    avatarUrl: "https://i.pravatar.cc/150?u=bob",
-    title: "Product Manager",
-    profileLink: "/people/bob",
-  },
-  {
-    id: "user-3",
-    fullName: "Charlie Brown",
-    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
-    title: "Designer",
-    profileLink: "/people/charlie",
-  },
-  { id: "user-4", fullName: "Diana Prince", avatarUrl: null, title: "QA Engineer", profileLink: "/people/diana" },
-];
-
-// Mock search function for TaskPage assignees
-const searchTaskPeople = async ({ query }: { query: string }): Promise<TaskPage.Person[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  return mockTaskPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
-};
-
-// Mock search function for TaskPage milestones - maintains earliest first sorting
-const searchMilestones = async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-
-  const filtered = mockMilestones.filter((milestone) => milestone.title.toLowerCase().includes(query.toLowerCase()));
-
-  // Sort by due date (earliest first), then by title for those without due dates
-  return filtered.sort((a, b) => {
-    if (a.dueDate && b.dueDate) {
-      return a.dueDate.getTime() - b.dueDate.getTime();
-    }
-    if (a.dueDate && !b.dueDate) return -1; // Items with due dates come first
-    if (!a.dueDate && b.dueDate) return 1;
-    return a.title.localeCompare(b.title); // Alphabetical for no due dates
-  });
-};
-
-// Mock search function for RichEditor mentions
-const searchRichEditorPeople = async ({ query }: { query: string }) => {
-  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  return mockRichEditorPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
-};
-
-// Mock mentioned person lookup function
-const mockMentionedPersonLookup = async (id: string) => {
-  await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate API delay
-  return mockRichEditorPeople.find((person) => person.id === id) || null;
-};
-
-// Helper function to convert text to rich content JSON format
-function asRichText(content: string): any {
-  return {
-    type: "doc",
-    content: [
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: content,
-          },
-        ],
-      },
-    ],
-  };
-}
-
-// Helper function for complex rich content with lists
-function asRichTextWithList(paragraphs: string[], listItems: string[]): any {
-  const content: any[] = [];
-
-  // Add paragraphs
-  paragraphs.forEach((text) => {
-    content.push({
-      type: "paragraph",
-      content: [{ type: "text", text }],
-    });
-  });
-
-  // Add bullet list
-  if (listItems.length > 0) {
-    content.push({
-      type: "bulletList",
-      content: listItems.map((item) => ({
-        type: "listItem",
-        content: [
-          {
-            type: "paragraph",
-            content: [{ type: "text", text: item }],
-          },
-        ],
-      })),
-    });
-  }
-
-  return {
-    type: "doc",
-    content,
-  };
-}
-
-// Helper functions for creating timeline data
-function createComment(author: TimelinePerson, content: string, timeAgo: number): TimelineItemType {
-  return {
-    type: "comment",
-    value: {
-      id: `comment-${Date.now()}-${Math.random()}`,
-      content: JSON.stringify({ message: content }),
-      author,
-      insertedAt: new Date(Date.now() - timeAgo).toISOString(),
-      reactions: [],
-    },
-  };
-}
-
-function createTaskActivity(
-  type: TaskActivity["type"],
-  author: TimelinePerson,
-  timeAgo: number,
-  extraData: any = {},
-): TimelineItemType {
-  return {
-    type: "task-activity",
-    value: {
-      id: `activity-${Date.now()}-${Math.random()}`,
-      type,
-      author,
-      insertedAt: new Date(Date.now() - timeAgo).toISOString(),
-      ...extraData,
-    } as TaskActivity,
-  };
-}
-
-// Timeline data generators for different scenarios
-function createActiveTaskTimeline(): TimelineItemType[] {
-  return [
-    createComment(
-      bob,
-      "I've started working on the login component. Should have a first version ready by tomorrow.",
-      30 * 60 * 1000,
-    ), // 30 min ago
-    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, {
-      fromStatus: "not_started",
-      toStatus: "in_progress",
-    }), // 2 hours ago
-    createTaskActivity("task-assignment", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
-    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, {
-      milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
-      action: "attached",
-    }),
-    createComment(alice, "This is a critical feature for the beta release. Let's prioritize it.", 6.5 * 60 * 60 * 1000),
-    createTaskActivity("task-creation", alice, 24 * 60 * 60 * 1000), // 1 day ago
-  ];
-}
-
-function createMinimalTaskTimeline(): TimelineItemType[] {
-  return [
-    createTaskActivity("task-creation", alice, 2 * 60 * 60 * 1000), // 2 hours ago
-  ];
-}
-
-function createCompletedTaskTimeline(): TimelineItemType[] {
-  return [
-    createComment(alice, "Great work everyone! This turned out really well.", 30 * 60 * 1000),
-    createTaskActivity("task-status-change", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
-    createComment(bob, "All tests are passing and the feature is ready for release!", 2 * 60 * 60 * 1000),
-    createComment(charlie, "The design looks perfect. Nice work on the animations!", 4 * 60 * 60 * 1000),
-    createTaskActivity("task-assignment", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
-    createTaskActivity("task-creation", alice, 3 * 24 * 60 * 60 * 1000),
-  ];
-}
-
-function createOverdueTaskTimeline(): TimelineItemType[] {
-  return [
-    createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
-    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, {
-      fromDueDate: null,
-      toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
-    }),
-    createTaskActivity("task-assignment", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
-    createTaskActivity("task-creation", alice, 7 * 24 * 60 * 60 * 1000),
-  ];
-}
-
-function createLongContentTimeline(): TimelineItemType[] {
-  return [
-    createComment(
-      diana,
-      "I've tested this thoroughly and everything works as expected. The error handling is particularly robust.",
-      30 * 60 * 1000,
-    ),
-    createComment(
-      charlie,
-      "The UI looks great! I made some small adjustments to the spacing and colors to match our design system.",
-      2 * 60 * 60 * 1000,
-    ),
-    createComment(
-      bob,
-      "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.",
-      4 * 60 * 60 * 1000,
-    ),
-    createTaskActivity("task-description", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
-    createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
-    createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
-    createTaskActivity("task-creation", alice, 24 * 60 * 60 * 1000),
-  ];
-}
 
 function Component(props: Partial<TaskPage.Props>) {
   const [name, setName] = React.useState(props.name || "");
@@ -444,7 +161,11 @@ function Component(props: Partial<TaskPage.Props>) {
     },
   };
 
-  return <TaskPage {...defaults} />;
+  return (
+    <PageNew title={[defaults.name]} size="fullwidth">
+      <TaskPage {...defaults} />
+    </PageNew>
+  );
 }
 
 /**
@@ -514,7 +235,7 @@ export const CompletedTask: Story = {
 export const OverdueTask: Story = {
   args: {
     name: "Fix critical security vulnerability",
-    description: asRichText("🚨 Critical security issue found in authentication module. Needs immediate attention."),
+    description: asRichText("Critical security issue found in authentication module. Needs immediate attention. 🚨"),
     status: "in_progress",
     dueDate: new Date(2024, 0, 5), // January 5, 2024 (overdue)
     assignees: [mockTaskPeople[0]!],
@@ -547,3 +268,12 @@ export const LongContent: Story = {
   },
 };
 
+/**
+ * TaskPage shown within a project context with header and tabs
+ */
+export const InProjectContext: Story = {
+  render: () => <InProjectContextStory />,
+  parameters: {
+    layout: "fullscreen",
+  },
+};
