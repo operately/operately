@@ -42,9 +42,10 @@ const GoalCheckIn: ActivityHandler = {
     const status = match(update.status)
       .with("pending", () => <span>Pending</span>)
       .with("on_track", () => <span>On Track</span>)
-      .with("concern", () => <span>Needs Attention</span>)
-      .with("caution", () => <span>Needs Attention</span>)
-      .with("issue", () => <span>At Risk</span>)
+      .with("concern", () => <span>Needs Caution</span>) // legacy
+      .with("caution", () => <span>Needs Caution</span>)
+      .with("issue", () => <span>Off Track</span>) // legacy
+      .with("off_track", () => <span>Off Track</span>)
       .run();
 
     return (
