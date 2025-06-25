@@ -2474,8 +2474,8 @@ export interface CloseGoalInput {
   goalId: Id;
   success: string;
   retrospective: string;
-  sendNotificationsToEveryone: boolean;
-  subscriberIds: Id[];
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
   successStatus: string;
 }
 
