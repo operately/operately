@@ -23,6 +23,7 @@ export const mockMilestones = {
     hasDescription: true,
     hasComments: true,
     commentCount: 5,
+    status: "active",
   },
   productLaunch: {
     id: "2",
@@ -31,6 +32,7 @@ export const mockMilestones = {
     hasDescription: true,
     hasComments: true,
     commentCount: 3,
+    status: "active",
   },
   marketExpansion: {
     id: "3",
@@ -38,6 +40,24 @@ export const mockMilestones = {
     dueDate: new Date("2025-09-30"),
     hasDescription: false,
     hasComments: false,
+    status: "active",
+  },
+  completedMilestone1: {
+    id: "5",
+    name: "Initial Research Phase",
+    dueDate: new Date("2025-03-15"),
+    hasDescription: true,
+    hasComments: true,
+    commentCount: 8,
+    status: "completed",
+  },
+  completedMilestone2: {
+    id: "6",
+    name: "Design System Foundation",
+    dueDate: new Date("2025-04-30"),
+    hasDescription: true,
+    hasComments: false,
+    status: "completed",
   },
   emptyMilestone: {
     id: "4",
@@ -45,6 +65,7 @@ export const mockMilestones = {
     dueDate: undefined,
     hasDescription: false,
     hasComments: false,
+    status: "active",
   },
 };
 

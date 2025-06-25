@@ -117,6 +117,7 @@ import IconStar from "@tabler/icons-react/dist/esm/icons/IconStar.mjs";
 import IconCircleX from "@tabler/icons-react/dist/esm/icons/IconCircleX.mjs";
 import IconExternalLink from "@tabler/icons-react/dist/esm/icons/IconExternalLink.mjs";
 import IconFlag from "@tabler/icons-react/dist/esm/icons/IconFlag.mjs";
+import IconFlagFilled from "@tabler/icons-react/dist/esm/icons/IconFlagFilled.mjs";
 import IconClipboardText from "@tabler/icons-react/dist/esm/icons/IconClipboardText.mjs";
 import IconMessages from "@tabler/icons-react/dist/esm/icons/IconMessages.mjs";
 import IconListCheck from "@tabler/icons-react/dist/esm/icons/IconListCheck.mjs";
@@ -263,6 +264,7 @@ export {
   IconCircleX,
   IconExternalLink,
   IconFlag,
+  IconFlagFilled,
   IconClipboardText,
   IconMessages,
   IconListCheck,
