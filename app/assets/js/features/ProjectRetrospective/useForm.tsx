@@ -8,6 +8,7 @@ import { Subscriber } from "@/models/notifications";
 import { useNavigateTo } from "@/routes/useNavigateTo";
 
 import { usePaths } from "@/routes/paths";
+import { emptyContent } from "turboui/RichContent";
 interface Error {
   field: string;
   message: string;
@@ -25,9 +26,7 @@ export interface FormState {
 
   errors: Error[];
 
-  whatWentWell: TipTapEditor.EditorState;
-  whatCouldHaveGoneBetter: TipTapEditor.EditorState;
-  whatDidYouLearn: TipTapEditor.EditorState;
+  retrospectiveNotes: TipTapEditor.EditorState;
 
   submit: () => void;
   submittable: boolean;
@@ -42,9 +41,12 @@ export function useForm(options: FormOptions): FormState {
   });
   const [errors, setErrors] = React.useState<Error[]>([]);
 
-  const whatWentWell = useWhatWentWellEditor(options);
-  const whatCouldHaveGoneBetter = useWhatCouldHaveGoneBetterEditor(options);
-  const whatDidYouLearn = useWhatDidYouLearnEditor(options);
+  const retrospectiveNotes = TipTapEditor.useEditor({
+    placeholder: "What went well? What didn't? What did you learn?",
+    className: "min-h-[250px] py-2 font-medium",
+    content: findExistingContent(options),
+    mentionSearchScope: { type: "project", id: options.project.id! },
+  })
 
   const redirect = useNavigateTo(
     options.mode === "create"
@@ -59,7 +61,8 @@ export function useForm(options: FormOptions): FormState {
   const submit = async () => {
     if (!submittable) return false;
 
-    const errors = validate(whatWentWell, whatCouldHaveGoneBetter, whatDidYouLearn);
+    const errors = validate(retrospectiveNotes);
+
     if (errors.length > 0) {
       setErrors(errors);
       return false;
@@ -68,22 +71,14 @@ export function useForm(options: FormOptions): FormState {
     if (options.mode == "create") {
       await post({
         projectId: options.project.id,
-        retrospective: JSON.stringify({
-          whatWentWell: whatWentWell.editor.getJSON(),
-          whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
-          whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
-        }),
+        retrospective: JSON.stringify(retrospectiveNotes.editor.getJSON()),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
       });
     } else {
       await edit({
         id: options.retrospective!.id,
-        content: JSON.stringify({
-          whatWentWell: whatWentWell.editor.getJSON(),
-          whatCouldHaveGoneBetter: whatCouldHaveGoneBetter.editor.getJSON(),
-          whatDidYouLearn: whatDidYouLearn.editor.getJSON(),
-        }),
+        content: JSON.stringify(retrospectiveNotes.editor.getJSON()),
       });
     }
 
@@ -93,15 +88,14 @@ export function useForm(options: FormOptions): FormState {
   };
 
   const submittable =
-    !loading && whatWentWell.submittable && whatCouldHaveGoneBetter.submittable && whatDidYouLearn.submittable;
+    !loading && retrospectiveNotes.submittable;
 
   return {
     project: options.project,
     mode: options.mode,
     errors,
-    whatWentWell,
-    whatCouldHaveGoneBetter,
-    whatDidYouLearn,
+
+    retrospectiveNotes,
 
     submit,
     submittable,
@@ -109,64 +103,19 @@ export function useForm(options: FormOptions): FormState {
   };
 }
 
-function useWhatWentWellEditor(options: FormOptions) {
-  return TipTapEditor.useEditor({
-    placeholder: `Write your answer here...`,
-    className: "min-h-[250px] py-2 font-medium",
-    content: findExistingContent(options, "whatWentWell"),
-    mentionSearchScope: { type: "project", id: options.project.id! },
-  });
-}
-
-function useWhatCouldHaveGoneBetterEditor(options: FormOptions) {
-  return TipTapEditor.useEditor({
-    placeholder: `Write your answer here...`,
-    className: "min-h-[250px] py-2 font-medium",
-    content: findExistingContent(options, "whatCouldHaveGoneBetter"),
-    mentionSearchScope: { type: "project", id: options.project.id! },
-  });
-}
-
-function useWhatDidYouLearnEditor(options: FormOptions) {
-  return TipTapEditor.useEditor({
-    placeholder: `Write your answer here...`,
-    className: "min-h-[250px] py-2 font-medium",
-    content: findExistingContent(options, "whatDidYouLearn"),
-    mentionSearchScope: { type: "project", id: options.project.id! },
-  });
-}
-
-function validate(
-  whatWentWell: TipTapEditor.EditorState,
-  whatCouldHaveGoneBetter: TipTapEditor.EditorState,
-  whatDidYouLearn: TipTapEditor.EditorState,
-): Error[] {
+function validate(richText: TipTapEditor.EditorState): Error[] {
   let errors: Error[] = [];
 
-  if (isContentEmpty(whatWentWell.editor.getJSON())) {
-    errors.push({ field: "whatWentWell", message: "is required" });
-  }
-
-  if (isContentEmpty(whatCouldHaveGoneBetter.editor.getJSON())) {
-    errors.push({ field: "whatCouldHaveGoneBetter", message: "is required" });
-  }
-
-  if (isContentEmpty(whatDidYouLearn.editor.getJSON())) {
-    errors.push({ field: "whatDidYouLearn", message: "is required" });
+  if (isContentEmpty(richText.editor.getJSON())) {
+    errors.push({ field: "retrospectiveNotes", message: "is required" });
   }
 
   return errors;
 }
 
-function findExistingContent(
-  options: FormOptions,
-  key: "whatWentWell" | "whatCouldHaveGoneBetter" | "whatDidYouLearn",
-) {
+function findExistingContent(options: FormOptions) {
   if (options.mode === "edit" && options.retrospective?.content) {
-    const content = JSON.parse(options.retrospective.content);
-
-    if (content[key]) {
-      return content[key];
-    }
+    return JSON.parse(options.retrospective.content);
   }
+  return emptyContent();
 }

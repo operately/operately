@@ -12,7 +12,7 @@ export function Page() {
 
   return (
     <Pages.Page title={"Closing " + project.name}>
-      <Paper.Root size="small">
+      <Paper.Root>
         <ProjectPageNavigation project={project} />
         <Paper.Body minHeight="none">
           <div className="uppercase text-content-accent text-sm">CLOSING THE PROJECT</div>
