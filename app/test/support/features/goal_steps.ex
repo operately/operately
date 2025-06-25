@@ -138,7 +138,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.new_champion)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.creator,
+      author: ctx.champion,
       action: "assigned you as the champion"
     })
   end
@@ -205,7 +205,7 @@ defmodule Operately.Support.Features.GoalSteps do
     ctx
     |> UI.login_as(ctx.new_reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.creator,
+      author: ctx.champion,
       action: "assigned you as the reviewer"
     })
   end
