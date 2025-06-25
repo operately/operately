@@ -65,9 +65,7 @@ defmodule Operately.Features.SubscriptionsTest do
     setup ctx do
       params = %{
         "author" => ctx.creator,
-        "what-went-well" => "We built the thing",
-        "what-could-ve-gone-better" => "We built the thing",
-        "what-did-you-learn" => "We learned the thing"
+        "notes" => "We built the thing",
       }
 
       ctx = Map.put(ctx, :params, params)
