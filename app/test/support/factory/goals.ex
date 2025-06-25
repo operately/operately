@@ -75,10 +75,12 @@ defmodule Operately.Support.Factory.Goals do
   def close_goal(ctx, testid, opts \\ []) do
     goal = Map.fetch!(ctx, testid)
     success = Keyword.get(opts, :success, "success")
+    success_status = Keyword.get(opts, :success_status, "achieved")
     retrospective = Keyword.get(opts, :retrospective, RichText.rich_text("content"))
 
     {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.creator, goal, %{
       success: success,
+      success_status: success_status,
       content: retrospective,
       send_notifications_to_everyone: true,
       subscriber_ids: [],

@@ -10,7 +10,8 @@ defmodule Operately.Operations.GoalClosing do
     changeset = Goals.Goal.changeset(goal, %{
       closed_at: DateTime.utc_now(),
       closed_by_id: author.id,
-      success: attrs.success
+      success: attrs.success,
+      success_status: attrs.success_status
     })
 
     Multi.new()
