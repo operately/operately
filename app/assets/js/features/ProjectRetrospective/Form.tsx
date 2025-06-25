@@ -82,13 +82,15 @@ function AccomplishedOrDropped() {
 
 function RetrospectiveNotes({ project }: { project: Projects.Project }) {
   return (
-    <Forms.RichTextArea
-      field="retrospective"
-      label="Retrospective notes"
-      mentionSearchScope={{ type: "project", id: project.id! }}
-      placeholder="What went well? What didn't? What did you learn?"
-      required
-    />
+    <div data-test-id="retrospective-notes">
+      <Forms.RichTextArea
+        field="retrospective"
+        label="Retrospective notes"
+        mentionSearchScope={{ type: "project", id: project.id! }}
+        placeholder="What went well? What didn't? What did you learn?"
+        required
+      />
+    </div>
   );
 }
 
