@@ -2471,15 +2471,16 @@ export interface ChangeTaskDescriptionResult {
 }
 
 export interface CloseGoalInput {
-  goalId?: Id | null;
-  success?: string | null;
-  retrospective?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
+  goalId: Id;
+  success: string;
+  retrospective: string;
+  sendNotificationsToEveryone: boolean;
+  subscriberIds: Id[];
+  successStatus: string;
 }
 
 export interface CloseGoalResult {
-  goal?: Goal | null;
+  goal: Goal;
 }
 
 export interface CloseProjectInput {
