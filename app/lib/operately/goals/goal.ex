@@ -35,6 +35,7 @@ defmodule Operately.Goals.Goal do
     field :closed_at, :utc_datetime
     belongs_to :closed_by, Operately.People.Person, foreign_key: :closed_by_id
     field :success, :string
+    field :success_status, Ecto.Enum, values: [:achieved, :missed]
 
     # populated with after load hooks
     field :my_role, :string, virtual: true
@@ -72,6 +73,7 @@ defmodule Operately.Goals.Goal do
       :closed_at,
       :closed_by_id,
       :success,
+      :success_status,
       :last_check_in_id,
       :last_update_status
     ])
@@ -89,6 +91,7 @@ defmodule Operately.Goals.Goal do
   @impl WorkMapItem
   def status(goal = %__MODULE__{}) do
     cond do
+      goal.success_status -> goal.success_status
       goal.success == "yes" -> :achieved
       goal.success == "no" -> :missed
       goal.closed_at -> :completed
