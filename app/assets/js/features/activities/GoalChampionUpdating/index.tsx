@@ -12,8 +12,8 @@ const GoalChampionUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_paths: Paths, _activity: Activity) {
-    throw new Error("Not implemented");
+  pagePath(paths: Paths, activity: Activity) {
+    return paths.goalPath(content(activity).goal!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -62,12 +62,12 @@ const GoalChampionUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return <></>;
+  NotificationTitle(props: { activity: Activity }) {
+    return People.firstName(props.activity.author!) + " assigned you as the champion";
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation(props: { activity: Activity }) {
+    return content(props.activity).goal!.name!;
   },
 };
 
