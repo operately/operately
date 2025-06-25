@@ -1,5 +1,4 @@
 import React from "react";
-import { PageNew } from "../Page";
 import { Status } from "../TaskBoard/types";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
@@ -108,18 +107,16 @@ export function TaskPage(props: TaskPage.Props) {
   const state = useTaskPageState(props);
 
   return (
-    <PageNew title={[state.name]} size="fullwidth">
-      <div className="px-4 py-4">
-        <PageHeader {...state} />
-        <div className="flex-1 overflow-scroll">
-          <div className="px-4 py-6">
-            <div className="sm:grid sm:grid-cols-12">
-              <Overview {...state} />
-              <Sidebar {...state} />
-            </div>
+    <div className="px-4 py-4">
+      <PageHeader {...state} />
+      <div className="flex-1 overflow-scroll">
+        <div className="px-4 py-6">
+          <div className="sm:grid sm:grid-cols-12">
+            <Overview {...state} />
+            <Sidebar {...state} />
           </div>
         </div>
       </div>
-    </PageNew>
+    </div>
   );
 }
