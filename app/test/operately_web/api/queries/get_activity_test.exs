@@ -121,6 +121,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     test "with no includes", ctx do
       {:ok, _} = Operately.Operations.GoalClosing.run(ctx.creator, ctx.goal, %{
         success: "success",
+        success_status: "achieved",
         content: RichText.rich_text("content"),
         send_notifications_to_everyone: false,
         subscriber_ids: [],
@@ -139,6 +140,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivityTest do
     test "include_unread_goal_notifications", ctx do
       {:ok, _} = Operately.Operations.GoalClosing.run(ctx.reviewer, ctx.goal,  %{
         success: "success",
+        success_status: "achieved",
         content: RichText.rich_text("content"),
         send_notifications_to_everyone: false,
         subscriber_ids: [ctx.creator.id],

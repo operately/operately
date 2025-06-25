@@ -168,6 +168,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       assert {200, _} = mutation(ctx.conn, :close_goal, %{
         goal_id: Paths.goal_id(ctx.goal),
         success: "yes",
+        success_status: "achieved",
         retrospective: rich_text("Closing retrospective") |> Jason.encode!(),
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(ctx.people, &(Paths.person_id(&1)))
@@ -193,6 +194,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       assert {200, _} = mutation(ctx.conn, :close_goal, %{
         goal_id: Paths.goal_id(ctx.goal),
         success: "yes",
+        success_status: "missed",
         retrospective: content,
         send_notifications_to_everyone: false,
         subscriber_ids: []
@@ -215,6 +217,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
       assert {200, _} = mutation(ctx.conn, :close_goal, %{
         goal_id: Paths.goal_id(ctx.goal),
         success: "yes",
+        success_status: "achieved",
         retrospective: content,
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
@@ -239,6 +242,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoalTest do
     mutation(conn, :close_goal, %{
       goal_id: Paths.goal_id(goal),
       success: "yes",
+      success_status: "achieved",
       retrospective: rich_text("result") |> Jason.encode!(),
     })
   end

@@ -23,7 +23,7 @@ defmodule Operately.Goals.GoalTest do
       ctx =
         ctx
         |> Factory.add_goal(:goal, :space)
-        |> Factory.close_goal(:goal, success: "no")
+        |> Factory.close_goal(:goal, success: "no", success_status: "missed")
 
       assert Goal.status(ctx.goal) == :missed
     end
