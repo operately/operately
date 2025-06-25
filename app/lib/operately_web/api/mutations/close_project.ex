@@ -41,19 +41,10 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   defp parse_inputs(inputs) do
     {:ok, project_id} = decode_id(inputs.project_id)
     {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
-    retrospective = Jason.decode!(inputs.retrospective)
 
     {:ok, %{
       project_id: project_id,
-      retrospective: retrospective,
-      # "content" is used to create subscriptions for mentioned people
-      content: %{
-        "content" => [
-          retrospective["whatWentWell"],
-          retrospective["whatDidYouLearn"],
-          retrospective["whatCouldHaveGoneBetter"],
-        ],
-      },
+      content: Jason.decode!(inputs.retrospective),
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :project_retrospective,
       subscriber_ids: subscriber_ids || []
