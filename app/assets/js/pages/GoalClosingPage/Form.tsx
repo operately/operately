@@ -65,8 +65,8 @@ function AccomplishedOrDropped() {
       field="success"
       label="Was this goal achieved?"
       options={[
-        { value: "yes", label: "Achieved" },
-        { value: "no", label: "Not achieved" },
+        { value: "yes", label: "Yes" },
+        { value: "no", label: "No" },
       ]}
     />
   );
