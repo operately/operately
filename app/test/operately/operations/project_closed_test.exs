@@ -9,11 +9,7 @@ defmodule Operately.Operations.ProjectClosedTest do
   alias Operately.Support.RichText
 
   @action "project_closed"
-  @retrospective_content %{
-    "whatWentWell" => RichText.rich_text("some content"),
-    "whatDidYouLearn" => RichText.rich_text("some content"),
-    "whatCouldHaveGoneBetter" => RichText.rich_text("some content"),
-  }
+  @retrospective_content RichText.rich_text("some content")
 
   setup ctx do
     ctx
@@ -29,8 +25,8 @@ defmodule Operately.Operations.ProjectClosedTest do
   test "Closing project notifies only reviewer", ctx do
     {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        retrospective: @retrospective_content,
-        content: %{},
+        content: @retrospective_content,
+        success_status: "achieved",
         send_to_everyone: false,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: [ctx.creator.id, ctx.reviewer.id]
@@ -54,8 +50,8 @@ defmodule Operately.Operations.ProjectClosedTest do
 
     {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        retrospective: @retrospective_content,
-        content: %{},
+        content: @retrospective_content,
+        success_status: "achieved",
         send_to_everyone: false,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: Enum.map(contributors, &(&1.person_id)),
@@ -81,8 +77,8 @@ defmodule Operately.Operations.ProjectClosedTest do
   test "Closing project notifies all contributors if send_to_everyone is true", ctx do
     {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        retrospective: @retrospective_content,
-        content: %{},
+        content: @retrospective_content,
+        success_status: "achieved",
         send_to_everyone: true,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: [],
@@ -108,8 +104,8 @@ defmodule Operately.Operations.ProjectClosedTest do
   test "Closing project does not notify creator", ctx do
     {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        retrospective: @retrospective_content,
-        content: %{},
+        content: @retrospective_content,
+        success_status: "achieved",
         send_to_everyone: false,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: [ctx.creator.id],
@@ -123,22 +119,12 @@ defmodule Operately.Operations.ProjectClosedTest do
   end
 
   test "Closing project notifies mentioned person", ctx do
-    content = %{
-      "whatWentWell" => RichText.rich_text(mentioned_people: [ctx.reviewer, ctx.contrib1]) |> Jason.decode!(),
-      "whatDidYouLearn" => RichText.rich_text(mentioned_people: [ctx.contrib2]) |> Jason.decode!(),
-      "whatCouldHaveGoneBetter" => RichText.rich_text(mentioned_people: [ctx.contrib3]) |> Jason.decode!(),
-    }
+    content = RichText.rich_text(mentioned_people: [ctx.reviewer, ctx.contrib1, ctx.contrib2, ctx.contrib3]) |> Jason.decode!()
 
     {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectClosed.run(ctx.creator, ctx.project, %{
-        retrospective: content,
-        content: %{
-          "content" => [
-            content["whatWentWell"],
-            content["whatDidYouLearn"],
-            content["whatCouldHaveGoneBetter"],
-          ],
-        },
+        content: content,
+        success_status: "achieved",
         send_to_everyone: false,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: [],
@@ -170,22 +156,12 @@ defmodule Operately.Operations.ProjectClosedTest do
     })
     person = person_fixture_with_account(%{company_id: ctx.company.id})
 
-    content = %{
-      "whatWentWell" => RichText.rich_text(mentioned_people: [person]) |> Jason.decode!(),
-      "whatDidYouLearn" => RichText.rich_text("Content"),
-      "whatCouldHaveGoneBetter" => RichText.rich_text("Content"),
-    }
+    content = RichText.rich_text(mentioned_people: [person]) |> Jason.decode!()
 
     {:ok, retrospective} = Oban.Testing.with_testing_mode(:manual, fn ->
       Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
-        retrospective: content,
-        content: %{
-          "content" => [
-            content["whatWentWell"],
-            content["whatDidYouLearn"],
-            content["whatCouldHaveGoneBetter"],
-          ],
-        },
+        content: content,
+        success_status: "achieved",
         send_to_everyone: false,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: [],

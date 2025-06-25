@@ -6,14 +6,15 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   alias Operately.Operations.ProjectClosed
 
   inputs do
-    field? :project_id, :string, null: true
-    field? :retrospective, :string, null: true
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:string), null: true
+    field :project_id, :string
+    field :retrospective, :string
+    field :success_status, :string
+    field? :send_notifications_to_everyone, :boolean
+    field? :subscriber_ids, list_of(:string)
   end
 
   outputs do
-    field? :retrospective, :project_retrospective, null: true
+    field :retrospective, :project_retrospective
   end
 
   def call(conn, inputs) do
@@ -45,6 +46,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
     {:ok, %{
       project_id: project_id,
       content: Jason.decode!(inputs.retrospective),
+      success_status: String.to_atom(inputs.success_status),
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :project_retrospective,
       subscriber_ids: subscriber_ids || []

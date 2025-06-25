@@ -194,6 +194,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert {200, res} = mutation(ctx.conn, :close_project, %{
         project_id: Paths.project_id(ctx.project),
         retrospective: Jason.encode!(@retrospective_content),
+        success_status: "achieved",
         send_notifications_to_everyone: true,
         subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
       })
@@ -221,6 +222,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert {200, res} = mutation(ctx.conn, :close_project, %{
         project_id: Paths.project_id(ctx.project),
         retrospective: Jason.encode!(retrospective_content),
+        success_status: "achieved",
         send_notifications_to_everyone: false,
         subscriber_ids: [],
       })
@@ -247,6 +249,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
       assert {200, res} = mutation(ctx.conn, :close_project, %{
         project_id: Paths.project_id(ctx.project),
         retrospective: Jason.encode!(retrospective_content),
+        success_status: "achieved",
         send_notifications_to_everyone: false,
         subscriber_ids: Enum.map(people, &(Paths.person_id(&1))),
       })
@@ -269,6 +272,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseProjectTest do
     mutation(conn, :close_project, %{
       project_id: Paths.project_id(project),
       retrospective: RichText.rich_text("some content", :as_string),
+      success_status: "achieved",
     })
   end
 
