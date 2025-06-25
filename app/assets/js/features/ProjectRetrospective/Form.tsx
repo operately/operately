@@ -3,27 +3,15 @@ import React from "react";
 import * as TipTapEditor from "@/components/Editor";
 
 import { PrimaryButton } from "turboui";
-import { createTestId } from "@/utils/testid";
 import { FormState } from "./useForm";
 import { SubscribersSelector } from "@/features/Subscriptions";
 
 export function Form({ form }: { form: FormState }) {
   return (
     <>
-      <Question
-        title="What went well?"
-        editor={form.whatWentWell.editor}
-        error={form.errors.find((e) => e.field === "whatWentWell")}
-      />
-      <Question
-        title="What could've gone better?"
-        editor={form.whatCouldHaveGoneBetter.editor}
-        error={form.errors.find((e) => e.field === "whatCouldHaveGoneBetter")}
-      />
-      <Question
-        title="What did you learn?"
-        editor={form.whatDidYouLearn.editor}
-        error={form.errors.find((e) => e.field === "whatDidYouLearn")}
+      <RetrospectiveNotes
+        editor={form.retrospectiveNotes.editor}
+        error={form.errors.find((e) => e.field === "retrospectiveNotes")}
       />
 
       {form.mode === "create" && (
@@ -35,12 +23,10 @@ export function Form({ form }: { form: FormState }) {
   );
 }
 
-function Question({ title, editor, error }) {
-  const testId = createTestId(title);
-
+function RetrospectiveNotes({ editor, error }) {
   return (
-    <div className="" data-test-id={testId}>
-      <h2 className="text-content-accent text font-bold mb-1">{title}</h2>
+    <div data-test-id="retrospective-notes">
+      <h2 className="text-content-accent text font-bold mb-1">Retrospective notes</h2>
       {error && <div className="text-sm text-content-error mb-2 font-medium">Please fill in this field</div>}
 
       <div className="border-x border-stroke-base">

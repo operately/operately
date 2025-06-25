@@ -13,7 +13,7 @@ defmodule Operately.Operations.ProjectClosed do
       Retrospective.changeset(%{
         author_id: author.id,
         project_id: project.id,
-        content: attrs.retrospective,
+        content: attrs.content,
         subscription_list_id: changes.subscription_list.id,
       })
     end)

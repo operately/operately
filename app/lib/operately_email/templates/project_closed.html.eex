@@ -1,24 +1,10 @@
 <%= title("#{short_name(@author)} closed the #{@project.name} project and submitted a retrospective") %>
 
 <%= spacer() %>
-<%= title("What went well?", font_size: 20) %>
+<%= title("Retrospective notes:", font_size: 20) %>
 
 <%= row do %>
-  <%= rich_text(@retrospective.content["whatWentWell"]) %>
-<% end %>
-
-<%= spacer() %>
-<%= title("What could've gone better?", font_size: 20) %>
-
-<%= row do %>
-  <%= rich_text(@retrospective.content["whatCouldHaveGoneBetter"]) %>
-<% end %>
-
-<%= spacer() %>
-<%= title("What did you learn?", font_size: 20) %>
-
-<%= row do %>
-  <%= rich_text(@retrospective.content["whatDidYouLearn"]) %>
+  <%= rich_text(@retrospective.content) %>
 <% end %>
 
 <%= spacer() %>
