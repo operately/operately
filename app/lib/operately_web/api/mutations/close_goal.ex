@@ -6,15 +6,16 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
   alias Operately.Operations.GoalClosing
 
   inputs do
-    field? :goal_id, :id, null: true
-    field? :success, :string, null: true
-    field? :retrospective, :string, null: true
-    field? :send_notifications_to_everyone, :boolean, null: true
-    field? :subscriber_ids, list_of(:id), null: true
+    field :goal_id, :id
+    field :success, :string
+    field :retrospective, :string
+    field :send_notifications_to_everyone, :boolean
+    field :subscriber_ids, list_of(:id)
+    field :success_status, :string
   end
 
   outputs do
-    field? :goal, :goal, null: true
+    field :goal, :goal
   end
 
   def call(conn, inputs) do
@@ -42,6 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.CloseGoal do
   defp parse_inputs(inputs) do
     {:ok, %{
       success: inputs.success,
+      success_status: String.to_atom(inputs.success_status),
       content: Jason.decode!(inputs.retrospective),
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscriber_ids: inputs[:subscriber_ids] || [],

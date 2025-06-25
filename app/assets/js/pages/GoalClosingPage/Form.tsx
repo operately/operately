@@ -30,9 +30,12 @@ export function Form() {
       retrospective: emptyContent(),
     },
     submit: async () => {
+      const successStatus = form.values.success === "yes" ? "achieved" : "missed";
+
       await close({
         goalId: goal.id,
         success: form.values.success,
+        successStatus: successStatus,
         retrospective: JSON.stringify(form.values.retrospective),
         sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
         subscriberIds: subscriptionsState.currentSubscribersList,
@@ -60,10 +63,10 @@ function AccomplishedOrDropped() {
   return (
     <Forms.RadioButtons
       field="success"
-      label="Was this goal accomplished?"
+      label="Was this goal achieved?"
       options={[
-        { value: "yes", label: "Accomplished" },
-        { value: "no", label: "Not accomplished" },
+        { value: "yes", label: "Achieved" },
+        { value: "no", label: "Not achieved" },
       ]}
     />
   );
