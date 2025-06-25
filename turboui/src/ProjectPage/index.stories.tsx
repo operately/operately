@@ -225,3 +225,63 @@ export const EmptyTasks: Story = {
     );
   },
 };
+
+export const EmptyProject: Story = {
+  render: () => {
+    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
+
+    const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
+      const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newMilestone = { id: milestoneId, ...newMilestoneData };
+      console.log("Milestone created:", newMilestone);
+      
+      // Add the new milestone to the milestones array
+      setMilestones(prev => [...prev, newMilestone]);
+    };
+
+    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+      console.log("Milestone updated:", milestoneId, updates);
+      
+      // Update the milestone in the milestones array
+      const updatedMilestones = milestones.map(milestone => 
+        milestone.id === milestoneId 
+          ? { ...milestone, ...updates }
+          : milestone
+      );
+      setMilestones(updatedMilestones);
+    };
+
+    return (
+      <ProjectPage
+        closeLink="#"
+        reopenLink="#"
+        projectName="New Project"
+        description={undefined}
+        space={{ id: "1", name: "Product", link: "#" }}
+        setSpace={() => {}}
+        spaceSearch={async () => []}
+        champion={null}
+        setChampion={() => {}}
+        status="on_track"
+        state="active"
+        closedAt={null}
+        canEdit={true}
+        accessLevels={{ company: "edit", space: "view" }}
+        setAccessLevels={() => {}}
+        updateProjectName={async () => true}
+        updateDescription={async () => true}
+        activityFeed={<div>Activity feed content</div>}
+        tasks={[]}
+        milestones={milestones}
+        onTaskStatusChange={() => {}}
+        onTaskCreate={() => {}}
+        onMilestoneCreate={handleMilestoneCreate}
+        onTaskUpdate={() => {}}
+        onMilestoneUpdate={handleMilestoneUpdate}
+        searchPeople={mockSearchPeople}
+        filters={[]}
+        onFiltersChange={() => {}}
+      />
+    );
+  },
+};
