@@ -1,5 +1,4 @@
 defmodule Mix.Tasks.Operation.GenEmailHandler do
-
   def gen(ctx) do
     Mix.Operately.generate_file(ctx.email_handler_file_path, fn _ ->
       """
@@ -15,7 +14,7 @@ defmodule Mix.Tasks.Operation.GenEmailHandler do
           |> to(person)
           |> subject(where: "...", who: author, action: "...")
           |> assign(:author, author)
-          |> render("#{ctx.resource}_#{ctx.action_gerund}")
+          |> render("#{ctx.activity_action_name}")
         end
       end
       """
@@ -37,5 +36,4 @@ defmodule Mix.Tasks.Operation.GenEmailHandler do
       """
     end)
   end
-
 end
