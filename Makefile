@@ -26,6 +26,9 @@ gen.page:
 gen.activity:
 	./devenv bash -c "cd app && ERL_FLAGS=+B mix operately.gen.activity"
 
+gen.activity.email:
+	./devenv bash -c "cd app && ERL_FLAGS=+B mix operately.gen.activity.email $(ACTIVITY_NAME)"
+
 js.fmt.fix:
 	./devenv bash -c "cd app && npx prettier --write assets/js && npx prettier --write ee/assets/js"
 
