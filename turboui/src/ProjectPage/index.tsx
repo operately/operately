@@ -10,6 +10,7 @@ import { Tabs, useTabs } from "../Tabs";
 import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageHeader } from "./PageHeader";
+import { Overview } from "./Overview";
 
 export namespace ProjectPage {
   export interface Space {
@@ -98,7 +99,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       <Tabs tabs={tabs} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
-        {tabs.active === "overview" && <div className="flex-1 overflow-auto p-4">Overview content will go here</div>}
+        {tabs.active === "overview" && <Overview {...state} />}
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden pt-1">
             <TaskBoard

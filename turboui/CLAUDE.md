@@ -120,27 +120,24 @@ make turboui.build && make turboui.test
 - **Typography consistency**: Match header sizes and styles across similar sections throughout the application
 - **Use standard components**: Always use design system components (Link variants, Button variants) instead of custom implementations
 
+### Pattern Recognition and Component Reuse
+
+**When implementing similar functionality:**
+
+- **Always examine reference implementations first**: If the user mentions "like [ComponentA]" or "similar to [ComponentB]", immediately examine those components for reusable patterns, shared components, or identical implementations
+- **Look for shared components**: Components like `SectionHeader`, spacing classes, button patterns, etc. are often standardized across the app - import and use them rather than recreating
+- **Copy exact patterns**: Don't recreate; copy the exact component structure, class names (`font-bold`, `mt-2`, `size="xxs"`), spacing, and interaction patterns from the referenced examples
+- **Start with reference implementation**: Read the reference component fully before writing new code, then copy the identical structure and customize only as needed
+
+**Implementation efficiency:**
+
+- **Match exactly first, customize second**: Get the implementation identical to the reference, then make specific adjustments if needed
+- **Note component hierarchy**: How headers, buttons, and content are structured and positioned in reference implementations
+- **Identify reusable pieces**: Extract shared utilities, hooks, or helper functions that should be reused rather than rebuilt
+
 ### Interactive Design
 
 - **Contextual placement**: Place actions near the content they affect rather than in distant headers or sidebars
 - **State management**: Ensure interactive elements actually update state in stories and implementations for realistic behavior
 - **Progressive disclosure**: Show advanced controls contextually within their relevant sections rather than globally
 - **Clear affordances**: Make interactive elements obviously clickable and provide clear feedback on state changes
-
-## Future Considerations
-
-### Potential Extensions
-
-- **Keyboard shortcuts**: Add hotkeys for common actions
-- **Bulk operations**: Multi-select and bulk edit functionality
-- **Advanced filtering**: Date ranges, assignee filters, status filters
-- **Real-time updates**: Live collaboration features
-- **Mobile optimization**: Touch-friendly interactions
-- **Accessibility**: Screen reader support, keyboard navigation
-
-### Architecture Evolution
-
-- **Context providers**: Consider React Context for deeply nested prop passing
-- **State management**: Evaluate need for more sophisticated state management
-- **Performance**: Implement React.memo and useMemo for large datasets
-- **Testing**: Add unit tests for complex component logic
