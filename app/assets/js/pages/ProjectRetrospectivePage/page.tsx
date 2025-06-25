@@ -18,6 +18,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+
 export function Page() {
   const { retrospective } = useLoadedData();
 
@@ -54,7 +55,7 @@ function Options() {
 
   return (
     <PageOptions.Root testId="project-options-button">
-      {retrospective.permissions?.canEditRetrospective && (
+      {false && retrospective.permissions?.canEditRetrospective && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit retrospective"

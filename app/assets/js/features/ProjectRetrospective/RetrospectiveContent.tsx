@@ -13,10 +13,6 @@ interface Props {
 export function RetrospectiveContent({ retrospective, limit, size = "std" }: Props) {
   const retro = JSON.parse(retrospective.content!);
 
-  const whatWentWell = JSON.stringify(retro.whatWentWell);
-  const whatCouldHaveGoneBetter = JSON.stringify(retro.whatCouldHaveGoneBetter);
-  const whatDidYouLearn = JSON.stringify(retro.whatDidYouLearn);
-
   const maybeShorten = (content: string) => {
     if (limit) {
       return shortenContent(content, limit, { suffix: "..." });
@@ -28,18 +24,34 @@ export function RetrospectiveContent({ retrospective, limit, size = "std" }: Pro
     "text-sm": size === "sm",
   });
 
-  return (
-    <div className="mb-8">
-      <QuestionTitle title="What went well?" size={size} />
-      <RichContent jsonContent={maybeShorten(whatWentWell)} className={contentClass} />
+  // Check if this is the old format with three separate sections
+  const isOldFormat = retro.whatWentWell && retro.whatCouldHaveGoneBetter && retro.whatDidYouLearn;
+  
+  if (isOldFormat) {
+    const whatWentWell = JSON.stringify(retro.whatWentWell);
+    const whatCouldHaveGoneBetter = JSON.stringify(retro.whatCouldHaveGoneBetter);
+    const whatDidYouLearn = JSON.stringify(retro.whatDidYouLearn);
+    
+    return (
+      <div className="mb-8">
+        <QuestionTitle title="What went well?" size={size} />
+        <RichContent jsonContent={maybeShorten(whatWentWell)} className={contentClass} />
 
-      <QuestionTitle title="What could've gone better?" size={size} />
-      <RichContent jsonContent={maybeShorten(whatCouldHaveGoneBetter)} className={contentClass} />
+        <QuestionTitle title="What could've gone better?" size={size} />
+        <RichContent jsonContent={maybeShorten(whatCouldHaveGoneBetter)} className={contentClass} />
 
-      <QuestionTitle title="What did you learn?" size={size} />
-      <RichContent jsonContent={maybeShorten(whatDidYouLearn)} className={contentClass} />
-    </div>
-  );
+        <QuestionTitle title="What did you learn?" size={size} />
+        <RichContent jsonContent={maybeShorten(whatDidYouLearn)} className={contentClass} />
+      </div>
+    );
+  } else {
+    const content = JSON.stringify(retro);
+    return (
+      <div className="my-8">
+        <RichContent jsonContent={maybeShorten(content)} className={contentClass} />
+      </div>
+    );
+  }
 }
 
 function QuestionTitle({ title, size }: { title: string; size: "std" | "sm" }) {
