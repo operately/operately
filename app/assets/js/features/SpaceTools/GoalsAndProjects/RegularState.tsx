@@ -145,7 +145,7 @@ interface ProjectsHeader {
 interface ResourceStatus {
   on_track: number;
   caution: number;
-  issue: number;
+  off_track: number;
   pending: number;
   total: number;
 }
@@ -162,7 +162,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
 
   const onTrackPercentage = (status.on_track / status.total) * 100;
   const cautionPercentage = (status.caution / status.total) * 100;
-  const issuePercentage = (status.issue / status.total) * 100;
+  const issuePercentage = (status.off_track / status.total) * 100;
   const pendingPercentage = (status.pending / status.total) * 100;
 
   return (
