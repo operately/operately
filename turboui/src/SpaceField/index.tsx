@@ -209,7 +209,7 @@ function SearchMode({ state }: { state: SpaceField.State }) {
         <input
           type="text"
           placeholder="Search spaces..."
-          className="w-full border border-stroke-base rounded px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
+          className="w-full border border-surface-outline rounded px-2 py-1 text-sm focus:outline-none focus:ring-0 text-content-base bg-surface-base"
           value={state.searchQuery}
           onChange={(e) => state.setSearchQuery(e.target.value)}
           autoFocus
