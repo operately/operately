@@ -40,10 +40,7 @@ export function Page() {
             variant="form-field"
             placeholder="What do you want to achieve?"
             text={state.name}
-            onSave={async (newName) => {
-              state.setName(newName);
-              return true; // Simulate successful save
-            }}
+            onChange={state.setName}
           />
         </Paper.Body>
         <SubmitButton state={state} />
