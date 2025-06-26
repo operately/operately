@@ -11,13 +11,7 @@ import { PrimaryButton, showErrorToast, SpaceField, TextField } from "turboui";
 
 import { PageModule } from "@/routes/types";
 
-export default { name: "GoalAddPage", loader, Page } as PageModule;
-
 interface LoaderResult {}
-
-export async function loader({}): Promise<LoaderResult> {
-  return {};
-}
 
 interface PageState {
   name: string;
@@ -31,51 +25,59 @@ interface PageState {
   submitting: boolean;
 }
 
-export function Page() {
-  const state = usePageState();
+export default {
+  name: "GoalAddPage",
 
-  return (
-    <Pages.Page title="New Goal" testId="goal-add-page">
-      <Paper.Root size="tiny">
-        <Paper.Body>
-          <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>
+  loader: async function loader({}): Promise<LoaderResult> {
+    return {};
+  },
 
-          <div className="flex flex-col gap-4">
-            <TextField
-              label="Name"
-              variant="form-field"
-              placeholder="What do you want to achieve?"
-              text={state.name}
-              onChange={state.setName}
-              error={state.nameError}
-            />
+  Page: function Page() {
+    const state = usePageState();
 
-            <SpaceField
-              label="Space"
-              space={state.space}
-              setSpace={state.setSpace}
-              search={state.spaceSearch}
-              variant="form-field"
-              testId="goal-add-space-field"
-              error={state.spaceError}
-            />
+    return (
+      <Pages.Page title="New Goal" testId="goal-add-page">
+        <Paper.Root size="tiny">
+          <Paper.Body>
+            <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>
+
+            <div className="flex flex-col gap-4">
+              <TextField
+                label="Name"
+                variant="form-field"
+                placeholder="What do you want to achieve?"
+                text={state.name}
+                onChange={state.setName}
+                error={state.nameError}
+              />
+
+              <SpaceField
+                label="Space"
+                space={state.space}
+                setSpace={state.setSpace}
+                search={state.spaceSearch}
+                variant="form-field"
+                testId="goal-add-space-field"
+                error={state.spaceError}
+              />
+            </div>
+
+            <div className="mt-6">
+              <PrimaryButton onClick={state.submit} loading={state.submitting} testId="add-goal-button" size="sm">
+                Add Goal
+              </PrimaryButton>
+            </div>
+          </Paper.Body>
+
+          <div className="my-8 text-center px-10">
+            <span className="font-bold">What happens next?</span> A new draft goal will be added to the selected space.
+            Only you can see it until you publish it.
           </div>
-
-          <div className="mt-6">
-            <PrimaryButton onClick={state.submit} loading={state.submitting} testId="add-goal-button" size="sm">
-              Add Goal
-            </PrimaryButton>
-          </div>
-        </Paper.Body>
-
-        <div className="my-8 text-center px-10">
-          <span className="font-bold">What happens next?</span> A new draft goal will be added to the selected space.
-          Only you can see it until you publish it.
-        </div>
-      </Paper.Root>
-    </Pages.Page>
-  );
-}
+        </Paper.Root>
+      </Pages.Page>
+    );
+  },
+} as PageModule;
 
 function usePageState(): PageState {
   const paths = usePaths();
@@ -113,7 +115,7 @@ function usePageState(): PageState {
 
       setNameError(undefined);
       setName("");
-      navigate(paths.goalPath(res.data.id));
+      navigate(paths.goalPath(res.goal.id));
     } catch (error) {
       showErrorToast("Network error", "Failed to create the goal");
       throw error; // rethrow to let the caller handle it
