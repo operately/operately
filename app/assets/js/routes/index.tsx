@@ -121,6 +121,7 @@ export function createAppRoutes() {
         pageRoute("work-map", pages.CompanyWorkMapPage),
 
         pageRoute("goals/new", pages.GoalAddPage),
+        pageRoute("goals/new/v2", pages.GoalAddPageV2),
         pageRoute("goals/:id", pages.GoalPage),
         pageRoute("goals/:goalId/complete", pages.GoalClosingPage),
         pageRoute("goals/:goalId/reopen", pages.GoalReopenPage),
