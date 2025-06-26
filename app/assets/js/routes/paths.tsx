@@ -336,6 +336,10 @@ export class Paths {
     return this.createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
+  goalNewPathV2({ parentGoalId }: { parentGoalId?: string }) {
+    return this.createCompanyPath(["goals", "new", "v2"]) + (parentGoalId ? "?parentGoalId=" + parentGoalId : "");
+  }
+
   goalCheckInNewPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "check-ins", "new"]);
   }
