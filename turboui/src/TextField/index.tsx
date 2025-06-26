@@ -12,10 +12,87 @@ export namespace TextField {
     placeholder?: string;
     trimBeforeSave?: boolean;
     testId?: string;
+    variant?: "inline" | "form-field";
   }
 }
 
-export function TextField({
+export function TextField(props: TextField.Props) {
+  if (props.variant === "form-field") {
+    return <FormFieldTextField {...props} />;
+  } else {
+    return <InlineTextField {...props} />;
+  }
+}
+
+function FormFieldTextField({
+  text,
+  onSave,
+  className,
+  placeholder,
+  trimBeforeSave = false,
+  testId = "text-field",
+}: TextField.Props) {
+  const [currentText, setCurrentText] = useState(text);
+
+  useEffect(() => {
+    setCurrentText(text);
+  }, [text]);
+
+  const handleSave = (newText: string) => {
+    let textToSave = trimBeforeSave ? newText.trim() : newText;
+    if (textToSave !== text) {
+      onSave(textToSave).then((success) => {
+        if (!success) {
+          setCurrentText(text);
+        }
+      });
+    }
+    setCurrentText(textToSave);
+  };
+
+  const handleCancel = () => {
+    setCurrentText(text);
+  };
+
+  const handleBlur = () => handleSave(currentText);
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      handleCancel();
+    } else if (e.key === "Enter") {
+      handleSave(currentText);
+    }
+  };
+
+  const outerClass = classNames(
+    "cursor-text relative w-full border border-surface-outline rounded-lg px-2 py-1.5 bg-surface-base",
+    "has-[:focus]:outline outline-indigo-600 bg-transparent",
+    className,
+  );
+
+  return (
+    <div className={outerClass} data-test-id={testId}>
+      <input
+        data-test-id={createTestId(testId, "input")}
+        type="text"
+        value={currentText}
+        onChange={(e) => setCurrentText(e.target.value)}
+        onBlur={handleBlur}
+        onKeyDown={handleKeyDown}
+        className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + className}
+        placeholder={placeholder}
+        style={{
+          minWidth: "0",
+          maxWidth: "100%",
+          boxSizing: "border-box",
+          font: "inherit",
+        }}
+      />
+    </div>
+  );
+}
+
+function InlineTextField({
   text,
   onSave,
   className,
@@ -48,12 +125,10 @@ export function TextField({
 
   const adjustInputWidth = () => {
     if (hiddenSpanRef.current && inputRef.current) {
-      // Use the longer of currentText or placeholder for width calculation
       const textToMeasure = currentText || placeholder || " ";
       hiddenSpanRef.current.textContent = textToMeasure;
       const textWidth = hiddenSpanRef.current.offsetWidth;
-      const desiredWidth = Math.max(textWidth + 10, 50); // Add padding and minimum width
-
+      const desiredWidth = Math.max(textWidth + 10, 50);
       inputRef.current.style.width = `${desiredWidth}px`;
       inputRef.current.style.maxWidth = "100%";
     }
@@ -68,14 +143,13 @@ export function TextField({
         }
       });
     }
-
     setIsEditing(false);
     setCurrentText(textToSave);
   };
 
   const handleCancel = () => {
     setIsEditing(false);
-    setCurrentText(text); // Revert to original text
+    setCurrentText(text);
   };
 
   const handleBlur = () => handleSave(currentText);
@@ -89,7 +163,7 @@ export function TextField({
   };
 
   const outerClass = classNames(
-    "relative inline-block",
+    "cursor-text relative inline-block",
     {
       "hover:bg-surface-dimmed": !isEditing && !readonly,
       "bg-surface-dimmed": isEditing,
@@ -106,7 +180,6 @@ export function TextField({
 
   return (
     <div className={outerClass} onClick={startEditing} data-test-id={testId}>
-      {/* Hidden span to measure text width */}
       <span
         ref={hiddenSpanRef}
         className={className}
@@ -119,7 +192,6 @@ export function TextField({
       >
         {isEditing ? currentText || placeholder || " " : currentText || " "}
       </span>
-
       {isEditing ? (
         <input
           data-test-id={createTestId(testId, "input")}
