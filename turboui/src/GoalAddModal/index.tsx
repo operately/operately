@@ -78,14 +78,7 @@ export function GoalAddModal({
 
         <label className="mb-1 text-sm font-bold block mt-4">Name</label>
         <div className="border rounded-lg border-surface-outline px-2 py-1.5 mb-2">
-          <TextField
-            text={name}
-            onSave={async (val) => {
-              setName(val);
-              return true;
-            }}
-            placeholder="e.g. Increase sales by 20%"
-          />
+          <TextField text={name} onChange={setName} placeholder="e.g. Increase sales by 20%" />
         </div>
 
         {!showDetails && (

@@ -1,12 +1,24 @@
-import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { AvatarWithName } from "../Avatar";
+import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
+import { DateField } from "../DateField";
+import FormattedTime from "../FormattedTime";
+import { NotificationToggle } from "../NotificationToggle";
 import { PieChart } from "../PieChart";
+import RichContent, { countCharacters, shortenContent } from "../RichContent";
+import { isContentEmpty } from "../RichContent/isContentEmpty";
+import { Editor, useEditor } from "../RichEditor";
+import { StatusBadge } from "../StatusBadge";
 import { calculateMilestoneStats } from "../TaskBoard/components/MilestoneCard";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
+import { FilterBadges, TaskFilter } from "../TaskBoard/components/TaskFilter";
 import { TaskList } from "../TaskBoard/components/TaskList";
-import { TaskFilter, FilterBadges } from "../TaskBoard/components/TaskFilter";
+import * as Types from "../TaskBoard/types";
 import { reorderTasksInList } from "../TaskBoard/utils/taskReorderingUtils";
-import { DragAndDropProvider } from "../utils/DragAndDrop";
+import { TextField } from "../TextField";
 import { Timeline } from "../Timeline";
+import { IconArchive, IconCalendar, IconCheck, IconFlag, IconLink, IconPlus, IconTrash } from "../icons";
+import { DragAndDropProvider } from "../utils/DragAndDrop";
 
 // Calculate completion percentage for a milestone, excluding canceled tasks
 function calculateCompletionPercentage(stats: {
@@ -25,26 +37,6 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-import {
-  IconPlus,
-  IconFlag,
-  IconCalendar,
-  IconLink,
-  IconArchive,
-  IconTrash,
-  IconCheck,
-} from "../icons";
-import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
-import { NotificationToggle } from "../NotificationToggle";
-import { StatusBadge } from "../StatusBadge";
-import { DateField } from "../DateField";
-import { AvatarWithName } from "../Avatar";
-import FormattedTime from "../FormattedTime";
-import RichContent, { countCharacters, shortenContent } from "../RichContent";
-import { isContentEmpty } from "../RichContent/isContentEmpty";
-import { Editor, useEditor } from "../RichEditor";
-import { TextField } from "../TextField";
-import * as Types from "../TaskBoard/types";
 
 interface MilestonePageProps {
   // Milestone to display
@@ -224,12 +216,12 @@ export function MilestonePage({
                   <TextField
                     className="font-semibold text-xl"
                     text={milestone.name}
-                    onSave={onMilestoneNameChange || (async () => true)}
+                    onChange={onMilestoneNameChange || (async () => true)}
                     readonly={!canEdit}
                     trimBeforeSave
                   />
-                  <StatusBadge 
-                    status={milestone.status === "completed" ? "completed" : "in_progress"} 
+                  <StatusBadge
+                    status={milestone.status === "completed" ? "completed" : "in_progress"}
                     customLabel={milestone.status === "completed" ? undefined : "Active"}
                     hideIcon={true}
                   />
@@ -530,11 +522,7 @@ function SidebarNotifications({
 
   return (
     <SidebarSection title="Notifications">
-      <NotificationToggle
-        isSubscribed={isSubscribed}
-        onToggle={handleToggle}
-        entityType="milestone"
-      />
+      <NotificationToggle isSubscribed={isSubscribed} onToggle={handleToggle} entityType="milestone" />
     </SidebarSection>
   );
 }
