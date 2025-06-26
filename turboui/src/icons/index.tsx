@@ -146,6 +146,8 @@ import IconFilter from "@tabler/icons-react/dist/esm/icons/IconFilter.mjs";
 import IconCircleDot from "@tabler/icons-react/dist/esm/icons/IconCircleDot.mjs";
 import IconGripVertical from "@tabler/icons-react/dist/esm/icons/IconGripVertical.mjs";
 import IconMinus from "@tabler/icons-react/dist/esm/icons/IconMinus.mjs";
+import IconBrandSlack from "@tabler/icons-react/dist/esm/icons/IconBrandSlack.mjs";
+import IconBrandGithub from "@tabler/icons-react/dist/esm/icons/IconBrandGithub.mjs";
 
 import type { IconProps as TablerIconProps } from "@tabler/icons-react";
 
@@ -294,6 +296,8 @@ export {
   IconFilter,
   IconGripVertical,
   IconMinus,
+  IconBrandSlack,
+  IconBrandGithub,
 };
 
 export interface IconProps {

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { ProjectPage } from "./index";
 import { genPeople } from "../utils/storybook/genPeople";
 import { mockTasks, mockEmptyTasks, mockMilestones } from "../TaskBoard/tests/mockData";
+import { ResourceManager } from "../ResourceManager";
 import * as TaskBoardTypes from "../TaskBoard/types";
 
 // Helper function to create rich text content for check-ins
@@ -98,6 +99,22 @@ const mockCheckIns: ProjectPage.CheckIn[] = [
   },
 ];
 
+// Mock resources data
+const mockResources: ResourceManager.Resource[] = [
+  {
+    id: "resource-1",
+    name: "Tasks",
+    url: "https://docs.google.com/spreadsheets/d/1234567890",
+    type: "google_sheet",
+  },
+  {
+    id: "resource-2", 
+    name: "Issue description",
+    url: "https://github.com/company/repo/issues/123",
+    type: "github",
+  },
+];
+
 export const Default: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockTasks]);
@@ -115,6 +132,7 @@ export const Default: Story = {
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
       return oneMonthFromToday;
     });
+    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
       console.log("Task status change:", taskId, newStatus);
@@ -165,6 +183,27 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
+    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newResource = { id: resourceId, ...resource };
+      console.log("Resource added:", newResource);
+      setResources([...resources, newResource]);
+    };
+
+    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+      console.log("Resource edited:", id, updates);
+      const updatedResources = resources.map((resource) =>
+        resource.id === id ? { ...resource, ...updates } : resource
+      );
+      setResources(updatedResources);
+    };
+
+    const handleResourceRemove = (id: string) => {
+      console.log("Resource removed:", id);
+      const updatedResources = resources.filter((resource) => resource.id !== id);
+      setResources(updatedResources);
+    };
+
     return (
       <ProjectPage
         closeLink="#"
@@ -206,6 +245,10 @@ export const Default: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
+        resources={resources}
+        onResourceAdd={handleResourceAdd}
+        onResourceEdit={handleResourceEdit}
+        onResourceRemove={handleResourceRemove}
       />
     );
   },
@@ -268,6 +311,10 @@ export const ReadOnly: Story = {
         setStartedAt={() => {}}
         dueAt={dueAt}
         setDueAt={() => {}}
+        resources={mockResources}
+        onResourceAdd={() => {}}
+        onResourceEdit={() => {}}
+        onResourceRemove={() => {}}
       />
     );
   },
@@ -285,6 +332,7 @@ export const EmptyTasks: Story = {
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
       return oneMonthFromToday;
     });
+    const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
 
     const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -300,6 +348,27 @@ export const EmptyTasks: Story = {
 
       // Add the new milestone to the milestones array
       setMilestones((prev) => [...prev, newMilestone]);
+    };
+
+    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newResource = { id: resourceId, ...resource };
+      console.log("Resource added:", newResource);
+      setResources([...resources, newResource]);
+    };
+
+    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+      console.log("Resource edited:", id, updates);
+      const updatedResources = resources.map((resource) =>
+        resource.id === id ? { ...resource, ...updates } : resource
+      );
+      setResources(updatedResources);
+    };
+
+    const handleResourceRemove = (id: string) => {
+      console.log("Resource removed:", id);
+      const updatedResources = resources.filter((resource) => resource.id !== id);
+      setResources(updatedResources);
     };
 
     return (
@@ -343,6 +412,10 @@ export const EmptyTasks: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
+        resources={resources}
+        onResourceAdd={handleResourceAdd}
+        onResourceEdit={handleResourceEdit}
+        onResourceRemove={handleResourceRemove}
       />
     );
   },
@@ -353,6 +426,7 @@ export const EmptyProject: Story = {
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [startedAt, setStartedAt] = useState<Date | null>(null);
     const [dueAt, setDueAt] = useState<Date | null>(null);
+    const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
 
     const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -371,6 +445,27 @@ export const EmptyProject: Story = {
         milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
       );
       setMilestones(updatedMilestones);
+    };
+
+    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newResource = { id: resourceId, ...resource };
+      console.log("Resource added:", newResource);
+      setResources([...resources, newResource]);
+    };
+
+    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+      console.log("Resource edited:", id, updates);
+      const updatedResources = resources.map((resource) =>
+        resource.id === id ? { ...resource, ...updates } : resource
+      );
+      setResources(updatedResources);
+    };
+
+    const handleResourceRemove = (id: string) => {
+      console.log("Resource removed:", id);
+      const updatedResources = resources.filter((resource) => resource.id !== id);
+      setResources(updatedResources);
     };
 
     return (
@@ -413,6 +508,10 @@ export const EmptyProject: Story = {
         setStartedAt={setStartedAt}
         dueAt={dueAt}
         setDueAt={setDueAt}
+        resources={resources}
+        onResourceAdd={handleResourceAdd}
+        onResourceEdit={handleResourceEdit}
+        onResourceRemove={handleResourceRemove}
       />
     );
   },
@@ -465,6 +564,10 @@ export const EmptyProjectReadOnly: Story = {
         setStartedAt={() => {}}
         dueAt={dueAt}
         setDueAt={() => {}}
+        resources={[]}
+        onResourceAdd={() => {}}
+        onResourceEdit={() => {}}
+        onResourceRemove={() => {}}
       />
     );
   },
