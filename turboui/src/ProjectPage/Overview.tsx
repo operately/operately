@@ -11,6 +11,7 @@ import { SectionHeader } from "../TaskPage/SectionHeader";
 import { PieChart } from "../PieChart";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
+import { ResourceManager } from "../ResourceManager";
 import { IconFlag } from "../icons";
 
 export function Overview(props: ProjectPage.State) {
@@ -31,6 +32,7 @@ function LeftColumn(props: ProjectPage.State) {
     <div className="sm:col-span-8 space-y-8">
       <OverviewSection {...props} />
       <TimelineSection {...props} />
+      <ResourcesSection {...props} />
     </div>
   );
 }
@@ -439,5 +441,17 @@ function CollapsibleSection({
       </button>
       {!isCollapsed && children}
     </div>
+  );
+}
+
+function ResourcesSection(props: ProjectPage.State) {
+  return (
+    <ResourceManager
+      resources={props.resources}
+      onResourceAdd={props.onResourceAdd}
+      onResourceEdit={props.onResourceEdit}
+      onResourceRemove={props.onResourceRemove}
+      canEdit={props.canEdit}
+    />
   );
 }
