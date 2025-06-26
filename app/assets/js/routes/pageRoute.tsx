@@ -1,8 +1,8 @@
-import React from "react";
 import { AxiosError } from "axios";
+import React from "react";
 
-import nprogress from "nprogress";
 import { setDevData } from "@/features/DevBar/useDevBarData";
+import nprogress from "nprogress";
 import { redirect } from "react-router-dom";
 import { Loader, PageModule } from "./types";
 

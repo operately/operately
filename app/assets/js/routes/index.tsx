@@ -96,7 +96,6 @@ export function createAppRoutes() {
         pageRoute("spaces/:id/discussions/new", pages.DiscussionNewPage),
         pageRoute("spaces/:id/discussions/drafts", pages.DiscussionDraftsPage),
         pageRoute("spaces/:id/goals/new", pages.GoalAddPage),
-        pageRoute("spaces/:id/goals/new/v2", pages.GoalAddPageV2),
         pageRoute("spaces/:id/access", pages.SpaceAccessManagementPage),
         pageRoute("spaces/:id/edit/general-access", pages.SpaceEditGeneralAccessPage),
         pageRoute("spaces/:id/add-members", pages.SpaceAddMembersPage),
@@ -122,6 +121,7 @@ export function createAppRoutes() {
         pageRoute("work-map", pages.CompanyWorkMapPage),
 
         pageRoute("goals/new", pages.GoalAddPage),
+        pageRoute("goals/new/v2", pages.GoalAddPageV2),
         pageRoute("goals/:id", pages.GoalPage),
         pageRoute("goals/:goalId/complete", pages.GoalClosingPage),
         pageRoute("goals/:goalId/reopen", pages.GoalReopenPage),

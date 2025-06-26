@@ -4,11 +4,10 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { Form, FormState, useForm } from "@/features/goals/GoalForm";
+import { FormState, useForm } from "@/features/goals/GoalForm";
 import { PrimaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
-import { usePaths } from "@/routes/paths";
 export function Page() {
   const me = useMe()!;
   const { spaceID, space, spaces, company, parentGoal, goals, isCompanyWide } = useLoadedData();
@@ -29,20 +28,11 @@ export function Page() {
 }
 
 function NewGoalForSpacePage({ form }: { form: FormState }) {
-  const paths = usePaths();
-  const { space } = useLoadedData();
-
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
-        <Paper.NavigateBack to={paths.workMapPath()} title={`Back to ${space!.name} Space`} />
-
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new subgoal for {space!.name}</h1>
-
-        <Paper.Body minHeight="300px">
-          <Form form={form} />
-        </Paper.Body>
-
+        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal</h1>
+        <Paper.Body minHeight="300px">Hello, nothing yet here.</Paper.Body>
         <SubmitButton form={form} />
       </Paper.Root>
     </Pages.Page>
@@ -50,22 +40,11 @@ function NewGoalForSpacePage({ form }: { form: FormState }) {
 }
 
 function NewGoalPage({ form }: { form: FormState }) {
-  const paths = usePaths();
-  const { isCompanyWide } = useLoadedData();
-
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="large">
-        <Paper.NavigateBack to={paths.workMapPath()} title="Back to Work Map" />
-
-        <h1 className="mb-4 font-bold text-3xl text-center">
-          Adding a new {isCompanyWide ? "company-wide" : " "} goal
-        </h1>
-
-        <Paper.Body minHeight="300px">
-          <Form form={form} />
-        </Paper.Body>
-
+        <h1 className="mb-4 font-bold text-3xl text-center">Add a new goal</h1>
+        <Paper.Body minHeight="300px">Hello, nothing yet here.</Paper.Body>
         <SubmitButton form={form} />
       </Paper.Root>
     </Pages.Page>
