@@ -23,6 +23,7 @@ export { MiniWorkMap } from "./MiniWorkMap";
 export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
+export { SpaceField } from "./SpaceField";
 export { TextField } from "./TextField";
 export { showErrorToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
