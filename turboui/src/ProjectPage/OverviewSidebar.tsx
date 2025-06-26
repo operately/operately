@@ -22,11 +22,7 @@ export function OverviewSidebar(props: any) {
 
 function LastCheckInSection(props: any) {
   if (!props.checkIns || props.checkIns.length === 0) {
-    return (
-      <SidebarSection title="Last Check-In">
-        <div className="text-sm text-content-dimmed">No check-ins yet</div>
-      </SidebarSection>
-    );
+    return null;
   }
 
   return (
