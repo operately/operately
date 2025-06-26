@@ -28,18 +28,19 @@ export namespace SpaceField {
     variant?: "inline" | "form-field";
     testId?: string;
     showIcon?: boolean;
+    label?: string;
+    error?: string;
   }
 
-  export interface State extends Required<Props> {
+  export interface State extends Required<Omit<Props, "label" | "error">> {
+    label: string;
+    error: string;
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
 
     dialogMode: "menu" | "search";
     setDialogMode: (mode: "menu" | "search") => void;
     closeDialog: () => void;
-
-    space: Space | null;
-    setSpace: (space: Space | null) => void;
 
     searchQuery: string;
     setSearchQuery: (query: string) => void;
@@ -62,10 +63,14 @@ export function SpaceField(props: SpaceField.Props) {
   const state = useSpaceFieldState(props);
 
   return (
-    <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
-      <Trigger state={state} />
-      <Dialog state={state} />
-    </Popover.Root>
+    <div className={state.variant === "form-field" ? "w-full" : undefined}>
+      {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
+      <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
+        <Trigger state={state} />
+        <Dialog state={state} />
+      </Popover.Root>
+      {state.error && <div className="text-red-500 text-xs mt-1 mb-1">{state.error}</div>}
+    </div>
   );
 }
 
@@ -92,6 +97,8 @@ export function useSpaceFieldState(p: SpaceField.Props): SpaceField.State {
   return {
     ...DefaultProps,
     ...p,
+    label: p.label || "",
+    error: p.error || "",
     isOpen,
     setIsOpen,
     dialogMode,
@@ -112,7 +119,9 @@ function Trigger({ state }: { state: SpaceField.State }) {
       "gap-1.5": true,
       "focus:outline-none hover:bg-surface-dimmed rounded-lg": !state.readonly,
       "px-1.5 py-1 -my-1 -mx-1.5": !state.readonly && state.variant === "inline",
-      "px-2 py-1.5 border border-surface-outline rounded-lg": state.variant === "form-field", // Added border for form-field
+      "px-2 py-1.5 border rounded-lg": state.variant === "form-field",
+      "border-surface-outline": state.variant === "form-field" && !state.error,
+      "border-red-500 outline-red-500": state.variant === "form-field" && !!state.error,
       "text-content-dimmed": !state.space,
       "w-full": state.variant === "form-field",
       "cursor-pointer": !state.readonly, // Added cursor-pointer when not readonly
