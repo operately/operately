@@ -3,12 +3,13 @@ import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
 import { AvatarWithName } from "../Avatar/AvatarWithName";
 import { ActionList } from "../ActionList";
+import { LastCheckIn } from "../LastCheckIn";
 import { IconCopy, IconCircleArrowRight, IconPlayerPause, IconCircleCheck, IconRotateDot, IconTrash } from "../icons";
 
 export function OverviewSidebar(props: any) {
   return (
     <div className="sm:col-span-4 space-y-6 sm:pl-8">
-      <LastCheckIn {...props} />
+      <LastCheckInSection {...props} />
       <ParentGoal {...props} />
       <ProjectDates {...props} />
       <Champion {...props} />
@@ -19,10 +20,18 @@ export function OverviewSidebar(props: any) {
   );
 }
 
-function LastCheckIn(_props: any) {
+function LastCheckInSection(props: any) {
+  if (!props.checkIns || props.checkIns.length === 0) {
+    return (
+      <SidebarSection title="Last Check-In">
+        <div className="text-sm text-content-dimmed">No check-ins yet</div>
+      </SidebarSection>
+    );
+  }
+
   return (
     <SidebarSection title="Last Check-In">
-      <div className="text-sm text-content-dimmed">No check-ins yet</div>
+      <LastCheckIn checkIns={props.checkIns} state={props.state} mentionedPersonLookup={props.mentionedPersonLookup} />
     </SidebarSection>
   );
 }
