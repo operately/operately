@@ -6,6 +6,24 @@ import { genPeople } from "../utils/storybook/genPeople";
 import { mockTasks, mockEmptyTasks, mockMilestones } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 
+// Helper function to create rich text content for check-ins
+function asRichText(content: string): any {
+  return {
+    type: "doc",
+    content: [
+      {
+        type: "paragraph",
+        content: [
+          {
+            type: "text",
+            text: content,
+          },
+        ],
+      },
+    ],
+  };
+}
+
 const people = genPeople(5);
 
 const meta: Meta<typeof ProjectPage> = {
@@ -32,6 +50,43 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoard
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
   return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
+
+// Mock check-ins data
+const mockCheckIns: ProjectPage.CheckIn[] = [
+  {
+    id: "checkin-1",
+    author: people[0]!,
+    date: new Date(2025, 3, 17), // Apr 17th, 2025
+    content: asRichText(
+      "Project kickoff meeting completed successfully! The team is aligned on deliverables and timeline. UI wireframes are in progress and backend architecture is being finalized.",
+    ),
+    link: "/projects/1/check-ins/1",
+    commentCount: 5,
+    status: "on_track",
+  },
+  {
+    id: "checkin-2",
+    author: people[1]!,
+    date: new Date(2025, 3, 10), // Apr 10th, 2025
+    content: asRichText(
+      "First sprint review completed. Made good progress on the authentication module and user interface components. Some minor delays in API integration, but we're adjusting the timeline accordingly.",
+    ),
+    link: "/projects/1/check-ins/2",
+    commentCount: 2,
+    status: "caution",
+  },
+  {
+    id: "checkin-3",
+    author: people[2]!,
+    date: new Date(2025, 3, 3), // Apr 3rd, 2025
+    content: asRichText(
+      "Database schema finalized and development environment is set up. All team members have access to the repositories and development tools. Ready to start implementation phase next week.",
+    ),
+    link: "/projects/1/check-ins/3",
+    commentCount: 8,
+    status: "on_track",
+  },
+];
 
 export const Default: Story = {
   render: () => {
@@ -118,6 +173,8 @@ export const Default: Story = {
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
+        checkIns={mockCheckIns}
+        mentionedPersonLookup={async () => null}
       />
     );
   },
@@ -158,6 +215,8 @@ export const ReadOnly: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
+        checkIns={mockCheckIns}
+        mentionedPersonLookup={async () => null}
       />
     );
   },
@@ -215,6 +274,8 @@ export const EmptyTasks: Story = {
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
+        checkIns={mockCheckIns}
+        mentionedPersonLookup={async () => null}
       />
     );
   },
@@ -274,6 +335,8 @@ export const EmptyProject: Story = {
         filters={[]}
         onFiltersChange={() => {}}
         contributors={[]}
+        checkIns={[]}
+        mentionedPersonLookup={async () => null}
       />
     );
   },
@@ -315,6 +378,8 @@ export const EmptyProjectReadOnly: Story = {
         filters={[]}
         onFiltersChange={() => {}}
         contributors={[]}
+        checkIns={[]}
+        mentionedPersonLookup={async () => null}
       />
     );
   },
