@@ -137,29 +137,45 @@ export function useState(props: PersonField.Props): PersonField.State {
 }
 
 function Trigger({ state }: { state: PersonField.State }) {
-  return (
-    <Popover.Trigger className={calcTriggerClass(state)} data-test-id={state.testId}>
+  const triggerContent = (
+    <>
       <TriggerIcon state={state} />
       <TriggerText state={state} />
-    </Popover.Trigger>
+    </>
   );
+
+  if (state.readonly && state.person && state.person.profileLink) {
+    return (
+      <DivLink to={state.person.profileLink} className={calcTriggerClass(state)} testId={state.testId}>
+        {triggerContent}
+      </DivLink>
+    );
+  } else {
+    return (
+      <Popover.Trigger className={calcTriggerClass(state)} data-test-id={state.testId}>
+        {triggerContent}
+      </Popover.Trigger>
+    );
+  }
 }
 
 function calcTriggerClass(state: PersonField.State) {
+  const hasClickableProfile = state.readonly && state.person && state.person.profileLink;
+  
   if (state.avatarOnly) {
     return classNames({
       "flex items-center justify-center": true,
       "focus:outline-none rounded-full": !state.readonly,
-      "cursor-pointer": !state.readonly,
-      "cursor-default": state.readonly,
+      "cursor-pointer": !state.readonly || hasClickableProfile,
+      "cursor-default": state.readonly && !hasClickableProfile,
       "ring-2 ring-surface-accent": state.isOpen,
     });
   } else {
     return classNames({
       "flex items-center gap-2 truncate text-left": true,
       "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
-      "cursor-pointer": !state.readonly,
-      "cursor-default": state.readonly,
+      "cursor-pointer": !state.readonly || hasClickableProfile,
+      "cursor-default": state.readonly && !hasClickableProfile,
       "bg-surface-dimmed": state.isOpen,
     });
   }
