@@ -9,15 +9,26 @@ import { NotificationToggle } from "../NotificationToggle";
 
 export function OverviewSidebar(props: any) {
   return (
-    <div className="sm:col-span-4 space-y-6 sm:pl-8">
-      <LastCheckInSection {...props} />
-      <ParentGoal {...props} />
-      <ProjectDates {...props} />
-      <Champion {...props} />
-      <Reviewer {...props} />
-      <Contributors {...props} />
-      <NotificationSection {...props} />
-      <Actions {...props} />
+    <div className="sm:col-span-4 sm:pl-8">
+      <div className="space-y-6">
+        <LastCheckInSection {...props} />
+        <ParentGoal {...props} />
+        <ProjectDates {...props} />
+      </div>
+
+      <div className="space-y-6 pt-6 mt-6 border-t border-surface-outline">
+        <Champion {...props} />
+        <Reviewer {...props} />
+        <Contributors {...props} />
+      </div>
+
+      <div className="pt-6 mt-6 border-t border-surface-outline">
+        <NotificationSection {...props} />
+      </div>
+
+      <div className="pt-6 mt-6 border-t border-surface-outline">
+        <Actions {...props} />
+      </div>
     </div>
   );
 }
@@ -116,17 +127,17 @@ function Contributors(props: any) {
           profileLink: "/people/alice",
           title: "Frontend Development & UI/UX",
         },
-        { 
-          id: "2", 
-          fullName: "Bob Smith", 
-          avatarUrl: "https://i.pravatar.cc/150?u=bob", 
+        {
+          id: "2",
+          fullName: "Bob Smith",
+          avatarUrl: "https://i.pravatar.cc/150?u=bob",
           profileLink: "/people/bob",
           title: "Backend Architecture & API Design",
         },
-        { 
-          id: "3", 
-          fullName: "Charlie Brown", 
-          avatarUrl: "https://i.pravatar.cc/150?u=charlie", 
+        {
+          id: "3",
+          fullName: "Charlie Brown",
+          avatarUrl: "https://i.pravatar.cc/150?u=charlie",
           profileLink: "/people/charlie",
           title: "Quality Assurance & Testing",
         },
@@ -163,11 +174,7 @@ function NotificationSection(_props: any) {
 
   return (
     <SidebarSection title="Notifications">
-      <NotificationToggle
-        isSubscribed={isSubscribed}
-        onToggle={handleToggle}
-        entityType="project"
-      />
+      <NotificationToggle isSubscribed={isSubscribed} onToggle={handleToggle} entityType="project" />
     </SidebarSection>
   );
 }
@@ -224,11 +231,9 @@ function Actions(props: any) {
   }
 
   return (
-    <div className="border-t pt-4">
-      <SidebarSection title="Actions">
-        <ActionList actions={visibleActions} />
-      </SidebarSection>
-    </div>
+    <SidebarSection title="Actions">
+      <ActionList actions={visibleActions} />
+    </SidebarSection>
   );
 }
 
