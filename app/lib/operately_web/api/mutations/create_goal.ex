@@ -47,13 +47,19 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoal do
     end
   end
 
-  defp validate_champion_permissions(me, inputs) when me.id == inputs.champion_id, do: {:ok, nil}
-  defp validate_champion_permissions(_, inputs) do
-    Group.get(inputs.champion_id, id: inputs.space_id)
+  defp validate_champion_permissions(me, inputs) do
+    cond do
+      inputs[:champion_id] == nil -> {:ok, nil}
+      me.id == inputs.champion_id -> {:ok, nil}
+      true -> Group.get(inputs.champion_id, id: inputs.space_id)
+    end
   end
 
-  defp validate_reviewer_permissions(me, inputs) when me.id == inputs.reviewer_id, do: {:ok, nil}
-  defp validate_reviewer_permissions(_, inputs) do
-    Group.get(inputs.reviewer_id, id: inputs.space_id)
+  defp validate_reviewer_permissions(me, inputs) do
+    cond do
+      inputs[:reviewer_id] == nil -> {:ok, nil}
+      me.id == inputs.reviewer_id -> {:ok, nil}
+      true -> Group.get(inputs.reviewer_id, id: inputs.space_id)
+    end
   end
 end
