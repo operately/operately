@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   alias Operately.Operations.ProjectClosed
 
   inputs do
-    field :project_id, :string
+    field :project_id, :id
     field :retrospective, :string
     field :success_status, :string
     field? :send_notifications_to_everyone, :boolean
-    field? :subscriber_ids, list_of(:string)
+    field? :subscriber_ids, list_of(:id)
   end
 
   outputs do
@@ -40,16 +40,13 @@ defmodule OperatelyWeb.Api.Mutations.CloseProject do
   end
 
   defp parse_inputs(inputs) do
-    {:ok, project_id} = decode_id(inputs.project_id)
-    {:ok, subscriber_ids} = decode_id(inputs[:subscriber_ids], :allow_nil)
-
     {:ok, %{
-      project_id: project_id,
+      project_id: inputs.project_id,
       content: Jason.decode!(inputs.retrospective),
       success_status: String.to_atom(inputs.success_status),
       send_to_everyone: inputs[:send_notifications_to_everyone] || false,
       subscription_parent_type: :project_retrospective,
-      subscriber_ids: subscriber_ids || []
+      subscriber_ids: inputs[:subscriber_ids] || []
     }}
   end
 end

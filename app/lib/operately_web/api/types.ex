@@ -276,8 +276,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project do
-    field? :id, :string, null: true
-    field? :name, :string, null: true
+    field :id, :string
+    field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
     field? :started_at, :date, null: true
@@ -285,11 +285,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :next_update_scheduled_at, :date, null: true
     field? :next_check_in_scheduled_at, :date, null: true
     field? :privacy, :string, null: true
-    field? :status, :string, null: true
+    field :status, :string
+    field :success_status, :success_status
     field? :closed_at, :date, null: true
     field? :retrospective, :project_retrospective, null: true
     field? :description, :string, null: true
-    field? :goal_id, :string, null: true
+    field :goal_id, :string
     field? :goal, :goal, null: true
     field? :last_check_in, :project_check_in, null: true
     field? :milestones, list_of(:milestone), null: true
@@ -312,16 +313,16 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project_retrospective do
-    field? :id, :string, null: true
-    field? :author, :person, null: true
-    field? :project, :project, null: true
-    field? :content, :string, null: true
-    field? :closed_at, :date, null: true
-    field? :permissions, :project_permissions, null: true
-    field? :reactions, list_of(:reaction), null: true
-    field? :subscription_list, :subscription_list, null: true
-    field? :potential_subscribers, list_of(:subscriber), null: true
-    field? :notifications, list_of(:notification), null: true
+    field :id, :string
+    field :author, :person
+    field :project, :project
+    field :content, :string
+    field :closed_at, :date
+    field :permissions, :project_permissions
+    field :reactions, list_of(:reaction)
+    field :subscription_list, :subscription_list
+    field :potential_subscribers, list_of(:subscriber)
+    field :notifications, list_of(:notification)
   end
 
   object :messages_board do
@@ -1655,4 +1656,6 @@ defmodule OperatelyWeb.Api.Types do
 
     field? :assignees, list_of(:person), null: true
   end
+
+  enum(:success_status, values: [:achieved, :missed])
 end
