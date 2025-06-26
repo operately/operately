@@ -27,7 +27,7 @@ interface LoaderResult {
 
 export async function loader({ request, params }): Promise<LoaderResult> {
   const paths = new Paths({ companyId: params.companyId });
-  redirectIfFeatureEnabled(params, { feature: "new-goal-add-page", path: paths.goalNewPathV2({}) });
+  await redirectIfFeatureEnabled(params, { feature: "new-goal-add-page", path: paths.goalNewPathV2({}) });
 
   const searchParams = new URL(request.url).searchParams;
 
