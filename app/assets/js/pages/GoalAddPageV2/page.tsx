@@ -26,33 +26,42 @@ export function Page() {
 
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
-      <Paper.Root size="small">
+      <Paper.Root size="tiny">
         <Paper.Body>
           <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>
 
-          <TextField
-            label="Goal Name"
-            variant="form-field"
-            placeholder="What do you want to achieve?"
-            text={state.name}
-            onChange={state.setName}
-            error={state.nameError}
-          />
+          <div className="flex flex-col gap-4">
+            <TextField
+              label="Name"
+              variant="form-field"
+              placeholder="What do you want to achieve?"
+              text={state.name}
+              onChange={state.setName}
+              error={state.nameError}
+            />
 
-          <SpaceField
-            space={state.space}
-            setSpace={state.setSpace}
-            search={state.spaceSearch}
-            variant="form-field"
-            testId="goal-add-space-field"
-          />
+            <SpaceField
+              label="Space"
+              space={state.space}
+              setSpace={state.setSpace}
+              search={state.spaceSearch}
+              variant="form-field"
+              testId="goal-add-space-field"
+              error={state.spaceError}
+            />
+          </div>
 
-          <div className="mt-4">
+          <div className="mt-6">
             <PrimaryButton onClick={state.submit} loading={state.submitting} testId="add-goal-button" size="sm">
               Add Goal
             </PrimaryButton>
           </div>
         </Paper.Body>
+
+        <div className="my-8 text-center px-10">
+          <span className="font-bold">What happens next?</span> A new draft goal will be added to the selected space.
+          Only you can see it until you publish it.
+        </div>
       </Paper.Root>
     </Pages.Page>
   );
