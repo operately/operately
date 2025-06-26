@@ -63,6 +63,7 @@ const defaultSpace: GoalPage.Space = {
 };
 
 function Component(props: Partial<GoalPage.Props>) {
+  const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
   const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
   const [dueDate, setDueDate] = React.useState<Date | null>(props.dueDate || null);
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
@@ -79,7 +80,6 @@ function Component(props: Partial<GoalPage.Props>) {
     description,
     status: "on_track" as const,
     state: "active" as const,
-    goalName: "Launch AI Platform",
     spaceName: "Product",
     targets: [],
     relatedWorkItems: [],
@@ -95,6 +95,8 @@ function Component(props: Partial<GoalPage.Props>) {
     <GoalPage
       {...defaults}
       {...props}
+      goalName={goalName}
+      setGoalName={setGoalName}
       space={space}
       setSpace={setSpace}
       spaceSearch={spaceSearch}
@@ -122,7 +124,6 @@ function Component(props: Partial<GoalPage.Props>) {
       championSearch={searchPeopleFn}
       reviewerSearch={searchPeopleFn}
       activityFeed={<div></div>}
-      updateGoalName={async (_name: string) => true}
       updateDescription={async (_description: string | null) => true}
       addTarget={addTarget}
       deleteTarget={deleteTarget}
