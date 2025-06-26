@@ -56,6 +56,16 @@ export const Default: StoryObj<typeof TextField> = {
           <div className="uppercase text-xs mb-2">Example 4: Placeholder</div>
           <TextField text="" onSave={onSave} placeholder="This is a placeholder" />
         </div>
+
+        <div>
+          <div className="uppercase text-xs mb-2 mt-8">Form-Field Variant: Editable</div>
+          <TextField text="Form Field Text" onSave={onSave} variant="form-field" placeholder="Enter text" />
+        </div>
+
+        <div>
+          <div className="uppercase text-xs mb-2">Form-Field Variant: Placeholder</div>
+          <TextField text="" onSave={onSave} variant="form-field" placeholder="Form field placeholder" />
+        </div>
       </div>
     );
   },
