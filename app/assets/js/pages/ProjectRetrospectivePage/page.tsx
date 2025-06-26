@@ -55,7 +55,7 @@ function Options() {
 
   return (
     <PageOptions.Root testId="project-options-button">
-      {false && retrospective.permissions?.canEditRetrospective && (
+      {retrospective.permissions?.canEditRetrospective && (
         <PageOptions.Link
           icon={IconEdit}
           title="Edit retrospective"

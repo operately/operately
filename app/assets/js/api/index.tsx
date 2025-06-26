@@ -1100,8 +1100,8 @@ export interface PersonPermissions {
 }
 
 export interface Project {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
   startedAt?: string | null;
@@ -1109,11 +1109,12 @@ export interface Project {
   nextUpdateScheduledAt?: string | null;
   nextCheckInScheduledAt?: string | null;
   privacy?: string | null;
-  status?: string | null;
+  status: string;
+  successStatus: SuccessStatus;
   closedAt?: string | null;
   retrospective?: ProjectRetrospective | null;
   description?: string | null;
-  goalId?: string | null;
+  goalId: string;
   goal?: Goal | null;
   lastCheckIn?: ProjectCheckIn | null;
   milestones?: Milestone[] | null;
@@ -1215,16 +1216,16 @@ export interface ProjectPermissions {
 }
 
 export interface ProjectRetrospective {
-  id?: string | null;
-  author?: Person | null;
-  project?: Project | null;
-  content?: string | null;
-  closedAt?: string | null;
-  permissions?: ProjectPermissions | null;
-  reactions?: Reaction[] | null;
-  subscriptionList?: SubscriptionList | null;
-  potentialSubscribers?: Subscriber[] | null;
-  notifications?: Notification[] | null;
+  id: string;
+  author: Person;
+  project: Project;
+  content: string;
+  closedAt: string;
+  permissions: ProjectPermissions;
+  reactions: Reaction[];
+  subscriptionList: SubscriptionList;
+  potentialSubscribers: Subscriber[];
+  notifications: Notification[];
 }
 
 export interface ProjectReviewRequest {
@@ -1697,6 +1698,8 @@ export type GoalStatus =
   | "dropped"
   | "pending"
   | "outdated";
+
+export type SuccessStatus = "achieved" | "missed";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
@@ -2484,11 +2487,11 @@ export interface CloseGoalResult {
 }
 
 export interface CloseProjectInput {
-  projectId: string;
+  projectId: Id;
   retrospective: string;
   successStatus: string;
   sendNotificationsToEveryone?: boolean;
-  subscriberIds?: string[];
+  subscriberIds?: Id[];
 }
 
 export interface CloseProjectResult {
@@ -2860,12 +2863,13 @@ export interface EditProjectPermissionsResult {
 }
 
 export interface EditProjectRetrospectiveInput {
-  id?: string | null;
-  content?: string | null;
+  id: Id;
+  content: string;
+  successStatus: string;
 }
 
 export interface EditProjectRetrospectiveResult {
-  retrospective?: ProjectRetrospective | null;
+  retrospective: ProjectRetrospective;
 }
 
 export interface EditProjectTimelineInput {

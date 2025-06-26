@@ -40,7 +40,7 @@ export function Page() {
       <Paper.Root>
         <Navigation project={checkIn.project} />
 
-        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={banner(checkIn)}>
+        <Paper.Body className="p-4 md:p-8 lg:px-28 lg:pt-8" noPadding banner={banner(checkIn.project)}>
           <Options />
           <Title />
           <StatusSection checkIn={checkIn} reviewer={checkIn.project!.reviewer} />

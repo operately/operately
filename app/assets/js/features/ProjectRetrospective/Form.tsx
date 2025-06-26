@@ -29,26 +29,27 @@ export function Form({ mode, project, retrospective }: Props) {
 
   const form = Forms.useForm({
     fields: {
-      success: "yes",
+      success: project.successStatus === "missed" ? "no" : "yes",
       retrospective: retrospective ? JSON.parse(retrospective.content!) : emptyContent(),
     },
-    cancel: () => navigate(paths.projectPath(project.id!)),
+    cancel: () => navigate(paths.projectPath(project.id)),
     submit: async () => {
       if (mode == "create") {
         await post({
-          projectId: project.id!,
+          projectId: project.id,
           retrospective: JSON.stringify(form.values.retrospective),
           sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
           subscriberIds: subscriptionsState.currentSubscribersList,
           successStatus: form.values.success === "yes" ? "achieved" : "missed",
         });
-        navigate(paths.projectPath(project.id!));
+        navigate(paths.projectPath(project.id));
       } else {
         await edit({
           id: retrospective!.id,
           content: JSON.stringify(form.values.retrospective),
+          successStatus: form.values.success === "yes" ? "achieved" : "missed",
         });
-        navigate(paths.projectPath(retrospective?.id!));
+        navigate(paths.projectRetrospectivePath(project.id));
       }
     },
   });
@@ -62,7 +63,7 @@ export function Form({ mode, project, retrospective }: Props) {
 
       <Subscribers mode={mode} project={project} subscriptionsState={subscriptionsState} />
 
-      <Forms.Submit saveText="Close Project" />
+      <Forms.Submit saveText={mode === "create" ? "Close Project" : "Save"} />
     </Forms.Form>
   );
 }
@@ -86,7 +87,7 @@ function RetrospectiveNotes({ project }: { project: Projects.Project }) {
       <Forms.RichTextArea
         field="retrospective"
         label="Retrospective notes"
-        mentionSearchScope={{ type: "project", id: project.id! }}
+        mentionSearchScope={{ type: "project", id: project.id }}
         placeholder="What went well? What didn't? What did you learn?"
         required
       />
@@ -105,7 +106,7 @@ function Subscribers({ mode, project, subscriptionsState }: SubscribersProps) {
 
   return (
     <div className="my-10">
-      <SubscribersSelector state={subscriptionsState} projectName={project.name!} />
+      <SubscribersSelector state={subscriptionsState} projectName={project.name} />
     </div>
   );
 }

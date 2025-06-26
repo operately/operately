@@ -28,21 +28,17 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
     |> UI.click(testid: "submit")
   end
 
-  step :edit_project_retrospective, ctx, params do
+  step :edit_project_retrospective, ctx, notes do
     ctx
     |> UI.sleep(200)
     |> UI.click(testid: "project-options-button")
     |> UI.click(testid: "edit-retrospective")
-    |> fill_rich_text("what-went-well", params["what-went-well"])
-    |> fill_rich_text("what-could-ve-gone-better", params["what-could-ve-gone-better"])
-    |> fill_rich_text("what-did-you-learn", params["what-did-you-learn"])
+    |> fill_rich_text("retrospective-notes", notes)
   end
 
-  step :assert_project_retrospective_edited, ctx, params do
+  step :assert_project_retrospective_edited, ctx, notes do
     ctx
-    |> UI.assert_text(params["what-went-well"])
-    |> UI.assert_text(params["what-could-ve-gone-better"])
-    |> UI.assert_text(params["what-did-you-learn"])
+    |> UI.assert_text(notes)
   end
 
   step :assert_project_retrospective_posted, ctx, params do
