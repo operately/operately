@@ -5,15 +5,14 @@ import classNames from "../utils/classnames";
 export namespace TextField {
   export interface Props {
     text: string;
-    onSave: (newText: string) => Promise<boolean>;
-
+    onChange: (newText: string) => void;
     className?: string;
     readonly?: boolean;
     placeholder?: string;
     trimBeforeSave?: boolean;
     testId?: string;
     variant?: "inline" | "form-field";
-    label?: string; // Added label prop
+    label?: string;
   }
 }
 
@@ -27,12 +26,13 @@ export function TextField(props: TextField.Props) {
 
 function FormFieldTextField({
   text,
-  onSave,
+  onChange,
   className,
   placeholder,
   trimBeforeSave = false,
   testId = "text-field",
   label,
+  readonly = false,
 }: TextField.Props) {
   const [currentText, setCurrentText] = useState(text);
 
@@ -40,29 +40,18 @@ function FormFieldTextField({
     setCurrentText(text);
   }, [text]);
 
-  const handleSave = (newText: string) => {
-    let textToSave = trimBeforeSave ? newText.trim() : newText;
+  const handleBlur = () => {
+    let textToSave = trimBeforeSave ? currentText.trim() : currentText;
     if (textToSave !== text) {
-      onSave(textToSave).then((success) => {
-        if (!success) {
-          setCurrentText(text);
-        }
-      });
+      onChange(textToSave);
     }
-    setCurrentText(textToSave);
   };
-
-  const handleCancel = () => {
-    setCurrentText(text);
-  };
-
-  const handleBlur = () => handleSave(currentText);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
-      handleCancel();
+      setCurrentText(text); // revert buffer
     } else if (e.key === "Enter") {
-      handleSave(currentText);
+      (e.currentTarget as HTMLInputElement).blur(); // trigger onBlur
     }
   };
 
@@ -85,6 +74,7 @@ function FormFieldTextField({
           onKeyDown={handleKeyDown}
           className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + className}
           placeholder={placeholder}
+          readOnly={readonly}
           style={{
             minWidth: "0",
             maxWidth: "100%",
@@ -99,7 +89,7 @@ function FormFieldTextField({
 
 function InlineTextField({
   text,
-  onSave,
+  onChange,
   className,
   readonly = false,
   placeholder,
@@ -140,31 +130,20 @@ function InlineTextField({
     }
   };
 
-  const handleSave = (newText: string) => {
-    let textToSave = trimBeforeSave ? newText.trim() : newText;
+  const handleBlur = () => {
+    let textToSave = trimBeforeSave ? currentText.trim() : currentText;
     if (textToSave !== text) {
-      onSave(textToSave).then((success) => {
-        if (!success) {
-          setCurrentText(text);
-        }
-      });
+      onChange(textToSave);
     }
     setIsEditing(false);
-    setCurrentText(textToSave);
   };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setCurrentText(text);
-  };
-
-  const handleBlur = () => handleSave(currentText);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
-      handleCancel();
+      setCurrentText(text); // revert buffer
+      setIsEditing(false);
     } else if (e.key === "Enter") {
-      handleSave(currentText);
+      (e.currentTarget as HTMLInputElement).blur(); // trigger onBlur
     }
   };
 
@@ -211,6 +190,7 @@ function InlineTextField({
             onKeyDown={handleKeyDown}
             className={"ring-0 focus:ring-0 " + className}
             placeholder={placeholder}
+            readOnly={readonly}
             style={{
               border: "none",
               background: "none",
