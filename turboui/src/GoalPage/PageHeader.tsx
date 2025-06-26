@@ -1,8 +1,7 @@
 import React from "react";
 
-import { IconChevronRight } from "../icons";
 import { GoalPage } from ".";
-import { IconGoal } from "../icons";
+import { IconChevronRight, IconGoal } from "../icons";
 import { BlackLink } from "../Link";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
@@ -24,7 +23,7 @@ export function PageHeader(props: GoalPage.State) {
           <TextField
             className="font-semibold text-lg"
             text={props.goalName}
-            onSave={props.updateGoalName}
+            onChange={props.setGoalName}
             readonly={!props.canEdit}
             trimBeforeSave
             testId="goal-name-field"

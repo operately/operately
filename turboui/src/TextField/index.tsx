@@ -103,8 +103,10 @@ function InlineTextField({
   const hiddenSpanRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
-    setCurrentText(text);
-  }, [text]);
+    if (!isEditing) {
+      setCurrentText(text);
+    }
+  }, [text, isEditing]);
 
   useEffect(() => {
     if (isEditing && inputRef.current) {
