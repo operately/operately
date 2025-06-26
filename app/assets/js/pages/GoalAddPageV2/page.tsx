@@ -1,38 +1,24 @@
+import Api from "@/api";
 import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { PrimaryButton, TextField } from "turboui";
+import { useCreateGoal } from "@/api";
+import { usePaths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
+import { PrimaryButton, showErrorToast, SpaceField, TextField } from "turboui";
 
 interface PageState {
   name: string;
   setName: (name: string) => void;
+  space: SpaceField.Space | null;
+  setSpace: (space: SpaceField.Space | null) => void;
   nameError: string | undefined;
-  submit: () => boolean;
+  spaceError: string | undefined;
+  spaceSearch: SpaceField.SearchSpaceFn;
+  submit: () => Promise<void>;
   submitting: boolean;
-}
-
-function usePageState(): PageState {
-  const [name, setName] = React.useState("");
-  const [nameError, setNameError] = React.useState<string | undefined>(undefined);
-
-  const submit = () => {
-    if (name.trim() === "") {
-      setNameError("Cannot be empty");
-      return false;
-    }
-
-    return true; // TODO: Implement actual submission logic
-  };
-
-  return {
-    name,
-    setName,
-    nameError,
-    submit,
-    submitting: false, // TODO: Fix this
-  };
 }
 
 export function Page() {
@@ -41,8 +27,9 @@ export function Page() {
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
       <Paper.Root size="small">
-        <h1 className="mb-4 font-bold text-3xl text-center">Add a new goal</h1>
-        <Paper.Body minHeight="300px">
+        <Paper.Body>
+          <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>
+
           <TextField
             label="Goal Name"
             variant="form-field"
@@ -51,21 +38,92 @@ export function Page() {
             onChange={state.setName}
             error={state.nameError}
           />
+
+          <SpaceField
+            space={state.space}
+            setSpace={state.setSpace}
+            search={state.spaceSearch}
+            variant="form-field"
+            testId="goal-add-space-field"
+          />
+
+          <div className="mt-4">
+            <PrimaryButton onClick={state.submit} loading={state.submitting} testId="add-goal-button" size="sm">
+              Add Goal
+            </PrimaryButton>
+          </div>
         </Paper.Body>
-        <SubmitButton state={state} />
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function SubmitButton({ state }: { state: PageState }) {
-  return (
-    <div className="mt-8">
-      <div className="flex items-center justify-center gap-4">
-        <PrimaryButton onClick={state.submit} loading={state.submitting} size="lg" testId="add-goal-button">
-          Add Goal
-        </PrimaryButton>
-      </div>
-    </div>
-  );
+function usePageState(): PageState {
+  const paths = usePaths();
+  const navigate = useNavigate();
+
+  const [create, { loading: submitting }] = useCreateGoal();
+
+  const [name, setName] = React.useState("");
+  const [space, setSpace] = React.useState<SpaceField.Space | null>(null);
+
+  const [nameError, setNameError] = React.useState<string | undefined>(undefined);
+  const [spaceError, setSpaceError] = React.useState<string | undefined>(undefined);
+
+  const spaceSearch = useSpaceSearch();
+
+  const submit = async () => {
+    if (name.trim() === "") {
+      setNameError("Cannot be empty");
+      return;
+    }
+
+    if (space === null) {
+      setSpaceError("Please select a space");
+      return;
+    }
+
+    try {
+      const res = await create({
+        name: name.trim(),
+        spaceId: space?.id || null,
+        anonymousAccessLevel: 40,
+        companyAccessLevel: 40,
+        spaceAccessLevel: 40,
+      });
+
+      setNameError(undefined);
+      setName("");
+      navigate(paths.goalPath(res.data.id));
+    } catch (error) {
+      showErrorToast("Network error", "Failed to create the goal");
+      throw error; // rethrow to let the caller handle it
+    }
+  };
+
+  return {
+    name,
+    setName,
+    nameError,
+    space,
+    setSpace,
+    spaceError,
+    spaceSearch,
+    submit,
+    submitting,
+  };
+}
+
+function useSpaceSearch(): SpaceField.SearchSpaceFn {
+  const paths = usePaths();
+
+  return async ({ query }: { query: string }): Promise<SpaceField.Space[]> => {
+    const data = await Api.spaces.search({ query: query });
+
+    return data.spaces.map((space) => ({
+      id: space.id!,
+      name: space.name!,
+      link: paths.spacePath(space.id!),
+    }));
+  };
 }
