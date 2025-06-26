@@ -51,6 +51,16 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoard
   return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
+// Mock parent goal search
+const mockParentGoalSearch = async ({ query }: { query: string }): Promise<ProjectPage.ParentGoal[]> => {
+  const goals = [
+    { id: "1", name: "Improve Customer Experience", link: "/goals/1" },
+    { id: "2", name: "Increase Product Adoption", link: "/goals/2" },
+    { id: "3", name: "Expand Market Reach", link: "/goals/3" },
+  ];
+  return goals.filter((goal) => goal.name.toLowerCase().includes(query.toLowerCase()));
+};
+
 // Mock check-ins data
 const mockCheckIns: ProjectPage.CheckIn[] = [
   {
@@ -93,6 +103,11 @@ export const Default: Story = {
     const [tasks, setTasks] = useState([...mockTasks]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
+    const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
+      id: "1",
+      name: "Improve Customer Experience",
+      link: "/goals/1",
+    });
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
       console.log("Task status change:", taskId, newStatus);
@@ -175,6 +190,9 @@ export const Default: Story = {
         onFiltersChange={setFilters}
         checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
+        parentGoal={parentGoal}
+        setParentGoal={setParentGoal}
+        parentGoalSearch={mockParentGoalSearch}
       />
     );
   },
@@ -217,6 +235,13 @@ export const ReadOnly: Story = {
         onFiltersChange={() => {}}
         checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
+        parentGoal={{
+          id: "2",
+          name: "Increase Product Adoption",
+          link: "/goals/2",
+        }}
+        setParentGoal={() => {}}
+        parentGoalSearch={mockParentGoalSearch}
       />
     );
   },
@@ -276,6 +301,9 @@ export const EmptyTasks: Story = {
         onFiltersChange={setFilters}
         checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
+        parentGoal={null}
+        setParentGoal={() => {}}
+        parentGoalSearch={mockParentGoalSearch}
       />
     );
   },
@@ -337,6 +365,9 @@ export const EmptyProject: Story = {
         contributors={[]}
         checkIns={[]}
         mentionedPersonLookup={async () => null}
+        parentGoal={null}
+        setParentGoal={() => {}}
+        parentGoalSearch={mockParentGoalSearch}
       />
     );
   },
@@ -380,6 +411,9 @@ export const EmptyProjectReadOnly: Story = {
         contributors={[]}
         checkIns={[]}
         mentionedPersonLookup={async () => null}
+        parentGoal={null}
+        setParentGoal={() => {}}
+        parentGoalSearch={mockParentGoalSearch}
       />
     );
   },

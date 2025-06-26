@@ -4,6 +4,7 @@ import { PersonField } from "../PersonField";
 import { AvatarWithName } from "../Avatar/AvatarWithName";
 import { ActionList } from "../ActionList";
 import { LastCheckIn } from "../LastCheckIn";
+import { GoalField } from "../GoalField";
 import { IconCopy, IconCircleArrowRight, IconPlayerPause, IconCircleCheck, IconRotateDot, IconTrash } from "../icons";
 
 export function OverviewSidebar(props: any) {
@@ -32,10 +33,18 @@ function LastCheckInSection(props: any) {
   );
 }
 
-function ParentGoal(_props: any) {
+function ParentGoal(props: any) {
   return (
     <SidebarSection title="Parent Goal">
-      <div className="text-sm text-content-dimmed">No parent goal</div>
+      <GoalField
+        testId="parent-goal-field"
+        goal={props.parentGoal || null}
+        setGoal={props.setParentGoal || (() => {})}
+        searchGoals={props.parentGoalSearch || (async () => [])}
+        readonly={!props.canEdit}
+        emptyStateMessage="Set parent goal"
+        emptyStateReadOnlyMessage="No parent goal"
+      />
     </SidebarSection>
   );
 }
