@@ -38,7 +38,10 @@ export function Page() {
             variant="form-field"
             placeholder="What do you want to achieve?"
             text={state.name}
-            setText={state.setName}
+            onSave={async (newName) => {
+              state.setName(newName);
+              return true; // Simulate successful save
+            }}
           />
         </Paper.Body>
         <SubmitButton state={state} />
@@ -47,7 +50,7 @@ export function Page() {
   );
 }
 
-function SubmitButton({ state }: PageState) {
+function SubmitButton({ state }: { state: PageState }) {
   return (
     <div className="mt-8">
       {/* {form.errors.length > 0 && (
