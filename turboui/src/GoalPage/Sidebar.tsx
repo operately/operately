@@ -1,5 +1,4 @@
 import React from "react";
-import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
 
 import { match } from "ts-pattern";
@@ -14,6 +13,7 @@ import { PrivacyField } from "../PrivacyField";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 import { durationHumanized, isOverdue } from "../utils/time";
+import { LastCheckIn } from "../LastCheckIn";
 
 import {
   IconAlertTriangleFilled,
@@ -30,7 +30,7 @@ export function Sidebar(props: GoalPage.State) {
     <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
       <Retrospective {...props} />
       <CompletedOn {...props} />
-      <LastCheckIn {...props} />
+      <LastCheckInSection {...props} />
       <ParentGoal {...props} />
       <DueDate {...props} />
       <Champion {...props} />
@@ -136,50 +136,12 @@ function Reviewer(props: GoalPage.State) {
   );
 }
 
-function LastCheckIn(props: GoalPage.State) {
+function LastCheckInSection(props: GoalPage.State) {
   if (props.checkIns.length === 0) return null;
-  if (props.state === "closed") return null;
-
-  const checkIn = props.checkIns[0]!;
-
-  let borderColor = "";
-
-  if (checkIn.status === "on_track") {
-    borderColor = "border-green-500";
-  } else if (checkIn.status === "caution" || checkIn.status === "concern") {
-    borderColor = "border-yellow-500";
-  } else if (checkIn.status === "issue") {
-    borderColor = "border-red-500";
-  }
-
-  const className = classNames(
-    "flex gap-1 flex-col",
-    "cursor-pointer text-sm py-3 pl-3 pr-4",
-    "border-l-4",
-    "bg-zinc-50 dark:bg-zinc-800",
-    "hover:bg-zinc-100 dark:hover:bg-zinc-700",
-    borderColor,
-  );
 
   return (
     <SidebarSection title="Last Check-In">
-      <div className="text-sm">
-        <DivLink to={checkIn.link} className={className}>
-          <div className="flex items-center font-semibold">
-            <FormattedTime time={checkIn.date} format="short-date" />
-          </div>
-
-          <Summary content={checkIn.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
-
-          <div className="mt-1.5 flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Avatar person={checkIn.author} size={20} />
-              {checkIn.author.fullName.split(" ")[0]}
-            </div>
-            <StatusBadge status={checkIn.status} hideIcon className="scale-95 inline-block shrink-0 align-[5px]" />
-          </div>
-        </DivLink>
-      </div>
+      <LastCheckIn checkIns={props.checkIns} state={props.state} mentionedPersonLookup={props.mentionedPersonLookup} />
     </SidebarSection>
   );
 }

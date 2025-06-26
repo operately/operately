@@ -11,6 +11,7 @@ import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
+import { MentionedPersonLookupFn } from "../RichEditor";
 
 export namespace ProjectPage {
   export interface Space {
@@ -25,6 +26,16 @@ export namespace ProjectPage {
     avatarUrl: string | null;
     title: string;
     profileLink: string;
+  }
+
+  export interface CheckIn {
+    id: string;
+    author: Person;
+    date: Date;
+    content: string;
+    link: string;
+    commentCount: number;
+    status: BadgeStatus;
   }
 
   export interface Props {
@@ -68,6 +79,8 @@ export namespace ProjectPage {
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
     contributors?: any[];
+    checkIns?: CheckIn[];
+    mentionedPersonLookup?: MentionedPersonLookupFn;
   }
 
   export interface State extends Props {}
