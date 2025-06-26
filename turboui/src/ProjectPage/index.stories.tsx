@@ -108,6 +108,13 @@ export const Default: Story = {
       name: "Improve Customer Experience",
       link: "/goals/1",
     });
+    const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[2] || null);
+    const [startedAt, setStartedAt] = useState<Date | null>(new Date(2025, 2, 15)); // March 15, 2025
+    const [dueAt, setDueAt] = useState<Date | null>(() => {
+      const oneMonthFromToday = new Date();
+      oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
+      return oneMonthFromToday;
+    });
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
       console.log("Task status change:", taskId, newStatus);
@@ -169,6 +176,8 @@ export const Default: Story = {
         spaceSearch={async () => []}
         champion={people[0] || null}
         setChampion={() => {}}
+        reviewer={reviewer}
+        setReviewer={setReviewer}
         status="on_track"
         state="active"
         closedAt={null}
@@ -193,6 +202,10 @@ export const Default: Story = {
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={setStartedAt}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
       />
     );
   },
@@ -202,6 +215,13 @@ export const ReadOnly: Story = {
   render: () => {
     const [tasks] = useState([...mockTasks]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
+    const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[1] || null); // Set reviewer for read-only story
+    const startedAt = new Date(2025, 1, 1); // February 1, 2025
+    const dueAt = (() => {
+      const oneMonthFromToday = new Date();
+      oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
+      return oneMonthFromToday;
+    })();
 
     return (
       <ProjectPage
@@ -214,6 +234,8 @@ export const ReadOnly: Story = {
         spaceSearch={async () => []}
         champion={people[0] || null}
         setChampion={() => {}}
+        reviewer={reviewer}
+        setReviewer={setReviewer}
         status="on_track"
         state="active"
         closedAt={null}
@@ -242,6 +264,10 @@ export const ReadOnly: Story = {
         }}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={() => {}}
+        dueAt={dueAt}
+        setDueAt={() => {}}
       />
     );
   },
@@ -252,6 +278,13 @@ export const EmptyTasks: Story = {
     const [tasks, setTasks] = useState([...mockEmptyTasks]);
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
+    const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[3] || null);
+    const [startedAt, setStartedAt] = useState<Date | null>(new Date(2025, 3, 1)); // April 1, 2025
+    const [dueAt, setDueAt] = useState<Date | null>(() => {
+      const oneMonthFromToday = new Date();
+      oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
+      return oneMonthFromToday;
+    });
 
     const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -280,6 +313,8 @@ export const EmptyTasks: Story = {
         spaceSearch={async () => []}
         champion={people[0] || null}
         setChampion={() => {}}
+        reviewer={reviewer}
+        setReviewer={setReviewer}
         status="on_track"
         state="active"
         closedAt={null}
@@ -304,6 +339,10 @@ export const EmptyTasks: Story = {
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={setStartedAt}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
       />
     );
   },
@@ -312,6 +351,8 @@ export const EmptyTasks: Story = {
 export const EmptyProject: Story = {
   render: () => {
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
+    const [startedAt, setStartedAt] = useState<Date | null>(null);
+    const [dueAt, setDueAt] = useState<Date | null>(null);
 
     const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -368,6 +409,10 @@ export const EmptyProject: Story = {
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={setStartedAt}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
       />
     );
   },
@@ -377,6 +422,8 @@ export const EmptyProjectReadOnly: Story = {
   render: () => {
     const [tasks] = useState<TaskBoardTypes.Task[]>([]);
     const [milestones] = useState<TaskBoardTypes.Milestone[]>([]);
+    const startedAt = null; // No start date for empty read-only project
+    const dueAt = null; // No due date for empty read-only project
 
     return (
       <ProjectPage
@@ -414,6 +461,10 @@ export const EmptyProjectReadOnly: Story = {
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={() => {}}
+        dueAt={dueAt}
+        setDueAt={() => {}}
       />
     );
   },
