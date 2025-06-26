@@ -13,6 +13,7 @@ export namespace TextField {
     testId?: string;
     variant?: "inline" | "form-field";
     label?: string;
+    error?: string;
   }
 
   export interface State {
@@ -20,6 +21,7 @@ export namespace TextField {
     testId: string;
     trimBeforeSave: boolean;
     label: string | undefined;
+    error?: string;
     readonly: boolean;
     placeholder: string;
 
@@ -62,6 +64,7 @@ function useTextFieldState(props: TextField.Props): TextField.State {
     testId: props.testId || "text-field",
     trimBeforeSave: props.trimBeforeSave || false,
     label: props.label,
+    error: props.error,
     readonly: props.readonly || false,
     placeholder: props.placeholder || "",
 
@@ -94,15 +97,14 @@ function FormFieldTextField(state: TextField.State) {
   };
 
   const outerClass = classNames(
-    "cursor-text relative w-full border border-surface-outline rounded-lg px-2 py-1.5 bg-surface-base",
+    "cursor-text relative w-full border rounded-lg px-2 py-1.5 bg-surface-base",
     "has-[:focus]:outline outline-indigo-600 bg-transparent",
-    state.className,
+    state.error ? "border-red-500 outline-red-500" : "border-surface-outline",
   );
 
   return (
-    <div className={outerClass}>
+    <div className={state.className}>
       {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
-
       <div className={outerClass} data-test-id={state.testId}>
         <input
           data-test-id={createTestId(state.testId, "input")}
@@ -122,6 +124,7 @@ function FormFieldTextField(state: TextField.State) {
           }}
         />
       </div>
+      {state.error && <div className="text-red-500 text-xs mt-1 mb-1">{state.error}</div>}
     </div>
   );
 }
