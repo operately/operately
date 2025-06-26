@@ -1,12 +1,11 @@
 import {
   IconAlertTriangleFilled,
   IconArchive,
-  IconBell,
-  IconBellOff,
   IconCalendar,
   IconLink,
   IconTrash,
 } from "../icons";
+import { NotificationToggle } from "../NotificationToggle";
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";
@@ -121,36 +120,17 @@ function CreatedBy(props: TaskPage.State) {
 }
 
 function Subscription(props: TaskPage.State) {
-  const handleToggle = () => {
-    props.onSubscriptionToggle(!props.isSubscribed);
+  const handleToggle = (subscribed: boolean) => {
+    props.onSubscriptionToggle(subscribed);
   };
 
   return (
     <SidebarSection title="Notifications">
-      <div className="space-y-2">
-        <button
-          onClick={handleToggle}
-          className="flex items-center gap-2 text-sm hover:bg-surface-highlight rounded px-2 py-1 -mx-2"
-        >
-          {props.isSubscribed ? (
-            <>
-              <IconBell size={16} className="text-blue-500" />
-              <span>Unsubscribe</span>
-            </>
-          ) : (
-            <>
-              <IconBellOff size={16} className="text-content-dimmed" />
-              <span>Subscribe</span>
-            </>
-          )}
-        </button>
-
-        <div className="text-xs text-content-dimmed">
-          {props.isSubscribed
-            ? "You're receiving notifications because you're subscribed to this task."
-            : "You're not receiving notifications from this task."}
-        </div>
-      </div>
+      <NotificationToggle
+        isSubscribed={props.isSubscribed}
+        onToggle={handleToggle}
+        entityType="task"
+      />
     </SidebarSection>
   );
 }
