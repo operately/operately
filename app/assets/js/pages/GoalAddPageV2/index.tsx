@@ -113,7 +113,7 @@ function usePageState(): PageState {
 
       setNameError(undefined);
       setName("");
-      navigate(paths.goalPath(res.data.id));
+      navigate(paths.goalPath(res.goal.id));
     } catch (error) {
       showErrorToast("Network error", "Failed to create the goal");
       throw error; // rethrow to let the caller handle it
