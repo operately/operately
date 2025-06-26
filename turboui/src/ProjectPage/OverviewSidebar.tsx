@@ -5,6 +5,7 @@ import { ActionList } from "../ActionList";
 import { LastCheckIn } from "../LastCheckIn";
 import { GoalField } from "../GoalField";
 import { IconCopy, IconCircleArrowRight, IconPlayerPause, IconCircleCheck, IconRotateDot, IconTrash } from "../icons";
+import { NotificationToggle } from "../NotificationToggle";
 
 export function OverviewSidebar(props: any) {
   return (
@@ -15,7 +16,7 @@ export function OverviewSidebar(props: any) {
       <Champion {...props} />
       <Reviewer {...props} />
       <Contributors {...props} />
-      <NotificationToggle {...props} />
+      <NotificationSection {...props} />
       <Actions {...props} />
     </div>
   );
@@ -153,39 +154,20 @@ function Contributors(props: any) {
   );
 }
 
-function NotificationToggle(_props: any) {
+function NotificationSection(_props: any) {
   const [isSubscribed, setIsSubscribed] = useState(true);
 
-  const handleToggle = () => {
-    setIsSubscribed(!isSubscribed);
+  const handleToggle = (subscribed: boolean) => {
+    setIsSubscribed(subscribed);
   };
 
   return (
     <SidebarSection title="Notifications">
-      <div className="space-y-2">
-        <button
-          onClick={handleToggle}
-          className="flex items-center gap-2 text-sm hover:bg-surface-highlight rounded px-2 py-1 -mx-2"
-        >
-          {isSubscribed ? (
-            <>
-              <IconCircleCheck size={16} className="text-blue-500" />
-              <span>Unsubscribe</span>
-            </>
-          ) : (
-            <>
-              <IconRotateDot size={16} className="text-content-dimmed" />
-              <span>Subscribe</span>
-            </>
-          )}
-        </button>
-
-        <div className="text-xs text-content-dimmed">
-          {isSubscribed
-            ? "You're receiving notifications because you're subscribed to this project."
-            : "You're not receiving notifications from this project."}
-        </div>
-      </div>
+      <NotificationToggle
+        isSubscribed={isSubscribed}
+        onToggle={handleToggle}
+        entityType="project"
+      />
     </SidebarSection>
   );
 }

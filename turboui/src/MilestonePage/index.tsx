@@ -29,14 +29,13 @@ import {
   IconPlus,
   IconFlag,
   IconCalendar,
-  IconBell,
-  IconBellOff,
   IconLink,
   IconArchive,
   IconTrash,
   IconCheck,
 } from "../icons";
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
+import { NotificationToggle } from "../NotificationToggle";
 import { StatusBadge } from "../StatusBadge";
 import { DateField } from "../DateField";
 import { AvatarWithName } from "../Avatar";
@@ -523,25 +522,19 @@ function SidebarNotifications({
   isSubscribed: boolean;
   onSubscriptionToggle?: (subscribed: boolean) => void;
 }) {
-  const handleToggle = () => {
+  const handleToggle = (subscribed: boolean) => {
     if (onSubscriptionToggle) {
-      onSubscriptionToggle(!isSubscribed);
+      onSubscriptionToggle(subscribed);
     }
   };
 
   return (
     <SidebarSection title="Notifications">
-      <div className="space-y-2">
-        <SecondaryButton size="xs" onClick={handleToggle} icon={isSubscribed ? IconBell : IconBellOff}>
-          {isSubscribed ? "Unsubscribe" : "Subscribe"}
-        </SecondaryButton>
-
-        <div className="text-xs text-content-dimmed">
-          {isSubscribed
-            ? "You're receiving notifications because you're subscribed to this milestone."
-            : "You're not receiving notifications from this milestone."}
-        </div>
-      </div>
+      <NotificationToggle
+        isSubscribed={isSubscribed}
+        onToggle={handleToggle}
+        entityType="milestone"
+      />
     </SidebarSection>
   );
 }
