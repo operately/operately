@@ -28,27 +28,21 @@ defmodule Operately.Features.ProjectRetrospectiveTest do
     |> Steps.assert_retrospective_error()
   end
 
-  # @tag login_as: :champion
-  # feature "edit project retrospective", ctx do
-  #   params = %{
-  #     "author" => ctx.champion,
-  #     "what-went-well" => "We built the thing",
-  #     "what-could-ve-gone-better" => "We built the thing",
-  #     "what-did-you-learn" => "We learned the thing"
-  #   }
-  #   edited_params = %{
-  #     "what-went-well" => "We built the thing (edited)",
-  #     "what-could-ve-gone-better" => "We built the thing (edited)",
-  #     "what-did-you-learn" => "We learned the thing (edited)"
-  #   }
+  @tag login_as: :champion
+  feature "edit project retrospective", ctx do
+    params = %{
+      "author" => ctx.champion,
+      "notes" => "We built the thing",
+    }
+    edited_notes = "We built the thing (edited)"
 
-  #   ctx
-  #   |> Steps.initiate_project_closing()
-  #   |> Steps.fill_in_retrospective(params)
-  #   |> Steps.submit_retrospective()
-  #   |> Steps.assert_project_retrospective_posted(params)
-  #   |> Steps.edit_project_retrospective(edited_params)
-  #   |> Steps.submit_retrospective()
-  #   |> Steps.assert_project_retrospective_edited(edited_params)
-  # end
+    ctx
+    |> Steps.initiate_project_closing()
+    |> Steps.fill_in_retrospective(params)
+    |> Steps.submit_retrospective()
+    |> Steps.assert_project_retrospective_posted(params)
+    |> Steps.edit_project_retrospective(edited_notes)
+    |> Steps.submit_retrospective()
+    |> Steps.assert_project_retrospective_edited(edited_notes)
+  end
 end

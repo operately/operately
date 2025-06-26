@@ -6,22 +6,22 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospective do
   alias Operately.Operations.ProjectRetrospectiveEditing
 
   inputs do
-    field? :id, :string, null: true
-    field? :content, :string, null: true
+    field :id, :id
+    field :content, :string
+    field :success_status, :string
   end
 
   outputs do
-    field? :retrospective, :project_retrospective, null: true
+    field :retrospective, :project_retrospective
   end
 
   def call(conn, inputs) do
     Action.new()
-    |> run(:id, fn -> decode_id(inputs.id) end)
-    |> run(:content, fn -> parse_content(inputs.content) end)
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:retrospective, fn ctx -> load(ctx) end)
+    |> run(:attrs, fn -> parse_inputs(inputs) end)
+    |> run(:retrospective, fn ctx -> load(inputs.id, ctx.me) end)
     |> run(:permissions, fn ctx -> Permissions.check(ctx.retrospective.request_info.access_level, :can_edit_retrospective) end)
-    |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, ctx.content)  end)
+    |> run(:operation, fn ctx -> ProjectRetrospectiveEditing.run(ctx.me, ctx.retrospective, ctx.attrs)  end)
     |> run(:serialized, fn ctx -> {:ok, %{retrospective: Serializer.serialize(ctx.operation)}} end)
     |> respond()
   end
@@ -38,21 +38,17 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectRetrospective do
     end
   end
 
-  defp load(ctx) do
-    Retrospective.get(ctx.me, id: ctx.id, opts: [
+  defp load(id, me) do
+    Retrospective.get(me, id: id, opts: [
       preload: :project,
     ])
   end
 
-  defp parse_content(content) do
-    content = Jason.decode!(content)
-
-    required_keys = ["whatCouldHaveGoneBetter", "whatDidYouLearn", "whatWentWell"]
-
-    if Map.keys(content) -- required_keys == [] do
-      {:ok, content}
-    else
-      {:error, nil}
-    end
+  defp parse_inputs(inputs) do
+    {:ok, %{
+      id: inputs.id,
+      content: Jason.decode!(inputs.content),
+      success_status: String.to_atom(inputs.success_status),
+    }}
   end
 end
