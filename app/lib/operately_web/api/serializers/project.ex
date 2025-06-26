@@ -5,6 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       name: project.name,
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
       status: project.status,
+      success_status: Atom.to_string(project.success_status),
       goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id),
     }
   end
