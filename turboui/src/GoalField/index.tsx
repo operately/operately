@@ -121,18 +121,32 @@ function Trigger({ state }: { state: GoalField.State }) {
   const triggerClass = classNames({
     "flex items-center gap-2 truncate text-left": true,
     "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
-    "cursor-pointer": !state.readonly,
-    "cursor-default": state.readonly,
+    "cursor-pointer": !state.readonly || (state.readonly && state.goal),
+    "cursor-default": state.readonly && !state.goal,
     "bg-surface-dimmed": state.isOpen,
   });
 
   if (state.goal) {
-    return (
-      <Popover.Trigger className={triggerClass} data-test-id={state.testId}>
+    const goalContent = (
+      <>
         <IconGoal size={state.iconSize} />
         <div className="text-sm font-medium">{state.goal.name}</div>
-      </Popover.Trigger>
+      </>
     );
+
+    if (state.readonly) {
+      return (
+        <DivLink to={state.goal.link} className={triggerClass} testId={state.testId}>
+          {goalContent}
+        </DivLink>
+      );
+    } else {
+      return (
+        <Popover.Trigger className={triggerClass} data-test-id={state.testId}>
+          {goalContent}
+        </Popover.Trigger>
+      );
+    }
   } else {
     return (
       <Popover.Trigger className={triggerClass}>
