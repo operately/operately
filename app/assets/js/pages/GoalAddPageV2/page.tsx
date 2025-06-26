@@ -9,6 +9,7 @@ interface PageState {
   name: string;
   setName: (name: string) => void;
   submit: () => boolean;
+  submitting: boolean;
 }
 
 function usePageState(): PageState {
@@ -22,6 +23,7 @@ function usePageState(): PageState {
     name,
     setName,
     submit,
+    submitting: false, // TODO: Fix this
   };
 }
 
