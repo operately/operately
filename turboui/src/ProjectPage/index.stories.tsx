@@ -29,10 +29,8 @@ const mockPeople: TaskBoardTypes.Person[] = [
 
 // Mock search function for people
 const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoardTypes.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
 export const Default: Story = {
@@ -58,35 +56,31 @@ export const Default: Story = {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
-      
+
       // Add the new milestone to the milestones array
-      setMilestones(prev => [...prev, newMilestone]);
+      setMilestones((prev) => [...prev, newMilestone]);
     };
 
     const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
       console.log("Task updated:", taskId, updates);
-      const updatedTasks = tasks.map((task) => 
-        task.id === taskId ? { ...task, ...updates } : task
-      );
+      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
       setTasks(updatedTasks);
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
       console.log("Milestone updated:", milestoneId, updates);
-      
+
       // Update the milestone in the milestones array
-      const updatedMilestones = milestones.map(milestone => 
-        milestone.id === milestoneId 
-          ? { ...milestone, ...updates }
-          : milestone
+      const updatedMilestones = milestones.map((milestone) =>
+        milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
       );
       setMilestones(updatedMilestones);
-      
-      const updatedTasks = tasks.map(task => {
+
+      const updatedTasks = tasks.map((task) => {
         if (task.milestone?.id === milestoneId) {
           return {
             ...task,
-            milestone: { ...task.milestone, ...updates }
+            milestone: { ...task.milestone, ...updates },
           };
         }
         return task;
@@ -186,9 +180,9 @@ export const EmptyTasks: Story = {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
-      
+
       // Add the new milestone to the milestones array
-      setMilestones(prev => [...prev, newMilestone]);
+      setMilestones((prev) => [...prev, newMilestone]);
     };
 
     return (
@@ -234,19 +228,17 @@ export const EmptyProject: Story = {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
-      
+
       // Add the new milestone to the milestones array
-      setMilestones(prev => [...prev, newMilestone]);
+      setMilestones((prev) => [...prev, newMilestone]);
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
       console.log("Milestone updated:", milestoneId, updates);
-      
+
       // Update the milestone in the milestones array
-      const updatedMilestones = milestones.map(milestone => 
-        milestone.id === milestoneId 
-          ? { ...milestone, ...updates }
-          : milestone
+      const updatedMilestones = milestones.map((milestone) =>
+        milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
       );
       setMilestones(updatedMilestones);
     };
@@ -281,6 +273,48 @@ export const EmptyProject: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
+        contributors={[]}
+      />
+    );
+  },
+};
+
+export const EmptyProjectReadOnly: Story = {
+  render: () => {
+    const [tasks] = useState<TaskBoardTypes.Task[]>([]);
+    const [milestones] = useState<TaskBoardTypes.Milestone[]>([]);
+
+    return (
+      <ProjectPage
+        closeLink="#"
+        reopenLink="#"
+        projectName="Mobile App Redesign"
+        description=""
+        space={{ id: "1", name: "Product", link: "#" }}
+        setSpace={() => {}}
+        spaceSearch={async () => []}
+        champion={null}
+        setChampion={() => {}}
+        status="on_track"
+        state="active"
+        closedAt={null}
+        canEdit={false}
+        accessLevels={{ company: "edit", space: "view" }}
+        setAccessLevels={() => {}}
+        updateProjectName={async () => true}
+        updateDescription={async () => true}
+        activityFeed={<div>Activity feed content</div>}
+        tasks={tasks}
+        milestones={milestones}
+        onTaskStatusChange={() => {}}
+        onTaskCreate={() => {}}
+        onMilestoneCreate={() => {}}
+        onTaskUpdate={() => {}}
+        onMilestoneUpdate={() => {}}
+        searchPeople={mockSearchPeople}
+        filters={[]}
+        onFiltersChange={() => {}}
+        contributors={[]}
       />
     );
   },
