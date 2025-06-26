@@ -5,86 +5,115 @@ import classNames from "../utils/classnames";
 export namespace TextField {
   export interface Props {
     text: string;
-    onSave: (newText: string) => Promise<boolean>;
-
+    onChange: (newText: string) => void;
     className?: string;
     readonly?: boolean;
     placeholder?: string;
     trimBeforeSave?: boolean;
     testId?: string;
     variant?: "inline" | "form-field";
-    label?: string; // Added label prop
+    label?: string;
   }
+
+  export interface State {
+    className: string;
+    testId: string;
+    trimBeforeSave: boolean;
+    label: string | undefined;
+    readonly: boolean;
+    placeholder: string;
+
+    currentText: string;
+    setCurrentText: (newText: string) => void;
+    isEditing: boolean;
+    setIsEditing: (isEditing: boolean) => void;
+
+    save: () => void;
+    cancel: () => void;
+  }
+}
+
+function useTextFieldState(props: TextField.Props): TextField.State {
+  const [currentText, setCurrentText] = useState(props.text);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    setCurrentText(props.text);
+  }, [props.text]);
+
+  const save = () => {
+    let textToSave = props.trimBeforeSave ? currentText.trim() : currentText;
+
+    setCurrentText(textToSave);
+    setIsEditing(false);
+
+    if (textToSave !== props.text) {
+      props.onChange(textToSave);
+    }
+  };
+
+  const cancel = () => {
+    setCurrentText(props.text); // revert buffer
+    setIsEditing(false);
+  };
+
+  return {
+    className: props.className || "",
+    testId: props.testId || "text-field",
+    trimBeforeSave: props.trimBeforeSave || false,
+    label: props.label,
+    readonly: props.readonly || false,
+    placeholder: props.placeholder || "",
+
+    currentText,
+    setCurrentText,
+    isEditing,
+    setIsEditing,
+    save,
+    cancel,
+  };
 }
 
 export function TextField(props: TextField.Props) {
+  const state = useTextFieldState(props);
+
   if (props.variant === "form-field") {
-    return <FormFieldTextField {...props} />;
+    return <FormFieldTextField {...state} />;
   } else {
-    return <InlineTextField {...props} />;
+    return <InlineTextField {...state} />;
   }
 }
 
-function FormFieldTextField({
-  text,
-  onSave,
-  className,
-  placeholder,
-  trimBeforeSave = false,
-  testId = "text-field",
-  label,
-}: TextField.Props) {
-  const [currentText, setCurrentText] = useState(text);
-
-  useEffect(() => {
-    setCurrentText(text);
-  }, [text]);
-
-  const handleSave = (newText: string) => {
-    let textToSave = trimBeforeSave ? newText.trim() : newText;
-    if (textToSave !== text) {
-      onSave(textToSave).then((success) => {
-        if (!success) {
-          setCurrentText(text);
-        }
-      });
-    }
-    setCurrentText(textToSave);
-  };
-
-  const handleCancel = () => {
-    setCurrentText(text);
-  };
-
-  const handleBlur = () => handleSave(currentText);
-
+function FormFieldTextField(state: TextField.State) {
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
-      handleCancel();
+      state.cancel();
     } else if (e.key === "Enter") {
-      handleSave(currentText);
+      state.save();
     }
   };
 
   const outerClass = classNames(
     "cursor-text relative w-full border border-surface-outline rounded-lg px-2 py-1.5 bg-surface-base",
     "has-[:focus]:outline outline-indigo-600 bg-transparent",
-    className,
+    state.className,
   );
 
   return (
-    <div className={className}>
-      {label && <label className="font-bold text-sm mb-1 block text-left">{label}</label>}
-      <div className={outerClass} data-test-id={testId}>
+    <div className={outerClass}>
+      {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
+
+      <div className={outerClass} data-test-id={state.testId}>
         <input
-          data-test-id={createTestId(testId, "input")}
+          data-test-id={createTestId(state.testId, "input")}
           type="text"
-          value={currentText}
-          onChange={(e) => setCurrentText(e.target.value)}
-          onBlur={handleBlur}
+          value={state.currentText}
+          onChange={(e) => state.setCurrentText(e.target.value)}
+          onBlur={state.save}
           onKeyDown={handleKeyDown}
-          className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + className}
-          placeholder={placeholder}
+          className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + state.className}
+          placeholder={state.placeholder}
+          readOnly={state.readonly}
           style={{
             minWidth: "0",
             maxWidth: "100%",
@@ -97,41 +126,26 @@ function FormFieldTextField({
   );
 }
 
-function InlineTextField({
-  text,
-  onSave,
-  className,
-  readonly = false,
-  placeholder,
-  trimBeforeSave = false,
-  testId = "text-field",
-  label,
-}: TextField.Props) {
-  const [isEditing, setIsEditing] = useState(false);
-  const [currentText, setCurrentText] = useState(text);
+function InlineTextField(state: TextField.State) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const hiddenSpanRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
-    setCurrentText(text);
-  }, [text]);
-
-  useEffect(() => {
-    if (isEditing && inputRef.current) {
+    if (state.isEditing && inputRef.current) {
       inputRef.current.focus();
       adjustInputWidth();
     }
-  }, [isEditing]);
+  }, [state.isEditing]);
 
   useEffect(() => {
-    if (isEditing) {
+    if (state.isEditing) {
       adjustInputWidth();
     }
-  }, [currentText, isEditing]);
+  }, [state.currentText, state.isEditing]);
 
   const adjustInputWidth = () => {
     if (hiddenSpanRef.current && inputRef.current) {
-      const textToMeasure = currentText || placeholder || " ";
+      const textToMeasure = state.currentText || state.placeholder || " ";
       hiddenSpanRef.current.textContent = textToMeasure;
       const textWidth = hiddenSpanRef.current.offsetWidth;
       const desiredWidth = Math.max(textWidth + 10, 50);
@@ -140,57 +154,37 @@ function InlineTextField({
     }
   };
 
-  const handleSave = (newText: string) => {
-    let textToSave = trimBeforeSave ? newText.trim() : newText;
-    if (textToSave !== text) {
-      onSave(textToSave).then((success) => {
-        if (!success) {
-          setCurrentText(text);
-        }
-      });
-    }
-    setIsEditing(false);
-    setCurrentText(textToSave);
-  };
-
-  const handleCancel = () => {
-    setIsEditing(false);
-    setCurrentText(text);
-  };
-
-  const handleBlur = () => handleSave(currentText);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
-      handleCancel();
+      state.cancel();
     } else if (e.key === "Enter") {
-      handleSave(currentText);
+      state.save();
     }
   };
 
   const outerClass = classNames(
     "cursor-text relative inline-block",
     {
-      "hover:bg-surface-dimmed": !isEditing && !readonly,
-      "bg-surface-dimmed": isEditing,
+      "hover:bg-surface-dimmed": !state.isEditing && !state.readonly,
+      "bg-surface-dimmed": state.isEditing,
       "rounded px-1 py-0.5 -mx-1 -my-0.5": true,
     },
-    className,
+    state.className,
   );
 
   const startEditing = () => {
-    if (!readonly) {
-      setIsEditing(true);
+    if (!state.readonly) {
+      state.setIsEditing(true);
     }
   };
 
   return (
-    <div className={className}>
-      {label && <label className="font-bold text-sm mb-1 block text-left">{label}</label>}
-      <div className={outerClass} onClick={startEditing} data-test-id={testId}>
+    <div className={state.className}>
+      {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
+      <div className={outerClass} onClick={startEditing} data-test-id={state.testId}>
         <span
           ref={hiddenSpanRef}
-          className={className}
+          className={state.className}
           style={{
             position: "absolute",
             visibility: "hidden",
@@ -198,19 +192,21 @@ function InlineTextField({
             font: "inherit",
           }}
         >
-          {isEditing ? currentText || placeholder || " " : currentText || " "}
+          {state.isEditing ? state.currentText || state.placeholder || " " : state.currentText || " "}
         </span>
-        {isEditing ? (
+
+        {state.isEditing ? (
           <input
-            data-test-id={createTestId(testId, "input")}
+            data-test-id={createTestId(state.testId, "input")}
             ref={inputRef}
             type="text"
-            value={currentText}
-            onChange={(e) => setCurrentText(e.target.value)}
-            onBlur={handleBlur}
+            value={state.currentText}
+            onChange={(e) => state.setCurrentText(e.target.value)}
+            onBlur={state.save}
             onKeyDown={handleKeyDown}
-            className={"ring-0 focus:ring-0 " + className}
-            placeholder={placeholder}
+            className={"ring-0 focus:ring-0 " + state.className}
+            placeholder={state.placeholder}
+            readOnly={state.readonly}
             style={{
               border: "none",
               background: "none",
@@ -225,10 +221,10 @@ function InlineTextField({
           />
         ) : (
           <span
-            className={className}
-            style={{ color: !currentText && placeholder ? "var(--color-content-subtle)" : undefined }}
+            className={state.className}
+            style={{ color: !state.currentText && state.placeholder ? "var(--color-content-subtle)" : undefined }}
           >
-            {currentText || placeholder || " "}
+            {state.currentText || state.placeholder || " "}
           </span>
         )}
       </div>
