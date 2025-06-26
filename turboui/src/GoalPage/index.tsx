@@ -88,6 +88,7 @@ export namespace GoalPage {
     addSubprojectLink: string;
 
     goalName: string;
+    setGoalName: (name: string) => void;
     description?: string;
 
     space: Space;
@@ -129,7 +130,6 @@ export namespace GoalPage {
     championSearch: SearchFn;
     reviewerSearch: SearchFn;
 
-    updateGoalName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
 
     addTarget: GoalTargetList.AddTargetFn;

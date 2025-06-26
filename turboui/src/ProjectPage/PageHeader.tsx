@@ -1,7 +1,6 @@
-import { IconChevronRight } from "../icons";
 import React from "react";
 import { ProjectPage } from ".";
-import { IconProject } from "../icons";
+import { IconChevronRight, IconProject } from "../icons";
 import { BlackLink } from "../Link";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
@@ -23,7 +22,7 @@ export function PageHeader(props: ProjectPage.State) {
           <TextField
             className="font-semibold text-lg"
             text={props.projectName}
-            onSave={props.updateProjectName}
+            onChange={props.updateProjectName}
             readonly={!props.canEdit}
             trimBeforeSave
           />

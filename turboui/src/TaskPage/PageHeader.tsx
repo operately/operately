@@ -11,7 +11,7 @@ export function PageHeader(props: TaskPage.State) {
           <TextField
             className="font-semibold text-2xl"
             text={props.name}
-            onSave={props.onNameChange}
+            onChange={props.onNameChange}
             readonly={!props.canEdit}
             trimBeforeSave
           />

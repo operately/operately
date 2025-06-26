@@ -69,6 +69,13 @@ function Page() {
   assertPresent(goal.privacy);
   assertPresent(goal.permissions?.canEdit);
 
+  const [goalName, setGoalName] = usePageField({
+    value: (data) => data.goal.name!,
+    update: (v) => Api.goals.updateName({ goalId: goal.id!, name: v }),
+    onError: (e: string) => showErrorToast(e, "Reverted the goal name to its previous value."),
+    validations: [(v) => (v.trim() === "" ? "Goal name cannot be empty" : null)],
+  });
+
   const [accessLevels, setAccessLevels] = usePageField({
     value: (data) => accessLevelsAsStrings(data.goal.accessLevels),
     update: (v) => Api.goals.updateAccessLevels({ goalId: goal.id!, accessLevels: accessLevelsAsNumbers(v) }),
@@ -132,7 +139,6 @@ function Page() {
   };
 
   const props: GoalPage.Props = {
-    goalName: goal.name,
     workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
     closeLink: paths.goalClosePath(goal.id),
     reopenLink: paths.goalReopenPath(goal.id),
@@ -143,12 +149,14 @@ function Page() {
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,
+    canEdit: goal.permissions.canEdit,
     deleteGoal,
+
+    goalName,
+    setGoalName,
 
     accessLevels,
     setAccessLevels,
-
-    canEdit: goal.permissions.canEdit,
 
     space,
     setSpace,
@@ -245,21 +253,6 @@ function Page() {
           console.error("Failed to update target index", e);
           return false;
         });
-    },
-
-    updateGoalName: function (name: string): Promise<boolean> {
-      if (name.trim() === "") {
-        return Promise.resolve(false);
-      } else {
-        return Api.goals
-          .updateName({ goalId: goal.id!, name })
-          .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
-          .then(() => true)
-          .catch((e) => {
-            console.error("Failed to update goal name", e);
-            return false;
-          });
-      }
     },
 
     updateDescription: function (description: any | null): Promise<boolean> {
@@ -367,9 +360,10 @@ interface usePageFieldProps<T> {
   value: (LoaderResult) => T;
   update: (newValue: T) => Promise<{ success?: boolean | null } | boolean | null | undefined>;
   onError?: (error: any) => void;
+  validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError }: usePageFieldProps<T>): [T, (v: T) => void] {
+function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -383,6 +377,21 @@ function usePageField<T>({ value, update, onError }: usePageFieldProps<T>): [T, 
   }, [value, cacheVersion, stateVersion]);
 
   const updateState = (newVal: T): void => {
+    // Run validations if provided
+    if (validations) {
+      for (const validate of validations) {
+        const error = validate(newVal);
+
+        if (error) {
+          console.error("Validation failed:", error);
+          console.log("Reverting to previous value", value(data));
+          setState(value(data)); // revert to previous value
+          onError?.(error);
+          return;
+        }
+      }
+    }
+
     const oldVal = state;
 
     const successHandler = () => {
@@ -403,7 +412,7 @@ function usePageField<T>({ value, update, onError }: usePageFieldProps<T>): [T, 
         if (res === true || (typeof res === "object" && res?.success)) {
           successHandler();
         } else {
-          errorHandler("API call returned false, reverting state");
+          errorHandler("Network Error");
         }
       })
       .catch(errorHandler);
