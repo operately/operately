@@ -58,9 +58,17 @@ export namespace ProjectPage {
     champion: Person | null;
     setChampion: (person: Person | null) => void;
 
+    reviewer?: Person | null;
+    setReviewer?: (person: Person | null) => void;
+
     parentGoal?: ParentGoal | null;
     setParentGoal?: (goal: ParentGoal | null) => void;
     parentGoalSearch?: (params: { query: string }) => Promise<ParentGoal[]>;
+
+    startedAt?: Date | null;
+    setStartedAt?: (date: Date | null) => void;
+    dueAt?: Date | null;
+    setDueAt?: (date: Date | null) => void;
 
     status: BadgeStatus;
     state: "active" | "closed";

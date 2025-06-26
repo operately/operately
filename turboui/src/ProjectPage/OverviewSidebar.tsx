@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { DateField } from "../DateField";
 import { PersonField } from "../PersonField";
-import { AvatarWithName } from "../Avatar/AvatarWithName";
 import { ActionList } from "../ActionList";
 import { LastCheckIn } from "../LastCheckIn";
 import { GoalField } from "../GoalField";
@@ -14,6 +13,7 @@ export function OverviewSidebar(props: any) {
       <ParentGoal {...props} />
       <ProjectDates {...props} />
       <Champion {...props} />
+      <Reviewer {...props} />
       <Contributors {...props} />
       <NotificationToggle {...props} />
       <Actions {...props} />
@@ -54,16 +54,17 @@ function ProjectDates(props: any) {
     <div className="space-y-4">
       <SidebarSection title="Start Date">
         <DateField
-          date={null} // TODO: Add start date to props
-          setDate={() => {}} // TODO: Add start date handler
+          date={props.startedAt || null}
+          setDate={props.setStartedAt || (() => {})}
           readonly={!props.canEdit}
           placeholder="Set start date"
+          showOverdueWarning={false}
         />
       </SidebarSection>
       <SidebarSection title="Due Date">
         <DateField
-          date={null} // TODO: Add due date to props
-          setDate={() => {}} // TODO: Add due date handler
+          date={props.dueAt || null}
+          setDate={props.setDueAt || (() => {})}
           readonly={!props.canEdit}
           placeholder="Set due date"
         />
@@ -87,6 +88,21 @@ function Champion(props: any) {
   );
 }
 
+function Reviewer(props: any) {
+  return (
+    <SidebarSection title="Reviewer">
+      <PersonField
+        person={props.reviewer || null}
+        setPerson={props.setReviewer || (() => {})}
+        readonly={!props.canEdit}
+        searchPeople={async () => []} // TODO: Add person search
+        emptyStateMessage="Set reviewer"
+        emptyStateReadOnlyMessage="No reviewer"
+      />
+    </SidebarSection>
+  );
+}
+
 function Contributors(props: any) {
   // Use contributors from props if provided, otherwise use mock
   const contributors = Array.isArray(props.contributors)
@@ -97,16 +113,37 @@ function Contributors(props: any) {
           fullName: "Alice Johnson",
           avatarUrl: "https://i.pravatar.cc/150?u=alice",
           profileLink: "/people/alice",
+          title: "Frontend Development & UI/UX",
         },
-        { id: "2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
+        { 
+          id: "2", 
+          fullName: "Bob Smith", 
+          avatarUrl: "https://i.pravatar.cc/150?u=bob", 
+          profileLink: "/people/bob",
+          title: "Backend Architecture & API Design",
+        },
+        { 
+          id: "3", 
+          fullName: "Charlie Brown", 
+          avatarUrl: "https://i.pravatar.cc/150?u=charlie", 
+          profileLink: "/people/charlie",
+          title: "Quality Assurance & Testing",
+        },
       ];
 
   return (
     <SidebarSection title="Contributors">
       {contributors.length > 0 ? (
-        <div className="space-y-2">
+        <div className="space-y-3">
           {contributors.map((person) => (
-            <AvatarWithName key={person.id} person={person} size="small" link={person.profileLink} nameFormat="short" />
+            <PersonField
+              key={person.id}
+              person={person}
+              setPerson={() => {}}
+              readonly={true}
+              searchPeople={async () => []}
+              showTitle={true}
+            />
           ))}
         </div>
       ) : (
@@ -119,17 +156,36 @@ function Contributors(props: any) {
 function NotificationToggle(_props: any) {
   const [isSubscribed, setIsSubscribed] = useState(true);
 
+  const handleToggle = () => {
+    setIsSubscribed(!isSubscribed);
+  };
+
   return (
     <SidebarSection title="Notifications">
-      <label className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="checkbox"
-          checked={isSubscribed}
-          onChange={(e) => setIsSubscribed(e.target.checked)}
-          className="rounded"
-        />
-        <span className="text-sm">Subscribe to updates</span>
-      </label>
+      <div className="space-y-2">
+        <button
+          onClick={handleToggle}
+          className="flex items-center gap-2 text-sm hover:bg-surface-highlight rounded px-2 py-1 -mx-2"
+        >
+          {isSubscribed ? (
+            <>
+              <IconCircleCheck size={16} className="text-blue-500" />
+              <span>Unsubscribe</span>
+            </>
+          ) : (
+            <>
+              <IconRotateDot size={16} className="text-content-dimmed" />
+              <span>Subscribe</span>
+            </>
+          )}
+        </button>
+
+        <div className="text-xs text-content-dimmed">
+          {isSubscribed
+            ? "You're receiving notifications because you're subscribed to this project."
+            : "You're not receiving notifications from this project."}
+        </div>
+      </div>
     </SidebarSection>
   );
 }
@@ -187,7 +243,9 @@ function Actions(props: any) {
 
   return (
     <div className="border-t pt-4">
-      <ActionList actions={visibleActions} />
+      <SidebarSection title="Actions">
+        <ActionList actions={visibleActions} />
+      </SidebarSection>
     </div>
   );
 }
