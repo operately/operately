@@ -103,6 +103,19 @@ export const AllStates: Story = {
                 <Label>Empty</Label>
                 <ComponentWrapper space={null} variant="form-field" />
               </div>
+
+              <div>
+                <ComponentWrapper space={null} variant="form-field" label="With Label" />
+              </div>
+
+              <div>
+                <ComponentWrapper
+                  space={null}
+                  variant="form-field"
+                  label="With Label and Error"
+                  error="This is an error"
+                />
+              </div>
             </div>
           </div>
         </div>
