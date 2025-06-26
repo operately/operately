@@ -13,6 +13,7 @@ export namespace TextField {
     trimBeforeSave?: boolean;
     testId?: string;
     variant?: "inline" | "form-field";
+    label?: string; // Added label prop
   }
 }
 
@@ -31,6 +32,7 @@ function FormFieldTextField({
   placeholder,
   trimBeforeSave = false,
   testId = "text-field",
+  label,
 }: TextField.Props) {
   const [currentText, setCurrentText] = useState(text);
 
@@ -71,23 +73,26 @@ function FormFieldTextField({
   );
 
   return (
-    <div className={outerClass} data-test-id={testId}>
-      <input
-        data-test-id={createTestId(testId, "input")}
-        type="text"
-        value={currentText}
-        onChange={(e) => setCurrentText(e.target.value)}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
-        className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + className}
-        placeholder={placeholder}
-        style={{
-          minWidth: "0",
-          maxWidth: "100%",
-          boxSizing: "border-box",
-          font: "inherit",
-        }}
-      />
+    <div className={className}>
+      {label && <label className="font-bold text-sm mb-1 block text-left">{label}</label>}
+      <div className={outerClass} data-test-id={testId}>
+        <input
+          data-test-id={createTestId(testId, "input")}
+          type="text"
+          value={currentText}
+          onChange={(e) => setCurrentText(e.target.value)}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + className}
+          placeholder={placeholder}
+          style={{
+            minWidth: "0",
+            maxWidth: "100%",
+            boxSizing: "border-box",
+            font: "inherit",
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -100,6 +105,7 @@ function InlineTextField({
   placeholder,
   trimBeforeSave = false,
   testId = "text-field",
+  label,
 }: TextField.Props) {
   const [isEditing, setIsEditing] = useState(false);
   const [currentText, setCurrentText] = useState(text);
@@ -179,50 +185,53 @@ function InlineTextField({
   };
 
   return (
-    <div className={outerClass} onClick={startEditing} data-test-id={testId}>
-      <span
-        ref={hiddenSpanRef}
-        className={className}
-        style={{
-          position: "absolute",
-          visibility: "hidden",
-          whiteSpace: "pre",
-          font: "inherit",
-        }}
-      >
-        {isEditing ? currentText || placeholder || " " : currentText || " "}
-      </span>
-      {isEditing ? (
-        <input
-          data-test-id={createTestId(testId, "input")}
-          ref={inputRef}
-          type="text"
-          value={currentText}
-          onChange={(e) => setCurrentText(e.target.value)}
-          onBlur={handleBlur}
-          onKeyDown={handleKeyDown}
-          className={"ring-0 focus:ring-0 " + className}
-          placeholder={placeholder}
-          style={{
-            border: "none",
-            background: "none",
-            outline: "none",
-            padding: 0,
-            margin: 0,
-            font: "inherit",
-            minWidth: "50px",
-            maxWidth: "100%",
-            boxSizing: "border-box",
-          }}
-        />
-      ) : (
+    <div className={className}>
+      {label && <label className="font-bold text-sm mb-1 block text-left">{label}</label>}
+      <div className={outerClass} onClick={startEditing} data-test-id={testId}>
         <span
+          ref={hiddenSpanRef}
           className={className}
-          style={{ color: !currentText && placeholder ? "var(--color-content-subtle)" : undefined }}
+          style={{
+            position: "absolute",
+            visibility: "hidden",
+            whiteSpace: "pre",
+            font: "inherit",
+          }}
         >
-          {currentText || placeholder || " "}
+          {isEditing ? currentText || placeholder || " " : currentText || " "}
         </span>
-      )}
+        {isEditing ? (
+          <input
+            data-test-id={createTestId(testId, "input")}
+            ref={inputRef}
+            type="text"
+            value={currentText}
+            onChange={(e) => setCurrentText(e.target.value)}
+            onBlur={handleBlur}
+            onKeyDown={handleKeyDown}
+            className={"ring-0 focus:ring-0 " + className}
+            placeholder={placeholder}
+            style={{
+              border: "none",
+              background: "none",
+              outline: "none",
+              padding: 0,
+              margin: 0,
+              font: "inherit",
+              minWidth: "50px",
+              maxWidth: "100%",
+              boxSizing: "border-box",
+            }}
+          />
+        ) : (
+          <span
+            className={className}
+            style={{ color: !currentText && placeholder ? "var(--color-content-subtle)" : undefined }}
+          >
+            {currentText || placeholder || " "}
+          </span>
+        )}
+      </div>
     </div>
   );
 }

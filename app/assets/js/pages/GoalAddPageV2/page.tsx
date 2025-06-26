@@ -3,63 +3,62 @@ import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { FormState, useForm } from "@/features/goals/GoalForm";
-import { PrimaryButton } from "turboui";
-import { useLoadedData } from "./loader";
+import { PrimaryButton, TextField } from "turboui";
+
+interface PageState {
+  name: string;
+  setName: (name: string) => void;
+  submit: () => boolean;
+}
+
+function usePageState(): PageState {
+  const [name, setName] = React.useState("");
+
+  const submit = () => {
+    return true;
+  };
+
+  return {
+    name,
+    setName,
+    submit,
+  };
+}
 
 export function Page() {
-  const me = useMe()!;
-  const { spaceID, space, spaces, company, parentGoal, goals, isCompanyWide } = useLoadedData();
+  const state = usePageState();
 
-  const form = useForm({
-    mode: "create",
-    company: company,
-    me: me,
-    allowSpaceSelection: Boolean(isCompanyWide || !space),
-    space: space,
-    spaces: spaces,
-    parentGoal,
-    parentGoalOptions: goals,
-    isCompanyWide,
-  });
-
-  return spaceID ? <NewGoalForSpacePage form={form} /> : <NewGoalPage form={form} />;
-}
-
-function NewGoalForSpacePage({ form }: { form: FormState }) {
   return (
     <Pages.Page title="New Goal" testId="goal-add-page">
-      <Paper.Root size="large">
-        <h1 className="mb-4 font-bold text-3xl text-center">Adding a new goal</h1>
-        <Paper.Body minHeight="300px">Hello, nothing yet here.</Paper.Body>
-        <SubmitButton form={form} />
-      </Paper.Root>
-    </Pages.Page>
-  );
-}
-
-function NewGoalPage({ form }: { form: FormState }) {
-  return (
-    <Pages.Page title="New Goal" testId="goal-add-page">
-      <Paper.Root size="large">
+      <Paper.Root size="small">
         <h1 className="mb-4 font-bold text-3xl text-center">Add a new goal</h1>
-        <Paper.Body minHeight="300px">Hello, nothing yet here.</Paper.Body>
-        <SubmitButton form={form} />
+        <Paper.Body minHeight="300px">
+          <TextField
+            label="Goal Name"
+            variant="form-field"
+            placeholder="What do you want to achieve?"
+            text={state.name}
+            onSave={async (newName) => {
+              state.setName(newName);
+              return true; // Simulate successful save
+            }}
+          />
+        </Paper.Body>
+        <SubmitButton state={state} />
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function SubmitButton({ form }: { form: FormState }) {
+function SubmitButton({ state }: { state: PageState }) {
   return (
     <div className="mt-8">
-      {form.errors.length > 0 && (
+      {/* {form.errors.length > 0 && (
         <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
-      )}
+      )} */}
 
       <div className="flex items-center justify-center gap-4">
-        <PrimaryButton onClick={form.submit} loading={form.submitting} size="lg" testId="add-goal-button">
+        <PrimaryButton onClick={state.submit} loading={state.submitting} size="lg" testId="add-goal-button">
           Add Goal
         </PrimaryButton>
       </div>
