@@ -8,20 +8,28 @@ import { PrimaryButton, TextField } from "turboui";
 interface PageState {
   name: string;
   setName: (name: string) => void;
+  nameError: string | undefined;
   submit: () => boolean;
   submitting: boolean;
 }
 
 function usePageState(): PageState {
   const [name, setName] = React.useState("");
+  const [nameError, setNameError] = React.useState<string | undefined>(undefined);
 
   const submit = () => {
-    return true;
+    if (name.trim() === "") {
+      setNameError("Cannot be empty");
+      return false;
+    }
+
+    return true; // TODO: Implement actual submission logic
   };
 
   return {
     name,
     setName,
+    nameError,
     submit,
     submitting: false, // TODO: Fix this
   };
@@ -41,6 +49,7 @@ export function Page() {
             placeholder="What do you want to achieve?"
             text={state.name}
             onChange={state.setName}
+            error={state.nameError}
           />
         </Paper.Body>
         <SubmitButton state={state} />
@@ -52,10 +61,6 @@ export function Page() {
 function SubmitButton({ state }: { state: PageState }) {
   return (
     <div className="mt-8">
-      {/* {form.errors.length > 0 && (
-        <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
-      )} */}
-
       <div className="flex items-center justify-center gap-4">
         <PrimaryButton onClick={state.submit} loading={state.submitting} size="lg" testId="add-goal-button">
           Add Goal
