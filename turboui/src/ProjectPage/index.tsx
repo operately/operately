@@ -66,6 +66,8 @@ export namespace ProjectPage {
     searchPeople?: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
+
+    contributors?: any[];
   }
 
   export interface State extends Props {}

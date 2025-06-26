@@ -73,17 +73,19 @@ function Champion(props: any) {
   );
 }
 
-function Contributors(_props: any) {
-  // Mock contributors for now
-  const contributors = [
-    {
-      id: "1",
-      fullName: "Alice Johnson",
-      avatarUrl: "https://i.pravatar.cc/150?u=alice",
-      profileLink: "/people/alice",
-    },
-    { id: "2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
-  ];
+function Contributors(props: any) {
+  // Use contributors from props if provided, otherwise use mock
+  const contributors = Array.isArray(props.contributors)
+    ? props.contributors
+    : [
+        {
+          id: "1",
+          fullName: "Alice Johnson",
+          avatarUrl: "https://i.pravatar.cc/150?u=alice",
+          profileLink: "/people/alice",
+        },
+        { id: "2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob", profileLink: "/people/bob" },
+      ];
 
   return (
     <SidebarSection title="Contributors">
