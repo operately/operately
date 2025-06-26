@@ -38,6 +38,12 @@ export namespace ProjectPage {
     status: BadgeStatus;
   }
 
+  export interface ParentGoal {
+    id: string;
+    name: string;
+    link: string;
+  }
+
   export interface Props {
     closeLink: string;
     reopenLink: string;
@@ -51,6 +57,10 @@ export namespace ProjectPage {
 
     champion: Person | null;
     setChampion: (person: Person | null) => void;
+
+    parentGoal?: ParentGoal | null;
+    setParentGoal?: (goal: ParentGoal | null) => void;
+    parentGoalSearch?: (params: { query: string }) => Promise<ParentGoal[]>;
 
     status: BadgeStatus;
     state: "active" | "closed";
