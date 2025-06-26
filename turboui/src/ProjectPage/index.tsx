@@ -12,6 +12,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
 import { MentionedPersonLookupFn } from "../RichEditor";
+import { ResourceManager } from "../ResourceManager";
 
 export namespace ProjectPage {
   export interface Space {
@@ -99,6 +100,12 @@ export namespace ProjectPage {
     contributors?: any[];
     checkIns?: CheckIn[];
     mentionedPersonLookup?: MentionedPersonLookupFn;
+
+    // Resource management
+    resources?: ResourceManager.Resource[];
+    onResourceAdd?: (resource: Omit<ResourceManager.Resource, "id">) => void;
+    onResourceEdit?: (id: string, resource: Partial<ResourceManager.Resource>) => void;
+    onResourceRemove?: (id: string) => void;
   }
 
   export interface State extends Props {}
