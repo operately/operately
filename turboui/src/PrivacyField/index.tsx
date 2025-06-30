@@ -1,6 +1,5 @@
 import * as Popover from "@radix-ui/react-popover";
-import * as React from "react";
-
+import React from "react";
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
 
@@ -75,41 +74,20 @@ export function PrivacyField(props: PrivacyField.Props) {
 }
 
 function PrivacyPickerPopover(props: PrivacyField.State) {
-  const [tempCompanyAccess, setTempCompanyAccess] = React.useState<PrivacyField.AccessLevel>(
-    props.accessLevels.company,
-  );
-  const [tempSpaceAccess, setTempSpaceAccess] = React.useState<PrivacyField.AccessLevel>(props.accessLevels.space);
+  const [tempAccessLevels, setTempAccessLevels] = React.useState<PrivacyField.AccessLevels>({
+    company: props.accessLevels.company,
+    space: props.accessLevels.space,
+  });
 
-  const tempAccessLevels = {
-    company: tempCompanyAccess,
-    space: tempSpaceAccess,
-  };
-
-  const setTempAccessLevels = (levels: { company: PrivacyField.AccessLevel; space: PrivacyField.AccessLevel }) => {
-    setTempCompanyAccess(levels.company);
-    setTempSpaceAccess(levels.space);
-  };
-
-  React.useEffect(() => {
-    setTempCompanyAccess(props.accessLevels.company);
-    setTempSpaceAccess(props.accessLevels.space);
-  }, [props.accessLevels]);
+  React.useEffect(() => setTempAccessLevels(props.accessLevels), [props.accessLevels]);
 
   const handleSave = () => {
-    setTempCompanyAccess(tempCompanyAccess);
-    setTempSpaceAccess(tempSpaceAccess);
-
-    props.setAccessLevels({
-      company: tempCompanyAccess,
-      space: tempSpaceAccess,
-    });
-
+    props.setAccessLevels(tempAccessLevels);
     props.setIsOpen(false);
   };
 
   const handleCancel = () => {
-    setTempCompanyAccess(props.accessLevels.company);
-    setTempSpaceAccess(props.accessLevels.space);
+    setTempAccessLevels(props.accessLevels);
     props.setIsOpen(false);
   };
 
@@ -207,6 +185,13 @@ function AccessLevelOptions(props: PrivacyField.State) {
       ...props.accessLevels,
       company: level,
     });
+
+    if (lessThan(props.accessLevels.space, level)) {
+      props.setAccessLevels({
+        ...props.accessLevels,
+        space: level,
+      });
+    }
   };
 
   const setSpaceLevel = (level: PrivacyField.AccessLevel) => {
@@ -308,6 +293,7 @@ function SelectBox({
 
 function FormFieldPrivacyField(state: PrivacyField.State) {
   const outerClass = classNames(
+    "flex items-center justify-between gap-2",
     "cursor-pointer relative w-full border rounded-lg px-2 py-1.5 bg-surface-base",
     "focus-within:outline outline-indigo-600 bg-transparent",
     state.error ? "border-red-500 outline-red-500" : "border-surface-outline",
@@ -320,6 +306,7 @@ function FormFieldPrivacyField(state: PrivacyField.State) {
         <Popover.Trigger asChild disabled={state.readonly}>
           <div className={outerClass} data-test-id={state.testId}>
             <PrivacyDisplay {...state} />
+            <IconChevronDown size={16} className="text-content-subtle" />
           </div>
         </Popover.Trigger>
 
@@ -355,4 +342,9 @@ function InlinePrivacyField(state: PrivacyField.State) {
       </Popover.Root>
     </div>
   );
+}
+
+function lessThan(a: PrivacyField.AccessLevel, b: PrivacyField.AccessLevel): boolean {
+  const levels = ["no_access", "view", "comment", "edit", "full"] as const;
+  return levels.indexOf(a) < levels.indexOf(b);
 }
