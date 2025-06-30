@@ -62,7 +62,7 @@ export function Modal({
 
       // Handle ESC key to close the modal
       const handleEsc = (event: KeyboardEvent) => {
-        if (event.key === "Escape") {
+        if (event.key === "Escape" && !event.defaultPrevented) {
           onClose();
         }
       };
