@@ -253,7 +253,8 @@ function TriggerText({ state }: { state: PersonField.State }) {
 }
 
 function Dialog({ state }: { state: PersonField.State }) {
-  if (state.readonly) return null;
+  // Show dialog in readonly mode only if there's a person assigned (to allow clearing)
+  if (state.readonly && !state.person) return null;
 
   return (
     <Popover.Portal>
@@ -272,7 +273,7 @@ function Dialog({ state }: { state: PersonField.State }) {
         }}
       >
         {state.dialogMode === "menu" && <DialogMenu state={state} />}
-        {state.dialogMode === "search" && <DialogSearch state={state} />}
+        {state.dialogMode === "search" && !state.readonly && <DialogSearch state={state} />}
       </Popover.Content>
     </Popover.Portal>
   );
@@ -303,38 +304,47 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       });
     }
 
-    options.push({
-      testId: `${state.testId}-assign-another`,
-      icon: IconSearch,
-      label: "Choose someone else",
-      onClick: () => {
-        state.setSearchQuery(""); // Clear any previous search
-        state.setDialogMode("search");
-      },
-    });
-
-    state.extraDialogMenuOptions.forEach((option, index) => {
+    // Only show "Choose someone else" and search mode if not readonly
+    if (!state.readonly) {
       options.push({
-        key: `extra-${index}`,
-        icon: option.icon,
-        label: option.label,
+        testId: `${state.testId}-assign-another`,
+        icon: IconSearch,
+        label: "Choose someone else",
         onClick: () => {
-          option.onClick && option.onClick();
+          state.setSearchQuery(""); // Clear any previous search
+          state.setDialogMode("search");
+        },
+      });
+    }
+
+    // Only show extra dialog menu options if not readonly
+    if (!state.readonly) {
+      state.extraDialogMenuOptions.forEach((option, index) => {
+        options.push({
+          key: `extra-${index}`,
+          icon: option.icon,
+          label: option.label,
+          onClick: () => {
+            option.onClick && option.onClick();
+            state.setIsOpen(false);
+          },
+          linkTo: option.linkTo,
+        });
+      });
+    }
+
+    // Always show clear assignment if there's a person assigned
+    if (state.person) {
+      options.push({
+        testId: `${state.testId}-clear-assignment`,
+        icon: IconCircleX,
+        label: "Clear assignment",
+        onClick: () => {
+          state.setPerson(null);
           state.setIsOpen(false);
         },
-        linkTo: option.linkTo,
       });
-    });
-
-    options.push({
-      testId: `${state.testId}-clear-assignment`,
-      icon: IconCircleX,
-      label: "Clear assignment",
-      onClick: () => {
-        state.setPerson(null);
-        state.setIsOpen(false);
-      },
-    });
+    }
 
     return options;
   }, [state]);
