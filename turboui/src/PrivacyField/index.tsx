@@ -18,7 +18,6 @@ export namespace PrivacyField {
     accessLevels: AccessLevels;
     setAccessLevels: (levels: AccessLevels) => void;
 
-    spaceName: string;
     resourceType: "goal" | "project";
 
     variant?: "inline" | "form-field";
@@ -50,7 +49,6 @@ function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
     setIsOpen,
     accessLevels: props.accessLevels,
     setAccessLevels: props.setAccessLevels,
-    spaceName: props.spaceName,
     resourceType: props.resourceType,
     variant: props.variant || "inline",
     label: props.label || "",
@@ -155,7 +153,7 @@ function PrivacyDisplay(props: PrivacyField.State) {
     textSize,
   );
 
-  const text = getPrivacyTitle(props.accessLevels, props.spaceName);
+  const text = getPrivacyTitle(props.accessLevels);
   const icon = getPrivacyIcon(props.accessLevels, iconSize);
 
   return (
@@ -173,22 +171,22 @@ function getPrivacyIcon(levels: PrivacyField.AccessLevels, size: number) {
   return <IconLockFilled size={size} className="text-content-error shrink-0" />;
 }
 
-function getPrivacyTitle(levels: PrivacyField.AccessLevels, spaceName: string) {
+function getPrivacyTitle(levels: PrivacyField.AccessLevels) {
   return match([levels.company, levels.space])
     .with(["no_access", "no_access"], () => "Only assigned people have access")
-    .with(["no_access", "view"], () => `Only ${spaceName} members can view`)
-    .with(["no_access", "comment"], () => `Only ${spaceName} members can comment`)
-    .with(["no_access", "edit"], () => `Only ${spaceName} members can edit`)
-    .with(["no_access", "full"], () => `${spaceName} members have full access`)
+    .with(["no_access", "view"], () => `Only space members can view`)
+    .with(["no_access", "comment"], () => `Only space members can comment`)
+    .with(["no_access", "edit"], () => `Only space members can edit`)
+    .with(["no_access", "full"], () => `Space members have full access`)
     .with(["view", "view"], () => `Everyone in the company can view`)
-    .with(["view", "comment"], () => `Everyone in the company can view, ${spaceName} members can comment`)
-    .with(["view", "edit"], () => `Everyone in the company can view, ${spaceName} members can edit`)
-    .with(["view", "full"], () => `Everyone in the company can view, ${spaceName} members have full access`)
+    .with(["view", "comment"], () => `Company members can view, space members can comment`)
+    .with(["view", "edit"], () => `Company members can view, space members can edit`)
+    .with(["view", "full"], () => `Company members can view, space members have full access`)
     .with(["comment", "comment"], () => `Everyone in the company can comment`)
-    .with(["comment", "edit"], () => `Everyone in the company can comment, ${spaceName} members can edit`)
-    .with(["comment", "full"], () => `Everyone in the company can comment, ${spaceName} members have full access`)
+    .with(["comment", "edit"], () => `Company members can comment, space members can edit`)
+    .with(["comment", "full"], () => `Company members can comment, space members have full access`)
     .with(["edit", "edit"], () => `Everyone in the company can edit`)
-    .with(["edit", "full"], () => `Everyone in the company can edit, ${spaceName} members have full access`)
+    .with(["edit", "full"], () => `Company members can edit, space members have full access`)
     .with(["full", "full"], () => `Everyone in the company has full access`)
     .otherwise(() => {
       throw new Error("Invalid access levels: " + JSON.stringify(levels));

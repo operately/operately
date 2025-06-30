@@ -66,8 +66,9 @@ export default {
               <PrivacyField
                 accessLevels={state.accessLevels}
                 setAccessLevels={state.setAccessLevels}
-                spaceName={state.space?.name || ""}
                 resourceType={"goal"}
+                variant="form-field"
+                label="Privacy"
               />
             </div>
 
