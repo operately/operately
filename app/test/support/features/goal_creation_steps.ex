@@ -6,13 +6,20 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   import Ecto.Query, only: [from: 2]
 
-  def setup(ctx) do
+  def setup_old(ctx) do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:space)
     |> Factory.add_space_member(:champion, :space)
     |> Factory.add_space_member(:reviewer, :space)
     |> Factory.log_in_person(:champion)
+  end
+
+  def setup_new(ctx) do
+    ctx
+    |> Factory.setup()
+    |> Factory.enable_feature("new-goal-add-page")
+    |> Factory.log_in_person(:creator)
   end
 
   step :given_a_goal_exists, ctx, goal_params do
@@ -114,5 +121,26 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
       author: ctx.champion,
       action: "added the #{goal_name} goal"
     })
+  end
+
+  step :visit_new_goal_page, ctx do
+    ctx |> UI.visit(Paths.new_goal_path(ctx.company))
+  end
+
+  step :fill_in_goal_form, ctx, name do
+    ctx
+    |> UI.fill_text_field(testid: "goal-name", with: name)
+    |> UI.click(testid: "space-field")
+    |> UI.click(testid: UI.testid(["space-field", "search-result", "general"]))
+  end
+
+  step :submit, ctx do
+    ctx |> UI.click(testid: "submit")
+  end
+
+  step :assert_goal_added, ctx, name do
+    ctx
+    |> UI.assert_has(testid: "goal-page")
+    |> UI.assert_text(name)
   end
 end

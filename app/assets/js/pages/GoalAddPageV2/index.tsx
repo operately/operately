@@ -53,14 +53,16 @@ export default {
                 text={state.name}
                 onChange={state.setName}
                 error={state.nameError}
+                testId="goal-name"
               />
+
               <SpaceField
                 label="Space"
                 space={state.space}
                 setSpace={state.setSpace}
                 search={state.spaceSearch}
                 variant="form-field"
-                testId="goal-add-space-field"
+                testId="space-field"
                 error={state.spaceError}
               />
 
@@ -74,7 +76,7 @@ export default {
             </div>
 
             <div className="mt-6">
-              <PrimaryButton onClick={state.submit} loading={state.submitting} testId="add-goal-button" size="sm">
+              <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
                 Add Goal
               </PrimaryButton>
             </div>
