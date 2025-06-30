@@ -6,6 +6,7 @@ import { TextField } from "../../TextField";
 import { DateField } from "../../DateField";
 import { PersonField } from "../../PersonField";
 import { MilestoneField } from "../../MilestoneField";
+import * as Switch from "@radix-ui/react-switch";
 
 interface TaskCreationModalProps {
   isOpen: boolean;
@@ -172,15 +173,20 @@ export function TaskCreationModal({
         </div>
 
         <div className="flex items-center mt-6">
-          <label className="flex items-center cursor-pointer">
-            <input
-              type="checkbox"
+          <div className="flex items-center">
+            <Switch.Root
               checked={createMore}
-              onChange={() => setCreateMore(!createMore)}
-              className="h-4 w-4 text-primary-base border-surface-outline rounded focus:ring-primary-base"
-            />
-            <span className="ml-2 text-sm text-content-base">Create more</span>
-          </label>
+              onCheckedChange={setCreateMore}
+              className={`w-11 h-6 rounded-full relative outline-none cursor-pointer focus:ring-2 focus:ring-primary-base focus:ring-offset-2 transition-all duration-200 ${
+                createMore ? "bg-brand-1" : "bg-content-dimmed"
+              }`}
+            >
+              <Switch.Thumb className="block w-5 h-5 bg-brand-2 border border-stroke-base rounded-full shadow-md transform transition-all duration-200 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[22px]" />
+            </Switch.Root>
+            <label className="ml-3 text-sm text-content-base cursor-pointer" onClick={() => setCreateMore(!createMore)}>
+              Create more
+            </label>
+          </div>
           <div className="flex-1"></div>
           <div className="flex space-x-3">
             <SecondaryButton onClick={onClose} type="button">
