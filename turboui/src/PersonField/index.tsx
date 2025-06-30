@@ -253,8 +253,7 @@ function TriggerText({ state }: { state: PersonField.State }) {
 }
 
 function Dialog({ state }: { state: PersonField.State }) {
-  // Show dialog in readonly mode only if there's a person assigned (to allow clearing)
-  if (state.readonly && !state.person) return null;
+  if (state.readonly) return null;
 
   return (
     <Popover.Portal>
@@ -273,7 +272,7 @@ function Dialog({ state }: { state: PersonField.State }) {
         }}
       >
         {state.dialogMode === "menu" && <DialogMenu state={state} />}
-        {state.dialogMode === "search" && !state.readonly && <DialogSearch state={state} />}
+        {state.dialogMode === "search" && <DialogSearch state={state} />}
       </Popover.Content>
     </Popover.Portal>
   );
@@ -304,47 +303,38 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       });
     }
 
-    // Only show "Choose someone else" and search mode if not readonly
-    if (!state.readonly) {
-      options.push({
-        testId: `${state.testId}-assign-another`,
-        icon: IconSearch,
-        label: "Choose someone else",
-        onClick: () => {
-          state.setSearchQuery(""); // Clear any previous search
-          state.setDialogMode("search");
-        },
-      });
-    }
+    options.push({
+      testId: `${state.testId}-assign-another`,
+      icon: IconSearch,
+      label: "Choose someone else",
+      onClick: () => {
+        state.setSearchQuery(""); // Clear any previous search
+        state.setDialogMode("search");
+      },
+    });
 
-    // Only show extra dialog menu options if not readonly
-    if (!state.readonly) {
-      state.extraDialogMenuOptions.forEach((option, index) => {
-        options.push({
-          key: `extra-${index}`,
-          icon: option.icon,
-          label: option.label,
-          onClick: () => {
-            option.onClick && option.onClick();
-            state.setIsOpen(false);
-          },
-          linkTo: option.linkTo,
-        });
-      });
-    }
-
-    // Always show clear assignment if there's a person assigned
-    if (state.person) {
+    state.extraDialogMenuOptions.forEach((option, index) => {
       options.push({
-        testId: `${state.testId}-clear-assignment`,
-        icon: IconCircleX,
-        label: "Clear assignment",
+        key: `extra-${index}`,
+        icon: option.icon,
+        label: option.label,
         onClick: () => {
-          state.setPerson(null);
+          option.onClick && option.onClick();
           state.setIsOpen(false);
         },
+        linkTo: option.linkTo,
       });
-    }
+    });
+
+    options.push({
+      testId: `${state.testId}-clear-assignment`,
+      icon: IconCircleX,
+      label: "Clear assignment",
+      onClick: () => {
+        state.setPerson(null);
+        state.setIsOpen(false);
+      },
+    });
 
     return options;
   }, [state]);
@@ -402,6 +392,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
             "bg-surface-dimmed": index === selectedIndex,
             "hover:bg-surface-dimmed": index !== selectedIndex,
           })}
+          data-test-id={option.testId}
           onClick={() => {
             if (option.onClick) {
               option.onClick();
