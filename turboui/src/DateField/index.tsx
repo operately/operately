@@ -49,8 +49,8 @@ export function DateField({
   const handleChange = (newDate: Date | null) => {
     if (date?.getTime() !== newDate?.getTime()) {
       setDate(newDate);
-      setIsOpen(false); // Close popover after date selection
     }
+    setIsOpen(false); // Always close popover after date selection
   };
 
   const clearDate = () => {
@@ -61,7 +61,7 @@ export function DateField({
   useExportedTestHelper(testId, { setDate: handleChange });
 
   const triggerClassName = classNames(
-    "inline-block focus:outline-none",
+    "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
     {
       "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": variant === "inline" && !readonly,
       "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": variant === "form-field",
@@ -71,7 +71,17 @@ export function DateField({
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger className={triggerClassName} disabled={readonly} data-test-id={testId}>
+      <Popover.Trigger 
+        className={triggerClassName} 
+        disabled={readonly} 
+        data-test-id={testId}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !readonly) {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
+      >
         <DateDisplay
           date={date}
           className={className}
@@ -89,8 +99,15 @@ export function DateField({
 
       <Popover.Portal>
         <Popover.Content
-          className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50"
+          className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-[60]"
           sideOffset={5}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsOpen(false);
+            }
+          }}
         >
           <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
             <div className="text-sm font-medium">Select date</div>

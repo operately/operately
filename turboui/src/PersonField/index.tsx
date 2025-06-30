@@ -7,6 +7,14 @@ import { DivLink } from "../Link";
 import { createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
+interface DialogMenuOptionProps {
+  icon: React.ComponentType<{ size?: string | number; [key: string]: any }>;
+  label: string;
+  linkTo?: string;
+  onClick?: () => void;
+  testId?: string;
+}
+
 export namespace PersonField {
   export interface Person {
     id: string;
@@ -152,7 +160,16 @@ function Trigger({ state }: { state: PersonField.State }) {
     );
   } else {
     return (
-      <Popover.Trigger className={calcTriggerClass(state)} data-test-id={state.testId}>
+      <Popover.Trigger 
+        className={calcTriggerClass(state)} 
+        data-test-id={state.testId}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !state.readonly) {
+            e.preventDefault();
+            state.setIsOpen(true);
+          }
+        }}
+      >
         {triggerContent}
       </Popover.Trigger>
     );
@@ -165,7 +182,7 @@ function calcTriggerClass(state: PersonField.State) {
   if (state.avatarOnly) {
     return classNames({
       "flex items-center justify-center": true,
-      "focus:outline-none rounded-full": !state.readonly,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base rounded-full": !state.readonly,
       "cursor-pointer": !state.readonly || hasClickableProfile,
       "cursor-default": state.readonly && !hasClickableProfile,
       "ring-2 ring-surface-accent": state.isOpen,
@@ -173,7 +190,7 @@ function calcTriggerClass(state: PersonField.State) {
   } else {
     return classNames({
       "flex items-center gap-2 truncate text-left": true,
-      "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
       "cursor-pointer": !state.readonly || hasClickableProfile,
       "cursor-default": state.readonly && !hasClickableProfile,
       "bg-surface-dimmed": state.isOpen,
@@ -241,11 +258,18 @@ function Dialog({ state }: { state: PersonField.State }) {
   return (
     <Popover.Portal>
       <Popover.Content
-        className="bg-surface-base shadow rounded border border-stroke-base p-0.5"
+        className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-[60]"
         style={{ width: 220 }}
         sideOffset={4}
         alignOffset={2}
         align="start"
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            e.stopPropagation();
+            state.setIsOpen(false);
+          }
+        }}
       >
         {state.dialogMode === "menu" && <DialogMenu state={state} />}
         {state.dialogMode === "search" && <DialogSearch state={state} />}
@@ -255,78 +279,140 @@ function Dialog({ state }: { state: PersonField.State }) {
 }
 
 function DialogMenu({ state }: { state: PersonField.State }) {
-  return (
-    <div className="p-1">
-      <DialogMenuOption
-        testId={`${state.testId}-view-profile`}
-        icon={IconExternalLink}
-        label="See profile"
-        linkTo={state.person?.profileLink || "#"}
-      />
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+  const menuRef = React.useRef<HTMLDivElement>(null);
 
-      <DialogMenuOption
-        testId={`${state.testId}-assign-another`}
-        icon={IconSearch}
-        label="Choose someone else"
-        onClick={() => {
-          state.setSearchQuery(""); // Clear any previous search
-          state.setDialogMode("search");
-        }}
-      />
+  // Build menu options array
+  const menuOptions = React.useMemo(() => {
+    const options: Array<{
+      key?: string;
+      testId?: string;
+      icon: React.ComponentType<{ size?: string | number; [key: string]: any }>;
+      label: string;
+      linkTo?: string;
+      onClick?: () => void;
+    }> = [];
+    
+    if (state.person?.profileLink) {
+      options.push({
+        testId: `${state.testId}-view-profile`,
+        icon: IconExternalLink,
+        label: "See profile",
+        linkTo: state.person.profileLink,
+      });
+    }
 
-      {state.extraDialogMenuOptions.map((option, index) => (
-        <DialogMenuOption
-          key={index}
-          icon={option.icon}
-          label={option.label}
-          onClick={() => {
-            option.onClick && option.onClick();
-            state.setIsOpen(false);
-          }}
-          linkTo={option.linkTo}
-        />
-      ))}
+    options.push({
+      testId: `${state.testId}-assign-another`,
+      icon: IconSearch,
+      label: "Choose someone else",
+      onClick: () => {
+        state.setSearchQuery(""); // Clear any previous search
+        state.setDialogMode("search");
+      },
+    });
 
-      <DialogMenuOption
-        testId={`${state.testId}-clear-assignment`}
-        icon={IconCircleX}
-        label="Clear assignment"
-        onClick={() => {
-          state.setPerson(null);
+    state.extraDialogMenuOptions.forEach((option, index) => {
+      options.push({
+        key: `extra-${index}`,
+        icon: option.icon,
+        label: option.label,
+        onClick: () => {
+          option.onClick && option.onClick();
           state.setIsOpen(false);
-        }}
-      />
+        },
+        linkTo: option.linkTo,
+      });
+    });
+
+    options.push({
+      testId: `${state.testId}-clear-assignment`,
+      icon: IconCircleX,
+      label: "Clear assignment",
+      onClick: () => {
+        state.setPerson(null);
+        state.setIsOpen(false);
+      },
+    });
+
+    return options;
+  }, [state]);
+
+  // Focus menu when it opens
+  React.useEffect(() => {
+    if (menuRef.current) {
+      menuRef.current.focus();
+    }
+  }, []);
+
+  // Scroll selected item into view
+  React.useEffect(() => {
+    const selectedItem = itemRefs.current[selectedIndex];
+    if (selectedItem) {
+      selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    }
+  }, [selectedIndex]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev < menuOptions.length - 1 ? prev + 1 : prev));
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        break;
+      case "Enter":
+        e.preventDefault();
+        const selectedOption = menuOptions[selectedIndex];
+        if (selectedOption?.onClick) {
+          selectedOption.onClick();
+        } else if (selectedOption?.linkTo) {
+          window.open(selectedOption.linkTo, '_blank');
+          state.setIsOpen(false);
+        }
+        break;
+      case "Escape":
+        e.preventDefault();
+        e.stopPropagation();
+        state.setIsOpen(false);
+        break;
+    }
+  };
+
+  return (
+    <div ref={menuRef} className="p-1" onKeyDown={handleKeyDown} tabIndex={-1}>
+      {menuOptions.map((option, index) => (
+        <div
+          key={option.key || option.testId}
+          ref={(el) => (itemRefs.current[index] = el)}
+          className={classNames("flex items-center gap-2 px-1 py-1 rounded cursor-pointer", {
+            "bg-surface-dimmed": index === selectedIndex,
+            "hover:bg-surface-dimmed": index !== selectedIndex,
+          })}
+          data-test-id={option.testId}
+          onClick={() => {
+            if (option.onClick) {
+              option.onClick();
+            } else if (option.linkTo) {
+              window.open(option.linkTo, '_blank');
+              state.setIsOpen(false);
+            }
+          }}
+          onMouseEnter={() => setSelectedIndex(index)}
+        >
+          <div className="flex items-center text-sm gap-2">
+            <option.icon size={14} />
+            {option.label}
+          </div>
+        </div>
+      ))}
     </div>
   );
 }
 
-interface DialogMenuOptionProps {
-  icon: React.ComponentType<{ size?: string | number; [key: string]: any }>;
-  label: string;
-  linkTo?: string;
-  onClick?: () => void;
-  testId?: string;
-}
-
-function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOptionProps) {
-  const wrapperClass = "flex items-center gap-2 px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
-  const Icon = icon;
-
-  const content = (
-    <div className="flex items-center text-sm gap-2">
-      <Icon size={14} />
-      {label}
-    </div>
-  );
-
-  if (linkTo) {
-    return <DivLink className={wrapperClass} to={linkTo} children={content} testId={testId} />;
-  } else if (onClick) {
-    return <div className={wrapperClass} onClick={onClick} children={content} data-test-id={testId} />;
-  } else {
-    throw new Error("Either linkTo or onClick must be provided");
-  }
-}
 
 function DialogSearch({ state }: { state: PersonField.State }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -366,6 +452,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
         break;
       case "Escape":
         e.preventDefault();
+        e.stopPropagation();
         state.setIsOpen(false);
         break;
     }
@@ -375,7 +462,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
     <div className="p-1">
       <div className="p-1 pb-0.5">
         <input
-          className="w-full border border-surface-outline rounded px-2 py-1 text-sm focus:outline-none focus:ring-0 text-content-base bg-surface-base"
+          className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
           placeholder="Search..."
           value={state.searchQuery}
           autoFocus
