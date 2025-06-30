@@ -45,16 +45,12 @@ export function DateField({
   testId = "date-field",
 }: DateField.Props) {
   const [isOpen, setIsOpen] = useState(false);
-  const [justClosed, setJustClosed] = useState(false);
 
   const handleChange = (newDate: Date | null) => {
     if (date?.getTime() !== newDate?.getTime()) {
       setDate(newDate);
     }
     setIsOpen(false); // Always close popover after date selection
-    setJustClosed(true);
-    // Clear the justClosed flag after a short delay
-    setTimeout(() => setJustClosed(false), 100);
   };
 
   const clearDate = () => {
@@ -65,7 +61,7 @@ export function DateField({
   useExportedTestHelper(testId, { setDate: handleChange });
 
   const triggerClassName = classNames(
-    "inline-block focus:outline-none",
+    "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
     {
       "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": variant === "inline" && !readonly,
       "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": variant === "form-field",
@@ -79,7 +75,12 @@ export function DateField({
         className={triggerClassName} 
         disabled={readonly} 
         data-test-id={testId}
-        onFocus={() => !readonly && !justClosed && setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !readonly) {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
       >
         <DateDisplay
           date={date}

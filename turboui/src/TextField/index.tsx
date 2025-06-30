@@ -34,6 +34,7 @@ export namespace TextField {
 
     save: () => void;
     cancel: () => void;
+    onChange: (newText: string) => void;
   }
 }
 
@@ -76,6 +77,7 @@ function useTextFieldState(props: TextField.Props): TextField.State {
     save,
     cancel,
     autofocus: !!props.autofocus,
+    onChange: props.onChange,
   };
 }
 
@@ -120,7 +122,11 @@ function FormFieldTextField(state: TextField.State) {
           ref={inputRef}
           type="text"
           value={state.currentText}
-          onChange={(e) => state.setCurrentText(e.target.value)}
+          onChange={(e) => {
+            state.setCurrentText(e.target.value);
+            // For form fields, also update parent immediately for real-time validation
+            state.onChange(e.target.value);
+          }}
           onBlur={state.save}
           onKeyDown={handleKeyDown}
           className={"w-full border-none outline-none bg-transparent text-sm px-0 py-0 " + state.className}

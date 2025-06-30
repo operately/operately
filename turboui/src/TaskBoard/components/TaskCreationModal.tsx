@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
 import Modal from "../../Modal";
@@ -34,20 +34,16 @@ export function TaskCreationModal({
   const [assignee, setAssignee] = useState<Types.Person | null>(null);
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
   const [createMore, setCreateMore] = useState(false);
-  
+
   // Default search functions if not provided
   const defaultSearchPeople = async ({ query }: { query: string }) => {
-    return people.filter(person => 
-      person.fullName.toLowerCase().includes(query.toLowerCase())
-    );
+    return people.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
   };
-  
+
   const defaultSearchMilestones = async ({ query }: { query: string }) => {
-    return milestones.filter(milestone => 
-      milestone.name.toLowerCase().includes(query.toLowerCase())
-    );
+    return milestones.filter((milestone) => milestone.name.toLowerCase().includes(query.toLowerCase()));
   };
-  
+
   // Update milestone when currentMilestoneId changes or modal opens
   useEffect(() => {
     if (isOpen) {
@@ -55,7 +51,7 @@ export function TaskCreationModal({
       if (currentMilestoneId === "no-milestone") {
         setMilestone(null);
       } else if (currentMilestoneId) {
-        const selectedMilestone = milestones.find(m => m.id === currentMilestoneId);
+        const selectedMilestone = milestones.find((m) => m.id === currentMilestoneId);
         setMilestone(selectedMilestone || null);
       } else {
         // When adding from main button, clear milestone selection
@@ -63,8 +59,7 @@ export function TaskCreationModal({
       }
     }
   }, [isOpen, currentMilestoneId, milestones]);
-  
-  
+
   // Reset form after task creation
   const resetForm = () => {
     setTitle("");
@@ -73,43 +68,43 @@ export function TaskCreationModal({
     // Keep the milestone selected for creating multiple tasks in same milestone
     // Keep the createMore toggle state
   };
-  
+
   // Reset form when modal is closed
   useEffect(() => {
     if (!isOpen) {
       resetForm();
     }
   }, [isOpen]);
-  
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Don't submit if title is empty
     if (!title.trim()) return;
-    
+
     // Create new task object
     const newTask: Omit<Types.Task, "id"> = {
       title: title.trim(),
       status: "pending",
     };
-    
+
     // Add optional fields if they exist
     if (dueDate) {
       newTask.dueDate = dueDate;
     }
-    
+
     if (assignee) {
       newTask.assignees = [assignee];
     }
-    
+
     if (milestone) {
       newTask.milestone = milestone;
     }
-    
+
     // Submit the task
     onCreateTask(newTask);
-    
+
     // Handle form after submission
     if (createMore) {
       resetForm();
@@ -117,14 +112,9 @@ export function TaskCreationModal({
       onClose();
     }
   };
-  
+
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Create Task"
-      size="medium"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Create Task" size="medium">
       <form onSubmit={handleSubmit} className="space-y-4">
         <TextField
           variant="form-field"
@@ -135,12 +125,10 @@ export function TaskCreationModal({
           autofocus
           testId="task-title"
         />
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-content-base mb-1">
-              Due date
-            </label>
+            <label className="block text-sm font-medium text-content-base mb-1">Due date</label>
             <DateField
               variant="form-field"
               date={dueDate}
@@ -149,11 +137,9 @@ export function TaskCreationModal({
               testId="due-date"
             />
           </div>
-          
+
           <div>
-            <label className="block text-sm font-medium text-content-base mb-1">
-              Assignee
-            </label>
+            <label className="block text-sm font-medium text-content-base mb-1">Assignee</label>
             <PersonField
               person={assignee}
               setPerson={setAssignee}
@@ -163,19 +149,28 @@ export function TaskCreationModal({
             />
           </div>
         </div>
-        
+
         <div>
-          <label className="block text-sm font-medium text-content-base mb-1">
-            Milestone
-          </label>
+          <label className="block text-sm font-medium text-content-base mb-1">Milestone</label>
           <MilestoneField
-            milestone={milestone}
-            setMilestone={setMilestone}
+            milestone={milestone ? { ...milestone, title: milestone.name } : null}
+            setMilestone={(newMilestone) => {
+              if (newMilestone) {
+                // Convert MilestoneField.Milestone to TaskBoard.Milestone
+                const convertedMilestone: Types.Milestone = {
+                  ...newMilestone,
+                  name: newMilestone.name || newMilestone.title || "",
+                };
+                setMilestone(convertedMilestone);
+              } else {
+                setMilestone(null);
+              }
+            }}
             searchMilestones={searchMilestones || defaultSearchMilestones}
             emptyStateMessage="Select milestone"
           />
         </div>
-        
+
         <div className="flex items-center mt-6">
           <label className="flex items-center cursor-pointer">
             <input
@@ -192,7 +187,7 @@ export function TaskCreationModal({
               Cancel
             </SecondaryButton>
             <PrimaryButton type="submit" disabled={!title.trim()}>
-              Create Task
+              Create task
             </PrimaryButton>
           </div>
         </div>

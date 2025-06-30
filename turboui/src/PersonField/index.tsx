@@ -152,7 +152,16 @@ function Trigger({ state }: { state: PersonField.State }) {
     );
   } else {
     return (
-      <Popover.Trigger className={calcTriggerClass(state)} data-test-id={state.testId}>
+      <Popover.Trigger 
+        className={calcTriggerClass(state)} 
+        data-test-id={state.testId}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !state.readonly) {
+            e.preventDefault();
+            state.setIsOpen(true);
+          }
+        }}
+      >
         {triggerContent}
       </Popover.Trigger>
     );
@@ -165,7 +174,7 @@ function calcTriggerClass(state: PersonField.State) {
   if (state.avatarOnly) {
     return classNames({
       "flex items-center justify-center": true,
-      "focus:outline-none rounded-full": !state.readonly,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base rounded-full": !state.readonly,
       "cursor-pointer": !state.readonly || hasClickableProfile,
       "cursor-default": state.readonly && !hasClickableProfile,
       "ring-2 ring-surface-accent": state.isOpen,
@@ -173,7 +182,7 @@ function calcTriggerClass(state: PersonField.State) {
   } else {
     return classNames({
       "flex items-center gap-2 truncate text-left": true,
-      "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
       "cursor-pointer": !state.readonly || hasClickableProfile,
       "cursor-default": state.readonly && !hasClickableProfile,
       "bg-surface-dimmed": state.isOpen,

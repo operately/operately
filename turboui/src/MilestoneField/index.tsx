@@ -5,13 +5,16 @@ import { IconCircleX, IconExternalLink, IconSearch, IconFlag, IconPlus } from ".
 import { DivLink } from "../Link";
 import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
-import { TextField } from "../TextField";
 
-interface Milestone {
+export interface Milestone {
   id: string;
-  title: string;
+  name?: string;
+  title?: string;
   dueDate?: Date;
-  status?: "pending" | "complete" | "overdue";
+  status?: string;
+  hasDescription?: boolean;
+  hasComments?: boolean;
+  commentCount?: number;
   projectLink?: string;
 }
 
@@ -123,7 +126,7 @@ export function useState(props: MilestoneFieldProps): State {
 function Trigger({ state }: { state: State }) {
   const triggerClass = classNames({
     "flex items-center gap-2 truncate text-left": true,
-    "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+    "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
     "cursor-pointer": !state.readonly,
     "cursor-default": state.readonly,
     "bg-surface-dimmed": state.isOpen,
@@ -131,11 +134,19 @@ function Trigger({ state }: { state: State }) {
 
   if (state.milestone) {
     return (
-      <Popover.Trigger className={triggerClass}>
+      <Popover.Trigger 
+        className={triggerClass}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !state.readonly) {
+            e.preventDefault();
+            state.setIsOpen(true);
+          }
+        }}
+      >
         <div className="flex items-start gap-1.5">
           <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div className="truncate">
-            <div className="text-sm font-medium">{state.milestone.title}</div>
+            <div className="text-sm font-medium">{state.milestone.name || state.milestone.title}</div>
             {state.milestone.dueDate && (
               <div className="text-xs text-content-dimmed">
                 Due <FormattedTime time={state.milestone.dueDate} format="short-date" />
@@ -147,7 +158,15 @@ function Trigger({ state }: { state: State }) {
     );
   } else {
     return (
-      <Popover.Trigger className={triggerClass}>
+      <Popover.Trigger 
+        className={triggerClass}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" && !state.readonly) {
+            e.preventDefault();
+            state.setIsOpen(true);
+          }
+        }}
+      >
         <div className="flex items-center gap-1.5">
           <div className="truncate">
             <div className="text-sm font-medium text-content-dimmed">
@@ -354,7 +373,7 @@ function DialogSearch({ state }: { state: State }) {
             <div className="flex items-start gap-1.5 truncate">
               <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
               <div className="truncate">
-                <div className="text-sm truncate">{milestone.title}</div>
+                <div className="text-sm truncate">{milestone.name || milestone.title}</div>
                 {milestone.dueDate && (
                   <div className="text-xs text-content-dimmed">
                     Due <FormattedTime time={milestone.dueDate} format="short-date" />
