@@ -3,6 +3,7 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
 import Modal from "../../Modal";
 import { IconCalendar, IconUser } from "../../icons";
+import { TextField } from "../../TextField";
 
 interface TaskCreationModalProps {
   isOpen: boolean;
@@ -43,8 +44,6 @@ export function TaskCreationModal({
     }
   }, [isOpen, currentMilestoneId]);
   
-  // Refs
-  const titleInputRef = useRef<HTMLInputElement>(null);
   
   // Reset form after task creation
   const resetForm = () => {
@@ -55,14 +54,9 @@ export function TaskCreationModal({
     // Keep the createMore toggle state
   };
   
-  // Focus title input when modal opens
+  // Reset form when modal is closed
   useEffect(() => {
-    if (isOpen && titleInputRef.current) {
-      setTimeout(() => {
-        titleInputRef.current?.focus();
-      }, 100);
-    } else if (!isOpen) {
-      // Reset the form when the modal is closed
+    if (!isOpen) {
       resetForm();
     }
   }, [isOpen]);
@@ -105,10 +99,6 @@ export function TaskCreationModal({
     // Handle form after submission
     if (createMore) {
       resetForm();
-      // Focus title input again
-      setTimeout(() => {
-        titleInputRef.current?.focus();
-      }, 100);
     } else {
       onClose();
     }
@@ -122,22 +112,15 @@ export function TaskCreationModal({
       size="medium"
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="task-title" className="block text-sm font-medium text-content-base mb-1">
-            Task title
-          </label>
-          <input
-            id="task-title"
-            ref={titleInputRef}
-            type="text"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="Enter task title"
-            className="w-full px-3 py-2 border border-surface-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary-base"
-            required
-            autoFocus
-          />
-        </div>
+        <TextField
+          variant="form-field"
+          label="Task title"
+          text={title}
+          onChange={setTitle}
+          placeholder="Enter task title"
+          autofocus
+          testId="task-title"
+        />
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
