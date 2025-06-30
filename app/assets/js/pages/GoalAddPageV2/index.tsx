@@ -43,6 +43,7 @@ export default {
 
             <div className="flex flex-col gap-4">
               <TextField
+                autofocus
                 label="Name"
                 variant="form-field"
                 placeholder="What do you want to achieve?"
