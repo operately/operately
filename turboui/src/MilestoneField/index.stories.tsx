@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { MilestoneField } from "./index";
+import { MilestoneField, Milestone } from "./index";
 
 const meta: Meta<typeof MilestoneField> = {
   title: "Components/TaskBoard/MilestoneField",
@@ -20,52 +20,52 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Mock milestone data - sorted by due date (earliest first), with some without due dates
-const mockMilestones = [
+const mockMilestones: Milestone[] = [
   {
     id: "3",
-    title: "MVP Release",
+    name: "MVP Release",
     dueDate: new Date("2023-12-20"),
     status: "overdue" as const,
     projectLink: "/projects/mvp",
   },
   {
     id: "1",
-    title: "Project Alpha Launch",
+    name: "Project Alpha Launch",
     dueDate: new Date("2024-01-15"),
     status: "pending" as const,
     projectLink: "/projects/alpha",
   },
   {
     id: "5",
-    title: "Database Migration",
+    name: "Database Migration",
     dueDate: new Date("2024-01-30"),
     status: "pending" as const,
     projectLink: "/projects/migration",
   },
   {
     id: "2",
-    title: "Beta Testing Complete",
+    name: "Beta Testing Complete",
     dueDate: new Date("2024-02-01"),
     status: "complete" as const,
     projectLink: "/projects/beta",
   },
   {
     id: "4",
-    title: "User Research Phase",
+    name: "User Research Phase",
     dueDate: new Date("2024-03-10"),
     status: "pending" as const,
     projectLink: "/projects/research",
   },
   {
     id: "6",
-    title: "Documentation Review",
+    name: "Documentation Review",
     // No due date
     status: "pending" as const,
     projectLink: "/projects/docs",
   },
   {
     id: "7",
-    title: "Code Quality Audit",
+    name: "Code Quality Audit",
     // No due date
     status: "pending" as const,
     projectLink: "/projects/audit",
@@ -79,7 +79,7 @@ const Template = (args: any) => {
     // Simulate search delay
     await new Promise((resolve) => setTimeout(resolve, 200));
 
-    const filtered = mockMilestones.filter((m) => m.title.toLowerCase().includes(query.toLowerCase()));
+    const filtered = mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
 
     // Sort by due date (earliest first), then by title for those without due dates
     return filtered.sort((a, b) => {
@@ -88,7 +88,7 @@ const Template = (args: any) => {
       }
       if (a.dueDate && !b.dueDate) return -1; // Items with due dates come first
       if (!a.dueDate && b.dueDate) return 1;
-      return a.title.localeCompare(b.title); // Alphabetical for no due dates
+      return (a.name || a.title || "").localeCompare((b.name || b.title || "")); // Alphabetical for no due dates
     });
   };
 
@@ -99,7 +99,7 @@ const Template = (args: any) => {
     if (title) {
       const newMilestone = {
         id: Date.now().toString(),
-        title: title,
+        name: title,
         status: "pending" as const,
         projectLink: "/projects/demo",
       };
@@ -118,7 +118,7 @@ const Template = (args: any) => {
       />
 
       <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
-        <strong>Selected:</strong> {milestone ? milestone.title : "None"}
+        <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
       </div>
     </div>
   );
@@ -194,7 +194,7 @@ export const WithoutCreateNew: Story = {
 
       if (!query) return mockMilestones;
 
-      return mockMilestones.filter((m) => m.title.toLowerCase().includes(query.toLowerCase()));
+      return mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
     };
 
     return (
@@ -208,7 +208,7 @@ export const WithoutCreateNew: Story = {
         />
 
         <div className="mt-4 p-2 bg-gray-100 rounded text-sm">
-          <strong>Selected:</strong> {milestone ? milestone.title : "None"}
+          <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
         </div>
       </div>
     );
@@ -229,7 +229,7 @@ export const InteractiveDemo: Story = {
 
       if (!query) return mockMilestones;
 
-      return mockMilestones.filter((m) => m.title.toLowerCase().includes(query.toLowerCase()));
+      return mockMilestones.filter((m) => (m.name || m.title || "").toLowerCase().includes(query.toLowerCase()));
     };
 
     const handleCreateNew = (title?: string) => {
@@ -239,7 +239,7 @@ export const InteractiveDemo: Story = {
       if (title) {
         const newMilestone = {
           id: Date.now().toString(),
-          title: title,
+          name: title,
           status: "pending" as const,
           projectLink: "/projects/demo",
         };
@@ -275,7 +275,7 @@ export const InteractiveDemo: Story = {
         <div className="p-3 bg-gray-100 rounded">
           <div className="text-sm space-y-1">
             <div>
-              <strong>Selected:</strong> {milestone ? milestone.title : "None"}
+              <strong>Selected:</strong> {milestone ? (milestone.name || milestone.title) : "None"}
             </div>
             {milestone?.dueDate && (
               <div>
