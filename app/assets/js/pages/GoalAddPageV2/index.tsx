@@ -7,7 +7,7 @@ import * as Paper from "@/components/PaperContainer";
 import { useCreateGoal } from "@/api";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
-import { PrimaryButton, showErrorToast, SpaceField, TextField } from "turboui";
+import { PrimaryButton, PrivacyField, showErrorToast, SpaceField, TextField } from "turboui";
 
 import { PageModule } from "@/routes/types";
 
@@ -21,6 +21,8 @@ interface PageState {
   nameError: string | undefined;
   spaceError: string | undefined;
   spaceSearch: SpaceField.SearchSpaceFn;
+  accessLevels: PrivacyField.AccessLevels;
+  setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
   submit: () => Promise<void>;
   submitting: boolean;
 }
@@ -51,7 +53,6 @@ export default {
                 onChange={state.setName}
                 error={state.nameError}
               />
-
               <SpaceField
                 label="Space"
                 space={state.space}
@@ -61,6 +62,14 @@ export default {
                 testId="goal-add-space-field"
                 error={state.spaceError}
               />
+
+              <PrivacyField
+                accessLevels={state.accessLevels}
+                setAccessLevels={state.setAccessLevels}
+                resourceType={"goal"}
+                variant="form-field"
+                label="Privacy"
+              />
             </div>
 
             <div className="mt-6">
@@ -69,11 +78,6 @@ export default {
               </PrimaryButton>
             </div>
           </Paper.Body>
-
-          <div className="my-8 text-center px-10">
-            <span className="font-bold">What happens next?</span> A new draft goal will be added to the selected space.
-            Only you can see it until you publish it.
-          </div>
         </Paper.Root>
       </Pages.Page>
     );
@@ -88,6 +92,10 @@ function usePageState(): PageState {
 
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(null);
+  const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>({
+    company: "edit",
+    space: "edit",
+  });
 
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
   const [spaceError, setSpaceError] = React.useState<string | undefined>(undefined);
@@ -131,6 +139,8 @@ function usePageState(): PageState {
     setSpace,
     spaceError,
     spaceSearch,
+    accessLevels,
+    setAccessLevels,
     submit,
     submitting,
   };

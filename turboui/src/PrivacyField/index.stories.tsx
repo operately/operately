@@ -30,7 +30,6 @@ const Component = (args: Partial<PrivacyField.Props>) => {
       {...args}
       accessLevels={accessLevels}
       setAccessLevels={setAccessLevels}
-      spaceName={args.spaceName ?? "Marketing"}
       resourceType={args.resourceType ?? "goal"}
     />
   );
