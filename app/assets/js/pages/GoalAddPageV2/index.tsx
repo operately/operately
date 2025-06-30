@@ -69,11 +69,6 @@ export default {
               </PrimaryButton>
             </div>
           </Paper.Body>
-
-          <div className="my-8 text-center px-10">
-            <span className="font-bold">What happens next?</span> A new draft goal will be added to the selected space.
-            Only you can see it until you publish it.
-          </div>
         </Paper.Root>
       </Pages.Page>
     );
