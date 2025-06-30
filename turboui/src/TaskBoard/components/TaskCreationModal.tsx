@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
 import Modal from "../../Modal";
-import { IconCalendar, IconUser } from "../../icons";
 import { TextField } from "../../TextField";
+import { DateField } from "../../DateField";
+import { PersonField } from "../../PersonField";
+import { MilestoneField } from "../../MilestoneField";
 
 interface TaskCreationModalProps {
   isOpen: boolean;
@@ -12,6 +14,8 @@ interface TaskCreationModalProps {
   milestones?: Types.Milestone[];
   currentMilestoneId?: string;
   people?: Types.Person[];
+  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+  searchMilestones?: (params: { query: string }) => Promise<Types.Milestone[]>;
 }
 
 export function TaskCreationModal({
@@ -21,35 +25,51 @@ export function TaskCreationModal({
   milestones = [],
   currentMilestoneId,
   people = [],
+  searchPeople,
+  searchMilestones,
 }: TaskCreationModalProps) {
   // Form state
   const [title, setTitle] = useState("");
-  const [dueDate, setDueDate] = useState<string>("");
-  const [assigneeId, setAssigneeId] = useState<string>("");
-  const [milestoneId, setMilestoneId] = useState<string>("");
+  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [assignee, setAssignee] = useState<Types.Person | null>(null);
+  const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
   const [createMore, setCreateMore] = useState(false);
   
-  // Update milestone ID when currentMilestoneId changes or modal opens
+  // Default search functions if not provided
+  const defaultSearchPeople = async ({ query }: { query: string }) => {
+    return people.filter(person => 
+      person.fullName.toLowerCase().includes(query.toLowerCase())
+    );
+  };
+  
+  const defaultSearchMilestones = async ({ query }: { query: string }) => {
+    return milestones.filter(milestone => 
+      milestone.name.toLowerCase().includes(query.toLowerCase())
+    );
+  };
+  
+  // Update milestone when currentMilestoneId changes or modal opens
   useEffect(() => {
     if (isOpen) {
       // Handle special case for "no-milestone"
       if (currentMilestoneId === "no-milestone") {
-        setMilestoneId("");
+        setMilestone(null);
       } else if (currentMilestoneId) {
-        setMilestoneId(currentMilestoneId);
+        const selectedMilestone = milestones.find(m => m.id === currentMilestoneId);
+        setMilestone(selectedMilestone || null);
       } else {
         // When adding from main button, clear milestone selection
-        setMilestoneId("");
+        setMilestone(null);
       }
     }
-  }, [isOpen, currentMilestoneId]);
+  }, [isOpen, currentMilestoneId, milestones]);
   
   
   // Reset form after task creation
   const resetForm = () => {
     setTitle("");
-    setDueDate("");
-    setAssigneeId("");
+    setDueDate(null);
+    setAssignee(null);
     // Keep the milestone selected for creating multiple tasks in same milestone
     // Keep the createMore toggle state
   };
@@ -76,21 +96,15 @@ export function TaskCreationModal({
     
     // Add optional fields if they exist
     if (dueDate) {
-      newTask.dueDate = new Date(dueDate);
+      newTask.dueDate = dueDate;
     }
     
-    if (assigneeId) {
-      const selectedPerson = people.find(p => p.id === assigneeId);
-      if (selectedPerson) {
-        newTask.assignees = [selectedPerson];
-      }
+    if (assignee) {
+      newTask.assignees = [assignee];
     }
     
-    if (milestoneId) {
-      const selectedMilestone = milestones.find(m => m.id === milestoneId);
-      if (selectedMilestone) {
-        newTask.milestone = selectedMilestone;
-      }
+    if (milestone) {
+      newTask.milestone = milestone;
     }
     
     // Submit the task
@@ -124,65 +138,42 @@ export function TaskCreationModal({
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="due-date" className="block text-sm font-medium text-content-base mb-1">
+            <label className="block text-sm font-medium text-content-base mb-1">
               Due date
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <IconCalendar size={16} className="text-content-subtle" />
-              </div>
-              <input
-                id="due-date"
-                type="date"
-                value={dueDate}
-                onChange={(e) => setDueDate(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-surface-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary-base"
-              />
-            </div>
+            <DateField
+              variant="form-field"
+              date={dueDate}
+              setDate={setDueDate}
+              emptyStateText="Set due date"
+              testId="due-date"
+            />
           </div>
           
           <div>
-            <label htmlFor="assignee" className="block text-sm font-medium text-content-base mb-1">
+            <label className="block text-sm font-medium text-content-base mb-1">
               Assignee
             </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <IconUser size={16} className="text-content-subtle" />
-              </div>
-              <select
-                id="assignee"
-                value={assigneeId}
-                onChange={(e) => setAssigneeId(e.target.value)}
-                className="w-full pl-10 pr-3 py-2 border border-surface-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary-base appearance-none"
-              >
-                <option value="">Select assignee</option>
-                {people.map((person) => (
-                  <option key={person.id} value={person.id}>
-                    {person.fullName}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <PersonField
+              person={assignee}
+              setPerson={setAssignee}
+              searchPeople={searchPeople || defaultSearchPeople}
+              emptyStateMessage="Select assignee"
+              testId="assignee"
+            />
           </div>
         </div>
         
         <div>
-          <label htmlFor="milestone" className="block text-sm font-medium text-content-base mb-1">
+          <label className="block text-sm font-medium text-content-base mb-1">
             Milestone
           </label>
-          <select
-            id="milestone"
-            value={milestoneId}
-            onChange={(e) => setMilestoneId(e.target.value)}
-            className="w-full px-3 py-2 border border-surface-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary-base appearance-none"
-          >
-            <option value="">No milestone</option>
-            {milestones.map((milestone) => (
-              <option key={milestone.id} value={milestone.id}>
-                {milestone.name}
-              </option>
-            ))}
-          </select>
+          <MilestoneField
+            milestone={milestone}
+            setMilestone={setMilestone}
+            searchMilestones={searchMilestones || defaultSearchMilestones}
+            emptyStateMessage="Select milestone"
+          />
         </div>
         
         <div className="flex items-center mt-6">

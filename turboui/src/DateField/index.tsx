@@ -45,12 +45,16 @@ export function DateField({
   testId = "date-field",
 }: DateField.Props) {
   const [isOpen, setIsOpen] = useState(false);
+  const [justClosed, setJustClosed] = useState(false);
 
   const handleChange = (newDate: Date | null) => {
     if (date?.getTime() !== newDate?.getTime()) {
       setDate(newDate);
-      setIsOpen(false); // Close popover after date selection
     }
+    setIsOpen(false); // Always close popover after date selection
+    setJustClosed(true);
+    // Clear the justClosed flag after a short delay
+    setTimeout(() => setJustClosed(false), 100);
   };
 
   const clearDate = () => {
@@ -71,7 +75,12 @@ export function DateField({
 
   return (
     <Popover.Root open={isOpen} onOpenChange={setIsOpen}>
-      <Popover.Trigger className={triggerClassName} disabled={readonly} data-test-id={testId}>
+      <Popover.Trigger 
+        className={triggerClassName} 
+        disabled={readonly} 
+        data-test-id={testId}
+        onFocus={() => !readonly && !justClosed && setIsOpen(true)}
+      >
         <DateDisplay
           date={date}
           className={className}
@@ -89,7 +98,7 @@ export function DateField({
 
       <Popover.Portal>
         <Popover.Content
-          className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-50"
+          className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-[60]"
           sideOffset={5}
         >
           <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">

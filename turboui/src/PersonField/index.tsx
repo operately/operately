@@ -241,7 +241,7 @@ function Dialog({ state }: { state: PersonField.State }) {
   return (
     <Popover.Portal>
       <Popover.Content
-        className="bg-surface-base shadow rounded border border-stroke-base p-0.5"
+        className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-[60]"
         style={{ width: 220 }}
         sideOffset={4}
         alignOffset={2}
@@ -375,7 +375,7 @@ function DialogSearch({ state }: { state: PersonField.State }) {
     <div className="p-1">
       <div className="p-1 pb-0.5">
         <input
-          className="w-full border border-surface-outline rounded px-2 py-1 text-sm focus:outline-none focus:ring-0 text-content-base bg-surface-base"
+          className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
           placeholder="Search..."
           value={state.searchQuery}
           autoFocus

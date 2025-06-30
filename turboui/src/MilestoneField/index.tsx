@@ -5,6 +5,7 @@ import { IconCircleX, IconExternalLink, IconSearch, IconFlag, IconPlus } from ".
 import { DivLink } from "../Link";
 import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
+import { TextField } from "../TextField";
 
 interface Milestone {
   id: string;
@@ -165,7 +166,7 @@ function Dialog({ state }: { state: State }) {
   return (
     <Popover.Portal>
       <Popover.Content
-        className="bg-surface-base shadow rounded border border-stroke-base p-0.5"
+        className="bg-surface-base shadow rounded border border-stroke-base p-0.5 z-[60]"
         style={{ width: 240 }}
         sideOffset={4}
         alignOffset={2}
@@ -322,7 +323,7 @@ function DialogSearch({ state }: { state: State }) {
     <div className="p-1">
       <div className="p-1 pb-0.5">
         <input
-          className="w-full border border-stroke-base rounded px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
+          className="w-full border border-surface-outline rounded-lg px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-base bg-surface-base text-content-base"
           placeholder="Find or create milestone..."
           value={state.searchQuery}
           autoFocus
