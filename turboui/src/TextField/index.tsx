@@ -107,7 +107,7 @@ function FormFieldTextField(state: TextField.State) {
 
   const outerClass = classNames(
     "cursor-text relative w-full border rounded-lg px-2 py-1.5 bg-surface-base",
-    "has-[:focus]:outline outline-indigo-600 bg-transparent",
+    "focus-within:outline outline-indigo-600 bg-transparent",
     state.error ? "border-red-500 outline-red-500" : "border-surface-outline",
   );
 
