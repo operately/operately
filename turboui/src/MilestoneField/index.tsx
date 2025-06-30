@@ -190,6 +190,13 @@ function Dialog({ state }: { state: State }) {
         sideOffset={4}
         alignOffset={2}
         align="start"
+        onKeyDown={(e) => {
+          if (e.key === "Escape") {
+            e.preventDefault();
+            e.stopPropagation();
+            state.setIsOpen(false);
+          }
+        }}
       >
         {state.dialogMode === "menu" && <DialogMenu state={state} />}
         {state.dialogMode === "search" && <DialogSearch state={state} />}
@@ -333,6 +340,7 @@ function DialogSearch({ state }: { state: State }) {
         break;
       case "Escape":
         e.preventDefault();
+        e.stopPropagation();
         state.setIsOpen(false);
         break;
     }

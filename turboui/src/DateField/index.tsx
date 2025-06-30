@@ -101,6 +101,13 @@ export function DateField({
         <Popover.Content
           className="bg-surface-base shadow-lg border border-surface-outline rounded-md z-[60]"
           sideOffset={5}
+          onKeyDown={(e) => {
+            if (e.key === "Escape") {
+              e.preventDefault();
+              e.stopPropagation();
+              setIsOpen(false);
+            }
+          }}
         >
           <div className="flex justify-between items-center border-b border-stroken-base p-2 pb-1.5">
             <div className="text-sm font-medium">Select date</div>
