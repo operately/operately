@@ -7,13 +7,13 @@ import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
 import { DateField } from "../DateField";
 import { GoalField } from "../GoalField";
+import { LastCheckIn } from "../LastCheckIn";
 import { DivLink } from "../Link";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 import { durationHumanized, isOverdue } from "../utils/time";
-import { LastCheckIn } from "../LastCheckIn";
 
 import {
   IconAlertTriangleFilled,
@@ -217,7 +217,6 @@ function Privacy(props: GoalPage.State) {
       <PrivacyField
         testId="goal-privacy-field"
         accessLevels={props.accessLevels}
-        spaceName={props.space.name}
         setAccessLevels={props.setAccessLevels}
         resourceType={"goal"}
         readonly={!props.canEdit}

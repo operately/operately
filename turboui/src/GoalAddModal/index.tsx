@@ -135,7 +135,6 @@ export function GoalAddModal({
                   <PrivacyField
                     accessLevels={accessLevels}
                     setAccessLevels={setAccessLevels}
-                    spaceName={""}
                     resourceType={"goal"}
                     iconSize={16}
                   />
