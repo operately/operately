@@ -270,10 +270,10 @@ function SelectBox({
   testId: string;
 }) {
   return (
-    <div className="px-2 py-1 border border-surface-outline rounded-md text-sm bg-surface-base grid items-center">
+    <div className="px-2 py-1 border border-surface-outline rounded-md text-sm grid items-center">
       <select
         data-test-id={testId}
-        className="appearance-none col-start-1 row-start-1"
+        className="appearance-none col-start-1 row-start-1 bg-transparent"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       >
