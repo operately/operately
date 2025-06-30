@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { PrimaryButton, PrivacyField, showErrorToast, SpaceField, TextField } from "turboui";
 
 import { PageModule } from "@/routes/types";
+import { accessLevelAsNumber } from "../../models/goals";
 
 interface LoaderResult {}
 
@@ -117,9 +118,9 @@ function usePageState(): PageState {
       const res = await create({
         name: name.trim(),
         spaceId: space?.id || null,
-        anonymousAccessLevel: 40,
-        companyAccessLevel: 40,
-        spaceAccessLevel: 40,
+        anonymousAccessLevel: 0,
+        companyAccessLevel: accessLevelAsNumber(accessLevels.company),
+        spaceAccessLevel: accessLevelAsNumber(accessLevels.space),
       });
 
       setNameError(undefined);
