@@ -14,6 +14,7 @@ export namespace TextField {
     variant?: "inline" | "form-field";
     label?: string;
     error?: string;
+    autofocus?: boolean;
   }
 
   export interface State {
@@ -32,6 +33,7 @@ export namespace TextField {
 
     save: () => void;
     cancel: () => void;
+    autofocus: boolean;
   }
 }
 
@@ -67,19 +69,18 @@ function useTextFieldState(props: TextField.Props): TextField.State {
     error: props.error,
     readonly: props.readonly || false,
     placeholder: props.placeholder || "",
-
     currentText,
     setCurrentText,
     isEditing,
     setIsEditing,
     save,
     cancel,
+    autofocus: !!props.autofocus,
   };
 }
 
 export function TextField(props: TextField.Props) {
   const state = useTextFieldState(props);
-
   if (props.variant === "form-field") {
     return <FormFieldTextField {...state} />;
   } else {
@@ -88,6 +89,14 @@ export function TextField(props: TextField.Props) {
 }
 
 function FormFieldTextField(state: TextField.State) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if (state.autofocus && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [state.autofocus]);
+
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Escape") {
       state.cancel();
@@ -108,6 +117,7 @@ function FormFieldTextField(state: TextField.State) {
       <div className={outerClass} data-test-id={state.testId}>
         <input
           data-test-id={createTestId(state.testId, "input")}
+          ref={inputRef}
           type="text"
           value={state.currentText}
           onChange={(e) => state.setCurrentText(e.target.value)}
@@ -134,11 +144,11 @@ function InlineTextField(state: TextField.State) {
   const hiddenSpanRef = useRef<HTMLSpanElement | null>(null);
 
   useEffect(() => {
-    if (state.isEditing && inputRef.current) {
+    if (state.isEditing && inputRef.current && state.autofocus) {
       inputRef.current.focus();
       adjustInputWidth();
     }
-  }, [state.isEditing]);
+  }, [state.isEditing, state.autofocus]);
 
   useEffect(() => {
     if (state.isEditing) {
