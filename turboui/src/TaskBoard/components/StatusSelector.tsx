@@ -1,14 +1,15 @@
 import React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import classNames from "../../utils/classnames";
-import { IconCircleDashed, IconCircleDot, IconCircleCheck, IconX, IconChevronDown } from "../../icons";
+import { IconCircleDashed, IconCircleDot, IconCircleCheckFilled, IconX, IconChevronDown, IconCheck } from "../../icons";
 
 // Import types from the shared types module
 import * as Types from "../types";
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheck = (props: any) => <IconCircleCheck {...props} className="text-success" />;
+const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckFilled {...props} className="text-success" />;
+const ColoredIconCheck = (props: any) => <IconCheck {...props} className="text-success" />;
 const ColoredIconX = (props: any) => <IconX {...props} className="text-red-500" />;
 
 // Map task status to labels and icons
@@ -22,7 +23,7 @@ const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?:
   },
   done: {
     label: "Done",
-    icon: ColoredIconCircleCheck,
+    icon: ColoredIconCircleCheckFilled,
     color: "text-success",
     buttonColor: "text-success",
   },
@@ -79,9 +80,12 @@ function StatusButton({
     config.buttonColor,
   );
 
+  // Use IconCheck for 'done' in button mode, otherwise use config.icon
+  const iconToRender = status === "done" ? ColoredIconCheck : config.icon;
+
   return (
     <div className={buttonClassName}>
-      {React.createElement(config.icon, {
+      {React.createElement(iconToRender, {
         size: iconSize,
         className: "flex-shrink-0 flex items-center self-center",
       })}
@@ -242,7 +246,7 @@ export function StatusSelector({
                       {React.createElement(config.icon, { size: 18 })}
                       <div className="text-sm truncate">{config.label}</div>
                     </div>
-                    {isCurrentStatus && <IconCircleCheck size={14} className="text-primary-500 ml-2" />}
+                    {isCurrentStatus && <IconCircleCheckFilled size={14} className="text-primary-500 ml-2" />}
                   </div>
                 );
               })}
