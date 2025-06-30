@@ -80,36 +80,36 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
       <div className="flex items-center px-4 py-2.5 group bg-surface-base hover:bg-surface-highlight">
         {/* Left side: Status and task info */}
         <div className="flex-1 flex items-center gap-2 min-w-0">
-          {/* Status icon */}
-          <div className="flex-shrink-0 flex items-center">
-            <StatusSelector status={task.status} onChange={handleStatusChange} size="md" readonly={!onTaskUpdate} />
-          </div>
-
-          {/* Task title with inline meta indicators */}
-          <div className="min-w-0 flex-1 flex items-center gap-2">
+          {/* Status icon and title wrapper for alignment */}
+          <div className="flex items-center gap-2 h-6">
+            {/* Status icon */}
+            <div className="flex-shrink-0 flex items-center h-6">
+              <StatusSelector status={task.status} onChange={handleStatusChange} size="md" readonly={!onTaskUpdate} />
+            </div>
+            {/* Task title with inline meta indicators */}
             <BlackLink
               to={`/tasks/${task.id}`}
-              className="text-sm hover:text-link-hover transition-colors truncate"
+              className="text-sm hover:text-link-hover transition-colors truncate h-6 flex items-center relative top-[-1px]"
               underline="hover"
             >
               {task.title}
             </BlackLink>
-
-            {/* Description indicator */}
-            {task.hasDescription && (
-              <span className="text-content-subtle flex-shrink-0">
-                <IconFileText size={14} />
-              </span>
-            )}
-
-            {/* Comments indicator */}
-            {task.hasComments && (
-              <span className="text-content-subtle flex items-center flex-shrink-0">
-                <IconMessageCircle size={14} />
-                {task.commentCount && <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>}
-              </span>
-            )}
           </div>
+
+          {/* Description indicator */}
+          {task.hasDescription && (
+            <span className="text-content-subtle flex-shrink-0">
+              <IconFileText size={14} />
+            </span>
+          )}
+
+          {/* Comments indicator */}
+          {task.hasComments && (
+            <span className="text-content-subtle flex items-center flex-shrink-0">
+              <IconMessageCircle size={14} />
+              {task.commentCount && <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>}
+            </span>
+          )}
         </div>
 
         {/* Right side: Due date and assignee */}

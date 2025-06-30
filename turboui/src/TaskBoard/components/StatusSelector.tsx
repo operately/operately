@@ -1,14 +1,15 @@
 import React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import classNames from "../../utils/classnames";
-import { IconCircleDashed, IconCircleDot, IconCircleCheck, IconX, IconChevronDown } from "../../icons";
+import { IconCircleDashed, IconCircleDot, IconCircleCheckFilled, IconX, IconChevronDown, IconCheck } from "../../icons";
 
 // Import types from the shared types module
 import * as Types from "../types";
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheck {...props} className="text-success" />;
+const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckFilled {...props} className="text-success" />;
+const ColoredIconCheck = (props: any) => <IconCheck {...props} className="text-success" />;
 const ColoredIconX = (props: any) => <IconX {...props} className="text-red-500" />;
 
 // Map task status to labels and icons
@@ -70,23 +71,28 @@ function StatusButton({
         ? "border-green-200 bg-green-50 cursor-default"
         : "border-green-200 bg-green-50 hover:bg-green-100 cursor-pointer"
       : status === "canceled"
-      ? readonly
-        ? "border-red-200 bg-red-50 cursor-default"
-        : "border-red-200 bg-red-50 hover:bg-red-100 cursor-pointer"
-      : readonly
-      ? "border-surface-outline bg-surface-base cursor-default"
-      : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
+        ? readonly
+          ? "border-red-200 bg-red-50 cursor-default"
+          : "border-red-200 bg-red-50 hover:bg-red-100 cursor-pointer"
+        : readonly
+          ? "border-surface-outline bg-surface-base cursor-default"
+          : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
     config.buttonColor,
   );
 
+  // Use IconCheck for 'done' in button mode, otherwise use config.icon
+  const iconToRender = status === "done" ? ColoredIconCheck : config.icon;
+
   return (
     <div className={buttonClassName}>
-      {React.createElement(config.icon, {
+      {React.createElement(iconToRender, {
         size: iconSize,
-        className: "flex-shrink-0",
+        className: "flex-shrink-0 flex items-center self-center",
       })}
-      <span>{config.label}</span>
-      {!readonly && <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60" />}
+      <span className="flex items-center leading-none">{config.label}</span>
+      {!readonly && (
+        <IconChevronDown size={iconSize - 2} className="flex-shrink-0 opacity-60 flex items-center self-center" />
+      )}
     </div>
   );
 }
@@ -146,9 +152,7 @@ export function StatusSelector({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) => 
-          prev < filteredStatusOptions.length - 1 ? prev + 1 : prev
-        );
+        setSelectedIndex((prev) => (prev < filteredStatusOptions.length - 1 ? prev + 1 : prev));
         break;
       case "ArrowUp":
         e.preventDefault();
@@ -178,10 +182,10 @@ export function StatusSelector({
     return showFullBadge ? (
       <StatusButton status={status} size={size} readonly={true} />
     ) : (
-      <div className={`inline-flex items-center justify-center ${containerSize}`}>
+      <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
         {React.createElement(taskStatusConfig[status].icon, {
           size: iconSize,
-          className: `align-middle ${taskStatusConfig[status].color || ""}`,
+          className: `flex items-center self-center ${taskStatusConfig[status].color || ""}`,
         })}
       </div>
     );
@@ -193,10 +197,10 @@ export function StatusSelector({
         {showFullBadge ? (
           <StatusButton status={status} size={size} readonly={false} />
         ) : (
-          <div className={`inline-flex items-center justify-center ${containerSize}`}>
+          <div className={`inline-flex items-center justify-center h-6 ${containerSize}`}>
             {React.createElement(taskStatusConfig[status].icon, {
               size: iconSize,
-              className: `align-middle ${taskStatusConfig[status].color || ""}`,
+              className: `flex items-center self-center ${taskStatusConfig[status].color || ""}`,
             })}
           </div>
         )}
@@ -231,13 +235,10 @@ export function StatusSelector({
                   <div
                     key={statusOption}
                     ref={(el) => (itemRefs.current[index] = el)}
-                    className={classNames(
-                      "flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer",
-                      {
-                        "bg-surface-dimmed": isSelected,
-                        "hover:bg-surface-dimmed": !isSelected,
-                      }
-                    )}
+                    className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
+                      "bg-surface-dimmed": isSelected,
+                      "hover:bg-surface-dimmed": !isSelected,
+                    })}
                     onClick={() => handleItemClick(statusOption as Types.Status)}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
@@ -245,7 +246,7 @@ export function StatusSelector({
                       {React.createElement(config.icon, { size: 18 })}
                       <div className="text-sm truncate">{config.label}</div>
                     </div>
-                    {isCurrentStatus && <IconCircleCheck size={14} className="text-primary-500 ml-2" />}
+                    {isCurrentStatus && <IconCircleCheckFilled size={14} className="text-primary-500 ml-2" />}
                   </div>
                 );
               })}
