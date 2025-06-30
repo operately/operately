@@ -4,8 +4,8 @@ import * as React from "react";
 import { match } from "ts-pattern";
 import classNames from "../utils/classnames";
 
-import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconTent } from "../icons";
 import { PrimaryButton, SecondaryButton } from "../Button";
+import { IconBuilding, IconChevronDown, IconLock, IconLockFilled, IconTent } from "../icons";
 import { createTestId } from "../TestableElement";
 
 export const ACCESS_LEVELS = ["no_access", "view", "comment", "edit", "full"] as const;
@@ -21,6 +21,9 @@ export namespace PrivacyField {
     spaceName: string;
     resourceType: "goal" | "project";
 
+    variant?: "inline" | "form-field";
+    label?: string;
+    error?: string;
     placeholder?: string;
     readonly?: boolean;
     className?: string;
@@ -49,6 +52,9 @@ function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
     setAccessLevels: props.setAccessLevels,
     spaceName: props.spaceName,
     resourceType: props.resourceType,
+    variant: props.variant || "inline",
+    label: props.label || "",
+    error: props.error || "",
     placeholder: props.placeholder || "Select privacy level",
     readonly: props.readonly || false,
     className: props.className || "",
@@ -63,25 +69,11 @@ function usePrivacyFieldState(props: PrivacyField.Props): PrivacyField.State {
 export function PrivacyField(props: PrivacyField.Props) {
   const state = usePrivacyFieldState(props);
 
-  const triggerClassName = classNames(
-    "inline-block focus:outline-none",
-    {
-      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": !state.readonly,
-    },
-    state.className,
-  );
-
-  return (
-    <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
-      <Popover.Trigger className={triggerClassName} disabled={state.readonly} data-test-id={state.testId}>
-        <PrivacyDisplay {...state} />
-      </Popover.Trigger>
-
-      <Popover.Portal>
-        <PrivacyPickerPopover {...state} />
-      </Popover.Portal>
-    </Popover.Root>
-  );
+  if (state.variant === "form-field") {
+    return <FormFieldPrivacyField {...state} />;
+  } else {
+    return <InlinePrivacyField {...state} />;
+  }
 }
 
 function PrivacyPickerPopover(props: PrivacyField.State) {
@@ -153,13 +145,14 @@ function PrivacyPickerPopover(props: PrivacyField.State) {
 function PrivacyDisplay(props: PrivacyField.State) {
   const iconSize = props.iconSize;
   const textSize = props.textSize;
+  const variant = props.variant || "inline";
 
   const elemClass = classNames(
     {
       "flex items-start gap-1.5 text-left": true,
+      "w-full": variant === "form-field",
     },
     textSize,
-    props.className,
   );
 
   const text = getPrivacyTitle(props.accessLevels, props.spaceName);
@@ -311,6 +304,57 @@ function SelectBox({
       <div className="col-start-1 row-start-1 pointer-events-none w-full flex items-center justify-end">
         <IconChevronDown size={16} className="" />
       </div>
+    </div>
+  );
+}
+
+function FormFieldPrivacyField(state: PrivacyField.State) {
+  const outerClass = classNames(
+    "cursor-pointer relative w-full border rounded-lg px-2 py-1.5 bg-surface-base",
+    "focus-within:outline outline-indigo-600 bg-transparent",
+    state.error ? "border-red-500 outline-red-500" : "border-surface-outline",
+  );
+
+  return (
+    <div className={state.className}>
+      {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
+      <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
+        <Popover.Trigger asChild disabled={state.readonly}>
+          <div className={outerClass} data-test-id={state.testId}>
+            <PrivacyDisplay {...state} />
+          </div>
+        </Popover.Trigger>
+
+        <Popover.Portal>
+          <PrivacyPickerPopover {...state} />
+        </Popover.Portal>
+      </Popover.Root>
+      {state.error && <div className="text-red-500 text-xs mt-1 mb-1">{state.error}</div>}
+    </div>
+  );
+}
+
+function InlinePrivacyField(state: PrivacyField.State) {
+  const triggerClassName = classNames(
+    "inline-block focus:outline-none",
+    {
+      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": !state.readonly,
+    },
+    state.className,
+  );
+
+  return (
+    <div className={state.className}>
+      {state.label && <label className="font-bold text-sm mb-1 block text-left">{state.label}</label>}
+      <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
+        <Popover.Trigger className={triggerClassName} disabled={state.readonly} data-test-id={state.testId}>
+          <PrivacyDisplay {...state} />
+        </Popover.Trigger>
+
+        <Popover.Portal>
+          <PrivacyPickerPopover {...state} />
+        </Popover.Portal>
+      </Popover.Root>
     </div>
   );
 }
