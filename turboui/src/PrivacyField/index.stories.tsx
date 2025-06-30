@@ -99,3 +99,63 @@ export const AllStates: Story = {
     );
   },
 };
+
+export const Variants: Story = {
+  render: () => {
+    return (
+      <Page title="PrivacyField Variants" size="small">
+        <div className="space-y-8 p-12">
+          <h2 className="mb-4 font-bold text-xl">Inline Variants</h2>
+
+          <div>
+            <div className="uppercase text-xs mb-2">Example 1: Default</div>
+            <Component accessLevels={{ company: "no_access", space: "full" }} />
+          </div>
+
+          <div>
+            <div className="uppercase text-xs mb-2">Example 2: Read Only</div>
+            <Component accessLevels={{ company: "view", space: "edit" }} readonly />
+          </div>
+
+          <div>
+            <div className="uppercase text-xs mb-2">Example 3: Company Access</div>
+            <Component accessLevels={{ company: "full", space: "full" }} />
+          </div>
+
+          <h2 className="mt-8 mb-4 font-bold text-xl">Form Field Variants</h2>
+
+          <div>
+            <div className="uppercase text-xs mb-2 mt-8">Form-Field Variant: Default</div>
+            <Component variant="form-field" accessLevels={{ company: "no_access", space: "full" }} />
+          </div>
+
+          <div>
+            <Component
+              variant="form-field"
+              label="Privacy Settings"
+              accessLevels={{ company: "view", space: "edit" }}
+            />
+          </div>
+
+          <div>
+            <Component
+              variant="form-field"
+              label="Privacy Settings"
+              error="Please select a valid privacy level"
+              accessLevels={{ company: "no_access", space: "no_access" }}
+            />
+          </div>
+
+          <div>
+            <Component
+              variant="form-field"
+              label="Privacy Settings"
+              accessLevels={{ company: "full", space: "full" }}
+              readonly
+            />
+          </div>
+        </div>
+      </Page>
+    );
+  },
+};
