@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { IconLink, IconExternalLink, IconDots, IconCopy, IconPencil, IconTrash } from "../icons";
 import { ResourceManager } from "../ResourceManager";
 import { PrimaryButton, SecondaryButton } from "../Button";
+import { showInfoToast } from "../Toasts";
 
 export interface ResourceLinkProps {
   resource: ResourceManager.Resource;
@@ -41,6 +42,7 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
   const handleCopyLink = async () => {
     try {
       await navigator.clipboard.writeText(resource.url);
+      showInfoToast("Link copied", "The URL has been copied to your clipboard");
       setShowMenu(false);
     } catch (err) {
       console.error("Failed to copy link:", err);
