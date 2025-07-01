@@ -17,6 +17,21 @@ export function GoalAddPage(props: GoalAddForm.Props) {
   );
 }
 
+export namespace GoalAddModal {
+  export interface Props extends GoalAddForm.Props {
+    isOpen: boolean;
+    close: () => void;
+  }
+}
+
+export function GoalAddModal(props: GoalAddModal.Props) {
+  return (
+    <div className="p-8">
+      <GoalAddForm {...props} />
+    </div>
+  );
+}
+
 //
 // Form definition for adding a goal
 //
