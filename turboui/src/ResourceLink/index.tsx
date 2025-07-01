@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { IconLink, IconExternalLink, IconDots, IconCopy, IconPencil, IconTrash } from "../icons";
 import { ResourceManager } from "../ResourceManager";
-import { PrimaryButton, SecondaryButton } from "../Button";
+import { PrimaryButton, SecondaryButton, DangerButton } from "../Button";
 import { showInfoToast } from "../Toasts";
 
 export interface ResourceLinkProps {
@@ -14,6 +14,7 @@ export interface ResourceLinkProps {
 export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLinkProps) {
   const [showMenu, setShowMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [menuPosition, setMenuPosition] = useState<'right' | 'left'>('right');
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -73,8 +74,13 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
   };
 
   const handleRemove = () => {
-    onRemove?.(resource.id);
+    setShowDeleteConfirm(true);
     setShowMenu(false);
+  };
+
+  const confirmRemove = () => {
+    onRemove?.(resource.id);
+    setShowDeleteConfirm(false);
   };
 
   return (
@@ -160,6 +166,15 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
           onCancel={() => setShowEditModal(false)}
         />
       )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteConfirm && (
+        <DeleteConfirmModal
+          resourceName={resource.name.trim() || resource.url}
+          onConfirm={confirmRemove}
+          onCancel={() => setShowDeleteConfirm(false)}
+        />
+      )}
     </div>
   );
 }
@@ -231,6 +246,42 @@ function EditResourceModal({
             </PrimaryButton>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+
+function DeleteConfirmModal({
+  resourceName,
+  onConfirm,
+  onCancel,
+}: {
+  resourceName: string;
+  onConfirm: () => void;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+      <div className="bg-surface-base border border-stroke-base rounded-xl shadow-xl max-w-md w-full">
+        <div className="p-6 space-y-4">
+          <div className="flex items-center gap-3">
+            <IconTrash size={20} className="text-content-error" />
+            <h2 className="text-xl font-semibold text-content-base">Delete resource</h2>
+          </div>
+
+          <p className="text-content-base">
+            Are you sure you want to delete "{resourceName}"? This action cannot be undone.
+          </p>
+
+          <div className="flex gap-3 justify-end">
+            <SecondaryButton onClick={onCancel}>
+              Cancel
+            </SecondaryButton>
+            <DangerButton onClick={onConfirm}>
+              Delete
+            </DangerButton>
+          </div>
+        </div>
       </div>
     </div>
   );
