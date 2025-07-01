@@ -59,7 +59,7 @@ export function TableRow(props: Props) {
         />
       </RowContainer>
 
-      <ChildRows {...props} expanded={expanded} />
+      <ChildRows {...props} expanded={expanded} canAddChildren={props.canAddChildren} />
     </>
   );
 }
