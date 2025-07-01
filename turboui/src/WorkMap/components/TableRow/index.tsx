@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 
 import { WorkMap } from "..";
 
@@ -20,6 +19,7 @@ interface Props {
   tab: WorkMap.Filter;
   showIndentation: boolean;
   columnOptions?: WorkMap.ColumnOptions;
+  canAddChildren: boolean;
 }
 
 export function TableRow(props: Props) {
@@ -35,6 +35,7 @@ export function TableRow(props: Props) {
           expanded={expanded}
           setExpanded={setExpanded}
           showIndentation={props.showIndentation}
+          canAddChildren={props.canAddChildren}
         />
         <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
         <ProgressCell
