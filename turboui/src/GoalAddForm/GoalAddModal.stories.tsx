@@ -8,6 +8,16 @@ import { GoalAddForm, GoalAddModal, GoalAddPage } from "./index";
 const meta: Meta<typeof GoalAddPage> = {
   title: "Components/GoalAddModal",
   component: GoalAddPage,
+  parameters: {
+    layout: "centered",
+  },
+  decorators: [
+    (Story) => (
+      <div className="max-w-2xl mx-auto">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export default meta;

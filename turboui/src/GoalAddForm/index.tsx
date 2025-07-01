@@ -1,6 +1,7 @@
 import React from "react";
 
 import { PrimaryButton } from "../Button";
+import Modal from "../Modal";
 import { Page } from "../Page";
 import { PrivacyField } from "../PrivacyField";
 import { SpaceField } from "../SpaceField";
@@ -26,9 +27,9 @@ export namespace GoalAddModal {
 
 export function GoalAddModal(props: GoalAddModal.Props) {
   return (
-    <div className="p-8">
+    <Modal isOpen={props.isOpen} onClose={props.close} size="medium">
       <GoalAddForm {...props} />
-    </div>
+    </Modal>
   );
 }
 
