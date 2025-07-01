@@ -1,7 +1,7 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import { WorkMapPage } from "../components";
-import { mockItems, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";
+import { closedParentWithOngoingChildren, mockItems, mockSingleItem } from "../tests/mockData";
 
 /**
  * WorkMapPage is a comprehensive page for displaying and interacting with
@@ -36,6 +36,7 @@ export const Default: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
+    addingChildrenEnabled: true,
   },
 };
 

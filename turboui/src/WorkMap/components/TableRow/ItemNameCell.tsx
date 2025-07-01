@@ -1,12 +1,12 @@
 import React from "react";
-import { IconChevronDown, IconChevronRight } from "../../../icons";
-import { BlackLink } from "../../../Link";
-import classNames from "../../../utils/classnames";
-import { useItemStatus } from "../../hooks/useItemStatus";
-import { IconGoal, IconProject } from "../../../icons";
-import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import { match } from "ts-pattern";
 import WorkMap from "..";
+import { SecondaryButton } from "../../../Button";
+import { IconChevronDown, IconChevronRight, IconGoal, IconProject } from "../../../icons";
+import { BlackLink } from "../../../Link";
+import { PrivacyIndicator } from "../../../PrivacyIndicator";
+import classNames from "../../../utils/classnames";
+import { useItemStatus } from "../../hooks/useItemStatus";
 
 interface Props {
   item: WorkMap.Item;
@@ -14,9 +14,10 @@ interface Props {
   showIndentation: boolean;
   expanded: boolean;
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  canAddChildren: boolean;
 }
 
-export function ItemNameCell({ item, level, expanded, setExpanded, showIndentation }: Props) {
+export function ItemNameCell({ item, level, expanded, setExpanded, showIndentation, canAddChildren }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative">
       <div className="flex items-center">
@@ -25,6 +26,8 @@ export function ItemNameCell({ item, level, expanded, setExpanded, showIndentati
         <Icon item={item} />
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
+
+        {canAddChildren && <AddButton item={item} />}
       </div>
     </td>
   );
@@ -137,5 +140,23 @@ function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
       className="ml-2"
       testId="privacy-indicator"
     />
+  );
+}
+
+function AddButton({ item }: { item: WorkMap.Item }) {
+  if (item.type !== "goal") return null;
+
+  return (
+    <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+      <SecondaryButton
+        size="xxs"
+        onClick={() => {
+          // Implement add logic here
+          // e.g., open a modal or call a callback
+        }}
+      >
+        Add
+      </SecondaryButton>
+    </div>
   );
 }

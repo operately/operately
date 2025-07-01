@@ -1,17 +1,18 @@
 import React from "react";
 import { WorkMap } from "..";
-import { TableRow } from "./TableRow";
-import classNames from "../../utils/classnames";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle } from "../../icons";
+import classNames from "../../utils/classnames";
+import { TableRow } from "./TableRow";
 
 interface Props {
   items: WorkMap.Item[];
   tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
+  addingChildrenEnabled?: boolean;
 }
 
-export function WorkMapTable({ items, tab, columnOptions = {} }: Props) {
+export function WorkMapTable({ items, tab, columnOptions = {}, addingChildrenEnabled = false }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
@@ -32,6 +33,7 @@ export function WorkMapTable({ items, tab, columnOptions = {} }: Props) {
                 tab={tab}
                 columnOptions={columnOptions}
                 showIndentation={showIndentation}
+                canAddChildren={addingChildrenEnabled && tab !== "completed"}
               />
             ))
           )}
