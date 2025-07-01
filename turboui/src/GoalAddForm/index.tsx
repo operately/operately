@@ -5,6 +5,7 @@ import { Page } from "../Page";
 import { PrivacyField } from "../PrivacyField";
 import { SpaceField } from "../SpaceField";
 import { TextField } from "../TextField";
+import { showErrorToast } from "../Toasts";
 
 export function GoalAddPage(props: GoalAddForm.Props) {
   return (
@@ -21,9 +22,18 @@ export function GoalAddPage(props: GoalAddForm.Props) {
 //
 
 export namespace GoalAddForm {
+  export interface SaveProps {
+    name: string;
+    spaceId: string;
+    accessLevels: PrivacyField.AccessLevels;
+  }
+
   export interface Props {
     space?: SpaceField.Space | null;
     spaceSearch: SpaceField.SearchSpaceFn;
+
+    save: (props: SaveProps) => Promise<{ id: string }>;
+    onSuccess?: (id: string) => void;
   }
 
   export interface State {
@@ -100,16 +110,46 @@ function useFormState(props: GoalAddForm.Props): GoalAddForm.State {
 
   const [submitting, setSubmitting] = React.useState(false);
 
+  const validate = (): boolean => {
+    let ok = true;
+
+    if (name.trim() === "") {
+      setNameError("Cannot be empty");
+      ok = false;
+    } else {
+      setNameError(undefined);
+    }
+
+    if (!space) {
+      setSpaceError("Please select a space");
+      ok = false;
+    } else {
+      setSpaceError(undefined);
+    }
+
+    return ok;
+  };
+
   const submit = async () => {
     setSubmitting(true);
+
     try {
-      // Implement submission logic here
-      // Reset errors if successful
+      if (!validate()) {
+        return;
+      }
+
+      const res = await props.save({
+        name: name.trim(),
+        spaceId: space!.id,
+        accessLevels,
+      });
+
       setNameError(undefined);
       setSpaceError(undefined);
+
+      props.onSuccess?.(res.id);
     } catch (error) {
-      // Handle errors and set error messages
-      console.error(error);
+      showErrorToast("Network error", "Failed to create the goal");
     } finally {
       setSubmitting(false);
     }
