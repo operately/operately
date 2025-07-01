@@ -1,5 +1,5 @@
 import React from "react";
-import { showErrorToast, ToasterBar } from ".";
+import { showErrorToast, showSuccessToast, showInfoToast, ToasterBar } from ".";
 import { SecondaryButton } from "../Button";
 
 export default {
@@ -17,9 +17,17 @@ export default {
 
 export const Default = {
   render: () => (
-    <div>
-      <SecondaryButton onClick={() => showErrorToast("Error Title", "This is an error description")} size="sm">
-        Click me
+    <div className="space-y-3">
+      <SecondaryButton onClick={() => showErrorToast("Error title", "This is an error description")} size="sm">
+        Show error toast
+      </SecondaryButton>
+
+      <SecondaryButton onClick={() => showSuccessToast("Success title", "This is a success message")} size="sm">
+        Show success toast
+      </SecondaryButton>
+
+      <SecondaryButton onClick={() => showInfoToast("Info title", "This is an informational message")} size="sm">
+        Show info toast
       </SecondaryButton>
     </div>
   ),
