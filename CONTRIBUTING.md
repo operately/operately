@@ -16,7 +16,7 @@ You can help by submitting an issue when you experience:
 
 You can engage with our community by:
 
-- Joining our [discord server](https://discord.gg/w5D2vGet)
+- Joining our [discord server](https://discord.com/invite/2ngnragJYV)
 - Improving documentation
 - Participate in general discussions about the development of Operately
 
