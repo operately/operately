@@ -1,13 +1,13 @@
 import React from "react";
 
-import { TimeframeSelector } from "../../TimeframeSelector";
-import { PrivacyIndicator } from "../../PrivacyIndicator";
-import { Navigation } from "../../Page/Navigation";
 import { Page } from "../../Page";
+import { Navigation } from "../../Page/Navigation";
+import { PrivacyIndicator } from "../../PrivacyIndicator";
+import { TimeframeSelector } from "../../TimeframeSelector";
 
+import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
-import { useWorkMapTab } from "../hooks/useWorkMapTab";
 
 export { WorkMapTable };
 
@@ -19,7 +19,14 @@ export function WorkMapPage(props: WorkMap.Props) {
   );
 }
 
-export function WorkMap({ title, items, columnOptions = {}, tabOptions = {}, type = "company" }: WorkMap.Props) {
+export function WorkMap({
+  title,
+  items,
+  columnOptions = {},
+  tabOptions = {},
+  type = "company",
+  addingChildrenEnabled = false,
+}: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
   return (
@@ -31,7 +38,12 @@ export function WorkMap({ title, items, columnOptions = {}, tabOptions = {}, typ
       </header>
       <div className="flex-1 overflow-auto">
         <WorkMapNavigation tabsState={tabsState} />
-        <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} />
+        <WorkMapTable
+          items={filteredItems}
+          tab={tab}
+          columnOptions={columnOptions}
+          addingChildrenEnabled={addingChildrenEnabled}
+        />
       </div>
     </div>
   );
@@ -120,5 +132,6 @@ export namespace WorkMap {
     tabOptions?: TabOptions;
     type?: WorkMapType;
     navigation?: Navigation.Item[];
+    addingChildrenEnabled?: boolean;
   }
 }
