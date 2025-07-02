@@ -15,6 +15,11 @@ import * as Spaces from "@/models/spaces";
 
 export default { name: "GoalAddPage", loader, Page } as PageModule;
 
+export interface UrlParams {
+  parentGoalId?: string;
+  spaceId?: string;
+}
+
 interface LoaderResult {
   space: Spaces.Space | null;
   parentGoal: Goals.Goal | null;
