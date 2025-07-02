@@ -14,7 +14,7 @@ export function FileDragAndDropArea({ children }) {
   );
 
   const messageClassName = classNames(
-    "p-6 bg-callout-info text-white text-sm rounded-md shadow-lg",
+    "p-6 bg-callout-info-bg text-white text-sm rounded-md shadow-lg",
     "transition-transform transform scale-95 duration-300",
     isFileDragging ? "scale-100 opacity-100" : "scale-95 opacity-0",
   );

@@ -47,21 +47,17 @@
   --color-accent-1: rgba(37, 155, 105, 1);
   --color-accent-1-light: rgba(37, 155, 105, 0.8);
 
-  --color-callout-info: var(--color-blue-50);
-  --color-callout-info-icon: var(--color-blue-400);
-  --color-callout-info-message: var(--color-blue-700);
+  --color-callout-info-bg: var(--color-blue-50);
+  --color-callout-info-content: var(--color-blue-700);
 
-  --color-callout-warning: var(--color-yellow-50);
-  --color-callout-warning-icon: var(--color-yellow-400);
-  --color-callout-warning-message: var(--color-yellow-700);
+  --color-callout-warning-bg: var(--color-amber-50);
+  --color-callout-warning-content: var(--color-amber-700);
 
-  --color-callout-error: var(--color-red-50);
-  --color-callout-error-icon: var(--color-red-400);
-  --color-callout-error-message: var(--color-red-700);
+  --color-callout-error-bg: var(--color-red-50);
+  --color-callout-error-content: var(--color-red-700);
 
-  --color-callout-success: var(--color-green-50);
-  --color-callout-success-icon: var(--color-green-400);
-  --color-callout-success-message: var(--color-green-700);
+  --color-callout-success-bg: var(--color-emerald-50);
+  --color-callout-success-content: var(--color-emerald-600);
 }
 
 .dark {
@@ -92,21 +88,17 @@
   --color-accent-1: rgba(37, 155, 105, 1);
   --color-accent-1-light: rgba(37, 155, 105, 0.8);
 
-  --color-callout-info: var(--color-blue-900);
-  --color-callout-info-icon: var(--color-blue-300);
-  --color-callout-info-message: var(--color-blue-200);
+  --color-callout-info-bg: var(--color-blue-900);
+  --color-callout-info-content: var(--color-blue-300);
 
-  --color-callout-warning: var(--color-yellow-900);
-  --color-callout-warning-icon: var(--color-yellow-300);
-  --color-callout-warning-message: var(--color-yellow-200);
+  --color-callout-warning-bg: var(--color-amber-900);
+  --color-callout-warning-content: var(--color-amber-300);
 
-  --color-callout-error: var(--color-red-900);
-  --color-callout-error-icon: var(--color-red-300);
-  --color-callout-error-message: var(--color-red-200);
+  --color-callout-error-bg: var(--color-red-900);
+  --color-callout-error-content: var(--color-red-300);
 
-  --color-callout-success: var(--color-green-900);
-  --color-callout-success-icon: var(--color-green-300);
-  --color-callout-success-message: var(--color-green-200);
+  --color-callout-success-bg: var(--color-emerald-900);
+  --color-callout-success-content: var(--color-emerald-300);
 }
 
 body {

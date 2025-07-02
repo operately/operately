@@ -10,7 +10,7 @@ export function ProgressBar({ progress, status, size = "md", showLabel = false }
 
   // Determine color based on status
   const progressColor = match(status)
-    .with("on_track", "completed", "achieved", () => "bg-green-500 dark:bg-green-400")
+    .with("on_track", "completed", "achieved", () => "bg-emerald-500 dark:bg-emerald-400")
     .with("paused", "dropped", () => "bg-gray-400 dark:bg-gray-500")
     .with("caution", "partial", () => "bg-amber-500 dark:bg-amber-400")
     .with("issue", "missed", () => "bg-red-500 dark:bg-red-400")
@@ -22,13 +22,11 @@ export function ProgressBar({ progress, status, size = "md", showLabel = false }
     .with("sm", () => "h-1")
     .with("lg", () => "h-3")
     .with("md", () => "h-2")
-    .exhaustive()
+    .exhaustive();
 
   return (
     <div role="progress-bar" className="w-full flex items-center gap-2">
-      <div
-        className={`w-full ${heightClass} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}
-      >
+      <div className={`w-full ${heightClass} bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden`}>
         <div
           className={`h-full rounded-full ${progressColor} relative overflow-hidden`}
           style={{ width: progressWidth }}

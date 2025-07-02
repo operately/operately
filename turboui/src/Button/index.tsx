@@ -68,7 +68,7 @@ export function SecondaryButton(props: BaseButtonProps) {
     <UnstyledButton
       {...props}
       className={className}
-      spinner={<Spinner loading={props.loading} size={props.size} color="var(--color-accent-1)" />}
+      spinner={<Spinner loading={props.loading} size={props.size} color="var(--color-brand-1)" />}
     />
   );
 }

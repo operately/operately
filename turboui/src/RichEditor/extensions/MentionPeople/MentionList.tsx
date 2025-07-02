@@ -108,8 +108,8 @@ interface ItemListProps {
 
 function ItemList({ items, selectItem, selectedIndex }: ItemListProps): JSX.Element {
   const baseClass = "px-1.5 py-1 text-left";
-  const selectedClass = baseClass + " bg-accent-1 text-content-accent";
-  const unselectedClass = baseClass + " text-content-accent hover:bg-accent-1";
+  const selectedClass = baseClass + " bg-brand-1 text-content-accent";
+  const unselectedClass = baseClass + " text-content-accent hover:bg-brand-1";
 
   return (
     <>

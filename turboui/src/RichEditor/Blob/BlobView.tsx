@@ -240,7 +240,7 @@ function LoadingProgressBar({ progress, barClassName }: { progress: number; barC
 
   return (
     <div className={className}>
-      <div className="bg-accent-1 h-full" style={{ width: `${progress}%` }}></div>
+      <div className="bg-callout-success-content h-full" style={{ width: `${progress}%` }}></div>
     </div>
   );
 }

@@ -44,7 +44,7 @@ const ColorSection: React.FC<ColorSectionProps> = ({ title, colors }) => (
     <h3 className="text-lg font-semibold mb-1">{title}</h3>
     <div className="text-sm mb-4">
       {title === "Background Colors" && "Colors used for backgrounds and surface."}
-      {title === "Interactive Components" && "Form backgrounds, callouts, etc."}
+      {title === "Accent Colors" && "For badges, error states, callouts, tooltips"}
       {title === "Borders And Separators" && "Colors used for dividers, borders, and other separators"}
       {title === "Solid Colors" && "CTA, buttons, Avatar background, etc."}
       {title === "Text Colors" && "Colors used for text content, icons, warnings, and other content"}
@@ -157,67 +157,47 @@ export const AllColors: StoryObj = {
         />
 
         <ColorSection
-          title="Interactive Components"
+          title="Accent Colors"
           colors={[
             {
-              color: "bg-callout-info",
-              name: "callout-info",
+              color: "bg-callout-info-bg",
+              name: "callout-info-bg",
               description: "Information callout background color",
             },
             {
-              color: "bg-callout-info-icon",
-              name: "callout-info-icon",
+              color: "bg-callout-info-content",
+              name: "callout-info-content",
               description: "Information callout icon color",
             },
             {
-              color: "bg-callout-info-message",
-              name: "callout-info-message",
-              description: "Information callout message text",
-            },
-            {
-              color: "bg-callout-warning",
-              name: "callout-warning",
+              color: "bg-callout-warning-bg",
+              name: "callout-warning-bg",
               description: "Warning callout background color",
             },
             {
-              color: "bg-callout-warning-icon",
-              name: "callout-warning-icon",
-              description: "Warning callout icon color",
+              color: "bg-callout-warning-content",
+              name: "callout-warning-content",
+              description: "Warning callout content message color",
             },
             {
-              color: "bg-callout-warning-message",
-              name: "callout-warning-message",
-              description: "Warning callout message text",
-            },
-            {
-              color: "bg-callout-error",
-              name: "callout-error",
+              color: "bg-callout-error-bg",
+              name: "callout-error-bg",
               description: "Error callout background color",
             },
             {
-              color: "bg-callout-error-icon",
-              name: "callout-error-icon",
-              description: "Error callout icon color",
+              color: "bg-callout-error-content",
+              name: "callout-error-content",
+              description: "Error callout content message text",
             },
             {
-              color: "bg-callout-error-message",
-              name: "callout-error-message",
-              description: "Error callout message text",
-            },
-            {
-              color: "bg-callout-success",
-              name: "callout-success",
+              color: "bg-callout-success-bg",
+              name: "callout-success-bg",
               description: "Success callout background color",
             },
             {
-              color: "bg-callout-success-icon",
-              name: "callout-success-icon",
-              description: "Success callout icon color",
-            },
-            {
-              color: "bg-callout-success-message",
-              name: "callout-success-message",
-              description: "Success callout message text",
+              color: "bg-callout-success-content",
+              name: "callout-success-content",
+              description: "Success callout content message text",
             },
           ]}
         />
