@@ -18,11 +18,11 @@ export function calcClassName(
       "cursor-pointer": !props.loading,
     },
     {
-      "px-2 py-[1px] text-xs rounded-2xl": size === "xxs",
-      "px-2.5 py-1 text-sm rounded-full": size === "xs",
-      "px-3 py-1.5 text-sm rounded-full": size === "sm",
-      "px-3.5 py-2 rounded-full": size === "base",
-      "px-4 py-2.5 rounded-full": size === "lg",
+      "px-2 py-0.5 text-xs rounded-md": size === "xxs",
+      "px-2.5 py-1 text-sm rounded-md": size === "xs",
+      "px-3 py-1.5 text-sm rounded-md": size === "sm",
+      "px-4 py-2 rounded-md": size === "base",
+      "px-5 py-2.5 rounded-md": size === "lg",
     },
     {
       [normal]: !props.loading && !props.disabled,
