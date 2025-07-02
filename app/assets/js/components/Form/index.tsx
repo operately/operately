@@ -6,9 +6,8 @@ type Ref = HTMLFormElement;
 
 import { PrimaryButton, SecondaryButton } from "turboui";
 
-export * from "./radio";
-export * from "./select";
 export * from "./dateselector";
+export * from "./radio";
 
 interface Props {
   children?: React.ReactNode;
