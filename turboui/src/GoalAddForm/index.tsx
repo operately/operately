@@ -50,6 +50,7 @@ export namespace GoalAddForm {
 
     save: (props: SaveProps) => Promise<{ id: string }>;
     onSuccess?: (id: string) => void;
+    hideTitle?: boolean;
   }
 
   export interface State {
@@ -72,7 +73,7 @@ export function GoalAddForm(props: GoalAddForm.Props) {
 
   return (
     <div>
-      <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>
+      {!props.hideTitle && <h1 className="mb-4 font-bold text-xl">Add a new goal</h1>}
 
       <div className="flex flex-col gap-4">
         <TextField

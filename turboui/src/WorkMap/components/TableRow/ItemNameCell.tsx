@@ -2,8 +2,10 @@ import React from "react";
 import { match } from "ts-pattern";
 import WorkMap from "..";
 import { SecondaryButton } from "../../../Button";
+import { GoalAddForm, GoalAddModal } from "../../../GoalAddForm";
 import { IconChevronDown, IconChevronRight, IconGoal, IconProject } from "../../../icons";
 import { BlackLink } from "../../../Link";
+import Modal from "../../../Modal";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
@@ -146,17 +148,80 @@ function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
 function AddButton({ item }: { item: WorkMap.Item }) {
   if (item.type !== "goal") return null;
 
+  const [isOpen, setIsOpen] = React.useState(false);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
+  const spaceSearch = ({}: { query: string }) => {
+    // Implement space search logic here
+    return Promise.resolve([]); // Replace with actual search results
+  };
+
+  const save = (_attrs: GoalAddForm.SaveProps): Promise<{ id: string }> => {
+    // Implement save logic here
+    return Promise.resolve({ id: "new-goal-id" }); // Replace with actual save logic
+  };
+
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
-      <SecondaryButton
-        size="xxs"
-        onClick={() => {
-          // Implement add logic here
-          // e.g., open a modal or call a callback
-        }}
-      >
+      <SecondaryButton size="xxs" onClick={open}>
         Add
       </SecondaryButton>
+
+      <AddSubitemModal isOpen={isOpen} close={close} spaceSearch={spaceSearch} save={save} parentGoal={item} />
+    </div>
+  );
+}
+
+function AddSubitemModal(props: GoalAddModal.Props & { parentGoal: WorkMap.Item }) {
+  const [itemType, setItemType] = React.useState<"goal" | "project">("project");
+
+  return (
+    <Modal isOpen={props.isOpen} onClose={props.close} size="medium" closeOnBackdropClick={false}>
+      <div className="flex items-center justify-between mb-4">
+        <div>
+          <h1 className="font-bold text-xl">{itemType === "goal" ? "Add New Sub-goal" : "Add New Project"}</h1>
+        </div>
+
+        <Toggle
+          value={itemType}
+          setValue={(v) => setItemType(v)}
+          options={[
+            { label: "Goal", value: "goal" },
+            { label: "Project", value: "project" },
+          ]}
+        />
+      </div>
+
+      <GoalAddForm hideTitle={true} {...props} />
+    </Modal>
+  );
+}
+
+function Toggle<T extends string>({
+  value,
+  setValue,
+  options,
+}: {
+  value: T;
+  setValue: (value: T) => void;
+  options: { label: string; value: T }[];
+}) {
+  return (
+    <div className="flex bg-surface-dimmed rounded p-0.5 border border-stroke-base">
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          className={classNames(
+            "px-2 py-0.5 rounded text-sm font-medium transition-colors",
+            value === option.value ? "bg-brand-1 text-white-1" : "bg-transparent",
+          )}
+          onClick={() => setValue(option.value)}
+        >
+          {option.label}
+        </button>
+      ))}
     </div>
   );
 }
