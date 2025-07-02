@@ -105,6 +105,13 @@ export const LoadingStates: StoryObj = {
 export const Sizes: StoryObj = {
   render: () => (
     <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-14">
+        <div className="text-xs text-content-base font-medium w-8">xxs</div>
+        <div className="text-xs text-content-base font-medium w-8">xs</div>
+        <div className="text-xs text-content-base font-medium w-8">sm</div>
+        <div className="text-xs text-content-base font-medium w-8">base</div>
+        <div className="text-xs text-content-base font-medium w-8">lg</div>
+      </div>
       <div className="flex items-center gap-4">
         <PrimaryButton size="xxs">Button</PrimaryButton>
         <PrimaryButton size="xs">Button</PrimaryButton>
@@ -136,6 +143,13 @@ export const Sizes: StoryObj = {
 export const WithIcons: StoryObj = {
   render: () => (
     <div className="flex flex-col gap-4">
+      <div className="flex items-center gap-20">
+        <div className="text-xs text-content-base font-medium w-8">xxs</div>
+        <div className="text-xs text-content-base font-medium w-8">xs</div>
+        <div className="text-xs text-content-base font-medium w-8">sm</div>
+        <div className="text-xs text-content-base font-medium w-8">base</div>
+        <div className="text-xs text-content-base font-medium w-8">lg</div>
+      </div>
       <div className="flex items-center gap-4">
         <PrimaryButton size="xxs" icon={IconHome}>
           Home
