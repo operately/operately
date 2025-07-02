@@ -80,7 +80,7 @@ const permissionData: PermissionData = {
   [PermissionLevels.FULL_ACCESS]: {
     testId: "full-access-badge",
     title: "Full Access",
-    colors: "bg-callout-warning text-callout-warning-message",
+    colors: "bg-callout-warning-bg text-callout-warning-content",
     description: {
       project: joinStr(
         "Has full access to the project and can perform any action, ",
@@ -94,7 +94,7 @@ const permissionData: PermissionData = {
   [PermissionLevels.EDIT_ACCESS]: {
     testId: "edit-access-badge",
     title: "Edit Access",
-    colors: "bg-callout-info text-callout-info-message",
+    colors: "bg-callout-info-bg text-callout-info-content",
     description: {
       project: joinStr(
         "Can edit the project, including its details, tasks, and comments, ",
@@ -110,7 +110,7 @@ const permissionData: PermissionData = {
   [PermissionLevels.COMMENT_ACCESS]: {
     testId: "comment-access-badge",
     title: "Comment Access",
-    colors: "bg-callout-error text-callout-error-message",
+    colors: "bg-callout-error-bg text-callout-error-content",
     description: {
       project: joinStr(
         "Can comment on the project, including tasks, and check-ins. ",

@@ -13,17 +13,10 @@ import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
+import { WarningCallout } from "../Callouts";
 import { durationHumanized, isOverdue } from "../utils/time";
 
-import {
-  IconAlertTriangleFilled,
-  IconCircleArrowRight,
-  IconCircleCheck,
-  IconRotateDot,
-  IconTrash,
-  IconUserCheck,
-  IconUserStar,
-} from "../icons";
+import { IconCircleArrowRight, IconCircleCheck, IconRotateDot, IconTrash, IconUserCheck, IconUserStar } from "../icons";
 
 export function Sidebar(props: GoalPage.State) {
   return (
@@ -195,9 +188,8 @@ function OverdueWarning(props: GoalPage.State) {
   const duration = durationHumanized(props.dueDate, new Date());
 
   return (
-    <div className="bg-callout-error p-3 text-callout-warning-message rounded mt-2 text-sm flex items-center gap-2">
-      <IconAlertTriangleFilled size={16} className="text-callout-warning-icon" />
-      Overdue by {duration}.
+    <div className="mt-2">
+      <WarningCallout message={`Overdue by ${duration}.`} />
     </div>
   );
 }

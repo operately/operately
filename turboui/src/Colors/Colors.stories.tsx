@@ -160,34 +160,24 @@ export const AllColors: StoryObj = {
           title="Accent Colors"
           colors={[
             {
-              color: "bg-callout-info",
-              name: "callout-info",
+              color: "bg-callout-info-bg",
+              name: "callout-info-bg",
               description: "Information callout background color",
             },
             {
-              color: "bg-callout-info-icon",
-              name: "callout-info-icon",
+              color: "bg-callout-info-content",
+              name: "callout-info-content",
               description: "Information callout icon color",
             },
             {
-              color: "bg-callout-info-message",
-              name: "callout-info-message",
-              description: "Information callout message text",
-            },
-            {
-              color: "bg-callout-warning",
-              name: "callout-warning",
+              color: "bg-callout-warning-bg",
+              name: "callout-warning-bg",
               description: "Warning callout background color",
             },
             {
-              color: "bg-callout-warning-icon",
-              name: "callout-warning-icon",
-              description: "Warning callout icon color",
-            },
-            {
-              color: "bg-callout-warning-message",
-              name: "callout-warning-message",
-              description: "Warning callout message text",
+              color: "bg-callout-warning-content",
+              name: "callout-warning-content",
+              description: "Warning callout content message color",
             },
             {
               color: "bg-callout-error-bg",
@@ -197,7 +187,7 @@ export const AllColors: StoryObj = {
             {
               color: "bg-callout-error-content",
               name: "callout-error-content",
-              description: "Error callout message text",
+              description: "Error callout content message text",
             },
             {
               color: "bg-callout-success-bg",
@@ -207,7 +197,7 @@ export const AllColors: StoryObj = {
             {
               color: "bg-callout-success-content",
               name: "callout-success-content",
-              description: "Success callout message text",
+              description: "Success callout content message text",
             },
           ]}
         />

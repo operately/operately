@@ -1,14 +1,9 @@
-import {
-  IconAlertTriangleFilled,
-  IconArchive,
-  IconCalendar,
-  IconLink,
-  IconTrash,
-} from "../icons";
+import { IconArchive, IconCalendar, IconLink, IconTrash } from "../icons";
 import { NotificationToggle } from "../NotificationToggle";
 import React from "react";
 import { TaskPage } from ".";
 import { AvatarWithName } from "../Avatar";
+import { WarningCallout } from "../Callouts";
 import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
@@ -126,11 +121,7 @@ function Subscription(props: TaskPage.State) {
 
   return (
     <SidebarSection title="Notifications">
-      <NotificationToggle
-        isSubscribed={props.isSubscribed}
-        onToggle={handleToggle}
-        entityType="task"
-      />
+      <NotificationToggle isSubscribed={props.isSubscribed} onToggle={handleToggle} entityType="task" />
     </SidebarSection>
   );
 }
@@ -197,9 +188,8 @@ function OverdueWarning(props: TaskPage.State) {
   const duration = durationHumanized(props.dueDate, new Date());
 
   return (
-    <div className="bg-callout-error p-3 text-callout-warning-message rounded mt-2 text-sm flex items-center gap-2">
-      <IconAlertTriangleFilled size={16} className="text-callout-warning-icon" />
-      Overdue by {duration}.
+    <div className="mt-2">
+      <WarningCallout message={`Overdue by ${duration}.`} />
     </div>
   );
 }

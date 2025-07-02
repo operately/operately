@@ -24,7 +24,7 @@ const toastConfigs: Record<ToastType, ToastConfig> = {
   },
   info: {
     icon: IconInfoCircleFilled,
-    iconColor: "text-callout-info-icon",
+    iconColor: "text-callout-info-content",
   },
 };
 

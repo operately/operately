@@ -13,10 +13,10 @@ export function InfoCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconInfoCircleFilled}
-      iconClassName="text-callout-info-icon"
-      backgroundColor="bg-callout-info"
-      titleColor="text-callout-info-message"
-      messageColor="text-callout-info-message"
+      iconClassName="text-callout-info-content"
+      backgroundColor="bg-callout-info-bg"
+      titleColor="text-callout-info-content"
+      messageColor="text-callout-info-content"
     />
   );
 }
@@ -26,10 +26,10 @@ export function WarningCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconAlertTriangleFilled}
-      iconClassName="text-callout-warning-icon"
-      backgroundColor="bg-callout-error"
-      titleColor="text-callout-warning-message"
-      messageColor="text-callout-warning-message"
+      iconClassName="text-callout-warning-content"
+      backgroundColor="bg-callout-warning-bg"
+      titleColor="text-callout-warning-content"
+      messageColor="text-callout-warning-content"
     />
   );
 }
