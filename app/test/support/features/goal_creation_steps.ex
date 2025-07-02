@@ -19,12 +19,12 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx
     |> Factory.setup()
     |> Factory.enable_feature("new-goal-add-page")
+    |> Factory.add_space(:space)
     |> Factory.log_in_person(:creator)
   end
 
   step :given_a_goal_exists, ctx, goal_params do
-    ctx
-    |> Factory.add_goal(:goal, :space, name: goal_params.name, champion: :champion, reviewer: :reviewer, space: :space)
+    ctx |> Factory.add_goal(:goal, :space, name: goal_params.name)
   end
 
   step :add_goal, ctx, goal_params do
@@ -89,30 +89,6 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     })
   end
 
-  step :assert_subgoal_added, ctx, goal_params do
-    parent_goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.parent_name)
-    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^goal_params.name, preload: [:targets])
-
-    assert goal != nil
-    assert goal.champion_id == ctx.champion.id
-    assert goal.reviewer_id == ctx.reviewer.id
-    assert goal.company_id == ctx.company.id
-    assert goal.parent_goal_id == parent_goal.id
-    assert goal.group_id == ctx.space.id
-    assert goal.targets != nil
-    assert Enum.count(goal.targets) == 1
-    assert Enum.at(goal.targets, 0).name == goal_params.target_name
-    assert Enum.at(goal.targets, 0).from == Float.parse(goal_params.from) |> elem(0)
-    assert Enum.at(goal.targets, 0).to == Float.parse(goal_params.to) |> elem(0)
-    assert Enum.at(goal.targets, 0).unit == goal_params.unit
-
-    ctx
-    |> UI.visit(Paths.goal_path(ctx.company, goal))
-    |> UI.assert_text(goal_params.name)
-    |> UI.assert_text(goal_params.target_name)
-    |> UI.assert_text(goal_params.parent_name)
-  end
-
   step :assert_subgoal_created_email_sent, ctx, goal_name do
     ctx
     |> EmailSteps.assert_activity_email_sent(%{
@@ -142,5 +118,23 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx
     |> UI.assert_has(testid: "goal-page")
     |> UI.assert_text(name)
+  end
+
+  step :add_subgoal, ctx, name do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.click(testid: "add-subgoal")
+    |> UI.fill_text_field(testid: "goal-name", with: name)
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-page")
+  end
+
+  step :assert_subgoal_added, ctx, name do
+    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
+    assert goal != nil
+    assert goal.parent_goal_id == ctx.goal.id
+    assert goal.group_id == ctx.goal.group_id
+
+    ctx
   end
 end
