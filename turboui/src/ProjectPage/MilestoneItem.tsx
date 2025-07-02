@@ -41,7 +41,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
         {/* Timeline flag icon as marker */}
         <div className="flex flex-col items-center mt-1">
           {isCompleted ? (
-            <IconFlagFilled size={20} className={classNames("flex-shrink-0", "text-accent-1")} />
+            <IconFlagFilled size={20} className={classNames("flex-shrink-0", "bg-callout-success-content")} />
           ) : (
             <IconFlag
               size={20}

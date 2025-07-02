@@ -51,9 +51,8 @@ module.exports = {
         "callout-error-icon": "var(--color-callout-error-icon)",
         "callout-error-message": "var(--color-callout-error-message)",
 
-        "callout-success": "var(--color-callout-success)",
-        "callout-success-icon": "var(--color-callout-success-icon)",
-        "callout-success-message": "var(--color-callout-success-message)",
+        "callout-success-bg": "var(--color-callout-success-bg)",
+        "callout-success-content": "var(--color-callout-success-content)",
 
         brand: {
           1: "#3185FF",

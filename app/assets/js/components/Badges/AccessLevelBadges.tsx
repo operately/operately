@@ -123,7 +123,7 @@ const permissionData: PermissionData = {
   [PermissionLevels.VIEW_ACCESS]: {
     testId: "view-access-badge",
     title: "View Access",
-    colors: "bg-callout-success text-callout-success-message",
+    colors: "bg-callout-success-bg text-callout-success-content",
     description: {
       project: joinStr(
         "Can view the project, including its details, tasks, and comments. ",

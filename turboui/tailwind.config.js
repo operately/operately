@@ -10,12 +10,12 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        'fadeIn': 'fadeIn 0.3s ease-in-out',
+        fadeIn: "fadeIn 0.3s ease-in-out",
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(-4px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+          "0%": { opacity: "0", transform: "translateY(-4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       colors: {
@@ -56,9 +56,8 @@ module.exports = {
         "callout-error-icon": "var(--color-callout-error-icon)",
         "callout-error-message": "var(--color-callout-error-message)",
 
-        "callout-success": "var(--color-callout-success)",
-        "callout-success-icon": "var(--color-callout-success-icon)",
-        "callout-success-message": "var(--color-callout-success-message)",
+        "callout-success-bg": "var(--color-callout-success-bg)",
+        "callout-success-content": "var(--color-callout-success-content)",
 
         brand: {
           1: "#3185FF",

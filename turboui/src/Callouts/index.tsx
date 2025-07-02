@@ -1,12 +1,7 @@
 import React from "react";
 import { TestableElement } from "../TestableElement";
 
-import {
-  IconAlertTriangleFilled,
-  IconCircleCheckFilled,
-  IconCircleXFilled,
-  IconInfoCircleFilled,
-} from "../icons";
+import { IconAlertTriangleFilled, IconCircleCheckFilled, IconCircleXFilled, IconInfoCircleFilled } from "../icons";
 
 interface Props extends TestableElement {
   message: string | JSX.Element;
@@ -57,10 +52,10 @@ export function SuccessCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconCircleCheckFilled}
-      iconClassName="text-callout-success-icon"
-      backgroundColor="bg-callout-success"
-      titleColor="text-callout-success-message"
-      messageColor="text-callout-success-message"
+      iconClassName="text-callout-success-content"
+      backgroundColor="bg-callout-success-bg"
+      titleColor="text-callout-success-content"
+      messageColor="text-callout-success-content"
     />
   );
 }

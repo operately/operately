@@ -33,7 +33,7 @@ export function PersonCard(props: PersonCard.Props) {
   const location = useLocation();
 
   const className = classNames("flex items-center gap-2 text-sm rounded-xl px-4 py-3 bg-surface-dimmed", "relative", {
-    "border-2 border-accent-1": highlight,
+    "border-2 border-brand-1": highlight,
     "border-2 border-stroke-base": !highlight,
     "cursor-pointer": !link,
   });
