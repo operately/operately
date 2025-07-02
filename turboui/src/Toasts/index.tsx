@@ -6,7 +6,7 @@ export function ToasterBar() {
   return <Toaster position="bottom-right" reverseOrder={true} />;
 }
 
-type ToastType = 'error' | 'success' | 'info';
+type ToastType = "error" | "success" | "info";
 
 interface ToastConfig {
   icon: React.ComponentType<{ className?: string; size?: number }>;
@@ -16,11 +16,11 @@ interface ToastConfig {
 const toastConfigs: Record<ToastType, ToastConfig> = {
   error: {
     icon: IconExclamationCircleFilled,
-    iconColor: "text-callout-error-icon",
+    iconColor: "text-callout-error-content",
   },
   success: {
     icon: IconCircleCheckFilled,
-    iconColor: "text-callout-success-icon",
+    iconColor: "text-callout-success-content",
   },
   info: {
     icon: IconInfoCircleFilled,
@@ -46,13 +46,13 @@ const showToast = (type: ToastType, title: string, description: string) => {
 };
 
 export const showErrorToast = (title: string, description: string) => {
-  showToast('error', title, description);
+  showToast("error", title, description);
 };
 
 export const showSuccessToast = (title: string, description: string) => {
-  showToast('success', title, description);
+  showToast("success", title, description);
 };
 
 export const showInfoToast = (title: string, description: string) => {
-  showToast('info', title, description);
+  showToast("info", title, description);
 };

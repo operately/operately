@@ -33,7 +33,7 @@ function Icon(props: AccessLevelProps) {
     return <IconBuilding className="text-content-accent ml-1.5 mr-3" size={30} strokeWidth={2} />;
   }
 
-  return <IconLockFilled className="ml-1.5 mr-3 text-callout-error-icon" size={30} strokeWidth={2} />;
+  return <IconLockFilled className="ml-1.5 mr-3 text-callout-error-content" size={30} strokeWidth={2} />;
 }
 
 function calcTitle(props: AccessLevelProps) {

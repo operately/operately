@@ -44,7 +44,7 @@ const ColorSection: React.FC<ColorSectionProps> = ({ title, colors }) => (
     <h3 className="text-lg font-semibold mb-1">{title}</h3>
     <div className="text-sm mb-4">
       {title === "Background Colors" && "Colors used for backgrounds and surface."}
-      {title === "Interactive Components" && "Form backgrounds, callouts, etc."}
+      {title === "Accent Colors" && "For badges, error states, callouts, tooltips"}
       {title === "Borders And Separators" && "Colors used for dividers, borders, and other separators"}
       {title === "Solid Colors" && "CTA, buttons, Avatar background, etc."}
       {title === "Text Colors" && "Colors used for text content, icons, warnings, and other content"}
@@ -157,7 +157,7 @@ export const AllColors: StoryObj = {
         />
 
         <ColorSection
-          title="Interactive Components"
+          title="Accent Colors"
           colors={[
             {
               color: "bg-callout-info",
@@ -190,18 +190,13 @@ export const AllColors: StoryObj = {
               description: "Warning callout message text",
             },
             {
-              color: "bg-callout-error",
-              name: "callout-error",
+              color: "bg-callout-error-bg",
+              name: "callout-error-bg",
               description: "Error callout background color",
             },
             {
-              color: "bg-callout-error-icon",
-              name: "callout-error-icon",
-              description: "Error callout icon color",
-            },
-            {
-              color: "bg-callout-error-message",
-              name: "callout-error-message",
+              color: "bg-callout-error-content",
+              name: "callout-error-content",
               description: "Error callout message text",
             },
             {

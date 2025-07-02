@@ -21,26 +21,26 @@ const getStatusProperties = (status: BadgeStatus) => {
   switch (status) {
     case "on_track":
       return {
-        bgColor: "bg-green-50 dark:bg-green-900/30",
-        textColor: "text-green-700 dark:text-green-300",
-        dotColor: "bg-green-500 dark:bg-green-400",
-        borderColor: "border-green-200 dark:border-green-800",
+        bgColor: "bg-callout-success-bg",
+        textColor: "text-callout-success-content",
+        dotColor: "bg-callout-success-content",
+        borderColor: "border-emerald-200",
         label: "On track",
       };
     case "completed":
       return {
-        bgColor: "bg-green-50 dark:bg-green-900/30",
-        textColor: "text-green-700 dark:text-green-300",
-        dotColor: "bg-green-500 dark:bg-green-400",
-        borderColor: "border-green-200 dark:border-green-800",
+        bgColor: "bg-callout-success-bg",
+        textColor: "text-callout-success-content",
+        dotColor: "bg-callout-success-content",
+        borderColor: "border-emerald-200",
         label: "Completed",
       };
     case "achieved":
       return {
-        bgColor: "bg-green-50 dark:bg-green-900/30",
-        textColor: "text-green-700 dark:text-green-300",
-        dotColor: "bg-green-500 dark:bg-green-400",
-        borderColor: "border-green-200 dark:border-green-800",
+        bgColor: "bg-callout-success-bg",
+        textColor: "text-callout-success-content",
+        dotColor: "bg-callout-success-content",
+        borderColor: "border-emerald-200",
         label: "Achieved",
       };
     case "paused":

@@ -47,9 +47,8 @@ module.exports = {
         "callout-warning-icon": "var(--color-callout-warning-icon)",
         "callout-warning-message": "var(--color-callout-warning-message)",
 
-        "callout-error": "var(--color-callout-error)",
-        "callout-error-icon": "var(--color-callout-error-icon)",
-        "callout-error-message": "var(--color-callout-error-message)",
+        "callout-error-bg": "var(--color-callout-error-bg)",
+        "callout-error-content": "var(--color-callout-error-content)",
 
         "callout-success-bg": "var(--color-callout-success-bg)",
         "callout-success-content": "var(--color-callout-success-content)",

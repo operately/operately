@@ -55,9 +55,8 @@
   --color-callout-warning-icon: var(--color-yellow-400);
   --color-callout-warning-message: var(--color-yellow-700);
 
-  --color-callout-error: var(--color-red-50);
-  --color-callout-error-icon: var(--color-red-400);
-  --color-callout-error-message: var(--color-red-700);
+  --color-callout-error-bg: var(--color-red-50);
+  --color-callout-error-content: var(--color-red-700);
 
   --color-callout-success-bg: var(--color-emerald-50);
   --color-callout-success-content: var(--color-emerald-600);
@@ -99,9 +98,8 @@
   --color-callout-warning-icon: var(--color-yellow-300);
   --color-callout-warning-message: var(--color-yellow-200);
 
-  --color-callout-error: var(--color-red-900);
-  --color-callout-error-icon: var(--color-red-300);
-  --color-callout-error-message: var(--color-red-200);
+  --color-callout-error-bg: var(--color-red-900);
+  --color-callout-error-content: var(--color-red-300);
 
   --color-callout-success-bg: var(--color-emerald-900);
   --color-callout-success-content: var(--color-emerald-300);

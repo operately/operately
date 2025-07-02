@@ -39,10 +39,10 @@ export function ErrorCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconCircleXFilled}
-      iconClassName="text-callout-error-icon"
-      backgroundColor="bg-callout-error"
-      titleColor="text-callout-error-message"
-      messageColor="text-callout-error-message"
+      iconClassName="text-callout-error-content"
+      backgroundColor="bg-callout-error-bg"
+      titleColor="text-callout-error-content"
+      messageColor="text-callout-error-content"
     />
   );
 }
