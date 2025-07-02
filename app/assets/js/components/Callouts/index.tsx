@@ -1,12 +1,7 @@
 import React from "react";
 import { TestableElement } from "@/utils/testid";
 
-import {
-  IconAlertTriangleFilled,
-  IconCircleCheckFilled,
-  IconCircleXFilled,
-  IconInfoCircleFilled,
-} from "turboui";
+import { IconAlertTriangleFilled, IconCircleCheckFilled, IconCircleXFilled, IconInfoCircleFilled } from "turboui";
 
 interface Props extends TestableElement {
   message: string | JSX.Element;
@@ -18,10 +13,10 @@ export function InfoCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconInfoCircleFilled}
-      iconClassName="text-callout-info-icon"
-      backgroundColor="bg-callout-info"
-      titleColor="text-callout-info-message"
-      messageColor="text-callout-info-message"
+      iconClassName="text-callout-info-content"
+      backgroundColor="bg-callout-info-bg"
+      titleColor="text-callout-info-content"
+      messageColor="text-callout-info-content"
     />
   );
 }
@@ -31,10 +26,10 @@ export function WarningCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconAlertTriangleFilled}
-      iconClassName="text-callout-warning-icon"
-      backgroundColor="bg-callout-error"
-      titleColor="text-callout-warning-message"
-      messageColor="text-callout-warning-message"
+      iconClassName="text-callout-warning-content"
+      backgroundColor="bg-callout-warning-bg"
+      titleColor="text-callout-warning-content"
+      messageColor="text-callout-warning-content"
     />
   );
 }
@@ -44,10 +39,10 @@ export function ErrorCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconCircleXFilled}
-      iconClassName="text-callout-error-icon"
-      backgroundColor="bg-callout-error"
-      titleColor="text-callout-error-message"
-      messageColor="text-callout-error-message"
+      iconClassName="text-callout-error-content"
+      backgroundColor="bg-callout-error-bg"
+      titleColor="text-callout-error-content"
+      messageColor="text-callout-error-content"
     />
   );
 }
@@ -57,10 +52,10 @@ export function SuccessCallout(props: Props) {
     <UnstyledCallout
       {...props}
       icon={IconCircleCheckFilled}
-      iconClassName="text-callout-success-icon"
-      backgroundColor="bg-callout-success"
-      titleColor="text-callout-success-message"
-      messageColor="text-callout-success-message"
+      iconClassName="text-callout-success-content"
+      backgroundColor="bg-callout-success-bg"
+      titleColor="text-callout-success-content"
+      messageColor="text-callout-success-content"
     />
   );
 }

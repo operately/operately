@@ -10,12 +10,12 @@ module.exports = {
   theme: {
     extend: {
       animation: {
-        'fadeIn': 'fadeIn 0.3s ease-in-out',
+        fadeIn: "fadeIn 0.3s ease-in-out",
       },
       keyframes: {
         fadeIn: {
-          '0%': { opacity: '0', transform: 'translateY(-4px)' },
-          '100%': { opacity: '1', transform: 'translateY(0)' },
+          "0%": { opacity: "0", transform: "translateY(-4px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
       },
       colors: {
@@ -44,21 +44,17 @@ module.exports = {
         "accent-1": "var(--color-accent-1)",
         "accent-1-light": "var(--color-accent-1-light)",
 
-        "callout-info": "var(--color-callout-info)",
-        "callout-info-icon": "var(--color-callout-info-icon)",
-        "callout-info-message": "var(--color-callout-info-message)",
+        "callout-info-bg": "var(--color-callout-info-bg)",
+        "callout-info-content": "var(--color-callout-info-content)",
 
-        "callout-warning": "var(--color-callout-warning)",
-        "callout-warning-icon": "var(--color-callout-warning-icon)",
-        "callout-warning-message": "var(--color-callout-warning-message)",
+        "callout-warning-bg": "var(--color-callout-warning-bg)",
+        "callout-warning-content": "var(--color-callout-warning-content)",
 
-        "callout-error": "var(--color-callout-error)",
-        "callout-error-icon": "var(--color-callout-error-icon)",
-        "callout-error-message": "var(--color-callout-error-message)",
+        "callout-error-bg": "var(--color-callout-error-bg)",
+        "callout-error-content": "var(--color-callout-error-content)",
 
-        "callout-success": "var(--color-callout-success)",
-        "callout-success-icon": "var(--color-callout-success-icon)",
-        "callout-success-message": "var(--color-callout-success-message)",
+        "callout-success-bg": "var(--color-callout-success-bg)",
+        "callout-success-content": "var(--color-callout-success-content)",
 
         brand: {
           1: "#3185FF",

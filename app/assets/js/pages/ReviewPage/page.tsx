@@ -55,10 +55,10 @@ function TitleIcon() {
 function SendingEmailsBanner() {
   const className = classNames(
     "text-sm font-medium",
-    "bg-callout-success text-callout-success-message",
+    "bg-callout-success-bg text-callout-success-content",
     "px-2 py-1",
     "rounded",
-    "border border-callout-success",
+    "border border-callout-success-bg",
     "absolute top-2 right-2",
   );
 
