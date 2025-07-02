@@ -4,6 +4,7 @@ export * from "./Avatar";
 export * from "./Button";
 export * from "./Chronometer";
 export * from "./CommentSection";
+export * from "./ConfirmDialog";
 export * from "./FormattedTime";
 export * from "./icons";
 export * from "./Link";
