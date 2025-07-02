@@ -124,14 +124,17 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.click(testid: "add-subgoal")
-    |> UI.take_screenshot()
     |> UI.fill_text_field(testid: "goal-name", with: name)
     |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "goal-page")
   end
 
   step :assert_subgoal_added, ctx, name do
+    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
+    assert goal != nil
+    assert goal.parent_goal_id == ctx.goal.id
+    assert goal.group_id == ctx.goal.group_id
+
     ctx
-    |> UI.assert_has(testid: "goal-page")
-    |> UI.assert_text(name)
   end
 end

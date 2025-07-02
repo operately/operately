@@ -7,14 +7,13 @@ import { GoalAddPage, SpaceField } from "turboui";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 import { GoalAddForm } from "turboui/src/GoalAddForm";
-import { emptyLoader } from "../../components/Pages";
 import { accessLevelAsNumber } from "../../models/goals";
 
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Spaces from "@/models/spaces";
 
-export default { name: "GoalAddPage", loader: emptyLoader, Page } as PageModule;
+export default { name: "GoalAddPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   space: Spaces.Space | null;

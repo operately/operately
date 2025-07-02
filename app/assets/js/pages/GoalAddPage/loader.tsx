@@ -26,10 +26,13 @@ interface LoaderResult {
 // 2. We are navigating to /goals/new, and we need to pick a space.
 
 export async function loader({ request, params }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
-  await redirectIfFeatureEnabled(params, { feature: "new-goal-add-page", path: paths.goalNewPathV2({}) });
-
   const searchParams = new URL(request.url).searchParams;
+  const paths = new Paths({ companyId: params.companyId });
+
+  await redirectIfFeatureEnabled(params, {
+    feature: "new-goal-add-page",
+    path: paths.goalNewPathV2({}) + "?" + searchParams.toString(),
+  });
 
   const parentGoalId = searchParams.get("parentGoalId") || undefined;
   const isCompanyWide = searchParams.get("companyWide") === "true";
