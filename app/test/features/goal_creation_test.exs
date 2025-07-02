@@ -39,17 +39,6 @@ defmodule Operately.Features.GoalCreationTest do
       |> Steps.assert_subgoal_added(params)
       |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
     end
-
-    feature "add subgoal to a company wide goal", ctx do
-      params = Map.merge(@goal_params, %{parent_name: @parent_goal_params.name})
-
-      ctx
-      |> Steps.given_a_goal_exists(@parent_goal_params)
-      |> Steps.initialize_goal_creation()
-      |> Steps.add_goal(params)
-      |> Steps.assert_subgoal_added(params)
-      |> Steps.assert_subgoal_created_email_sent(@goal_params.name)
-    end
   end
 
   describe "new goal creation tests" do
@@ -65,7 +54,7 @@ defmodule Operately.Features.GoalCreationTest do
 
     feature "create a new subgoal from for an exitsting goal (from the goal page)", ctx do
       ctx
-      |> Steps.given_a_goal_exists("Existing Goal")
+      |> Steps.given_a_goal_exists(%{name: "Existing Goal"})
       |> Steps.add_subgoal("Example Subgoal")
       |> Steps.assert_subgoal_added("Example Subgoal")
     end

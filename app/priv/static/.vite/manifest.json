@@ -1,15 +1,15 @@
 {
-  "_vendor-Dq-DdY4h.js": {
-    "file": "assets/vendor-Dq-DdY4h.js",
+  "_vendor-DHgCowNo.js": {
+    "file": "assets/vendor-DHgCowNo.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-BUriSd-H.js",
+    "file": "assets/app-mW5r1lTc.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-Dq-DdY4h.js"
+      "_vendor-DHgCowNo.js"
     ]
   }
 }
