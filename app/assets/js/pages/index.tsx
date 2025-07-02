@@ -25,7 +25,6 @@ import FeedPage from "./FeedPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import GoalActivityPage from "./GoalActivityPage";
 import GoalAddPage from "./GoalAddPage";
-import GoalAddPageV2 from "./GoalAddPageV2";
 import GoalCheckInNewPage from "./GoalCheckInNewPage";
 import GoalCheckInPage from "./GoalCheckInPage";
 import GoalClosingPage from "./GoalClosingPage";
@@ -123,7 +122,6 @@ export default {
   ForgotPasswordPage,
   GoalActivityPage,
   GoalAddPage,
-  GoalAddPageV2,
   GoalCheckInNewPage,
   GoalCheckInPage,
   GoalClosingPage,

@@ -15,8 +15,6 @@ export interface Timeframe {
   type: TimeframeType;
 }
 
-export type SetTimeframe = (timeframe: Timeframe) => void;
-
 //
 // Parsing and serializing the timeframe for GraphQL
 //
@@ -26,14 +24,6 @@ export function parse(timeframe: api.Timeframe): Timeframe {
     startDate: Time.parseDate(timeframe.startDate),
     endDate: Time.parseDate(timeframe.endDate),
     type: timeframe.type as TimeframeType,
-  };
-}
-
-export function serialize(timeframe: Timeframe): api.Timeframe {
-  return {
-    startDate: timeframe.startDate && Time.toDateWithoutTime(timeframe.startDate),
-    endDate: timeframe.endDate && Time.toDateWithoutTime(timeframe.endDate),
-    type: timeframe.type,
   };
 }
 
@@ -95,21 +85,6 @@ function formatDays(timeframe: Timeframe) {
 //
 // Shortcut functions for creating timeframes
 //
-
-export function currentQuarter(): Timeframe {
-  const now = new Date();
-  const quarter = Math.floor(now.getMonth() / 3);
-
-  if (quarter === 0) {
-    return firstQuarterOfYear(now.getFullYear());
-  } else if (quarter === 1) {
-    return secondQuarterOfYear(now.getFullYear());
-  } else if (quarter === 2) {
-    return thirdQuarterOfYear(now.getFullYear());
-  } else {
-    return fourthQuarterOfYear(now.getFullYear());
-  }
-}
 
 export function firstQuarterOfYear(year: number): Timeframe {
   return {
