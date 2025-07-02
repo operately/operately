@@ -62,5 +62,12 @@ defmodule Operately.Features.GoalCreationTest do
       |> Steps.submit()
       |> Steps.assert_goal_added("Example Goal")
     end
+
+    feature "create a new subgoal from for an exitsting goal (from the goal page)", ctx do
+      ctx
+      |> Steps.given_a_goal_exists("Existing Goal")
+      |> Steps.add_subgoal("Example Subgoal")
+      |> Steps.assert_subgoal_added("Example Subgoal")
+    end
   end
 end

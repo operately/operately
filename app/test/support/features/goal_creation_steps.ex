@@ -24,7 +24,12 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   step :given_a_goal_exists, ctx, goal_params do
     ctx
-    |> Factory.add_goal(:goal, :space, name: goal_params.name, champion: :champion, reviewer: :reviewer, space: :space)
+    |> Factory.add_goal(:goal, :space,
+      name: goal_params.name,
+      champion: :champion,
+      reviewer: :reviewer,
+      space: :space
+    )
   end
 
   step :add_goal, ctx, goal_params do
@@ -142,5 +147,14 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx
     |> UI.assert_has(testid: "goal-page")
     |> UI.assert_text(name)
+  end
+
+  step :add_subgoal, ctx, name do
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.parent_goal))
+    |> UI.click(testid: "add-subgoal")
+    |> UI.take_screenshot()
+    |> UI.fill_text_field(testid: "goal-name", with: name)
+    |> UI.click(testid: "submit")
   end
 end

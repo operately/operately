@@ -13,7 +13,7 @@ export function RelatedWork(props: GoalPage.Props) {
         title="Subgoals & Projects"
         buttons={
           <div className="flex items-center gap-2">
-            <SecondaryButton size="xxs" linkTo={props.addSubgoalLink}>
+            <SecondaryButton size="xxs" linkTo={props.addSubgoalLink} testId="add-subgoal">
               Add goal
             </SecondaryButton>
             <SecondaryButton size="xxs" linkTo={props.addSubprojectLink}>
