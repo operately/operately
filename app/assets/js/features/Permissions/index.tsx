@@ -1,10 +1,9 @@
 import { match } from "ts-pattern";
 
-export { ResourcePermissionSelector } from "./PermissionSelector";
+export { PermissionLevels } from "./PermissionLevels";
 export { PrivacyIndicator } from "./PrivacyIndicator";
 
 import { PermissionLevels } from "./PermissionLevels";
-export { PermissionLevels } from "./PermissionLevels";
 
 export enum PermissionOptions {
   PUBLIC = "public",
@@ -54,5 +53,3 @@ export function accessLevelAsString(permission: PermissionLevels) {
     .with(PermissionLevels.NO_ACCESS, () => "No Access")
     .run();
 }
-
-export const PUBLIC_PERMISSIONS_LIST = [VIEW_ACCESS];
