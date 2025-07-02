@@ -24,7 +24,7 @@ const ColorSwatch: React.FC<ColorSwatchProps> = ({ color, name, description, cla
   <div className={`flex items-center gap-3 p-3 ${className}`}>
     <div className={`w-12 h-12 rounded ${color} border border-gray-200`} />
     <div className="flex-1">
-      <div className="font-bold ">{name}</div>
+      <div className="font-bold">{name}</div>
       <div className="text-xs mt-0.5">{description}</div>
     </div>
   </div>
@@ -48,6 +48,8 @@ const ColorSection: React.FC<ColorSectionProps> = ({ title, colors }) => (
       {title === "Borders And Separators" && "Colors used for dividers, borders, and other separators"}
       {title === "Solid Colors" && "CTA, buttons, Avatar background, etc."}
       {title === "Text Colors" && "Colors used for text content, icons, warnings, and other content"}
+      {title == "Brand Colors" &&
+        "Used for brand identity and interactive elements like buttons, CTAs, checkboxes, etc."}
     </div>
     <div className="grid grid-cols-2 gap-x-6 gap-y-1">
       {colors.map((colorInfo, index) => (
@@ -221,6 +223,22 @@ export const AllColors: StoryObj = {
         />
 
         <ColorSection
+          title="Brand Colors"
+          colors={[
+            {
+              color: "bg-brand-1",
+              name: "brand-1",
+              description: "Primary brand color (#3185FF)",
+            },
+            {
+              color: "bg-brand-2",
+              name: "brand-2",
+              description: "Secondary brand color (#E3F2FF)",
+            },
+          ]}
+        />
+
+        <ColorSection
           title="Borders And Separators"
           colors={[
             {
@@ -237,7 +255,7 @@ export const AllColors: StoryObj = {
         />
 
         <ColorSection
-          title="Solid Colors"
+          title="Solid Colors [DEPRECATED, WILL BE REMOVED]"
           colors={[
             {
               color: "bg-accent-1",
@@ -295,22 +313,6 @@ export const AllColors: StoryObj = {
               color: "bg-toggle-active",
               name: "toggle-active",
               description: "Active state color for toggles and switches",
-            },
-          ]}
-        />
-
-        <ColorSection
-          title="Brand Colors"
-          colors={[
-            {
-              color: "bg-brand-1",
-              name: "brand-1",
-              description: "Primary brand color (#3185FF)",
-            },
-            {
-              color: "bg-brand-2",
-              name: "brand-2",
-              description: "Secondary brand color (#E3F2FF)",
             },
           ]}
         />
