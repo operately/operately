@@ -10,7 +10,7 @@ export function PrimaryButton(props: BaseButtonProps) {
     always: "border border-brand-1",
     normal: "text-white-1 bg-brand-1 hover:bg-blue-600",
     loading: "text-content-subtle bg-blue-400 border-blue-400",
-    disabled: "text-content-subtle bg-blue-400 border-blue-400",
+    disabled: "text-white-1 bg-blue-500 border-blue-500 opacity-50",
   });
 
   return (
