@@ -16,9 +16,18 @@ interface Props {
   expanded: boolean;
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
   canAddChildren: boolean;
+  addItemConfig?: WorkMap.AddItemConfig;
 }
 
-export function ItemNameCell({ item, level, expanded, setExpanded, showIndentation, canAddChildren }: Props) {
+export function ItemNameCell({
+  item,
+  level,
+  expanded,
+  setExpanded,
+  showIndentation,
+  canAddChildren,
+  addItemConfig,
+}: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative">
       <div className="flex items-center">
@@ -28,7 +37,7 @@ export function ItemNameCell({ item, level, expanded, setExpanded, showIndentati
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
 
-        {canAddChildren && <AddButton item={item} />}
+        {canAddChildren && <AddButton item={item} addItemConfig={addItemConfig!} />}
       </div>
     </td>
   );
@@ -144,27 +153,12 @@ function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
   );
 }
 
-function AddButton({ item }: { item: WorkMap.Item }) {
+function AddButton({ item, addItemConfig }: { item: WorkMap.Item; addItemConfig: WorkMap.AddItemConfig }) {
   if (item.type !== "goal") return null;
 
   const [isOpen, setIsOpen] = React.useState(false);
   const open = () => setIsOpen(true);
   const close = () => setIsOpen(false);
-
-  // Just a placeholder for now
-  const spaceSearch = async ({}: { query: string }) => {
-    // Mock search function for spaces
-    return [
-      { id: "space1", name: "Space 1", link: "/spaces/space1" },
-      { id: "space2", name: "Space 2", link: "/spaces/space2" },
-    ];
-  };
-
-  const saveItem = async (props: any) => {
-    // Mock save function
-    console.log("Saving item:", props);
-    return { id: "new-item-id" };
-  };
 
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
@@ -176,8 +170,8 @@ function AddButton({ item }: { item: WorkMap.Item }) {
         isOpen={isOpen}
         close={close}
         parentGoal={item}
-        spaceSearch={spaceSearch}
-        save={saveItem}
+        spaceSearch={addItemConfig.spaceSearch}
+        save={addItemConfig.save}
         space={item.space}
       />
     </div>
