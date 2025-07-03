@@ -12,6 +12,7 @@ export namespace AddItemModal {
     name: string;
     type: "goal" | "project";
     spaceId: string;
+    parentId: string | null;
     accessLevels: PrivacyField.AccessLevels;
   }
 
@@ -19,7 +20,7 @@ export namespace AddItemModal {
     isOpen: boolean;
     close: () => void;
     space: SpaceField.Space;
-    parentGoal: { name: string };
+    parentGoal: { id: string; name: string } | null;
     spaceSearch: SpaceField.SearchSpaceFn;
     save: (props: SaveProps) => Promise<{ id: string }>;
   }
@@ -49,9 +50,12 @@ export function AddItemModal(props: AddItemModal.Props) {
       <div className="flex items-start justify-between mb-4">
         <div className="">
           <h1 className="font-bold text-xl">{state.itemType === "goal" ? "Add New Goal" : "Add New Project"}</h1>
-          <div className="text-sm">
-            Under: <span className="font-medium">{props.parentGoal.name}</span>
-          </div>
+
+          {props.parentGoal && (
+            <div className="text-sm">
+              Under: <span className="font-medium">{props.parentGoal.name}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -172,6 +176,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
         type: itemType,
         spaceId: space!.id,
         accessLevels,
+        parentId: props.parentGoal ? props.parentGoal.id : null,
       });
 
       props.close();
