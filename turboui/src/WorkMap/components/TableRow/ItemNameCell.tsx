@@ -7,6 +7,7 @@ import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
+import { AddItemModal } from "../AddItemModal";
 
 interface Props {
   item: WorkMap.Item;
@@ -146,17 +147,17 @@ function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
 function AddButton({ item }: { item: WorkMap.Item }) {
   if (item.type !== "goal") return null;
 
+  const [isOpen, setIsOpen] = React.useState(false);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
-      <SecondaryButton
-        size="xxs"
-        onClick={() => {
-          // Implement add logic here
-          // e.g., open a modal or call a callback
-        }}
-      >
+      <SecondaryButton size="xxs" onClick={open}>
         Add
       </SecondaryButton>
+
+      <AddItemModal isOpen={isOpen} close={close} parentGoal={item} />
     </div>
   );
 }

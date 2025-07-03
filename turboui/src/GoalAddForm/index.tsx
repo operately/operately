@@ -1,7 +1,6 @@
 import React from "react";
 
 import { PrimaryButton } from "../Button";
-import Modal from "../Modal";
 import { Page } from "../Page";
 import { PrivacyField } from "../PrivacyField";
 import { SpaceField } from "../SpaceField";
@@ -15,21 +14,6 @@ export function GoalAddPage(props: GoalAddForm.Props) {
         <GoalAddForm {...props} />
       </div>
     </Page>
-  );
-}
-
-export namespace GoalAddModal {
-  export interface Props extends GoalAddForm.Props {
-    isOpen: boolean;
-    close: () => void;
-  }
-}
-
-export function GoalAddModal(props: GoalAddModal.Props) {
-  return (
-    <Modal isOpen={props.isOpen} onClose={props.close} size="medium">
-      <GoalAddForm {...props} />
-    </Modal>
   );
 }
 
@@ -105,7 +89,7 @@ export function GoalAddForm(props: GoalAddForm.Props) {
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 flex items-center gap-2">
         <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
           Add Goal
         </PrimaryButton>
