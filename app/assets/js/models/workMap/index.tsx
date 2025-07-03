@@ -1,28 +1,34 @@
-import { WorkMapItem, getWorkMap, getFlatWorkMap } from "@/api";
-import { WorkMap, TimeframeSelector } from "turboui";
+import { WorkMapItem, getFlatWorkMap, getWorkMap } from "@/api";
+import { Paths } from "@/routes/paths";
+import { TimeframeSelector, WorkMap } from "turboui";
 
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type
  * This handles type differences including nullable fields and ensures
  * the structure matches exactly what the TurboUI component expects
  */
-export function convertToWorkMapItem(item: WorkMapItem): WorkMap.Item {
-  const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
-    if (!timeframe) return null;
-
-    return {
-      startDate: timeframe.startDate || undefined,
-      endDate: timeframe.endDate || undefined,
-      type: (timeframe.type || undefined) as TimeframeSelector.TimeframeType,
-    };
-  };
-
+export function convertToWorkMapItem(paths: Paths, item: WorkMapItem): WorkMap.Item {
   return {
     ...item,
+    space: {
+      id: item.space.id,
+      name: item.space.name,
+      link: paths.spacePath(item.space.id),
+    },
     timeframe: convertTimeframe(item.timeframe),
-    children: item.children.map(convertToWorkMapItem),
+    children: item.children.map((c) => convertToWorkMapItem(paths, c)),
   };
 }
 
-export { getWorkMap, getFlatWorkMap };
+const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
+  if (!timeframe) return null;
+
+  return {
+    startDate: timeframe.startDate || undefined,
+    endDate: timeframe.endDate || undefined,
+    type: (timeframe.type || undefined) as TimeframeSelector.TimeframeType,
+  };
+};
+
+export { getFlatWorkMap, getWorkMap };
 export type { WorkMapItem };

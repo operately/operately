@@ -3,6 +3,7 @@ import * as WorkMap from "@/models/workMap";
 import { convertToWorkMapItem } from "@/models/workMap";
 
 import { PageCache } from "@/routes/PageCache";
+import { Paths } from "@/routes/paths";
 import { fetchAll } from "@/utils/async";
 
 interface LoaderResult {
@@ -16,9 +17,10 @@ interface LoaderResult {
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   const personId = params.id;
+  const paths = new Paths({ companyId: params.companyId! });
 
   return PageCache.fetch({
-    cacheKey: `v2-PersonalWorkMap-${personId}`,
+    cacheKey: `v3-PersonalWorkMap-${personId}`,
     refreshCache,
     fetchFn: async () =>
       fetchAll({
@@ -32,10 +34,10 @@ export async function loader({ params, refreshCache = false }): Promise<LoaderRe
         workMap: WorkMap.getFlatWorkMap({
           championId: personId,
           contributorId: personId,
-        }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
+        }).then((d) => d.workMap?.map((i) => convertToWorkMapItem(paths, i)) ?? []),
         reviewerWorkMap: WorkMap.getFlatWorkMap({
           reviewerId: personId,
-        }).then((d) => d.workMap?.map(convertToWorkMapItem) ?? []),
+        }).then((d) => d.workMap?.map((i) => convertToWorkMapItem(paths, i)) ?? []),
       }),
   });
 }
