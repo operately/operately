@@ -7,8 +7,8 @@ import { SpaceField } from "../../SpaceField";
 import { TextField } from "../../TextField";
 import { showErrorToast } from "../../Toasts";
 
-namespace AddItemModel {
-  interface SaveProps {
+export namespace AddItemModal {
+  export interface SaveProps {
     name: string;
     type: "goal" | "project";
     spaceId: string;
@@ -41,7 +41,7 @@ namespace AddItemModel {
   }
 }
 
-export function AddItemModal(props: AddItemModel.Props) {
+export function AddItemModal(props: AddItemModal.Props) {
   const state = useAddItemModalState(props);
 
   return (
@@ -126,7 +126,7 @@ export function AddItemModal(props: AddItemModel.Props) {
   );
 }
 
-function useAddItemModalState(props: AddItemModel.Props) {
+function useAddItemModalState(props: AddItemModal.Props) {
   const [itemType, setItemType] = React.useState<"goal" | "project">("project");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);

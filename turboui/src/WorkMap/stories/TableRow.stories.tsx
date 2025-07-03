@@ -71,7 +71,6 @@ export const Default: Story = {
     level: 0,
     isLast: false,
     tab: "all",
-    canAddChildren: false,
   },
 };
 
@@ -92,7 +91,6 @@ export const CompletedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch new marketing campaign");
@@ -118,7 +116,6 @@ export const AchievedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Increase website traffic by 50%");
@@ -144,7 +141,6 @@ export const MissedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch mobile app by Q1");
@@ -170,7 +166,6 @@ export const PausedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Expand to international markets");
@@ -198,7 +193,6 @@ export const CautionGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Implement new CRM system");
@@ -226,7 +220,6 @@ export const IssueGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Migrate legacy systems");
@@ -251,7 +244,6 @@ export const OutdatedGoal: Story = {
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
-          canAddChildren={args.canAddChildren}
         />
       </tbody>
     </>
@@ -261,7 +253,6 @@ export const OutdatedGoal: Story = {
     level: 0,
     isLast: false,
     tab: "all",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Update legacy documentation");
@@ -289,7 +280,6 @@ export const OnTrackProject: Story = {
     level: 0,
     isLast: false,
     tab: "all",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.refuteItemHasLineThrough(canvasElement, step, "Redesign product dashboard");
@@ -317,7 +307,6 @@ export const CompletedProject: Story = {
     level: 0,
     isLast: false,
     tab: "completed",
-    canAddChildren: false,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Update documentation");
@@ -340,7 +329,6 @@ export const MultipleRows: Story = {
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
-          canAddChildren={false}
         />
         <TableRow
           item={data.mockProjectOnTrack}
@@ -348,7 +336,6 @@ export const MultipleRows: Story = {
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
-          canAddChildren={false}
         />
         <TableRow
           item={data.mockGoalCompleted}
@@ -356,7 +343,6 @@ export const MultipleRows: Story = {
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
-          canAddChildren={false}
         />
         <TableRow
           item={data.mockProjectCompleted}
@@ -364,7 +350,6 @@ export const MultipleRows: Story = {
           isLast={true}
           tab={args.tab}
           showIndentation={args.showIndentation}
-          canAddChildren={false}
         />
       </tbody>
     </>
@@ -374,7 +359,6 @@ export const MultipleRows: Story = {
     item: data.mockGoalOnTrack, // These args won't be used directly by the render function
     level: 0, // but are required by the StoryAnnotations type
     isLast: false,
-    canAddChildren: false,
   },
 };
 
@@ -442,7 +426,6 @@ export const PrivacyLevels: Story = {
     tab: "all",
     item: data.mockGoalOnTrack, // This is required by the Story type, but our render function overrides it
     isLast: false, // Also required by the Story type
-    canAddChildren: false, // Not relevant for this story
   },
   parameters: {
     docs: {

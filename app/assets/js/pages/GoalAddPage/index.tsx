@@ -1,4 +1,4 @@
-import Api, { useCreateGoal } from "@/api";
+import { useCreateGoal } from "@/api";
 import React from "react";
 
 import { Paths, usePaths } from "@/routes/paths";
@@ -12,6 +12,7 @@ import { accessLevelAsNumber } from "../../models/goals";
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
 import * as Spaces from "@/models/spaces";
+import { useSpaceSearch } from "@/models/spaces";
 
 export default { name: "GoalAddPage", loader, Page } as PageModule;
 
@@ -82,20 +83,6 @@ function useOnSuccess(): (id: string) => void {
 
   return (id: string) => {
     navigate(paths.goalPath(id));
-  };
-}
-
-function useSpaceSearch(): SpaceField.SearchSpaceFn {
-  const paths = usePaths();
-
-  return async ({ query }: { query: string }): Promise<SpaceField.Space[]> => {
-    const data = await Api.spaces.search({ query: query });
-
-    return data.spaces.map((space) => ({
-      id: space.id!,
-      name: space.name!,
-      link: paths.spacePath(space.id!),
-    }));
   };
 }
 
