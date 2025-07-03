@@ -166,12 +166,6 @@ function AddButton({ item }: { item: WorkMap.Item }) {
     return { id: "new-item-id" };
   };
 
-  const space = {
-    id: item.space!.id,
-    name: item.space!.name,
-    link: "#", // TODO: Replace with actual link
-  };
-
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
       <SecondaryButton size="xxs" onClick={open}>
@@ -184,7 +178,7 @@ function AddButton({ item }: { item: WorkMap.Item }) {
         parentGoal={item}
         spaceSearch={spaceSearch}
         save={saveItem}
-        space={space}
+        space={item.space}
       />
     </div>
   );
