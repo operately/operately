@@ -11,7 +11,7 @@ interface Props {
   onRowClick?: (item: WorkMap.Item) => void;
   expanded: boolean;
   showIndentation: boolean;
-  canAddChildren: boolean;
+  addItemConfig?: WorkMap.AddItemConfig;
 }
 
 export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {
