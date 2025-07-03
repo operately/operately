@@ -117,7 +117,7 @@ export function AddItemModal(props: AddItemModal.Props) {
             Add Goal
           </PrimaryButton>
 
-          <SecondaryButton type="button" data-testid="cancel" size="sm">
+          <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
             Cancel
           </SecondaryButton>
         </div>
@@ -174,6 +174,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
         accessLevels,
       });
 
+      props.close();
       setNameError(undefined);
       setSpaceError(undefined);
     } catch (error) {
