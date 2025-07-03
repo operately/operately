@@ -77,6 +77,7 @@ export namespace WorkMap {
   interface Space {
     id: string;
     name: string;
+    link: string;
   }
 
   interface Timeframe {
