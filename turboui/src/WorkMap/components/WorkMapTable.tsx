@@ -9,10 +9,10 @@ interface Props {
   items: WorkMap.Item[];
   tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
-  addingChildrenEnabled?: boolean;
+  addItemConfig?: WorkMap.AddItemConfig;
 }
 
-export function WorkMapTable({ items, tab, columnOptions = {}, addingChildrenEnabled = false }: Props) {
+export function WorkMapTable({ items, tab, columnOptions = {}, addItemConfig }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
@@ -33,7 +33,7 @@ export function WorkMapTable({ items, tab, columnOptions = {}, addingChildrenEna
                 tab={tab}
                 columnOptions={columnOptions}
                 showIndentation={showIndentation}
-                canAddChildren={addingChildrenEnabled && tab !== "completed"}
+                addItemConfig={addItemConfig}
               />
             ))
           )}

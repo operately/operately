@@ -19,7 +19,7 @@ interface Props {
   tab: WorkMap.Filter;
   showIndentation: boolean;
   columnOptions?: WorkMap.ColumnOptions;
-  canAddChildren: boolean;
+  addItemConfig?: WorkMap.AddItemConfig;
 }
 
 export function TableRow(props: Props) {
@@ -35,7 +35,8 @@ export function TableRow(props: Props) {
           expanded={expanded}
           setExpanded={setExpanded}
           showIndentation={props.showIndentation}
-          canAddChildren={props.canAddChildren}
+          canAddChildren={Boolean(props.addItemConfig?.enabled) && tab !== "completed"}
+          addItemConfig={props.addItemConfig}
         />
         <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
         <ProgressCell
@@ -59,7 +60,7 @@ export function TableRow(props: Props) {
         />
       </RowContainer>
 
-      <ChildRows {...props} expanded={expanded} canAddChildren={props.canAddChildren} />
+      <ChildRows {...props} expanded={expanded} />
     </>
   );
 }

@@ -5,7 +5,9 @@ import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 import { TimeframeSelector } from "../../TimeframeSelector";
 
+import { SpaceField } from "../../SpaceField";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
+import { AddItemModal } from "./AddItemModal";
 import { WorkMapNavigation } from "./WorkMapNavigation";
 import { WorkMapTable } from "./WorkMapTable";
 
@@ -25,7 +27,7 @@ export function WorkMap({
   columnOptions = {},
   tabOptions = {},
   type = "company",
-  addingChildrenEnabled = false,
+  addItemConfig,
 }: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
@@ -38,12 +40,7 @@ export function WorkMap({
       </header>
       <div className="flex-1 overflow-auto">
         <WorkMapNavigation tabsState={tabsState} />
-        <WorkMapTable
-          items={filteredItems}
-          tab={tab}
-          columnOptions={columnOptions}
-          addingChildrenEnabled={addingChildrenEnabled}
-        />
+        <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} addItemConfig={addItemConfig} />
       </div>
     </div>
   );
@@ -126,6 +123,12 @@ export namespace WorkMap {
     hideNextStep?: boolean;
   }
 
+  export interface AddItemConfig {
+    enabled: boolean;
+    spaceSearch: SpaceField.SearchSpaceFn;
+    save: (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
+  }
+
   export interface Props {
     title: string;
     items: Item[];
@@ -133,6 +136,11 @@ export namespace WorkMap {
     tabOptions?: TabOptions;
     type?: WorkMapType;
     navigation?: Navigation.Item[];
-    addingChildrenEnabled?: boolean;
+
+    addItemConfig?: {
+      enabled: boolean;
+      spaceSearch: SpaceField.SearchSpaceFn;
+      save: (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
+    };
   }
 }
