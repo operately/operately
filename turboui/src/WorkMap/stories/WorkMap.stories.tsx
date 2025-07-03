@@ -1,9 +1,9 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import WorkMap from "../components";
+import React from "react";
 import { Page } from "../../Page";
+import WorkMap from "../components";
+import { closedParentWithOngoingChildren, mockItems, mockSingleItem } from "../tests/mockData";
 import * as Steps from "../tests/steps";
-import { mockItems, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";
 
 /**
  * WorkMap is a comprehensive component for displaying and interacting with
@@ -38,6 +38,7 @@ export const Default: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
+    addingChildrenEnabled: true,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 14);

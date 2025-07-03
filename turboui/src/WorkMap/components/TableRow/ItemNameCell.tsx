@@ -7,6 +7,7 @@ import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
+import { AddItemModal } from "../AddItemModal";
 
 interface Props {
   item: WorkMap.Item;
@@ -146,17 +147,32 @@ function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
 function AddButton({ item }: { item: WorkMap.Item }) {
   if (item.type !== "goal") return null;
 
+  const [isOpen, setIsOpen] = React.useState(false);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
+  // Just a placeholder for now
+  const spaceSearch = async ({}: { query: string }) => {
+    // Mock search function for spaces
+    return [
+      { id: "space1", name: "Space 1", link: "/spaces/space1" },
+      { id: "space2", name: "Space 2", link: "/spaces/space2" },
+    ];
+  };
+
+  const saveItem = async (props: any) => {
+    // Mock save function
+    console.log("Saving item:", props);
+    return { id: "new-item-id" };
+  };
+
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
-      <SecondaryButton
-        size="xxs"
-        onClick={() => {
-          // Implement add logic here
-          // e.g., open a modal or call a callback
-        }}
-      >
+      <SecondaryButton size="xxs" onClick={open}>
         Add
       </SecondaryButton>
+
+      <AddItemModal isOpen={isOpen} close={close} parentGoal={item} spaceSearch={spaceSearch} save={saveItem} />
     </div>
   );
 }
