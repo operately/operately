@@ -30,6 +30,7 @@ export function WorkMap({
   addItem,
   addingEnabled = false,
   spaceSearch,
+  addItemDefaultSpace,
 }: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
@@ -49,6 +50,7 @@ export function WorkMap({
           addItem={addItem}
           addingEnabled={addingEnabled}
           spaceSearch={spaceSearch}
+          addItemDefaultSpace={addItemDefaultSpace}
         />
       </div>
     </div>
@@ -141,6 +143,7 @@ export namespace WorkMap {
     addItem?: AddNewItemFn;
     addingEnabled?: boolean;
     spaceSearch?: SpaceField.SearchSpaceFn;
+    addItemDefaultSpace?: SpaceField.Space;
 
     columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;
