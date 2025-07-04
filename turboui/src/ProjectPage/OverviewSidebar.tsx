@@ -49,7 +49,7 @@ function LastCheckInSection(props: any) {
   }
 
   return (
-    <SidebarSection title="Last Check-In">
+    <SidebarSection title="Last check-in">
       <LastCheckIn checkIns={props.checkIns} state={props.state} mentionedPersonLookup={props.mentionedPersonLookup} />
     </SidebarSection>
   );
@@ -57,7 +57,7 @@ function LastCheckInSection(props: any) {
 
 function ParentGoal(props: any) {
   return (
-    <SidebarSection title="Parent Goal">
+    <SidebarSection title="Parent goal">
       <GoalField
         testId="parent-goal-field"
         goal={props.parentGoal || null}
@@ -74,7 +74,7 @@ function ParentGoal(props: any) {
 function ProjectDates(props: any) {
   return (
     <div className="space-y-4">
-      <SidebarSection title="Start Date">
+      <SidebarSection title="Start date">
         <DateField
           date={props.startedAt || null}
           setDate={props.setStartedAt || (() => {})}
@@ -83,7 +83,7 @@ function ProjectDates(props: any) {
           showOverdueWarning={false}
         />
       </SidebarSection>
-      <SidebarSection title="Due Date">
+      <SidebarSection title="Due date">
         <DateField
           date={props.dueAt || null}
           setDate={props.setDueAt || (() => {})}
@@ -104,7 +104,7 @@ function Champion(props: any) {
           <Tooltip
             content={
               <div className="max-w-xs">
-                <div className="font-semibold mb-2">Project Champion</div>
+                <div className="font-semibold mb-2">Project champion</div>
                 <div className="text-sm">
                   The project owner accountable for completion. Plans, assigns responsibilities, and submits weekly
                   check-ins.
@@ -138,7 +138,7 @@ function Reviewer(props: any) {
           <Tooltip
             content={
               <div className="max-w-xs">
-                <div className="font-semibold mb-2">Project Reviewer</div>
+                <div className="font-semibold mb-2">Project reviewer</div>
                 <div className="text-sm">
                   Provides feedback throughout the project, and is responsible for acknowledging weekly check-ins.
                 </div>

@@ -304,7 +304,7 @@ function TimelineSection(props: ProjectPage.State) {
 
   const addButton = (
     <GhostButton size="xs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
-      + Add Milestone
+      + Add milestone
     </GhostButton>
   );
 
@@ -356,7 +356,7 @@ function TimelineSection(props: ProjectPage.State) {
               <div className="flex items-center gap-4">
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleAddMilestone} disabled={!newMilestoneName.trim()}>
-                    Add Milestone
+                    Add milestone
                   </Button>
                   <GhostButton size="sm" onClick={() => setShowAddForm(false)}>
                     Cancel
