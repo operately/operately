@@ -250,7 +250,7 @@ export function MilestonePage({
                           slices={[
                             {
                               percentage: completionPercentage,
-                              color: "var(--color-callout-success-icon)",
+                              color: "var(--color-callout-success-content)",
                             },
                           ]}
                         />
