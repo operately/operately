@@ -35,6 +35,12 @@ This document captures the architecture principles, patterns, and workflow for d
 
 - **Ask, do not assume**: If requirements are not 100% clear do not jump into implementation with assumptions but ask for clarifications and present options if possible.
 
+### Design Iteration and Feedback
+
+- **Question layout decisions**: If placement feels visually awkward or breaks established patterns, discuss alternatives before implementing
+- **Consider integration over isolation**: New UI elements often work better integrated into existing containers rather than as standalone floating elements
+- **Design system is evolving**: Be flexible with color/component choices while preferring established patterns when available
+
 ### File Organization
 
 ```
@@ -82,6 +88,19 @@ make turboui.build && make turboui.test
 - **Icons**: Use Tabler icons consistently, hide in list contexts to reduce clutter
 - **Colors**: Use existing color classes (content-subtle, content-error, etc.) defined in tailwind config and outlined in turboui/src/Colors
 - **Spacing**: Use consistent gap and padding patterns
+
+### Design System Colors and Theming
+
+- **Prefer design system colors first**: Check `src/Colors/Colors.stories.tsx` for available semantic colors before using Tailwind classes
+- **Dark mode support**: Design system colors automatically support dark mode; custom Tailwind colors may not
+- **Fallback to Tailwind when needed**: If design system colors don't meet the need, Tailwind classes are acceptable (expect this ~10-20% of cases)
+- **Check existing patterns**: Look at similar components (e.g., `src/Callouts/index.tsx` for status messaging) to understand established color usage
+
+### Component Discovery and Imports
+
+- **Verify component exports**: Use Task tool or check actual import files when uncertain about available components/icons
+- **Don't assume standard names**: Button components use specific variants (`PrimaryButton`, etc.), not generic names
+- **Check icon availability**: Icons follow `Icon[Name]` pattern - verify existence in `src/icons/index.tsx` before using
 
 ### Interaction Patterns
 
