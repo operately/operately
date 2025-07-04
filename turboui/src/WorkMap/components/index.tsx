@@ -27,7 +27,9 @@ export function WorkMap({
   columnOptions = {},
   tabOptions = {},
   type = "company",
-  addItemConfig,
+  addItem,
+  addingEnabled = false,
+  spaceSearch,
 }: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
@@ -40,7 +42,14 @@ export function WorkMap({
       </header>
       <div className="flex-1 overflow-auto">
         <WorkMapNavigation tabsState={tabsState} />
-        <WorkMapTable items={filteredItems} tab={tab} columnOptions={columnOptions} addItemConfig={addItemConfig} />
+        <WorkMapTable
+          items={filteredItems}
+          tab={tab}
+          columnOptions={columnOptions}
+          addItem={addItem}
+          addingEnabled={addingEnabled}
+          spaceSearch={spaceSearch}
+        />
       </div>
     </div>
   );
@@ -123,21 +132,19 @@ export namespace WorkMap {
     hideNextStep?: boolean;
   }
 
-  export type SaveNewItemFn = (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
-
-  export interface AddItemConfig {
-    enabled: boolean;
-    spaceSearch: SpaceField.SearchSpaceFn;
-    save: SaveNewItemFn;
-  }
+  export type AddNewItemFn = (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
 
   export interface Props {
     title: string;
+
     items: Item[];
+    addItem?: AddNewItemFn;
+    addingEnabled?: boolean;
+    spaceSearch?: SpaceField.SearchSpaceFn;
+
     columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;
     type?: WorkMapType;
     navigation?: Navigation.Item[];
-    addItemConfig?: AddItemConfig;
   }
 }

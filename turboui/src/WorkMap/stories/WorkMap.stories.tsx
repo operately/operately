@@ -38,23 +38,21 @@ export const Default: Story = {
   args: {
     title: "Company Work Map",
     items: mockItems,
-    addItemConfig: {
-      enabled: true,
-      spaceSearch: async ({ query: query }) => {
-        return [
-          { id: "space1", name: "Space 1", link: "/spaces/space1" },
-          { id: "space2", name: "Space 2", link: "/spaces/space2" },
-        ].filter((space) => space.name.toLowerCase().includes(query));
-      },
-      save: async (props) => {
-        console.log("Saving new item:", props);
+    addingEnabled: true,
+    spaceSearch: async ({ query: query }) => {
+      return [
+        { id: "space1", name: "Space 1", link: "/spaces/space1" },
+        { id: "space2", name: "Space 2", link: "/spaces/space2" },
+      ].filter((space) => space.name.toLowerCase().includes(query));
+    },
+    addItem: async (props) => {
+      console.log("Saving new item:", props);
 
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            resolve({ id: "new-item-id" });
-          }, 1000);
-        });
-      },
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          resolve({ id: "new-item-id" });
+        }, 1000);
+      });
     },
   },
   play: async ({ canvasElement, step }) => {

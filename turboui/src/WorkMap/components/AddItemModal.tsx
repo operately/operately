@@ -11,7 +11,7 @@ export namespace AddItemModal {
   export interface SaveProps {
     name: string;
     type: "goal" | "project";
-    spaceId: string;
+    space: SpaceField.Space;
     parentId: string | null;
     accessLevels: PrivacyField.AccessLevels;
   }
@@ -174,7 +174,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
       await props.save({
         name: name.trim(),
         type: itemType,
-        spaceId: space!.id,
+        space: space!,
         accessLevels,
         parentId: props.parentGoal ? props.parentGoal.id : null,
       });
