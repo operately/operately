@@ -55,7 +55,13 @@ defmodule Operately.Companies.Company do
   import Ecto.Query, only: [from: 2]
 
   def load_general_space(company) do
-    space = Operately.Groups.get_group(company.company_space_id)
+    space =
+      Operately.Repo.one(
+        from s in Operately.Groups.Group,
+          where: s.id == ^company.company_space_id,
+          preload: [:company]
+      )
+
     Map.put(company, :general_space, space)
   end
 
