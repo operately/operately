@@ -70,7 +70,7 @@ export function AddItemModal(props: AddItemModal.Props) {
               className="accent-blue-600"
               onChange={() => state.setItemType("goal")}
             />
-            <span>Sub-Goal</span>
+            <span>Goal</span>
           </label>
           <label className="flex items-center gap-1 cursor-pointer">
             <input
@@ -131,7 +131,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 }
 
 function useAddItemModalState(props: AddItemModal.Props) {
-  const [itemType, setItemType] = React.useState<"goal" | "project">("project");
+  const [itemType, setItemType] = React.useState<"goal" | "project">("goal");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);

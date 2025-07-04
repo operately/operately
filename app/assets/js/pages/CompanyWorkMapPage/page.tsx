@@ -2,6 +2,7 @@ import * as React from "react";
 
 import { useSpaceSearch } from "@/models/spaces";
 import { WorkMap, WorkMapPage } from "turboui";
+import { useCreateProject } from "../../api";
 import { Company, hasFeature } from "../../models/companies";
 import { accessLevelAsNumber, useCreateGoal } from "../../models/goals";
 import { useLoadedData } from "./loader";
@@ -18,7 +19,9 @@ export function Page() {
 
 function useAddItemConfig(company: Company) {
   const spaceSearch = useSpaceSearch();
+
   const [saveGoal] = useCreateGoal();
+  const [saveProject] = useCreateProject();
 
   const saveNewGoal: WorkMap.SaveNewItemFn = async (props) => {
     return saveGoal({
@@ -33,8 +36,17 @@ function useAddItemConfig(company: Company) {
     });
   };
 
-  const saveNewProject: WorkMap.SaveNewItemFn = async () => {
-    throw new Error("Project creation is not implemented yet");
+  const saveNewProject: WorkMap.SaveNewItemFn = async (props) => {
+    return saveProject({
+      name: props.name,
+      spaceId: props.spaceId,
+      goalId: props.parentId || null,
+      anonymousAccessLevel: 0,
+      companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
+      spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
+    }).then((response) => {
+      return { id: response.project!.id! };
+    });
   };
 
   const saveNewItem: WorkMap.SaveNewItemFn = async (props) => {
