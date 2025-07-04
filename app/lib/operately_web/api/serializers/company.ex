@@ -1,8 +1,8 @@
 defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
   def serialize(company, level: :essential) do
     %{
-       id: OperatelyWeb.Paths.company_id(company),
-       name: company.name,
+      id: OperatelyWeb.Paths.company_id(company),
+      name: company.name
     }
   end
 
@@ -17,7 +17,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
       people: OperatelyWeb.Api.Serializer.serialize(company.people, level: :full),
       admins: OperatelyWeb.Api.Serializer.serialize(company.admins),
       owners: OperatelyWeb.Api.Serializer.serialize(company.owners),
-      permissions: OperatelyWeb.Api.Serializer.serialize(company.permissions)
+      permissions: OperatelyWeb.Api.Serializer.serialize(company.permissions),
+      general_space: OperatelyWeb.Api.Serializer.serialize(company.general_space, level: :full)
     }
   end
 end

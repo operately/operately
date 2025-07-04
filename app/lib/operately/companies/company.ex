@@ -23,6 +23,7 @@ defmodule Operately.Companies.Company do
     field :admins, :any, virtual: true
     field :owners, :any, virtual: true
     field :permissions, :any, virtual: true
+    field :general_space, :any, virtual: true
 
     field :people_count, :integer, virtual: true
     field :goals_count, :integer, virtual: true
@@ -52,6 +53,11 @@ defmodule Operately.Companies.Company do
   #
 
   import Ecto.Query, only: [from: 2]
+
+  def load_general_space(company) do
+    space = Operately.Groups.get_group(company.company_space_id)
+    Map.put(company, :general_space, space)
+  end
 
   def load_member_count(companies) when is_list(companies) do
     ids = Enum.map(companies, fn c -> c.id end)

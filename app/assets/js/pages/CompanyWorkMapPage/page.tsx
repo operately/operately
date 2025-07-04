@@ -24,6 +24,11 @@ export function Page() {
       addItem={addItem}
       addingEnabled={addingEnabled}
       spaceSearch={spaceSearch}
+      addItemDefaultSpace={{
+        id: company.generalSpace!.id,
+        name: company.generalSpace!.name,
+        link: paths.spacePath(company.generalSpace!.id),
+      }}
     />
   );
 }

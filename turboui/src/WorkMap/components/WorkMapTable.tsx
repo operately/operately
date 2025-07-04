@@ -1,9 +1,12 @@
 import React from "react";
+
 import { WorkMap } from "..";
+import { PrimaryButton } from "../../Button";
 import { SpaceField } from "../../SpaceField";
 import { Tooltip } from "../../Tooltip";
-import { IconInfoCircle } from "../../icons";
+import { IconInfoCircle, IconPlus } from "../../icons";
 import classNames from "../../utils/classnames";
+import { AddItemModal } from "./AddItemModal";
 import { TableRow } from "./TableRow";
 
 interface Props {
@@ -13,9 +16,18 @@ interface Props {
   columnOptions?: WorkMap.ColumnOptions;
   addItem?: WorkMap.AddNewItemFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
+  addItemDefaultSpace?: SpaceField.Space;
 }
 
-export function WorkMapTable({ items, tab, columnOptions = {}, addItem, addingEnabled = false, spaceSearch }: Props) {
+export function WorkMapTable({
+  items,
+  tab,
+  columnOptions = {},
+  addItem,
+  addingEnabled = false,
+  spaceSearch,
+  addItemDefaultSpace,
+}: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
@@ -25,22 +37,38 @@ export function WorkMapTable({ items, tab, columnOptions = {}, addItem, addingEn
         <TableHeader tab={tab} columnOptions={columnOptions} />
         <tbody>
           {emptyWorkMap ? (
-            <ZeroState />
+            <ZeroState
+              addingEnabled={addingEnabled}
+              spaceSearch={spaceSearch!}
+              addItem={addItem!}
+              addItemDefaultSpace={addItemDefaultSpace!}
+            />
           ) : (
-            items.map((item, idx) => (
-              <TableRow
-                key={item.id}
-                item={item}
-                level={0}
-                isLast={idx === items.length - 1}
-                tab={tab}
-                columnOptions={columnOptions}
-                showIndentation={showIndentation}
-                addItem={addItem}
-                addingEnabled={addingEnabled}
-                spaceSearch={spaceSearch}
-              />
-            ))
+            <>
+              {items.map((item, idx) => (
+                <TableRow
+                  key={item.id}
+                  item={item}
+                  level={0}
+                  isLast={idx === items.length - 1}
+                  tab={tab}
+                  columnOptions={columnOptions}
+                  showIndentation={showIndentation}
+                  addItem={addItem}
+                  addingEnabled={addingEnabled}
+                  spaceSearch={spaceSearch}
+                />
+              ))}
+
+              {addingEnabled && (
+                <AddNewRow
+                  addingEnabled={addingEnabled}
+                  spaceSearch={spaceSearch!}
+                  addItem={addItem!}
+                  addItemDefaultSpace={addItemDefaultSpace!}
+                />
+              )}
+            </>
           )}
         </tbody>
       </table>
@@ -126,11 +154,94 @@ function NextStepHeaderCell({ hide }: { hide?: boolean }) {
   );
 }
 
-function ZeroState() {
+function ZeroState({
+  addingEnabled,
+  spaceSearch,
+  addItem,
+  addItemDefaultSpace,
+}: {
+  addingEnabled: boolean;
+  spaceSearch: SpaceField.SearchSpaceFn;
+  addItem: WorkMap.AddNewItemFn;
+  addItemDefaultSpace: SpaceField.Space;
+}) {
+  if (!addingEnabled) {
+    return (
+      <tr>
+        <td colSpan={7} className="py-32 text-center">
+          <div className="mb-4">Nothing here yet.</div>
+        </td>
+      </tr>
+    );
+  }
+
+  const [isOpen, setIsOpen] = React.useState(false);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
   return (
     <tr>
-      <td colSpan={7} className="py-32 text-lg text-center text-content-dimmed">
-        🍃 Nothing here
+      <td colSpan={7} className="py-32 text-center">
+        <div className="mb-4">
+          There's nothing here yet.
+          <br />
+          Start by adding your first goal to get things moving.
+        </div>
+
+        <PrimaryButton size="sm" onClick={() => {}}>
+          Add your first item
+        </PrimaryButton>
+
+        <AddItemModal
+          isOpen={isOpen}
+          close={close}
+          parentGoal={null}
+          spaceSearch={spaceSearch}
+          save={addItem}
+          space={addItemDefaultSpace}
+        />
+      </td>
+    </tr>
+  );
+}
+
+function AddNewRow({
+  addingEnabled,
+  spaceSearch,
+  addItem,
+  addItemDefaultSpace,
+}: {
+  addingEnabled: boolean;
+  spaceSearch: SpaceField.SearchSpaceFn;
+  addItem: WorkMap.AddNewItemFn;
+  addItemDefaultSpace: SpaceField.Space;
+}) {
+  if (!addingEnabled) return null;
+
+  const [isOpen, setIsOpen] = React.useState(false);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
+
+  return (
+    <tr>
+      <td className="py-2 px-2 sm:px-4">
+        <button
+          className="flex items-center gap-1 text-sm text-content-dimmed hover:text-content-base transition-colors py-1.5 px-2 rounded-md hover:bg-surface-highlight"
+          aria-label="Add new item"
+          onClick={open}
+        >
+          <IconPlus size={16} className="text-content-dimmed" />
+          <span>Add new item</span>
+        </button>
+
+        <AddItemModal
+          isOpen={isOpen}
+          close={close}
+          parentGoal={null}
+          spaceSearch={spaceSearch}
+          save={addItem}
+          space={addItemDefaultSpace}
+        />
       </td>
     </tr>
   );

@@ -26,6 +26,11 @@ export function Page() {
       spaceSearch={spaceSearch}
       columnOptions={{ hideSpace: true }}
       navigation={[{ to: paths.spacePath(space.id), label: space.name }]}
+      addItemDefaultSpace={{
+        id: space.id,
+        name: space.name,
+        link: paths.spacePath(space.id),
+      }}
     />
   );
 }
