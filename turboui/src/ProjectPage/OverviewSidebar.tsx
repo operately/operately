@@ -4,8 +4,17 @@ import { PersonField } from "../PersonField";
 import { ActionList } from "../ActionList";
 import { LastCheckIn } from "../LastCheckIn";
 import { GoalField } from "../GoalField";
-import { IconCopy, IconCircleArrowRight, IconPlayerPause, IconCircleCheck, IconRotateDot, IconTrash } from "../icons";
+import {
+  IconCopy,
+  IconCircleArrowRight,
+  IconPlayerPause,
+  IconCircleCheck,
+  IconRotateDot,
+  IconTrash,
+  IconInfoCircle,
+} from "../icons";
 import { NotificationToggle } from "../NotificationToggle";
+import { Tooltip } from "../Tooltip";
 
 export function OverviewSidebar(props: any) {
   return (
@@ -87,7 +96,26 @@ function ProjectDates(props: any) {
 
 function Champion(props: any) {
   return (
-    <SidebarSection title="Champion">
+    <SidebarSection
+      title={
+        <div className="flex items-center gap-2">
+          <span>Champion</span>
+          <Tooltip
+            content={
+              <div className="max-w-xs">
+                <div className="font-semibold mb-2">Project Champion</div>
+                <div className="text-sm">
+                  The project owner accountable for completion. Plans, assigns responsibilities, and submits weekly
+                  check-ins.
+                </div>
+              </div>
+            }
+          >
+            <IconInfoCircle className="w-4 h-4 text-content-dimmed cursor-help" />
+          </Tooltip>
+        </div>
+      }
+    >
       <PersonField
         person={props.champion}
         setPerson={props.setChampion}
@@ -102,7 +130,25 @@ function Champion(props: any) {
 
 function Reviewer(props: any) {
   return (
-    <SidebarSection title="Reviewer">
+    <SidebarSection
+      title={
+        <div className="flex items-center gap-2">
+          <span>Reviewer</span>
+          <Tooltip
+            content={
+              <div className="max-w-xs">
+                <div className="font-semibold mb-2">Project Reviewer</div>
+                <div className="text-sm">
+                  Provides feedback throughout the project, and is responsible for acknowledging weekly check-ins.
+                </div>
+              </div>
+            }
+          >
+            <IconInfoCircle className="w-4 h-4 text-content-dimmed cursor-help" />
+          </Tooltip>
+        </div>
+      }
+    >
       <PersonField
         person={props.reviewer || null}
         setPerson={props.setReviewer || (() => {})}
@@ -237,7 +283,7 @@ function Actions(props: any) {
   );
 }
 
-function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+function SidebarSection({ title, children }: { title: string | React.ReactNode; children: React.ReactNode }) {
   return (
     <div>
       <div className="font-bold text-sm mb-1.5">{title}</div>
