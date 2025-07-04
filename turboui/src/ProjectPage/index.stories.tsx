@@ -746,7 +746,12 @@ export const PausedProject: Story = {
 export const ClosedProject: Story = {
   render: () => {
     const [tasks] = useState([...mockTasks]);
-    const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
+    // All milestones completed for closed project
+    const completedMilestones = Object.values(mockMilestones).map(milestone => ({
+      ...milestone,
+      status: "completed" as const
+    }));
+    const [milestones] = useState<TaskBoardTypes.Milestone[]>(completedMilestones);
     const [parentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "2",
       name: "Operately is a competitive goal-tracking solution",

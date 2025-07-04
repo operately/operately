@@ -31,8 +31,12 @@ function LeftColumn(props: ProjectPage.State) {
   return (
     <div className="sm:col-span-8 space-y-8">
       <OverviewSection {...props} />
-      <TimelineSection {...props} />
-      <ResourcesSection {...props} />
+      <div className="pt-8 mt-8 border-t border-surface-outline">
+        <TimelineSection {...props} />
+      </div>
+      <div className="pt-8 mt-8 border-t border-surface-outline">
+        <ResourcesSection {...props} />
+      </div>
     </div>
   );
 }
@@ -62,7 +66,7 @@ function ProjectDescription({ state, canEdit }: ProjectDescriptionProps) {
 
   if (state.mode === "zero") {
     return (
-      <div>
+      <div className="py-4">
         <button
           onClick={state.startEdit}
           className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
@@ -303,37 +307,33 @@ function TimelineSection(props: ProjectPage.State) {
   };
 
   const addButton = (
-    <GhostButton size="xs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
-      + Add Milestone
-    </GhostButton>
+    <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
+      Add milestone
+    </SecondaryButton>
   );
 
   // Calculate completion stats
   const totalMilestones = validMilestones.length;
   const completedCount = completedMilestones.length;
-  const remainingCount = upcomingMilestones.length;
   const completionPercentage = totalMilestones > 0 ? (completedCount / totalMilestones) * 100 : 0;
 
   return (
-    <div className="border border-stroke-base rounded-lg bg-surface-base">
-      <div className="p-4 border-b border-stroke-base bg-surface-dimmed">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <SectionHeader title="Milestones" />
-            {totalMilestones > 0 && (
-              <div className="flex items-center gap-2 text-sm">
-                <PieChart size={16} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
-                <span className="text-content-accent font-medium">
-                  {completedCount}/{totalMilestones} completed
-                </span>
-              </div>
-            )}
+    <div className="space-y-4">
+      {/* Header with inline completion stats */}
+      <div className="flex items-center gap-2">
+        <SectionHeader title="Milestones" />
+        {totalMilestones > 0 && (
+          <div className="flex items-center gap-1 text-sm text-content-accent">
+            <PieChart size={16} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
+            <span>
+              {completedCount}/{totalMilestones} completed
+            </span>
           </div>
-          {props.canEdit && addButton}
-        </div>
+        )}
+        {props.canEdit && addButton}
       </div>
 
-      <div className="p-4 space-y-6">
+      <div className="space-y-6">
         {/* Add Milestone Form */}
         {showAddForm && (
           <div className="bg-surface-dimmed rounded-lg p-4 border-2 border-dashed border-stroke-base">
@@ -356,11 +356,11 @@ function TimelineSection(props: ProjectPage.State) {
               <div className="flex items-center gap-4">
                 <div className="flex gap-2">
                   <Button size="sm" onClick={handleAddMilestone} disabled={!newMilestoneName.trim()}>
-                    Add Milestone
+                    Add milestone
                   </Button>
-                  <GhostButton size="sm" onClick={() => setShowAddForm(false)}>
+                  <SecondaryButton size="sm" onClick={() => setShowAddForm(false)}>
                     Cancel
-                  </GhostButton>
+                  </SecondaryButton>
                 </div>
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={addMore} onChange={(e) => setAddMore(e.target.checked)} />
@@ -374,7 +374,7 @@ function TimelineSection(props: ProjectPage.State) {
         {/* Upcoming Milestones */}
         {sortedUpcoming.length > 0 && (
           <div>
-            <h3 className="text-sm font-medium text-content-accent mb-3">Upcoming ({remainingCount})</h3>
+            <h3 className="text-sm font-medium text-content-accent mb-3">Upcoming</h3>
             <div className="space-y-2">
               {sortedUpcoming.map((milestone, index) => (
                 <MilestoneItem
@@ -410,8 +410,15 @@ function TimelineSection(props: ProjectPage.State) {
         {validMilestones.length === 0 && (
           <div className="text-center py-8 text-content-dimmed">
             <IconFlag size={48} className="mx-auto mb-4 text-content-subtle" />
-            <p className="text-sm">No milestones yet</p>
-            <p className="text-xs mt-1">Add milestones to track key deliverables and deadlines</p>
+            <p className="text-sm mb-1">No milestones yet</p>
+            {props.canEdit && (
+              <div>
+                <p className="text-xs mb-4">Add milestones to track key deliverables and deadlines</p>
+                <GhostButton size="sm" onClick={() => setShowAddForm(true)}>
+                  Add your first milestone
+                </GhostButton>
+              </div>
+            )}
           </div>
         )}
       </div>
