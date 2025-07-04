@@ -391,7 +391,7 @@ function TimelineSection(props: ProjectPage.State) {
 
         {/* Completed Milestones */}
         {sortedCompleted.length > 0 && (
-          <CollapsibleSection title={`Completed (${completedCount})`} defaultCollapsed>
+          <CollapsibleSection title={`Show ${completedCount} completed`} defaultCollapsed>
             <div className="space-y-2">
               {sortedCompleted.map((milestone, index) => (
                 <MilestoneItem
