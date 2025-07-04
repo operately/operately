@@ -13,6 +13,7 @@ import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { ResourceManager } from "../ResourceManager";
+import { StatusBanner } from "./StatusBanner";
 
 export namespace ProjectPage {
   export interface Space {
@@ -72,9 +73,10 @@ export namespace ProjectPage {
     setDueAt?: (date: Date | null) => void;
 
     status: BadgeStatus;
-    state: "active" | "closed";
+    state: "active" | "closed" | "paused";
 
     closedAt: Date | null;
+    retrospectiveLink?: string;
 
     canEdit: boolean;
     accessLevels: PrivacyField.AccessLevels;
@@ -136,6 +138,14 @@ export function ProjectPage(props: ProjectPage.Props) {
   return (
     <PageNew title={[state.projectName]} size="fullwidth" testId="project-page">
       <PageHeader {...state} />
+      {(state.state === "paused" || state.state === "closed") && (
+        <StatusBanner
+          state={state.state}
+          closedAt={state.closedAt}
+          reopenLink={state.reopenLink}
+          retrospectiveLink={state.retrospectiveLink}
+        />
+      )}
       <Tabs tabs={tabs} />
 
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -165,3 +175,5 @@ export function ProjectPage(props: ProjectPage.Props) {
     </PageNew>
   );
 }
+
+export { StatusBanner };
