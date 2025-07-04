@@ -15,7 +15,7 @@ interface Props {
   spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
-export function WorkMapTable({ items, tab, columnOptions = {}, addItem, addingEnabled = true, spaceSearch }: Props) {
+export function WorkMapTable({ items, tab, columnOptions = {}, addItem, addingEnabled = false, spaceSearch }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
