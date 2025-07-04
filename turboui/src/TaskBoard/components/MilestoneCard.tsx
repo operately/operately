@@ -116,7 +116,7 @@ export function MilestoneCard({
               slices={[
                 {
                   percentage: calculateCompletionPercentage(milestoneStats),
-                  color: "var(--color-callout-success-icon)",
+                  color: "var(--color-callout-success-content)",
                 },
               ]}
             />
@@ -188,13 +188,13 @@ export function MilestoneCard({
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
         {(tasks && tasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
-          <TaskList 
-            tasks={tasks} 
+          <TaskList
+            tasks={tasks}
             hiddenTasks={hiddenTasks}
             showHiddenTasksToggle={showHiddenTasksToggle}
-            milestoneId={milestone.id} 
-            onTaskUpdate={onTaskUpdate} 
-            searchPeople={searchPeople} 
+            milestoneId={milestone.id}
+            onTaskUpdate={onTaskUpdate}
+            searchPeople={searchPeople}
           />
         ) : (
           <EmptyMilestoneDropZone milestoneId={milestone.id} onTaskCreation={() => setIsTaskModalOpen(true)} />
