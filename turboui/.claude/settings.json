@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+            "description": "Auto-format files with Prettier after edits"
+          }
+        ]
+      }
+    ]
+  }
+}
