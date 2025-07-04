@@ -138,9 +138,9 @@ export namespace WorkMap {
     title: string;
 
     items: Item[];
-    addItem: AddNewItemFn;
+    addItem?: AddNewItemFn;
     addingEnabled?: boolean;
-    spaceSearch: SpaceField.SearchSpaceFn;
+    spaceSearch?: SpaceField.SearchSpaceFn;
 
     columnOptions?: ColumnOptions;
     tabOptions?: TabOptions;

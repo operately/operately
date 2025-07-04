@@ -18,8 +18,8 @@ interface Props {
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
   canAddChildren: boolean;
   addingEnabled?: boolean;
-  addItem: WorkMap.AddNewItemFn;
-  spaceSearch: SpaceField.SearchSpaceFn;
+  addItem?: WorkMap.AddNewItemFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
 export function ItemNameCell({
@@ -41,7 +41,7 @@ export function ItemNameCell({
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
 
-        {canAddChildren && <AddButton item={item} addItem={addItem!} spaceSearch={spaceSearch} />}
+        {canAddChildren && <AddButton item={item} addItem={addItem!} spaceSearch={spaceSearch!} />}
       </div>
     </td>
   );

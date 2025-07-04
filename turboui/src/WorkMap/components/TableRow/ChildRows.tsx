@@ -12,9 +12,9 @@ interface Props {
   onRowClick?: (item: WorkMap.Item) => void;
   expanded: boolean;
   showIndentation: boolean;
-  addItem: WorkMap.AddNewItemFn;
+  addItem?: WorkMap.AddNewItemFn;
   addingEnabled?: boolean;
-  spaceSearch: SpaceField.SearchSpaceFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
 export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {

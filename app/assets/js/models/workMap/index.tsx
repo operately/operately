@@ -52,83 +52,83 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
   }, [initialItems]);
 
   const addNewGoal: WorkMap.AddNewItemFn = async (props) => {
-    return saveGoal({
+    console.log("Adding new goal:", props);
+
+    const res = await saveGoal({
       name: props.name,
       spaceId: props.space.id,
       anonymousAccessLevel: 0,
       companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
       spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
       parentGoalId: props.parentId || null,
-    }).then((response) => {
-      setItems((prevItems) => [
-        ...prevItems,
-        {
-          id: response.goal!.id!,
-          type: "goal",
-          name: props.name,
-          space: props.space,
-          spacePath: props.space.link,
-          parentId: props.parentId || null,
-          state: "active",
-          status: "pending",
-          progress: 0,
-          owner: null,
-          ownerPath: null,
-          nextStep: "",
-          timeframe: null,
-          children: [],
-          isNew: true,
-          completedOn: null,
-          itemPath: paths.goalPath(response.goal!.id!),
-          privacy: calcPrivacyLevel(
-            accessLevelAsNumber(props.accessLevels.company),
-            accessLevelAsNumber(props.accessLevels.space),
-          ),
-        },
-      ]);
-
-      return { id: response.goal!.id! };
     });
+
+    const item: WorkMapItem = {
+      id: res.goal!.id!,
+      type: "goal",
+      name: props.name,
+      space: props.space,
+      spacePath: props.space.link,
+      parentId: props.parentId || null,
+      state: "active",
+      status: "pending",
+      progress: 0,
+      owner: null,
+      ownerPath: null,
+      nextStep: "",
+      timeframe: null,
+      children: [],
+      isNew: true,
+      completedOn: null,
+      itemPath: paths.goalPath(res.goal!.id!),
+      privacy: calcPrivacyLevel(
+        accessLevelAsNumber(props.accessLevels.company),
+        accessLevelAsNumber(props.accessLevels.space),
+      ),
+    };
+
+    setItems((prevItems) => [...prevItems, item]);
+
+    return { id: res.goal!.id! };
   };
 
   const addNewProject: WorkMap.AddNewItemFn = async (props) => {
-    return saveProject({
+    const res = await saveProject({
       name: props.name,
       spaceId: props.space.id,
       goalId: props.parentId || null,
       anonymousAccessLevel: 0,
       companyAccessLevel: accessLevelAsNumber(props.accessLevels.company),
       spaceAccessLevel: accessLevelAsNumber(props.accessLevels.space),
-    }).then((response) => {
-      setItems((prevItems) => [
-        ...prevItems,
-        {
-          id: response.project!.id!,
-          type: "project",
-          name: props.name,
-          space: props.space,
-          spacePath: props.space.link,
-          parentId: props.parentId || null,
-          state: "active",
-          status: "pending",
-          progress: 0,
-          owner: null,
-          ownerPath: null,
-          nextStep: "",
-          timeframe: null,
-          children: [],
-          isNew: true,
-          completedOn: null,
-          itemPath: paths.goalPath(response.project!.id!),
-          privacy: calcPrivacyLevel(
-            accessLevelAsNumber(props.accessLevels.company),
-            accessLevelAsNumber(props.accessLevels.space),
-          ),
-        },
-      ]);
-
-      return { id: response.project!.id! };
     });
+
+    const item: WorkMapItem = {
+      id: res.project!.id!,
+      type: "project",
+      name: props.name,
+      space: props.space,
+      spacePath: props.space.link,
+      parentId: props.parentId || null,
+      state: "active",
+      status: "pending",
+      progress: 0,
+      owner: null,
+      ownerPath: null,
+      nextStep: "",
+      timeframe: null,
+      children: [],
+      isNew: true,
+      completedOn: null,
+      itemPath: paths.projectPath(res.project!.id!),
+      privacy: calcPrivacyLevel(
+        accessLevelAsNumber(props.accessLevels.company),
+        accessLevelAsNumber(props.accessLevels.space),
+      ),
+    };
+
+    setItems((prevItems) => [...prevItems, item]);
+
+    return { id: res.project!.id! };
   };
 
   const addItem: WorkMap.AddNewItemFn = async (props) => {

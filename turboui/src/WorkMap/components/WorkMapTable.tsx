@@ -8,11 +8,11 @@ import { TableRow } from "./TableRow";
 
 interface Props {
   items: WorkMap.Item[];
-  addItem: WorkMap.AddNewItemFn;
   addingEnabled?: boolean;
   tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
-  spaceSearch: SpaceField.SearchSpaceFn;
+  addItem?: WorkMap.AddNewItemFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
 export function WorkMapTable({ items, tab, columnOptions = {}, addItem, addingEnabled = true, spaceSearch }: Props) {

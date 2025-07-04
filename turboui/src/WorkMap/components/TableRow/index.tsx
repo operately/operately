@@ -20,9 +20,9 @@ interface Props {
   tab: WorkMap.Filter;
   showIndentation: boolean;
   columnOptions?: WorkMap.ColumnOptions;
-  addItem: WorkMap.AddNewItemFn;
+  addItem?: WorkMap.AddNewItemFn;
   addingEnabled?: boolean;
-  spaceSearch: SpaceField.SearchSpaceFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
 export function TableRow(props: Props) {
