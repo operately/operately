@@ -108,7 +108,7 @@ const mockResources: ResourceManager.Resource[] = [
     type: "google_sheet",
   },
   {
-    id: "resource-2", 
+    id: "resource-2",
     name: "Issue description",
     url: "https://github.com/company/repo/issues/123",
     type: "github",
@@ -193,7 +193,7 @@ export const Default: Story = {
     const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
-        resource.id === id ? { ...resource, ...updates } : resource
+        resource.id === id ? { ...resource, ...updates } : resource,
       );
       setResources(updatedResources);
     };
@@ -360,7 +360,7 @@ export const EmptyTasks: Story = {
     const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
-        resource.id === id ? { ...resource, ...updates } : resource
+        resource.id === id ? { ...resource, ...updates } : resource,
       );
       setResources(updatedResources);
     };
@@ -457,7 +457,7 @@ export const EmptyProject: Story = {
     const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
-        resource.id === id ? { ...resource, ...updates } : resource
+        resource.id === id ? { ...resource, ...updates } : resource,
       );
       setResources(updatedResources);
     };
@@ -565,6 +565,206 @@ export const EmptyProjectReadOnly: Story = {
         dueAt={dueAt}
         setDueAt={() => {}}
         resources={[]}
+        onResourceAdd={() => {}}
+        onResourceEdit={() => {}}
+        onResourceRemove={() => {}}
+      />
+    );
+  },
+};
+
+export const PausedProject: Story = {
+  render: () => {
+    const [tasks, setTasks] = useState([...mockTasks]);
+    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
+    const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
+    const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
+      id: "1",
+      name: "Improve Customer Experience",
+      link: "/goals/1",
+    });
+    const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[2] || null);
+    const [startedAt, setStartedAt] = useState<Date | null>(new Date(2025, 2, 15)); // March 15, 2025
+    const [dueAt, setDueAt] = useState<Date | null>(() => {
+      const oneMonthFromToday = new Date();
+      oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
+      return oneMonthFromToday;
+    });
+    const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
+
+    const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
+      console.log("Task status change:", taskId, newStatus);
+      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
+      setTasks(updatedTasks);
+    };
+
+    const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
+      const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newTask = { id: taskId, ...newTaskData };
+      console.log("Task created:", newTask);
+      setTasks([...tasks, newTask]);
+    };
+
+    const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
+      const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newMilestone = { id: milestoneId, ...newMilestoneData };
+      console.log("Milestone created:", newMilestone);
+      setMilestones((prev) => [...prev, newMilestone]);
+    };
+
+    const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
+      console.log("Task updated:", taskId, updates);
+      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
+      setTasks(updatedTasks);
+    };
+
+    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+      console.log("Milestone updated:", milestoneId, updates);
+      const updatedMilestones = milestones.map((milestone) =>
+        milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
+      );
+      setMilestones(updatedMilestones);
+
+      const updatedTasks = tasks.map((task) => {
+        if (task.milestone?.id === milestoneId) {
+          return {
+            ...task,
+            milestone: { ...task.milestone, ...updates },
+          };
+        }
+        return task;
+      });
+      setTasks(updatedTasks);
+    };
+
+    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+      const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+      const newResource = { id: resourceId, ...resource };
+      console.log("Resource added:", newResource);
+      setResources([...resources, newResource]);
+    };
+
+    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+      console.log("Resource edited:", id, updates);
+      const updatedResources = resources.map((resource) =>
+        resource.id === id ? { ...resource, ...updates } : resource,
+      );
+      setResources(updatedResources);
+    };
+
+    const handleResourceRemove = (id: string) => {
+      console.log("Resource removed:", id);
+      const updatedResources = resources.filter((resource) => resource.id !== id);
+      setResources(updatedResources);
+    };
+
+    return (
+      <ProjectPage
+        closeLink="#"
+        reopenLink="#"
+        projectName="AI Chatbot Prototype"
+        description="<p>This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.</p>"
+        space={{ id: "1", name: "Product", link: "#" }}
+        setSpace={() => {}}
+        spaceSearch={async () => []}
+        champion={people[0] || null}
+        setChampion={() => {}}
+        reviewer={reviewer}
+        setReviewer={setReviewer}
+        status="paused"
+        state="paused"
+        closedAt={null}
+        canEdit={true}
+        accessLevels={{ company: "edit", space: "view" }}
+        setAccessLevels={() => {}}
+        updateProjectName={async () => true}
+        updateDescription={async () => true}
+        activityFeed={<div>Activity feed content</div>}
+        tasks={tasks}
+        milestones={milestones}
+        onTaskStatusChange={handleTaskStatusChange}
+        onTaskCreate={handleTaskCreate}
+        onMilestoneCreate={handleMilestoneCreate}
+        onTaskUpdate={handleTaskUpdate}
+        onMilestoneUpdate={handleMilestoneUpdate}
+        searchPeople={mockSearchPeople}
+        filters={filters}
+        onFiltersChange={setFilters}
+        checkIns={mockCheckIns}
+        mentionedPersonLookup={async () => null}
+        parentGoal={parentGoal}
+        setParentGoal={setParentGoal}
+        parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={setStartedAt}
+        dueAt={dueAt}
+        setDueAt={setDueAt}
+        resources={resources}
+        onResourceAdd={handleResourceAdd}
+        onResourceEdit={handleResourceEdit}
+        onResourceRemove={handleResourceRemove}
+      />
+    );
+  },
+};
+
+export const ClosedProject: Story = {
+  render: () => {
+    const [tasks] = useState([...mockTasks]);
+    const [milestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
+    const [parentGoal] = useState<ProjectPage.ParentGoal | null>({
+      id: "2",
+      name: "Operately is a competitive goal-tracking solution",
+      link: "/goals/2",
+    });
+    const [reviewer] = useState<ProjectPage.Person | null>(people[1] || null);
+    const startedAt = new Date(2025, 1, 1); // February 1, 2025
+    const dueAt = new Date(2025, 5, 26); // June 26, 2025
+    const closedAt = new Date(2025, 5, 26); // June 26, 2025
+
+    return (
+      <ProjectPage
+        closeLink="#"
+        reopenLink="#"
+        projectName="Work Map GA"
+        description="<p>We're going towards turning the work maps on for everyone and removing legacy UI.</p><p>Milestones (will add after bug is fixed):</p><ul><li>No bugs / papercuts in current work maps</li><li>My work</li><li>Profile pages that show work maps in new layout</li><li>New home section</li></ul>"
+        space={{ id: "1", name: "Product", link: "#" }}
+        setSpace={() => {}}
+        spaceSearch={async () => []}
+        champion={people[0] || null}
+        setChampion={() => {}}
+        reviewer={reviewer}
+        setReviewer={() => {}}
+        status="achieved"
+        state="closed"
+        closedAt={closedAt}
+        retrospectiveLink="/projects/work-map-ga/retrospective"
+        canEdit={false}
+        accessLevels={{ company: "edit", space: "view" }}
+        setAccessLevels={() => {}}
+        updateProjectName={async () => true}
+        updateDescription={async () => true}
+        activityFeed={<div>Activity feed content</div>}
+        tasks={tasks}
+        milestones={milestones}
+        onTaskStatusChange={() => {}}
+        onTaskCreate={() => {}}
+        onMilestoneCreate={() => {}}
+        onTaskUpdate={() => {}}
+        onMilestoneUpdate={() => {}}
+        searchPeople={mockSearchPeople}
+        filters={[]}
+        onFiltersChange={() => {}}
+        checkIns={mockCheckIns}
+        mentionedPersonLookup={async () => null}
+        parentGoal={parentGoal}
+        setParentGoal={() => {}}
+        parentGoalSearch={mockParentGoalSearch}
+        startedAt={startedAt}
+        setStartedAt={() => {}}
+        dueAt={dueAt}
+        setDueAt={() => {}}
+        resources={mockResources}
         onResourceAdd={() => {}}
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
