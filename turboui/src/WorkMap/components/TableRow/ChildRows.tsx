@@ -1,5 +1,6 @@
 import React from "react";
 import { WorkMap } from "..";
+import { SpaceField } from "../../../SpaceField";
 import { TableRow } from "./index";
 
 interface Props {
@@ -11,7 +12,9 @@ interface Props {
   onRowClick?: (item: WorkMap.Item) => void;
   expanded: boolean;
   showIndentation: boolean;
-  addItemConfig?: WorkMap.AddItemConfig;
+  addItem?: WorkMap.AddNewItemFn;
+  addingEnabled?: boolean;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
 export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {

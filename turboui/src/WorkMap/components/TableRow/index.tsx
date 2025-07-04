@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import { WorkMap } from "..";
 
+import { SpaceField } from "../../../SpaceField";
 import { ChildRows } from "./ChildRows";
 import { DueDateCell } from "./DueDateCell";
 import { ItemNameCell } from "./ItemNameCell";
@@ -19,7 +20,9 @@ interface Props {
   tab: WorkMap.Filter;
   showIndentation: boolean;
   columnOptions?: WorkMap.ColumnOptions;
-  addItemConfig?: WorkMap.AddItemConfig;
+  addItem?: WorkMap.AddNewItemFn;
+  addingEnabled?: boolean;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
 export function TableRow(props: Props) {
@@ -35,8 +38,9 @@ export function TableRow(props: Props) {
           expanded={expanded}
           setExpanded={setExpanded}
           showIndentation={props.showIndentation}
-          canAddChildren={Boolean(props.addItemConfig?.enabled) && tab !== "completed"}
-          addItemConfig={props.addItemConfig}
+          canAddChildren={Boolean(props.addingEnabled) && tab !== "completed"}
+          spaceSearch={props.spaceSearch}
+          addItem={props.addItem}
         />
         <StatusCell status={item.status} hide={columnOptions?.hideStatus} />
         <ProgressCell

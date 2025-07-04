@@ -1,5 +1,6 @@
 import React from "react";
 import { WorkMap } from "..";
+import { SpaceField } from "../../SpaceField";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle } from "../../icons";
 import classNames from "../../utils/classnames";
@@ -7,12 +8,14 @@ import { TableRow } from "./TableRow";
 
 interface Props {
   items: WorkMap.Item[];
+  addingEnabled?: boolean;
   tab: WorkMap.Filter;
   columnOptions?: WorkMap.ColumnOptions;
-  addItemConfig?: WorkMap.AddItemConfig;
+  addItem?: WorkMap.AddNewItemFn;
+  spaceSearch?: SpaceField.SearchSpaceFn;
 }
 
-export function WorkMapTable({ items, tab, columnOptions = {}, addItemConfig }: Props) {
+export function WorkMapTable({ items, tab, columnOptions = {}, addItem, addingEnabled = false, spaceSearch }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
@@ -33,7 +36,9 @@ export function WorkMapTable({ items, tab, columnOptions = {}, addItemConfig }: 
                 tab={tab}
                 columnOptions={columnOptions}
                 showIndentation={showIndentation}
-                addItemConfig={addItemConfig}
+                addItem={addItem}
+                addingEnabled={addingEnabled}
+                spaceSearch={spaceSearch}
               />
             ))
           )}

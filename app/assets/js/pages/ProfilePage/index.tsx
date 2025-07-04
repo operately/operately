@@ -6,11 +6,12 @@ import { toPersonWithLink } from "@/models/people";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
-import { ProfilePage, IconPencil } from "turboui";
+import { IconPencil, ProfilePage } from "turboui";
 
 import { loader, useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { convertToWorkMapItems } from "../../models/workMap";
 export default { name: "ProfilePage", loader, Page } as PageModule;
 
 function Page() {
@@ -29,8 +30,8 @@ function Page() {
     reports: toPersonWithLink(paths, People.sortByName(person.reports)),
     manager: person.manager ? toPersonWithLink(paths, person.manager) : null,
 
-    workMap: workMap,
-    reviewerWorkMap: reviewerWorkMap,
+    workMap: convertToWorkMapItems(paths, workMap),
+    reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
     options: [
       {
         type: "link" as const,
