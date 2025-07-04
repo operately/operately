@@ -110,7 +110,7 @@ export function AddItemModal(props: AddItemModal.Props) {
           <PrivacyField
             accessLevels={state.accessLevels}
             setAccessLevels={state.setAccessLevels}
-            resourceType={"goal"}
+            resourceType={state.itemType}
             variant="form-field"
             label="Privacy"
           />
@@ -118,7 +118,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 
         <div className="mt-6 flex items-center gap-2">
           <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
-            Add Goal
+            Add {state.itemType === "goal" ? "Goal" : "Project"}
           </PrimaryButton>
 
           <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
@@ -184,7 +184,7 @@ function useAddItemModalState(props: AddItemModal.Props) {
       setSpaceError(undefined);
     } catch (error) {
       console.error("Failed to create goal:", error);
-      showErrorToast("Network error", "Failed to create the goal");
+      showErrorToast("Network error", "Failed to create the " + itemType + ".");
     } finally {
       setSubmitting(false);
     }
