@@ -19,7 +19,7 @@ const meta: Meta<typeof AddItemModal> = {
   args: {
     isOpen: true,
     close: () => {},
-    parentGoal: { name: "Parent Goal" },
+    parentGoal: { id: "1", name: "Parent Goal" },
     spaceSearch: async ({}: { query: string }) => {
       return [{ id: "space1", name: "Space 1", link: "/spaces/space1" }];
     },
@@ -40,7 +40,7 @@ export const Default: Story = {};
 function Component() {
   const [isOpen, setIsOpen] = React.useState(true);
   const close = () => setIsOpen(false);
-  const parentGoal = { name: "Parent Goal" };
+  const parentGoal = { id: "1", name: "Parent Goal" };
   const spaceSearch = async ({}: { query: string }) => {
     // Mock search function
     return [{ id: "space1", name: "Space 1", link: "/spaces/space1" }];

@@ -123,10 +123,12 @@ export namespace WorkMap {
     hideNextStep?: boolean;
   }
 
+  export type SaveNewItemFn = (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
+
   export interface AddItemConfig {
     enabled: boolean;
     spaceSearch: SpaceField.SearchSpaceFn;
-    save: (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
+    save: SaveNewItemFn;
   }
 
   export interface Props {
@@ -136,11 +138,6 @@ export namespace WorkMap {
     tabOptions?: TabOptions;
     type?: WorkMapType;
     navigation?: Navigation.Item[];
-
-    addItemConfig?: {
-      enabled: boolean;
-      spaceSearch: SpaceField.SearchSpaceFn;
-      save: (props: AddItemModal.SaveProps) => Promise<{ id: string }>;
-    };
+    addItemConfig?: AddItemConfig;
   }
 }
