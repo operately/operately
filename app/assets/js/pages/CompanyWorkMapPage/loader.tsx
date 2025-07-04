@@ -13,12 +13,12 @@ interface LoaderResult {
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
-    cacheKey: `v9-CompanyWorkMap.company-${params.companyId}`,
+    cacheKey: `v10-CompanyWorkMap.company-${params.companyId}`,
     refreshCache,
     fetchFn: async () =>
       await fetchAll({
         workMap: getWorkMap({}).then((d) => d.workMap),
-        company: getCompany({ id: params.companyId }).then((d) => d.company!),
+        company: getCompany({ id: params.companyId, includeGeneralSpace: true }).then((d) => d.company!),
       }),
   });
 }
