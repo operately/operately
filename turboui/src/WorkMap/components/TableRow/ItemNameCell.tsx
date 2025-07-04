@@ -5,6 +5,7 @@ import { SecondaryButton } from "../../../Button";
 import { IconChevronDown, IconChevronRight, IconGoal, IconProject } from "../../../icons";
 import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
+import { SpaceField } from "../../../SpaceField";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
 import { AddItemModal } from "../AddItemModal";
@@ -16,7 +17,9 @@ interface Props {
   expanded: boolean;
   setExpanded: React.Dispatch<React.SetStateAction<boolean>>;
   canAddChildren: boolean;
-  addItemConfig?: WorkMap.AddItemConfig;
+  addingEnabled?: boolean;
+  addItem: WorkMap.AddNewItemFn;
+  spaceSearch: SpaceField.SearchSpaceFn;
 }
 
 export function ItemNameCell({
@@ -26,7 +29,8 @@ export function ItemNameCell({
   setExpanded,
   showIndentation,
   canAddChildren,
-  addItemConfig,
+  addItem,
+  spaceSearch,
 }: Props) {
   return (
     <td className="py-2 px-2 md:px-4 relative">
@@ -37,7 +41,7 @@ export function ItemNameCell({
         <Name item={item} />
         <PrivacyIndicatorWrapper item={item} />
 
-        {canAddChildren && <AddButton item={item} addItemConfig={addItemConfig!} />}
+        {canAddChildren && <AddButton item={item} addItem={addItem!} spaceSearch={spaceSearch} />}
       </div>
     </td>
   );
@@ -153,7 +157,15 @@ function PrivacyIndicatorWrapper({ item }: { item: WorkMap.Item }) {
   );
 }
 
-function AddButton({ item, addItemConfig }: { item: WorkMap.Item; addItemConfig: WorkMap.AddItemConfig }) {
+function AddButton({
+  item,
+  addItem,
+  spaceSearch,
+}: {
+  item: WorkMap.Item;
+  addItem: WorkMap.AddNewItemFn;
+  spaceSearch: SpaceField.SearchSpaceFn;
+}) {
   if (item.type !== "goal") return null;
 
   const [isOpen, setIsOpen] = React.useState(false);
@@ -170,8 +182,8 @@ function AddButton({ item, addItemConfig }: { item: WorkMap.Item; addItemConfig:
         isOpen={isOpen}
         close={close}
         parentGoal={item}
-        spaceSearch={addItemConfig.spaceSearch}
-        save={addItemConfig.save}
+        spaceSearch={spaceSearch}
+        save={addItem}
         space={item.space}
       />
     </div>
