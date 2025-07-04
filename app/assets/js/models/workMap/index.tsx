@@ -42,7 +42,10 @@ export type { WorkMapItem };
 
 export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[], WorkMap.AddNewItemFn] {
   const paths = usePaths();
+
   const [items, setItems] = React.useState<WorkMapItem[]>(initialItems);
+  const inject = useItemInjector(setItems);
+
   const [saveGoal] = useCreateGoal();
   const [saveProject] = useCreateProject();
 
@@ -52,8 +55,6 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
   }, [initialItems]);
 
   const addNewGoal: WorkMap.AddNewItemFn = async (props) => {
-    console.log("Adding new goal:", props);
-
     const res = await saveGoal({
       name: props.name,
       spaceId: props.space.id,
@@ -87,7 +88,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       ),
     };
 
-    setItems((prevItems) => [...prevItems, item]);
+    inject(item);
 
     return { id: res.goal!.id! };
   };
@@ -126,7 +127,7 @@ export function useWorkMapItems(initialItems: WorkMapItem[] = []): [WorkMapItem[
       ),
     };
 
-    setItems((prevItems) => [...prevItems, item]);
+    inject(item);
 
     return { id: res.project!.id! };
   };
@@ -153,9 +154,43 @@ function calcPrivacyLevel(companyAccessLevel: number, spaceAccessLevel: number):
     return "confidential";
   }
 
-  if (companyAccessLevel > 0 && spaceAccessLevel === 0) {
+  if (companyAccessLevel > 0 && spaceAccessLevel > 0) {
     return "internal";
   }
 
   throw new Error("Invalid access levels for privacy calculation");
+}
+
+// A utility function to inject a new item into the work map.
+//
+// It recursively finds the parent item by `parentId` and adds the new item to its `children` array.
+// If no `parentId` is provided, it adds the item as a root item.
+//
+function useItemInjector(setItems: React.Dispatch<React.SetStateAction<WorkMapItem[]>>) {
+  return (item: WorkMapItem) => {
+    setItems((prevItems) => {
+      // Helper to recursively add the item to the correct parent
+      function addToParent(items: WorkMapItem[]): WorkMapItem[] {
+        return items.map((i) => {
+          if (i.id === item.parentId) {
+            return {
+              ...i,
+              children: [...i.children, item],
+            };
+          }
+          return {
+            ...i,
+            children: addToParent(i.children),
+          };
+        });
+      }
+
+      // If no parentId, add as root item
+      if (!item.parentId) {
+        return [...prevItems, item];
+      }
+
+      return addToParent(prevItems);
+    });
+  };
 }
