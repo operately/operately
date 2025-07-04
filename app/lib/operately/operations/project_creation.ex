@@ -46,7 +46,7 @@ defmodule Operately.Operations.ProjectCreation do
         :creator_id => params.creator_id,
         :started_at => DateTime.utc_now(),
         :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
-        :health => :on_track,
+        :health => :on_track
       })
     end)
   end
@@ -58,14 +58,18 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_champion_as_contributor(multi, params) do
-    Multi.insert(multi, :champion, fn changes ->
-      Contributor.changeset(%{
-        project_id: changes.project.id,
-        person_id: params.champion_id,
-        responsibility: " ",
-        role: :champion
-      })
-    end)
+    if params.champion_id do
+      Multi.insert(multi, :champion, fn changes ->
+        Contributor.changeset(%{
+          project_id: changes.project.id,
+          person_id: params.champion_id,
+          responsibility: " ",
+          role: :champion
+        })
+      end)
+    else
+      multi
+    end
   end
 
   defp insert_reviewer_as_contributor(multi, params) do
@@ -103,7 +107,6 @@ defmodule Operately.Operations.ProjectCreation do
     standard = Access.get_group!(company_id: params.company_id, tag: :standard)
     space_full_access = Access.get_group!(group_id: params.group_id, tag: :full_access)
     space_standard = Access.get_group!(group_id: params.group_id, tag: :standard)
-    champion_group = Access.get_group!(person_id: params.champion_id)
 
     multi
     |> Access.maybe_insert_anonymous_binding(params.company_id, params.anonymous_access_level)
@@ -111,7 +114,7 @@ defmodule Operately.Operations.ProjectCreation do
     |> Access.insert_binding(:company_members_binding, standard, params.company_access_level)
     |> Access.insert_binding(:space_full_access_binding, space_full_access, Binding.full_access())
     |> Access.insert_binding(:space_members_binding, space_standard, params.space_access_level)
-    |> Access.insert_binding(:champion_binding, champion_group, Binding.full_access(), :champion)
+    |> insert_binding_for_champion(params)
     |> insert_binding_for_reviewer(params)
     |> insert_binding_for_creator(params)
   end
@@ -120,6 +123,15 @@ defmodule Operately.Operations.ProjectCreation do
     if is_creator_a_contributor?(params) do
       group = Access.get_group!(person_id: params.creator_id)
       Access.insert_binding(multi, :creator_binding, group, Binding.full_access())
+    else
+      multi
+    end
+  end
+
+  defp insert_binding_for_champion(multi, params) do
+    if params.champion_id do
+      group = Access.get_group!(person_id: params.champion_id)
+      Access.insert_binding(multi, :champion_binding, group, Binding.full_access(), :champion)
     else
       multi
     end
