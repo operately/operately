@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "../Link";
 import { DateField } from "../DateField";
-import { PrimaryButton as Button, GhostButton, SecondaryButton } from "../Button";
+import { PrimaryButton as Button, SecondaryButton } from "../Button";
 import { IconFlag, IconFlagFilled, IconCalendar } from "../icons";
 import { FormattedTime } from "../FormattedTime";
 import classNames from "../utils/classnames";
@@ -67,9 +67,9 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
                 <Button size="sm" onClick={handleSave} disabled={!editName.trim()}>
                   Save
                 </Button>
-                <GhostButton size="sm" onClick={handleCancel}>
+                <SecondaryButton size="sm" onClick={handleCancel}>
                   Cancel
-                </GhostButton>
+                </SecondaryButton>
               </div>
             </div>
           </div>
