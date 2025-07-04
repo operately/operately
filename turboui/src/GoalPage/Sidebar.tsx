@@ -15,8 +15,17 @@ import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
 import { WarningCallout } from "../Callouts";
 import { durationHumanized, isOverdue } from "../utils/time";
+import { Tooltip } from "../Tooltip";
 
-import { IconCircleArrowRight, IconCircleCheck, IconRotateDot, IconTrash, IconUserCheck, IconUserStar } from "../icons";
+import {
+  IconCircleArrowRight,
+  IconCircleCheck,
+  IconRotateDot,
+  IconTrash,
+  IconUserCheck,
+  IconUserStar,
+  IconInfoCircle,
+} from "../icons";
 
 export function Sidebar(props: GoalPage.State) {
   return (
@@ -79,7 +88,25 @@ function ParentGoal(props: GoalPage.State) {
 
 function Champion(props: GoalPage.State) {
   return (
-    <SidebarSection title="Champion">
+    <SidebarSection
+      title={
+        <div className="flex items-center gap-2">
+          <span>Champion</span>
+          <Tooltip
+            content={
+              <div className="max-w-xs">
+                <div className="font-semibold mb-2">Goal Champion</div>
+                <div className="text-sm">
+                  The goal owner accountable for completion. Plans projects and submits monthly check-ins.
+                </div>
+              </div>
+            }
+          >
+            <IconInfoCircle className="w-4 h-4 text-content-dimmed cursor-help" />
+          </Tooltip>
+        </div>
+      }
+    >
       <PersonField
         testId="champion-field"
         person={props.champion}
@@ -105,7 +132,25 @@ function Champion(props: GoalPage.State) {
 
 function Reviewer(props: GoalPage.State) {
   return (
-    <SidebarSection title="Reviewer">
+    <SidebarSection
+      title={
+        <div className="flex items-center gap-2">
+          <span>Reviewer</span>
+          <Tooltip
+            content={
+              <div className="max-w-xs">
+                <div className="font-semibold mb-2">Goal Reviewer</div>
+                <div className="text-sm">
+                  Provides feedback throughout the goal, and is responsible for acknowledging monthly check-ins.
+                </div>
+              </div>
+            }
+          >
+            <IconInfoCircle className="w-4 h-4 text-content-dimmed cursor-help" />
+          </Tooltip>
+        </div>
+      }
+    >
       <PersonField
         testId="reviewer-field"
         person={props.reviewer}
@@ -194,7 +239,7 @@ function OverdueWarning(props: GoalPage.State) {
   );
 }
 
-function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
+function SidebarSection({ title, children }: { title: string | React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="">
       <div className="font-bold text-sm mb-1.5">{title}</div>
