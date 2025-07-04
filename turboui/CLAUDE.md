@@ -30,6 +30,7 @@ This document captures the architecture principles, patterns, and workflow for d
 1. **Storybook development**: Components are developed and tested in Storybook
 2. **TypeScript checking**: Run `make turboui.build && make turboui.test` regularly
 3. **Component stories**: Create comprehensive stories showing all component states
+4. **Auto-formatting**: Claude Code will automatically run Prettier on file edits (configured in `.claude/settings.json`)
 
 ### Tips
 
