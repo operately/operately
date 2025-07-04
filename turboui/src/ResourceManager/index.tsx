@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { SecondaryButton, PrimaryButton } from "../Button";
-import { IconBrandSlack, IconBrandGithub, IconFileText, IconTable, IconCalendar, IconLink, IconPlus } from "../icons";
+import { IconBrandSlack, IconBrandGithub, IconFileText, IconTable, IconCalendar, IconLink } from "../icons";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { ResourceLink } from "../ResourceLink";
 
@@ -71,28 +71,34 @@ export function ResourceManager({
     return null;
   }
 
+  const addButton = (
+    <SecondaryButton size="xxs" onClick={() => setIsAddModalOpen(true)}>
+      Add resource
+    </SecondaryButton>
+  );
+
   return (
-    <div className="space-y-3">
-      <div className="flex items-center gap-3">
+    <div className="space-y-4">
+      {/* Header with inline add button */}
+      <div className="flex items-center gap-2">
         <SectionHeader title="Resources" />
-        {canEdit && (
-          <SecondaryButton onClick={() => setIsAddModalOpen(true)} icon={IconPlus} size="xxs">
-            Add
-          </SecondaryButton>
-        )}
+        {canEdit && addButton}
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        {resources.map((resource) => (
-          <ResourceLink
-            key={resource.id}
-            resource={resource}
-            onEdit={onResourceEdit}
-            onRemove={onResourceRemove}
-            canEdit={canEdit}
-          />
-        ))}
-      </div>
+      {/* Resources content */}
+      {hasResources ? (
+        <div className="flex flex-wrap gap-2">
+          {resources.map((resource) => (
+            <ResourceLink
+              key={resource.id}
+              resource={resource}
+              onEdit={onResourceEdit}
+              onRemove={onResourceRemove}
+              canEdit={canEdit}
+            />
+          ))}
+        </div>
+      ) : null}
 
       {isAddModalOpen && <AddResourceModal onClose={() => setIsAddModalOpen(false)} onAdd={onResourceAdd} />}
     </div>
