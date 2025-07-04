@@ -15,6 +15,7 @@ import {
 } from "../icons";
 import { NotificationToggle } from "../NotificationToggle";
 import { Tooltip } from "../Tooltip";
+import { SecondaryButton } from "../Button";
 
 export function OverviewSidebar(props: any) {
   return (
@@ -162,38 +163,13 @@ function Reviewer(props: any) {
 }
 
 function Contributors(props: any) {
-  // Use contributors from props if provided, otherwise use mock
-  const contributors = Array.isArray(props.contributors)
-    ? props.contributors
-    : [
-        {
-          id: "1",
-          fullName: "Alice Johnson",
-          avatarUrl: "https://i.pravatar.cc/150?u=alice",
-          profileLink: "/people/alice",
-          title: "Frontend Development & UI/UX",
-        },
-        {
-          id: "2",
-          fullName: "Bob Smith",
-          avatarUrl: "https://i.pravatar.cc/150?u=bob",
-          profileLink: "/people/bob",
-          title: "Backend Architecture & API Design",
-        },
-        {
-          id: "3",
-          fullName: "Charlie Brown",
-          avatarUrl: "https://i.pravatar.cc/150?u=charlie",
-          profileLink: "/people/charlie",
-          title: "Quality Assurance & Testing",
-        },
-      ];
+  const contributors = props.contributors || [];
 
   return (
     <SidebarSection title="Contributors">
-      {contributors.length > 0 ? (
-        <div className="space-y-3">
-          {contributors.map((person) => (
+      <div className="space-y-3">
+        {contributors.length > 0 ? (
+          contributors.map((person: any) => (
             <PersonField
               key={person.id}
               person={person}
@@ -202,11 +178,18 @@ function Contributors(props: any) {
               searchPeople={async () => []}
               showTitle={true}
             />
-          ))}
-        </div>
-      ) : (
-        <div className="text-sm text-content-dimmed">No contributors</div>
-      )}
+          ))
+        ) : (
+          <div className="text-sm text-content-dimmed">No contributors</div>
+        )}
+        {props.canEdit && (
+          <div className="mt-3">
+            <SecondaryButton linkTo={props.manageTeamLink} size="xs">
+              Manage team & access
+            </SecondaryButton>
+          </div>
+        )}
+      </div>
     </SidebarSection>
   );
 }

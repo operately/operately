@@ -100,6 +100,7 @@ export namespace ProjectPage {
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
     contributors?: any[];
+    manageTeamLink?: string;
     checkIns?: CheckIn[];
     mentionedPersonLookup?: MentionedPersonLookupFn;
 

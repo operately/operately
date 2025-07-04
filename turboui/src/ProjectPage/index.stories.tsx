@@ -46,6 +46,31 @@ const mockPeople: TaskBoardTypes.Person[] = [
   { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
 ];
 
+// Mock contributors data for project sidebar
+const mockContributors: ProjectPage.Person[] = [
+  {
+    id: "1",
+    fullName: "Alice Johnson",
+    avatarUrl: "https://i.pravatar.cc/150?u=alice",
+    profileLink: "/people/alice",
+    title: "Frontend Development & UI/UX",
+  },
+  {
+    id: "2",
+    fullName: "Bob Smith",
+    avatarUrl: "https://i.pravatar.cc/150?u=bob",
+    profileLink: "/people/bob",
+    title: "Backend Architecture & API Design",
+  },
+  {
+    id: "3",
+    fullName: "Charlie Brown",
+    avatarUrl: "https://i.pravatar.cc/150?u=charlie",
+    profileLink: "/people/charlie",
+    title: "Quality Assurance & Testing",
+  },
+];
+
 // Mock search function for people
 const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoardTypes.Person[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
@@ -249,6 +274,8 @@ export const Default: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        contributors={mockContributors}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
@@ -315,6 +342,8 @@ export const ReadOnly: Story = {
         onResourceAdd={() => {}}
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
+        contributors={mockContributors}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
@@ -416,6 +445,8 @@ export const EmptyTasks: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        contributors={mockContributors}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
@@ -498,7 +529,6 @@ export const EmptyProject: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        contributors={[]}
         checkIns={[]}
         mentionedPersonLookup={async () => null}
         parentGoal={null}
@@ -512,6 +542,8 @@ export const EmptyProject: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        contributors={[]}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
@@ -554,7 +586,6 @@ export const EmptyProjectReadOnly: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        contributors={[]}
         checkIns={[]}
         mentionedPersonLookup={async () => null}
         parentGoal={null}
@@ -568,6 +599,8 @@ export const EmptyProjectReadOnly: Story = {
         onResourceAdd={() => {}}
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
+        contributors={[]}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
@@ -703,6 +736,8 @@ export const PausedProject: Story = {
         onResourceAdd={handleResourceAdd}
         onResourceEdit={handleResourceEdit}
         onResourceRemove={handleResourceRemove}
+        contributors={mockContributors}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
@@ -768,6 +803,8 @@ export const ClosedProject: Story = {
         onResourceAdd={() => {}}
         onResourceEdit={() => {}}
         onResourceRemove={() => {}}
+        contributors={mockContributors}
+        manageTeamLink="/projects/1/team"
       />
     );
   },
