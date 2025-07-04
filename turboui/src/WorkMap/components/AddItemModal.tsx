@@ -7,6 +7,8 @@ import { SpaceField } from "../../SpaceField";
 import { TextField } from "../../TextField";
 import { showErrorToast } from "../../Toasts";
 
+import * as Switch from "@radix-ui/react-switch";
+
 export namespace AddItemModal {
   export interface SaveProps {
     name: string;
@@ -116,17 +118,41 @@ export function AddItemModal(props: AddItemModal.Props) {
           />
         </div>
 
-        <div className="mt-6 flex items-center gap-2">
-          <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
-            Add {state.itemType === "goal" ? "Goal" : "Project"}
-          </PrimaryButton>
+        <div className="flex items-center mt-6">
+          <SwitchToggle value={state.createMore} setValue={state.setCreateMore} />
 
-          <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
-            Cancel
-          </SecondaryButton>
+          <div className="flex-1"></div>
+          <div className="flex space-x-3">
+            <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
+              Cancel
+            </SecondaryButton>
+
+            <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
+              Add {state.itemType === "goal" ? "Goal" : "Project"}
+            </PrimaryButton>
+          </div>
         </div>
       </div>
     </Modal>
+  );
+}
+
+function SwitchToggle({ value, setValue }: { value: boolean; setValue: (value: boolean) => void }) {
+  return (
+    <div className="flex items-center">
+      <Switch.Root
+        checked={value}
+        onCheckedChange={setValue}
+        className={`w-11 h-6 rounded-full relative outline-none cursor-pointer focus:ring-2 focus:ring-primary-base focus:ring-offset-2 transition-all duration-200 ${
+          value ? "bg-brand-1" : "bg-content-dimmed"
+        }`}
+      >
+        <Switch.Thumb className="block w-5 h-5 bg-brand-2 border border-stroke-base rounded-full shadow-md transform transition-all duration-200 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[22px]" />
+      </Switch.Root>
+      <label className="ml-3 text-sm text-content-base cursor-pointer" onClick={() => setValue(!value)}>
+        Create more
+      </label>
+    </div>
   );
 }
 
@@ -136,6 +162,8 @@ function useAddItemModalState(props: AddItemModal.Props) {
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
   const [spaceError, setSpaceError] = React.useState<string | undefined>(undefined);
+  const [createMore, setCreateMore] = React.useState(false);
+
   const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>({
     company: "edit",
     space: "edit",
@@ -179,9 +207,14 @@ function useAddItemModalState(props: AddItemModal.Props) {
         parentId: props.parentGoal ? props.parentGoal.id : null,
       });
 
-      props.close();
+      setName("");
+      setSpace(props.space || null);
       setNameError(undefined);
       setSpaceError(undefined);
+
+      if (!createMore) {
+        props.close();
+      }
     } catch (error) {
       console.error("Failed to create goal:", error);
       showErrorToast("Network error", "Failed to create the " + itemType + ".");
@@ -191,6 +224,9 @@ function useAddItemModalState(props: AddItemModal.Props) {
   };
 
   return {
+    createMore,
+    setCreateMore,
+
     name,
     setName,
     itemType,
