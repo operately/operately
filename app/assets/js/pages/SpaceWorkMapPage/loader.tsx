@@ -15,7 +15,7 @@ interface LoaderResult {
 
 export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return PageCache.fetch({
-    cacheKey: `v5-SpaceWorkMap.space-${params.id}`,
+    cacheKey: `v6-SpaceWorkMap.space-${params.id}`,
     refreshCache,
     fetchFn: () =>
       fetchAll({

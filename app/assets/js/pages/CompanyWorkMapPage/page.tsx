@@ -2,7 +2,6 @@ import * as React from "react";
 
 import { useSpaceSearch } from "@/models/spaces";
 import { WorkMapPage } from "turboui";
-import { hasFeature } from "../../models/companies";
 import { convertToWorkMapItems, useWorkMapItems } from "../../models/workMap";
 import { usePaths } from "../../routes/paths";
 import { useLoadedData } from "./loader";
@@ -15,15 +14,14 @@ export function Page() {
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
-  const addingEnabled = hasFeature(company, "new-goal-add-page");
 
   return (
     <WorkMapPage
       title={title}
       items={convertToWorkMapItems(paths, items)}
       addItem={addItem}
-      addingEnabled={addingEnabled}
       spaceSearch={spaceSearch}
+      addingEnabled={true}
       addItemDefaultSpace={{
         id: company.generalSpace!.id,
         name: company.generalSpace!.name,

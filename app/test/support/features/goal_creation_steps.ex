@@ -7,7 +7,6 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   def setup(ctx) do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("new-goal-add-page")
     |> Factory.add_space(:space)
     |> Factory.log_in_person(:creator)
   end
