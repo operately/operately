@@ -48,53 +48,41 @@ export function AddItemModal(props: AddItemModal.Props) {
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.close} size="medium" closeOnBackdropClick={false}>
-      <div className="flex items-start justify-between mb-4">
-        <div className="">
-          <h1 className="font-bold text-xl">{state.itemType === "goal" ? "Add New Goal" : "Add New Project"}</h1>
+      <h1 className="font-bold text-xl w-52">Add new {state.itemType === "goal" ? "Goal" : "Project"}</h1>
 
-          {props.parentGoal && (
-            <div className="text-sm">
-              Under: <span className="font-medium">{props.parentGoal.name}</span>
-            </div>
-          )}
-        </div>
+      <div className="mb-2">
+        {props.parentGoal && (
+          <div className="text-xs text-content-dimmed mb-1">
+            Adding under <span className="font-medium">{props.parentGoal.name}</span>
+          </div>
+        )}
       </div>
 
-      <div>
-        <div className="flex gap-3 text-sm mb-4">
-          <label className="flex items-center gap-1 cursor-pointer">
-            <input
-              type="radio"
-              name="goalOrProject"
-              value="goal"
-              checked={state.itemType === "goal"}
-              className="accent-blue-600"
-              onChange={() => state.setItemType("goal")}
-              data-test-id="type-goal"
-            />
-            <span>Goal</span>
-          </label>
-          <label className="flex items-center gap-1 cursor-pointer">
-            <input
-              type="radio"
-              name="goalOrProject"
-              value="project"
-              checked={state.itemType === "project"}
-              className="accent-blue-600"
-              onChange={() => state.setItemType("project")}
-              data-test-id="type-project"
-            />
-            <span>Project</span>
-          </label>
-        </div>
+      <RadioGroup
+        options={[
+          {
+            value: "goal",
+            label: "Goal",
+            description: "big-picture outcome",
+          },
+          {
+            value: "project",
+            label: "Project",
+            description: "concrete actions or deliverables",
+          },
+        ]}
+        value={state.itemType}
+        onChange={state.setItemType}
+      />
 
-        <div className="flex flex-col gap-4">
+      <div>
+        <div className="flex flex-col gap-4 mt-4">
           <TextField
             autofocus
             label="Name"
             variant="form-field"
             placeholder={
-              state.itemType === "goal" ? "e.g. Increase user acqisition" : "e.g. Implement new website design"
+              state.itemType === "goal" ? "e.g. Increase user acquisition" : "e.g. Implement new website design"
             }
             text={state.name}
             onChange={state.setName}
@@ -225,4 +213,46 @@ function useAddItemModalState(props: AddItemModal.Props) {
     submit,
     submitting,
   };
+}
+
+interface RadioCardOption {
+  value: "goal" | "project";
+  label: string;
+  description: string;
+}
+
+interface RadioGroupProps {
+  options: RadioCardOption[];
+  value: "goal" | "project";
+  onChange: (value: "goal" | "project") => void;
+}
+
+function RadioGroup({ options, value, onChange }: RadioGroupProps) {
+  return (
+    <fieldset className="w-full">
+      <div role="radiogroup" aria-labelledby="item-type-label">
+        {options.map((option) => (
+          <label
+            key={option.value}
+            className="flex items-center cursor-pointer py-0.5"
+            data-test-id={`type-${option.value}`}
+          >
+            <input
+              type="radio"
+              name="item-type"
+              value={option.value}
+              checked={value === option.value}
+              onChange={() => onChange(option.value)}
+              className="form-radio accent-indigo-500 mr-2"
+              aria-checked={value === option.value}
+            />
+            <div className="text-sm">
+              <span className="font-medium">{option.label}</span>
+              <span className="text-content-dimmed"> - {option.description}</span>
+            </div>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+  );
 }
