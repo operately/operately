@@ -1,11 +1,6 @@
 export const COLORS = {
-  completed: "green",
-  accomplished: "green",
-  not_accomplished: "red",
   on_track: "green",
   caution: "yellow",
-  concern: "yellow",
-  issue: "red",
   off_track: "red",
   paused: "gray",
   outdated: "gray",
@@ -13,13 +8,8 @@ export const COLORS = {
 };
 
 export const TITLES = {
-  completed: "Completed",
-  accomplished: "Accomplished",
-  not_accomplished: "Not Accomplished",
   on_track: "On Track",
   caution: "Caution",
-  concern: "Concern",
-  issue: "Issue",
   off_track: "Off Track",
   paused: "Paused",
   outdated: "Outdated",

@@ -9,9 +9,9 @@ import { ActivityHandler } from "../interfaces";
 import { richContentToString } from "@/components/RichContent";
 import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
-import { match } from "ts-pattern";
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
+import { SmallStatusIndicator } from "@/components/status";
 
 const GoalCheckIn: ActivityHandler = {
   pagePath(paths, activity: Activity): string {
@@ -39,18 +39,10 @@ const GoalCheckIn: ActivityHandler = {
     const fullMessage = richContentToString(JSON.parse(update.message!));
     const message = truncateString(fullMessage, 180);
 
-    const status = match(update.status)
-      .with("pending", () => <span>Pending</span>)
-      .with("on_track", () => <span>On Track</span>)
-      .with("concern", () => <span>Needs Caution</span>) // legacy
-      .with("caution", () => <span>Needs Caution</span>)
-      .with("issue", () => <span>Off Track</span>) // legacy
-      .with("off_track", () => <span>Off Track</span>)
-      .run();
-
     return (
       <div className="ProseMirror">
-        {status} &mdash; <span>{message}</span>
+        <SmallStatusIndicator status={update.status!} />
+        <span>{message}</span>
       </div>
     );
   },
