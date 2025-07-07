@@ -21,7 +21,7 @@ export type ProgressBarStatus =
   // Progress states
   | "on_track"
   | "caution"
-  | "issue"
+  | "off_track"
   | "paused"
   | "pending"
   // Completion states
@@ -29,6 +29,7 @@ export type ProgressBarStatus =
   | "partial"
   | "missed"
   // Legacy/alternative states
+  | "issue"
   | "completed"
   | "dropped"
   | "failed";
