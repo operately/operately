@@ -47,12 +47,14 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   end
 
   step :assert_subgoal_added, ctx, name do
-    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
-    assert goal != nil
-    assert goal.parent_goal_id == ctx.goal.id
-    assert goal.group_id == ctx.goal.group_id
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
 
-    ctx
+      assert goal != nil
+      assert goal.name == name
+      assert goal.parent_goal_id == ctx.goal.id
+      assert goal.group_id == ctx.goal.group_id
+    end)
   end
 
   step :visit_company_work_map, ctx do
@@ -81,7 +83,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
 
   step :hover_over_and_click_add_button, ctx, goal_name do
     ctx
-    |> UI.hover(testid: "work-item-#{goal_name}")
+    |> UI.hover(testid: UI.testid(["work-item", goal_name]))
     |> UI.click(testid: "add-subitem")
   end
 end
