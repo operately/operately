@@ -109,13 +109,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("goal_closing", content) do
-    %{
-      goal: serialize_goal(content["goal"]),
-      success: content["success"]
-    }
-  end
-
   def serialize_content("goal_created", content) do
     %{
       goal: serialize_goal(content["goal"])
