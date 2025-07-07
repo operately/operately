@@ -261,11 +261,8 @@ export interface ActivityContentGoalCheckInEdit {
 }
 
 export interface ActivityContentGoalClosing {
-  companyId?: string | null;
-  spaceId?: string | null;
-  goalId?: string | null;
-  success?: string | null;
-  goal?: Goal | null;
+  successStatus: SuccessStatus;
+  goal: Goal;
 }
 
 export interface ActivityContentGoalCreated {
