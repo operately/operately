@@ -18,4 +18,13 @@ defmodule Operately.Features.GoalCreationTest do
     |> Steps.add_subgoal("Example Subgoal")
     |> Steps.assert_subgoal_added("Example Subgoal")
   end
+
+  feature "create a new goal from the company work map", ctx do
+    ctx
+    |> Steps.visit_company_work_map()
+    |> Steps.click_add_button()
+    |> Steps.fill_in_work_item_form("Example Goal")
+    |> Steps.submit()
+    |> Steps.assert_work_item_added("Example Goal")
+  end
 end

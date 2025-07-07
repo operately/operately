@@ -71,6 +71,7 @@ export function AddItemModal(props: AddItemModal.Props) {
               checked={state.itemType === "goal"}
               className="accent-blue-600"
               onChange={() => state.setItemType("goal")}
+              data-test-id="type-goal"
             />
             <span>Goal</span>
           </label>
@@ -82,6 +83,7 @@ export function AddItemModal(props: AddItemModal.Props) {
               checked={state.itemType === "project"}
               className="accent-blue-600"
               onChange={() => state.setItemType("project")}
+              data-test-id="type-project"
             />
             <span>Project</span>
           </label>
@@ -96,7 +98,7 @@ export function AddItemModal(props: AddItemModal.Props) {
             text={state.name}
             onChange={state.setName}
             error={state.nameError}
-            testId="goal-name"
+            testId="item-name"
           />
 
           <SpaceField
