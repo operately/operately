@@ -24,7 +24,7 @@
 
 ## About the project
 
-<img width="100%" alt="Operately screenshot" src="https://github.com/operately/website/blob/main/src/pages/_index/operately-v3-screenshot.png?raw=true">
+<img width="100%" alt="Operately screenshot" src="https://github.com/operately/website/blob/main/src/pages/_index/operately-v4-screenshot.png?raw=true">
 
 Every startup needs to align on goals, run projects, track KPIs, and standardize processes. However, figuring out the right systems that tie everything together is tough, and keeping them in order, even tougher.
 
