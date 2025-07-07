@@ -7,6 +7,7 @@ defmodule Operately.Activities.Content.GoalClosing do
     belongs_to :goal, Operately.Goals.Goal
 
     field :success, :string
+    field :success_status, Ecto.Enum, values: [:achieved, :missed]
   end
 
   def changeset(attrs) do

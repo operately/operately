@@ -1224,11 +1224,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_goal_closing do
-    field? :company_id, :string, null: true
-    field? :space_id, :string, null: true
-    field? :goal_id, :string, null: true
-    field? :success, :string, null: true
-    field? :goal, :goal, null: true
+    field :success_status, :success_status
+    field :goal, :goal
   end
 
   object :activity_content_goal_editing do
