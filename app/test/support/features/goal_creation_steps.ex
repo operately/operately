@@ -56,7 +56,7 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   end
 
   step :visit_company_work_map, ctx do
-    ctx |> UI.visit(Paths.company_work_map_path(ctx.company))
+    ctx |> UI.visit(Paths.work_map_path(ctx.company))
   end
 
   step :click_add_button, ctx do
@@ -67,13 +67,9 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx |> UI.fill_text_field(testid: "work-item-name", with: name)
   end
 
-  step :submit, ctx do
-    ctx |> UI.click(testid: "submit")
-  end
-
   step :assert_work_item_added, ctx, name do
     goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
-    general = Operately.Repo.one(from s in Operately.Spaces.Space, where: s.name == "General")
+    general = Operately.Repo.one(from s in Operately.Groups.Group, where: s.name == "General")
 
     assert goal != nil
     assert goal.name == name

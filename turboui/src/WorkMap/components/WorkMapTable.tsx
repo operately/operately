@@ -188,7 +188,7 @@ function ZeroState({
           Start by adding your first goal to get things moving.
         </div>
 
-        <PrimaryButton size="sm" onClick={open}>
+        <PrimaryButton size="sm" onClick={open} testId="add-work-item">
           Add your first item
         </PrimaryButton>
 
