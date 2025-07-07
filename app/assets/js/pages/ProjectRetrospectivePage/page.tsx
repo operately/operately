@@ -102,7 +102,7 @@ function Status() {
 function RetrospectiveContent() {
   const { retrospective } = useLoadedData();
 
-  const content = parseContent(retrospective.content);
+  const content = React.useMemo(() => parseContent(retrospective.content), [retrospective.content]);
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   return (
