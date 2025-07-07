@@ -48,7 +48,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 
   return (
     <Modal isOpen={props.isOpen} onClose={props.close} size="medium" closeOnBackdropClick={false}>
-      <h1 className="font-bold text-xl w-52">Add new {state.itemType === "goal" ? "Goal" : "Project"}</h1>
+      <h1 className="font-bold text-xl w-52">Add new {state.itemType === "goal" ? "goal" : "project"}</h1>
 
       <div className="mb-2">
         {props.parentGoal && (
