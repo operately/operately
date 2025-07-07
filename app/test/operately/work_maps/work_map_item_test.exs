@@ -19,7 +19,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
         |> Factory.preload(:project, :milestones)
 
       item = WorkMapItem.build_item(ctx.project, [], false)
-      assert item.status == :completed
+      assert item.status == :achieved
     end
 
     @status [:on_track, :caution, :off_track]
