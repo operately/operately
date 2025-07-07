@@ -1,15 +1,15 @@
 {
-  "_vendor-BjX2MQTT.js": {
-    "file": "assets/vendor-BjX2MQTT.js",
+  "_vendor-CXWSZcRs.js": {
+    "file": "assets/vendor-CXWSZcRs.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-BYDaEi-3.js",
+    "file": "assets/app-CjEJTY3I.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-BjX2MQTT.js"
+      "_vendor-CXWSZcRs.js"
     ]
   }
 }
