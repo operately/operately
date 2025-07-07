@@ -78,4 +78,10 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
       assert goal.group_id == general.id
     end)
   end
+
+  step :hover_over_and_click_add_button, ctx, goal_name do
+    ctx
+    |> UI.hover(testid: "work-item-#{goal_name}")
+    |> UI.click(testid: "add-subitem")
+  end
 end
