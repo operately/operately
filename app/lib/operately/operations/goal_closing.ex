@@ -23,7 +23,8 @@ defmodule Operately.Operations.GoalClosing do
         company_id: author.company_id,
         space_id: goal.group_id,
         goal_id: goal.id,
-        success: attrs.success
+        success: attrs.success,
+        success_status: attrs.success_status,
       }
     end, include_notification: false)
     |> Multi.insert(:thread, fn changes -> CommentThread.changeset(%{
