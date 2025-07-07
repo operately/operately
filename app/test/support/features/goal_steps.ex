@@ -458,23 +458,4 @@ defmodule Operately.Support.Features.GoalSteps do
       assert company_binding.access_level == 0
     end)
   end
-
-  #
-  # Utility functions
-  #
-
-  defp attempts(ctx, n, fun) do
-    try do
-      fun.()
-      ctx
-    rescue
-      e in [ExUnit.AssertionError] ->
-        if n > 0 do
-          Process.sleep(100)
-          attempts(ctx, n - 1, fun)
-        else
-          raise e
-        end
-    end
-  end
 end

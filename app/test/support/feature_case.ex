@@ -63,6 +63,21 @@ defmodule Operately.FeatureCase do
       def scroll_into_view(session, css_selector) do
         session |> Wallaby.Browser.execute_script("document.querySelector('#{css_selector}').scrollIntoView()")
       end
+
+      defp attempts(ctx, n, fun) do
+        try do
+          fun.()
+          ctx
+        rescue
+          e in [ExUnit.AssertionError] ->
+            if n > 0 do
+              Process.sleep(200)
+              attempts(ctx, n - 1, fun)
+            else
+              raise e
+            end
+        end
+      end
     end
   end
 

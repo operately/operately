@@ -64,18 +64,18 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
   end
 
   step :fill_in_work_item_form, ctx, name do
-    ctx |> UI.fill_text_field(testid: "work-item-name", with: name)
+    ctx |> UI.fill_text_field(testid: "item-name", with: name)
   end
 
   step :assert_work_item_added, ctx, name do
-    goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
-    general = Operately.Repo.one(from s in Operately.Groups.Group, where: s.name == "General")
+    attempts(ctx, 3, fn ->
+      goal = Operately.Repo.one(from g in Operately.Goals.Goal, where: g.name == ^name)
+      general = Operately.Repo.one(from s in Operately.Groups.Group, where: s.name == "General")
 
-    assert goal != nil
-    assert goal.name == name
-    assert goal.parent_goal_id == nil
-    assert goal.group_id == general.id
-
-    ctx
+      assert goal != nil
+      assert goal.name == name
+      assert goal.parent_goal_id == nil
+      assert goal.group_id == general.id
+    end)
   end
 end
