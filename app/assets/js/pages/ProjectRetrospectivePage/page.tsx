@@ -10,10 +10,11 @@ import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
-import { AvatarWithName, IconEdit } from "turboui";
+import { AvatarWithName, IconEdit, StatusBadge } from "turboui";
 
+import RichContent, { parseContent } from "turboui/RichContent";
+import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
-import { RetrospectiveContent } from "@/features/ProjectRetrospective";
 import { assertPresent } from "@/utils/assertions";
 import { useLoadedData, useRefresh } from "./loader";
 
@@ -34,7 +35,8 @@ export function Page() {
           <Options />
 
           <Header />
-          <RetrospectiveContent retrospective={retrospective} />
+          <Status />
+          <RetrospectiveContent />
 
           <Spacer size={2} />
           <RetroReactions />
@@ -82,6 +84,31 @@ function Header() {
         <FormattedTime time={retrospective.closedAt} format="long-date" />
       </div>
     </>
+  );
+}
+
+function Status() {
+  const { retrospective } = useLoadedData();
+
+  assertPresent(retrospective.project, "project must be present in retrospective");
+
+  return (
+    <div className="mt-4">
+      <StatusBadge status={retrospective.project.successStatus} />
+    </div>
+  );
+}
+
+function RetrospectiveContent() {
+  const { retrospective } = useLoadedData();
+
+  const content = React.useMemo(() => parseContent(retrospective.content), [retrospective.content]);
+  const mentionedPersonLookup = useMentionedPersonLookupFn();
+
+  return (
+    <div className="my-8">
+      <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+    </div>
   );
 }
 
