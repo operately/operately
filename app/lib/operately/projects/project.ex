@@ -99,8 +99,7 @@ defmodule Operately.Projects.Project do
   @impl WorkMapItem
   def status(project = %__MODULE__{}) do
     cond do
-      project.closed_at -> :completed
-      project.status == "closed" -> :completed
+      project.success_status -> project.success_status
       project.status == "paused" -> :paused
       Operately.Projects.outdated?(project) -> :outdated
       project.last_check_in -> project.last_check_in.status
