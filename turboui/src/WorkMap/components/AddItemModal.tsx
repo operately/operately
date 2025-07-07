@@ -94,7 +94,9 @@ export function AddItemModal(props: AddItemModal.Props) {
             autofocus
             label="Name"
             variant="form-field"
-            placeholder="What do you want to achieve?"
+            placeholder={
+              state.itemType === "goal" ? "e.g. Increase user acqisition" : "e.g. Implement new website design"
+            }
             text={state.name}
             onChange={state.setName}
             error={state.nameError}
