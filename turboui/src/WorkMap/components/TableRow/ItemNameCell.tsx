@@ -6,6 +6,7 @@ import { IconChevronDown, IconChevronRight, IconGoal, IconProject } from "../../
 import { BlackLink } from "../../../Link";
 import { PrivacyIndicator } from "../../../PrivacyIndicator";
 import { SpaceField } from "../../../SpaceField";
+import { createTestId } from "../../../TestableElement";
 import classNames from "../../../utils/classnames";
 import { useItemStatus } from "../../hooks/useItemStatus";
 import { AddItemModal } from "../AddItemModal";
@@ -33,7 +34,7 @@ export function ItemNameCell({
   spaceSearch,
 }: Props) {
   return (
-    <td className="py-2 px-2 md:px-4 relative">
+    <td className="py-2 px-2 md:px-4 relative" data-test-id={createTestId("work-item", item.name)}>
       <div className="flex items-center">
         <Indentation level={level} showIndentation={showIndentation} />
         <ExpandButton item={item} expanded={expanded} setExpanded={setExpanded} showIndentation={showIndentation} />
@@ -174,7 +175,7 @@ function AddButton({
 
   return (
     <div className="-mt-[2px] ml-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
-      <SecondaryButton size="xxs" onClick={open}>
+      <SecondaryButton size="xxs" onClick={open} testId="add-subitem">
         Add
       </SecondaryButton>
 
