@@ -5,7 +5,6 @@ import { WorkMap } from "..";
  */
 export function useItemStatus(status: WorkMap.Item["status"]) {
   const isCompleted =
-    status === "completed" ||
     status === "achieved" ||
     status === "missed";
 

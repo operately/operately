@@ -82,7 +82,7 @@ export const mockItems: WorkMap.Item[] = [
         parentId: "goal-1",
         type: "project",
         name: "Document features in Help Center",
-        status: "completed",
+        status: "achieved",
         progress: 100,
         space: { id: "space-product", name: "Product", link: "/spaces/product" },
         spacePath: "#",
@@ -384,7 +384,7 @@ export const mockItems: WorkMap.Item[] = [
     parentId: null,
     type: "goal",
     name: "Legacy system migration to cloud infrastructure",
-    status: "completed",
+    status: "achieved",
     progress: 100,
     space: { id: "space-eng", name: "Engineering", link: "/spaces/eng" },
     spacePath: "#",
@@ -406,7 +406,7 @@ export const mockItems: WorkMap.Item[] = [
         parentId: "goal-4",
         type: "project",
         name: "Legacy database migration",
-        status: "completed",
+        status: "achieved",
         progress: 100,
         space: { id: "space-eng", name: "Engineering", link: "/spaces/eng" },
         spacePath: "#",
@@ -671,7 +671,7 @@ export const onlyCompleted: WorkMap.Item[] = [
     parentId: null,
     type: "goal",
     name: "Achieve Series B funding",
-    status: "completed",
+    status: "achieved",
     progress: 100,
     space: { id: "space-finance", name: "Finance", link: "/finance" },
     spacePath: "#",
@@ -690,7 +690,7 @@ export const onlyCompleted: WorkMap.Item[] = [
     parentId: null,
     type: "goal",
     name: "Hit 100k MAU",
-    status: "completed",
+    status: "achieved",
     progress: 100,
     space: { id: "space-growth", name: "Growth", link: "/growth" },
     spacePath: "#",
@@ -709,7 +709,7 @@ export const onlyCompleted: WorkMap.Item[] = [
     parentId: null,
     type: "project",
     name: "Migrate to Vite",
-    status: "completed",
+    status: "achieved",
     progress: 100,
     space: { id: "space-eng", name: "Engineering", link: "/spaces/eng" },
     spacePath: "#",
@@ -771,9 +771,9 @@ export const createMockItem = (
     spacePath: "#",
     owner: people.alex,
     ownerPath: "#",
-    nextStep: status === "completed" || status === "achieved" ? "" : "Next action to take",
+    nextStep: status === "achieved" ? "" : "Next action to take",
     isNew: false,
-    completedOn: status === "completed" || status === "achieved" ? "2025-03-15T00:00:00.000Z" : null,
+    completedOn: status === "achieved" ? "2025-03-15T00:00:00.000Z" : null,
     children: hasChildren ? [childItem] : [],
     itemPath: "#",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
@@ -805,7 +805,7 @@ export const createMockItem = (
 
 // Create mock items for each status
 export const mockGoalOnTrack = createMockItem("goal-1", "Improve customer experience", "goal", "on_track", 45, true);
-export const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "completed", 100);
+export const mockGoalCompleted = createMockItem("goal-2", "Launch new marketing campaign", "goal", "achieved", 100);
 export const mockGoalAchieved = createMockItem("goal-3", "Increase website traffic by 50%", "goal", "achieved", 100);
 export const mockGoalPartial = createMockItem("goal-4", "Reduce support tickets by 30%", "goal", "missed", 75);
 export const mockGoalMissed = createMockItem("goal-5", "Launch mobile app by Q1", "goal", "missed", 60);
@@ -814,7 +814,7 @@ export const mockGoalCaution = createMockItem("goal-7", "Implement new CRM syste
 export const mockGoalIssue = createMockItem("goal-8", "Migrate legacy systems", "goal", "off_track", 15);
 export const mockGoalOutdated = createMockItem("goal-9", "Update legacy documentation", "goal", "outdated", 30);
 export const mockProjectOnTrack = createMockItem("project-1", "Redesign product dashboard", "project", "on_track", 55);
-export const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "completed", 100);
+export const mockProjectCompleted = createMockItem("project-2", "Update documentation", "project", "achieved", 100);
 export const mockProjectOutdated = createMockItem("project-3", "Refactor authentication", "project", "outdated", 25);
 
 export const singleSpaceWorkMap: WorkMap.Item[] = [
@@ -841,7 +841,7 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         parentId: "goal-product-strategy",
         type: "goal",
         name: "Conduct comprehensive user research",
-        status: "completed",
+        status: "achieved",
         progress: 100,
         space: { id: "space-product", name: "Product", link: "/spaces/product" },
         spacePath: "#",
@@ -863,7 +863,7 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             parentId: "goal-user-research",
             type: "project",
             name: "Conduct user interviews with key customers",
-            status: "completed",
+            status: "achieved",
             progress: 100,
             space: { id: "space-product", name: "Product", link: "/spaces/product" },
             spacePath: "#",
@@ -886,7 +886,7 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             parentId: "goal-user-research",
             type: "project",
             name: "Analyze customer survey results",
-            status: "completed",
+            status: "achieved",
             progress: 100,
             space: { id: "space-product", name: "Product", link: "/spaces/product" },
             spacePath: "#",
@@ -1072,7 +1072,7 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     parentId: null,
     type: "project",
     name: "Cloud infrastructure migration",
-    status: "completed",
+    status: "achieved",
     progress: 100,
     space: { id: "space-product", name: "Product", link: "/spaces/product" },
     spacePath: "#",

@@ -1686,14 +1686,11 @@ export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret
 
 export type GoalStatus =
   | "on_track"
-  | "completed"
   | "achieved"
-  | "partial"
   | "missed"
   | "paused"
   | "caution"
-  | "issue"
-  | "dropped"
+  | "off_track"
   | "pending"
   | "outdated";
 
@@ -1705,7 +1702,6 @@ export type WorkMapItemState = "active" | "paused" | "closed";
 
 export type WorkMapItemStatus =
   | "on_track"
-  | "completed"
   | "achieved"
   | "missed"
   | "paused"
