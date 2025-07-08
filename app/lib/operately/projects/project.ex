@@ -103,7 +103,7 @@ defmodule Operately.Projects.Project do
       project.status == "paused" -> :paused
       Operately.Projects.outdated?(project) -> :outdated
       project.last_check_in -> project.last_check_in.status
-      true -> :on_track
+      true -> :pending
     end
   end
 

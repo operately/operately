@@ -42,13 +42,13 @@ defmodule Operately.Goals.GoalTest do
       end
     end
 
-    test "a goal without update should be 'on_track'", ctx do
+    test "a goal which is not outdated and without update should be 'pending'", ctx do
       ctx =
         ctx
         |> Factory.add_goal(:goal, :space)
         |> Factory.preload(:goal, :last_update)
 
-      assert Goal.status(ctx.goal) == :on_track
+      assert Goal.status(ctx.goal) == :pending
     end
   end
 
