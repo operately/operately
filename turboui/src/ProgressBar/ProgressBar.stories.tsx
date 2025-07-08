@@ -20,14 +20,11 @@ const meta = {
       options: [
         "on_track",
         "caution",
-        "issue",
+        "off_track",
         "paused",
         "pending",
         "achieved",
-        "partial",
         "missed",
-        "completed",
-        "dropped",
       ],
       control: { type: "select" },
     },
@@ -128,27 +125,22 @@ export const WithAndWithoutLabel: Story = {
  * Progress states:
  * - on_track: Green - Goal is currently in progress and on track
  * - caution: Amber - Goal is at risk or needs attention
- * - issue: Red - Goal has serious issues
+ * - off_track: Red - Goal has serious issues
  * - paused: Gray - Goal is temporarily paused
  * - pending: Blue - Goal is waiting to start or for approval
  *
  * Completion states:
- * - achieved/completed: Green - Goal was fully accomplished
- * - partial: Amber - Goal was partially accomplished
- * - missed/failed: Red - Goal was not accomplished
- * - dropped: Gray - Goal was intentionally abandoned
+ * - achieved: Green - Goal was fully accomplished
+ * - missed: Red - Goal was not accomplished
  */
 export const StatusColors: Story = {
   render: () => {
     const statuses: { name: string; value: ProgressBarStatus }[] = [
       { name: "On Track", value: "on_track" },
-      { name: "Completed", value: "completed" },
       { name: "Achieved", value: "achieved" },
       { name: "Paused", value: "paused" },
-      { name: "Dropped", value: "dropped" },
       { name: "Caution", value: "caution" },
-      { name: "Partial", value: "partial" },
-      { name: "Issue", value: "issue" },
+      { name: "Off Track", value: "off_track" },
       { name: "Missed", value: "missed" },
       { name: "Pending", value: "pending" },
     ];
@@ -224,15 +216,15 @@ export const ComprehensiveExamples: Story = {
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-medium mb-2">Issue - Small</h3>
+        <h3 className="text-lg font-medium mb-2">Off Track - Small</h3>
         <div style={{ width: "500px" }}>
-          <ProgressBar progress={22} status="issue" size="sm" />
+          <ProgressBar progress={22} status="off_track" size="sm" />
         </div>
       </div>
       <div className="p-4">
-        <h3 className="text-lg font-medium mb-2">Completed - 100%</h3>
+        <h3 className="text-lg font-medium mb-2">Achieved - 100%</h3>
         <div style={{ width: "500px" }}>
-          <ProgressBar progress={100} status="completed" showLabel={true} />
+          <ProgressBar progress={100} status="achieved" showLabel={true} />
         </div>
       </div>
       <div className="p-4">
