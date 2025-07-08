@@ -94,10 +94,9 @@ defmodule Operately.Goals.Goal do
       goal.success_status -> goal.success_status
       goal.success == "yes" -> :achieved
       goal.success == "no" -> :missed
-      goal.closed_at -> :completed
       Operately.Goals.outdated?(goal) -> :outdated
       goal.last_update_status -> goal.last_update_status
-      true -> :on_track
+      true -> :pending
     end
   end
 
