@@ -2,9 +2,21 @@
 
 <%= spacer() %>
 
+<%= title("Overview", font_size: "16") %>
+
+<%= row do %>
+  <%= rich_text(@overview) %>
+<% end %>
+
+<%= spacer() %>
+
+<%= title("Check-in notes", font_size: "16") %>
+
 <%= row do %>
   <%= rich_text(@check_in.description) %>
 <% end %>
+
+<%= spacer() %>
 
 <%= row do %>
   <%= cta_button(@cta_url, @cta_text) %>
