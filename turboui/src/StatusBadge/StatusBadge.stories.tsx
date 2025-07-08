@@ -20,10 +20,7 @@ const meta = {
         'off_track',
         'paused',
         'achieved',
-        'completed',
-        'partial',
         'missed',
-        'dropped',
         'Custom Status'
       ],
     },
@@ -79,7 +76,6 @@ export const CompletionStates: Story = {
   render: () => (
     <div className="flex flex-wrap gap-4" style={{ width: '500px' }}>
       <StatusBadge status="achieved" />
-      <StatusBadge status="completed" />
       <StatusBadge status="missed" />
     </div>
   ),
@@ -156,7 +152,7 @@ export const InteractiveBehaviors: Story = {
             <td className="py-2 px-4 text-sm">Task Gamma</td>
             <td className="py-2 px-4">
               <div className="transform group-hover:scale-105 transition-transform duration-150">
-                <StatusBadge status="completed" />
+                <StatusBadge status="missed" />
               </div>
             </td>
             <td className="py-2 px-4 text-sm">100%</td>
@@ -174,7 +170,7 @@ export const AllStatuses: Story = {
   render: () => {
     // All possible status values
     const progressStatuses: BadgeStatus[] = ['on_track', 'caution', 'off_track', 'paused'];
-    const completionStatuses: BadgeStatus[] = ['achieved', 'completed', 'missed'];
+    const completionStatuses: BadgeStatus[] = ['achieved', 'missed'];
     
     return (
       <div style={{ width: '500px' }}>

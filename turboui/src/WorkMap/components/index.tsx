@@ -62,7 +62,6 @@ export default WorkMap;
 export namespace WorkMap {
   export const ALLOWED_STATUSES = [
     "on_track",
-    "completed",
     "achieved",
     "missed",
     "paused",

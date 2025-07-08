@@ -27,14 +27,6 @@ const getStatusProperties = (status: BadgeStatus) => {
         borderColor: "border-emerald-200",
         label: "On track",
       };
-    case "completed":
-      return {
-        bgColor: "bg-callout-success-bg",
-        textColor: "text-callout-success-content",
-        dotColor: "bg-callout-success-content",
-        borderColor: "border-emerald-200",
-        label: "Completed",
-      };
     case "achieved":
       return {
         bgColor: "bg-callout-success-bg",
@@ -105,7 +97,6 @@ const getStatusProperties = (status: BadgeStatus) => {
 
 const getStatusIcon = (status: BadgeStatus, textColor: string) => {
   switch (status) {
-    case "completed":
     case "achieved":
       return <IconCheck size={10} className={`${textColor} mr-1.5 flex-shrink-0`} />;
 
