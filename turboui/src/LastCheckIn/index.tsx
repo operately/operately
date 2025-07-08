@@ -38,7 +38,7 @@ export function LastCheckIn({ checkIns, state, mentionedPersonLookup }: LastChec
 
   if (checkIn.status === "on_track") {
     borderColor = "border-green-500";
-  } else if (checkIn.status === "caution" || checkIn.status === "concern") {
+  } else if (checkIn.status === "caution") {
     borderColor = "border-yellow-500";
   } else if (checkIn.status === "off_track") {
     borderColor = "border-red-500";
