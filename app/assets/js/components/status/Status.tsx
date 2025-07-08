@@ -39,7 +39,7 @@ export function Status({ status, reviewer, selectable, onSelected, testId }: Sta
 export function Placeholder() {
   return (
     <div className="flex items-center gap-2 p-2 text-content-dimmed">
-      <div className="w-10 h-10 rounded-full border-2 border-surface-base border-dashed" />
+      <div className="w-10 h-10 rounded-full border-2 border-surface-outline border-dashed" />
 
       <div>
         <p className="font-semibold">Select a status</p>
