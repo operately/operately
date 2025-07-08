@@ -9,10 +9,8 @@ export type BadgeStatus =
   | 'paused'
   | 'pending'
   // Completion states
-  | 'achieved'   // Goal fully accomplished (green)
-  | 'missed'     // Goal not accomplished (red)
-  // Legacy/alternative states
-  | 'completed'  // Legacy term for achieved
+  | 'achieved'
+  | 'missed'
   | string;      // Allow custom status strings
 
 /**

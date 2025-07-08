@@ -60,13 +60,11 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
         </>
       );
     case "caution":
-    case "concern":
       return (
         <>
           Emerging risks or delays. {reviewerName || "The reviewer"} should be aware.
         </>
       );
-    case "issue":
     case "off_track":
       return (
         <>
