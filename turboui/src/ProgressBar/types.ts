@@ -26,13 +26,7 @@ export type ProgressBarStatus =
   | "pending"
   // Completion states
   | "achieved"
-  | "partial"
   | "missed"
-  // Legacy/alternative states
-  | "issue"
-  | "completed"
-  | "dropped"
-  | "failed";
 
 export type ProgressBarSize = "sm" | "md" | "lg";
 
