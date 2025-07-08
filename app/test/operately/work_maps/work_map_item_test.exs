@@ -38,7 +38,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
       end
     end
 
-    test "a project without check-in should be 'on_track'", ctx do
+    test "a project which is not outdated and without check-in should be 'pending'", ctx do
       ctx =
         ctx
         |> Factory.add_project(:project, :space)
@@ -46,7 +46,7 @@ defmodule Operately.WorkMaps.WorkMapItemTest do
         |> Factory.preload(:project, :milestones)
 
       item = WorkMapItem.build_item(ctx.project, [], false)
-      assert item.status == :on_track
+      assert item.status == :pending
     end
   end
 end
