@@ -75,7 +75,7 @@ function StatusSection({ reviewer }: { reviewer?: Person }) {
         label="1. How's the project going?"
         field="status"
         reviewer={reviewer}
-        options={["on_track", "caution", "issue"]}
+        options={["on_track", "caution", "off_track"]}
       />
     </div>
   );

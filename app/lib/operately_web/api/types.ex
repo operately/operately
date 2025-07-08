@@ -1059,14 +1059,11 @@ defmodule OperatelyWeb.Api.Types do
   enum(:goal_status,
     values: [
       :on_track,
-      :completed,
       :achieved,
-      :partial,
       :missed,
       :paused,
       :caution,
-      :issue,
-      :dropped,
+      :off_track,
       :pending,
       :outdated
     ]
@@ -1618,7 +1615,6 @@ defmodule OperatelyWeb.Api.Types do
   enum(:work_map_item_status,
     values: [
       :on_track,
-      :completed,
       :achieved,
       :missed,
       :paused,
