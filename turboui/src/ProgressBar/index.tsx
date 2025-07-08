@@ -10,9 +10,9 @@ export function ProgressBar({ progress, status, size = "md", showLabel = false }
 
   // Determine color based on status
   const progressColor = match(status)
-    .with("on_track", "completed", "achieved", () => "bg-emerald-500 dark:bg-emerald-400")
-    .with("paused", "dropped", () => "bg-gray-400 dark:bg-gray-500")
-    .with("caution", "partial", () => "bg-amber-500 dark:bg-amber-400")
+    .with("on_track", "achieved", () => "bg-emerald-500 dark:bg-emerald-400")
+    .with("paused", () => "bg-gray-400 dark:bg-gray-500")
+    .with("caution", () => "bg-amber-500 dark:bg-amber-400")
     .with("off_track", "missed", () => "bg-red-500 dark:bg-red-400")
     .with("pending", () => "bg-blue-500 dark:bg-blue-400")
     .otherwise(() => "bg-gray-400 dark:bg-gray-500");

@@ -40,7 +40,7 @@ export function LastCheckIn({ checkIns, state, mentionedPersonLookup }: LastChec
     borderColor = "border-green-500";
   } else if (checkIn.status === "caution" || checkIn.status === "concern") {
     borderColor = "border-yellow-500";
-  } else if (checkIn.status === "issue") {
+  } else if (checkIn.status === "off_track") {
     borderColor = "border-red-500";
   }
 
