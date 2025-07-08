@@ -66,7 +66,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     end
 
     defp status_msg(:on_track) do
-      [text("The goal is "), bg_green("on-track"), text(". Progressing as planned.")]
+      [text("The goal is "), bg_green("on-track"), text(" and progressing as planned.")]
     end
 
     defp status_msg(:caution) do
