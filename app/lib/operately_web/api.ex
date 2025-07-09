@@ -43,6 +43,10 @@ defmodule OperatelyWeb.Api do
     query(:search, OperatelyWeb.Api.Spaces.Search)
   end
 
+  namespace(:ai) do
+    query(:prompt, OperatelyWeb.Api.AI.Prompt)
+  end
+
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)
   query(:get_activity, Q.GetActivity)
@@ -89,7 +93,6 @@ defmodule OperatelyWeb.Api do
   query(:list_possible_managers, Q.ListPossibleManagers)
   query(:get_work_map, Q.GetWorkMap)
   query(:get_flat_work_map, Q.GetFlatWorkMap)
-  query(:run_ai_prompt, Q.RunAiPrompt)
 
   mutation(:archive_message, M.ArchiveMessage)
   mutation(:restore_company_member, M.RestoreCompanyMember)
