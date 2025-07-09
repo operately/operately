@@ -10,7 +10,10 @@ defmodule Operately.People.AgentDef do
     timestamps()
   end
 
-  @doc false
+  def changeset(attrs) do
+    changeset(%__MODULE__{}, attrs)
+  end
+
   def changeset(agent_def, attrs) do
     agent_def
     |> cast(attrs, [:person_id, :definition])

@@ -3,10 +3,12 @@ defmodule Operately.Operations.AgentAdding do
   alias Operately.{Access, Repo}
 
   defmodule Attrs do
-    defstruct [:title, :full_name]
+    defstruct [:title, :full_name, :definition]
   end
 
-  def run(author, %Attrs{} = attrs) do
+  def run(author, attrs) do
+    attrs = struct!(Attrs, attrs)
+
     Multi.new()
     |> load_company(author)
     |> load_company_space(author)

@@ -39,13 +39,6 @@ defmodule Operately.AI do
 
     definition = Operately.People.get_agent_def(person)
 
-    prompt = """
-    You are a COO of the company. Your task is to verify if the goal is well defined and actionable.
-    Please review the goal and if it is not well defined, provide a detailed explanation of what is missing or needs
-    to be changed. The feedback should be actionable and specific. Submit the feedback as a markdown message
-    to the goal.
-    """
-
     {:ok, chain} =
       LLMChain.new!(%{
         llm: ChatAnthropic.new!(),
