@@ -5,6 +5,7 @@ defmodule Operately.AI do
   alias LangChain.ChatModels.ChatAnthropic
   alias LangChain.Utils.ChainResult
   alias Operately.WorkMaps.GetWorkMapQuery
+  alias Operately.AI.Tools
 
   def run(person, prompt) do
     {:ok, chain} =
@@ -49,60 +50,11 @@ defmodule Operately.AI do
           goal: goal
         }
       })
-      |> LLMChain.add_tools(get_goal_details_fn())
-      |> LLMChain.add_tools(post_goal_message_fn())
+      |> LLMChain.add_tools(Tools.get_goal_details())
+      # |> LLMChain.add_tools(Tools.post_goal_message())
       |> LLMChain.add_message(Message.new_user!(prompt))
       |> LLMChain.run(mode: :while_needs_response)
 
     ChainResult.to_string!(chain)
-  end
-
-  defp get_goal_details_fn do
-    Function.new!(%{
-      name: "get_goal_details",
-      description: "Returns the details of the goal.",
-      function: fn _, context ->
-        me = Map.get(context, :person)
-        goal = Map.get(context, :goal)
-
-        conn = %{
-          assigns: %{
-            current_person: me
-          }
-        }
-
-        OperatelyWeb.Api.Queries.GetGoal.run(conn, %{id: goal.id})
-        |> IO.inspect(label: "Goal Details")
-      end
-    })
-  end
-
-  defp post_goal_message_fn(person) do
-    Function.new!(%{
-      name: "post_goal_message",
-      description: "Posts a message to the goal.",
-      parameters_schema: %{
-        type: "object",
-        properties: %{
-          message: %{
-            type: "string",
-            description: "The markdown message to post to the goal."
-          }
-        },
-        required: ["message"]
-      },
-      function: fn args, context ->
-        content = Map.get(args, "content")
-        goal = Map.get(context, :goal)
-
-        conn = %{
-          assigns: %{
-            current_person: me
-          }
-        }
-
-        Operately.Goals.post_goal_message(person, goal_id, message)
-      end
-    })
   end
 end
