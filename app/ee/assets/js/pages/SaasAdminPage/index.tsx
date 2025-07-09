@@ -65,6 +65,12 @@ function CompanyList() {
           </div>
         </TableRow>
       ))}
+
+      {window.appConfig.version && (
+        <div className="flex justify-start mt-6 text-xs">
+          <div className="bg-surface-dimmed px-3 py-1 rounded-full">Version: {window.appConfig.version}</div>
+        </div>
+      )}
     </div>
   );
 }

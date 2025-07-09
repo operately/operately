@@ -7,6 +7,17 @@ import Config
 # any compile-time configuration in here, as it won't be applied.
 # The block below contains prod specific runtime configuration.
 
+# Load the application version from the version file
+version_path = Path.join(:code.priv_dir(:operately), "../rel/version")
+version =
+  if File.exists?(version_path) do
+    File.read!(version_path) |> String.trim()
+  else
+    "dev"
+  end
+
+config :operately, :version, version
+
 # ## Using releases
 #
 # If you use `mix release`, you need to explicitly enable the server
