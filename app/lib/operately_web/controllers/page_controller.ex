@@ -21,6 +21,7 @@ defmodule OperatelyWeb.PageController do
       allowSignupWithGoogle: Application.get_env(:operately, :allow_signup_with_google),
       allowLoginWithEmail: Application.get_env(:operately, :allow_login_with_email),
       allowSignupWithEmail: Application.get_env(:operately, :allow_signup_with_email),
+      version: Application.get_env(:operately, :version),
       sentry: %{
         enabled: Application.get_env(:operately, :js_sentry_enabled),
         dsn: Application.get_env(:operately, :js_sentry_dsn)
