@@ -21,6 +21,28 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule AddAgent do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :title, :string
+      field :full_name, :string
+      field :definition, :string
+    end
+
+    outputs do
+      field :person, :person
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Steps.add_agent(inputs.title, inputs.full_name, inputs.definition)
+      |> Steps.respond(fn ctx -> %{person: Serializers.serialize(ctx.person, :full)} end)
+    end
+  end
+
   defmodule Steps do
     use OperatelyWeb.Api.Helpers
 
@@ -33,6 +55,16 @@ defmodule OperatelyWeb.Api.Ai do
     def run_prompt(multi, prompt) do
       Ecto.Multi.run(multi, :result, fn _repo, %{me: me} ->
         Operately.AI.run(me, prompt)
+      end)
+    end
+
+    def add_agent(multi, title, full_name, definition) do
+      Ecto.Multi.run(multi, :person, fn _repo, %{me: me} ->
+        Operately.Operations.AgentAdding.run(me, %{
+          title: title,
+          full_name: full_name,
+          definition: definition
+        })
       end)
     end
 
