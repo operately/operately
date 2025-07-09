@@ -8,13 +8,13 @@ defmodule Operately.People.Person do
 
     belongs_to(:manager, Operately.People.Person, foreign_key: :manager_id)
     has_many(:reports, Operately.People.Person, foreign_key: :manager_id)
-    field :peers, :any, virtual: true # loaded in a custom preload
+    has_one(:agent_def, Operately.People.AgentDef, foreign_key: :person_id)
 
-    has_one :access_group, Operately.Access.Group, foreign_key: :person_id
-    has_one :access_context, through: [:company, :access_context]
-    has_many :access_group_memberships, Operately.Access.GroupMembership, foreign_key: :person_id
+    has_one(:access_group, Operately.Access.Group, foreign_key: :person_id)
+    has_one(:access_context, through: [:company, :access_context])
+    has_many(:access_group_memberships, Operately.Access.GroupMembership, foreign_key: :person_id)
 
-    has_one :invitation, Operately.Invitations.Invitation, foreign_key: :member_id
+    has_one(:invitation, Operately.Invitations.Invitation, foreign_key: :member_id)
 
     field :full_name, :string
     field :title, :string
@@ -33,10 +33,12 @@ defmodule Operately.People.Person do
 
     field :avatar_blob_id, :binary_id
     field :has_open_invitation, :boolean, default: false
+    field :type, Ecto.Enum, values: [:human, :ai], default: :human
 
-    # if the person is loaded in an access context, this field can be set
+    # loaded via hooks
     field :access_level, :any, virtual: true
     field :permissions, :any, virtual: true
+    field :peers, :any, virtual: true
 
     timestamps()
     request_info()
@@ -66,7 +68,8 @@ defmodule Operately.People.Person do
       :suspended,
       :suspended_at,
       :avatar_blob_id,
-      :has_open_invitation
+      :has_open_invitation,
+      :type
     ])
     |> validate_required([:full_name, :company_id])
     |> foreign_key_constraint(:avatar_blob_id, name: :people_avatar_blob_id_fkey)
