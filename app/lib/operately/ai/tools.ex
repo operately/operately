@@ -66,11 +66,10 @@ defmodule Operately.AI.Tools do
         required: ["title", "message"]
       },
       function: fn args, context ->
-        content = Map.get(args, "content")
         goal = Map.get(context, :goal)
         me = Map.get(context, :person)
         title = Map.get(args, "title")
-        message = Operately.Demo.PoorMansMarkdown.from_markdown(content, %{})
+        message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{}) |> Jason.encode!()
 
         conn = %{
           assigns: %{
@@ -78,16 +77,17 @@ defmodule Operately.AI.Tools do
           }
         }
 
-        args = %{
-          goal_id: goal.id,
-          title: title,
-          message: message,
-          send_notifications_to_everyone: true,
-          subscriber_ids: []
-        }
+        args =
+          %{
+            goal_id: goal.id,
+            title: title,
+            message: message,
+            send_notifications_to_everyone: true,
+            subscriber_ids: []
+          }
 
-        OperatelyWeb.Api.Mutations.CreateGoalDiscussion.call(conn, args)
-        |> IO.inspect(label: "Posting a message")
+        {:ok, resp} = OperatelyWeb.Api.Mutations.CreateGoalDiscussion.call(conn, args)
+        Jason.encode(resp)
       end
     })
   end

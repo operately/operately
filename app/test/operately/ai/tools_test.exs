@@ -35,9 +35,9 @@ defmodule Operately.AI.ToolsTest do
       args = %{"title" => "Test Message", "message" => "This is a test message."}
 
       assert {:ok, result} = tool.function.(args, context)
-      assert message = Jason.decode!(result)
-      assert message["message"]["title"] == "Test Message"
-      assert message["message"]["body"] == "This is a test message."
+      assert {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(Jason.decode!(result)["id"])
+      assert message = Operately.Activities.get_activity(id) |> Repo.preload(:comment_thread)
+      assert message.comment_thread.title == "Test Message"
     end
   end
 end

@@ -1,5 +1,4 @@
 defmodule Operately.Demo.PoorMansMarkdown do
-
   #
   # Poor man's Markdown to ProseMirror conversion.
   #
@@ -10,11 +9,9 @@ defmodule Operately.Demo.PoorMansMarkdown do
 
   def from_markdown(markdown, resources) do
     markdown
-    |> String.split("\n\n", trim: true)   # Split into blocks (paragraphs/lists)
-    |> Enum.reduce([], fn el, acc ->
-      parse_block(el, acc, resources)     # Parse each block
-    end)
-    |> build_prosemirror_doc()            # Build the ProseMirror document
+    |> String.split("\n\n", trim: true)
+    |> Enum.reduce([], fn el, acc -> parse_block(el, acc, resources) end)
+    |> build_prosemirror_doc()
   end
 
   defp build_prosemirror_doc(content) do
@@ -28,10 +25,13 @@ defmodule Operately.Demo.PoorMansMarkdown do
     cond do
       String.starts_with?(block, "- ") ->
         acc ++ parse_bullet_list(block)
+
       String.starts_with?(block, "1. ") ->
         acc ++ parse_numbered_list(block)
+
       String.match?(block, ~r/^#+\s/) ->
         acc ++ parse_heading(block)
+
       true ->
         acc ++ parse_paragraph(block, resources)
     end
@@ -128,6 +128,7 @@ defmodule Operately.Demo.PoorMansMarkdown do
     cond do
       String.starts_with?(text, "**") && String.ends_with?(text, "**") ->
         bold_text = String.trim(text, "**")
+
         %{
           "type" => "text",
           "text" => bold_text,
@@ -140,7 +141,7 @@ defmodule Operately.Demo.PoorMansMarkdown do
         %{
           "attrs" => %{
             "id" => OperatelyWeb.Paths.person_id(person),
-            "label" => person.full_name,
+            "label" => person.full_name
           },
           "type" => "mention"
         }
