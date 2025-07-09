@@ -2,7 +2,6 @@ defmodule Operately.Operations.AgentAddingTest do
   use Operately.DataCase, async: true
 
   alias Operately.Repo
-  alias Operately.People.Person
   alias Operately.People.AgentDef
   alias Operately.Operations.AgentAdding
   alias Operately.Support.Factory
@@ -25,8 +24,8 @@ defmodule Operately.Operations.AgentAddingTest do
 
     {:ok, person} = AgentAdding.run(ctx.creator, attrs)
 
-    assert person.full_name == "Agent Smith"
-    assert person.title == "AI Assistant"
+    assert person.full_name == "Alfred Iverson"
+    assert person.title == "Chief Operating Officer (COO)"
     assert person.type == :ai
 
     agent_def = Repo.get_by!(AgentDef, person_id: person.id)

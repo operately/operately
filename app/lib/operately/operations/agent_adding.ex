@@ -64,6 +64,9 @@ defmodule Operately.Operations.AgentAdding do
 
   defp insert_binding_to_company_space(multi) do
     multi
+    |> Multi.insert(:person_access_group, fn changes ->
+      Access.Group.changeset(%{person_id: changes.person.id})
+    end)
     |> Multi.run(:binding_to_space_group, fn _, changes ->
       context = Access.get_context!(group_id: changes.company_space.id)
 
