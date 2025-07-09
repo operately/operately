@@ -22,13 +22,17 @@ defmodule Operately.People do
     Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
   end
 
+  def get_agent_def(%Person{} = person) do
+    Repo.get_by(Operately.People.AgentDef, person_id: person.id)
+  end
+
   def get_person_with_access_level(person_id, requester_id) do
     if person_id == requester_id do
       person = Repo.one!(from p in Person, where: p.id == ^person_id)
       person = Person.set_requester_access_level(person, Binding.full_access())
       {:ok, person}
     else
-      (from p in Person, as: :resource, where: p.id == ^person_id)
+      from(p in Person, as: :resource, where: p.id == ^person_id)
       |> Fetch.get_resource_with_access_level(requester_id)
     end
   end
@@ -51,11 +55,13 @@ defmodule Operately.People do
   end
 
   def is_new_account?(email) when is_binary(email) do
-    not Repo.exists?(from(a in Account,
-      join: p in assoc(a, :people),
-      where: a.email == ^email,
-      where: not p.has_open_invitation
-    ))
+    not Repo.exists?(
+      from(a in Account,
+        join: p in assoc(a, :people),
+        where: a.email == ^email,
+        where: not p.has_open_invitation
+      )
+    )
   end
 
   defdelegate insert_person(multi, callback), to: Operately.People.InsertPersonIntoOperation, as: :insert
@@ -67,7 +73,7 @@ defmodule Operately.People do
          {:ok, group} <- Access.create_group(%{person_id: person.id}),
          {:ok, _} <- Access.create_group_membership(%{group_id: group.id, person_id: person.id}),
          company_group <- Access.get_group(company_id: person.company_id, tag: :standard),
-         {:ok, _} <- Access.create_group_membership(%{ group_id: company_group.id, person_id: person.id }) do
+         {:ok, _} <- Access.create_group_membership(%{group_id: company_group.id, person_id: person.id}) do
       {:ok, person}
     else
       error -> error
@@ -213,38 +219,42 @@ defmodule Operately.People do
     alias Operately.Projects.Project
     alias Operately.Projects.Milestone
 
-    projects = Repo.all(
-      from p in Project,
-        join: a in assoc(p, :contributors),
-        where: a.person_id == ^person.id and a.role == :champion
-    )
+    projects =
+      Repo.all(
+        from p in Project,
+          join: a in assoc(p, :contributors),
+          where: a.person_id == ^person.id and a.role == :champion
+      )
 
-    milestones = Repo.all(
-      from m in Milestone,
-        where: m.project_id in ^(Enum.map(projects, & &1.id)),
-        where: not is_nil(m.deadline_at),
-        where: m.deadline_at > ^time_range_start,
-        where: m.deadline_at < ^time_range_end,
-        where: m.status == :pending
-    )
+    milestones =
+      Repo.all(
+        from m in Milestone,
+          where: m.project_id in ^Enum.map(projects, & &1.id),
+          where: not is_nil(m.deadline_at),
+          where: m.deadline_at > ^time_range_start,
+          where: m.deadline_at < ^time_range_end,
+          where: m.status == :pending
+      )
 
-    pending_status_updates = Repo.all(
-      from p in Project,
-        where: p.id in ^(Enum.map(projects, & &1.id)),
-        where: not is_nil(p.next_update_scheduled_at),
-        where: p.next_update_scheduled_at > ^time_range_start,
-        where: p.next_update_scheduled_at < ^time_range_end
-    )
+    pending_status_updates =
+      Repo.all(
+        from p in Project,
+          where: p.id in ^Enum.map(projects, & &1.id),
+          where: not is_nil(p.next_update_scheduled_at),
+          where: p.next_update_scheduled_at > ^time_range_start,
+          where: p.next_update_scheduled_at < ^time_range_end
+      )
 
-    assignments = []
-      ++ Enum.map(milestones, fn milestone ->
-        %{
-          type: "milestone",
-          due: milestone.deadline_at,
-          resource: milestone
-        }
-      end)
-        ++ Enum.map(pending_status_updates, fn project_status_update ->
+    assignments =
+      [] ++
+        Enum.map(milestones, fn milestone ->
+          %{
+            type: "milestone",
+            due: milestone.deadline_at,
+            resource: milestone
+          }
+        end) ++
+        Enum.map(pending_status_updates, fn project_status_update ->
           %{
             type: "project_status_update",
             due: project_status_update.next_update_scheduled_at,
@@ -258,5 +268,4 @@ defmodule Operately.People do
   def get_theme(%Person{} = person) do
     person.theme || "system"
   end
-
 end
