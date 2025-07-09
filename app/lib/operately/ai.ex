@@ -34,7 +34,11 @@ defmodule Operately.AI do
   # Goal Verification
   #
 
-  def verify_goal(person, goal) do
+  def run_agent(person, goal) do
+    verify_if_person_is_an_ai_agent(person)
+
+    definition = Operately.People.get_agent_def(person)
+
     prompt = """
     You are a COO of the company. Your task is to verify if the goal is well defined and actionable.
     Please review the goal and if it is not well defined, provide a detailed explanation of what is missing or needs
@@ -52,9 +56,15 @@ defmodule Operately.AI do
       })
       |> LLMChain.add_tools(Tools.get_goal_details())
       |> LLMChain.add_tools(Tools.post_goal_message())
-      |> LLMChain.add_message(Message.new_user!(prompt))
+      |> LLMChain.add_message(Message.new_user!(definition.definition))
       |> LLMChain.run(mode: :while_needs_response)
 
     ChainResult.to_string!(chain)
+  end
+
+  defp verify_if_person_is_an_ai_agent(person) do
+    if person.type != :ai do
+      raise "This function is only for AI agents"
+    end
   end
 end
