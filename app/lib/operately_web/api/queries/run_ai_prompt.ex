@@ -34,7 +34,7 @@ defmodule OperatelyWeb.Api.Queries.RunAiPrompt do
   defp check_feature_enabled(ctx) do
     company = Operately.Companies.get_company!(ctx.me.company_id)
 
-    if "ai_playground" in company.enabled_experimental_features do
+    if "ai" in company.enabled_experimental_features do
       {:ok, true}
     else
       {:error, "AI Playground feature is not enabled for this company"}
