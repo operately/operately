@@ -47,7 +47,7 @@ defmodule Operately.AI.Tools do
   - :person - The person posting the message.
   - :goal - The goal to which the message will be posted.
   """
-  def post_goal_message_fn do
+  def post_goal_message do
     Function.new!(%{
       name: "post_goal_message",
       description: "Posts a message to the goal.",

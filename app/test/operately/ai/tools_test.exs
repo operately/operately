@@ -23,4 +23,21 @@ defmodule Operately.AI.ToolsTest do
       assert goal["goal"]["name"] == ctx.goal.name
     end
   end
+
+  describe "post_goal_message/0" do
+    setup ctx do
+      Factory.add_goal(ctx, :goal, :product)
+    end
+
+    test "posts a message to the goal", ctx do
+      tool = Tools.post_goal_message()
+      context = %{person: ctx.creator, goal: ctx.goal}
+      args = %{"title" => "Test Message", "message" => "This is a test message."}
+
+      assert {:ok, result} = tool.function.(args, context)
+      assert message = Jason.decode!(result)
+      assert message["message"]["title"] == "Test Message"
+      assert message["message"]["body"] == "This is a test message."
+    end
+  end
 end

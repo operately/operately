@@ -51,7 +51,7 @@ defmodule Operately.AI do
         }
       })
       |> LLMChain.add_tools(Tools.get_goal_details())
-      # |> LLMChain.add_tools(Tools.post_goal_message())
+      |> LLMChain.add_tools(Tools.post_goal_message())
       |> LLMChain.add_message(Message.new_user!(prompt))
       |> LLMChain.run(mode: :while_needs_response)
 
