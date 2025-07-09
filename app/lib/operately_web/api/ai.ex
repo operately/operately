@@ -15,9 +15,9 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
-      |> Steps.check_if_ai_enabled()
+      |> Steps.verify_feature_enabled()
       |> Steps.run_prompt(inputs.prompt)
-      |> Steps.respond(fn _ -> %{result: ctx.result} end)
+      |> Steps.respond(fn ctx -> %{result: ctx.result} end)
     end
   end
 
@@ -25,21 +25,27 @@ defmodule OperatelyWeb.Api.Ai do
     use OperatelyWeb.Api.Helpers
 
     def start(conn) do
-      %{conn: conn, me: find_me(conn)}
+      Ecto.Multi.new()
+      |> Ecto.Multi.put(:conn, conn)
+      |> Ecto.Multi.put(:me, find_me(conn))
     end
 
-    def run_prompt(ctx, prompt) do
-      Map.put(ctx, :result, Operately.AI.run(ctx.me, prompt))
+    def run_prompt(multi, prompt) do
+      Ecto.Multi.run(multi, :result, fn _repo, %{me: me} ->
+        Operately.AI.run(me, prompt)
+      end)
     end
 
-    def check_feature_enabled(ctx) do
-      company = Operately.Companies.get_company!(ctx.me.company_id)
+    def verify_feature_enabled(ctx) do
+      Ecto.Multi.run(ctx, :feature_enabled?, fn _repo, _changes ->
+        company = Operately.Companies.get_company!(ctx.me.company_id)
 
-      if "ai" in company.enabled_experimental_features do
-        {:ok, true}
-      else
-        {:error, "AI Playground feature is not enabled for this company"}
-      end
+        if "ai" in company.enabled_experimental_features do
+          {:ok, true}
+        else
+          {:error, "AI is not enabled for this company"}
+        end
+      end)
     end
 
     def respond(result, ok_callback, error_callback \\ &handle_error/1) do
