@@ -32,6 +32,7 @@ Signals.init();
 if (window.appConfig.sentry.enabled) {
   Sentry.init({
     dsn: window.appConfig.sentry.dsn,
+    release: window.appConfig.version,
     integrations: [
       new Sentry.BrowserTracing({
         routingInstrumentation: Sentry.reactRouterV6Instrumentation(
