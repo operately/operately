@@ -11,7 +11,7 @@ import { usePaths } from "../../routes/paths";
 export default { name: "CompanyManageAiAgentsPage", loader, Page } as PageModule;
 
 interface LoaderResult {
-  agent: Person[];
+  agent: Person;
 }
 
 async function loader({ params }): Promise<LoaderResult> {
