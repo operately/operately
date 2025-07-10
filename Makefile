@@ -234,7 +234,7 @@ test.elixir.warnings:
 DOCKER_IMAGE_TAG = $(shell git rev-parse --short HEAD)
 
 inject.rel.version:
-	sed -i '' -E 's/dev-version/$(shell date +%Y-%m-%d)-$(DOCKER_IMAGE_TAG)/g' app/lib/operately.ex
+	sed -i -E 's/dev-version/$(shell date +%Y-%m-%d)-$(DOCKER_IMAGE_TAG)/g' app/lib/operately.ex
 
 docker.build:
 	$(MAKE) inject.rel.version
