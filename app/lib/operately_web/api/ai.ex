@@ -47,7 +47,6 @@ defmodule OperatelyWeb.Api.Ai do
     inputs do
       field :title, :string
       field :full_name, :string
-      field :definition, :string
     end
 
     outputs do
@@ -58,7 +57,7 @@ defmodule OperatelyWeb.Api.Ai do
       conn
       |> Steps.start()
       |> Steps.verify_feature_enabled()
-      |> Steps.add_agent(inputs.title, inputs.full_name, inputs.definition)
+      |> Steps.add_agent(inputs.title, inputs.full_name)
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -85,13 +84,9 @@ defmodule OperatelyWeb.Api.Ai do
       end)
     end
 
-    def add_agent(multi, title, full_name, definition) do
+    def add_agent(multi, title, full_name) do
       Ecto.Multi.run(multi, :person, fn _repo, %{me: me} ->
-        Operately.Operations.AgentAdding.run(me, %{
-          title: title,
-          full_name: full_name,
-          definition: definition
-        })
+        Operately.Operations.AgentAdding.run(me, %{title: title, full_name: full_name})
       end)
     end
 
