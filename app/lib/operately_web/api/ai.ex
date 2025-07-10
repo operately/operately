@@ -22,7 +22,10 @@ defmodule OperatelyWeb.Api.Ai do
   end
 
   defmodule ListAgents do
-    use TurboConnect.Mutation
+    use TurboConnect.Query
+
+    inputs do
+    end
 
     outputs do
       field :agents, list_of(:person)
@@ -60,12 +63,13 @@ defmodule OperatelyWeb.Api.Ai do
   end
 
   defmodule Steps do
+    require Logger
     use OperatelyWeb.Api.Helpers
 
     def start(conn) do
       Ecto.Multi.new()
       |> Ecto.Multi.put(:conn, conn)
-      |> Ecto.Multi.put(:me, find_me(conn))
+      |> Ecto.Multi.put(:me, conn.assigns.current_person)
     end
 
     def list_agents(multi) do
@@ -90,20 +94,20 @@ defmodule OperatelyWeb.Api.Ai do
       end)
     end
 
-    def verify_feature_enabled(ctx) do
-      Ecto.Multi.run(ctx, :feature_enabled?, fn _repo, _changes ->
-        company = Operately.Companies.get_company!(ctx.me.company_id)
+    def verify_feature_enabled(multi) do
+      Ecto.Multi.run(multi, :feature_enabled?, fn _repo, %{me: me} ->
+        company = Operately.Companies.get_company!(me.company_id)
 
         if "ai" in company.enabled_experimental_features do
           {:ok, true}
         else
-          {:error, "AI is not enabled for this company"}
+          {:error, :not_found}
         end
       end)
     end
 
-    def respond(result, ok_callback, error_callback \\ &handle_error/1) do
-      case result do
+    def respond(multi, ok_callback, error_callback \\ &handle_error/1) do
+      case Operately.Repo.transaction(multi) do
         {:ok, changes} ->
           {:ok, ok_callback.(changes)}
 

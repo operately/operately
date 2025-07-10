@@ -26,6 +26,7 @@ defmodule Operately.Support.Factory do
   defdelegate set_person_manager(ctx, testid, manager_key), to: Factory.Companies
   defdelegate suspend_company_member(ctx, testid, opts \\ []), to: Factory.Companies
   defdelegate enable_feature(ctx, feature_name), to: Factory.Companies
+  defdelegate disable_feature(ctx, feature_name), to: Factory.Companies
 
   # spaces
   defdelegate add_space(ctx, testid, opts \\ []), to: Factory.Spaces

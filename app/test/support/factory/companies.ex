@@ -10,7 +10,7 @@ defmodule Operately.Support.Factory.Companies do
       company_name: name,
       mission: mission,
       title: creator_title,
-      trusted_email_domains: [],
+      trusted_email_domains: []
     }
 
     {:ok, company} = Operately.Companies.create_company(attrs, account)
@@ -21,10 +21,11 @@ defmodule Operately.Support.Factory.Companies do
   def add_company_member(ctx, testid, opts \\ []) do
     name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
 
-    attrs = Enum.into(opts, %{
-      company_id: ctx.company.id,
-      full_name: name,
-    })
+    attrs =
+      Enum.into(opts, %{
+        company_id: ctx.company.id,
+        full_name: name
+      })
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
 
@@ -36,7 +37,7 @@ defmodule Operately.Support.Factory.Companies do
 
     attrs = %{
       company_id: ctx.company.id,
-      full_name: name,
+      full_name: name
     }
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
@@ -51,7 +52,7 @@ defmodule Operately.Support.Factory.Companies do
 
     attrs = %{
       company_id: ctx.company.id,
-      full_name: name,
+      full_name: name
     }
 
     person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
@@ -80,19 +81,24 @@ defmodule Operately.Support.Factory.Companies do
   def suspend_company_member(ctx, key, _opts \\ []) do
     person = Map.fetch!(ctx, key)
 
-    {:ok, person} = Operately.People.update_person(person, %{
-      suspended: true,
-      suspended_at: DateTime.utc_now(),
-    })
+    {:ok, person} =
+      Operately.People.update_person(person, %{
+        suspended: true,
+        suspended_at: DateTime.utc_now()
+      })
 
     Map.put(ctx, key, person)
   end
 
   def enable_feature(ctx, feature_name) do
     company = Map.fetch!(ctx, :company)
-
     {:ok, _} = Operately.Companies.enable_experimental_feature(company, feature_name)
+    ctx
+  end
 
+  def disable_feature(ctx, feature_name) do
+    company = Map.fetch!(ctx, :company)
+    {:ok, _} = Operately.Companies.disable_experimental_feature(company, feature_name)
     ctx
   end
 end
