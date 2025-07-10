@@ -96,8 +96,16 @@ export class Paths {
     return this.createCompanyPath(["admin", "manage-people"]);
   }
 
+  companyAiAgentsPath() {
+    return this.createCompanyPath(["admin", "manage-ai-agents"]);
+  }
+
   companyManageAiAgentsPath() {
     return this.createCompanyPath(["admin", "manage-ai-agents"]);
+  }
+
+  companyAgentPath(agentId: string) {
+    return this.createCompanyPath(["admin", "manage-ai-agents", agentId]);
   }
 
   companyManageAdminsPath() {

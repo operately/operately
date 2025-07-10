@@ -46,6 +46,7 @@ defmodule OperatelyWeb.Api do
   namespace(:ai) do
     query(:prompt, OperatelyWeb.Api.Ai.Prompt)
     query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
+    query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
     mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
   end
 
