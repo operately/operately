@@ -7,6 +7,7 @@ import AccountAppearancePage from "./AccountAppearancePage";
 import AccountChangePasswordPage from "./AccountChangePasswordPage";
 import AccountPage from "./AccountPage";
 import AccountSecurityPage from "./AccountSecurityPage";
+import AgentPage from "./AgentPage";
 import AiPlaygroundPage from "./AiPlaygroundPage";
 import CompanyAdminAddPeoplePage from "./CompanyAdminAddPeoplePage";
 import CompanyAdminManageAdminsPage from "./CompanyAdminManageAdminsPage";
@@ -105,6 +106,7 @@ export default {
   AccountChangePasswordPage,
   AccountPage,
   AccountSecurityPage,
+  AgentPage,
   AiPlaygroundPage,
   CompanyAdminAddPeoplePage,
   CompanyAdminManageAdminsPage,
