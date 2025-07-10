@@ -33,6 +33,10 @@ defmodule OperatelyWeb.Api.AiTest do
   end
 
   describe "ListAgents mutation" do
+    setup ctx do
+      Factory.add_company_agent(ctx, :coo, title: "Agent 1", full_name: "Agent One", definition: "Definition 1")
+    end
+
     test "requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:ai, :list_agents], %{})
     end
@@ -42,6 +46,7 @@ defmodule OperatelyWeb.Api.AiTest do
 
       assert {200, res} = query(ctx.conn, [:ai, :list_agents], %{})
       assert is_list(res.agents)
+      assert length(res.agents) == 1
     end
   end
 

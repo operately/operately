@@ -23,6 +23,7 @@ defmodule OperatelyWeb.Api.Ai do
 
   defmodule ListAgents do
     use TurboConnect.Query
+    alias OperatelyWeb.Api.Serializer
 
     inputs do
     end
@@ -36,7 +37,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Steps.list_agents()
-      |> Steps.respond(fn -> %{success: true} end)
+      |> Steps.respond(fn res -> %{agents: Serializer.serialize(res.agents, level: :full)} end)
     end
   end
 
@@ -58,7 +59,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Steps.add_agent(inputs.title, inputs.full_name, inputs.definition)
-      |> Steps.respond(fn -> %{success: true} end)
+      |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
 
@@ -74,7 +75,7 @@ defmodule OperatelyWeb.Api.Ai do
 
     def list_agents(multi) do
       Ecto.Multi.run(multi, :agents, fn _repo, %{me: me} ->
-        Operately.People.list_agents(me.company_id)
+        {:ok, Operately.People.list_agents(me.company_id)}
       end)
     end
 
