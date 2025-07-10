@@ -17,11 +17,13 @@ export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./WorkMap";
 
+export { InfoCallout } from "./Callouts";
 export { DateField } from "./DateField";
 export { FormattedTime } from "./FormattedTime";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
 export { MiniWorkMap } from "./MiniWorkMap";
+export { Modal } from "./Modal";
 export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
