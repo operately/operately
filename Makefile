@@ -233,8 +233,11 @@ test.elixir.warnings:
 
 DOCKER_IMAGE_TAG = $(shell git rev-parse --short HEAD)
 
+inject.rel.version:
+	sed -i '' -E 's/dev-version/$(shell date +%Y-%m-%d)-$(DOCKER_IMAGE_TAG)/g' app/lib/operately.ex
+
 docker.build:
-	echo "$(date +%Y-%m-%d)-${SEMAPHORE_COMMIT_SHA:-$(git rev-parse --short HEAD)}" > app/rel/version
+	$(MAKE) inject.rel.version
 	docker build -f Dockerfile.prod -t operately/operately:latest -t operately/operately:$(DOCKER_IMAGE_TAG) .
 
 docker.push:
