@@ -53,6 +53,10 @@ function usePageState() {
     }
   };
 
+  const createAgentPath = (agentId: string) => {
+    return paths.companyAgentPath(agentId);
+  };
+
   return {
     agents,
     companyAdminPath,
@@ -60,6 +64,7 @@ function usePageState() {
     closeAddNewModal,
     openAddNewModal,
     createNewAgent,
+    createAgentPath,
   };
 }
 
@@ -100,7 +105,7 @@ function Page() {
               <DivLink
                 key={agent.id}
                 className="block first:border-t border-b border-stroke-base py-3 px-1 hover:bg-surface-highlight"
-                to={`/company/ai-agents/${agent.id}`}
+                to={state.createAgentPath(agent.id)}
               >
                 <AvatarWithName size={40} person={agent} title={agent.title} />
               </DivLink>
