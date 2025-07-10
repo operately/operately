@@ -13,13 +13,7 @@ defmodule Operately.Operations.AgentAddingTest do
   test "adding an AI agent", ctx do
     attrs = %{
       title: "Chief Operating Officer (COO)",
-      full_name: "Alfred Iverson",
-      definition: """
-      You are a COO of the company. Your task is to verify if the goal is well defined and actionable.
-      Please review the goal and if it is not well defined, provide a detailed explanation of what is missing or needs
-      to be changed. The feedback should be actionable and specific. Submit the feedback as a markdown message
-      to the goal.
-      """
+      full_name: "Alfred Iverson"
     }
 
     {:ok, person} = AgentAdding.run(ctx.creator, attrs)
@@ -28,7 +22,6 @@ defmodule Operately.Operations.AgentAddingTest do
     assert person.title == "Chief Operating Officer (COO)"
     assert person.type == :ai
 
-    agent_def = Repo.get_by!(AgentDef, person_id: person.id)
-    assert agent_def.definition == attrs.definition
+    assert Repo.get_by!(AgentDef, person_id: person.id)
   end
 end

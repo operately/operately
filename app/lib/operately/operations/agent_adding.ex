@@ -3,7 +3,7 @@ defmodule Operately.Operations.AgentAdding do
   alias Operately.{Access, Repo}
 
   defmodule Attrs do
-    defstruct [:title, :full_name, :definition]
+    defstruct [:title, :full_name]
   end
 
   def run(author, attrs) do
@@ -13,7 +13,7 @@ defmodule Operately.Operations.AgentAdding do
     |> load_company(author)
     |> load_company_space(author)
     |> insert_person(attrs)
-    |> insert_definition(attrs)
+    |> insert_definition()
     |> insert_membership_with_company_space_group()
     |> insert_binding_to_company_space()
     |> Repo.transaction()
@@ -40,11 +40,11 @@ defmodule Operately.Operations.AgentAdding do
     end)
   end
 
-  defp insert_definition(multi, attrs) do
+  defp insert_definition(multi) do
     Multi.insert(multi, :definition, fn %{person: person} ->
       Operately.People.AgentDef.changeset(%{
         person_id: person.id,
-        definition: attrs.definition
+        definition: ""
       })
     end)
   end
