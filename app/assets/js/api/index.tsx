@@ -2429,7 +2429,6 @@ export interface AddSpaceMembersResult {}
 export interface AiAddAgentInput {
   title: string;
   fullName: string;
-  definition: string;
 }
 
 export interface AiAddAgentResult {
