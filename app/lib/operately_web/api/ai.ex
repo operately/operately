@@ -38,7 +38,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Steps.get_agent(inputs.id)
-      |> Steps.respond(fn res -> %{person: Serializer.serialize(res.agent, level: :full)} end)
+      |> Steps.respond(fn res -> %{agent: Serializer.serialize(res.agent, level: :full)} end)
     end
   end
 
@@ -103,6 +103,10 @@ defmodule OperatelyWeb.Api.Ai do
             preload: [:agent_def]
           )
         )
+        |> case do
+          nil -> {:error, :not_found}
+          agent -> {:ok, agent}
+        end
       end)
     end
 

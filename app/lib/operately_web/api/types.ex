@@ -1201,6 +1201,11 @@ defmodule OperatelyWeb.Api.Types do
     field? :invitation, :invitation, null: true
     field? :show_dev_bar, :boolean, null: true
     field? :permissions, :person_permissions, null: true
+    field? :agent_def, :agent_def
+  end
+
+  object :agent_def do
+    field :definition, :string
   end
 
   object :person_permissions do
