@@ -17,7 +17,8 @@ defmodule Operately.Companies do
     Repo.all(
       from c in Company,
         join: p in assoc(c, :people),
-        where: p.account_id == ^account.id)
+        where: p.account_id == ^account.id
+    )
   end
 
   def count_companies do
@@ -39,11 +40,7 @@ defmodule Operately.Companies do
   def get_company_by_name(name), do: Repo.get_by(Company, name: name)
 
   def get_company_space!(company_id) do
-    from(c in Company,
-      join: g in Operately.Groups.Group, on: g.id == c.company_space_id,
-      where: c.id == ^company_id,
-      select: g
-    )
+    from(c in Company, join: g in Operately.Groups.Group, on: g.id == c.company_space_id, where: c.id == ^company_id, select: g)
     |> Repo.one!()
   end
 
@@ -73,7 +70,7 @@ defmodule Operately.Companies do
 
   alias Operately.Operations.{
     CompanyAdding,
-    CompanyAdminAdding, 
+    CompanyAdminAdding,
     CompanyAdminRemoving,
     CompanyOwnersAdding,
     CompanyOwnerRemoving
@@ -115,6 +112,7 @@ defmodule Operately.Companies do
   end
 
   def enable_experimental_feature(company, feature) do
+    company = Repo.reload(company)
     features = [feature | company.enabled_experimental_features] |> Enum.uniq()
 
     company
@@ -122,4 +120,12 @@ defmodule Operately.Companies do
     |> Repo.update()
   end
 
+  def disable_experimental_feature(company, feature) do
+    company = Repo.reload(company)
+    features = List.delete(company.enabled_experimental_features, feature)
+
+    company
+    |> Company.changeset(%{enabled_experimental_features: features})
+    |> Repo.update()
+  end
 end

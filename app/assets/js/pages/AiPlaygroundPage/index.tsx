@@ -19,7 +19,7 @@ async function loader({ params }): Promise<LoaderResult> {
     includePermissions: true,
   }).then((d) => d.company!);
 
-  if (Companies.hasFeature(company, "ai_playground")) {
+  if (Companies.hasFeature(company, "ai")) {
     return {};
   } else {
     throw redirect(paths.homePath());

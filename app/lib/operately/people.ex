@@ -14,6 +14,10 @@ defmodule Operately.People do
     Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
   end
 
+  def list_agents(company_id) do
+    Repo.all(from p in Person, where: p.company_id == ^company_id and p.type == :ai and not p.suspended)
+  end
+
   def get_account!(id), do: Repo.get!(Account, id)
   def get_person(id), do: Repo.get(Person, id)
   def get_person!(id), do: Repo.get!(Person, id)
