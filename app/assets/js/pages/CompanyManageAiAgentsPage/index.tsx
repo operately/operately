@@ -1,10 +1,15 @@
-import * as Api from "@/api";
+import Api, { Person } from "@/api";
+
 import * as Pages from "@/components/Pages";
 import * as React from "react";
 import * as Turboui from "turboui";
 
+import { PageModule } from "@/routes/types";
+
+export default { name: "CompanyManageAiAgentsPage", loader, Page } as PageModule;
+
 interface LoaderResult {
-  agents: Api.Ai.Agent[];
+  agents: Person[];
 }
 
 export async function loader({}): Promise<LoaderResult> {
@@ -17,7 +22,7 @@ export function Page() {
   const { agents } = Pages.useLoadedData<LoaderResult>();
 
   return (
-    <Turboui.Page title="Manage AI Agents">
+    <Turboui.PageNew title="Manage AI Agents">
       <div className="text-content-accent text-3xl font-extrabold">Manage AI Agents</div>
 
       {agents.length === 0 ? (
@@ -28,11 +33,11 @@ export function Page() {
         <div className="mt-4">
           {agents.map((agent) => (
             <div key={agent.id} className="mb-2">
-              <span className="text-content-primary font-bold">{agent.name}</span> - {agent.description}
+              <span className="text-content-primary font-bold">{agent.fullName}</span> - {agent.title}
             </div>
           ))}
         </div>
       )}
-    </Turboui.Page>
+    </Turboui.PageNew>
   );
 }
