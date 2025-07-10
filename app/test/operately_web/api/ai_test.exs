@@ -62,4 +62,28 @@ defmodule OperatelyWeb.Api.AiTest do
       assert res.success == true
     end
   end
+
+  describe "get_agent query" do
+    setup ctx do
+      Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
+    end
+
+    test "requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:ai, :get_agent], %{id: Ecto.UUID.generate()})
+    end
+
+    test "return 404 if agent not found", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:ai, :get_agent], %{id: Ecto.UUID.generate()})
+    end
+
+    test "returns agent details for existing agent", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:ai, :get_agent], %{id: OperatelyWeb.Paths.person_id(ctx.agent)})
+      assert res.agent.title == "Agent 1"
+      assert res.agent.full_name == "Agent One"
+    end
+  end
 end

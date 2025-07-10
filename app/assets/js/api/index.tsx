@@ -1712,6 +1712,14 @@ export type WorkMapItemStatus =
 
 export type WorkMapItemType = "project" | "goal";
 
+export interface AiGetAgentInput {
+  id: Id;
+}
+
+export interface AiGetAgentResult {
+  agent: Person;
+}
+
 export interface AiListAgentsInput {}
 
 export interface AiListAgentsResult {
@@ -4019,6 +4027,10 @@ class ApiNamespaceRoot {
 
 class ApiNamespaceAi {
   constructor(private client: ApiClient) {}
+
+  async getAgent(input: AiGetAgentInput): Promise<AiGetAgentResult> {
+    return this.client.get("/ai/get_agent", input);
+  }
 
   async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
     return this.client.get("/ai/list_agents", input);
@@ -6443,6 +6455,10 @@ export default {
     listAgents: (input: AiListAgentsInput) => defaultApiClient.apiNamespaceAi.listAgents(input),
     useListAgents: (input: AiListAgentsInput) =>
       useQuery<AiListAgentsResult>(() => defaultApiClient.apiNamespaceAi.listAgents(input)),
+
+    getAgent: (input: AiGetAgentInput) => defaultApiClient.apiNamespaceAi.getAgent(input),
+    useGetAgent: (input: AiGetAgentInput) =>
+      useQuery<AiGetAgentResult>(() => defaultApiClient.apiNamespaceAi.getAgent(input)),
 
     prompt: (input: AiPromptInput) => defaultApiClient.apiNamespaceAi.prompt(input),
     usePrompt: (input: AiPromptInput) => useQuery<AiPromptResult>(() => defaultApiClient.apiNamespaceAi.prompt(input)),
