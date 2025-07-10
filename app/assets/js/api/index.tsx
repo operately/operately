@@ -1712,6 +1712,20 @@ export type WorkMapItemStatus =
 
 export type WorkMapItemType = "project" | "goal";
 
+export interface AiListAgentsInput {}
+
+export interface AiListAgentsResult {
+  agents: Person[];
+}
+
+export interface AiPromptInput {
+  prompt: string;
+}
+
+export interface AiPromptResult {
+  result: string;
+}
+
 export interface GetAccountInput {}
 
 export interface GetAccountResult {
@@ -2252,14 +2266,6 @@ export interface ListSpaceToolsResult {
   tools?: SpaceTools | null;
 }
 
-export interface RunAiPromptInput {
-  prompt?: string | null;
-}
-
-export interface RunAiPromptResult {
-  result?: string | null;
-}
-
 export interface SearchPeopleInput {
   query?: string | null;
   ignoredIds?: string[] | null;
@@ -2419,6 +2425,16 @@ export interface AddSpaceMembersInput {
 }
 
 export interface AddSpaceMembersResult {}
+
+export interface AiAddAgentInput {
+  title: string;
+  fullName: string;
+  definition: string;
+}
+
+export interface AiAddAgentResult {
+  success: boolean;
+}
 
 export interface ArchiveGoalInput {
   goalId?: string | null;
@@ -3569,10 +3585,6 @@ class ApiNamespaceRoot {
     return this.client.get("/list_space_tools", input);
   }
 
-  async runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
-    return this.client.get("/run_ai_prompt", input);
-  }
-
   async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
     return this.client.get("/search_people", input);
   }
@@ -4006,6 +4018,22 @@ class ApiNamespaceRoot {
   }
 }
 
+class ApiNamespaceAi {
+  constructor(private client: ApiClient) {}
+
+  async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
+    return this.client.get("/ai/list_agents", input);
+  }
+
+  async prompt(input: AiPromptInput): Promise<AiPromptResult> {
+    return this.client.get("/ai/prompt", input);
+  }
+
+  async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
+    return this.client.post("/ai/add_agent", input);
+  }
+}
+
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
 
@@ -4086,11 +4114,13 @@ export class ApiClient {
   private basePath: string;
   private headers: any;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceAi: ApiNamespaceAi;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceGoals: ApiNamespaceGoals;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceAi = new ApiNamespaceAi(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
   }
@@ -4297,10 +4327,6 @@ export class ApiClient {
 
   listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
     return this.apiNamespaceRoot.listSpaceTools(input);
-  }
-
-  runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
-    return this.apiNamespaceRoot.runAiPrompt(input);
   }
 
   searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
@@ -4864,9 +4890,6 @@ export async function listResourceHubNodes(input: ListResourceHubNodesInput): Pr
 }
 export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
   return defaultApiClient.listSpaceTools(input);
-}
-export async function runAiPrompt(input: RunAiPromptInput): Promise<RunAiPromptResult> {
-  return defaultApiClient.runAiPrompt(input);
 }
 export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
   return defaultApiClient.searchPeople(input);
@@ -5433,10 +5456,6 @@ export function useListResourceHubNodes(
 
 export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
   return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input));
-}
-
-export function useRunAiPrompt(input: RunAiPromptInput): UseQueryHookResult<RunAiPromptResult> {
-  return useQuery<RunAiPromptResult>(() => defaultApiClient.runAiPrompt(input));
 }
 
 export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
@@ -6212,8 +6231,6 @@ export default {
   useListResourceHubNodes,
   listSpaceTools,
   useListSpaceTools,
-  runAiPrompt,
-  useRunAiPrompt,
   searchPeople,
   useSearchPeople,
   searchPotentialSpaceMembers,
@@ -6422,6 +6439,18 @@ export default {
   useUpdateTask,
   updateTaskStatus,
   useUpdateTaskStatus,
+
+  ai: {
+    listAgents: (input: AiListAgentsInput) => defaultApiClient.apiNamespaceAi.listAgents(input),
+    useListAgents: (input: AiListAgentsInput) =>
+      useQuery<AiListAgentsResult>(() => defaultApiClient.apiNamespaceAi.listAgents(input)),
+
+    prompt: (input: AiPromptInput) => defaultApiClient.apiNamespaceAi.prompt(input),
+    usePrompt: (input: AiPromptInput) => useQuery<AiPromptResult>(() => defaultApiClient.apiNamespaceAi.prompt(input)),
+
+    addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
+    useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
+  },
 
   spaces: {
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
