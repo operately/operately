@@ -52,12 +52,12 @@ defmodule OperatelyWeb.Api.AiTest do
 
   describe "add_agent mutation" do
     test "requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:ai, :add_agent], %{title: "Agent", full_name: "Agent Name", definition: "def"})
+      assert {401, _} = mutation(ctx.conn, [:ai, :add_agent], %{title: "Agent", full_name: "Agent Name"})
     end
 
     test "adds agent for authenticated user", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
-      params = %{title: "Agent", full_name: "Agent Name", definition: "def"}
+      params = %{title: "Agent", full_name: "Agent Name"}
       assert {200, res} = mutation(ctx.conn, [:ai, :add_agent], params)
       assert res.success == true
     end
