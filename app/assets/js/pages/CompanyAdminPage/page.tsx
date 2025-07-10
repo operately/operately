@@ -1,7 +1,7 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import { IconUsers, IconUser, IconLetterCase, IconShieldLock, IconLock } from "turboui";
 import * as React from "react";
+import { IconLetterCase, IconLock, IconRobotFace, IconShieldLock, IconUser, IconUsers } from "turboui";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { includesId } from "@/routes/paths";
@@ -12,6 +12,7 @@ import { NavigationBackToLobby } from "./NavigationBackToLobby";
 import { OptionsMenuItem } from "./OptionsMenu";
 
 import { usePaths } from "@/routes/paths";
+import { hasFeature } from "../../models/companies";
 export function Page() {
   const paths = usePaths();
   const { company } = useLoadedData();
@@ -50,7 +51,7 @@ export function Page() {
 
 function AdminsMenu() {
   const paths = usePaths();
-  const { adminIds, ownerIds } = useLoadedData();
+  const { adminIds, ownerIds, company } = useLoadedData();
 
   const me = useMe();
   const amIAdmin = includesId(adminIds, me!.id);
@@ -62,6 +63,7 @@ function AdminsMenu() {
   }
 
   const managePeople = paths.companyManagePeoplePath();
+  const manageAgents = paths.companyManageAiAgentsPath();
   const renameCompanyPath = paths.companyRenamePath();
   const restorePath = paths.companyAdminRestoreSuspendedPeoplePath();
 
@@ -70,12 +72,11 @@ function AdminsMenu() {
       <div>
         <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Manage team members" />
 
-        <OptionsMenuItem
-          linkTo={restorePath}
-          icon={IconUser}
-          title="Restore access for deactivated team members"
-        />
+        {hasFeature(company, "ai") && (
+          <OptionsMenuItem linkTo={manageAgents} icon={IconRobotFace} title="Manage AI agents" />
+        )}
 
+        <OptionsMenuItem linkTo={restorePath} icon={IconUser} title="Restore access for deactivated team members" />
         <OptionsMenuItem linkTo={renameCompanyPath} icon={IconLetterCase} title="Rename the company" />
       </div>
     </Paper.Section>

@@ -1,4 +1,5 @@
-import { runAiPrompt } from "@/api";
+import Api from "@/api";
+
 import * as Companies from "@/models/companies";
 import * as React from "react";
 import * as Turboui from "turboui";
@@ -19,7 +20,7 @@ async function loader({ params }): Promise<LoaderResult> {
     includePermissions: true,
   }).then((d) => d.company!);
 
-  if (Companies.hasFeature(company, "ai_playground")) {
+  if (Companies.hasFeature(company, "ai")) {
     return {};
   } else {
     throw redirect(paths.homePath());
@@ -43,7 +44,7 @@ function Page() {
   const handleRunPrompt = async () => {
     try {
       setWorking(true);
-      const result = await runAiPrompt({ prompt });
+      const result = await Api.ai.prompt({ prompt });
       setResponse(result.result!);
     } catch (error) {
       alert("Error running prompt: " + error.message);
