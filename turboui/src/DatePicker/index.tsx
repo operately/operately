@@ -10,7 +10,7 @@ import DatePreview from "./components/DatePreview";
 import ActionButtons from "./components/ActionButtons";
 
 const DATE_TYPES = [
-  { value: "exact" as const, label: "Exact Date" },
+  { value: "exact" as const, label: "Day" },
   { value: "month" as const, label: "Month" },
   { value: "quarter" as const, label: "Quarter" },
   { value: "year" as const, label: "Year" },
