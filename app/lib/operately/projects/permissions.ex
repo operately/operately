@@ -25,23 +25,20 @@ defmodule Operately.Projects.Permissions do
     :can_edit_task,
     :can_edit_timeline,
     :can_pause,
-    :can_view,
+    :can_view
   ]
 
   def calculate(access_level) when is_integer(access_level) do
     %__MODULE__{
       can_view: access_level >= Binding.view_access(),
-
       can_comment_on_milestone: access_level >= Binding.comment_access(),
       can_comment_on_check_in: access_level >= Binding.comment_access(),
       can_comment_on_retrospective: access_level >= Binding.comment_access(),
-
       can_complete_milestone: access_level >= Binding.edit_access(),
       can_reopen_milestone: access_level >= Binding.edit_access(),
       can_create_milestone: access_level >= Binding.edit_access(),
       can_edit_milestone: access_level >= Binding.edit_access(),
       can_delete_milestone: access_level >= Binding.edit_access(),
-
       can_edit_check_in: access_level >= Binding.edit_access(),
       can_edit_description: access_level >= Binding.edit_access(),
       can_edit_timeline: access_level >= Binding.edit_access(),
@@ -50,15 +47,13 @@ defmodule Operately.Projects.Permissions do
       can_edit_name: access_level >= Binding.edit_access(),
       can_edit_space: access_level >= Binding.edit_access(),
       can_edit_retrospective: access_level >= Binding.edit_access(),
-
       can_close: access_level >= Binding.edit_access(),
       can_pause: access_level >= Binding.edit_access(),
       can_check_in: access_level >= Binding.edit_access(),
       can_edit_task: access_level >= Binding.edit_access(),
       can_acknowledge_check_in: access_level >= Binding.edit_access(),
-
-      can_edit_contributors: access_level >= Binding.full_access(),
-      can_edit_permissions: access_level >= Binding.full_access(),
+      can_edit_contributors: access_level >= Binding.edit_access(),
+      can_edit_permissions: access_level >= Binding.edit_access()
     }
   end
 
