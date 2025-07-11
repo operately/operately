@@ -86,4 +86,32 @@ defmodule OperatelyWeb.Api.AiTest do
       assert res.agent.full_name == "Agent One"
     end
   end
+
+  describe "edit_agent_definition mutation" do
+    setup ctx do
+      Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
+    end
+
+    test "requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:ai, :edit_agent_definition], %{id: Ecto.UUID.generate(), definition: "New Definition"})
+    end
+
+    test "returns 404 if agent not found", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:ai, :edit_agent_definition], %{id: Ecto.UUID.generate(), definition: "New Definition"})
+    end
+
+    test "updates agent definition for existing agent", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      agent_id = OperatelyWeb.Paths.person_id(ctx.agent)
+
+      assert {200, res} = mutation(ctx.conn, [:ai, :edit_agent_definition], %{id: agent_id, definition: "New Definition"})
+      assert res.success == true
+
+      # Verify the agent was updated
+      assert {200, res} = query(ctx.conn, [:ai, :get_agent], %{id: agent_id})
+      assert res.agent.agent_def.definition == "New Definition"
+    end
+  end
 end

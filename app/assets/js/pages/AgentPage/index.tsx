@@ -33,7 +33,7 @@ function usePageState() {
 
     try {
       setDefinition(newDefinition);
-      await Api.ai.updateAgentDefinition({ id: agent.id, definition: newDefinition });
+      await Api.ai.editAgentDefinition({ id: agent.id, definition: newDefinition });
     } catch (error) {
       setDefinition(oldDefinition);
       showErrorToast("Network error", "Reverting to previous definition");
