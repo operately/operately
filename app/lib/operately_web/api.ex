@@ -48,6 +48,7 @@ defmodule OperatelyWeb.Api do
     query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
     query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
     mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
+    mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
   end
 
   query(:get_account, Q.GetAccount)

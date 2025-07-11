@@ -83,6 +83,32 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule EditAgentDefinition do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :id, :id
+      field :definition, :string
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Steps.get_agent(inputs.id)
+      |> Ecto.Multi.run(:update_agent_def, fn _repo, %{agent: agent} ->
+        agent.agent_def
+        |> Operately.People.AgentDef.changeset(%{definition: inputs.definition})
+        |> Operately.Repo.update()
+      end)
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule Steps do
     require Logger
     use OperatelyWeb.Api.Helpers
