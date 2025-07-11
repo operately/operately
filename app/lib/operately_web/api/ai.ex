@@ -125,7 +125,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.verify_feature_enabled()
       |> Steps.get_agent(inputs.id)
       |> Ecto.Multi.run(:run_agent, fn _repo, %{agent: agent} ->
-        Operately.AI.run_agent(agent)
+        {:ok, Operately.AI.run_agent(agent)}
       end)
       |> Steps.respond(fn _res -> %{} end)
     end
