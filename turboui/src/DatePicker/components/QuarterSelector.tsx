@@ -17,19 +17,18 @@ export const QuarterSelector: React.FC<QuarterSelectorProps> = ({
       <label className="block text-xs font-medium text-gray-700 mb-1.5">
         Quarter
       </label>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="flex space-x-2">
         {quarters.map(quarter => (
           <button
             key={quarter.value}
             onClick={() => setSelectedPeriod(quarter.value)}
-            className={`p-2 rounded-lg border text-left transition-colors ${
+            className={`px-3 py-1.5 rounded-lg border text-center transition-colors flex-1 ${
               selectedPeriod === quarter.value
                 ? 'border-blue-500 bg-blue-50 text-blue-700'
                 : 'border-gray-300 hover:border-gray-400'
             }`}
           >
             <div className="font-medium text-xs">{quarter.label}</div>
-            <div className="text-xs text-gray-500">{quarter.range}</div>
           </button>
         ))}
       </div>

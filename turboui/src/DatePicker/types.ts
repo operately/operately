@@ -14,7 +14,6 @@ export interface MonthOption {
 export interface PeriodOption {
   value: number;
   label: string;
-  range: string;
 }
 
 export interface DatePickerProps {

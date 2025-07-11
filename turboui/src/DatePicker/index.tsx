@@ -17,10 +17,10 @@ const DATE_TYPES = [
 ];
 
 const QUARTERS = [
-  { value: 1, label: "Q1", range: "Jan 01 - Mar 31" },
-  { value: 2, label: "Q2", range: "Apr 01 - Jun 30" },
-  { value: 3, label: "Q3", range: "Jul 01 - Sep 30" },
-  { value: 4, label: "Q4", range: "Oct 01 - Dec 31" },
+  { value: 1, label: "Q1" },
+  { value: 2, label: "Q2" },
+  { value: 3, label: "Q3" },
+  { value: 4, label: "Q4" },
 ];
 const MONTHS = [
   { value: 1, label: "Jan", name: "January" },
