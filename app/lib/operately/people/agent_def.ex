@@ -6,6 +6,7 @@ defmodule Operately.People.AgentDef do
     field :definition, :string
 
     belongs_to :person, Operately.People.Person
+    has_many :agent_runs, Operately.People.AgentRun
 
     timestamps()
   end

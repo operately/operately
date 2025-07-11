@@ -1,4 +1,4 @@
-import Api, { Person } from "@/api";
+import Api, { AgentRun, Person } from "@/api";
 
 import * as Pages from "@/components/Pages";
 import * as React from "react";
@@ -20,16 +20,19 @@ export default { name: "CompanyManageAiAgentsPage", loader, Page } as PageModule
 
 interface LoaderResult {
   agent: Person;
+  runs: AgentRun[];
 }
 
 async function loader({ params }): Promise<LoaderResult> {
   return {
     agent: await Api.ai.getAgent({ id: params.id }).then((d) => d.agent),
+    runs: await Api.ai.listAgentRuns({ agentId: params.id }).then((d) => d.runs),
   };
 }
 
 function usePageState() {
-  const { agent } = Pages.useLoadedData<LoaderResult>();
+  const { agent, runs } = Pages.useLoadedData<LoaderResult>();
+
   const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
 
   const paths = usePaths();
@@ -60,6 +63,7 @@ function usePageState() {
 
   return {
     agent,
+    runs,
     companyAdminPath,
     companyAiAgentsPath,
     definition,
@@ -90,6 +94,8 @@ function Page() {
             </PrimaryButton>
           </div>
         </div>
+
+        <AgentRunList runs={state.runs} />
       </div>
     </PageNew>
   );
@@ -125,6 +131,27 @@ function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageStat
         placeholder="Enter agent definition here..."
         onBlur={(e) => state.saveDefiniton(e.target.value)}
       />
+    </div>
+  );
+}
+
+function AgentRunList({ runs }: { runs: any[] }) {
+  if (runs.length === 0) {
+    return <div className="mt-6 text-sm text-surface-text-secondary">No runs yet</div>;
+  }
+
+  return (
+    <div className="mt-6">
+      <h3 className="text-lg font-bold mb-2">Runs</h3>
+      <ul className="space-y-2">
+        {runs.map((run) => (
+          <li key={run.id} className="p-2 border border-surface-outline rounded-md">
+            <div className="text-sm">{run.status}</div>
+            <div className="text-xs text-surface-text-secondary">{new Date(run.startedAt).toLocaleString()}</div>
+            <div className="text-xs text-surface-text-secondary">{run.logs}</div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
