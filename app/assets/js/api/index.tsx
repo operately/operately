@@ -782,6 +782,10 @@ export interface AddMemberInput {
   accessLevel?: number | null;
 }
 
+export interface AgentDef {
+  definition: string;
+}
+
 export interface Assignment {
   type?: string | null;
   due?: string | null;
@@ -1091,6 +1095,7 @@ export interface Person {
   invitation?: Invitation | null;
   showDevBar?: boolean | null;
   permissions?: PersonPermissions | null;
+  agentDef?: AgentDef;
 }
 
 export interface PersonPermissions {
@@ -2440,6 +2445,15 @@ export interface AiAddAgentInput {
 }
 
 export interface AiAddAgentResult {
+  success: boolean;
+}
+
+export interface AiEditAgentDefinitionInput {
+  id: Id;
+  definition: string;
+}
+
+export interface AiEditAgentDefinitionResult {
   success: boolean;
 }
 
@@ -4042,6 +4056,10 @@ class ApiNamespaceAi {
 
   async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
     return this.client.post("/ai/add_agent", input);
+  }
+
+  async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
+    return this.client.post("/ai/edit_agent_definition", input);
   }
 }
 
@@ -6465,6 +6483,13 @@ export default {
 
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
     useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
+
+    editAgentDefinition: (input: AiEditAgentDefinitionInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
+    useEditAgentDefinition: () =>
+      useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>(
+        defaultApiClient.apiNamespaceAi.editAgentDefinition,
+      ),
   },
 
   spaces: {

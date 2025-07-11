@@ -3,7 +3,7 @@ import Api, { Person } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as React from "react";
 
-import { Avatar, DimmedLink, IconChevronRight, PageNew, showErrorToast } from "turboui";
+import { Avatar, DimmedLink, IconChevronRight, PageNew, showErrorToast, showSuccessToast } from "turboui";
 
 import { PageModule } from "@/routes/types";
 import { usePaths } from "../../routes/paths";
@@ -22,7 +22,7 @@ async function loader({ params }): Promise<LoaderResult> {
 
 function usePageState() {
   const { agent } = Pages.useLoadedData<LoaderResult>();
-  const [definition, setDefinition] = React.useState<string>("");
+  const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -34,6 +34,7 @@ function usePageState() {
     try {
       setDefinition(newDefinition);
       await Api.ai.editAgentDefinition({ id: agent.id, definition: newDefinition });
+      showSuccessToast("Success", "Agent definition updated successfully");
     } catch (error) {
       setDefinition(oldDefinition);
       showErrorToast("Network error", "Reverting to previous definition");
