@@ -1208,6 +1208,12 @@ defmodule OperatelyWeb.Api.Types do
     field :definition, :string
   end
 
+  object :agent_run do
+    field :status, :string
+    field :started_at, :datetime
+    field :logs, :string
+  end
+
   object :person_permissions do
     field :can_edit_profile, :boolean, null: true
   end

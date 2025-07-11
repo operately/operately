@@ -786,6 +786,12 @@ export interface AgentDef {
   definition: string;
 }
 
+export interface AgentRun {
+  status: string;
+  startedAt: string;
+  logs: string;
+}
+
 export interface Assignment {
   type?: string | null;
   due?: string | null;
@@ -1723,6 +1729,14 @@ export interface AiGetAgentInput {
 
 export interface AiGetAgentResult {
   agent: Person;
+}
+
+export interface AiListAgentRunsInput {
+  agentId: Id;
+}
+
+export interface AiListAgentRunsResult {
+  runs: AgentRun[];
 }
 
 export interface AiListAgentsInput {}
@@ -4050,6 +4064,10 @@ class ApiNamespaceAi {
 
   async getAgent(input: AiGetAgentInput): Promise<AiGetAgentResult> {
     return this.client.get("/ai/get_agent", input);
+  }
+
+  async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
+    return this.client.get("/ai/list_agent_runs", input);
   }
 
   async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
@@ -6490,6 +6508,10 @@ export default {
 
     prompt: (input: AiPromptInput) => defaultApiClient.apiNamespaceAi.prompt(input),
     usePrompt: (input: AiPromptInput) => useQuery<AiPromptResult>(() => defaultApiClient.apiNamespaceAi.prompt(input)),
+
+    listAgentRuns: (input: AiListAgentRunsInput) => defaultApiClient.apiNamespaceAi.listAgentRuns(input),
+    useListAgentRuns: (input: AiListAgentRunsInput) =>
+      useQuery<AiListAgentRunsResult>(() => defaultApiClient.apiNamespaceAi.listAgentRuns(input)),
 
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
     useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
