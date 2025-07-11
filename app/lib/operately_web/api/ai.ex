@@ -114,7 +114,6 @@ defmodule OperatelyWeb.Api.Ai do
 
     inputs do
       field :id, :id
-      field :goal_id, :id
     end
 
     outputs do
@@ -126,7 +125,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.verify_feature_enabled()
       |> Steps.get_agent(inputs.id)
       |> Ecto.Multi.run(:run_agent, fn _repo, %{agent: agent} ->
-        Operately.AI.run_agent(agent, inputs.goal_id)
+        Operately.AI.run_agent(agent)
       end)
       |> Steps.respond(fn _res -> %{} end)
     end
