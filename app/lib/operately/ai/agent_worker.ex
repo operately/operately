@@ -4,6 +4,7 @@ defmodule Operately.Ai.AgentWorker do
 
   alias Operately.Repo
   alias Operately.People.AgentRun
+  import Ecto.Query
 
   #
   # Performs the agent run execution, from fetching the agent run
@@ -28,7 +29,12 @@ defmodule Operately.Ai.AgentWorker do
   end
 
   defp get_agent_run(agent_run_id) do
-    case Repo.get(AgentRun, agent_run_id) do
+    query =
+      from ar in AgentRun,
+        where: ar.id == ^agent_run_id,
+        preload: [agent_def: :person]
+
+    case Operately.Repo.one(query) do
       nil -> {:error, "Agent run not found"}
       agent_run -> {:ok, agent_run}
     end
@@ -41,17 +47,7 @@ defmodule Operately.Ai.AgentWorker do
   end
 
   defp execute_agent(agent_run) do
-    # TODO: Implement actual agent execution logic here
-    # This is where you would call your AI agent, process the definition, etc.
-
-    # For now, simulate some work and log the execution
-    Logger.info("Executing agent run #{agent_run.id}")
-
-    # Simulate processing time
-    Process.sleep(1000)
-
-    # Add some mock logs
-    logs = "Agent execution started\nProcessing agent definition...\nAgent execution completed successfully"
+    logs = Operately.AI.run_agent(agent_run.agent_def.person)
 
     agent_run
     |> AgentRun.changeset(%{logs: logs})
