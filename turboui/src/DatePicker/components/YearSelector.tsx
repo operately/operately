@@ -3,11 +3,15 @@ import React from 'react';
 interface YearSelectorProps {
   selectedYear: number;
   setSelectedYear: (year: number) => void;
+  minYear?: number;
+  maxYear?: number;
 }
 
 export const YearSelector: React.FC<YearSelectorProps> = ({
   selectedYear,
-  setSelectedYear
+  setSelectedYear,
+  minYear = 2020,
+  maxYear = 2030,
 }) => {
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedYear(parseInt(e.target.value));
@@ -22,8 +26,8 @@ export const YearSelector: React.FC<YearSelectorProps> = ({
         type="number"
         value={selectedYear}
         onChange={handleYearChange}
-        min="2020"
-        max="2030"
+        min={minYear}
+        max={maxYear}
         className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
       />
     </div>
