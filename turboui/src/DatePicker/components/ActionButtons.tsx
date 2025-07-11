@@ -14,7 +14,7 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ computedDate, onCa
           Cancel
         </SecondaryButton>
         <PrimaryButton
-          onClick={() => computedDate && onSetDeadline?.(computedDate)}
+          onClick={() => onSetDeadline?.(computedDate)}
           disabled={!computedDate}
           size="sm"
         >
