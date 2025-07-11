@@ -1,37 +1,28 @@
-import React from 'react';
+import React from "react";
 
-interface YearSelectorProps {
+interface Props {
+  years: number[];
   selectedYear: number;
   setSelectedYear: (year: number) => void;
-  minYear?: number;
-  maxYear?: number;
 }
 
-export const YearSelector: React.FC<YearSelectorProps> = ({
-  selectedYear,
-  setSelectedYear,
-  minYear = 2020,
-  maxYear = 2030,
-}) => {
-  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedYear(parseInt(e.target.value));
-  };
-
+export function YearSelector({ years, selectedYear, setSelectedYear }: Props) {
   return (
     <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-        Year
-      </label>
-      <input
-        type="number"
-        value={selectedYear}
-        onChange={handleYearChange}
-        min={minYear}
-        max={maxYear}
-        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-      />
+      <label className="block text-xs font-medium text-gray-700 mb-1.5">Year</label>
+      <div className="max-h-48 overflow-y-auto py-1">
+        {years.map((year) => (
+          <button
+            key={year}
+            onClick={() => setSelectedYear(year)}
+            className={`w-full px-3 py-1.5 text-center text-sm transition-colors ${
+              selectedYear === year ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
+            }`}
+          >
+            {year}
+          </button>
+        ))}
+      </div>
     </div>
   );
-};
-
-export default YearSelector;
+}

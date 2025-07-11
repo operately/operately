@@ -1,40 +1,40 @@
-import React from 'react';
-import { PeriodOption } from '../types';
+import React from "react";
+import { PeriodOption } from "../types";
 
-interface QuarterSelectorProps {
+interface Props {
   quarters: PeriodOption[];
   selectedPeriod: number;
   setSelectedPeriod: (period: number) => void;
+  selectedYear: number;
+  visibleYears: number[];
 }
 
-export const QuarterSelector: React.FC<QuarterSelectorProps> = ({
-  quarters,
-  selectedPeriod,
-  setSelectedPeriod
-}) => {
+export function QuarterSelector({ quarters, selectedPeriod, setSelectedPeriod, selectedYear, visibleYears }: Props) {
   return (
     <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-        Quarter
-      </label>
-      <div className="grid grid-cols-2 gap-2">
-        {quarters.map(quarter => (
-          <button
-            key={quarter.value}
-            onClick={() => setSelectedPeriod(quarter.value)}
-            className={`p-2 rounded-lg border text-left transition-colors ${
-              selectedPeriod === quarter.value
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            <div className="font-medium text-xs">{quarter.label}</div>
-            <div className="text-xs text-gray-500">{quarter.range}</div>
-          </button>
+      <label className="block text-xs font-medium text-gray-700 mb-1.5">Quarter</label>
+      <div className="max-h-48 overflow-y-auto p-2">
+        {visibleYears.map((year) => (
+          <div key={year} className="mb-4 last:mb-0">
+            <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
+            <div className="flex space-x-1">
+              {quarters.map((quarter) => (
+                <button
+                  key={`${year}-${quarter.value}`}
+                  onClick={() => setSelectedPeriod(quarter.value)}
+                  className={`flex-1 py-1 px-2 rounded text-center text-xs transition-colors ${
+                    selectedYear === year && selectedPeriod === quarter.value
+                      ? "bg-blue-50 text-blue-700 font-medium"
+                      : "hover:bg-gray-50"
+                  }`}
+                >
+                  {quarter.label}
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
   );
-};
-
-export default QuarterSelector;
+}

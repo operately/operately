@@ -1,35 +1,27 @@
 import React, { useState } from "react";
 import { IconCalendar } from "../icons";
 import { DateType } from "./types";
-import InlineCalendar from "./components/InlineCalendar";
+import { InlineCalendar } from "./components/InlineCalendar";
 import DateTypeSelector from "./components/DateTypeSelector";
-import YearSelector from "./components/YearSelector";
-import MonthSelector from "./components/MonthSelector";
-import QuarterSelector from "./components/QuarterSelector";
-import SemesterSelector from "./components/SemesterSelector";
-import DatePreview from "./components/DatePreview";
+import { MonthSelector } from "./components/MonthSelector";
+import { QuarterSelector } from "./components/QuarterSelector";
+import { YearSelector } from "./components/YearSelector";
+import { DatePreview } from "./components/DatePreview";
 import ActionButtons from "./components/ActionButtons";
 
 const DATE_TYPES = [
-  { value: "exact" as const, label: "Exact Date" },
+  { value: "exact" as const, label: "Day" },
   { value: "month" as const, label: "Month" },
   { value: "quarter" as const, label: "Quarter" },
-  { value: "semester" as const, label: "Semester" },
   { value: "year" as const, label: "Year" },
 ];
 
 const QUARTERS = [
-  { value: 1, label: "Q1", range: "Jan 01 - Mar 31" },
-  { value: 2, label: "Q2", range: "Apr 01 - Jun 30" },
-  { value: 3, label: "Q3", range: "Jul 01 - Sep 30" },
-  { value: 4, label: "Q4", range: "Oct 01 - Dec 31" },
+  { value: 1, label: "Q1" },
+  { value: 2, label: "Q2" },
+  { value: 3, label: "Q3" },
+  { value: 4, label: "Q4" },
 ];
-
-const SEMESTERS = [
-  { value: 1, label: "Semester 1", range: "Jan 01 - Jun 30" },
-  { value: 2, label: "Semester 2", range: "Jul 01 - Dec 31" },
-];
-
 const MONTHS = [
   { value: 1, label: "Jan", name: "January" },
   { value: 2, label: "Feb", name: "February" },
@@ -45,30 +37,34 @@ const MONTHS = [
   { value: 12, label: "Dec", name: "December" },
 ];
 
-export interface DatePickerProps {
+export interface Props {
   onDateSelect?: (date: string) => void;
   onCancel?: () => void;
-  initialDateType?: DateType;
-  initialSelectedDate?: string;
-  initialSelectedYear?: number;
-  initialSelectedPeriod?: number;
-  label?: string;
+  initialType?: DateType;
+  initialDate?: string;
+  initialYear?: number;
+  initialPeriod?: number;
+  minYear?: number;
+  maxYear?: number;
 }
 
-export const DatePicker: React.FC<DatePickerProps> = ({
-  onDateSelect,
-  onCancel,
-  initialDateType = "exact",
-  initialSelectedDate = "",
-  initialSelectedYear = new Date().getFullYear(),
-  initialSelectedPeriod = 1,
-  label = "Date",
-}) => {
-  const [dateType, setDateType] = useState<DateType>(initialDateType);
-  const [selectedDate, setSelectedDate] = useState<string>(initialSelectedDate);
-  const [selectedYear, setSelectedYear] = useState<number>(initialSelectedYear);
-  const [selectedPeriod, setSelectedPeriod] = useState<number>(initialSelectedPeriod);
+export function DatePicker({ 
+  onDateSelect, 
+  onCancel, 
+  initialType, 
+  initialDate, 
+  initialYear, 
+  initialPeriod,
+  minYear = 2020,
+  maxYear = 2030
+}: Props) {
+  const [dateType, setDateType] = useState<DateType>(initialType || "exact");
+  const [selectedDate, setSelectedDate] = useState<string>(initialDate || "");
+  const [selectedYear, setSelectedYear] = useState<number>(initialYear || new Date().getFullYear());
+  const [selectedPeriod, setSelectedPeriod] = useState<number>(initialPeriod || 1);
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
+
+  const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
   const getComputedDate = (): string => {
     switch (dateType) {
@@ -82,10 +78,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       case "quarter": {
         const quarterEndDates = ["03-31", "06-30", "09-30", "12-31"];
         return `${selectedYear}-${quarterEndDates[selectedPeriod - 1]}`;
-      }
-      case "semester": {
-        const semesterEndDates = ["06-30", "12-31"];
-        return `${selectedYear}-${semesterEndDates[selectedPeriod - 1]}`;
       }
       case "year":
         return `${selectedYear}-12-31`;
@@ -107,16 +99,11 @@ export const DatePicker: React.FC<DatePickerProps> = ({
     <div className="max-w-md min-w-[300px] mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
         <IconCalendar size={20} />
-        Set {label}
+        Set Date
       </h2>
 
-      {/* Date Type Selection */}
       <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />
 
-      {/* Year Selection (when not exact date) */}
-      {dateType !== "exact" && <YearSelector selectedYear={selectedYear} setSelectedYear={setSelectedYear} />}
-
-      {/* Conditional inputs based on date type */}
       {dateType === "exact" && (
         <div className="mb-3">
           <label className="block text-xs font-medium text-gray-700 mb-1.5">Select Date</label>
@@ -130,22 +117,32 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       )}
 
       {dateType === "month" && (
-        <MonthSelector months={MONTHS} selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
+        <MonthSelector
+          months={MONTHS}
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+          selectedYear={selectedYear}
+          visibleYears={yearOptions}
+        />
       )}
 
       {dateType === "quarter" && (
-        <QuarterSelector quarters={QUARTERS} selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
+        <QuarterSelector
+          quarters={QUARTERS}
+          selectedPeriod={selectedPeriod}
+          setSelectedPeriod={setSelectedPeriod}
+          selectedYear={selectedYear}
+          visibleYears={yearOptions}
+        />
       )}
 
-      {dateType === "semester" && (
-        <SemesterSelector semesters={SEMESTERS} selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
+      {dateType === "year" && (
+        <YearSelector years={yearOptions} selectedYear={selectedYear} setSelectedYear={setSelectedYear} />
       )}
 
-      {/* Preview */}
-      {computedDate && <DatePreview computedDate={computedDate} label={label} />}
+      {computedDate && <DatePreview computedDate={computedDate} />}
 
-      {/* Actions */}
       <ActionButtons computedDate={computedDate} onCancel={onCancel} onSetDeadline={handleSetDeadline} />
     </div>
   );
-};
+}
