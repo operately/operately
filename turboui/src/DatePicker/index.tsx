@@ -106,7 +106,6 @@ export function DatePicker({
 
       {dateType === "exact" && (
         <div className="mb-3">
-          <label className="block text-xs font-medium text-gray-700 mb-1.5">Select Date</label>
           <InlineCalendar
             calendarDate={calendarDate}
             selectedDate={selectedDate}

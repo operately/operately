@@ -12,7 +12,6 @@ interface Props {
 export function MonthSelector({ months, selectedPeriod, setSelectedPeriod, selectedYear, visibleYears }: Props) {
   return (
     <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">Month</label>
       <div className="max-h-48 overflow-y-auto p-2">
         {visibleYears.map((year) => (
           <div key={year} className="mb-4 last:mb-0">
