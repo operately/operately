@@ -8,17 +8,29 @@ defmodule Operately.AI.Tools do
   @doc """
   Provides details of a goal.
 
+  Expects the following arguments:
+  - "id": The ID of the goal for which details are requested.
+
   Expected context:
   - :person - The person requesting the goal details.
-  - :goal - The goal for which details are requested.
   """
   def get_goal_details do
     Function.new!(%{
       name: "get_goal_details",
       description: "Returns the details of the goal.",
-      function: fn _, context ->
+      parameters_schema: %{
+        type: "object",
+        properties: %{
+          id: %{
+            type: "string",
+            description: "The ID of the goal."
+          }
+        },
+        required: ["id"]
+      },
+      function: fn args, context ->
         me = Map.get(context, :person)
-        goal = Map.get(context, :goal)
+        id = Map.get(args, "id")
 
         conn = %{
           assigns: %{
@@ -27,7 +39,7 @@ defmodule Operately.AI.Tools do
         }
 
         args = %{
-          id: goal.id
+          id: id
         }
 
         {:ok, goal} = OperatelyWeb.Api.Queries.GetGoal.call(conn, args)
@@ -42,10 +54,10 @@ defmodule Operately.AI.Tools do
   Expects the following arguments:
   - "title": The title of the message.
   - "message": The markdown message to post to the goal.
+  - "goal_id": The ID of the goal to which the message will be posted.
 
   Expected context:
   - :person - The person posting the message.
-  - :goal - The goal to which the message will be posted.
   """
   def post_goal_message do
     Function.new!(%{
@@ -54,6 +66,10 @@ defmodule Operately.AI.Tools do
       parameters_schema: %{
         type: "object",
         properties: %{
+          goal_id: %{
+            type: "string",
+            description: "The ID of the goal to which the message will be posted."
+          },
           title: %{
             type: "string",
             description: "The title of the message."
@@ -66,9 +82,9 @@ defmodule Operately.AI.Tools do
         required: ["title", "message"]
       },
       function: fn args, context ->
-        goal = Map.get(context, :goal)
         me = Map.get(context, :person)
         title = Map.get(args, "title")
+        goal_id = Map.get(args, "goal_id")
         message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{}) |> Jason.encode!()
 
         conn = %{
@@ -79,7 +95,7 @@ defmodule Operately.AI.Tools do
 
         args =
           %{
-            goal_id: goal.id,
+            goal_id: goal_id,
             title: title,
             message: message,
             send_notifications_to_everyone: true,
