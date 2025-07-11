@@ -3,7 +3,15 @@ import Api, { Person } from "@/api";
 import * as Pages from "@/components/Pages";
 import * as React from "react";
 
-import { Avatar, DimmedLink, IconChevronRight, PageNew, showErrorToast, showSuccessToast } from "turboui";
+import {
+  Avatar,
+  DimmedLink,
+  IconChevronRight,
+  PageNew,
+  PrimaryButton,
+  showErrorToast,
+  showSuccessToast,
+} from "turboui";
 
 import { PageModule } from "@/routes/types";
 import { usePaths } from "../../routes/paths";
@@ -41,12 +49,22 @@ function usePageState() {
     }
   };
 
+  const runAgent = async () => {
+    try {
+      await Api.ai.runAgent({ id: agent.id });
+      showSuccessToast("Success", "Agent is running");
+    } catch (error) {
+      showErrorToast("Network error", "Failed to run agent");
+    }
+  };
+
   return {
     agent,
     companyAdminPath,
     companyAiAgentsPath,
     definition,
     saveDefiniton,
+    runAgent,
   };
 }
 
@@ -65,6 +83,12 @@ function Page() {
         <div className="max-w-xl mx-auto mt-4">
           <AgentHeader state={state} />
           <AgentDefinitionEditor state={state} />
+
+          <div className="mt-6">
+            <PrimaryButton onClick={state.runAgent} size="sm">
+              Run Agent
+            </PrimaryButton>
+          </div>
         </div>
       </div>
     </PageNew>

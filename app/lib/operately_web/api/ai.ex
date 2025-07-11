@@ -109,6 +109,29 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule RunAgent do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :id, :id
+      field :goal_id, :id
+    end
+
+    outputs do
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Steps.get_agent(inputs.id)
+      |> Ecto.Multi.run(:run_agent, fn _repo, %{agent: agent} ->
+        Operately.AI.run_agent(agent, inputs.goal_id)
+      end)
+      |> Steps.respond(fn _res -> %{} end)
+    end
+  end
+
   defmodule Steps do
     require Logger
     use OperatelyWeb.Api.Helpers
