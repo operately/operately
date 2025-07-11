@@ -2401,8 +2401,8 @@ export interface AddKeyResourceResult {
 }
 
 export interface AddProjectContributorInput {
-  projectId?: string | null;
-  personId?: string | null;
+  projectId: Id;
+  personId: Id;
   responsibility?: string | null;
   permissions?: number | null;
   role?: string | null;
@@ -2456,6 +2456,12 @@ export interface AiEditAgentDefinitionInput {
 export interface AiEditAgentDefinitionResult {
   success: boolean;
 }
+
+export interface AiRunAgentInput {
+  id: Id;
+}
+
+export interface AiRunAgentResult {}
 
 export interface ArchiveGoalInput {
   goalId?: string | null;
@@ -4060,6 +4066,10 @@ class ApiNamespaceAi {
 
   async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
     return this.client.post("/ai/edit_agent_definition", input);
+  }
+
+  async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
+    return this.client.post("/ai/run_agent", input);
   }
 }
 
@@ -6483,6 +6493,9 @@ export default {
 
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
     useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
+
+    runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
+    useRunAgent: () => useMutation<AiRunAgentInput, AiRunAgentResult>(defaultApiClient.apiNamespaceAi.runAgent),
 
     editAgentDefinition: (input: AiEditAgentDefinitionInput) =>
       defaultApiClient.apiNamespaceAi.editAgentDefinition(input),

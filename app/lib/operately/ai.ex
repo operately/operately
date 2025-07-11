@@ -34,7 +34,7 @@ defmodule Operately.AI do
   # Goal Verification
   #
 
-  def run_agent(person, goal) do
+  def run_agent(person) do
     verify_if_person_is_an_ai_agent(person)
 
     definition = Operately.People.get_agent_def(person)
@@ -42,10 +42,7 @@ defmodule Operately.AI do
     {:ok, chain} =
       LLMChain.new!(%{
         llm: ChatAnthropic.new!(),
-        custom_context: %{
-          person: person,
-          goal: goal
-        }
+        custom_context: %{person: person}
       })
       |> LLMChain.add_tools(Tools.get_goal_details())
       |> LLMChain.add_tools(Tools.post_goal_message())

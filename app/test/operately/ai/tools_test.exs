@@ -16,9 +16,10 @@ defmodule Operately.AI.ToolsTest do
 
     test "returns goal details", ctx do
       tool = Tools.get_goal_details()
-      context = %{person: ctx.creator, goal: ctx.goal}
+      context = %{person: ctx.creator}
+      args = %{"id" => ctx.goal.id}
 
-      assert {:ok, result} = tool.function.(%{}, context)
+      assert {:ok, result} = tool.function.(args, context)
       assert goal = Jason.decode!(result)
       assert goal["goal"]["name"] == ctx.goal.name
     end
@@ -31,8 +32,8 @@ defmodule Operately.AI.ToolsTest do
 
     test "posts a message to the goal", ctx do
       tool = Tools.post_goal_message()
-      context = %{person: ctx.creator, goal: ctx.goal}
-      args = %{"title" => "Test Message", "message" => "This is a test message."}
+      context = %{person: ctx.creator}
+      args = %{"goal_id" => ctx.goal.id, "title" => "Test Message", "message" => "This is a test message."}
 
       assert {:ok, result} = tool.function.(args, context)
       assert {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(Jason.decode!(result)["id"])
