@@ -89,23 +89,6 @@ export const QuarterSelection: Story = {
 };
 
 /**
- * DatePicker showing semester selection.
- */
-export const SemesterSelection: Story = {
-  tags: ["autodocs"],
-  render: (args) => (
-    <div className="max-w-md mx-auto bg-white p-4">
-      <DatePicker {...args} />
-    </div>
-  ),
-  args: {
-    initialDateType: "semester",
-    initialSelectedYear: new Date().getFullYear(),
-    initialSelectedPeriod: Math.floor(new Date().getMonth() / 6) + 1,
-  },
-};
-
-/**
  * DatePicker showing year selection.
  */
 export const YearSelection: Story = {

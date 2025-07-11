@@ -6,7 +6,6 @@ import DateTypeSelector from "./components/DateTypeSelector";
 import YearSelector from "./components/YearSelector";
 import MonthSelector from "./components/MonthSelector";
 import QuarterSelector from "./components/QuarterSelector";
-import SemesterSelector from "./components/SemesterSelector";
 import DatePreview from "./components/DatePreview";
 import ActionButtons from "./components/ActionButtons";
 
@@ -14,7 +13,6 @@ const DATE_TYPES = [
   { value: "exact" as const, label: "Exact Date" },
   { value: "month" as const, label: "Month" },
   { value: "quarter" as const, label: "Quarter" },
-  { value: "semester" as const, label: "Semester" },
   { value: "year" as const, label: "Year" },
 ];
 
@@ -24,12 +22,6 @@ const QUARTERS = [
   { value: 3, label: "Q3", range: "Jul 01 - Sep 30" },
   { value: 4, label: "Q4", range: "Oct 01 - Dec 31" },
 ];
-
-const SEMESTERS = [
-  { value: 1, label: "Semester 1", range: "Jan 01 - Jun 30" },
-  { value: 2, label: "Semester 2", range: "Jul 01 - Dec 31" },
-];
-
 const MONTHS = [
   { value: 1, label: "Jan", name: "January" },
   { value: 2, label: "Feb", name: "February" },
@@ -83,10 +75,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
         const quarterEndDates = ["03-31", "06-30", "09-30", "12-31"];
         return `${selectedYear}-${quarterEndDates[selectedPeriod - 1]}`;
       }
-      case "semester": {
-        const semesterEndDates = ["06-30", "12-31"];
-        return `${selectedYear}-${semesterEndDates[selectedPeriod - 1]}`;
-      }
       case "year":
         return `${selectedYear}-12-31`;
       default:
@@ -136,11 +124,6 @@ export const DatePicker: React.FC<DatePickerProps> = ({
       {dateType === "quarter" && (
         <QuarterSelector quarters={QUARTERS} selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
       )}
-
-      {dateType === "semester" && (
-        <SemesterSelector semesters={SEMESTERS} selectedPeriod={selectedPeriod} setSelectedPeriod={setSelectedPeriod} />
-      )}
-
       {/* Preview */}
       {computedDate && <DatePreview computedDate={computedDate} label={label} />}
 
