@@ -1,39 +1,41 @@
-import React from 'react';
-import { MonthOption } from '../types';
+import React from "react";
+import { MonthOption } from "../types";
 
-interface MonthSelectorProps {
+interface Props {
   months: MonthOption[];
   selectedPeriod: number;
   setSelectedPeriod: (period: number) => void;
+  selectedYear: number;
+  visibleYears: number[];
 }
 
-export const MonthSelector: React.FC<MonthSelectorProps> = ({
-  months,
-  selectedPeriod,
-  setSelectedPeriod
-}) => {
+export function MonthSelector({ months, selectedPeriod, setSelectedPeriod, selectedYear, visibleYears }: Props) {
   return (
     <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-        Month
-      </label>
-      <div className="grid grid-cols-4 gap-2">
-        {months.map(month => (
-          <button
-            key={month.value}
-            onClick={() => setSelectedPeriod(month.value)}
-            className={`p-2 rounded-lg border text-center transition-colors ${
-              selectedPeriod === month.value
-                ? 'border-blue-500 bg-blue-50 text-blue-700'
-                : 'border-gray-300 hover:border-gray-400'
-            }`}
-          >
-            <div className="font-medium text-xs">{month.label}</div>
-          </button>
+      <div className="max-h-48 overflow-y-auto p-2">
+        {visibleYears.map((year) => (
+          <div key={year} className="mb-4 last:mb-0">
+            <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
+            <div className="grid grid-cols-4 gap-1">
+              {months.map((month) => (
+                <button
+                  key={`${year}-${month.value}`}
+                  onClick={() => {
+                    setSelectedPeriod(month.value);
+                  }}
+                  className={`py-1 px-2 rounded text-center text-xs transition-colors ${
+                    selectedYear === year && selectedPeriod === month.value
+                      ? "bg-blue-50 text-blue-700 font-medium"
+                      : "hover:bg-gray-50"
+                  }`}
+                >
+                  {month.label}
+                </button>
+              ))}
+            </div>
+          </div>
         ))}
       </div>
     </div>
   );
-};
-
-export default MonthSelector;
+}
