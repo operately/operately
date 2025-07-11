@@ -13,20 +13,20 @@ const meta = {
     layout: "centered",
   },
   argTypes: {
-    initialDateType: {
+    initialType: {
       control: "select",
-      options: ["exact", "month", "quarter", "semester", "year"],
+      options: ["exact", "month", "quarter", "year"],
       description: "The initial date type selected",
     },
-    initialSelectedDate: {
+    initialDate: {
       control: "text",
       description: "Initial selected date in YYYY-MM-DD format (for exact date type)",
     },
-    initialSelectedYear: {
+    initialYear: {
       control: "number",
       description: "Initial selected year",
     },
-    initialSelectedPeriod: {
+    initialPeriod: {
       control: "number",
       description: "Initial selected period (month, quarter, or semester)",
     },
@@ -49,8 +49,8 @@ export const Default: Story = {
     </div>
   ),
   args: {
-    initialDateType: "exact",
-    initialSelectedDate: new Date().toISOString().split("T")[0],
+    initialType: "exact",
+    initialDate: new Date().toISOString().split("T")[0],
   },
 };
 
@@ -65,9 +65,9 @@ export const MonthSelection: Story = {
     </div>
   ),
   args: {
-    initialDateType: "month",
-    initialSelectedYear: new Date().getFullYear(),
-    initialSelectedPeriod: new Date().getMonth() + 1,
+    initialType: "month",
+    initialYear: new Date().getFullYear(),
+    initialPeriod: new Date().getMonth() + 1,
   },
 };
 
@@ -82,9 +82,9 @@ export const QuarterSelection: Story = {
     </div>
   ),
   args: {
-    initialDateType: "quarter",
-    initialSelectedYear: new Date().getFullYear(),
-    initialSelectedPeriod: Math.floor(new Date().getMonth() / 3) + 1,
+    initialType: "quarter",
+    initialYear: new Date().getFullYear(),
+    initialPeriod: Math.floor(new Date().getMonth() / 3) + 1,
   },
 };
 
@@ -99,7 +99,7 @@ export const YearSelection: Story = {
     </div>
   ),
   args: {
-    initialDateType: "year",
-    initialSelectedYear: new Date().getFullYear(),
+    initialType: "year",
+    initialYear: new Date().getFullYear(),
   },
 };
