@@ -39,7 +39,7 @@ export function DatePicker({
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
   return (
-    <div className="max-w-md min-w-[300px] mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-md min-w-[300px] mx-auto p-6 bg-surface-base rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
         <IconCalendar size={20} />
         Set Date
