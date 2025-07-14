@@ -3,10 +3,11 @@ defmodule Operately.People.AgentDef do
   import Ecto.Changeset
 
   schema "agent_defs" do
-    field :definition, :string
-
     belongs_to :person, Operately.People.Person
     has_many :agent_runs, Operately.People.AgentRun
+
+    field :definition, :string
+    field :sandbox_mode, :boolean, default: false
 
     timestamps()
   end
@@ -17,7 +18,7 @@ defmodule Operately.People.AgentDef do
 
   def changeset(agent_def, attrs) do
     agent_def
-    |> cast(attrs, [:person_id, :definition])
+    |> cast(attrs, [:person_id, :definition, :sandbox_mode])
     |> validate_required([:person_id])
     |> assoc_constraint(:person)
   end
