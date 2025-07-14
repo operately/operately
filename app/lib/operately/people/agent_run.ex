@@ -6,7 +6,7 @@ defmodule Operately.People.AgentRun do
   alias Ecto.Multi
 
   schema "agent_runs" do
-    field :status, Ecto.Enum, values: [:pending, :running, :completed, :failed, :cancelled]
+    field :status, Ecto.Enum, values: [:planning, :running, :completed, :failed, :cancelled]
     field :started_at, :utc_datetime_usec
     field :finished_at, :utc_datetime_usec
     field :error_message, :string
@@ -26,7 +26,7 @@ defmodule Operately.People.AgentRun do
     agent_run
     |> cast(attrs, [:agent_def_id, :status, :started_at, :finished_at, :error_message, :logs, :sandbox_mode])
     |> validate_required([:agent_def_id, :status, :started_at])
-    |> validate_inclusion(:status, [:pending, :running, :completed, :failed, :cancelled])
+    |> validate_inclusion(:status, [:planning, :running, :completed, :failed, :cancelled])
     |> assoc_constraint(:agent_def)
   end
 
@@ -35,7 +35,7 @@ defmodule Operately.People.AgentRun do
       changeset(%{
         agent_def_id: agent_def.id,
         sandbox_mode: agent_def.sandbox_mode,
-        status: :pending,
+        status: :planning,
         started_at: DateTime.utc_now()
       })
 
