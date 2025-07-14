@@ -1,4 +1,4 @@
-export type DateType = 'exact' | 'month' | 'quarter' | 'year';
+export type DateType = "exact" | "month" | "quarter" | "year";
 
 export interface DateTypeOption {
   value: DateType;
@@ -6,13 +6,13 @@ export interface DateTypeOption {
 }
 
 export interface MonthOption {
-  value: number;
+  value: string;
   label: string;
   name: string;
 }
 
 export interface PeriodOption {
-  value: number;
+  value: string;
   label: string;
 }
 
@@ -22,5 +22,5 @@ export interface DatePickerProps {
   initialDateType?: DateType;
   initialSelectedDate?: string;
   initialSelectedYear?: number;
-  initialSelectedPeriod?: number;
+  initialSelectedPeriod?: string;
 }
