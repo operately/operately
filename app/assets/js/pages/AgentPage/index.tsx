@@ -12,6 +12,7 @@ import {
   PrimaryButton,
   showErrorToast,
   showSuccessToast,
+  SwitchToggle,
 } from "turboui";
 
 import { PageModule } from "@/routes/types";
@@ -35,6 +36,7 @@ function usePageState() {
   const { agent, runs } = Pages.useLoadedData<LoaderResult>();
 
   const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
+  const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -50,6 +52,19 @@ function usePageState() {
     } catch (error) {
       setDefinition(oldDefinition);
       showErrorToast("Network error", "Reverting to previous definition");
+    }
+  };
+
+  const saveSandboxMode = async (newSandboxMode: boolean) => {
+    const oldSandboxMode = sandboxMode;
+
+    try {
+      setSandboxMode(newSandboxMode);
+      await Api.ai.editAgentSandboxMode({ id: agent.id, mode: newSandboxMode });
+      showSuccessToast("Success", "Agent sandbox mode updated successfully");
+    } catch (error) {
+      setSandboxMode(oldSandboxMode);
+      showErrorToast("Network error", "Reverting to previous sandbox mode");
     }
   };
 
@@ -70,6 +85,8 @@ function usePageState() {
     definition,
     saveDefiniton,
     runAgent,
+    sandboxMode,
+    saveSandboxMode,
   };
 }
 
@@ -87,6 +104,7 @@ function Page() {
       <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
         <div>
           <AgentHeader state={state} />
+          <AgentModeToggle state={state} />
           <AgentDefinitionEditor state={state} />
         </div>
 
@@ -106,10 +124,28 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
           <div className="flex items-center gap-2 text-sm">{state.agent.title}</div>
         </div>
       </div>
-      <div className="mt-6">
+      <div className="">
         <PrimaryButton onClick={state.runAgent} size="sm">
           Run Agent
         </PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+function AgentModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
+      <div>
+        <label className="font-bold text-sm mb-1">Sandbox Mode</label>
+        <div className="text-xs text-surface-text-secondary max-w-xl">
+          When enabled, the agent will not perform any actions that affect the real world. It will have access to the
+          same data and context, but will only simulate actions without executing them.
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <SwitchToggle label="" value={state.sandboxMode} setValue={state.saveSandboxMode} />
       </div>
     </div>
   );
@@ -149,7 +185,9 @@ function AgentRunList({ runs }: { runs: any[] }) {
         {runs.map((run) => (
           <li key={run.id} className="p-2 border border-surface-outline">
             <div className="flex items-center justify-between">
-              <div className="text-xs uppercase">{run.status}</div>
+              <div className="text-xs uppercase">
+                {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
+              </div>
               <div className="text-xs text-surface-text-secondary">
                 <FormattedTime time={run.startedAt} format="relative" />
               </div>
