@@ -6,14 +6,15 @@ defmodule Operately.People.AgentRun do
   alias Ecto.Multi
 
   schema "agent_runs" do
+    belongs_to :agent_def, Operately.People.AgentDef
+
     field :status, Ecto.Enum, values: [:planning, :running, :completed, :failed, :cancelled]
     field :started_at, :utc_datetime_usec
     field :finished_at, :utc_datetime_usec
     field :error_message, :string
     field :logs, :string
     field :sandbox_mode, :boolean, default: false
-
-    belongs_to :agent_def, Operately.People.AgentDef
+    field :tasks, {:array, :map}, default: []
 
     timestamps()
   end
@@ -24,7 +25,7 @@ defmodule Operately.People.AgentRun do
 
   def changeset(agent_run, attrs) do
     agent_run
-    |> cast(attrs, [:agent_def_id, :status, :started_at, :finished_at, :error_message, :logs, :sandbox_mode])
+    |> cast(attrs, [:agent_def_id, :status, :started_at, :finished_at, :error_message, :logs, :sandbox_mode, :tasks])
     |> validate_required([:agent_def_id, :status, :started_at])
     |> validate_inclusion(:status, [:planning, :running, :completed, :failed, :cancelled])
     |> assoc_constraint(:agent_def)
@@ -61,5 +62,38 @@ defmodule Operately.People.AgentRun do
     alias Operately.Repo
 
     SQL.query(Repo, "UPDATE agent_runs SET logs = COALESCE(logs, '') || $1 WHERE id = $2", [msg, Ecto.UUID.dump!(agent_run_id)])
+  end
+
+  def add_task(agent_run_id, name, description \\ nil, status \\ "pending") do
+    task = %{
+      id: Ecto.UUID.generate(),
+      name: name,
+      description: description,
+      status: status,
+      created_at: DateTime.utc_now()
+    }
+
+    run = Operately.Repo.get(__MODULE__, agent_run_id)
+
+    run
+    |> changeset(%{tasks: run.tasks ++ [task]})
+    |> Operately.Repo.update()
+  end
+
+  def mark_task_completed(agent_run_id, task_id) do
+    run = Operately.Repo.get(__MODULE__, agent_run_id)
+
+    updated_tasks =
+      Enum.map(run.tasks, fn task ->
+        if task.id == task_id do
+          Map.put(task, :status, "completed")
+        else
+          task
+        end
+      end)
+
+    run
+    |> changeset(%{tasks: updated_tasks})
+    |> Operately.Repo.update()
   end
 end
