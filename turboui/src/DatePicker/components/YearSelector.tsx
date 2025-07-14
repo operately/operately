@@ -1,12 +1,12 @@
 import React from "react";
 
 interface Props {
+  selectedDate: Date | undefined;
+  setSelectedDate: (date: Date) => void;
   years: number[];
-  selectedYear: number;
-  setSelectedYear: (year: number) => void;
 }
 
-export function YearSelector({ years, selectedYear, setSelectedYear }: Props) {
+export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
   return (
     <div className="mb-3">
       <div className="max-h-48 overflow-y-auto p-2">
@@ -14,9 +14,9 @@ export function YearSelector({ years, selectedYear, setSelectedYear }: Props) {
           {years.map((year) => (
             <button
               key={year}
-              onClick={() => setSelectedYear(year)}
+              onClick={() => setSelectedDate(new Date(year, 0, 1))}
               className={`px-3 py-1.5 text-center text-sm rounded transition-colors ${
-                selectedYear === year ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
+                selectedDate?.getFullYear() === year ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
               }`}
             >
               {year}
