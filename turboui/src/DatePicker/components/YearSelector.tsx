@@ -1,4 +1,5 @@
 import React, { useRef, useLayoutEffect } from "react";
+import { OptionButton } from "./OptionButton";
 
 interface Props {
   selectedDate: Date | undefined;
@@ -34,16 +35,15 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
       <div ref={containerRef} className="max-h-48 overflow-y-auto p-2">
         <div className="flex flex-col space-y-1 mx-auto">
           {years.map((year) => (
-            <button
+            <OptionButton
               key={year}
               ref={year === currentYear ? currentYearRef : undefined}
               onClick={() => setSelectedDate(new Date(year, 0, 1))}
-              className={`px-3 py-1.5 text-center text-sm rounded transition-colors ${
-                selectedDate?.getFullYear() === year ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"
-              }`}
+              isSelected={selectedDate?.getFullYear() === year}
+              className="px-3 py-1.5 text-sm"
             >
               {year}
-            </button>
+            </OptionButton>
           ))}
         </div>
       </div>

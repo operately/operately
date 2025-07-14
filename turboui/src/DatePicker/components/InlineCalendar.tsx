@@ -61,7 +61,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
             ? "border border-blue-500 bg-blue-50 text-blue-700"
             : isToday
             ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
-            : "hover:bg-gray-100"
+            : "hover:bg-gray-100 hover:text-blue-500"
         }`}
       >
         {day}

@@ -1,5 +1,6 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateMonths } from "../utils";
+import { OptionButton } from "./OptionButton";
 
 interface Props {
   selectedDate: Date | undefined;
@@ -37,19 +38,16 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
             <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
             <div className="grid grid-cols-4 gap-1">
               {generateMonths(year).map((month) => (
-                <button
+                <OptionButton
                   key={month.value}
                   onClick={() => {
                     setSelectedDate(new Date(month.value));
                   }}
-                  className={`py-1 px-2 rounded text-center text-xs transition-colors ${
-                    isSelectedMonth(selectedDate, month.value, year)
-                      ? "bg-blue-50 text-blue-700 font-medium"
-                      : "hover:bg-gray-50"
-                  }`}
+                  isSelected={isSelectedMonth(selectedDate, month.value, year)}
+                  className="py-1 px-2 text-xs"
                 >
                   {month.label}
-                </button>
+                </OptionButton>
               ))}
             </div>
           </div>
