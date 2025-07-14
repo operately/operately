@@ -6,7 +6,6 @@ import DateTypeSelector from "./components/DateTypeSelector";
 import { MonthSelector } from "./components/MonthSelector";
 import { QuarterSelector } from "./components/QuarterSelector";
 import { YearSelector } from "./components/YearSelector";
-import { DatePreview } from "./components/DatePreview";
 import ActionButtons from "./components/ActionButtons";
 
 const DATE_TYPES = [
@@ -64,8 +63,6 @@ export function DatePicker({
       {dateType === "year" && (
         <YearSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} years={yearOptions} />
       )}
-
-      <DatePreview selectedDate={selectedDate} dateType={dateType} />
 
       <ActionButtons selectedDate={selectedDate} onCancel={onCancel} onSetDeadline={onDateSelect} />
     </div>
