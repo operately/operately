@@ -33,7 +33,7 @@ defmodule Operately.People.AgentRun do
   def create(agent_def) do
     run =
       changeset(%{
-        agent_def: agent_def.id,
+        agent_def_id: agent_def.id,
         sandbox_mode: agent_def.sandbox_mode,
         status: :pending,
         started_at: DateTime.utc_now()
@@ -51,6 +51,6 @@ defmodule Operately.People.AgentRun do
     alias Ecto.Adapters.SQL
     alias Operately.Repo
 
-    SQL.query(Repo, "UPDATE agent_runs SET logs = logs || $1 WHERE id = $2", [msg, agent_run_id])
+    SQL.query(Repo, "UPDATE agent_runs SET logs = COALESCE(logs, '') || $1 WHERE id = $2", [msg, Ecto.UUID.dump!(agent_run_id)])
   end
 end

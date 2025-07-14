@@ -17,11 +17,12 @@ defmodule Operately.AI.Tools do
       name: "get_work_map",
       description: "Returns all goals and projects for a given person.",
       function: fn _, context ->
-        log(context, "work_map used")
+        tool_use_log(context, "get_work_map", %{})
+
         person = Map.get(context, :person)
 
         {:ok, workmap} = GetWorkMapQuery.execute(person, %{company_id: person.company_id})
-        api_serialized = OperatelyWeb.Api.Serializer.serialize(workmap, level: :full)
+        api_serialized = OperatelyWeb.Api.Serializer.serialize(workmap, level: :essential)
 
         Jason.encode(api_serialized)
       end
@@ -53,7 +54,7 @@ defmodule Operately.AI.Tools do
         required: ["id"]
       },
       function: fn args, context ->
-        log(context, "get_goal_details used with: #{inspect(args)}")
+        tool_use_log(context, "get_goal_details", args)
 
         me = Map.get(context, :person)
         id = Map.get(args, "id")
@@ -108,7 +109,7 @@ defmodule Operately.AI.Tools do
         required: ["title", "message"]
       },
       function: fn args, context ->
-        log(context, "post_goal_message used with: #{inspect(args)}")
+        tool_use_log(context, "post_goal_message", args)
 
         me = Map.get(context, :person)
         title = Map.get(args, "title")
@@ -136,8 +137,12 @@ defmodule Operately.AI.Tools do
     })
   end
 
+  defp tool_use_log(context, tool_name, args) do
+    log(context, "USING TOOL: #{tool_name} with args: #{inspect(args)}\n")
+  end
+
   defp log(context, msg) do
-    if Map.has_key?(context, :agent_run_id) do
+    if Map.has_key?(context, :agent_run) do
       Operately.People.AgentRun.append_log(context.agent_run.id, msg)
     end
   end
