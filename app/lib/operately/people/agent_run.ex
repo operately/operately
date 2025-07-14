@@ -30,7 +30,7 @@ defmodule Operately.People.AgentRun do
     |> assoc_constraint(:agent_def)
   end
 
-  def create(agent_def) do
+  def create(agent_def, dispatch \\ true) do
     run =
       changeset(%{
         agent_def_id: agent_def.id,
@@ -42,9 +42,18 @@ defmodule Operately.People.AgentRun do
     Multi.new()
     |> Multi.insert(:agent_run, run)
     |> Multi.run(:worker, fn _repo, %{agent_run: agent_run} ->
-      Operately.Ai.AgentWorker.new(%{agent_run_id: agent_run.id}) |> Oban.insert()
+      if dispatch do
+        Operately.Ai.AgentWorker.new(%{agent_run_id: agent_run.id}) |> Oban.insert()
+      else
+        {:ok, nil}
+      end
     end)
     |> Repo.transaction()
+    |> case do
+      {:ok, %{agent_run: agent_run}} -> {:ok, agent_run}
+      {:error, :agent_run, changeset, _} -> {:error, changeset}
+      {:error, :worker, error, _} -> {:error, error}
+    end
   end
 
   def append_log(agent_run_id, msg) do
