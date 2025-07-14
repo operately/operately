@@ -78,21 +78,19 @@ function Page() {
 
   return (
     <PageNew title={state.agent.fullName}>
-      <div className="p-4">
-        <div className="text-sm flex items-center gap-1">
-          <DimmedLink to={state.companyAdminPath}>Company Admin</DimmedLink>
-          <IconChevronRight size={12} />
-          <DimmedLink to={state.companyAiAgentsPath}>AI Agents</DimmedLink>
+      <div className="text-sm flex items-center gap-1 p-4 py-2 border-b border-stroke-base">
+        <DimmedLink to={state.companyAdminPath}>Company Admin</DimmedLink>
+        <IconChevronRight size={12} />
+        <DimmedLink to={state.companyAiAgentsPath}>AI Agents</DimmedLink>
+      </div>
+
+      <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
+        <div>
+          <AgentHeader state={state} />
+          <AgentDefinitionEditor state={state} />
         </div>
 
-        <div className="grid grid-cols-2 gap-8 mt-4">
-          <div>
-            <AgentHeader state={state} />
-            <AgentDefinitionEditor state={state} />
-          </div>
-
-          <AgentRunList runs={state.runs} />
-        </div>
+        <AgentRunList runs={state.runs} />
       </div>
     </PageNew>
   );
