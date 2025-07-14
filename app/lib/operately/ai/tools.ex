@@ -1,9 +1,33 @@
 defmodule Operately.AI.Tools do
-  alias LangChain.Function
-
   @moduledoc """
   Provides AI tools for interacting with Operately's API.
   """
+
+  alias LangChain.Function
+  alias Operately.WorkMaps.GetWorkMapQuery
+
+  @doc """
+  Returns a tool that retrieves the work map for a given person.
+
+  Expected context:
+  - :person - The person for whom the work map is requested.
+  """
+  def work_map do
+    Function.new!(%{
+      name: "get_work_map",
+      description: "Returns all goals and projects for a given person.",
+      function: fn _, context ->
+        tool_use_log(context, "get_work_map", %{})
+
+        person = Map.get(context, :person)
+
+        {:ok, workmap} = GetWorkMapQuery.execute(person, %{company_id: person.company_id})
+        api_serialized = OperatelyWeb.Api.Serializer.serialize(workmap, level: :essential)
+
+        Jason.encode(api_serialized)
+      end
+    })
+  end
 
   @doc """
   Provides details of a goal.
@@ -13,6 +37,7 @@ defmodule Operately.AI.Tools do
 
   Expected context:
   - :person - The person requesting the goal details.
+  - :agent_run_id - The ID of the agent run.
   """
   def get_goal_details do
     Function.new!(%{
@@ -29,6 +54,8 @@ defmodule Operately.AI.Tools do
         required: ["id"]
       },
       function: fn args, context ->
+        tool_use_log(context, "get_goal_details", args)
+
         me = Map.get(context, :person)
         id = Map.get(args, "id")
 
@@ -82,6 +109,8 @@ defmodule Operately.AI.Tools do
         required: ["title", "message"]
       },
       function: fn args, context ->
+        tool_use_log(context, "post_goal_message", args)
+
         me = Map.get(context, :person)
         title = Map.get(args, "title")
         goal_id = Map.get(args, "goal_id")
@@ -106,5 +135,15 @@ defmodule Operately.AI.Tools do
         Jason.encode(resp)
       end
     })
+  end
+
+  defp tool_use_log(context, tool_name, args) do
+    log(context, "USING TOOL: #{tool_name} with args: #{inspect(args)}\n")
+  end
+
+  defp log(context, msg) do
+    if Map.has_key?(context, :agent_run) do
+      Operately.People.AgentRun.append_log(context.agent_run.id, msg)
+    end
   end
 end
