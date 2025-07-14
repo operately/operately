@@ -1,5 +1,6 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateQuarters } from "../utils";
+import { OptionButton } from "./OptionButton";
 
 interface Props {
   selectedDate: Date | undefined;
@@ -37,17 +38,14 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
             <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
             <div className="flex space-x-1">
               {generateQuarters(year).map((quarter) => (
-                <button
+                <OptionButton
                   key={quarter.value}
                   onClick={() => setSelectedDate(new Date(quarter.value))}
-                  className={`flex-1 py-1 px-2 rounded text-center text-xs transition-colors ${
-                    isSelectedQuarter(selectedDate, quarter.value, year)
-                      ? "bg-blue-50 text-blue-700 font-medium"
-                      : "hover:bg-gray-50"
-                  }`}
+                  isSelected={isSelectedQuarter(selectedDate, quarter.value, year)}
+                  className="flex-1 py-1 px-2 text-xs"
                 >
                   {quarter.label}
-                </button>
+                </OptionButton>
               ))}
             </div>
           </div>
