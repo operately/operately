@@ -50,6 +50,7 @@ defmodule OperatelyWeb.Api do
     query(:list_agent_runs, OperatelyWeb.Api.Ai.ListAgentRuns)
     mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
     mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
+    mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
     mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
   end
 

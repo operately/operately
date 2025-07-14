@@ -2473,6 +2473,15 @@ export interface AiEditAgentDefinitionResult {
   success: boolean;
 }
 
+export interface AiEditAgentSandboxModeInput {
+  id: Id;
+  mode: boolean;
+}
+
+export interface AiEditAgentSandboxModeResult {
+  success: boolean;
+}
+
 export interface AiRunAgentInput {
   id: Id;
 }
@@ -4086,6 +4095,10 @@ class ApiNamespaceAi {
 
   async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
     return this.client.post("/ai/edit_agent_definition", input);
+  }
+
+  async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
+    return this.client.post("/ai/edit_agent_sandbox_mode", input);
   }
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
@@ -6517,6 +6530,13 @@ export default {
 
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
     useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
+
+    editAgentSandboxMode: (input: AiEditAgentSandboxModeInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
+    useEditAgentSandboxMode: () =>
+      useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>(
+        defaultApiClient.apiNamespaceAi.editAgentSandboxMode,
+      ),
 
     runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
     useRunAgent: () => useMutation<AiRunAgentInput, AiRunAgentResult>(defaultApiClient.apiNamespaceAi.runAgent),
