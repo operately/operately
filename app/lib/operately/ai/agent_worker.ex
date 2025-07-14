@@ -52,7 +52,7 @@ defmodule Operately.Ai.AgentWorker do
 
     logs = Operately.AI.run_agent(person, agent_def, agent_run)
 
-    Operately.People.AgentRun.append_log(agent_run.id, "\n\n" <> logs)
+    Operately.People.AgentRun.append_log(agent_run.id, "\n" <> logs)
 
     {:ok, agent_run}
   end

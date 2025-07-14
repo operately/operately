@@ -6,6 +6,7 @@ import * as React from "react";
 import {
   Avatar,
   DimmedLink,
+  FormattedTime,
   IconChevronRight,
   PageNew,
   PrimaryButton,
@@ -84,18 +85,14 @@ function Page() {
           <DimmedLink to={state.companyAiAgentsPath}>AI Agents</DimmedLink>
         </div>
 
-        <div className="max-w-xl mx-auto mt-4">
-          <AgentHeader state={state} />
-          <AgentDefinitionEditor state={state} />
-
-          <div className="mt-6">
-            <PrimaryButton onClick={state.runAgent} size="sm">
-              Run Agent
-            </PrimaryButton>
+        <div className="grid grid-cols-2 gap-8 mt-4">
+          <div>
+            <AgentHeader state={state} />
+            <AgentDefinitionEditor state={state} />
           </div>
-        </div>
 
-        <AgentRunList runs={state.runs} />
+          <AgentRunList runs={state.runs} />
+        </div>
       </div>
     </PageNew>
   );
@@ -103,11 +100,18 @@ function Page() {
 
 function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
   return (
-    <div className="flex items-center gap-3">
-      <Avatar person={state.agent} size={40} />
-      <div className="">
-        <div className="text-lg font-bold">{state.agent.fullName}</div>
-        <div className="flex items-center gap-2 text-sm">{state.agent.title}</div>
+    <div className="flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Avatar person={state.agent} size={40} />
+        <div className="">
+          <div className="text-lg font-bold">{state.agent.fullName}</div>
+          <div className="flex items-center gap-2 text-sm">{state.agent.title}</div>
+        </div>
+      </div>
+      <div className="mt-6">
+        <PrimaryButton onClick={state.runAgent} size="sm">
+          Run Agent
+        </PrimaryButton>
       </div>
     </div>
   );
@@ -137,18 +141,27 @@ function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageStat
 
 function AgentRunList({ runs }: { runs: any[] }) {
   if (runs.length === 0) {
-    return <div className="mt-6 text-sm text-surface-text-secondary">No runs yet</div>;
+    return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
   }
 
   return (
-    <div className="mt-6">
+    <div className="overflow-y-scroll h-full">
       <h3 className="text-lg font-bold mb-2">Runs</h3>
       <ul className="space-y-2">
         {runs.map((run) => (
-          <li key={run.id} className="p-2 border border-surface-outline rounded-md">
-            <div className="text-sm">{run.status}</div>
-            <div className="text-xs text-surface-text-secondary">{new Date(run.startedAt).toLocaleString()}</div>
-            <div className="text-xs text-surface-text-secondary">{run.logs}</div>
+          <li key={run.id} className="p-2 border border-surface-outline">
+            <div className="flex items-center justify-between">
+              <div className="text-xs uppercase">{run.status}</div>
+              <div className="text-xs text-surface-text-secondary">
+                <FormattedTime time={run.startedAt} format="relative" />
+              </div>
+            </div>
+
+            {run.logs && (
+              <div className="mt-2 text-xs border-t border-stroke-base pt-1">
+                <pre className="whitespace-pre-wrap">{run.logs}</pre>
+              </div>
+            )}
           </li>
         ))}
       </ul>
