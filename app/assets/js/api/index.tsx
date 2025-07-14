@@ -784,12 +784,14 @@ export interface AddMemberInput {
 
 export interface AgentDef {
   definition: string;
+  sandboxMode: boolean;
 }
 
 export interface AgentRun {
   status: string;
   startedAt: string;
   logs: string;
+  sandboxMode: boolean;
 }
 
 export interface Assignment {
