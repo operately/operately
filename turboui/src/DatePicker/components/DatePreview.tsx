@@ -1,19 +1,35 @@
 import React from "react";
+import { DateType } from "../types";
 
 interface DatePreviewProps {
-  computedDate: string;
+  selectedDate: Date | undefined;
+  dateType: DateType;
 }
 
-export function DatePreview({ computedDate }: DatePreviewProps) {
-  if (!computedDate) return null;
+export function DatePreview({ selectedDate, dateType }: DatePreviewProps) {
+  if (!selectedDate) return null;
 
   const formatDisplayDate = () => {
-    const date = new Date(computedDate);
-    return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
+    switch (dateType) {
+      case "exact":
+        return selectedDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+      case "month":
+        return selectedDate.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+        });
+      case "quarter":
+        const quarter = Math.floor(selectedDate.getMonth() / 3) + 1;
+        return `Q${quarter} ${selectedDate.getFullYear()}`;
+      case "year":
+        return selectedDate.getFullYear().toString();
+      default:
+        return selectedDate.toLocaleDateString("en-US");
+    }
   };
 
   return (

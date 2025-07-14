@@ -1,15 +1,13 @@
 import React from "react";
-import { MonthOption } from "../types";
+import { generateMonths } from "../utils";
 
 interface Props {
-  months: MonthOption[];
-  selectedPeriod: number;
-  setSelectedPeriod: (period: number) => void;
-  selectedYear: number;
+  selectedDate: Date | undefined;
+  setSelectedDate: (date: Date) => void;
   visibleYears: number[];
 }
 
-export function MonthSelector({ months, selectedPeriod, setSelectedPeriod, selectedYear, visibleYears }: Props) {
+export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: Props) {
   return (
     <div className="mb-3">
       <div className="max-h-48 overflow-y-auto p-2">
@@ -17,14 +15,14 @@ export function MonthSelector({ months, selectedPeriod, setSelectedPeriod, selec
           <div key={year} className="mb-4 last:mb-0">
             <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
             <div className="grid grid-cols-4 gap-1">
-              {months.map((month) => (
+              {generateMonths(year).map((month) => (
                 <button
-                  key={`${year}-${month.value}`}
+                  key={month.value}
                   onClick={() => {
-                    setSelectedPeriod(month.value);
+                    setSelectedDate(new Date(month.value));
                   }}
                   className={`py-1 px-2 rounded text-center text-xs transition-colors ${
-                    selectedYear === year && selectedPeriod === month.value
+                    isSelectedMonth(selectedDate, month.value, year)
                       ? "bg-blue-50 text-blue-700 font-medium"
                       : "hover:bg-gray-50"
                   }`}
@@ -38,4 +36,19 @@ export function MonthSelector({ months, selectedPeriod, setSelectedPeriod, selec
       </div>
     </div>
   );
+}
+
+function isSelectedMonth(date: Date | undefined, monthValue: string, year: number): boolean {
+  try {
+    if (!date) return false;
+
+    const monthDate = new Date(monthValue);
+    return (
+      date.getFullYear() === year &&
+      date.getFullYear() === monthDate.getFullYear() &&
+      date.getMonth() === monthDate.getMonth()
+    );
+  } catch {
+    return false;
+  }
 }

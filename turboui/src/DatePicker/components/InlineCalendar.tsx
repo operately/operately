@@ -2,13 +2,13 @@ import React from "react";
 import { IconChevronLeft, IconChevronRight } from "../../icons";
 
 interface Props {
-  calendarDate: Date;
-  selectedDate: string;
-  setSelectedDate: (date: string) => void;
-  setCalendarDate: (date: Date) => void;
+  selectedDate: Date | undefined;
+  setSelectedDate: (date: Date) => void;
 }
 
-export function InlineCalendar({ calendarDate, selectedDate, setSelectedDate, setCalendarDate }: Props) {
+export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
+  const [calendarDate, setCalendarDate] = React.useState(new Date());
+
   const today = new Date();
   const currentMonth = calendarDate.getMonth();
   const currentYear = calendarDate.getFullYear();
@@ -43,14 +43,19 @@ export function InlineCalendar({ calendarDate, selectedDate, setSelectedDate, se
   // Days of the month
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(currentYear, currentMonth, day);
-    const dateString = date.toISOString().split("T")[0] || "";
-    const isSelected = selectedDate === dateString;
+
+    const isSelected =
+      selectedDate instanceof Date &&
+      selectedDate.getFullYear() === date.getFullYear() &&
+      selectedDate.getMonth() === date.getMonth() &&
+      selectedDate.getDate() === date.getDate();
+
     const isToday = date.toDateString() === today.toDateString();
 
     days.push(
       <button
         key={day}
-        onClick={() => setSelectedDate(dateString)}
+        onClick={() => setSelectedDate(date)}
         className={`w-7 h-7 text-xs rounded-full transition-colors ${
           isSelected
             ? "border border-blue-500 bg-blue-50 text-blue-700"

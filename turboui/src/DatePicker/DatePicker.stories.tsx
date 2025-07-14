@@ -22,14 +22,6 @@ const meta = {
       control: "text",
       description: "Initial selected date in YYYY-MM-DD format (for exact date type)",
     },
-    initialYear: {
-      control: "number",
-      description: "Initial selected year",
-    },
-    initialPeriod: {
-      control: "number",
-      description: "Initial selected period (month, quarter, or semester)",
-    },
     onDateSelect: { action: "date selected" },
     onCancel: { action: "canceled" },
   },
@@ -50,7 +42,7 @@ export const Default: Story = {
   ),
   args: {
     initialType: "exact",
-    initialDate: new Date().toISOString().split("T")[0],
+    initialDate: new Date(),
   },
 };
 
@@ -66,8 +58,6 @@ export const MonthSelection: Story = {
   ),
   args: {
     initialType: "month",
-    initialYear: new Date().getFullYear(),
-    initialPeriod: new Date().getMonth() + 1,
   },
 };
 
@@ -83,8 +73,6 @@ export const QuarterSelection: Story = {
   ),
   args: {
     initialType: "quarter",
-    initialYear: new Date().getFullYear(),
-    initialPeriod: Math.floor(new Date().getMonth() / 3) + 1,
   },
 };
 
@@ -100,6 +88,5 @@ export const YearSelection: Story = {
   ),
   args: {
     initialType: "year",
-    initialYear: new Date().getFullYear(),
   },
 };
