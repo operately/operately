@@ -1,6 +1,5 @@
-import React from 'react';
-import { DateType, DateTypeOption } from '../types';
-import { IconChevronDown } from '../../icons';
+import React from "react";
+import { DateType, DateTypeOption } from "../types";
 
 interface DateTypeSelectorProps {
   dateType: DateType;
@@ -8,33 +7,27 @@ interface DateTypeSelectorProps {
   setDateType: (type: DateType) => void;
 }
 
-export const DateTypeSelector: React.FC<DateTypeSelectorProps> = ({
-  dateType,
-  dateTypes,
-  setDateType
-}) => {
-  const handleDateTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setDateType(e.target.value as DateType);
+export const DateTypeSelector: React.FC<DateTypeSelectorProps> = ({ dateType, dateTypes, setDateType }) => {
+  const handleDateTypeChange = (type: DateType) => {
+    setDateType(type);
   };
 
   return (
-    <div className="mb-3">
-      <label className="block text-xs font-medium text-gray-700 mb-1.5">
-        Date Type
-      </label>
-      <div className="relative">
-        <select
-          value={dateType}
-          onChange={handleDateTypeChange}
-          className="w-full p-2 text-sm border border-gray-300 rounded-lg appearance-none bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        >
-          {dateTypes.map(type => (
-            <option key={type.value} value={type.value}>
-              {type.label}
-            </option>
-          ))}
-        </select>
-        <IconChevronDown size={16} stroke={1.5} className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+    <div className="mb-3 border-b border-stroke-dimmed pb-2">
+      <label className="block text-xs font-medium text-content-base mb-1.5">Date Type</label>
+      <div className="flex overflow-hidden rounded-md bg-surface-base">
+        {dateTypes.map((type) => (
+          <button
+            key={type.value}
+            onClick={() => handleDateTypeChange(type.value)}
+            className={`
+              flex-1 py-1 text-sm transition-colors rounded
+              ${dateType === type.value ? "bg-blue-50 text-blue-700 font-medium" : "hover:bg-gray-50"}
+            `}
+          >
+            {type.label}
+          </button>
+        ))}
       </div>
     </div>
   );
