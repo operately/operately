@@ -13,19 +13,67 @@ defmodule Operately.Ai.AgentWorker do
   def perform(job) do
     agent_run_id = job.args["agent_run_id"]
 
-    with {:ok, agent_run} <- get_agent_run(agent_run_id),
-         {:ok, agent_run} <- mark_as_running(agent_run),
-         {:ok, agent_run} <- execute_agent(agent_run) do
-      mark_as_completed(agent_run)
-    else
-      {:error, reason} -> handle_error(agent_run_id, reason)
+    case get_agent_run(agent_run_id) do
+      {:ok, agent_run} ->
+        process_agent_run(agent_run)
+
+      {:error, reason} ->
+        Logger.error("Failed to fetch agent run #{agent_run_id}: #{reason}")
+        {:error, reason}
     end
-  rescue
-    e ->
-      Logger.error("Failed to execute agent run #{job.args["agent_run_id"]}")
-      Logger.error(Exception.format(:error, e, __STACKTRACE__))
-      handle_error(job.args["agent_run_id"], Exception.message(e))
-      {:error, e}
+  end
+
+  defp process_agent_run(agent_run) do
+    case agent_run.status do
+      :planning ->
+        plan_agent_run(agent_run)
+
+      :running ->
+        # execute_agent_run(agent_run)
+        {:ok, agent_run}
+
+      :completed ->
+        {:ok, agent_run}
+
+      _ ->
+        {:error, "Invalid agent run status: #{agent_run.status}"}
+    end
+  end
+
+  def plan_agent_run(agent_run) do
+    person = agent_run.agent_def.person
+    agent_def = agent_run.agent_def
+
+    {:ok, _} = Operately.People.AgentRun.clear_tasks(agent_run.id)
+
+    Operately.People.AgentRun.append_log(agent_run.id, "PLANNING STARTED\n")
+
+    logs =
+      Operately.AI.run_agent(person, agent_def, agent_run, """
+      Use the available information and tools to plan out the tasks for day. Do not post any messages or take any actions yet.
+      Focus on identifying the tasks that need to be done, their order, and any dependencies.
+      Create tasks by using the add_agent_task function. Save the details necessary to execute the tasks later.
+      Make sure to include all relevant details in the task description.
+      """)
+
+    Operately.People.AgentRun.append_log(agent_run.id, "\n" <> logs)
+
+    {:ok, _} = mark_as_running(agent_run)
+
+    {:ok, agent_run}
+  end
+
+  defp execute_agent(agent_run) do
+    person = agent_run.agent_def.person
+    agent_def = agent_run.agent_def
+
+    Operately.People.AgentRun.append_log("EXECUTION STARTED\n")
+
+    logs = Operately.AI.run_agent(person, agent_def, agent_run)
+
+    Operately.People.AgentRun.append_log(agent_run.id, "\n" <> logs)
+
+    {:ok, agent_run}
   end
 
   defp get_agent_run(agent_run_id) do
@@ -41,45 +89,10 @@ defmodule Operately.Ai.AgentWorker do
   end
 
   defp mark_as_running(agent_run) do
-    agent_run
-    |> AgentRun.changeset(%{status: :running})
-    |> Repo.update()
-  end
-
-  defp execute_agent(agent_run) do
-    person = agent_run.agent_def.person
-    agent_def = agent_run.agent_def
-
-    logs = Operately.AI.run_agent(person, agent_def, agent_run)
-
-    Operately.People.AgentRun.append_log(agent_run.id, "\n" <> logs)
-
-    {:ok, agent_run}
+    agent_run |> AgentRun.changeset(%{status: :running}) |> Repo.update()
   end
 
   defp mark_as_completed(agent_run) do
-    agent_run
-    |> AgentRun.changeset(%{
-      status: :completed,
-      finished_at: DateTime.utc_now()
-    })
-    |> Repo.update()
-  end
-
-  defp handle_error(agent_run_id, reason) do
-    case Repo.get(AgentRun, agent_run_id) do
-      nil ->
-        Logger.error("Could not find agent run #{agent_run_id} to mark as failed")
-        {:error, reason}
-
-      agent_run ->
-        agent_run
-        |> AgentRun.changeset(%{
-          status: :failed,
-          finished_at: DateTime.utc_now(),
-          error_message: to_string(reason)
-        })
-        |> Repo.update()
-    end
+    agent_run |> AgentRun.changeset(%{status: :completed, finished_at: DateTime.utc_now()}) |> Repo.update()
   end
 end

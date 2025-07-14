@@ -6,6 +6,33 @@ defmodule Operately.AI.Tools do
   alias LangChain.Function
   alias Operately.WorkMaps.GetWorkMapQuery
 
+  def add_agent_task do
+    Function.new!(%{
+      name: "add_agent_task",
+      description: "Adds a task to the agent run.",
+      parameters_schema: %{
+        type: "object",
+        properties: %{
+          name: %{
+            type: "string",
+            description: "The description of the task."
+          }
+        },
+        required: ["name"]
+      },
+      function: fn args, context ->
+        alias Operately.People.AgentRun
+
+        tool_use_log(context, "add_agent_task", args)
+        agent_run = Map.get(context, :agent_run)
+        name = Map.get(args, "name")
+
+        {:ok, _} = AgentRun.add_task(agent_run, name)
+        {:ok, "Task '#{name}' added to agent run #{agent_run.id}."}
+      end
+    })
+  end
+
   @doc """
   Returns a tool that retrieves the work map for a given person.
 

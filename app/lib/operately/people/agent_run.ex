@@ -64,7 +64,15 @@ defmodule Operately.People.AgentRun do
     SQL.query(Repo, "UPDATE agent_runs SET logs = COALESCE(logs, '') || $1 WHERE id = $2", [msg, Ecto.UUID.dump!(agent_run_id)])
   end
 
-  def add_task(agent_run_id, name, description \\ nil, status \\ "pending") do
+  def clear_tasks(agent_run_id) do
+    run = Repo.get(__MODULE__, agent_run_id)
+
+    run
+    |> changeset(%{tasks: []})
+    |> Repo.update()
+  end
+
+  def add_task(agent_run, name, description \\ nil, status \\ "pending") do
     task = %{
       id: Ecto.UUID.generate(),
       name: name,
@@ -73,7 +81,7 @@ defmodule Operately.People.AgentRun do
       created_at: DateTime.utc_now()
     }
 
-    run = Operately.Repo.get(__MODULE__, agent_run_id)
+    run = Operately.Repo.get(__MODULE__, agent_run.id)
 
     run
     |> changeset(%{tasks: run.tasks ++ [task]})
