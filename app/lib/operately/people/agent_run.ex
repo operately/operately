@@ -46,4 +46,11 @@ defmodule Operately.People.AgentRun do
     end)
     |> Repo.transaction()
   end
+
+  def append_log(agent_run_id, msg) do
+    alias Ecto.Adapters.SQL
+    alias Operately.Repo
+
+    SQL.query(Repo, "UPDATE agent_runs SET logs = logs || $1 WHERE id = $2", [msg, agent_run_id])
+  end
 end

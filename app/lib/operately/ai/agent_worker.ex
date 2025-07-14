@@ -47,11 +47,12 @@ defmodule Operately.Ai.AgentWorker do
   end
 
   defp execute_agent(agent_run) do
-    logs = Operately.AI.run_agent(agent_run.agent_def.person)
+    person = agent_run.agent_def.person
+    agent_def = agent_run.agent_def
 
-    agent_run
-    |> AgentRun.changeset(%{logs: logs})
-    |> Repo.update()
+    logs = Operately.AI.run_agent(person, agent_def, agent_run)
+
+    Operately.People.AgentRun.append_log(agent_run.id, logs)
   end
 
   defp mark_as_completed(agent_run) do
