@@ -131,8 +131,11 @@ defmodule Operately.AI.Tools do
             subscriber_ids: []
           }
 
-        {:ok, resp} = OperatelyWeb.Api.Mutations.CreateGoalDiscussion.call(conn, args)
-        Jason.encode(resp)
+        unless context.agent_run.sandbox_mode do
+          {:ok, _resp} = OperatelyWeb.Api.Mutations.CreateGoalDiscussion.call(conn, args)
+        end
+
+        {:ok, "posted"}
       end
     })
   end

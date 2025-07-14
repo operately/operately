@@ -149,7 +149,9 @@ function AgentRunList({ runs }: { runs: any[] }) {
         {runs.map((run) => (
           <li key={run.id} className="p-2 border border-surface-outline">
             <div className="flex items-center justify-between">
-              <div className="text-xs uppercase">{run.status}</div>
+              <div className="text-xs uppercase">
+                {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
+              </div>
               <div className="text-xs text-surface-text-secondary">
                 <FormattedTime time={run.startedAt} format="relative" />
               </div>
