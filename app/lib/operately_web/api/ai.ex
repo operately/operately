@@ -157,6 +157,27 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule GetAgentRun do
+    use TurboConnect.Query
+    alias OperatelyWeb.Api.Serializer
+
+    inputs do
+      field :id, :id
+    end
+
+    outputs do
+      field :run, :agent_run
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Steps.get_agent_run()
+      |> Steps.respond(fn res -> %{run: Serializer.serialize(res.run, level: :full)} end)
+    end
+  end
+
   defmodule ListAgentRuns do
     use TurboConnect.Query
     alias OperatelyWeb.Api.Serializer
@@ -209,6 +230,12 @@ defmodule OperatelyWeb.Api.Ai do
     def list_agents(multi) do
       Ecto.Multi.run(multi, :agents, fn _repo, %{me: me} ->
         {:ok, Operately.People.list_agents(me.company_id)}
+      end)
+    end
+
+    def get_agent_run(multi, id) do
+      Ecto.Multi.run(multi, :run, fn _repo, _ ->
+        Operately.People.AgentRun.get_by_id(id)
       end)
     end
 

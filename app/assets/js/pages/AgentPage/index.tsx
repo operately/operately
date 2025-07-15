@@ -47,6 +47,7 @@ interface State {
   expandRun: (runId: AgentRun) => void;
   closeRun: () => void;
   creatingRun: boolean;
+  refreshRun: () => void;
 }
 
 function usePageState(): State {
@@ -114,6 +115,13 @@ function usePageState(): State {
     setExpandedRun(null);
   };
 
+  const refreshRun = async () => {
+    if (!expandedRun) return;
+
+    const updatedRun = await Api.ai.getAgentRun({ id: expandedRun.id }).then((d) => d.run);
+    setExpandedRun(updatedRun);
+  };
+
   return {
     agent,
     runs,
@@ -128,6 +136,7 @@ function usePageState(): State {
     expandRun,
     closeRun,
     creatingRun,
+    refreshRun,
   };
 }
 
@@ -247,22 +256,29 @@ function AgentRunList({ state }: { state: ReturnType<typeof usePageState> }) {
 function AgentRunView({ state }: { state: State }) {
   if (!state.expandedRun) return null;
 
+  React.useEffect(() => {
+    const f = setInterval(state.refreshRun);
+    return () => clearInterval(f);
+  }, [state.expandedRun]);
+
+  const run = state.expandedRun;
+
   return (
     <div className="overflow-y-scroll h-full flex flex-col border border-surface-outline">
       <div className="flex items-center justify-between p-2">
         <div className="text-xs uppercase">
-          {state.expandedRun.status} {state.expandedRun.sandboxMode ? "(Sandbox Mode)" : ""}
+          {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
         </div>
 
         <div className="text-xs text-surface-text-secondary flex items-center gap-2">
-          <FormattedTime time={state.expandedRun.startedAt} format="relative" />
+          <FormattedTime time={run.startedAt} format="relative" />
           <IconX onClick={() => state.closeRun()} className="cursor-pointer" size={16} />
         </div>
       </div>
 
-      {state.expandedRun.logs && (
+      {run.logs && (
         <div className="text-xs border-t border-stroke-base p-2 overflow-y-scroll flex-1">
-          <pre className="whitespace-pre-wrap">{state.expandedRun.logs}</pre>
+          <pre className="whitespace-pre-wrap">{run.logs}</pre>
         </div>
       )}
     </div>
