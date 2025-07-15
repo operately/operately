@@ -8,6 +8,7 @@ import {
   DimmedLink,
   FormattedTime,
   IconChevronRight,
+  IconX,
   PageNew,
   PrimaryButton,
   showErrorToast,
@@ -42,16 +43,18 @@ interface State {
   runAgent: () => Promise<void>;
   sandboxMode: boolean;
   saveSandboxMode: (newSandboxMode: boolean) => Promise<void>;
-  expandedRunId: string | null;
-  expandRun: (runId: string) => void;
+  expandedRun: AgentRun | null;
+  expandRun: (runId: AgentRun) => void;
+  closeRun: () => void;
 }
 
 function usePageState(): State {
-  const { agent, runs } = Pages.useLoadedData<LoaderResult>();
+  const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
 
   const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
   const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
-  const [expandedRunId, setExpandedRunId] = React.useState<string | null>(null);
+  const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
+  const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -85,15 +88,31 @@ function usePageState(): State {
 
   const runAgent = async () => {
     try {
-      await Api.ai.runAgent({ id: agent.id });
+      const res = await Api.ai.runAgent({ id: agent.id });
       showSuccessToast("Success", "Agent is running");
+
+      setRuns((prevRuns) => [
+        ...prevRuns,
+        {
+          ...res.run,
+          status: "running",
+          startedAt: new Date(),
+          logs: "",
+        },
+      ]);
+
+      setExpandedRun(run);
     } catch (error) {
       showErrorToast("Network error", "Failed to run agent");
     }
   };
 
-  const expandRun = (runId: string) => {
-    setExpandedRunId((prev) => (prev === runId ? null : runId));
+  const expandRun = (run: AgentRun) => {
+    setExpandedRun(run);
+  };
+
+  const closeRun = () => {
+    setExpandedRun(null);
   };
 
   return {
@@ -106,8 +125,9 @@ function usePageState(): State {
     runAgent,
     sandboxMode,
     saveSandboxMode,
-    expandedRunId,
+    expandedRun,
     expandRun,
+    closeRun,
   };
 }
 
@@ -129,7 +149,7 @@ function Page() {
           <AgentDefinitionEditor state={state} />
         </div>
 
-        <AgentRunList state={state} />
+        {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
       </div>
     </PageNew>
   );
@@ -207,7 +227,7 @@ function AgentRunList({ state }: { state: ReturnType<typeof usePageState> }) {
           <li
             key={run.id}
             className="p-2 border border-surface-outline cursor-pointer"
-            onClick={() => state.expandRun(run.id)}
+            onClick={() => state.expandRun(run)}
           >
             <div className="flex items-center justify-between">
               <div className="text-xs uppercase">
@@ -224,34 +244,27 @@ function AgentRunList({ state }: { state: ReturnType<typeof usePageState> }) {
   );
 }
 
-// function AgentRunList({ runs }: { runs: any[] }) {
-//   if (runs.length === 0) {
-//     return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
-//   }
+function AgentRunView({ state }: { state: State }) {
+  if (!state.expandedRun) return null;
 
-//   return (
-//     <div className="overflow-y-scroll h-full">
-//       <h3 className="text-lg font-bold mb-2">Runs</h3>
-//       <ul className="space-y-2">
-//         {runs.map((run) => (
-//           <li key={run.id} className="p-2 border border-surface-outline">
-//             <div className="flex items-center justify-between">
-//               <div className="text-xs uppercase">
-//                 {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
-//               </div>
-//               <div className="text-xs text-surface-text-secondary">
-//                 <FormattedTime time={run.startedAt} format="relative" />
-//               </div>
-//             </div>
+  return (
+    <div className="overflow-y-scroll h-full flex flex-col border border-surface-outline">
+      <div className="flex items-center justify-between p-2">
+        <div className="text-xs uppercase">
+          {state.expandedRun.status} {state.expandedRun.sandboxMode ? "(Sandbox Mode)" : ""}
+        </div>
 
-//             {run.logs && (
-//               <div className="mt-2 text-xs border-t border-stroke-base pt-1">
-//                 <pre className="whitespace-pre-wrap">{run.logs}</pre>
-//               </div>
-//             )}
-//           </li>
-//         ))}
-//       </ul>
-//     </div>
-//   );
-// }
+        <div className="text-xs text-surface-text-secondary flex items-center gap-2">
+          <FormattedTime time={state.expandedRun.startedAt} format="relative" />
+          <IconX onClick={() => state.closeRun()} className="cursor-pointer" size={16} />
+        </div>
+      </div>
+
+      {state.expandedRun.logs && (
+        <div className="text-xs border-t border-stroke-base p-2 overflow-y-scroll flex-1">
+          <pre className="whitespace-pre-wrap">{state.expandedRun.logs}</pre>
+        </div>
+      )}
+    </div>
+  );
+}

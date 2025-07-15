@@ -788,10 +788,11 @@ export interface AgentDef {
 }
 
 export interface AgentRun {
+  id: string;
   status: string;
   startedAt: string;
-  logs: string;
   sandboxMode: boolean;
+  logs?: string;
 }
 
 export interface Assignment {
@@ -2486,7 +2487,9 @@ export interface AiRunAgentInput {
   id: Id;
 }
 
-export interface AiRunAgentResult {}
+export interface AiRunAgentResult {
+  run: AgentRun;
+}
 
 export interface ArchiveGoalInput {
   goalId?: string | null;

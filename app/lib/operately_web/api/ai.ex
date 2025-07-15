@@ -137,12 +137,14 @@ defmodule OperatelyWeb.Api.Ai do
 
   defmodule RunAgent do
     use TurboConnect.Mutation
+    alias OperatelyWeb.Api.Serializer
 
     inputs do
       field :id, :id
     end
 
     outputs do
+      field :run, :agent_run
     end
 
     def call(conn, inputs) do
@@ -151,7 +153,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.verify_feature_enabled()
       |> Steps.get_agent(inputs.id)
       |> Ecto.Multi.run(:run, fn _, %{agent: agent} -> Operately.People.AgentRun.create(agent.agent_def) end)
-      |> Steps.respond(fn _res -> %{} end)
+      |> Steps.respond(fn res -> Serializer.serialize(res.run, level: :full) end)
     end
   end
 
