@@ -36,7 +36,7 @@ defmodule Operately.Ai.PlanningPhase do
 
   defp run_planning_chain(run) do
     logs = Operately.AI.run_agent(run, @planning_message)
-    Operately.People.AgentRun.append_log(run.id, "\n" <> logs)
+    Operately.People.AgentRun.append_log(run.id, "\n" <> logs <> "\n")
     run
   end
 
