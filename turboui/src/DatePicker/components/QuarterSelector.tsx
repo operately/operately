@@ -1,10 +1,11 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateQuarters } from "../utils";
 import { OptionButton } from "./OptionButton";
+import { SelectedDate } from "../types";
 
 interface Props {
-  selectedDate: Date | undefined;
-  setSelectedDate: (date: Date | undefined) => void;
+  selectedDate: SelectedDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
   visibleYears: number[];
 }
 
@@ -13,7 +14,6 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    setSelectedDate(undefined);
     const currentYearIndex = visibleYears.indexOf(currentYear);
 
     if (currentYearIndex !== -1 && containerRef.current) {
@@ -40,7 +40,9 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
               {generateQuarters(year).map((quarter) => (
                 <OptionButton
                   key={quarter.value}
-                  onClick={() => setSelectedDate(new Date(quarter.value))}
+                  onClick={() => {
+                    setSelectedDate({ type: "quarter", date: new Date(quarter.value) });
+                  }}
                   isSelected={isSelectedQuarter(selectedDate, quarter.value, year)}
                   className="flex-1 py-1 px-2 text-xs"
                 >
@@ -55,21 +57,15 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
   );
 }
 
-function isSelectedQuarter(date: Date | undefined, quarterValue: string, year: number): boolean {
+function isSelectedQuarter(selectedDate: SelectedDate, quarterValue: string, year: number): boolean {
   try {
-    if (!date) return false;
+    if (!selectedDate.date) return false;
 
     const quarterDate = new Date(quarterValue);
+    const quarter = Math.floor(selectedDate.date.getMonth() / 3) + 1;
+    const selectedQuarter = Math.floor(quarterDate.getMonth() / 3) + 1;
 
-    // Check if date is in the same quarter
-    const dateQuarter = Math.floor(date.getMonth() / 3) + 1;
-    const quarterValueQuarter = Math.floor(quarterDate.getMonth() / 3) + 1;
-
-    return (
-      date.getFullYear() === year &&
-      date.getFullYear() === quarterDate.getFullYear() &&
-      dateQuarter === quarterValueQuarter
-    );
+    return selectedDate.type === "quarter" && selectedDate.date.getFullYear() === year && quarter === selectedQuarter;
   } catch {
     return false;
   }
