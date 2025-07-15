@@ -40,8 +40,6 @@ interface State {
   runs: AgentRun[];
   companyAdminPath: string;
   companyAiAgentsPath: string;
-  definition: string;
-  saveDefiniton: (newDefinition: string) => Promise<void>;
   runAgent: () => Promise<void>;
   sandboxMode: boolean;
   saveSandboxMode: (newSandboxMode: boolean) => Promise<void>;
@@ -51,20 +49,43 @@ interface State {
   creatingRun: boolean;
   refreshRun: () => void;
 
+  definition: string;
+  saveDefiniton: (newDefinition: string) => Promise<void>;
   openEditDefinitionModal: () => void;
   closeEditDefinitionModal: () => void;
   isEditDefinitionModalOpen: boolean;
+
+  planningInstructions: string;
+  savePlanningInstructions: (newInstructions: string) => Promise<void>;
+  openEditPlanningInstructionsModal: () => void;
+  closeEditPlanningInstructionsModal: () => void;
+  isEditPlanningInstructionsModalOpen: boolean;
+
+  taskExectionInstructions: string;
+  saveTaskExecutionInstructions: (newInstructions: string) => Promise<void>;
+  openEditTaskExecutionInstructionsModal: () => void;
+  closeEditTaskExecutionInstructionsModal: () => void;
+  isEditTaskExecutionInstructionsModalOpen: boolean;
 }
 
 function usePageState(): State {
   const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
 
   const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
+  const [planningInstructions, setPlanningInstructions] = React.useState<string>(agent.agentDef!.planningInstructions);
+  const [taskExectionInstructions, setTaskExecutionInstructions] = React.useState<string>(
+    agent.agentDef!.taskExecutionInstructions,
+  );
+
   const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
   const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
   const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
   const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
+
   const [isEditDefinitionModalOpen, setIsEditDefinitionModalOpen] = React.useState<boolean>(false);
+  const [isEditPlanningInstructionsModalOpen, setIsEditPlanningInstructionsModalOpen] = React.useState<boolean>(false);
+  const [isEditTaskExecutionInstructionsModalOpen, setIsEditTaskExecutionInstructionsModalOpen] =
+    React.useState<boolean>(false);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -80,6 +101,32 @@ function usePageState(): State {
     } catch (error) {
       setDefinition(oldDefinition);
       showErrorToast("Network error", "Reverting to previous definition");
+    }
+  };
+
+  const savePlanningInstructions = async (newInstructions: string) => {
+    const oldInstructions = planningInstructions;
+
+    try {
+      setPlanningInstructions(newInstructions);
+      await Api.ai.editAgentPlanningInstructions({ id: agent.id, instructions: newInstructions });
+      showSuccessToast("Success", "Agent planning instructions updated successfully");
+    } catch (error) {
+      setPlanningInstructions(oldInstructions);
+      showErrorToast("Network error", "Reverting to previous planning instructions");
+    }
+  };
+
+  const saveTaskExecutionInstructions = async (newInstructions: string) => {
+    const oldInstructions = taskExectionInstructions;
+
+    try {
+      setTaskExecutionInstructions(newInstructions);
+      await Api.ai.editAgentTaskExecutionInstructions({ id: agent.id, instructions: newInstructions });
+      showSuccessToast("Success", "Agent task execution instructions updated successfully");
+    } catch (error) {
+      setTaskExecutionInstructions(oldInstructions);
+      showErrorToast("Network error", "Reverting to previous task execution instructions");
     }
   };
 
@@ -134,8 +181,6 @@ function usePageState(): State {
     runs,
     companyAdminPath,
     companyAiAgentsPath,
-    definition,
-    saveDefiniton,
     runAgent,
     sandboxMode,
     saveSandboxMode,
@@ -145,9 +190,23 @@ function usePageState(): State {
     creatingRun,
     refreshRun,
 
+    definition,
+    saveDefiniton,
     isEditDefinitionModalOpen,
     openEditDefinitionModal: () => setIsEditDefinitionModalOpen(true),
     closeEditDefinitionModal: () => setIsEditDefinitionModalOpen(false),
+
+    planningInstructions,
+    savePlanningInstructions,
+    isEditPlanningInstructionsModalOpen,
+    openEditPlanningInstructionsModal: () => setIsEditPlanningInstructionsModalOpen(true),
+    closeEditPlanningInstructionsModal: () => setIsEditPlanningInstructionsModalOpen(false),
+
+    taskExectionInstructions,
+    saveTaskExecutionInstructions,
+    isEditTaskExecutionInstructionsModalOpen,
+    openEditTaskExecutionInstructionsModal: () => setIsEditTaskExecutionInstructionsModalOpen(true),
+    closeEditTaskExecutionInstructionsModal: () => setIsEditTaskExecutionInstructionsModalOpen(false),
   };
 }
 
@@ -165,9 +224,10 @@ function Page() {
       <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
         <div>
           <AgentHeader state={state} />
+          <AgentDefinition state={state} />
+          <PlanningInstructions state={state} />
           <SandboxModeToggle state={state} />
           <DailyRunToggle state={state} />
-          <AgentDefinition state={state} />
         </div>
 
         {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
@@ -273,6 +333,54 @@ function AgentDefinitionEditModal({ state }: { state: ReturnType<typeof usePageS
           Cancel
         </SecondaryButton>
         <PrimaryButton size="sm" onClick={() => state.saveDefiniton(buffer)}>
+          Save
+        </PrimaryButton>
+      </div>
+    </Modal>
+  );
+}
+
+function PlanningInstructions({ state }: { state: State }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Planning Instructions</label>
+        <SecondaryButton size="xxs" onClick={state.openEditPlanningInstructionsModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.planningInstructions}</p>
+
+      <AgentDefinitionEditModal state={state} />
+    </div>
+  );
+}
+
+function PlanningInstructionsEditModal({ state }: { state: State }) {
+  const [buffer, setBuffer] = React.useState(state.planningInstructions);
+
+  return (
+    <Modal
+      title="Edit Agent Definition"
+      isOpen={state.isEditPlanningInstructionsModalOpen}
+      onClose={state.closeEditPlanningInstructionsModal}
+      closeOnBackdropClick={false}
+      size="large"
+    >
+      <textarea
+        className="w-full p-2 border border-surface-outline rounded-md text-xs"
+        rows={30}
+        value={buffer}
+        onChange={(e) => setBuffer(e.target.value)}
+        placeholder="Enter agent definition here..."
+      />
+
+      <div className="mt-4 flex justify-end gap-2">
+        <SecondaryButton size="sm" onClick={state.closeEditPlanningInstructionsModal}>
+          Cancel
+        </SecondaryButton>
+        <PrimaryButton size="sm" onClick={() => state.savePlanningInstructions(buffer)}>
           Save
         </PrimaryButton>
       </div>
