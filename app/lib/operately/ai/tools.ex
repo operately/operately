@@ -87,21 +87,18 @@ defmodule Operately.AI.Tools do
       function: fn args, context ->
         log(context, "TOOL USE: get_goal_details. ID=#{args["id"]}\n")
 
-        me = Map.get(context, :person)
-        id = Map.get(args, "id")
+        case OperatelyWeb.Api.Helpers.decode_id(Map.get(args, "id")) do
+          {:ok, id} ->
+            me = Map.get(context, :person)
+            conn = %{assigns: %{current_person: me}}
+            args = %{id: id}
 
-        conn = %{
-          assigns: %{
-            current_person: me
-          }
-        }
+            {:ok, goal} = OperatelyWeb.Api.Queries.GetGoal.call(conn, args)
+            Jason.encode(goal)
 
-        args = %{
-          id: id
-        }
-
-        {:ok, goal} = OperatelyWeb.Api.Queries.GetGoal.call(conn, args)
-        Jason.encode(goal)
+          {:error, _} ->
+            {:error, "Invalid goal ID format."}
+        end
       end
     })
   end
