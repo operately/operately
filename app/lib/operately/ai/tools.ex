@@ -5,6 +5,33 @@ defmodule Operately.AI.Tools do
 
   alias LangChain.Function
   alias Operately.WorkMaps.GetWorkMapQuery
+  alias Operately.People.AgentRun
+
+  def add_agent_task do
+    Function.new!(%{
+      name: "add_agent_task",
+      description: "Adds a task to the agent run.",
+      parameters_schema: %{
+        type: "object",
+        properties: %{
+          name: %{
+            type: "string",
+            description: "The description of the task."
+          }
+        },
+        required: ["name"]
+      },
+      function: fn args, context ->
+        log(context, "TOOL USE: add_agent_task. Name: #{args["name"]}\n")
+
+        agent_run = Map.get(context, :agent_run)
+        name = Map.get(args, "name")
+
+        {:ok, _} = AgentRun.add_task(agent_run, name)
+        {:ok, "Task '#{name}' added to agent run #{agent_run.id}."}
+      end
+    })
+  end
 
   @doc """
   Returns a tool that retrieves the work map for a given person.
@@ -17,7 +44,7 @@ defmodule Operately.AI.Tools do
       name: "get_work_map",
       description: "Returns all goals and projects for a given person.",
       function: fn _, context ->
-        tool_use_log(context, "get_work_map", %{})
+        log(context, "TOOL USE: get_work_map\n")
 
         person = Map.get(context, :person)
 
@@ -54,7 +81,7 @@ defmodule Operately.AI.Tools do
         required: ["id"]
       },
       function: fn args, context ->
-        tool_use_log(context, "get_goal_details", args)
+        log(context, "TOOL USE: get_goal_details. ID=#{args["id"]}\n")
 
         me = Map.get(context, :person)
         id = Map.get(args, "id")
@@ -109,7 +136,15 @@ defmodule Operately.AI.Tools do
         required: ["title", "message"]
       },
       function: fn args, context ->
-        tool_use_log(context, "post_goal_message", args)
+        log_details = [
+          "TOOL USE: post_goal_message",
+          "  Goal ID: #{args["goal_id"]}",
+          "  Title: #{args["title"]}",
+          "",
+          args["message"] |> line_break(at: 80) |> indent(with: "  ")
+        ]
+
+        log(context, Enum.join(log_details, "\n") <> "\n")
 
         me = Map.get(context, :person)
         title = Map.get(args, "title")
@@ -141,13 +176,30 @@ defmodule Operately.AI.Tools do
     })
   end
 
-  defp tool_use_log(context, tool_name, args) do
-    log(context, "USING TOOL: #{tool_name} with args: #{inspect(args)}\n")
-  end
-
   defp log(context, msg) do
     if Map.has_key?(context, :agent_run) do
       Operately.People.AgentRun.append_log(context.agent_run.id, msg)
     end
+  end
+
+  defp indent(text, with: prefix) do
+    text
+    |> String.split("\n")
+    |> Enum.map(&"#{prefix}#{&1}")
+    |> Enum.join("\n")
+  end
+
+  defp line_break(text, at: length) do
+    text
+    |> String.split(" ")
+    |> Enum.reduce({[], 0}, fn word, {lines, current_length} ->
+      if current_length + String.length(word) + 1 > length do
+        {lines ++ ["\n" <> word], String.length(word)}
+      else
+        {lines ++ [word], current_length + String.length(word) + 1}
+      end
+    end)
+    |> elem(0)
+    |> Enum.join(" ")
   end
 end
