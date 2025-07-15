@@ -22,13 +22,17 @@ defmodule Operately.AI.Tools do
         required: ["name"]
       },
       function: fn args, context ->
-        log(context, "TOOL USE: add_agent_task. Name: #{args["name"]}\n")
+        if context.agent_run.status != :planning do
+          {:error, "Cannot add task when agent run is not in planning phase."}
+        else
+          log(context, "TOOL USE: add_agent_task. Name: #{args["name"]}\n")
 
-        agent_run = Map.get(context, :agent_run)
-        name = Map.get(args, "name")
+          agent_run = Map.get(context, :agent_run)
+          name = Map.get(args, "name")
 
-        {:ok, _} = AgentRun.add_task(agent_run, name)
-        {:ok, "Task '#{name}' added to agent run #{agent_run.id}."}
+          {:ok, _} = AgentRun.add_task(agent_run, name)
+          {:ok, "Task '#{name}' added to agent run #{agent_run.id}."}
+        end
       end
     })
   end
