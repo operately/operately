@@ -153,7 +153,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.verify_feature_enabled()
       |> Steps.get_agent(inputs.id)
       |> Ecto.Multi.run(:run, fn _, %{agent: agent} -> Operately.People.AgentRun.create(agent.agent_def) end)
-      |> Steps.respond(fn res -> Serializer.serialize(res.run, level: :full) end)
+      |> Steps.respond(fn res -> %{run: Serializer.serialize(res.run, level: :full)} end)
     end
   end
 

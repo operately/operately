@@ -46,6 +46,7 @@ interface State {
   expandedRun: AgentRun | null;
   expandRun: (runId: AgentRun) => void;
   closeRun: () => void;
+  creatingRun: boolean;
 }
 
 function usePageState(): State {
@@ -55,6 +56,7 @@ function usePageState(): State {
   const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
   const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
   const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
+  const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -87,24 +89,21 @@ function usePageState(): State {
   };
 
   const runAgent = async () => {
+    if (creatingRun) return;
+    setCreatingRun(true);
+
     try {
       const res = await Api.ai.runAgent({ id: agent.id });
       showSuccessToast("Success", "Agent is running");
+      console.log("Agent run response:", res);
 
-      setRuns((prevRuns) => [
-        ...prevRuns,
-        {
-          ...res.run,
-          status: "running",
-          startedAt: new Date(),
-          logs: "",
-        },
-      ]);
-
-      setExpandedRun(run);
+      setRuns((prevRuns) => [...prevRuns, res.run]);
+      setExpandedRun(res.run);
     } catch (error) {
       showErrorToast("Network error", "Failed to run agent");
     }
+
+    setCreatingRun(false);
   };
 
   const expandRun = (run: AgentRun) => {
@@ -128,6 +127,7 @@ function usePageState(): State {
     expandedRun,
     expandRun,
     closeRun,
+    creatingRun,
   };
 }
 
@@ -166,7 +166,7 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
         </div>
       </div>
       <div className="">
-        <PrimaryButton onClick={state.runAgent} size="sm">
+        <PrimaryButton onClick={state.runAgent} size="sm" loading={state.creatingRun}>
           Run Agent
         </PrimaryButton>
       </div>
