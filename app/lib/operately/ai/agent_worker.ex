@@ -11,8 +11,9 @@ defmodule Operately.Ai.AgentWorker do
     id = job.args["agent_run_id"]
 
     case AgentRun.get_by_id(id) do
-      {:ok, agent_run} ->
-        process_agent_run(agent_run)
+      {:ok, run} ->
+        process_agent_run(run)
+        {:ok, run}
 
       {:error, reason} ->
         Logger.error("Failed to fetch agent run #{id}: #{reason}")
