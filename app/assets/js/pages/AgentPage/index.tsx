@@ -71,13 +71,15 @@ interface State {
 function usePageState(): State {
   const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
 
-  const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
-  const [planningInstructions, setPlanningInstructions] = React.useState<string>(agent.agentDef!.planningInstructions);
+  const def = agent.agentDef!;
+
+  const [definition, setDefinition] = React.useState<string>(def.definition);
+  const [planningInstructions, setPlanningInstructions] = React.useState<string>(def.planningInstructions);
   const [taskExectionInstructions, setTaskExecutionInstructions] = React.useState<string>(
-    agent.agentDef!.taskExecutionInstructions,
+    def.taskExecutionInstructions,
   );
 
-  const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
+  const [sandboxMode, setSandboxMode] = React.useState<boolean>(def.sandboxMode);
   const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
   const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
   const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
