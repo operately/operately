@@ -354,7 +354,7 @@ function PlanningInstructions({ state }: { state: State }) {
 
       <p className="mt-2 text-xs line-clamp-4">{state.planningInstructions}</p>
 
-      <AgentDefinitionEditModal state={state} />
+      <PlanningInstructionsEditModal state={state} />
     </div>
   );
 }
