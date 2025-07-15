@@ -4,6 +4,7 @@ defmodule Operately.People.AgentRun do
 
   alias Operately.Repo
   alias Ecto.Multi
+  import Ecto.Query, only: [from: 2]
 
   schema "agent_runs" do
     belongs_to :agent_def, Operately.People.AgentDef
@@ -29,6 +30,15 @@ defmodule Operately.People.AgentRun do
     |> validate_required([:agent_def_id, :status, :started_at])
     |> validate_inclusion(:status, [:planning, :running, :completed, :failed, :cancelled])
     |> assoc_constraint(:agent_def)
+  end
+
+  def get_by_id(id) do
+    query = from ar in __MODULE__, where: ar.id == ^id, preload: [agent_def: :person]
+
+    case Operately.Repo.one(query) do
+      nil -> {:error, "Agent run not found"}
+      agent_run -> {:ok, agent_run}
+    end
   end
 
   def create(agent_def, dispatch \\ true) do
