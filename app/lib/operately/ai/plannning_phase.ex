@@ -16,6 +16,7 @@ defmodule Operately.Ai.PlanningPhase do
     |> run_planning_chain()
     |> mark_as_running()
     |> schedule_next_step()
+    |> log_planning_end()
   end
 
   defp clear_tasks(run) do
@@ -25,6 +26,11 @@ defmodule Operately.Ai.PlanningPhase do
 
   defp log_planning_start(run) do
     Operately.People.AgentRun.append_log(run.id, "PLANNING STARTED\n")
+    run
+  end
+
+  defp log_planning_end(run) do
+    Operately.People.AgentRun.append_log(run.id, "PLANNING ENDED\n")
     run
   end
 
@@ -40,6 +46,7 @@ defmodule Operately.Ai.PlanningPhase do
   end
 
   defp mark_as_running(agent_run) do
-    agent_run |> AgentRun.changeset(%{status: :running}) |> Repo.update()
+    {:ok, run} = agent_run |> AgentRun.changeset(%{status: :running}) |> Repo.update()
+    run
   end
 end

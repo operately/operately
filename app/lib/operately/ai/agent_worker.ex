@@ -1,10 +1,7 @@
 defmodule Operately.Ai.AgentWorker do
   require Logger
   use Oban.Worker
-
-  alias Operately.Repo
   alias Operately.People.AgentRun
-  import Ecto.Query
 
   #
   # Performs the agent run execution, from fetching the agent run
