@@ -2,7 +2,7 @@ defmodule Operately.Goals.Timeframe do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @derive {Jason.Encoder, only: [:type, :start_date, :end_date]}
+  @derive {Jason.Encoder, only: [:type, :start_date, :end_date, :contextual_start_date, :contextual_end_date]}
 
   def fetch(term, key) when is_atom(key) do
     {:ok, Map.get(term, key)}
@@ -16,6 +16,9 @@ defmodule Operately.Goals.Timeframe do
     field :type, :string
     field :start_date, :date
     field :end_date, :date
+
+    embeds_one :contextual_start_date, Operately.ContextualDates.ContextualDate
+    embeds_one :contextual_end_date, Operately.ContextualDates.ContextualDate
   end
 
   def changeset(attrs) do
@@ -29,6 +32,8 @@ defmodule Operately.Goals.Timeframe do
   def changeset(timeframe, attrs) do
     timeframe
     |> cast(attrs, [:type, :start_date, :end_date])
+    |> cast_embed(:contextual_start_date)
+    |> cast_embed(:contextual_end_date)
     |> validate_required([:type, :start_date, :end_date])
     |> validate_inclusion(:type, ["year", "quarter", "month", "days"])
     |> validate_year_dates()
