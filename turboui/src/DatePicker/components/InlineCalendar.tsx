@@ -1,9 +1,10 @@
 import React from "react";
 import { IconChevronLeft, IconChevronRight } from "../../icons";
+import { SelectedDate } from "../types";
 
 interface Props {
-  selectedDate: Date | undefined;
-  setSelectedDate: (date: Date) => void;
+  selectedDate: SelectedDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
 }
 
 export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
@@ -44,18 +45,22 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(currentYear, currentMonth, day);
 
-    const isSelected =
-      selectedDate instanceof Date &&
-      selectedDate.getFullYear() === date.getFullYear() &&
-      selectedDate.getMonth() === date.getMonth() &&
-      selectedDate.getDate() === date.getDate();
+    const isSelected = selectedDate.date
+      ? selectedDate.type === "exact" &&
+        selectedDate.date.getDate() === day &&
+        selectedDate.date.getMonth() === currentMonth &&
+        selectedDate.date.getFullYear() === currentYear
+      : false;
+    const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
-    const isToday = date.toDateString() === today.toDateString();
+    const handleDayClick = (day: Date) => {
+      setSelectedDate({ date: day, type: "exact" });
+    };
 
     days.push(
       <button
         key={day}
-        onClick={() => setSelectedDate(date)}
+        onClick={() => handleDayClick(date)}
         className={`w-7 h-7 text-xs rounded-full transition-colors ${
           isSelected
             ? "border border-blue-500 bg-blue-50 text-blue-700"

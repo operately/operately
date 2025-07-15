@@ -1,10 +1,11 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateMonths } from "../utils";
 import { OptionButton } from "./OptionButton";
+import { SelectedDate } from "../types";
 
 interface Props {
-  selectedDate: Date | undefined;
-  setSelectedDate: (date: Date | undefined) => void;
+  selectedDate: SelectedDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
   visibleYears: number[];
 }
 
@@ -13,7 +14,6 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    setSelectedDate(undefined);
     const currentYearIndex = visibleYears.indexOf(currentYear);
 
     if (currentYearIndex !== -1 && containerRef.current) {
@@ -41,7 +41,8 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
                 <OptionButton
                   key={month.value}
                   onClick={() => {
-                    setSelectedDate(new Date(month.value));
+                    const date = new Date(month.value);
+                    setSelectedDate({ date, type: "month" });
                   }}
                   isSelected={isSelectedMonth(selectedDate, month.value, year)}
                   className="py-1 px-2 text-xs"
@@ -57,15 +58,16 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
   );
 }
 
-function isSelectedMonth(date: Date | undefined, monthValue: string, year: number): boolean {
+function isSelectedMonth(selectedDate: SelectedDate, monthValue: string, year: number): boolean {
   try {
-    if (!date) return false;
+    if (!selectedDate.date) return false;
 
     const monthDate = new Date(monthValue);
     return (
-      date.getFullYear() === year &&
-      date.getFullYear() === monthDate.getFullYear() &&
-      date.getMonth() === monthDate.getMonth()
+      selectedDate.type === "month" &&
+      selectedDate.date.getFullYear() === year &&
+      selectedDate.date.getFullYear() === monthDate.getFullYear() &&
+      selectedDate.date.getMonth() === monthDate.getMonth()
     );
   } catch {
     return false;
