@@ -36,13 +36,18 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   tags: ["autodocs"],
   render: (args) => (
-    <div className="max-w-md mx-auto bg-white p-4">
-      <DatePicker {...args} />
+    <div className="max-w-md mx-auto bg-white p-4 mt-12">
+      <div className="mt-6">
+        <DatePicker {...args} />
+      </div>
     </div>
   ),
   args: {
     initialType: "exact",
     initialDate: new Date(),
+  },
+  parameters: {
+    layout: 'padded',
   },
 };
 
@@ -52,12 +57,18 @@ export const Default: Story = {
 export const MonthSelection: Story = {
   tags: ["autodocs"],
   render: (args) => (
-    <div className="max-w-md mx-auto bg-white p-4">
-      <DatePicker {...args} />
+    <div className="max-w-md mx-auto bg-white p-4 mt-12">
+      <div className="mt-6">
+        <DatePicker {...args} />
+      </div>
     </div>
   ),
   args: {
     initialType: "month",
+    initialDate: new Date("2025-03-31"),
+  },
+  parameters: {
+    layout: 'padded',
   },
 };
 
@@ -67,12 +78,18 @@ export const MonthSelection: Story = {
 export const QuarterSelection: Story = {
   tags: ["autodocs"],
   render: (args) => (
-    <div className="max-w-md mx-auto bg-white p-4">
-      <DatePicker {...args} />
+    <div className="max-w-md mx-auto bg-white p-4 mt-12">
+      <div className="mt-6">
+        <DatePicker {...args} />
+      </div>
     </div>
   ),
   args: {
     initialType: "quarter",
+    initialDate: new Date("2026-09-30"),
+  },
+  parameters: {
+    layout: 'padded',
   },
 };
 
@@ -82,11 +99,17 @@ export const QuarterSelection: Story = {
 export const YearSelection: Story = {
   tags: ["autodocs"],
   render: (args) => (
-    <div className="max-w-md mx-auto bg-white p-4">
-      <DatePicker {...args} />
+    <div className="max-w-md mx-auto bg-white p-4 mt-12">
+      <div className="mt-6">
+        <DatePicker {...args} />
+      </div>
     </div>
   ),
   args: {
     initialType: "year",
+    initialDate: new Date("2024-12-31"),
+  },
+  parameters: {
+    layout: 'padded',
   },
 };
