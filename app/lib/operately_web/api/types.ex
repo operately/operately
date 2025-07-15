@@ -1210,10 +1210,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :agent_run do
+    field :id, :string
     field :status, :string
     field :started_at, :datetime
-    field :logs, :string
     field :sandbox_mode, :boolean
+
+    field? :logs, :string
   end
 
   object :person_permissions do

@@ -32,11 +32,26 @@ async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-function usePageState() {
+interface State {
+  agent: Person;
+  runs: AgentRun[];
+  companyAdminPath: string;
+  companyAiAgentsPath: string;
+  definition: string;
+  saveDefiniton: (newDefinition: string) => Promise<void>;
+  runAgent: () => Promise<void>;
+  sandboxMode: boolean;
+  saveSandboxMode: (newSandboxMode: boolean) => Promise<void>;
+  expandedRunId: string | null;
+  expandRun: (runId: string) => void;
+}
+
+function usePageState(): State {
   const { agent, runs } = Pages.useLoadedData<LoaderResult>();
 
   const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
   const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
+  const [expandedRunId, setExpandedRunId] = React.useState<string | null>(null);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -77,6 +92,10 @@ function usePageState() {
     }
   };
 
+  const expandRun = (runId: string) => {
+    setExpandedRunId((prev) => (prev === runId ? null : runId));
+  };
+
   return {
     agent,
     runs,
@@ -87,6 +106,8 @@ function usePageState() {
     runAgent,
     sandboxMode,
     saveSandboxMode,
+    expandedRunId,
+    expandRun,
   };
 }
 
@@ -108,7 +129,7 @@ function Page() {
           <AgentDefinitionEditor state={state} />
         </div>
 
-        <AgentRunList runs={state.runs} />
+        <AgentRunList state={state} />
       </div>
     </PageNew>
   );
@@ -173,8 +194,8 @@ function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageStat
   );
 }
 
-function AgentRunList({ runs }: { runs: any[] }) {
-  if (runs.length === 0) {
+function AgentRunList({ state }: { state: ReturnType<typeof usePageState> }) {
+  if (state.runs.length === 0) {
     return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
   }
 
@@ -182,8 +203,12 @@ function AgentRunList({ runs }: { runs: any[] }) {
     <div className="overflow-y-scroll h-full">
       <h3 className="text-lg font-bold mb-2">Runs</h3>
       <ul className="space-y-2">
-        {runs.map((run) => (
-          <li key={run.id} className="p-2 border border-surface-outline">
+        {state.runs.map((run) => (
+          <li
+            key={run.id}
+            className="p-2 border border-surface-outline cursor-pointer"
+            onClick={() => state.expandRun(run.id)}
+          >
             <div className="flex items-center justify-between">
               <div className="text-xs uppercase">
                 {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
@@ -192,15 +217,41 @@ function AgentRunList({ runs }: { runs: any[] }) {
                 <FormattedTime time={run.startedAt} format="relative" />
               </div>
             </div>
-
-            {run.logs && (
-              <div className="mt-2 text-xs border-t border-stroke-base pt-1">
-                <pre className="whitespace-pre-wrap">{run.logs}</pre>
-              </div>
-            )}
           </li>
         ))}
       </ul>
     </div>
   );
 }
+
+// function AgentRunList({ runs }: { runs: any[] }) {
+//   if (runs.length === 0) {
+//     return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
+//   }
+
+//   return (
+//     <div className="overflow-y-scroll h-full">
+//       <h3 className="text-lg font-bold mb-2">Runs</h3>
+//       <ul className="space-y-2">
+//         {runs.map((run) => (
+//           <li key={run.id} className="p-2 border border-surface-outline">
+//             <div className="flex items-center justify-between">
+//               <div className="text-xs uppercase">
+//                 {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
+//               </div>
+//               <div className="text-xs text-surface-text-secondary">
+//                 <FormattedTime time={run.startedAt} format="relative" />
+//               </div>
+//             </div>
+
+//             {run.logs && (
+//               <div className="mt-2 text-xs border-t border-stroke-base pt-1">
+//                 <pre className="whitespace-pre-wrap">{run.logs}</pre>
+//               </div>
+//             )}
+//           </li>
+//         ))}
+//       </ul>
+//     </div>
+//   );
+// }
