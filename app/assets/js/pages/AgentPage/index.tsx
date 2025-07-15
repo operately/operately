@@ -8,6 +8,7 @@ import {
   DimmedLink,
   FormattedTime,
   IconChevronRight,
+  IconX,
   PageNew,
   PrimaryButton,
   showErrorToast,
@@ -32,11 +33,31 @@ async function loader({ params }): Promise<LoaderResult> {
   };
 }
 
-function usePageState() {
-  const { agent, runs } = Pages.useLoadedData<LoaderResult>();
+interface State {
+  agent: Person;
+  runs: AgentRun[];
+  companyAdminPath: string;
+  companyAiAgentsPath: string;
+  definition: string;
+  saveDefiniton: (newDefinition: string) => Promise<void>;
+  runAgent: () => Promise<void>;
+  sandboxMode: boolean;
+  saveSandboxMode: (newSandboxMode: boolean) => Promise<void>;
+  expandedRun: AgentRun | null;
+  expandRun: (runId: AgentRun) => void;
+  closeRun: () => void;
+  creatingRun: boolean;
+  refreshRun: () => void;
+}
+
+function usePageState(): State {
+  const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
 
   const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
   const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
+  const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
+  const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
+  const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -69,12 +90,36 @@ function usePageState() {
   };
 
   const runAgent = async () => {
+    if (creatingRun) return;
+    setCreatingRun(true);
+
     try {
-      await Api.ai.runAgent({ id: agent.id });
+      const res = await Api.ai.runAgent({ id: agent.id });
       showSuccessToast("Success", "Agent is running");
+      console.log("Agent run response:", res);
+
+      setRuns((prevRuns) => [...prevRuns, res.run]);
+      setExpandedRun(res.run);
     } catch (error) {
       showErrorToast("Network error", "Failed to run agent");
     }
+
+    setCreatingRun(false);
+  };
+
+  const expandRun = (run: AgentRun) => {
+    setExpandedRun(run);
+  };
+
+  const closeRun = () => {
+    setExpandedRun(null);
+  };
+
+  const refreshRun = async () => {
+    if (!expandedRun) return;
+
+    const updatedRun = await Api.ai.getAgentRun({ id: expandedRun.id }).then((d) => d.run);
+    setExpandedRun(updatedRun);
   };
 
   return {
@@ -87,6 +132,11 @@ function usePageState() {
     runAgent,
     sandboxMode,
     saveSandboxMode,
+    expandedRun,
+    expandRun,
+    closeRun,
+    creatingRun,
+    refreshRun,
   };
 }
 
@@ -108,7 +158,7 @@ function Page() {
           <AgentDefinitionEditor state={state} />
         </div>
 
-        <AgentRunList runs={state.runs} />
+        {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
       </div>
     </PageNew>
   );
@@ -125,7 +175,7 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
         </div>
       </div>
       <div className="">
-        <PrimaryButton onClick={state.runAgent} size="sm">
+        <PrimaryButton onClick={state.runAgent} size="sm" loading={state.creatingRun}>
           Run Agent
         </PrimaryButton>
       </div>
@@ -173,8 +223,8 @@ function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageStat
   );
 }
 
-function AgentRunList({ runs }: { runs: any[] }) {
-  if (runs.length === 0) {
+function AgentRunList({ state }: { state: ReturnType<typeof usePageState> }) {
+  if (state.runs.length === 0) {
     return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
   }
 
@@ -182,8 +232,12 @@ function AgentRunList({ runs }: { runs: any[] }) {
     <div className="overflow-y-scroll h-full">
       <h3 className="text-lg font-bold mb-2">Runs</h3>
       <ul className="space-y-2">
-        {runs.map((run) => (
-          <li key={run.id} className="p-2 border border-surface-outline">
+        {state.runs.map((run) => (
+          <li
+            key={run.id}
+            className="p-2 border border-surface-outline cursor-pointer"
+            onClick={() => state.expandRun(run)}
+          >
             <div className="flex items-center justify-between">
               <div className="text-xs uppercase">
                 {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
@@ -192,15 +246,41 @@ function AgentRunList({ runs }: { runs: any[] }) {
                 <FormattedTime time={run.startedAt} format="relative" />
               </div>
             </div>
-
-            {run.logs && (
-              <div className="mt-2 text-xs border-t border-stroke-base pt-1">
-                <pre className="whitespace-pre-wrap">{run.logs}</pre>
-              </div>
-            )}
           </li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+function AgentRunView({ state }: { state: State }) {
+  if (!state.expandedRun) return null;
+
+  React.useEffect(() => {
+    const f = setInterval(state.refreshRun, 2000);
+    return () => clearInterval(f);
+  }, [state.expandedRun]);
+
+  const run = state.expandedRun;
+
+  return (
+    <div className="overflow-y-scroll h-full flex flex-col border border-surface-outline">
+      <div className="flex items-center justify-between p-2">
+        <div className="text-xs uppercase">
+          {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
+        </div>
+
+        <div className="text-xs text-surface-text-secondary flex items-center gap-2">
+          <FormattedTime time={run.startedAt} format="relative" />
+          <IconX onClick={() => state.closeRun()} className="cursor-pointer" size={16} />
+        </div>
+      </div>
+
+      {run.logs && (
+        <div className="text-xs border-t border-stroke-base p-2 overflow-y-scroll flex-1">
+          <pre className="whitespace-pre-wrap">{run.logs}</pre>
+        </div>
+      )}
     </div>
   );
 }
