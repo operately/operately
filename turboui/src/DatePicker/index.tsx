@@ -41,26 +41,45 @@ export function DatePicker({
   const [open, setOpen] = useState(false);
   const [dateType, setDateType] = useState<DateType>(initialType || "exact");
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({ type: initialType, date: initialDate });
+  const [previousSelectedDate, setPreviousSelectedDate] = useState<SelectedDate>({
+    type: initialType,
+    date: initialDate,
+  });
 
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
+
+    if (isOpen) {
+      setPreviousSelectedDate({ ...selectedDate });
+    }
   };
 
   const handleTriggerClick = () => {
     setOpen(!open);
+
+    if (!open) {
+      setPreviousSelectedDate({ ...selectedDate });
+    }
+  };
+
+  const handleCancel = () => {
+    setSelectedDate(previousSelectedDate);
+    setOpen(false);
+    onCancel?.();
+  };
+
+  const handleDateSelect = (date: string) => {
+    setOpen(false);
+    onDateSelect?.(date);
   };
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild>
         <div>
-          <DatePickerTrigger
-            selectedDate={selectedDate}
-            label={triggerLabel}
-            onClick={handleTriggerClick}
-          />
+          <DatePickerTrigger selectedDate={selectedDate} label={triggerLabel} onClick={handleTriggerClick} />
         </div>
       </Popover.Trigger>
 
@@ -71,8 +90,8 @@ export function DatePicker({
             selectedDate={selectedDate}
             setDateType={setDateType}
             setSelectedDate={setSelectedDate}
-            onDateSelect={onDateSelect}
-            onCancel={onCancel}
+            onDateSelect={handleDateSelect}
+            onCancel={handleCancel}
             yearOptions={yearOptions}
           />
         </Popover.Content>
