@@ -173,7 +173,7 @@ defmodule OperatelyWeb.Api.Ai do
       conn
       |> Steps.start()
       |> Steps.verify_feature_enabled()
-      |> Steps.get_agent_run()
+      |> Steps.get_agent_run(inputs.id)
       |> Steps.respond(fn res -> %{run: Serializer.serialize(res.run, level: :full)} end)
     end
   end

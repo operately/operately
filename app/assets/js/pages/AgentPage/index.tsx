@@ -257,7 +257,7 @@ function AgentRunView({ state }: { state: State }) {
   if (!state.expandedRun) return null;
 
   React.useEffect(() => {
-    const f = setInterval(state.refreshRun);
+    const f = setInterval(state.refreshRun, 2000);
     return () => clearInterval(f);
   }, [state.expandedRun]);
 
