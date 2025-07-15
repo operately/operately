@@ -9,8 +9,10 @@ import {
   FormattedTime,
   IconChevronRight,
   IconX,
+  Modal,
   PageNew,
   PrimaryButton,
+  SecondaryButton,
   showErrorToast,
   showSuccessToast,
   SwitchToggle,
@@ -38,8 +40,6 @@ interface State {
   runs: AgentRun[];
   companyAdminPath: string;
   companyAiAgentsPath: string;
-  definition: string;
-  saveDefiniton: (newDefinition: string) => Promise<void>;
   runAgent: () => Promise<void>;
   sandboxMode: boolean;
   saveSandboxMode: (newSandboxMode: boolean) => Promise<void>;
@@ -48,16 +48,46 @@ interface State {
   closeRun: () => void;
   creatingRun: boolean;
   refreshRun: () => void;
+
+  definition: string;
+  saveDefiniton: (newDefinition: string) => Promise<void>;
+  openEditDefinitionModal: () => void;
+  closeEditDefinitionModal: () => void;
+  isEditDefinitionModalOpen: boolean;
+
+  planningInstructions: string;
+  savePlanningInstructions: (newInstructions: string) => Promise<void>;
+  openEditPlanningInstructionsModal: () => void;
+  closeEditPlanningInstructionsModal: () => void;
+  isEditPlanningInstructionsModalOpen: boolean;
+
+  taskExectionInstructions: string;
+  saveTaskExecutionInstructions: (newInstructions: string) => Promise<void>;
+  openEditTaskExecutionInstructionsModal: () => void;
+  closeEditTaskExecutionInstructionsModal: () => void;
+  isEditTaskExecutionInstructionsModalOpen: boolean;
 }
 
 function usePageState(): State {
   const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
 
-  const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
-  const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
+  const def = agent.agentDef!;
+
+  const [definition, setDefinition] = React.useState<string>(def.definition);
+  const [planningInstructions, setPlanningInstructions] = React.useState<string>(def.planningInstructions);
+  const [taskExectionInstructions, setTaskExecutionInstructions] = React.useState<string>(
+    def.taskExecutionInstructions,
+  );
+
+  const [sandboxMode, setSandboxMode] = React.useState<boolean>(def.sandboxMode);
   const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
   const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
   const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
+
+  const [isEditDefinitionModalOpen, setIsEditDefinitionModalOpen] = React.useState<boolean>(false);
+  const [isEditPlanningInstructionsModalOpen, setIsEditPlanningInstructionsModalOpen] = React.useState<boolean>(false);
+  const [isEditTaskExecutionInstructionsModalOpen, setIsEditTaskExecutionInstructionsModalOpen] =
+    React.useState<boolean>(false);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -73,6 +103,32 @@ function usePageState(): State {
     } catch (error) {
       setDefinition(oldDefinition);
       showErrorToast("Network error", "Reverting to previous definition");
+    }
+  };
+
+  const savePlanningInstructions = async (newInstructions: string) => {
+    const oldInstructions = planningInstructions;
+
+    try {
+      setPlanningInstructions(newInstructions);
+      await Api.ai.editAgentPlanningInstructions({ id: agent.id, instructions: newInstructions });
+      showSuccessToast("Success", "Agent planning instructions updated successfully");
+    } catch (error) {
+      setPlanningInstructions(oldInstructions);
+      showErrorToast("Network error", "Reverting to previous planning instructions");
+    }
+  };
+
+  const saveTaskExecutionInstructions = async (newInstructions: string) => {
+    const oldInstructions = taskExectionInstructions;
+
+    try {
+      setTaskExecutionInstructions(newInstructions);
+      await Api.ai.editAgentTaskExecutionInstructions({ id: agent.id, instructions: newInstructions });
+      showSuccessToast("Success", "Agent task execution instructions updated successfully");
+    } catch (error) {
+      setTaskExecutionInstructions(oldInstructions);
+      showErrorToast("Network error", "Reverting to previous task execution instructions");
     }
   };
 
@@ -127,8 +183,6 @@ function usePageState(): State {
     runs,
     companyAdminPath,
     companyAiAgentsPath,
-    definition,
-    saveDefiniton,
     runAgent,
     sandboxMode,
     saveSandboxMode,
@@ -137,6 +191,24 @@ function usePageState(): State {
     closeRun,
     creatingRun,
     refreshRun,
+
+    definition,
+    saveDefiniton,
+    isEditDefinitionModalOpen,
+    openEditDefinitionModal: () => setIsEditDefinitionModalOpen(true),
+    closeEditDefinitionModal: () => setIsEditDefinitionModalOpen(false),
+
+    planningInstructions,
+    savePlanningInstructions,
+    isEditPlanningInstructionsModalOpen,
+    openEditPlanningInstructionsModal: () => setIsEditPlanningInstructionsModalOpen(true),
+    closeEditPlanningInstructionsModal: () => setIsEditPlanningInstructionsModalOpen(false),
+
+    taskExectionInstructions,
+    saveTaskExecutionInstructions,
+    isEditTaskExecutionInstructionsModalOpen,
+    openEditTaskExecutionInstructionsModal: () => setIsEditTaskExecutionInstructionsModalOpen(true),
+    closeEditTaskExecutionInstructionsModal: () => setIsEditTaskExecutionInstructionsModalOpen(false),
   };
 }
 
@@ -154,8 +226,10 @@ function Page() {
       <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
         <div>
           <AgentHeader state={state} />
-          <AgentModeToggle state={state} />
-          <AgentDefinitionEditor state={state} />
+          <AgentDefinition state={state} />
+          <PlanningInstructions state={state} />
+          <SandboxModeToggle state={state} />
+          <DailyRunToggle state={state} />
         </div>
 
         {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
@@ -183,14 +257,15 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
   );
 }
 
-function AgentModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+function SandboxModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
   return (
     <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
       <div>
         <label className="font-bold text-sm mb-1">Sandbox Mode</label>
         <div className="text-xs text-surface-text-secondary max-w-xl">
-          When enabled, the agent will not perform any actions that affect the real world. It will have access to the
-          same data and context, but will only simulate actions without executing them.
+          When enabled, the agent will not perform any actions that affect the real world, but will instead simulate
+          actions and responses. The agent will have access to the same data and capabilities, but will not post any
+          messages or perform any actions.
         </div>
       </div>
 
@@ -201,25 +276,117 @@ function AgentModeToggle({ state }: { state: ReturnType<typeof usePageState> }) 
   );
 }
 
-function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageState> }) {
+function DailyRunToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
+      <div>
+        <label className="font-bold text-sm mb-1">Run Daily</label>
+        <div className="text-xs text-surface-text-secondary max-w-xl">
+          When enabled, the agent will automatically run every day at a 9am UTC. This is useful for agents that need to
+          perform daily tasks or checks.
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <SwitchToggle label="" value={state.sandboxMode} setValue={state.saveSandboxMode} />
+      </div>
+    </div>
+  );
+}
+
+function AgentDefinition({ state }: { state: ReturnType<typeof usePageState> }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Responsibilities</label>
+        <SecondaryButton size="xxs" onClick={state.openEditDefinitionModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.definition}</p>
+
+      <AgentDefinitionEditModal state={state} />
+    </div>
+  );
+}
+
+function AgentDefinitionEditModal({ state }: { state: ReturnType<typeof usePageState> }) {
   const [buffer, setBuffer] = React.useState(state.definition);
 
-  React.useEffect(() => {
-    setBuffer(state.definition);
-  }, [state.definition]);
-
   return (
-    <div className="mt-6">
-      <label className="font-bold text-sm mb-1">Agent Definition</label>
+    <Modal
+      title="Edit Agent Definition"
+      isOpen={state.isEditDefinitionModalOpen}
+      onClose={state.closeEditDefinitionModal}
+      closeOnBackdropClick={false}
+      size="large"
+    >
       <textarea
-        className="w-full p-2 border border-surface-outline rounded-md"
-        rows={10}
+        className="w-full p-2 border border-surface-outline rounded-md text-xs"
+        rows={30}
         value={buffer}
         onChange={(e) => setBuffer(e.target.value)}
         placeholder="Enter agent definition here..."
-        onBlur={(e) => state.saveDefiniton(e.target.value)}
       />
+
+      <div className="mt-4 flex justify-end gap-2">
+        <SecondaryButton size="sm" onClick={state.closeEditDefinitionModal}>
+          Cancel
+        </SecondaryButton>
+        <PrimaryButton size="sm" onClick={() => state.saveDefiniton(buffer)}>
+          Save
+        </PrimaryButton>
+      </div>
+    </Modal>
+  );
+}
+
+function PlanningInstructions({ state }: { state: State }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Planning Instructions</label>
+        <SecondaryButton size="xxs" onClick={state.openEditPlanningInstructionsModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.planningInstructions}</p>
+
+      <PlanningInstructionsEditModal state={state} />
     </div>
+  );
+}
+
+function PlanningInstructionsEditModal({ state }: { state: State }) {
+  const [buffer, setBuffer] = React.useState(state.planningInstructions);
+
+  return (
+    <Modal
+      title="Edit Agent Definition"
+      isOpen={state.isEditPlanningInstructionsModalOpen}
+      onClose={state.closeEditPlanningInstructionsModal}
+      closeOnBackdropClick={false}
+      size="large"
+    >
+      <textarea
+        className="w-full p-2 border border-surface-outline rounded-md text-xs"
+        rows={30}
+        value={buffer}
+        onChange={(e) => setBuffer(e.target.value)}
+        placeholder="Enter agent definition here..."
+      />
+
+      <div className="mt-4 flex justify-end gap-2">
+        <SecondaryButton size="sm" onClick={state.closeEditPlanningInstructionsModal}>
+          Cancel
+        </SecondaryButton>
+        <PrimaryButton size="sm" onClick={() => state.savePlanningInstructions(buffer)}>
+          Save
+        </PrimaryButton>
+      </div>
+    </Modal>
   );
 }
 

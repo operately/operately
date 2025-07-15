@@ -785,6 +785,8 @@ export interface AddMemberInput {
 export interface AgentDef {
   definition: string;
   sandboxMode: boolean;
+  planningInstructions: string;
+  taskExecutionInstructions: string;
 }
 
 export interface AgentRun {
@@ -2482,12 +2484,30 @@ export interface AiEditAgentDefinitionResult {
   success: boolean;
 }
 
+export interface AiEditAgentPlanningInstructionsInput {
+  id: Id;
+  instructions: string;
+}
+
+export interface AiEditAgentPlanningInstructionsResult {
+  success: boolean;
+}
+
 export interface AiEditAgentSandboxModeInput {
   id: Id;
   mode: boolean;
 }
 
 export interface AiEditAgentSandboxModeResult {
+  success: boolean;
+}
+
+export interface AiEditAgentTaskExecutionInstructionsInput {
+  id: Id;
+  instructions: string;
+}
+
+export interface AiEditAgentTaskExecutionInstructionsResult {
   success: boolean;
 }
 
@@ -4112,8 +4132,20 @@ class ApiNamespaceAi {
     return this.client.post("/ai/edit_agent_definition", input);
   }
 
+  async editAgentPlanningInstructions(
+    input: AiEditAgentPlanningInstructionsInput,
+  ): Promise<AiEditAgentPlanningInstructionsResult> {
+    return this.client.post("/ai/edit_agent_planning_instructions", input);
+  }
+
   async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
     return this.client.post("/ai/edit_agent_sandbox_mode", input);
+  }
+
+  async editAgentTaskExecutionInstructions(
+    input: AiEditAgentTaskExecutionInstructionsInput,
+  ): Promise<AiEditAgentTaskExecutionInstructionsResult> {
+    return this.client.post("/ai/edit_agent_task_execution_instructions", input);
   }
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
@@ -6555,6 +6587,20 @@ export default {
     useEditAgentSandboxMode: () =>
       useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>(
         defaultApiClient.apiNamespaceAi.editAgentSandboxMode,
+      ),
+
+    editAgentTaskExecutionInstructions: (input: AiEditAgentTaskExecutionInstructionsInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
+    useEditAgentTaskExecutionInstructions: () =>
+      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>(
+        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions,
+      ),
+
+    editAgentPlanningInstructions: (input: AiEditAgentPlanningInstructionsInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
+    useEditAgentPlanningInstructions: () =>
+      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>(
+        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
       ),
 
     runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
