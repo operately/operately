@@ -1,9 +1,10 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { OptionButton } from "./OptionButton";
+import { SelectedDate } from "../types";
 
 interface Props {
-  selectedDate: Date | undefined;
-  setSelectedDate: (date: Date | undefined) => void;
+  selectedDate: SelectedDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
   years: number[];
 }
 
@@ -13,7 +14,6 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
-    setSelectedDate(undefined);
     const currentYearIndex = years.indexOf(currentYear);
 
     if (currentYearIndex !== -1 && containerRef.current) {
@@ -38,8 +38,8 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
             <OptionButton
               key={year}
               ref={year === currentYear ? currentYearRef : undefined}
-              onClick={() => setSelectedDate(new Date(year, 0, 1))}
-              isSelected={selectedDate?.getFullYear() === year}
+              onClick={() => setSelectedDate({ type: "year", date: new Date(year, 0, 1) })}
+              isSelected={selectedDate.type === "year" && selectedDate.date?.getFullYear() === year}
               className="px-3 py-1.5 text-sm"
             >
               {year}
