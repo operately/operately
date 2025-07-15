@@ -103,8 +103,8 @@ defmodule Operately.People.AgentRun do
 
     updated_tasks =
       Enum.map(run.tasks, fn task ->
-        if task.id == task_id do
-          Map.put(task, :status, "completed")
+        if task["id"] == task_id do
+          Map.put(task, "status", "completed")
         else
           task
         end

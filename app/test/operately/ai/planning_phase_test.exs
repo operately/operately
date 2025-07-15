@@ -1,4 +1,4 @@
-defmodule OperatelyWeb.Api.AiTest do
+defmodule OperatelyWeb.Api.PlanningPhaseTest do
   use Operately.DataCase
   use Oban.Testing, repo: Operately.Repo
   import Mock

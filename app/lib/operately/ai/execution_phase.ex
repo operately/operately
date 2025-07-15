@@ -4,17 +4,17 @@ defmodule Operately.Ai.ExecutionPhase do
 
   def execute(run) do
     case pop_task(run) do
-      {:ok, task} ->
+      nil ->
+        run
+        |> log_no_more_tasks()
+        |> mark_as_completed()
+
+      task ->
         run
         |> log_running_task(task)
         |> run_execution_chain(task)
         |> mark_task_completed(task["id"])
         |> schedule_next_step()
-
-      nil ->
-        run
-        |> log_no_more_tasks()
-        |> mark_as_completed()
     end
   end
 
