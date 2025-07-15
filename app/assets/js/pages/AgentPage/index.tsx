@@ -9,8 +9,10 @@ import {
   FormattedTime,
   IconChevronRight,
   IconX,
+  Modal,
   PageNew,
   PrimaryButton,
+  SecondaryButton,
   showErrorToast,
   showSuccessToast,
   SwitchToggle,
@@ -48,6 +50,10 @@ interface State {
   closeRun: () => void;
   creatingRun: boolean;
   refreshRun: () => void;
+
+  openEditDefinitionModal: () => void;
+  closeEditDefinitionModal: () => void;
+  isEditDefinitionModalOpen: boolean;
 }
 
 function usePageState(): State {
@@ -58,6 +64,7 @@ function usePageState(): State {
   const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
   const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
   const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
+  const [isEditDefinitionModalOpen, setIsEditDefinitionModalOpen] = React.useState<boolean>(false);
 
   const paths = usePaths();
   const companyAdminPath = paths.companyAdminPath();
@@ -137,6 +144,10 @@ function usePageState(): State {
     closeRun,
     creatingRun,
     refreshRun,
+
+    isEditDefinitionModalOpen,
+    openEditDefinitionModal: () => setIsEditDefinitionModalOpen(true),
+    closeEditDefinitionModal: () => setIsEditDefinitionModalOpen(false),
   };
 }
 
@@ -154,8 +165,9 @@ function Page() {
       <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
         <div>
           <AgentHeader state={state} />
-          <AgentModeToggle state={state} />
-          <AgentDefinitionEditor state={state} />
+          <SandboxModeToggle state={state} />
+          <DailyRunToggle state={state} />
+          <AgentDefinition state={state} />
         </div>
 
         {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
@@ -183,14 +195,15 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
   );
 }
 
-function AgentModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+function SandboxModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
   return (
     <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
       <div>
         <label className="font-bold text-sm mb-1">Sandbox Mode</label>
         <div className="text-xs text-surface-text-secondary max-w-xl">
-          When enabled, the agent will not perform any actions that affect the real world. It will have access to the
-          same data and context, but will only simulate actions without executing them.
+          When enabled, the agent will not perform any actions that affect the real world, but will instead simulate
+          actions and responses. The agent will have access to the same data and capabilities, but will not post any
+          messages or perform any actions.
         </div>
       </div>
 
@@ -201,25 +214,69 @@ function AgentModeToggle({ state }: { state: ReturnType<typeof usePageState> }) 
   );
 }
 
-function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageState> }) {
+function DailyRunToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
+      <div>
+        <label className="font-bold text-sm mb-1">Run Daily</label>
+        <div className="text-xs text-surface-text-secondary max-w-xl">
+          When enabled, the agent will automatically run every day at a 9am UTC. This is useful for agents that need to
+          perform daily tasks or checks.
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <SwitchToggle label="" value={state.sandboxMode} setValue={state.saveSandboxMode} />
+      </div>
+    </div>
+  );
+}
+
+function AgentDefinition({ state }: { state: ReturnType<typeof usePageState> }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Responsibilities</label>
+        <SecondaryButton size="xxs" onClick={state.openEditDefinitionModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.definition}</p>
+
+      <AgentDefinitionEditModal state={state} />
+    </div>
+  );
+}
+
+function AgentDefinitionEditModal({ state }: { state: ReturnType<typeof usePageState> }) {
   const [buffer, setBuffer] = React.useState(state.definition);
 
-  React.useEffect(() => {
-    setBuffer(state.definition);
-  }, [state.definition]);
-
   return (
-    <div className="mt-6">
-      <label className="font-bold text-sm mb-1">Agent Definition</label>
+    <Modal
+      title="Edit Agent Definition"
+      isOpen={state.isEditDefinitionModalOpen}
+      onClose={state.closeEditDefinitionModal}
+      closeOnBackdropClick={false}
+      size="large"
+    >
       <textarea
-        className="w-full p-2 border border-surface-outline rounded-md"
-        rows={10}
+        className="w-full p-2 border border-surface-outline rounded-md text-xs"
+        rows={30}
         value={buffer}
         onChange={(e) => setBuffer(e.target.value)}
         placeholder="Enter agent definition here..."
-        onBlur={(e) => state.saveDefiniton(e.target.value)}
       />
-    </div>
+
+      <div className="mt-4 flex justify-end gap-2">
+        <SecondaryButton size="sm" onClick={state.closeEditDefinitionModal}>
+          Cancel
+        </SecondaryButton>
+        <PrimaryButton size="sm" onClick={() => state.saveDefiniton(buffer)}>
+          Save
+        </PrimaryButton>
+      </div>
+    </Modal>
   );
 }
 
