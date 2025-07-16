@@ -1377,6 +1377,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :start_date, :date, null: true
     field? :end_date, :date, null: true
     field? :type, :string, null: true
+    field? :contextual_start_date, :contextual_date
+    field? :contextual_end_date, :contextual_date
+  end
+
+  object :contextual_date do
+    field :date_type, :string
+    field :value, :string
+    field :date, :date
   end
 
   object :activity_content_project_milestone_commented do

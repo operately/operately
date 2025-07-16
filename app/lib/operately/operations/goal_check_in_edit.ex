@@ -10,7 +10,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> update_check_in(check_in, attrs)
     |> maybe_update_targets(goal.targets, attrs.new_target_values)
     |> update_subscriptions(attrs.content)
-    |> maybe_update_goal(goal)
+    |> maybe_update_goal(goal, attrs)
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
@@ -81,10 +81,10 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> Operately.Operations.Notifications.Subscription.update_mentioned_people(content)
   end
 
-  defp maybe_update_goal(multi, goal) do
+  defp maybe_update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
       if changes.full_edit_allowed do
-        Goal.changeset(goal, %{timeframe: changes.check_in.timeframe, last_update_status: changes.check_in.status})
+        Goal.changeset(goal, %{timeframe: to_timeframe(goal, attrs[:due_date]), last_update_status: changes.check_in.status})
       else
         Goal.changeset(goal, %{})
       end
@@ -119,10 +119,25 @@ defmodule Operately.Operations.GoalCheckInEdit do
     if due_date == nil do
       nil
     else
+      contextual_start_date = %{
+        date_type: :day,
+        value: Date.to_iso8601(goal.inserted_at),
+        date: goal.inserted_at
+      }
+
+      contextual_end_date = %{
+        date_type: :day,
+        value: Date.to_iso8601(due_date),
+        date: due_date
+      }
+
+      # Return timeframe with both old fields and new contextual date fields
       %{
         type: "days",
         start_date: goal.inserted_at,
-        end_date: due_date
+        end_date: due_date,
+        contextual_start_date: contextual_start_date,
+        contextual_end_date: contextual_end_date
       }
     end
   end

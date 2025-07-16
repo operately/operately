@@ -877,6 +877,12 @@ export interface CompanyPermissions {
   canManageOwners?: boolean | null;
 }
 
+export interface ContextualDate {
+  dateType: string;
+  value: string;
+  date: string;
+}
+
 export interface CreateTargetInput {
   name?: string | null;
   from?: number | null;
@@ -1483,6 +1489,8 @@ export interface Timeframe {
   startDate?: string | null;
   endDate?: string | null;
   type?: string | null;
+  contextualStartDate?: ContextualDate;
+  contextualEndDate?: ContextualDate;
 }
 
 export interface Update {

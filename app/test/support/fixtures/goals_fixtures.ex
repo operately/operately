@@ -46,7 +46,7 @@ defmodule Operately.GoalsFixtures do
         send_to_everyone: false,
         subscription_parent_type: :goal_update,
         subscriber_ids: [],
-        due_date: "2024-12-31"
+        due_date: ~D[2024-12-31]
       })
 
     {:ok, update} = Operately.Operations.GoalCheckIn.run(author, goal, attrs)
