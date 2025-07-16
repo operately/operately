@@ -564,20 +564,51 @@ defmodule OperatelyWeb.Api.Goals do
             Operately.Goals.Goal.changeset(goal, %{timeframe: nil})
 
           goal.timeframe == nil ->
+            contextual_start_date = %{
+              date_type: :day,
+              value: Date.to_iso8601(goal.inserted_at),
+              date: goal.inserted_at
+            }
+            contextual_end_date = %{
+              date_type: :day,
+              value: Date.to_iso8601(new_due_date),
+              date: new_due_date
+            }
+
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
                 type: "days",
                 start_date: goal.inserted_at,
-                end_date: new_due_date
+                end_date: new_due_date,
+                contextual_start_date: contextual_start_date,
+                contextual_end_date: contextual_end_date
               }
             })
 
           true ->
+            contextual_end_date = %{
+              date_type: :day,
+              value: Date.to_iso8601(new_due_date),
+              date: new_due_date
+            }
+
+            contextual_start_date = if goal.timeframe.contextual_start_date do
+              Map.from_struct(goal.timeframe.contextual_start_date)
+            else
+              %{
+                date_type: :day,
+                value: Date.to_iso8601(goal.timeframe.start_date),
+                date: goal.timeframe.start_date
+              }
+            end
+
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
                 type: "days",
                 start_date: goal.timeframe.start_date,
-                end_date: new_due_date
+                end_date: new_due_date,
+                contextual_start_date: contextual_start_date,
+                contextual_end_date: contextual_end_date
               }
             })
         end
