@@ -2,9 +2,11 @@ defmodule Operately.ContextualDates.ContextualDate do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @valid_types [:day, :month, :quarter, :year]
+
   @primary_key false
   embedded_schema do
-    field :date_type, Ecto.Enum, values: [:day, :month, :quarter, :year]
+    field :date_type, Ecto.Enum, values: @valid_types
     field :value, :string
     field :date, :date
   end
@@ -66,4 +68,6 @@ defmodule Operately.ContextualDates.ContextualDate do
       add_error(changeset, :value, "must match the year of the date field")
     end
   end
+
+  def valid_types, do: @valid_types
 end
