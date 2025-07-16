@@ -79,6 +79,13 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_goal_moved_to_another_space_feed_posted()
   end
 
+  feature "adding the first target", ctx do
+    ctx
+    |> Steps.add_first_target()
+    |> Steps.assert_target_added()
+    |> Steps.assert_target_added_feed_posted()
+  end
+
   feature "adding a new target", ctx do
     ctx
     |> Steps.add_new_target()

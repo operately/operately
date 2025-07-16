@@ -20,7 +20,7 @@ export function Targets(props: GoalPage.Props) {
         showButtons={props.canEdit && !addActive}
       />
 
-      {props.targets.length === 0 ? (
+      {Boolean(!addActive && props.targets.length === 0) && (
         <div className="mt-1">
           <div className="text-content-dimmed text-sm">
             {props.canEdit
@@ -28,22 +28,22 @@ export function Targets(props: GoalPage.Props) {
               : "The champion didn't yet set targets for this goal."}
           </div>
         </div>
-      ) : (
-        <div className="mt-3">
-          <GoalTargetList
-            targets={props.targets}
-            showEditButton={props.canEdit}
-            showUpdateButton={props.canEdit}
-            addActive={addActive}
-            onAddActiveChange={(active) => setAddActive(active)}
-            addTarget={props.addTarget}
-            deleteTarget={props.deleteTarget}
-            updateTarget={props.updateTarget}
-            updateTargetValue={props.updateTargetValue}
-            updateTargetIndex={props.updateTargetIndex}
-          />
-        </div>
       )}
+
+      <div className="mt-3">
+        <GoalTargetList
+          targets={props.targets}
+          showEditButton={props.canEdit}
+          showUpdateButton={props.canEdit}
+          addActive={addActive}
+          onAddActiveChange={(active) => setAddActive(active)}
+          addTarget={props.addTarget}
+          deleteTarget={props.deleteTarget}
+          updateTarget={props.updateTarget}
+          updateTargetValue={props.updateTargetValue}
+          updateTargetIndex={props.updateTargetIndex}
+        />
+      </div>
     </div>
   );
 }

@@ -312,6 +312,19 @@ defmodule Operately.Support.Features.GoalSteps do
   # Adding a new target
   #
 
+  step :add_first_target, ctx do
+    remove_all_targets(ctx)
+
+    ctx
+    |> UI.visit(Paths.goal_path(ctx.company, ctx.goal))
+    |> UI.click(testid: "add-target")
+    |> UI.fill(testid: "target-name", with: "Incoming Requests")
+    |> UI.fill(testid: "target-from", with: "0")
+    |> UI.fill(testid: "target-to", with: "100")
+    |> UI.fill(testid: "target-unit", with: "Requests")
+    |> UI.click(testid: "save")
+  end
+
   step :add_new_target, ctx do
     ctx
     |> UI.click(testid: "add-target")
@@ -456,6 +469,13 @@ defmodule Operately.Support.Features.GoalSteps do
       company_binding = Access.get_binding(context_id: context.id, group_id: company_members.id)
 
       assert company_binding.access_level == 0
+    end)
+  end
+
+  defp remove_all_targets(ctx) do
+    Operately.Repo.preload(ctx.goal, [:targets]).targets
+    |> Enum.each(fn target ->
+      Operately.Repo.delete(target)
     end)
   end
 end

@@ -3,8 +3,8 @@ import React from "react";
 import { PieChart } from "../PieChart";
 import { ExpandIcon } from "./ExpandIcon";
 
-import { IconGripVertical } from "../icons";
 import { DangerButton, PrimaryButton, SecondaryButton } from "../Button";
+import { IconGripVertical } from "../icons";
 import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } from "../utils/DragAndDrop";
 
 import { useForm } from "react-hook-form";
@@ -86,7 +86,7 @@ function TargetList({ state }: { state: State }) {
 
   return (
     <div ref={ref}>
-      <TargetListHeader />
+      {state.targets.length > 0 && <TargetListHeader />}
 
       {state.targets.map((target) => (
         <TargetCard key={target.id} state={state} target={target} />
