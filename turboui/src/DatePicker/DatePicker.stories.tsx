@@ -22,6 +22,10 @@ const meta = {
       control: "text",
       description: "Initial selected date in YYYY-MM-DD format (for day date type)",
     },
+    readonly: {
+      control: "boolean",
+      description: "Whether the DatePicker is in readonly mode",
+    },
     onDateSelect: { action: "date selected" },
     onCancel: { action: "canceled" },
   },
@@ -45,6 +49,7 @@ export const Default: Story = {
   args: {
     initialType: "day",
     initialDate: new Date(),
+    readonly: false,
   },
   parameters: {
     layout: 'padded',
@@ -66,6 +71,7 @@ export const MonthSelection: Story = {
   args: {
     initialType: "month",
     initialDate: new Date("2025-03-31"),
+    readonly: false,
   },
   parameters: {
     layout: 'padded',
@@ -87,6 +93,7 @@ export const QuarterSelection: Story = {
   args: {
     initialType: "quarter",
     initialDate: new Date("2026-09-30"),
+    readonly: false,
   },
   parameters: {
     layout: 'padded',
@@ -108,6 +115,30 @@ export const YearSelection: Story = {
   args: {
     initialType: "year",
     initialDate: new Date("2024-12-31"),
+    readonly: false,
+  },
+  parameters: {
+    layout: 'padded',
+  },
+};
+
+/**
+ * DatePicker in readonly mode, showing a date without allowing interaction.
+ */
+export const ReadonlyMode: Story = {
+  tags: ["autodocs"],
+  render: (args) => (
+    <div className="max-w-md mx-auto bg-white p-4 mt-12">
+      <div className="mt-6">
+        <DatePicker {...args} />
+      </div>
+    </div>
+  ),
+  args: {
+    initialType: "day",
+    initialDate: new Date("2025-07-16"),
+    readonly: true,
+    triggerLabel: "Due Date",
   },
   parameters: {
     layout: 'padded',
