@@ -2,13 +2,6 @@ defmodule Operately.Ai.PlanningPhase do
   alias Operately.People.AgentRun
   alias Operately.Repo
 
-  @planning_message """
-  Use the available information and tools to plan out the tasks for day. Do not post any messages or take any actions yet.
-  Focus on identifying the tasks that need to be done, their order, and any dependencies.
-  Create tasks by using the add_agent_task function. Save the details necessary to execute the tasks later.
-  Make sure to include all relevant details in the task description.
-  """
-
   def execute(run) do
     run
     |> clear_tasks()
@@ -35,7 +28,7 @@ defmodule Operately.Ai.PlanningPhase do
   end
 
   defp run_planning_chain(run) do
-    logs = Operately.AI.run_agent(run, @planning_message)
+    logs = Operately.AI.run_agent(run, run.definition, [run.planning_instructions])
     Operately.People.AgentRun.append_log(run.id, "\n" <> logs <> "\n")
     run
   end
