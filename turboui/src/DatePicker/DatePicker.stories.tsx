@@ -25,6 +25,10 @@ const meta = {
       control: "text",
       description: "Label to show when no date is selected",
     },
+    showOverdueWarning: {
+      control: "boolean",
+      description: "Whether to show a warning color for overdue dates",
+    },
     onDateSelect: { action: "date selected" },
     onCancel: { action: "canceled" },
   },
@@ -134,9 +138,36 @@ export const YearSelection: Story = {
 };
 
 /**
+ * DatePicker showing an overdue date with warning.
+ */
+export const OverdueDate: Story = {
+  tags: ["autodocs"],
+  render: (args) => (
+    <div className="max-w-md mx-auto bg-white p-4 mt-12">
+      <div className="mt-6">
+        <DatePicker {...args} />
+      </div>
+    </div>
+  ),
+  args: {
+    initialDate: {
+      date: new Date("2025-01-15"), // Date in the past (since current date is 2025-07-16)
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+        new Date("2025-01-15"),
+      ),
+    },
+    showOverdueWarning: true,
+  },
+  parameters: {
+    layout: "padded",
+  },
+};
+
+/**
  * DatePicker in readonly mode, showing a date without allowing interaction.
  */
-export const ReadonlyMode: Story = {
+export const ReadOnly: Story = {
   tags: ["autodocs"],
   render: (args) => (
     <div className="max-w-md mx-auto bg-white p-4 mt-12">
@@ -154,7 +185,6 @@ export const ReadonlyMode: Story = {
       ),
     },
     readonly: true,
-    triggerLabel: "Due Date",
   },
   parameters: {
     layout: "padded",
