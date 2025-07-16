@@ -17,6 +17,10 @@ defmodule Operately.People.AgentRun do
     field :sandbox_mode, :boolean, default: false
     field :tasks, {:array, :map}, default: []
 
+    field :definition, :string
+    field :planning_instructions, :string
+    field :task_execution_instructions, :string
+
     timestamps()
   end
 
@@ -47,7 +51,10 @@ defmodule Operately.People.AgentRun do
         agent_def_id: agent_def.id,
         sandbox_mode: agent_def.sandbox_mode,
         status: :planning,
-        started_at: DateTime.utc_now()
+        started_at: DateTime.utc_now(),
+        definition: agent_def.definition,
+        planning_instructions: agent_def.planning_instructions,
+        task_execution_instructions: agent_def.task_execution_instructions
       })
 
     Multi.new()

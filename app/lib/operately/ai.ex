@@ -24,11 +24,8 @@ defmodule Operately.AI do
   # Goal Verification
   #
 
-  def run_agent(run, prompt) do
-    run = Operately.Repo.preload(run, agent_def: :person)
-    definition = run.agent_def.definition
-
-    {:ok, chain} =
+  def run_agent(run, definition, instructions) do
+    base =
       LLMChain.new!(%{
         llm: ChatAnthropic.new!(),
         custom_context: %{
@@ -41,9 +38,13 @@ defmodule Operately.AI do
       |> LLMChain.add_tools(Tools.get_goal_details())
       |> LLMChain.add_tools(Tools.post_goal_message())
       |> LLMChain.add_message(Message.new_system!(definition))
-      |> LLMChain.add_message(Message.new_user!(prompt))
-      |> LLMChain.run(mode: :while_needs_response)
 
+    chain =
+      Enum.reduce(instructions, base, fn instruction, acc ->
+        LLMChain.add_message(acc, Message.new_user!(instruction))
+      end)
+
+    {:ok, chain} = LLMChain.run(chain, mode: :while_needs_response)
     ChainResult.to_string!(chain)
   end
 end
