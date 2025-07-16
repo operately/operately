@@ -21,7 +21,14 @@ defmodule Operately.People.AgentDef do
 
   def changeset(agent_def, attrs) do
     agent_def
-    |> cast(attrs, [:person_id, :definition, :sandbox_mode])
+    |> cast(attrs, [
+      :person_id,
+      :definition,
+      :sandbox_mode,
+      :planning_instructions,
+      :task_execution_instructions,
+      :daily_run
+    ])
     |> validate_required([:person_id])
     |> assoc_constraint(:person)
   end

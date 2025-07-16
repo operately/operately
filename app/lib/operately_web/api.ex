@@ -55,6 +55,7 @@ defmodule OperatelyWeb.Api do
     mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
     mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
     mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
+    mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
   end
 
   query(:get_account, Q.GetAccount)

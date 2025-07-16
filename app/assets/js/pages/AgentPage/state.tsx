@@ -117,8 +117,8 @@ function useDefinition(): DefinitionState {
     const oldValue = value;
 
     try {
-      setValue(newDefinition);
       await Api.ai.editAgentDefinition({ id: agent.id, definition: newDefinition });
+      setValue(newDefinition);
       showSuccessToast("Success", "Agent definition updated successfully");
       closeModal();
     } catch (error) {
@@ -157,8 +157,8 @@ function usePlanningInstructions(): PlanningInstructionsState {
     const oldValue = value;
 
     try {
-      setValue(newInstructions);
       await Api.ai.editAgentPlanningInstructions({ id: agent.id, instructions: newInstructions });
+      setValue(newInstructions);
       showSuccessToast("Success", "Agent planning instructions updated successfully");
       closeModal();
     } catch (error) {
@@ -197,8 +197,8 @@ function useTaskExecutionInstructions(): TaskExecutionInstructionsState {
     const oldValue = value;
 
     try {
-      setValue(newInstructions);
       await Api.ai.editAgentTaskExecutionInstructions({ id: agent.id, instructions: newInstructions });
+      setValue(newInstructions);
       showSuccessToast("Success", "Agent task execution instructions updated successfully");
       closeModal();
     } catch (error) {
@@ -250,16 +250,20 @@ interface DailyRunState {
 }
 
 function useDailyRun(): DailyRunState {
-  // const { agent } = Pages.useLoadedData<LoaderResult>();
+  const { agent } = Pages.useLoadedData<LoaderResult>();
 
-  const [value, setEnabled] = React.useState<boolean>(false);
+  const [value, setEnabled] = React.useState<boolean>(agent.agentDef!.dailyRun);
+
+  React.useEffect(() => {
+    setEnabled(agent.agentDef!.dailyRun);
+  }, [agent.agentDef!.dailyRun]);
 
   const setValue = async (newEnabled: boolean) => {
     const oldEnabled = value;
 
     try {
       setEnabled(newEnabled);
-      // await Api.ai.editAgentDailyRun({ id: agent.id, enabled: newEnabled });
+      await Api.ai.editAgentDailyRun({ id: agent.id, enabled: newEnabled });
       showSuccessToast("Success", "Daily run updated successfully");
     } catch (error) {
       setEnabled(oldEnabled);

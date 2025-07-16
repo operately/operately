@@ -787,6 +787,7 @@ export interface AgentDef {
   sandboxMode: boolean;
   planningInstructions: string;
   taskExecutionInstructions: string;
+  dailyRun: boolean;
 }
 
 export interface AgentRun {
@@ -2475,6 +2476,15 @@ export interface AiAddAgentResult {
   success: boolean;
 }
 
+export interface AiEditAgentDailyRunInput {
+  id: Id;
+  enabled: boolean;
+}
+
+export interface AiEditAgentDailyRunResult {
+  success: boolean;
+}
+
 export interface AiEditAgentDefinitionInput {
   id: Id;
   definition: string;
@@ -4126,6 +4136,10 @@ class ApiNamespaceAi {
 
   async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
     return this.client.post("/ai/add_agent", input);
+  }
+
+  async editAgentDailyRun(input: AiEditAgentDailyRunInput): Promise<AiEditAgentDailyRunResult> {
+    return this.client.post("/ai/edit_agent_daily_run", input);
   }
 
   async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
@@ -6611,6 +6625,12 @@ export default {
     useEditAgentDefinition: () =>
       useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>(
         defaultApiClient.apiNamespaceAi.editAgentDefinition,
+      ),
+
+    editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+    useEditAgentDailyRun: () =>
+      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
+        defaultApiClient.apiNamespaceAi.editAgentDailyRun,
       ),
   },
 
