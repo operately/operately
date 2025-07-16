@@ -23,7 +23,7 @@ defmodule Operately.Operations.GoalCheckIn do
       })
     end)
     |> SubscriptionList.update(:update)
-    |> update_goal(goal)
+    |> update_goal(goal, attrs)
     |> update_targets(targets, attrs.target_values)
     |> record_activity(author, goal)
     |> Repo.transaction()
@@ -31,13 +31,13 @@ defmodule Operately.Operations.GoalCheckIn do
     |> handle_result_broadcast()
   end
 
-  defp update_goal(multi, goal) do
+  defp update_goal(multi, goal, attrs) do
     Multi.update(multi, :goal, fn changes ->
       Goal.changeset(goal, %{
         next_update_scheduled_at: calc_next_check_in_time(goal),
         last_check_in_id: changes.update.id,
         last_update_status: changes.update.status,
-        timeframe: changes.update.timeframe
+        timeframe: to_timeframe(goal, attrs.due_date)
       })
     end)
   end
@@ -95,11 +95,35 @@ defmodule Operately.Operations.GoalCheckIn do
     if due_date == nil do
       nil
     else
+      contextual_start_date = %{
+        date_type: :day,
+        value: Date.to_iso8601(goal.inserted_at),
+        date: goal.inserted_at
+      }
+
+      parsed_due_date = parse_date(due_date)
+      contextual_end_date = %{
+        date_type: :day,
+        value: Date.to_iso8601(parsed_due_date),
+        date: parse_date(due_date)
+      }
+
+      # Timeframe with both old fields and new contextual date fields
       %{
         type: "days",
         start_date: goal.inserted_at,
-        end_date: due_date
+        end_date: parsed_due_date,
+        contextual_start_date: contextual_start_date,
+        contextual_end_date: contextual_end_date
       }
+    end
+  end
+
+  defp parse_date(date) do
+    case date do
+      %Date{} -> date
+      date_string when is_binary(date_string) -> Date.from_iso8601!(date_string)
+      _ -> date
     end
   end
 end
