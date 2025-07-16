@@ -1,4 +1,4 @@
-export type DateType = "exact" | "month" | "quarter" | "year";
+export type DateType = "day" | "month" | "quarter" | "year";
 
 export interface SelectedDate {
   date?: Date;

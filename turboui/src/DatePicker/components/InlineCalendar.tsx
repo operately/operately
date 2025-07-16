@@ -46,7 +46,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
     const date = new Date(currentYear, currentMonth, day);
 
     const isSelected = selectedDate.date
-      ? selectedDate.type === "exact" &&
+      ? selectedDate.type === "day" &&
         selectedDate.date.getDate() === day &&
         selectedDate.date.getMonth() === currentMonth &&
         selectedDate.date.getFullYear() === currentYear
@@ -54,7 +54,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
     const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
     const handleDayClick = (day: Date) => {
-      setSelectedDate({ date: day, type: "exact" });
+      setSelectedDate({ date: day, type: "day" });
     };
 
     days.push(
