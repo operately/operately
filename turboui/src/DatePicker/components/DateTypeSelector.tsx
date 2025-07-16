@@ -1,15 +1,15 @@
 import React from "react";
-import { DateType, DateTypeOption } from "../types";
+import { DatePicker } from "../index";
 import { OptionButton } from "./OptionButton";
 
 interface DateTypeSelectorProps {
-  dateType: DateType;
-  dateTypes: DateTypeOption[];
-  setDateType: (type: DateType) => void;
+  dateType: DatePicker.DateType;
+  dateTypes: DatePicker.DateTypeOption[];
+  setDateType: (type: DatePicker.DateType) => void;
 }
 
 export const DateTypeSelector: React.FC<DateTypeSelectorProps> = ({ dateType, dateTypes, setDateType }) => {
-  const handleDateTypeChange = (type: DateType) => {
+  const handleDateTypeChange = (type: DatePicker.DateType) => {
     setDateType(type);
   };
 

@@ -1,10 +1,10 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { OptionButton } from "./OptionButton";
-import { SelectedDate } from "../types";
+import { DatePicker } from "../index";
 
 interface Props {
-  selectedDate: SelectedDate;
-  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
+  selectedDate?: DatePicker.ContextualDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   years: number[];
 }
 
@@ -30,6 +30,15 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
     }
   }, []);
 
+  const handleSelect = (year: number) => {
+    const date = new Date(year, 0, 1);
+    setSelectedDate({
+      dateType: "year",
+      date: date,
+      value: year.toString(),
+    });
+  };
+
   return (
     <div className="mb-3">
       <div ref={containerRef} className="max-h-48 overflow-y-auto p-2">
@@ -38,8 +47,8 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
             <OptionButton
               key={year}
               ref={year === currentYear ? currentYearRef : undefined}
-              onClick={() => setSelectedDate({ type: "year", date: new Date(year, 0, 1) })}
-              isSelected={selectedDate.type === "year" && selectedDate.date?.getFullYear() === year}
+              onClick={() => handleSelect(year)}
+              isSelected={isSelectedYear(year, selectedDate)}
               className="px-3 py-1.5 text-sm"
             >
               {year}
@@ -49,4 +58,10 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
       </div>
     </div>
   );
+}
+
+function isSelectedYear(year: number, selectedDate?: DatePicker.ContextualDate): boolean {
+  if (!selectedDate?.date) return false;
+
+  return selectedDate.dateType === "year" && selectedDate.date.getFullYear() === year;
 }

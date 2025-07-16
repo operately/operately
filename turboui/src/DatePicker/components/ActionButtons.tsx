@@ -1,16 +1,17 @@
 import React from "react";
+import { DatePicker } from "../index";
 import { SecondaryButton, PrimaryButton } from "../../Button";
 
 interface ActionButtonsProps {
-  selectedDate: Date | undefined;
+  selectedDate: DatePicker.ContextualDate | undefined;
   onCancel?: () => void;
-  onSetDeadline?: (date: string) => void;
+  onSetDeadline?: (selectedDate: DatePicker.ContextualDate | undefined) => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ selectedDate, onCancel, onSetDeadline }) => {
   const handleConfirm = () => {
     if (selectedDate) {
-      onSetDeadline?.(selectedDate.toISOString());
+      onSetDeadline?.(selectedDate);
     }
   };
 

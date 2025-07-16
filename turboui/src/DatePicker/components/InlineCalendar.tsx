@@ -1,10 +1,11 @@
 import React from "react";
 import { IconChevronLeft, IconChevronRight } from "../../icons";
-import { SelectedDate } from "../types";
+import { DatePicker } from "../index";
+import classNames from "../../utils/classnames";
 
 interface Props {
-  selectedDate: SelectedDate;
-  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
+  selectedDate?: DatePicker.ContextualDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate | undefined>>;
 }
 
 export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
@@ -45,30 +46,22 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
   for (let day = 1; day <= daysInMonth; day++) {
     const date = new Date(currentYear, currentMonth, day);
 
-    const isSelected = selectedDate.date
-      ? selectedDate.type === "day" &&
-        selectedDate.date.getDate() === day &&
-        selectedDate.date.getMonth() === currentMonth &&
-        selectedDate.date.getFullYear() === currentYear
-      : false;
+    const isSelected = isSelectedDay(day, currentMonth, currentYear, selectedDate);
     const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
     const handleDayClick = (day: Date) => {
-      setSelectedDate({ date: day, type: "day" });
+      const value = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(day);
+      setSelectedDate({ date: day, dateType: "day", value });
     };
+    const className = classNames(
+      "w-7 h-7 text-xs rounded-full transition-colors",
+      isSelected && "border border-blue-500 bg-blue-50 text-blue-700",
+      isToday && !isSelected && "bg-blue-100 text-blue-600 hover:bg-blue-200",
+      !isSelected && !isToday && "hover:bg-gray-100 hover:text-blue-500",
+    );
 
     days.push(
-      <button
-        key={day}
-        onClick={() => handleDayClick(date)}
-        className={`w-7 h-7 text-xs rounded-full transition-colors ${
-          isSelected
-            ? "border border-blue-500 bg-blue-50 text-blue-700"
-            : isToday
-            ? "bg-blue-100 text-blue-600 hover:bg-blue-200"
-            : "hover:bg-gray-100 hover:text-blue-500"
-        }`}
-      >
+      <button key={day} onClick={() => handleDayClick(date)} className={className}>
         {day}
       </button>,
     );
@@ -106,5 +99,15 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
 
       <div className="grid grid-cols-7 gap-0.5">{days}</div>
     </div>
+  );
+}
+
+function isSelectedDay(day: number, month: number, year: number, selectedDate?: DatePicker.ContextualDate): boolean {
+  return Boolean(
+    selectedDate &&
+      selectedDate.dateType === "day" &&
+      selectedDate.date.getDate() === day &&
+      selectedDate.date.getMonth() === month &&
+      selectedDate.date.getFullYear() === year,
   );
 }
