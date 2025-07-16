@@ -6,8 +6,10 @@ defmodule Operately.People.AgentDef do
     belongs_to :person, Operately.People.Person
     has_many :agent_runs, Operately.People.AgentRun
 
-    field :definition, :string
     field :sandbox_mode, :boolean, default: false
+    field :definition, :string
+    field :planning_instructions, :string
+    field :task_execution_instructions, :string
 
     timestamps()
   end
