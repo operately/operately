@@ -75,7 +75,8 @@ config :operately, Oban,
     {Oban.Plugins.Pruner, max_age: 300},
     {Oban.Plugins.Cron,
      crontab: [
-       {"0 8 * * *", OperatelyEmail.Assignments.Cron}
+       {"0 8 * * *", OperatelyEmail.Assignments.Cron},
+       {"0 8 * * *", Operately.AI.Cron}
      ]}
   ],
   queues: [
