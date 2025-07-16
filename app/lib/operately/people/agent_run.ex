@@ -30,7 +30,19 @@ defmodule Operately.People.AgentRun do
 
   def changeset(agent_run, attrs) do
     agent_run
-    |> cast(attrs, [:agent_def_id, :status, :started_at, :finished_at, :error_message, :logs, :sandbox_mode, :tasks])
+    |> cast(attrs, [
+      :agent_def_id,
+      :status,
+      :started_at,
+      :finished_at,
+      :error_message,
+      :logs,
+      :sandbox_mode,
+      :tasks,
+      :definition,
+      :planning_instructions,
+      :task_execution_instructions
+    ])
     |> validate_required([:agent_def_id, :status, :started_at])
     |> validate_inclusion(:status, [:planning, :running, :completed, :failed, :cancelled])
     |> assoc_constraint(:agent_def)
