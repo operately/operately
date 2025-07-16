@@ -161,7 +161,7 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
           reorder(id, oldIndex); // Revert if the update fails
         }
       });
-      
+
       return true; // Successfully initiated reorder
     },
   };
