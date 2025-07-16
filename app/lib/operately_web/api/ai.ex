@@ -187,6 +187,32 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule EditAgentDailyRun do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :id, :id
+      field :enabled, :boolean
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Steps.get_agent(inputs.id)
+      |> Ecto.Multi.run(:update_agent_def, fn _repo, %{agent: agent} ->
+        agent.agent_def
+        |> Operately.People.AgentDef.changeset(%{daily_run: inputs.enabled})
+        |> Operately.Repo.update()
+      end)
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule RunAgent do
     use TurboConnect.Mutation
     alias OperatelyWeb.Api.Serializer
