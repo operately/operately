@@ -26,6 +26,7 @@ export namespace DatePicker {
     minYear?: number;
     maxYear?: number;
     triggerLabel?: string;
+    readonly?: boolean;
   }
 }
 
@@ -37,6 +38,7 @@ export function DatePicker({
   minYear = 2020,
   maxYear = 2030,
   triggerLabel = "Date",
+  readonly = false,
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
   const [dateType, setDateType] = useState<DateType>(initialType || "day");
@@ -57,6 +59,8 @@ export function DatePicker({
   };
 
   const handleTriggerClick = () => {
+    if (readonly) return;
+
     setOpen(!open);
 
     if (!open) {
@@ -77,9 +81,14 @@ export function DatePicker({
 
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
-      <Popover.Trigger asChild>
+      <Popover.Trigger asChild disabled={readonly}>
         <div>
-          <DatePickerTrigger selectedDate={selectedDate} label={triggerLabel} onClick={handleTriggerClick} />
+          <DatePickerTrigger
+            selectedDate={selectedDate}
+            label={triggerLabel}
+            onClick={handleTriggerClick}
+            readonly={readonly}
+          />
         </div>
       </Popover.Trigger>
 
@@ -105,17 +114,26 @@ interface DatePickerTriggerProps {
   label?: string;
   onClick: () => void;
   className?: string;
+  readonly?: boolean;
 }
 
-function DatePickerTrigger({ selectedDate, label = "Date", onClick, className }: DatePickerTriggerProps) {
+function DatePickerTrigger({
+  selectedDate,
+  label = "Date",
+  onClick,
+  className,
+  readonly = false,
+}: DatePickerTriggerProps) {
   const buttonClassName = classNames(
-    "bg-surface-base hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
+    "bg-surface-base",
+    !readonly && "hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
     "border border-surface-outline",
     "rounded-lg",
     "flex items-center gap-1.5",
-    "cursor-pointer",
+    readonly ? "cursor-default" : "cursor-pointer",
     "px-3 py-1.5",
     "text-sm",
+    readonly && "opacity-75",
     className,
   );
 
@@ -155,10 +173,16 @@ function DatePickerTrigger({ selectedDate, label = "Date", onClick, className }:
   }
 
   return (
-    <button type="button" className={buttonClassName} onClick={handleClick}>
+    <button
+      type="button"
+      className={buttonClassName}
+      onClick={handleClick}
+      disabled={readonly}
+      aria-readonly={readonly}
+    >
       <IconCalendar size={16} className="shrink-0" />
       <span className="truncate">{displayText}</span>
-      <IconChevronDown size={16} className="shrink-0" />
+      {!readonly && <IconChevronDown size={16} className="shrink-0" />}
     </button>
   );
 }
