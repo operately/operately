@@ -6,8 +6,11 @@ defmodule Operately.People.AgentDef do
     belongs_to :person, Operately.People.Person
     has_many :agent_runs, Operately.People.AgentRun
 
-    field :definition, :string
     field :sandbox_mode, :boolean, default: false
+    field :definition, :string
+    field :planning_instructions, :string
+    field :task_execution_instructions, :string
+    field :daily_run, :boolean, default: false
 
     timestamps()
   end
@@ -18,7 +21,14 @@ defmodule Operately.People.AgentDef do
 
   def changeset(agent_def, attrs) do
     agent_def
-    |> cast(attrs, [:person_id, :definition, :sandbox_mode])
+    |> cast(attrs, [
+      :person_id,
+      :definition,
+      :sandbox_mode,
+      :planning_instructions,
+      :task_execution_instructions,
+      :daily_run
+    ])
     |> validate_required([:person_id])
     |> assoc_constraint(:person)
   end
