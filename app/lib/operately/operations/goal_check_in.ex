@@ -101,20 +101,29 @@ defmodule Operately.Operations.GoalCheckIn do
         date: goal.inserted_at
       }
 
+      parsed_due_date = parse_date(due_date)
       contextual_end_date = %{
         date_type: :day,
-        value: Date.to_iso8601(due_date),
-        date: due_date
+        value: Date.to_iso8601(parsed_due_date),
+        date: parse_date(due_date)
       }
 
       # Timeframe with both old fields and new contextual date fields
       %{
         type: "days",
         start_date: goal.inserted_at,
-        end_date: due_date,
+        end_date: parsed_due_date,
         contextual_start_date: contextual_start_date,
         contextual_end_date: contextual_end_date
       }
+    end
+  end
+
+  defp parse_date(date) do
+    case date do
+      %Date{} -> date
+      date_string when is_binary(date_string) -> Date.from_iso8601!(date_string)
+      _ -> date
     end
   end
 end
