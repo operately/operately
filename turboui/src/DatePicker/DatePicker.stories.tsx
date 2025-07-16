@@ -15,12 +15,12 @@ const meta = {
   argTypes: {
     initialType: {
       control: "select",
-      options: ["exact", "month", "quarter", "year"],
+      options: ["day", "month", "quarter", "year"],
       description: "The initial date type selected",
     },
     initialDate: {
       control: "text",
-      description: "Initial selected date in YYYY-MM-DD format (for exact date type)",
+      description: "Initial selected date in YYYY-MM-DD format (for day date type)",
     },
     onDateSelect: { action: "date selected" },
     onCancel: { action: "canceled" },
@@ -43,7 +43,7 @@ export const Default: Story = {
     </div>
   ),
   args: {
-    initialType: "exact",
+    initialType: "day",
     initialDate: new Date(),
   },
   parameters: {

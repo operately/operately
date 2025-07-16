@@ -11,7 +11,7 @@ import ActionButtons from "./components/ActionButtons";
 import classNames from "../utils/classnames";
 
 const DATE_TYPES = [
-  { value: "exact" as const, label: "Day" },
+  { value: "day" as const, label: "Day" },
   { value: "month" as const, label: "Month" },
   { value: "quarter" as const, label: "Quarter" },
   { value: "year" as const, label: "Year" },
@@ -39,7 +39,7 @@ export function DatePicker({
   triggerLabel = "Date",
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
-  const [dateType, setDateType] = useState<DateType>(initialType || "exact");
+  const [dateType, setDateType] = useState<DateType>(initialType || "day");
   const [selectedDate, setSelectedDate] = useState<SelectedDate>({ type: initialType, date: initialDate });
   const [previousSelectedDate, setPreviousSelectedDate] = useState<SelectedDate>({
     type: initialType,
@@ -130,7 +130,7 @@ function DatePickerTrigger({ selectedDate, label = "Date", onClick, className }:
 
   if (date && type) {
     switch (type) {
-      case "exact":
+      case "day":
         // Full date: Jul 14, 2025
         displayText = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
           date,
@@ -183,7 +183,7 @@ function DatePickerContent(props: {
 
       <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />
 
-      {dateType === "exact" && (
+      {dateType === "day" && (
         <div className="mb-3">
           <InlineCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
         </div>

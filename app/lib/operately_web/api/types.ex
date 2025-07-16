@@ -1381,8 +1381,10 @@ defmodule OperatelyWeb.Api.Types do
     field? :contextual_end_date, :contextual_date
   end
 
+  enum(:contextual_date_type, values: Operately.ContextualDates.ContextualDate.valid_types())
+
   object :contextual_date do
-    field :date_type, :string
+    field :date_type, :contextual_date_type
     field :value, :string
     field :date, :date
   end

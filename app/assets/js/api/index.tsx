@@ -878,7 +878,7 @@ export interface CompanyPermissions {
 }
 
 export interface ContextualDate {
-  dateType: string;
+  dateType: ContextualDateType;
   value: string;
   date: string;
 }
@@ -1703,6 +1703,8 @@ export type UpdateContent =
   | UpdateContentReview
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
+
+export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
