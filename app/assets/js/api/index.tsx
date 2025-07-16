@@ -785,6 +785,9 @@ export interface AddMemberInput {
 export interface AgentDef {
   definition: string;
   sandboxMode: boolean;
+  planningInstructions: string;
+  taskExecutionInstructions: string;
+  dailyRun: boolean;
 }
 
 export interface AgentRun {
@@ -2481,6 +2484,15 @@ export interface AiAddAgentResult {
   success: boolean;
 }
 
+export interface AiEditAgentDailyRunInput {
+  id: Id;
+  enabled: boolean;
+}
+
+export interface AiEditAgentDailyRunResult {
+  success: boolean;
+}
+
 export interface AiEditAgentDefinitionInput {
   id: Id;
   definition: string;
@@ -2490,12 +2502,30 @@ export interface AiEditAgentDefinitionResult {
   success: boolean;
 }
 
+export interface AiEditAgentPlanningInstructionsInput {
+  id: Id;
+  instructions: string;
+}
+
+export interface AiEditAgentPlanningInstructionsResult {
+  success: boolean;
+}
+
 export interface AiEditAgentSandboxModeInput {
   id: Id;
   mode: boolean;
 }
 
 export interface AiEditAgentSandboxModeResult {
+  success: boolean;
+}
+
+export interface AiEditAgentTaskExecutionInstructionsInput {
+  id: Id;
+  instructions: string;
+}
+
+export interface AiEditAgentTaskExecutionInstructionsResult {
   success: boolean;
 }
 
@@ -4116,12 +4146,28 @@ class ApiNamespaceAi {
     return this.client.post("/ai/add_agent", input);
   }
 
+  async editAgentDailyRun(input: AiEditAgentDailyRunInput): Promise<AiEditAgentDailyRunResult> {
+    return this.client.post("/ai/edit_agent_daily_run", input);
+  }
+
   async editAgentDefinition(input: AiEditAgentDefinitionInput): Promise<AiEditAgentDefinitionResult> {
     return this.client.post("/ai/edit_agent_definition", input);
   }
 
+  async editAgentPlanningInstructions(
+    input: AiEditAgentPlanningInstructionsInput,
+  ): Promise<AiEditAgentPlanningInstructionsResult> {
+    return this.client.post("/ai/edit_agent_planning_instructions", input);
+  }
+
   async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
     return this.client.post("/ai/edit_agent_sandbox_mode", input);
+  }
+
+  async editAgentTaskExecutionInstructions(
+    input: AiEditAgentTaskExecutionInstructionsInput,
+  ): Promise<AiEditAgentTaskExecutionInstructionsResult> {
+    return this.client.post("/ai/edit_agent_task_execution_instructions", input);
   }
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
@@ -6565,6 +6611,20 @@ export default {
         defaultApiClient.apiNamespaceAi.editAgentSandboxMode,
       ),
 
+    editAgentTaskExecutionInstructions: (input: AiEditAgentTaskExecutionInstructionsInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
+    useEditAgentTaskExecutionInstructions: () =>
+      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>(
+        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions,
+      ),
+
+    editAgentPlanningInstructions: (input: AiEditAgentPlanningInstructionsInput) =>
+      defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
+    useEditAgentPlanningInstructions: () =>
+      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>(
+        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
+      ),
+
     runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
     useRunAgent: () => useMutation<AiRunAgentInput, AiRunAgentResult>(defaultApiClient.apiNamespaceAi.runAgent),
 
@@ -6573,6 +6633,12 @@ export default {
     useEditAgentDefinition: () =>
       useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>(
         defaultApiClient.apiNamespaceAi.editAgentDefinition,
+      ),
+
+    editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
+    useEditAgentDailyRun: () =>
+      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
+        defaultApiClient.apiNamespaceAi.editAgentDailyRun,
       ),
   },
 
