@@ -8,6 +8,7 @@ import { QuarterSelector } from "./components/QuarterSelector";
 import { YearSelector } from "./components/YearSelector";
 import ActionButtons from "./components/ActionButtons";
 import classNames from "../utils/classnames";
+import { isOverdue } from "../utils/time";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -25,6 +26,7 @@ export namespace DatePicker {
     maxYear?: number;
     triggerLabel?: string;
     readonly?: boolean;
+    showOverdueWarning?: boolean;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -60,12 +62,13 @@ export function DatePicker({
   maxYear = 2030,
   triggerLabel = "Date",
   readonly = false,
+  showOverdueWarning = false,
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
   const [previousSelectedDate, setPreviousSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
   const [dateType, setDateType] = useState<DatePicker.DateType>(initialDate?.dateType || "day");
-  
+
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -108,9 +111,10 @@ export function DatePicker({
         <div>
           <DatePickerTrigger
             selectedDate={selectedDate}
-            label={triggerLabel}
             onClick={handleTriggerClick}
+            label={triggerLabel}
             readonly={readonly}
+            showOverdueWarning={showOverdueWarning}
           />
         </div>
       </Popover.Trigger>
@@ -138,6 +142,7 @@ interface DatePickerTriggerProps {
   onClick: () => void;
   className?: string;
   readonly?: boolean;
+  showOverdueWarning: boolean;
 }
 
 function DatePickerTrigger({
@@ -146,6 +151,7 @@ function DatePickerTrigger({
   onClick,
   className,
   readonly = false,
+  showOverdueWarning,
 }: DatePickerTriggerProps) {
   const buttonClassName = classNames(
     "bg-surface-base",
@@ -166,7 +172,10 @@ function DatePickerTrigger({
   };
 
   let displayText = selectedDate?.value || label;
-  
+  const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
+  const textClassName = classNames("truncate", isDateOverdue && showOverdueWarning && "text-content-error");
+  const calendarClassName = classNames("shrink-0", isDateOverdue && showOverdueWarning && "text-content-error");
+
   return (
     <button
       type="button"
@@ -175,8 +184,10 @@ function DatePickerTrigger({
       disabled={readonly}
       aria-readonly={readonly}
     >
-      <IconCalendar size={16} className="shrink-0" />
-      <span className="truncate">{displayText}</span>
+      <IconCalendar size={16} className={calendarClassName} />
+      <span className={textClassName}>
+        {displayText}
+      </span>
       {!readonly && <IconChevronDown size={16} className="shrink-0" />}
     </button>
   );
