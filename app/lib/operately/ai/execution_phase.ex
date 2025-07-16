@@ -28,8 +28,7 @@ defmodule Operately.Ai.ExecutionPhase do
   end
 
   defp run_execution_chain(run, task) do
-    prompt = "Use the available information and tools to execute this task: #{task["name"]}"
-    logs = Operately.AI.run_agent(run, prompt)
+    logs = Operately.AI.run_agent(run, run.definition, [task["name"], run.task_execution_instructions])
     Operately.People.AgentRun.append_log(run.id, "\n" <> logs <> "\n")
     run
   end

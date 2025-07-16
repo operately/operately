@@ -33,7 +33,7 @@ defmodule OperatelyWeb.Api.PlanningPhaseTest do
     agent = Operately.Repo.preload(ctx.agent, :agent_def)
     {:ok, run} = Operately.People.AgentRun.create(agent.agent_def, false)
 
-    with_mock Operately.AI, run_agent: &simulate_run/2 do
+    with_mock Operately.AI, run_agent: &simulate_run/3 do
       Oban.Testing.with_testing_mode(:manual, fn ->
         Operately.Ai.PlanningPhase.execute(run)
       end)
@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.PlanningPhaseTest do
     {:ok, Map.put(ctx, :agent_run, Operately.Repo.reload(run))}
   end
 
-  defp simulate_run(run, _message) do
+  defp simulate_run(run, _definition, _instructions) do
     add_task = Operately.AI.Tools.add_agent_task()
     add_task.function.(%{"name" => "Verify goal Improve customer satisfaction"}, %{agent_run: run})
     add_task.function.(%{"name" => "Check Improve customer satisfaction progress"}, %{agent_run: run})

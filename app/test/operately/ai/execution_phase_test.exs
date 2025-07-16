@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.ExecutionPhaseTest do
   defp execute(ctx) do
     run = Operately.Repo.reload(ctx.agent_run)
 
-    with_mock Operately.AI, run_agent: &simulate_run/2 do
+    with_mock Operately.AI, run_agent: &simulate_run/3 do
       Oban.Testing.with_testing_mode(:manual, fn ->
         Operately.Ai.ExecutionPhase.execute(run)
       end)
@@ -55,7 +55,7 @@ defmodule OperatelyWeb.Api.ExecutionPhaseTest do
     Map.put(ctx, :agent_run, Operately.Repo.reload(run))
   end
 
-  defp simulate_run(_run, _message) do
+  defp simulate_run(_run, _message, _instructions) do
     "Execution simulated successfully."
   end
 
