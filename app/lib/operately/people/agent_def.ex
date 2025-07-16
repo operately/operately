@@ -10,6 +10,7 @@ defmodule Operately.People.AgentDef do
     field :definition, :string
     field :planning_instructions, :string
     field :task_execution_instructions, :string
+    field :daily_run, :boolean, default: false
 
     timestamps()
   end
