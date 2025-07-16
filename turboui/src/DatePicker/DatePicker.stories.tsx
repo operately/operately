@@ -13,18 +13,17 @@ const meta = {
     layout: "centered",
   },
   argTypes: {
-    initialType: {
-      control: "select",
-      options: ["day", "month", "quarter", "year"],
-      description: "The initial date type selected",
-    },
     initialDate: {
-      control: "text",
-      description: "Initial selected date in YYYY-MM-DD format (for day date type)",
+      control: "object",
+      description: "ContextualDate object containing date, dateType, and value",
     },
     readonly: {
       control: "boolean",
       description: "Whether the DatePicker is in readonly mode",
+    },
+    triggerLabel: {
+      control: "text",
+      description: "Label to show when no date is selected",
     },
     onDateSelect: { action: "date selected" },
     onCancel: { action: "canceled" },
@@ -47,12 +46,15 @@ export const Default: Story = {
     </div>
   ),
   args: {
-    initialType: "day",
-    initialDate: new Date(),
+    initialDate: {
+      date: new Date(),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date()),
+    },
     readonly: false,
   },
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
 };
 
@@ -69,12 +71,15 @@ export const MonthSelection: Story = {
     </div>
   ),
   args: {
-    initialType: "month",
-    initialDate: new Date("2025-03-31"),
+    initialDate: {
+      date: new Date("2025-03-31"),
+      dateType: "month",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(new Date("2025-03-31")),
+    },
     readonly: false,
   },
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
 };
 
@@ -91,12 +96,15 @@ export const QuarterSelection: Story = {
     </div>
   ),
   args: {
-    initialType: "quarter",
-    initialDate: new Date("2026-09-30"),
+    initialDate: {
+      date: new Date("2026-09-30"),
+      dateType: "quarter",
+      value: `Q${Math.floor(new Date("2026-09-30").getMonth() / 3) + 1} ${new Date("2026-09-30").getFullYear()}`,
+    },
     readonly: false,
   },
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
 };
 
@@ -113,12 +121,15 @@ export const YearSelection: Story = {
     </div>
   ),
   args: {
-    initialType: "year",
-    initialDate: new Date("2024-12-31"),
+    initialDate: {
+      date: new Date("2024-12-31"),
+      dateType: "year",
+      value: new Date("2024-12-31").getFullYear().toString(),
+    },
     readonly: false,
   },
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
 };
 
@@ -135,12 +146,17 @@ export const ReadonlyMode: Story = {
     </div>
   ),
   args: {
-    initialType: "day",
-    initialDate: new Date("2025-07-16"),
+    initialDate: {
+      date: new Date("2025-07-16"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+        new Date("2025-07-16"),
+      ),
+    },
     readonly: true,
     triggerLabel: "Due Date",
   },
   parameters: {
-    layout: 'padded',
+    layout: "padded",
   },
 };

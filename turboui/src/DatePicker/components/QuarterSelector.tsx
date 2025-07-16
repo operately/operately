@@ -1,11 +1,11 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateQuarters } from "../utils";
 import { OptionButton } from "./OptionButton";
-import { SelectedDate } from "../types";
+import { DatePicker } from "../index";
 
 interface Props {
-  selectedDate: SelectedDate;
-  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
+  selectedDate?: DatePicker.ContextualDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   visibleYears: number[];
 }
 
@@ -30,6 +30,12 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
     }
   }, []);
 
+  const handleSelect = (quarter: DatePicker.PeriodOption) => {
+    const date = new Date(quarter.value);
+    const quarterLabel = `${quarter.label} ${date.getFullYear()}`;
+    setSelectedDate({ dateType: "quarter", date, value: quarterLabel });   
+  }
+
   return (
     <div className="mb-3">
       <div ref={containerRef} className="max-h-48 overflow-y-auto p-2">
@@ -40,10 +46,8 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
               {generateQuarters(year).map((quarter) => (
                 <OptionButton
                   key={quarter.value}
-                  onClick={() => {
-                    setSelectedDate({ type: "quarter", date: new Date(quarter.value) });
-                  }}
-                  isSelected={isSelectedQuarter(selectedDate, quarter.value, year)}
+                  onClick={() => handleSelect(quarter)}
+                  isSelected={isSelectedQuarter(quarter.value, year, selectedDate)}
                   className="flex-1 py-1 px-2 text-xs"
                 >
                   {quarter.label}
@@ -57,15 +61,15 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
   );
 }
 
-function isSelectedQuarter(selectedDate: SelectedDate, quarterValue: string, year: number): boolean {
+function isSelectedQuarter(quarterValue: string, year: number, selectedDate?: DatePicker.ContextualDate): boolean {
   try {
-    if (!selectedDate.date) return false;
+    if (!selectedDate?.date) return false;
 
     const quarterDate = new Date(quarterValue);
     const quarter = Math.floor(selectedDate.date.getMonth() / 3) + 1;
     const selectedQuarter = Math.floor(quarterDate.getMonth() / 3) + 1;
 
-    return selectedDate.type === "quarter" && selectedDate.date.getFullYear() === year && quarter === selectedQuarter;
+    return selectedDate && selectedDate.dateType === "quarter" && selectedDate.date.getFullYear() === year && quarter === selectedQuarter;
   } catch {
     return false;
   }
