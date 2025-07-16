@@ -1209,6 +1209,7 @@ defmodule OperatelyWeb.Api.Types do
     field :sandbox_mode, :boolean
     field :planning_instructions, :string
     field :task_execution_instructions, :string
+    field :daily_run, :boolean
   end
 
   object :agent_run do
