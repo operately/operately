@@ -53,6 +53,8 @@ defmodule OperatelyWeb.Api do
     mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
     mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
     mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
+    mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
+    mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
   end
 
   query(:get_account, Q.GetAccount)
