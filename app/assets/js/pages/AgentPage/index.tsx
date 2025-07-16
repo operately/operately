@@ -1,6 +1,5 @@
 import Api, { AgentRun, Person } from "@/api";
 
-import * as Pages from "@/components/Pages";
 import * as React from "react";
 
 import {
@@ -9,19 +8,19 @@ import {
   FormattedTime,
   IconChevronRight,
   IconX,
+  Modal,
   PageNew,
   PrimaryButton,
-  showErrorToast,
-  showSuccessToast,
+  SecondaryButton,
   SwitchToggle,
 } from "turboui";
 
 import { PageModule } from "@/routes/types";
-import { usePaths } from "../../routes/paths";
+import { usePageState } from "./state";
 
 export default { name: "CompanyManageAiAgentsPage", loader, Page } as PageModule;
 
-interface LoaderResult {
+export interface LoaderResult {
   agent: Person;
   runs: AgentRun[];
 }
@@ -30,113 +29,6 @@ async function loader({ params }): Promise<LoaderResult> {
   return {
     agent: await Api.ai.getAgent({ id: params.id }).then((d) => d.agent),
     runs: await Api.ai.listAgentRuns({ agentId: params.id }).then((d) => d.runs),
-  };
-}
-
-interface State {
-  agent: Person;
-  runs: AgentRun[];
-  companyAdminPath: string;
-  companyAiAgentsPath: string;
-  definition: string;
-  saveDefiniton: (newDefinition: string) => Promise<void>;
-  runAgent: () => Promise<void>;
-  sandboxMode: boolean;
-  saveSandboxMode: (newSandboxMode: boolean) => Promise<void>;
-  expandedRun: AgentRun | null;
-  expandRun: (runId: AgentRun) => void;
-  closeRun: () => void;
-  creatingRun: boolean;
-  refreshRun: () => void;
-}
-
-function usePageState(): State {
-  const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
-
-  const [definition, setDefinition] = React.useState<string>(agent.agentDef!.definition);
-  const [sandboxMode, setSandboxMode] = React.useState<boolean>(agent.agentDef!.sandboxMode);
-  const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
-  const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
-  const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
-
-  const paths = usePaths();
-  const companyAdminPath = paths.companyAdminPath();
-  const companyAiAgentsPath = paths.companyAiAgentsPath();
-
-  const saveDefiniton = async (newDefinition: string) => {
-    const oldDefinition = definition;
-
-    try {
-      setDefinition(newDefinition);
-      await Api.ai.editAgentDefinition({ id: agent.id, definition: newDefinition });
-      showSuccessToast("Success", "Agent definition updated successfully");
-    } catch (error) {
-      setDefinition(oldDefinition);
-      showErrorToast("Network error", "Reverting to previous definition");
-    }
-  };
-
-  const saveSandboxMode = async (newSandboxMode: boolean) => {
-    const oldSandboxMode = sandboxMode;
-
-    try {
-      setSandboxMode(newSandboxMode);
-      await Api.ai.editAgentSandboxMode({ id: agent.id, mode: newSandboxMode });
-      showSuccessToast("Success", "Agent sandbox mode updated successfully");
-    } catch (error) {
-      setSandboxMode(oldSandboxMode);
-      showErrorToast("Network error", "Reverting to previous sandbox mode");
-    }
-  };
-
-  const runAgent = async () => {
-    if (creatingRun) return;
-    setCreatingRun(true);
-
-    try {
-      const res = await Api.ai.runAgent({ id: agent.id });
-      showSuccessToast("Success", "Agent is running");
-      console.log("Agent run response:", res);
-
-      setRuns((prevRuns) => [...prevRuns, res.run]);
-      setExpandedRun(res.run);
-    } catch (error) {
-      showErrorToast("Network error", "Failed to run agent");
-    }
-
-    setCreatingRun(false);
-  };
-
-  const expandRun = (run: AgentRun) => {
-    setExpandedRun(run);
-  };
-
-  const closeRun = () => {
-    setExpandedRun(null);
-  };
-
-  const refreshRun = async () => {
-    if (!expandedRun) return;
-
-    const updatedRun = await Api.ai.getAgentRun({ id: expandedRun.id }).then((d) => d.run);
-    setExpandedRun(updatedRun);
-  };
-
-  return {
-    agent,
-    runs,
-    companyAdminPath,
-    companyAiAgentsPath,
-    definition,
-    saveDefiniton,
-    runAgent,
-    sandboxMode,
-    saveSandboxMode,
-    expandedRun,
-    expandRun,
-    closeRun,
-    creatingRun,
-    refreshRun,
   };
 }
 
@@ -154,8 +46,11 @@ function Page() {
       <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
         <div>
           <AgentHeader state={state} />
-          <AgentModeToggle state={state} />
-          <AgentDefinitionEditor state={state} />
+          <AgentDefinition state={state} />
+          <PlanningInstructions state={state} />
+          <TaskExecutionInstructions state={state} />
+          <SandboxModeToggle state={state} />
+          <DailyRunToggle state={state} />
         </div>
 
         {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
@@ -183,43 +78,150 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
   );
 }
 
-function AgentModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+function SandboxModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
   return (
     <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
       <div>
         <label className="font-bold text-sm mb-1">Sandbox Mode</label>
         <div className="text-xs text-surface-text-secondary max-w-xl">
-          When enabled, the agent will not perform any actions that affect the real world. It will have access to the
-          same data and context, but will only simulate actions without executing them.
+          When enabled, the agent will not perform any actions that affect the real world, but will instead simulate
+          actions and responses. The agent will have access to the same data and capabilities, but will not post any
+          messages or perform any actions.
         </div>
       </div>
 
       <div className="flex items-center gap-2">
-        <SwitchToggle label="" value={state.sandboxMode} setValue={state.saveSandboxMode} />
+        <SwitchToggle label="" value={state.sandboxMode.sandboxMode} setValue={state.sandboxMode.save} />
       </div>
     </div>
   );
 }
 
-function AgentDefinitionEditor({ state }: { state: ReturnType<typeof usePageState> }) {
-  const [buffer, setBuffer] = React.useState(state.definition);
-
-  React.useEffect(() => {
-    setBuffer(state.definition);
-  }, [state.definition]);
-
+function DailyRunToggle({ state }: { state: ReturnType<typeof usePageState> }) {
   return (
-    <div className="mt-6">
-      <label className="font-bold text-sm mb-1">Agent Definition</label>
-      <textarea
-        className="w-full p-2 border border-surface-outline rounded-md"
-        rows={10}
-        value={buffer}
-        onChange={(e) => setBuffer(e.target.value)}
-        placeholder="Enter agent definition here..."
-        onBlur={(e) => state.saveDefiniton(e.target.value)}
+    <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
+      <div>
+        <label className="font-bold text-sm mb-1">Run Daily</label>
+        <div className="text-xs text-surface-text-secondary max-w-xl">
+          When enabled, the agent will automatically run every day at a 9am UTC. This is useful for agents that need to
+          perform daily tasks or checks.
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <SwitchToggle label="" value={state.dailyRun.value} setValue={state.dailyRun.setValue} />
+      </div>
+    </div>
+  );
+}
+
+function AgentDefinition({ state }: { state: ReturnType<typeof usePageState> }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Responsibilities</label>
+        <SecondaryButton size="xxs" onClick={state.definition.openModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.definition.value}</p>
+
+      <EditInstructionsModal
+        title="Edit Agent Definition"
+        isOpen={state.definition.isModalOpen}
+        onClose={state.definition.closeModal}
+        value={state.definition.value}
+        setValue={state.definition.save}
       />
     </div>
+  );
+}
+
+function PlanningInstructions({ state }: { state: State }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Planning Instructions</label>
+        <SecondaryButton size="xxs" onClick={state.planningInstructions.openModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.planningInstructions.value}</p>
+
+      <EditInstructionsModal
+        title="Edit Planning Instructions"
+        isOpen={state.planningInstructions.isModalOpen}
+        onClose={state.planningInstructions.closeModal}
+        value={state.planningInstructions.value}
+        setValue={state.planningInstructions.save}
+      />
+    </div>
+  );
+}
+
+function TaskExecutionInstructions({ state }: { state: State }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md">
+      <div className="flex items-center justify-between mb-2">
+        <label className="font-bold text-sm">Task Execution Instructions</label>
+        <SecondaryButton size="xxs" onClick={state.taskExectionInstructions.openModal}>
+          Edit
+        </SecondaryButton>
+      </div>
+
+      <p className="mt-2 text-xs line-clamp-4">{state.taskExectionInstructions.value}</p>
+
+      <EditInstructionsModal
+        title="Edit Task Execution Instructions"
+        isOpen={state.taskExectionInstructions.isModalOpen}
+        onClose={state.taskExectionInstructions.closeModal}
+        value={state.taskExectionInstructions.value}
+        setValue={state.taskExectionInstructions.save}
+      />
+    </div>
+  );
+}
+
+function EditInstructionsModal({
+  title,
+  isOpen,
+  onClose,
+  value,
+  setValue,
+}: {
+  title: string;
+  isOpen: boolean;
+  onClose: () => void;
+  value: string;
+  setValue: (newValue: string) => void;
+}) {
+  const [buffer, setBuffer] = React.useState(value);
+
+  React.useEffect(() => {
+    setBuffer(value);
+  }, [value]);
+
+  return (
+    <Modal title={title} isOpen={isOpen} onClose={onClose} closeOnBackdropClick={false} size="large">
+      <textarea
+        className="w-full p-2 border border-surface-outline rounded-md text-xs"
+        rows={30}
+        value={buffer}
+        onChange={(e) => setBuffer(e.target.value)}
+        placeholder="Enter instructions"
+      />
+
+      <div className="mt-4 flex justify-end gap-2">
+        <SecondaryButton size="sm" onClick={onClose}>
+          Cancel
+        </SecondaryButton>
+        <PrimaryButton size="sm" onClick={() => setValue(buffer)}>
+          Save
+        </PrimaryButton>
+      </div>
+    </Modal>
   );
 }
 
