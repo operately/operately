@@ -1,11 +1,11 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateMonths } from "../utils";
 import { OptionButton } from "./OptionButton";
-import { SelectedDate } from "../types";
+import { DatePicker } from "../index"
 
 interface Props {
-  selectedDate: SelectedDate;
-  setSelectedDate: React.Dispatch<React.SetStateAction<SelectedDate>>;
+  selectedDate?: DatePicker.ContextualDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   visibleYears: number[];
 }
 
@@ -30,6 +30,12 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
     }
   }, []);
 
+  const handleSelect = (month: DatePicker.PeriodOption) => {
+    const date = new Date(month.value);
+    const value = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(date);
+    setSelectedDate({ date, dateType: "month", value });
+  };
+
   return (
     <div className="mb-3">
       <div ref={containerRef} className="max-h-48 overflow-y-auto p-2">
@@ -40,11 +46,8 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
               {generateMonths(year).map((month) => (
                 <OptionButton
                   key={month.value}
-                  onClick={() => {
-                    const date = new Date(month.value);
-                    setSelectedDate({ date, type: "month" });
-                  }}
-                  isSelected={isSelectedMonth(selectedDate, month.value, year)}
+                  onClick={() => handleSelect(month)}
+                  isSelected={isSelectedMonth(month.value, year, selectedDate)}
                   className="py-1 px-2 text-xs"
                 >
                   {month.label}
@@ -58,18 +61,11 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
   );
 }
 
-function isSelectedMonth(selectedDate: SelectedDate, monthValue: string, year: number): boolean {
-  try {
-    if (!selectedDate.date) return false;
-
-    const monthDate = new Date(monthValue);
-    return (
-      selectedDate.type === "month" &&
-      selectedDate.date.getFullYear() === year &&
-      selectedDate.date.getFullYear() === monthDate.getFullYear() &&
-      selectedDate.date.getMonth() === monthDate.getMonth()
-    );
-  } catch {
-    return false;
-  }
+function isSelectedMonth(monthValue: string, year: number, selectedDate?: DatePicker.ContextualDate) {
+  return Boolean(
+    selectedDate &&
+    selectedDate.dateType === "month" &&
+    selectedDate.date?.getMonth() === new Date(monthValue).getMonth() &&
+    selectedDate.date?.getFullYear() === year
+  );
 }

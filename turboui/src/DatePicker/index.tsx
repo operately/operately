@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
 import { IconCalendar, IconChevronDown } from "../icons";
-import { SelectedDate, DateType } from "./types";
 import { InlineCalendar } from "./components/InlineCalendar";
 import DateTypeSelector from "./components/DateTypeSelector";
 import { MonthSelector } from "./components/MonthSelector";
@@ -19,21 +18,43 @@ const DATE_TYPES = [
 
 export namespace DatePicker {
   export interface Props {
-    onDateSelect?: (date: string) => void;
+    onDateSelect?: (selectedDate: ContextualDate | undefined) => void;
     onCancel?: () => void;
-    initialType?: DateType;
-    initialDate?: Date;
+    initialDate?: ContextualDate;
     minYear?: number;
     maxYear?: number;
     triggerLabel?: string;
     readonly?: boolean;
+  }
+
+  export type DateType = "day" | "month" | "quarter" | "year";
+
+  export interface ContextualDate {
+    date: Date;
+    dateType: DateType;
+    value: string;
+  }
+
+  export interface DateTypeOption {
+    value: DateType;
+    label: string;
+  }
+
+  export interface MonthOption {
+    value: string;
+    label: string;
+    name: string;
+  }
+
+  export interface PeriodOption {
+    value: string;
+    label: string;
   }
 }
 
 export function DatePicker({
   onDateSelect,
   onCancel,
-  initialType,
   initialDate,
   minYear = 2020,
   maxYear = 2030,
@@ -41,20 +62,17 @@ export function DatePicker({
   readonly = false,
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
-  const [dateType, setDateType] = useState<DateType>(initialType || "day");
-  const [selectedDate, setSelectedDate] = useState<SelectedDate>({ type: initialType, date: initialDate });
-  const [previousSelectedDate, setPreviousSelectedDate] = useState<SelectedDate>({
-    type: initialType,
-    date: initialDate,
-  });
-
+  const [selectedDate, setSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
+  const [previousSelectedDate, setPreviousSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
+  const [dateType, setDateType] = useState<DatePicker.DateType>(initialDate?.dateType || "day");
+  
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
   const handleOpenChange = (isOpen: boolean) => {
     setOpen(isOpen);
 
-    if (isOpen) {
-      setPreviousSelectedDate({ ...selectedDate });
+    if (isOpen && selectedDate) {
+      setPreviousSelectedDate(selectedDate);
     }
   };
 
@@ -64,7 +82,7 @@ export function DatePicker({
     setOpen(!open);
 
     if (!open) {
-      setPreviousSelectedDate({ ...selectedDate });
+      setPreviousSelectedDate(selectedDate);
     }
   };
 
@@ -74,9 +92,14 @@ export function DatePicker({
     onCancel?.();
   };
 
-  const handleDateSelect = (date: string) => {
+  const handleDateSelect = () => {
     setOpen(false);
-    onDateSelect?.(date);
+
+    if (selectedDate) {
+      onDateSelect?.(selectedDate);
+    } else {
+      onDateSelect?.(undefined);
+    }
   };
 
   return (
@@ -96,8 +119,8 @@ export function DatePicker({
         <Popover.Content className="z-50 animate-fadeIn" sideOffset={5} align="start">
           <DatePickerContent
             dateType={dateType}
-            selectedDate={selectedDate}
             setDateType={setDateType}
+            selectedDate={selectedDate}
             setSelectedDate={setSelectedDate}
             onDateSelect={handleDateSelect}
             onCancel={handleCancel}
@@ -110,7 +133,7 @@ export function DatePicker({
 }
 
 interface DatePickerTriggerProps {
-  selectedDate: SelectedDate;
+  selectedDate?: DatePicker.ContextualDate;
   label?: string;
   onClick: () => void;
   className?: string;
@@ -142,36 +165,8 @@ function DatePickerTrigger({
     onClick();
   };
 
-  // Format the date if available, otherwise use the default label
-  let displayText = label;
-  const { date, type } = selectedDate;
-
-  if (date && type) {
-    switch (type) {
-      case "day":
-        // Full date: Jul 14, 2025
-        displayText = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
-          date,
-        );
-        break;
-      case "quarter":
-        // Quarter and year: Q1 2025, Q3 2025, etc.
-        const quarter = Math.floor(date.getMonth() / 3) + 1;
-        displayText = `Q${quarter} ${date.getFullYear()}`;
-        break;
-      case "month":
-        // Month abbreviation and year: Jan 2025, Mar 2025, Dec 2025, etc.
-        displayText = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(date);
-        break;
-      case "year":
-        // Just the year: 2025, 2026, etc.
-        displayText = date.getFullYear().toString();
-        break;
-      default:
-        displayText = label;
-    }
-  }
-
+  let displayText = selectedDate?.value || label;
+  
   return (
     <button
       type="button"
@@ -187,16 +182,18 @@ function DatePickerTrigger({
   );
 }
 
-function DatePickerContent(props: {
-  dateType: DateType;
-  selectedDate: SelectedDate;
-  setDateType: (type: DateType) => void;
-  setSelectedDate: (date: SelectedDate) => void;
-  onDateSelect?: (date: string) => void;
+interface DatePickerContentProps {
+  dateType: DatePicker.DateType;
+  setDateType: React.Dispatch<React.SetStateAction<DatePicker.DateType>>;
+  selectedDate?: DatePicker.ContextualDate;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate | undefined>>;
+  onDateSelect?: (selectedDate: DatePicker.ContextualDate | undefined) => void;
   onCancel?: () => void;
   yearOptions: number[];
-}) {
-  const { dateType, selectedDate, setDateType, setSelectedDate, onDateSelect, onCancel, yearOptions } = props;
+}
+
+function DatePickerContent(props: DatePickerContentProps) {
+  const { dateType, setDateType, selectedDate, setSelectedDate, onDateSelect, onCancel, yearOptions } = props;
 
   return (
     <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg shadow-lg">
@@ -225,7 +222,7 @@ function DatePickerContent(props: {
         <YearSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} years={yearOptions} />
       )}
 
-      <ActionButtons selectedDate={selectedDate.date} onCancel={onCancel} onSetDeadline={onDateSelect} />
+      <ActionButtons selectedDate={selectedDate} onCancel={onCancel} onSetDeadline={onDateSelect} />
     </div>
   );
 }
