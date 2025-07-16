@@ -16,7 +16,7 @@ import {
 } from "turboui";
 
 import { PageModule } from "@/routes/types";
-import { usePageState } from "./state";
+import { State, usePageState } from "./state";
 
 export default { name: "CompanyManageAiAgentsPage", loader, Page } as PageModule;
 
@@ -59,7 +59,7 @@ function Page() {
   );
 }
 
-function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
+function AgentHeader({ state }: { state: State }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
@@ -78,7 +78,7 @@ function AgentHeader({ state }: { state: ReturnType<typeof usePageState> }) {
   );
 }
 
-function SandboxModeToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+function SandboxModeToggle({ state }: { state: State }) {
   return (
     <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
       <div>
@@ -97,7 +97,7 @@ function SandboxModeToggle({ state }: { state: ReturnType<typeof usePageState> }
   );
 }
 
-function DailyRunToggle({ state }: { state: ReturnType<typeof usePageState> }) {
+function DailyRunToggle({ state }: { state: State }) {
   return (
     <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-ceter justify-between gap-4">
       <div>
@@ -115,7 +115,7 @@ function DailyRunToggle({ state }: { state: ReturnType<typeof usePageState> }) {
   );
 }
 
-function AgentDefinition({ state }: { state: ReturnType<typeof usePageState> }) {
+function AgentDefinition({ state }: { state: State }) {
   return (
     <div className="mt-6 p-4 border border-surface-outline rounded-md">
       <div className="flex items-center justify-between mb-2">
@@ -225,7 +225,7 @@ function EditInstructionsModal({
   );
 }
 
-function AgentRunList({ state }: { state: ReturnType<typeof usePageState> }) {
+function AgentRunList({ state }: { state: State }) {
   if (state.runs.length === 0) {
     return <div className="text-sm text-surface-text-secondary">No runs yet</div>;
   }
