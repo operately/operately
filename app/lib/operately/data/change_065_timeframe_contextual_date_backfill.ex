@@ -22,13 +22,13 @@ defmodule Operately.Data.Change065TimeframeContextualDateBackfill do
   defp update_goal_timeframe(goal) do
     contextual_start_date = %{
       date_type: :day,
-      value: Date.to_iso8601(goal.timeframe.start_date),
+      value: Calendar.strftime(goal.timeframe.start_date, "%b %d, %Y"),
       date: goal.timeframe.start_date
     }
 
     contextual_end_date = %{
       date_type: :day,
-      value: Date.to_iso8601(goal.timeframe.end_date),
+      value: Calendar.strftime(goal.timeframe.end_date, "%b %d, %Y"),
       date: goal.timeframe.end_date
     }
 

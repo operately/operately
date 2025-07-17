@@ -27,17 +27,6 @@ defmodule Operately.ContextualDates.ContextualDateTest do
       changeset = ContextualDate.changeset(%ContextualDate{}, params)
       assert changeset.valid?
     end
-
-    test "returns error when value doesn't match ISO format of date" do
-      params = %{
-        date_type: :day,
-        value: "2025-07-16",
-        date: ~D[2025-07-15]
-      }
-
-      changeset = ContextualDate.changeset(%ContextualDate{}, params)
-      assert %{value: ["must match the date field in ISO format (YYYY-MM-DD)"]} = errors_on(changeset)
-    end
   end
 
   describe "validate_value_format/2 for month type" do

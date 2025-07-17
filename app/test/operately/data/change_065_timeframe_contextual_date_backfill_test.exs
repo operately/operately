@@ -21,11 +21,11 @@ defmodule Operately.Data.Change065TimeframeContextualDateBackfillTest do
       goal = Repo.reload(ctx.goal)
 
       assert goal.timeframe.contextual_start_date.date_type == :day
-      assert goal.timeframe.contextual_start_date.value == "2023-01-01"
+      assert goal.timeframe.contextual_start_date.value == "Jan 01, 2023"
       assert goal.timeframe.contextual_start_date.date == start_date
 
       assert goal.timeframe.contextual_end_date.date_type == :day
-      assert goal.timeframe.contextual_end_date.value == "2023-12-31"
+      assert goal.timeframe.contextual_end_date.value == "Dec 31, 2023"
       assert goal.timeframe.contextual_end_date.date == end_date
     end
 
@@ -42,15 +42,15 @@ defmodule Operately.Data.Change065TimeframeContextualDateBackfillTest do
 
       goal1 = Repo.reload(ctx.goal1)
       assert goal1.timeframe.contextual_start_date.date_type == :day
-      assert goal1.timeframe.contextual_start_date.value == "2023-01-01"
+      assert goal1.timeframe.contextual_start_date.value == "Jan 01, 2023"
       assert goal1.timeframe.contextual_end_date.date_type == :day
-      assert goal1.timeframe.contextual_end_date.value == "2023-12-31"
+      assert goal1.timeframe.contextual_end_date.value == "Dec 31, 2023"
 
       goal2 = Repo.reload(ctx.goal2)
       assert goal2.timeframe.contextual_start_date.date_type == :day
-      assert goal2.timeframe.contextual_start_date.value == "2023-04-01"
+      assert goal2.timeframe.contextual_start_date.value == "Apr 01, 2023"
       assert goal2.timeframe.contextual_end_date.date_type == :day
-      assert goal2.timeframe.contextual_end_date.value == "2023-06-30"
+      assert goal2.timeframe.contextual_end_date.value == "Jun 30, 2023"
     end
   end
 end

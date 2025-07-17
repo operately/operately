@@ -23,6 +23,8 @@ defmodule Operately.ContextualDates.ContextualDate do
     validate_value_format(changeset, date_type)
   end
 
+  defp validate_value_format(changeset, :day), do: changeset
+
   defp validate_value_format(changeset, :month) do
     value = get_field(changeset, :value)
     valid_months = ~w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
@@ -42,18 +44,6 @@ defmodule Operately.ContextualDates.ContextualDate do
       changeset
     else
       add_error(changeset, :value, "must be a valid quarter format (Q1, Q2, Q3, Q4)")
-    end
-  end
-
-  defp validate_value_format(changeset, :day) do
-    # For day type, the value should be in ISO format (YYYY-MM-DD)
-    value = get_field(changeset, :value)
-    date = get_field(changeset, :date)
-
-    if value == Date.to_iso8601(date) do
-      changeset
-    else
-      add_error(changeset, :value, "must match the date field in ISO format (YYYY-MM-DD)")
     end
   end
 
