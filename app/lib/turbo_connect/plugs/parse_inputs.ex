@@ -187,6 +187,17 @@ defmodule TurboConnect.Plugs.ParseInputs do
           end
         end)
 
+      types.enums[type] != nil ->
+        enum_values = types.enums[type]
+        value = String.to_atom(value)
+
+        if value in enum_values do
+          {:ok, value}
+        else
+          allowed_values = enum_values |> Enum.join(", ")
+          {:error, 400, "Invalid value for enum #{type}: #{value}. Allowed values: #{allowed_values}"}
+        end
+
       true ->
         {:error, 400, "Unknown input type: #{type}"}
     end
