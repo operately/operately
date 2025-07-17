@@ -11,6 +11,10 @@ defmodule Operately.ContextualDates.ContextualDate do
     field :date, :date
   end
 
+  def changeset(contextual_date, %Operately.ContextualDates.ContextualDate{} = attrs) do
+    changeset(contextual_date, Map.from_struct(attrs))
+  end
+
   def changeset(contextual_date, attrs) do
     contextual_date
     |> cast(attrs, [:date_type, :value, :date])
