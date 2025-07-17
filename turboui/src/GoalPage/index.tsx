@@ -6,6 +6,7 @@ import { PageNew } from "../Page";
 
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
+import { DatePicker } from "../DatePicker";
 import { PrivacyField } from "../PrivacyField";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
@@ -105,8 +106,8 @@ export namespace GoalPage {
     reviewer: Person | null;
     setReviewer: (person: Person | null) => void;
 
-    dueDate: Date | null;
-    setDueDate: (date: Date | null) => void;
+    dueDate: DatePicker.ContextualDate | undefined;
+    setDueDate: (date: DatePicker.ContextualDate | undefined) => void;
 
     contributors: Contributor[];
     targets: GoalTargetList.Target[];

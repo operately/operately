@@ -3118,7 +3118,7 @@ export interface GoalsUpdateDescriptionResult {
 
 export interface GoalsUpdateDueDateInput {
   goalId: Id;
-  dueDate: string | null;
+  dueDate: ContextualDate | null;
 }
 
 export interface GoalsUpdateDueDateResult {
