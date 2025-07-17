@@ -33,7 +33,7 @@ defmodule Operately.ContextualDates.ContextualDateTest do
     test "validates with valid month abbreviation" do
       params = %{
         date_type: :month,
-        value: "Jul",
+        value: "Jul 2025",
         date: ~D[2025-07-31]
       }
 
@@ -49,7 +49,7 @@ defmodule Operately.ContextualDates.ContextualDateTest do
       }
 
       changeset = ContextualDate.changeset(%ContextualDate{}, params)
-      assert %{value: ["must be a valid month abbreviation (Jan, Feb, etc.)"]} = errors_on(changeset)
+      assert %{value: ["must be in 'Month Year' format (e.g., 'Jul 2025')"]} = errors_on(changeset)
     end
   end
 
@@ -57,7 +57,7 @@ defmodule Operately.ContextualDates.ContextualDateTest do
     test "validates with valid quarter format" do
       params = %{
         date_type: :quarter,
-        value: "Q3",
+        value: "Q3 2025",
         date: ~D[2025-09-30]
       }
 
