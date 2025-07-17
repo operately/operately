@@ -9,6 +9,7 @@ import { YearSelector } from "./components/YearSelector";
 import ActionButtons from "./components/ActionButtons";
 import classNames from "../utils/classnames";
 import { isOverdue } from "../utils/time";
+import { TestableElement } from "../TestableElement";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -18,7 +19,7 @@ const DATE_TYPES = [
 ];
 
 export namespace DatePicker {
-  export interface Props {
+  export interface Props extends TestableElement {
     onDateSelect?: (selectedDate: ContextualDate | undefined) => void;
     onCancel?: () => void;
     initialDate?: ContextualDate;
@@ -63,6 +64,7 @@ export function DatePicker({
   triggerLabel = "Date",
   readonly = false,
   showOverdueWarning = false,
+  testId,
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
@@ -115,6 +117,7 @@ export function DatePicker({
             label={triggerLabel}
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
+            testId={testId}
           />
         </div>
       </Popover.Trigger>
@@ -136,7 +139,7 @@ export function DatePicker({
   );
 }
 
-interface DatePickerTriggerProps {
+interface DatePickerTriggerProps extends TestableElement {
   selectedDate?: DatePicker.ContextualDate;
   label?: string;
   onClick: () => void;
@@ -152,6 +155,7 @@ function DatePickerTrigger({
   className,
   readonly = false,
   showOverdueWarning,
+  testId,
 }: DatePickerTriggerProps) {
   const triggerClassName = classNames(
     "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
@@ -187,6 +191,7 @@ function DatePickerTrigger({
       onClick={handleClick}
       disabled={readonly}
       aria-readonly={readonly}
+      data-testid={testId}
     >
       <span className={elemClass}>
         <IconCalendarEvent
