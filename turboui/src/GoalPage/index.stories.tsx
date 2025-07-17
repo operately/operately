@@ -6,6 +6,7 @@ import { PrivacyField } from "../PrivacyField";
 import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
+import { DatePicker } from "../DatePicker";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -65,7 +66,7 @@ const defaultSpace: GoalPage.Space = {
 function Component(props: Partial<GoalPage.Props>) {
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
   const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
-  const [dueDate, setDueDate] = React.useState<Date | null>(props.dueDate || null);
+  const [dueDate, setDueDate] = React.useState<DatePicker.ContextualDate | undefined>(props.dueDate || undefined);
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
   const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
   const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);
@@ -565,7 +566,7 @@ export const DeleteGoalWithSubitem: Story = {
 
 export const MoveGoal: Story = {
   args: {
-    moveModealOpen: true,
+    moveModalOpen: true,
   },
 };
 
