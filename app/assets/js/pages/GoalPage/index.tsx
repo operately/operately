@@ -1,9 +1,10 @@
+import * as React from "react";
 import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
 import { PageModule } from "@/routes/types";
 
+import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import * as React from "react";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { accessLevelsAsNumbers, accessLevelsAsStrings, getGoal, Goal, Target } from "@/models/goals";
@@ -89,8 +90,8 @@ function Page() {
   });
 
   const [dueDate, setDueDate] = usePageField({
-    value: (data) => Time.parse(data.goal.dueDate),
-    update: (v) => Api.goals.updateDueDate({ goalId: goal.id!, dueDate: v && Time.toDateWithoutTime(v) }),
+    value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualEndDate),
+    update: (v) => Api.goals.updateDueDate({ goalId: goal.id!, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
   });
 

@@ -27,20 +27,22 @@ defmodule Operately.ContextualDates.ContextualDate do
 
   defp validate_value_format(changeset, :month) do
     value = get_field(changeset, :value)
-    valid_months = ~w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec)
+    date = get_field(changeset, :date)
+    date_str = Calendar.strftime(date, "%b %Y")
 
-    if value in valid_months do
+    if value == date_str do
       changeset
     else
-      add_error(changeset, :value, "must be a valid month abbreviation (Jan, Feb, etc.)")
+      add_error(changeset, :value, "must be in 'Month Year' format (e.g., 'Jul 2025')")
     end
   end
 
   defp validate_value_format(changeset, :quarter) do
+    date = get_field(changeset, :date)
     value = get_field(changeset, :value)
-    valid_quarters = ~w(Q1 Q2 Q3 Q4)
+    date_str = "#{get_quarter(date)} #{date.year}"
 
-    if value in valid_quarters do
+    if value == date_str do
       changeset
     else
       add_error(changeset, :value, "must be a valid quarter format (Q1, Q2, Q3, Q4)")
@@ -56,6 +58,15 @@ defmodule Operately.ContextualDates.ContextualDate do
       changeset
     else
       add_error(changeset, :value, "must match the year of the date field")
+    end
+  end
+
+  defp get_quarter(date) do
+    case date.month do
+      month when month in [1, 2, 3] -> "Q1"
+      month when month in [4, 5, 6] -> "Q2"
+      month when month in [7, 8, 9] -> "Q3"
+      month when month in [10, 11, 12] -> "Q4"
     end
   end
 
