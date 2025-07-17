@@ -124,7 +124,7 @@ defmodule OperatelyWeb.Api.Goals do
 
     inputs do
       field :goal_id, :id, null: false
-      field :due_date, :date, null: true
+      field :due_date, :contextual_date, null: true
     end
 
     outputs do
@@ -566,38 +566,27 @@ defmodule OperatelyWeb.Api.Goals do
           goal.timeframe == nil ->
             contextual_start_date = %{
               date_type: :day,
-              value: Date.to_iso8601(goal.inserted_at),
+              value: Calendar.strftime(goal.inserted_at, "%b %d, %Y"),
               date: goal.inserted_at
-            }
-            contextual_end_date = %{
-              date_type: :day,
-              value: Date.to_iso8601(new_due_date),
-              date: new_due_date
             }
 
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
                 type: "days",
                 start_date: goal.inserted_at,
-                end_date: new_due_date,
+                end_date: new_due_date.date,
                 contextual_start_date: contextual_start_date,
-                contextual_end_date: contextual_end_date
+                contextual_end_date: new_due_date
               }
             })
 
           true ->
-            contextual_end_date = %{
-              date_type: :day,
-              value: Date.to_iso8601(new_due_date),
-              date: new_due_date
-            }
-
             contextual_start_date = if goal.timeframe.contextual_start_date do
               Map.from_struct(goal.timeframe.contextual_start_date)
             else
               %{
                 date_type: :day,
-                value: Date.to_iso8601(goal.timeframe.start_date),
+                value: Calendar.strftime(goal.timeframe.start_date, "%b %d, %Y"),
                 date: goal.timeframe.start_date
               }
             end
@@ -606,9 +595,9 @@ defmodule OperatelyWeb.Api.Goals do
               timeframe: %{
                 type: "days",
                 start_date: goal.timeframe.start_date,
-                end_date: new_due_date,
+                end_date: new_due_date.date,
                 contextual_start_date: contextual_start_date,
-                contextual_end_date: contextual_end_date
+                contextual_end_date: new_due_date
               }
             })
         end
