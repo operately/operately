@@ -32,3 +32,4 @@ export { SwitchToggle } from "./SwitchToggle";
 export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
+export { DatePicker } from "./DatePicker";

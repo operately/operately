@@ -266,14 +266,23 @@ defmodule OperatelyWeb.Api.GoalsTest do
     test "it requires a goal_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goals, :update_due_date], %{due_date: "2023-01-01"})
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_due_date], %{due_date: %{date: "2023-01-01", date_type: "day"}})
       assert res.message == "Missing required fields: goal_id"
     end
 
     test "it updates the due date", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_due_date], %{goal_id: Paths.goal_id(ctx.goal), due_date: "2026-01-01"})
+      contextual_date = %{
+        date: "2026-01-01",
+        date_type: "day",
+        value: "Jan 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_due_date], %{
+        goal_id: Paths.goal_id(ctx.goal),
+        due_date: contextual_date
+      })
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)
