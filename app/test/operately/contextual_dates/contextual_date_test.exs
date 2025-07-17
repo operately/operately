@@ -27,24 +27,13 @@ defmodule Operately.ContextualDates.ContextualDateTest do
       changeset = ContextualDate.changeset(%ContextualDate{}, params)
       assert changeset.valid?
     end
-
-    test "returns error when value doesn't match ISO format of date" do
-      params = %{
-        date_type: :day,
-        value: "2025-07-16",
-        date: ~D[2025-07-15]
-      }
-
-      changeset = ContextualDate.changeset(%ContextualDate{}, params)
-      assert %{value: ["must match the date field in ISO format (YYYY-MM-DD)"]} = errors_on(changeset)
-    end
   end
 
   describe "validate_value_format/2 for month type" do
     test "validates with valid month abbreviation" do
       params = %{
         date_type: :month,
-        value: "Jul",
+        value: "Jul 2025",
         date: ~D[2025-07-31]
       }
 
@@ -60,7 +49,7 @@ defmodule Operately.ContextualDates.ContextualDateTest do
       }
 
       changeset = ContextualDate.changeset(%ContextualDate{}, params)
-      assert %{value: ["must be a valid month abbreviation (Jan, Feb, etc.)"]} = errors_on(changeset)
+      assert %{value: ["must be in 'Month Year' format (e.g., 'Jul 2025')"]} = errors_on(changeset)
     end
   end
 
@@ -68,7 +57,7 @@ defmodule Operately.ContextualDates.ContextualDateTest do
     test "validates with valid quarter format" do
       params = %{
         date_type: :quarter,
-        value: "Q3",
+        value: "Q3 2025",
         date: ~D[2025-09-30]
       }
 
