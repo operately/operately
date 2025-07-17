@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
-import { IconCalendar, IconChevronDown } from "../icons";
+import { IconCalendarEvent } from "../icons";
 import { InlineCalendar } from "./components/InlineCalendar";
 import DateTypeSelector from "./components/DateTypeSelector";
 import { MonthSelector } from "./components/MonthSelector";
@@ -153,16 +153,12 @@ function DatePickerTrigger({
   readonly = false,
   showOverdueWarning,
 }: DatePickerTriggerProps) {
-  const buttonClassName = classNames(
-    "bg-surface-base",
-    !readonly && "hover:bg-surface-highlight dark:hover:bg-surface-dimmed/20",
-    "border border-surface-outline",
-    "rounded-lg",
-    "flex items-center gap-1.5",
-    readonly ? "cursor-default" : "cursor-pointer",
-    "px-3 py-1.5",
-    "text-sm",
-    readonly && "opacity-75",
+  const triggerClassName = classNames(
+    "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
+    {
+      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": !readonly,
+      "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": false,
+    },
     className,
   );
 
@@ -173,22 +169,32 @@ function DatePickerTrigger({
 
   let displayText = selectedDate?.value || label;
   const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
-  const textClassName = classNames("truncate", isDateOverdue && showOverdueWarning && "text-content-error");
-  const calendarClassName = classNames("shrink-0", isDateOverdue && showOverdueWarning && "text-content-error");
+
+  const elemClass = classNames(
+    {
+      "flex items-center": true,
+      "gap-1.5": true,
+      "text-content-error": isDateOverdue && showOverdueWarning,
+      "text-content-dimmed": !selectedDate,
+    },
+    "text-sm",
+  );
 
   return (
     <button
       type="button"
-      className={buttonClassName}
+      className={triggerClassName}
       onClick={handleClick}
       disabled={readonly}
       aria-readonly={readonly}
     >
-      <IconCalendar size={16} className={calendarClassName} />
-      <span className={textClassName}>
-        {displayText}
+      <span className={elemClass}>
+        <IconCalendarEvent
+          size={16}
+          className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
+        />
+        <span className="truncate">{displayText}</span>
       </span>
-      {!readonly && <IconChevronDown size={16} className="shrink-0" />}
     </button>
   );
 }
@@ -209,7 +215,7 @@ function DatePickerContent(props: DatePickerContentProps) {
   return (
     <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg shadow-lg">
       <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <IconCalendar size={20} />
+        <IconCalendarEvent size={20} />
         Set Date
       </h2>
 
