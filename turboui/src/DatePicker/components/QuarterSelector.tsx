@@ -7,9 +7,10 @@ interface Props {
   selectedDate?: DatePicker.ContextualDate;
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   visibleYears: number[];
+  useStartOfPeriod?: boolean;
 }
 
-export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }: Props) {
+export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, useStartOfPeriod = false }: Props) {
   const currentYear = new Date().getFullYear();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,7 +44,7 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears }:
           <div key={year} className="mb-4 last:mb-0">
             <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
             <div className="flex space-x-1">
-              {generateQuarters(year).map((quarter) => (
+              {generateQuarters(year, useStartOfPeriod).map((quarter) => (
                 <OptionButton
                   key={quarter.value}
                   onClick={() => handleSelect(quarter)}

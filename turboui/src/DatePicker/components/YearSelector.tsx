@@ -1,14 +1,16 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { OptionButton } from "./OptionButton";
 import { DatePicker } from "../index";
+import { getYearDate } from "../utils";
 
 interface Props {
   selectedDate?: DatePicker.ContextualDate;
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   years: number[];
+  useStartOfPeriod?: boolean;
 }
 
-export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
+export function YearSelector({ selectedDate, setSelectedDate, years, useStartOfPeriod = false }: Props) {
   const currentYear = new Date().getFullYear();
   const currentYearRef = useRef<HTMLButtonElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -31,7 +33,7 @@ export function YearSelector({ selectedDate, setSelectedDate, years }: Props) {
   }, []);
 
   const handleSelect = (year: number) => {
-    const date = new Date(year, 0, 1);
+    const date = getYearDate(year, useStartOfPeriod);
     setSelectedDate({
       dateType: "year",
       date: date,
