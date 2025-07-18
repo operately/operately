@@ -187,7 +187,7 @@ function assertValidStatus(value: string | null): asserts value is Status | null
 
 function assertReviewer(reviewer: string | undefined, noReviewer: boolean | undefined): asserts reviewer is string {
   if (noReviewer) {
-    if (reviewer !== undefined) {
+    if (![undefined, ""].includes(reviewer)) {
       throw new Error("Reviewer should not be set is noReviewer is true");
     }
 
