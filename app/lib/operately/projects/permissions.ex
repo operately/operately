@@ -25,7 +25,8 @@ defmodule Operately.Projects.Permissions do
     :can_edit_task,
     :can_edit_timeline,
     :can_pause,
-    :can_view
+    :can_view,
+    :can_comment
   ]
 
   def calculate(access_level) when is_integer(access_level) do
@@ -53,7 +54,8 @@ defmodule Operately.Projects.Permissions do
       can_edit_task: access_level >= Binding.edit_access(),
       can_acknowledge_check_in: access_level >= Binding.edit_access(),
       can_edit_contributors: access_level >= Binding.edit_access(),
-      can_edit_permissions: access_level >= Binding.edit_access()
+      can_edit_permissions: access_level >= Binding.edit_access(),
+      can_comment: access_level >= Binding.comment_access()
     }
   end
 

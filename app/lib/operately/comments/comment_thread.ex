@@ -3,7 +3,9 @@ defmodule Operately.Comments.CommentThread do
   alias Operately.Notifications
 
   schema "comment_threads" do
+    belongs_to :author, Operately.People.Person, foreign_key: :author_id
     belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+
     has_many :reactions, Operately.Updates.Reaction, foreign_key: :entity_id, where: [entity_type: :comment_thread]
     has_many :comments, Operately.Updates.Comment, foreign_key: :entity_id, where: [entity_type: :comment_thread]
 
@@ -11,7 +13,7 @@ defmodule Operately.Comments.CommentThread do
     has_one :access_context, through: [:activity, :access_context]
 
     field :parent_id, :binary_id
-    field :parent_type, Ecto.Enum, values: [:activity]
+    field :parent_type, Ecto.Enum, values: [:activity, :project]
 
     field :title, :string
     field :has_title, :boolean, default: false
@@ -30,8 +32,16 @@ defmodule Operately.Comments.CommentThread do
 
   def changeset(comment_thread, attrs) do
     comment_thread
-    |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title, :subscription_list_id])
+    |> cast(attrs, [:message, :parent_id, :parent_type, :title, :has_title, :subscription_list_id, :author_id])
     |> validate_required([:message, :parent_id, :parent_type, :subscription_list_id])
+    |> validate_required_author_id()
+  end
+
+  defp validate_required_author_id(changeset) do
+    case get_field(changeset, :parent_type) do
+      :project -> validate_required(changeset, [:author_id])
+      _ -> changeset
+    end
   end
 
   def set_potential_subscribers(activity) do
