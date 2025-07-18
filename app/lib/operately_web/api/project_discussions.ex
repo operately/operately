@@ -57,11 +57,11 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     inputs do
       field :project_id, :id
       field :title, :string
-      field :body, :json
+      field :message, :json
     end
 
     outputs do
-      field :discussion, :update
+      field :discussions, list_of(:discussion), null: true
     end
 
     def call(conn, inputs) do
@@ -165,18 +165,27 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       end)
     end
 
-    def create_discussion(multi, _title, _body) do
-      Ecto.Multi.run(multi, :discussion, fn _repo, %{me: _me, project: _project} ->
-        # content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
+    def create_discussion(multi, author, title, body, subscriber_ids) do
+      alias Operately.Operations.Notifications.SubscriptionList
+      alias Operately.Operations.Notifications.Subscription
 
-        # case Updates.record_project_discussion(me, project, title, body) do
-        #   {:ok, discussion} -> {:ok, discussion}
-        #   {:error, reason} -> {:error, reason}
-        # end
-
-        # Placeholder for actual implementation
-        {:error, :not_implemented}
+      multi
+      |> SubscriptionList.insert(author, %{
+        content: body,
+        subscriber_ids: subscriber_ids
+      })
+      |> Subscription.insert(author, attrs)
+      |> Ecto.Multi.insert(:thread, fn changes ->
+        CommentThread.changeset(%{
+          parent_id: changes.project.id,
+          parent_type: "project",
+          message: body,
+          title: title,
+          has_title: true,
+          subscription_list_id: changes.subscription_list.id
+        })
       end)
+      |> SubscriptionList.update(:thread)
     end
 
     def update_discussion(multi, _title, _body) do
