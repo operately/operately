@@ -18,6 +18,21 @@ defmodule OperatelyWeb.Api do
   alias OperatelyWeb.Api.Mutations, as: M
   alias OperatelyWeb.Api.Subscriptions, as: S
 
+  namespace(:ai) do
+    query(:prompt, OperatelyWeb.Api.Ai.Prompt)
+    query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
+    query(:get_agent_run, OperatelyWeb.Api.Ai.GetAgentRun)
+    query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
+    query(:list_agent_runs, OperatelyWeb.Api.Ai.ListAgentRuns)
+    mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
+    mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
+    mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
+    mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
+    mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
+    mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
+    mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
+  end
+
   namespace(:goals) do
     query(:get_check_ins, Q.GetGoalCheckIns)
     query(:get_discussions, OperatelyWeb.Api.Goals.GetDiscussions)
@@ -43,19 +58,13 @@ defmodule OperatelyWeb.Api do
     query(:search, OperatelyWeb.Api.Spaces.Search)
   end
 
-  namespace(:ai) do
-    query(:prompt, OperatelyWeb.Api.Ai.Prompt)
-    query(:get_agent, OperatelyWeb.Api.Ai.GetAgent)
-    query(:get_agent_run, OperatelyWeb.Api.Ai.GetAgentRun)
-    query(:list_agents, OperatelyWeb.Api.Ai.ListAgents)
-    query(:list_agent_runs, OperatelyWeb.Api.Ai.ListAgentRuns)
-    mutation(:add_agent, OperatelyWeb.Api.Ai.AddAgent)
-    mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
-    mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
-    mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
-    mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
-    mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
-    mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
+  namespace(:project_discussions) do
+    alias OperatelyWeb.Api.ProjectDiscussions
+
+    query(:get, ProjectDiscussions.Get)
+    query(:list, ProjectDiscussions.List)
+    mutation(:create, ProjectDiscussions.Create)
+    mutation(:edit, ProjectDiscussions.Edit)
   end
 
   query(:get_account, Q.GetAccount)
