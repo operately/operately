@@ -11,7 +11,8 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
         join: a in assoc(t, :activity),
         preload: [activity: a],
         where: is_nil(t.subscription_list_id),
-        where: a.action in ["goal_discussion_creation", "goal_closing", "goal_reopening", "goal_timeframe_editing"]
+        where: a.action in ["goal_discussion_creation", "goal_closing", "goal_reopening", "goal_timeframe_editing"],
+        select: ^(CommentThread.__schema__(:fields) -- [:author_id])
       )
       |> Repo.all()
       |> create_lists()
@@ -27,22 +28,26 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
 
     case SubscriptionList.get(:system, parent_id: thread.id, parent_type: :comment_thread) do
       {:error, :not_found} ->
-        {:ok, list} = Notifications.create_subscription_list(%{
-          parent_id: thread.id,
-          parent_type: :comment_thread,
-        })
+        {:ok, list} =
+          Notifications.create_subscription_list(%{
+            parent_id: thread.id,
+            parent_type: :comment_thread
+          })
+
         list
 
-      {:ok, list} -> list
+      {:ok, list} ->
+        list
     end
     |> update_thread(thread)
     |> create_subscriptions(people)
   end
 
   defp update_thread(list, thread) do
-    {:ok, _} = Comments.update_comment_thread(thread, %{
-      subscription_list_id: list.id
-    })
+    {:ok, _} =
+      Comments.update_comment_thread(thread, %{
+        subscription_list_id: list.id
+      })
 
     list
   end
@@ -54,12 +59,15 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussions 
   defp create_subscription(list, person) do
     case Subscription.get(:system, subscription_list_id: list.id, person_id: person.id) do
       {:error, :not_found} ->
-        {:ok, _} = Notifications.create_subscription(%{
-          subscription_list_id: list.id,
-          person_id: person.id,
-          type: :invited,
-        })
-      _ -> :ok
+        {:ok, _} =
+          Notifications.create_subscription(%{
+            subscription_list_id: list.id,
+            person_id: person.id,
+            type: :invited
+          })
+
+      _ ->
+        :ok
     end
   end
 
