@@ -21,7 +21,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
-      |> Steps.check_permissions(:can_view)
+      |> Steps.check_discussion_permissions(:can_view)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.discussion, level: :essential)}
       end)
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_view)
+      |> Steps.check_project_permissions(:can_view)
       |> Steps.list_discussions()
       |> Steps.respond(fn changes ->
         %{discussions: Serializer.serialize(changes.discussions, level: :essential)}
@@ -68,7 +68,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
-      |> Steps.check_permissions(:can_comment)
+      |> Steps.check_project_permissions(:can_comment)
       |> Steps.create_discussion(inputs.title, inputs.body)
       |> Steps.save_activity(:project_discussion_submitted, fn changes ->
         %{
@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
-      |> Steps.check_permissions(:can_edit)
+      |> Steps.check_discussion_permissions(:can_edit)
       |> Steps.update_discussion(inputs.title, inputs.body)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.updated_discussion, level: :essential)}
@@ -144,57 +144,57 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       end)
     end
 
-    def check_permissions(multi, permission) do
+    def check_project_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
-        resource = Map.get(changes, :project) || Map.get(changes, :discussion)
+        Operately.Projects.Permissions.check(changes.project.request_info.access_level, permission)
+      end)
+    end
 
-        access_level =
-          case resource do
-            %Project{} -> resource.request_info.access_level
-            %Update{} -> resource.space.request_info.access_level
-            _ -> nil
-          end
-
-        case {permission, access_level} do
-          {:can_view, level} when level >= 10 -> {:ok, :allowed}
-          {:can_comment, level} when level >= 20 -> {:ok, :allowed}
-          {:can_edit, level} when level >= 30 -> {:ok, :allowed}
-          _ -> {:error, :forbidden}
-        end
+    def check_discussion_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, changes ->
+        Operately.Projects.Permissions.check(changes.discussion.request_info.access_level, permission)
       end)
     end
 
     def list_discussions(multi) do
-      Ecto.Multi.run(multi, :discussions, fn _repo, %{project: project} ->
-        discussions = Updates.list_updates(project.id, :project, :project_discussion)
-        {:ok, discussions}
+      Ecto.Multi.run(multi, :discussions, fn _repo, %{project: _project} ->
+        # discussions = Updates.list_updates(project.id, :project, :project_discussion)
+        # {:ok, discussions}
+
+        {:error, :not_implemented}
       end)
     end
 
-    def create_discussion(multi, title, body) do
-      Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me, project: project} ->
-        content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
+    def create_discussion(multi, _title, _body) do
+      Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me, project: _project} ->
+        # content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
 
-        case Updates.record_project_discussion(me, project, title, body) do
-          {:ok, discussion} -> {:ok, discussion}
-          {:error, reason} -> {:error, reason}
-        end
+        # case Updates.record_project_discussion(me, project, title, body) do
+        #   {:ok, discussion} -> {:ok, discussion}
+        #   {:error, reason} -> {:error, reason}
+        # end
+
+        # Placeholder for actual implementation
+        {:error, :not_implemented}
       end)
     end
 
-    def update_discussion(multi, title, body) do
-      Ecto.Multi.run(multi, :updated_discussion, fn _repo, %{discussion: discussion} ->
-        content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
+    def update_discussion(multi, _title, _body) do
+      Ecto.Multi.run(multi, :updated_discussion, fn _repo, %{discussion: _discussion} ->
+        # content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
 
-        attrs = %{
-          content: content,
-          title: title
-        }
+        # attrs = %{
+        #   content: content,
+        #   title: title
+        # }
 
-        case Updates.update_update(discussion, attrs) do
-          {:ok, updated_discussion} -> {:ok, updated_discussion}
-          {:error, changeset} -> {:error, changeset}
-        end
+        # case Updates.update_update(discussion, attrs) do
+        #   {:ok, updated_discussion} -> {:ok, updated_discussion}
+        #   {:error, changeset} -> {:error, changeset}
+        # end
+
+        # Placeholder for actual implementation
+        {:error, :not_implemented}
       end)
     end
 
