@@ -7,9 +7,10 @@ interface Props {
   selectedDate?: DatePicker.ContextualDate;
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   visibleYears: number[];
+  useStartOfPeriod?: boolean;
 }
 
-export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: Props) {
+export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, useStartOfPeriod = false }: Props) {
   const currentYear = new Date().getFullYear(); // Should be 2025
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -43,7 +44,7 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears }: P
           <div key={year} className="mb-4 last:mb-0">
             <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
             <div className="grid grid-cols-4 gap-1">
-              {generateMonths(year).map((month) => (
+              {generateMonths(year, useStartOfPeriod).map((month) => (
                 <OptionButton
                   key={month.value}
                   onClick={() => handleSelect(month)}

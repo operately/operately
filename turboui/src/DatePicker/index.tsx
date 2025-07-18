@@ -30,6 +30,7 @@ export namespace DatePicker {
     showOverdueWarning?: boolean;
     variant?: "inline" | "form-field";
     hideCalendarIcon?: boolean;
+    useStartOfPeriod?: boolean;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -68,6 +69,7 @@ export function DatePicker({
   showOverdueWarning = false,
   variant = "inline",
   hideCalendarIcon = false,
+  useStartOfPeriod = false,
   testId = "date-field",
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
@@ -145,9 +147,10 @@ export function DatePicker({
             setSelectedDate={setSelectedDate}
             onDateSelect={handleDateSelect}
             onCancel={handleCancel}
-            yearOptions={yearOptions}
             onClearDate={handleClearDate}
+            yearOptions={yearOptions}
             testId={testId}
+            useStartOfPeriod={useStartOfPeriod}
           />
         </Popover.Content>
       </Popover.Portal>
@@ -233,6 +236,7 @@ interface DatePickerContentProps {
   onClearDate?: () => void;
   yearOptions: number[];
   testId: string;
+  useStartOfPeriod?: boolean;
 }
 
 function DatePickerContent(props: DatePickerContentProps) {
@@ -267,15 +271,15 @@ function DatePickerContent(props: DatePickerContentProps) {
       )}
 
       {dateType === "month" && (
-        <MonthSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} visibleYears={yearOptions} />
+        <MonthSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} visibleYears={yearOptions} useStartOfPeriod={props.useStartOfPeriod} />
       )}
 
       {dateType === "quarter" && (
-        <QuarterSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} visibleYears={yearOptions} />
+        <QuarterSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} visibleYears={yearOptions} useStartOfPeriod={props.useStartOfPeriod} />
       )}
 
       {dateType === "year" && (
-        <YearSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} years={yearOptions} />
+        <YearSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} years={yearOptions} useStartOfPeriod={props.useStartOfPeriod} />
       )}
 
       <ActionButtons selectedDate={selectedDate} onCancel={onCancel} onSetDeadline={onDateSelect} />
