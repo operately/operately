@@ -70,4 +70,21 @@ defmodule Operately.Operations.ProjectContributorAdditionTest do
     assert fetch_notification(activity.id)
     assert 1 == notifications_count()
   end
+
+  test "ProjectContributorAddition operation doesn't create notification when people add themselves as contributors", ctx do
+    Oban.Testing.with_testing_mode(:manual, fn ->
+      Operately.Operations.ProjectContributorAddition.run(ctx.contributor, %{
+        project_id: ctx.project.id,
+        person_id: ctx.contributor.id,
+        responsibility: "Developer",
+        permissions: Binding.edit_access(),
+      })
+    end)
+
+    activity = from(a in Activity, where: a.action == "project_contributor_addition" and a.content["project_id"] == ^ctx.project.id) |> Repo.one()
+
+    assert 0 == notifications_count()
+    perform_job(activity.id)
+    assert 0 == notifications_count()
+  end
 end

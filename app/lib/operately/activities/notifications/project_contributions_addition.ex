@@ -1,6 +1,7 @@
 defmodule Operately.Activities.Notifications.ProjectContributorsAddition do
   def dispatch(activity) do
     activity.content["contributors"]
+    |> Enum.filter(fn contributor -> contributor["person_id"] != activity.author_id end)
     |> Enum.map(fn contributor ->
       %{
         person_id: contributor["person_id"],
