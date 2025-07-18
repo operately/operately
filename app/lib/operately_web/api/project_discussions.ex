@@ -57,7 +57,9 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     inputs do
       field :project_id, :id
       field :title, :string
-      field :message, :json
+      field :message, :string
+      field? :send_notifications_to_everyone, :boolean, default: false
+      field? :subscriber_ids, list_of(:id), default: []
     end
 
     outputs do
@@ -69,7 +71,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_project_permissions(:can_comment)
-      |> Steps.create_discussion(inputs.title, inputs.body)
+      |> Steps.create_discussion(inputs.title, inputs.message, inputs.subscriber_ids, inputs.send_notifications_to_everyone)
       |> Steps.save_activity(:project_discussion_submitted, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -165,27 +167,27 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       end)
     end
 
-    def create_discussion(multi, author, title, body, subscriber_ids) do
+    def create_discussion(multi, title, message, subscriber_ids, send_to_everyone) do
       alias Operately.Operations.Notifications.SubscriptionList
       alias Operately.Operations.Notifications.Subscription
+      alias Operately.Comments.CommentThread
 
-      multi
-      |> SubscriptionList.insert(author, %{
-        content: body,
-        subscriber_ids: subscriber_ids
-      })
-      |> Subscription.insert(author, attrs)
-      |> Ecto.Multi.insert(:thread, fn changes ->
-        CommentThread.changeset(%{
-          parent_id: changes.project.id,
-          parent_type: "project",
-          message: body,
-          title: title,
-          has_title: true,
-          subscription_list_id: changes.subscription_list.id
-        })
+      Ecto.Multi.merge(multi, fn %{project: project, me: me} ->
+        Ecto.Multi.new()
+        |> SubscriptionList.insert(%{send_to_everyone: send_to_everyone, subscription_parent_type: :comment_thread})
+        |> Subscription.insert(me, %{content: message, subscriber_ids: subscriber_ids})
+        |> Ecto.Multi.insert(:thread, fn changes ->
+          CommentThread.changeset(%{
+            parent_id: project.id,
+            parent_type: "project",
+            message: message,
+            title: title,
+            has_title: true,
+            subscription_list_id: changes.subscription_list.id
+          })
+        end)
+        |> SubscriptionList.update(:thread)
       end)
-      |> SubscriptionList.update(:thread)
     end
 
     def update_discussion(multi, _title, _body) do
