@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
-import { IconCalendarEvent } from "../icons";
+import { IconCalendarEvent, IconX } from "../icons";
 import { InlineCalendar } from "./components/InlineCalendar";
 import DateTypeSelector from "./components/DateTypeSelector";
 import { MonthSelector } from "./components/MonthSelector";
@@ -9,7 +9,7 @@ import { YearSelector } from "./components/YearSelector";
 import ActionButtons from "./components/ActionButtons";
 import classNames from "../utils/classnames";
 import { isOverdue } from "../utils/time";
-import { TestableElement } from "../TestableElement";
+import { createTestId, TestableElement } from "../TestableElement";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -68,7 +68,7 @@ export function DatePicker({
   showOverdueWarning = false,
   variant = "inline",
   hideCalendarIcon = false,
-  testId,
+  testId = "date-field",
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
@@ -111,6 +111,14 @@ export function DatePicker({
     }
   };
 
+  const handleClearDate = () => {
+    setSelectedDate(undefined);
+    setPreviousSelectedDate(undefined);
+    onDateSelect?.(undefined);
+    setDateType("day");
+    setOpen(false);
+  };
+
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild disabled={readonly}>
@@ -138,6 +146,8 @@ export function DatePicker({
             onDateSelect={handleDateSelect}
             onCancel={handleCancel}
             yearOptions={yearOptions}
+            onClearDate={handleClearDate}
+            testId={testId}
           />
         </Popover.Content>
       </Popover.Portal>
@@ -220,18 +230,33 @@ interface DatePickerContentProps {
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate | undefined>>;
   onDateSelect?: (selectedDate: DatePicker.ContextualDate | undefined) => void;
   onCancel?: () => void;
+  onClearDate?: () => void;
   yearOptions: number[];
+  testId: string;
 }
 
 function DatePickerContent(props: DatePickerContentProps) {
-  const { dateType, setDateType, selectedDate, setSelectedDate, onDateSelect, onCancel, yearOptions } = props;
+  const {
+    dateType,
+    setDateType,
+    selectedDate,
+    setSelectedDate,
+    onDateSelect,
+    onCancel,
+    onClearDate,
+    yearOptions,
+    testId,
+  } = props;
 
   return (
     <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg shadow-lg">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <IconCalendarEvent size={20} />
-        Set Date
-      </h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-semibold flex items-center gap-2">
+          <IconCalendarEvent size={19} />
+          Set Date
+        </h2>
+        {selectedDate && <ClearButton onClear={onClearDate} testId={testId} />}
+      </div>
 
       <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />
 
@@ -255,5 +280,18 @@ function DatePickerContent(props: DatePickerContentProps) {
 
       <ActionButtons selectedDate={selectedDate} onCancel={onCancel} onSetDeadline={onDateSelect} />
     </div>
+  );
+}
+
+function ClearButton({ onClear, testId }: { onClear?: () => void; testId: string }) {
+  return (
+    <button
+      onClick={() => onClear?.()}
+      className="flex items-center text-xs text-content-subtle px-2 py-1 rounded hover:bg-surface-dimmed"
+      data-test-id={createTestId(testId, "clear")}
+    >
+      <IconX size={14} className="mr-1" />
+      Clear
+    </button>
   );
 }
