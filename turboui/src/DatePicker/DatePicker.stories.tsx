@@ -278,3 +278,83 @@ export const ReadOnly: Story = {
     layout: "padded",
   },
 };
+
+/**
+ * This story demonstrates the DatePicker with and without the calendar icon.
+ */
+export const WithoutCalendarIcon: Story = {
+  tags: ["autodocs"],
+  render: () => {
+    const today = new Date();
+    const formattedDate = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+      today,
+    );
+
+    return (
+      <div className="max-w-3xl mx-auto bg-white p-8">
+        <div className="flex flex-col gap-8">
+          <div>
+            <h2 className="text-lg font-bold mb-4">With Calendar Icon (Default)</h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Inline Variant</h3>
+                <DatePicker
+                  initialDate={{
+                    date: today,
+                    dateType: "day",
+                    value: formattedDate,
+                  }}
+                  variant="inline"
+                />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium mb-2">Form Field Variant</h3>
+                <DatePicker
+                  initialDate={{
+                    date: today,
+                    dateType: "day",
+                    value: formattedDate,
+                  }}
+                  variant="form-field"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h2 className="text-lg font-bold mb-4">Without Calendar Icon</h2>
+            <div className="flex flex-col gap-4">
+              <div>
+                <h3 className="text-sm font-medium mb-2">Inline Variant</h3>
+                <DatePicker
+                  initialDate={{
+                    date: today,
+                    dateType: "day",
+                    value: formattedDate,
+                  }}
+                  variant="inline"
+                  hideCalendarIcon={true}
+                />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium mb-2">Form Field Variant</h3>
+                <DatePicker
+                  initialDate={{
+                    date: today,
+                    dateType: "day",
+                    value: formattedDate,
+                  }}
+                  variant="form-field"
+                  hideCalendarIcon={true}
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  },
+  parameters: {
+    layout: "padded",
+  },
+};
