@@ -57,11 +57,13 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     inputs do
       field :project_id, :id
       field :title, :string
-      field :body, :json
+      field :message, :json
+      field? :send_notifications_to_everyone, :boolean, default: false
+      field? :subscriber_ids, list_of(:id), default: []
     end
 
     outputs do
-      field :discussion, :update
+      field :discussion, :comment_thread
     end
 
     def call(conn, inputs) do
@@ -69,16 +71,17 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_project_permissions(:can_comment)
-      |> Steps.create_discussion(inputs.title, inputs.body)
+      |> Steps.create_discussion(inputs.title, inputs.message, inputs.subscriber_ids, inputs.send_notifications_to_everyone)
       |> Steps.save_activity(:project_discussion_submitted, fn changes ->
         %{
           company_id: changes.project.company_id,
           project_id: changes.project.id,
-          update_id: changes.discussion.id
+          discussion_id: changes.thread.id,
+          title: changes.thread.title
         }
       end)
       |> Steps.respond(fn changes ->
-        %{discussion: Serializer.serialize(changes.discussion, level: :essential)}
+        %{discussion: Serializer.serialize(changes.thread, level: :essential)}
       end)
     end
   end
@@ -165,17 +168,27 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       end)
     end
 
-    def create_discussion(multi, _title, _body) do
-      Ecto.Multi.run(multi, :discussion, fn _repo, %{me: _me, project: _project} ->
-        # content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
+    def create_discussion(multi, title, message, subscriber_ids, send_to_everyone) do
+      alias Operately.Operations.Notifications.SubscriptionList
+      alias Operately.Operations.Notifications.Subscription
+      alias Operately.Comments.CommentThread
 
-        # case Updates.record_project_discussion(me, project, title, body) do
-        #   {:ok, discussion} -> {:ok, discussion}
-        #   {:error, reason} -> {:error, reason}
-        # end
-
-        # Placeholder for actual implementation
-        {:error, :not_implemented}
+      Ecto.Multi.merge(multi, fn %{project: project, me: me} ->
+        Ecto.Multi.new()
+        |> SubscriptionList.insert(%{send_to_everyone: send_to_everyone, subscription_parent_type: :comment_thread})
+        |> Subscription.insert(me, %{content: message, subscriber_ids: subscriber_ids})
+        |> Ecto.Multi.insert(:thread, fn changes ->
+          CommentThread.changeset(%{
+            author_id: me.id,
+            parent_id: project.id,
+            parent_type: :project,
+            message: message,
+            title: title,
+            has_title: true,
+            subscription_list_id: changes.subscription_list.id
+          })
+        end)
+        |> SubscriptionList.update(:thread)
       end)
     end
 
