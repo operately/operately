@@ -117,33 +117,8 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
 
       assert {200, res} = mutation(ctx.conn, [:project_discussions, :create], inputs)
       assert res.discussion.title == "Test Discussion"
-
-      # # Verify the discussion was created in the database
-      # discussion = Operately.Repo.get(Operately.Updates.Update, res.discussion.id)
-      # assert discussion.type == :project_discussion
-      # assert discussion.updatable_id == ctx.project.id
-      # assert discussion.updatable_type == :project
-      # assert discussion.author_id == ctx.creator.id
+      assert res.discussion.message == RichText.rich_text("Hello", :as_string)
     end
-
-    #   test "it creates activity for the discussion", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
-
-    #     inputs = %{
-    #       project_id: Paths.project_id(ctx.project),
-    #       title: "Test Discussion",
-    #       body: rich_text_content()
-    #     }
-
-    #     before_count = Operately.Activities.list_activities() |> length()
-    #     assert {200, _} = mutation(ctx.conn, [:project_discussions, :create], inputs)
-    #     after_count = Operately.Activities.list_activities() |> length()
-
-    #     assert after_count == before_count + 1
-
-    #     activity = Operately.Activities.list_activities() |> List.first()
-    #     assert activity.action == "project_discussion_submitted"
-    #   end
   end
 
   describe "edit project discussion" do
