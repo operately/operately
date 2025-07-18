@@ -86,66 +86,39 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert {401, _} = mutation(ctx.conn, [:project_discussions, :create], %{})
     end
 
-    #   test "it requires project_id, title, and body", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+    test "it requires project_id, title, and body", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #     assert {400, res} = mutation(ctx.conn, [:project_discussions, :create], %{})
-    #     assert res.message == "Missing required fields: project_id, title, body"
-    #   end
+      assert {400, res} = mutation(ctx.conn, [:project_discussions, :create], %{})
+      assert res.message == "Missing required fields: project_id, title, message"
+    end
 
-    #   test "it returns 404 if the project does not exist", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+    test "it returns 404 if the project does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #     project_id = Ecto.UUID.generate() |> Paths.project_id()
+      inputs = %{
+        project_id: Paths.project_id(%{id: Ecto.UUID.generate(), name: "Nonexistent Project"}),
+        title: "Test Discussion",
+        message: RichText.rich_text("Hello", :as_string)
+      }
 
-    #     inputs = %{
-    #       project_id: project_id,
-    #       title: "Test Discussion",
-    #       body: rich_text_content()
-    #     }
+      assert {404, res} = mutation(ctx.conn, [:project_discussions, :create], inputs)
+      assert res.message == "Project not found"
+    end
 
-    #     assert {404, res} = mutation(ctx.conn, [:project_discussions, :create], inputs)
-    #     assert res.message == "Project not found"
-    #   end
+    test "it creates a project discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #   test "it creates a project discussion", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+      inputs = %{
+        project_id: Paths.project_id(ctx.project),
+        title: "Test Discussion",
+        message: RichText.rich_text("Hello", :as_string)
+      }
 
-    #     inputs = %{
-    #       project_id: Paths.project_id(ctx.project),
-    #       title: "Test Discussion",
-    #       body: rich_text_content()
-    #     }
-
-    #     assert {200, res} = mutation(ctx.conn, [:project_discussions, :create], inputs)
-    #     assert res.discussion.title == "Test Discussion"
-
-    #     # Verify the discussion was created in the database
-    #     discussion = Operately.Repo.get(Operately.Updates.Update, res.discussion.id)
-    #     assert discussion.type == :project_discussion
-    #     assert discussion.updatable_id == ctx.project.id
-    #     assert discussion.updatable_type == :project
-    #     assert discussion.author_id == ctx.creator.id
-    #   end
-
-    #   test "it creates activity for the discussion", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
-
-    #     inputs = %{
-    #       project_id: Paths.project_id(ctx.project),
-    #       title: "Test Discussion",
-    #       body: rich_text_content()
-    #     }
-
-    #     before_count = Operately.Activities.list_activities() |> length()
-    #     assert {200, _} = mutation(ctx.conn, [:project_discussions, :create], inputs)
-    #     after_count = Operately.Activities.list_activities() |> length()
-
-    #     assert after_count == before_count + 1
-
-    #     activity = Operately.Activities.list_activities() |> List.first()
-    #     assert activity.action == "project_discussion_submitted"
-    #   end
+      assert {200, res} = mutation(ctx.conn, [:project_discussions, :create], inputs)
+      assert res.discussion.title == "Test Discussion"
+      assert res.discussion.message == RichText.rich_text("Hello", :as_string)
+    end
   end
 
   describe "edit project discussion" do
@@ -211,8 +184,4 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
     #     assert res.message == "You don't have permission to perform this action"
     #   end
   end
-
-  # defp rich_text_content(text \\ "This is a test discussion content") do
-  #   RichText.rich_text(text) |> Jason.decode!()
-  # end
 end
