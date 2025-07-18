@@ -28,6 +28,7 @@ export namespace DatePicker {
     triggerLabel?: string;
     readonly?: boolean;
     showOverdueWarning?: boolean;
+    variant?: "inline" | "form-field";
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -64,6 +65,7 @@ export function DatePicker({
   triggerLabel = "Date",
   readonly = false,
   showOverdueWarning = false,
+  variant = "inline",
   testId,
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
@@ -117,6 +119,7 @@ export function DatePicker({
             label={triggerLabel}
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
+            variant={variant}
             testId={testId}
           />
         </div>
@@ -146,6 +149,7 @@ interface DatePickerTriggerProps extends TestableElement {
   className?: string;
   readonly?: boolean;
   showOverdueWarning: boolean;
+  variant?: "inline" | "form-field";
 }
 
 function DatePickerTrigger({
@@ -155,14 +159,15 @@ function DatePickerTrigger({
   className,
   readonly = false,
   showOverdueWarning,
+  variant,
   testId,
 }: DatePickerTriggerProps) {
   const triggerClassName = classNames(
     "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
-    {
-      "hover:bg-surface-dimmed rounded-lg px-1.5 py-1 -mx-1.5 -my-1": !readonly,
-      "border border-surface-outline rounded-lg w-full hover:bg-surface-dimmed px-2 py-1.5": false,
-    },
+    variant === "inline"
+      ? "rounded-lg px-1.5 py-1 -mx-1.5 -my-1"
+      : "border border-surface-outline rounded-lg w-full px-2 py-1.5",
+    !readonly ? "hover:bg-surface-dimmed" : "",
     className,
   );
 

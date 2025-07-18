@@ -29,6 +29,11 @@ const meta = {
       control: "boolean",
       description: "Whether to show a warning color for overdue dates",
     },
+    variant: {
+      control: "radio",
+      options: ["inline", "form-field"],
+      description: "Styling variant: inline (default) or form-field (with border)",
+    },
     onDateSelect: { action: "date selected" },
     onCancel: { action: "canceled" },
   },
@@ -56,6 +61,89 @@ export const Default: Story = {
       value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date()),
     },
     readonly: false,
+  },
+  parameters: {
+    layout: "padded",
+  },
+};
+
+/**
+ * This story demonstrates both variants of the DatePicker: inline and form-field.
+ */
+export const VariantComparison: Story = {
+  tags: ["autodocs"],
+  render: () => {
+    const today = new Date();
+
+    return (
+      <div className="max-w-3xl mx-auto bg-white p-8">
+        <div className="mb-10">
+          <h2 className="text-lg font-bold mb-4">Variant: inline (default)</h2>
+          <div className="flex flex-col gap-4">
+            <div>
+              <h3 className="text-sm font-medium mb-2">Normal</h3>
+              <DatePicker
+                initialDate={{
+                  date: today,
+                  dateType: "day",
+                  value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+                    today,
+                  ),
+                }}
+                variant="inline"
+              />
+            </div>
+            <div>
+              <h3 className="text-sm font-medium mb-2">Read-only</h3>
+              <DatePicker
+                initialDate={{
+                  date: today,
+                  dateType: "day",
+                  value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+                    today,
+                  ),
+                }}
+                variant="inline"
+                readonly
+              />
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="text-lg font-bold mb-4">Variant: form-field</h2>
+          <div className="flex flex-col gap-4">
+            <div>
+              <h3 className="text-sm font-medium mb-2">Normal</h3>
+              <DatePicker
+                initialDate={{
+                  date: today,
+                  dateType: "day",
+                  value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+                    today,
+                  ),
+                }}
+                variant="form-field"
+              />
+            </div>
+            <div>
+              <h3 className="text-sm font-medium mb-2">Read-only</h3>
+              <DatePicker
+                initialDate={{
+                  date: today,
+                  dateType: "day",
+                  value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+                    today,
+                  ),
+                }}
+                variant="form-field"
+                readonly
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   },
   parameters: {
     layout: "padded",
