@@ -1,3 +1,4 @@
+defmodule OperatelyWeb.Api do
   use TurboConnect.Api
 
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
@@ -58,10 +59,12 @@
   end
 
   namespace(:project_discussions) do
-    query(:get, OperatelyWeb.Api.ProjectDiscussions.Get)
-    query(:list, OperatelyWeb.Api.ProjectDiscussions.List)
-    mutation(:create, OperatelyWeb.Api.ProjectDiscussions.Create)
-    mutation(:edit, OperatelyWeb.Api.ProjectDiscussions.Edit)
+    alias OperatelyWeb.Api.ProjectDiscussions
+
+    query(:get, ProjectDiscussions.Get)
+    query(:list, ProjectDiscussions.List)
+    mutation(:create, ProjectDiscussions.Create)
+    mutation(:edit, ProjectDiscussions.Edit)
   end
 
   query(:get_account, Q.GetAccount)
