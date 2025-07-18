@@ -29,6 +29,7 @@ export namespace DatePicker {
     readonly?: boolean;
     showOverdueWarning?: boolean;
     variant?: "inline" | "form-field";
+    hideCalendarIcon?: boolean;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -66,6 +67,7 @@ export function DatePicker({
   readonly = false,
   showOverdueWarning = false,
   variant = "inline",
+  hideCalendarIcon = false,
   testId,
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
@@ -120,6 +122,7 @@ export function DatePicker({
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
             variant={variant}
+            hideCalendarIcon={hideCalendarIcon}
             testId={testId}
           />
         </div>
@@ -144,22 +147,22 @@ export function DatePicker({
 
 interface DatePickerTriggerProps extends TestableElement {
   selectedDate?: DatePicker.ContextualDate;
-  label?: string;
+  label: string;
   onClick: () => void;
-  className?: string;
-  readonly?: boolean;
+  readonly: boolean;
   showOverdueWarning: boolean;
-  variant?: "inline" | "form-field";
+  variant: "inline" | "form-field";
+  hideCalendarIcon: boolean;
 }
 
 function DatePickerTrigger({
   selectedDate,
-  label = "Date",
+  label,
   onClick,
-  className,
-  readonly = false,
+  readonly,
   showOverdueWarning,
   variant,
+  hideCalendarIcon,
   testId,
 }: DatePickerTriggerProps) {
   const triggerClassName = classNames(
@@ -168,7 +171,6 @@ function DatePickerTrigger({
       ? "rounded-lg px-1.5 py-1 -mx-1.5 -my-1"
       : "border border-surface-outline rounded-lg w-full px-2 py-1.5",
     !readonly ? "hover:bg-surface-dimmed" : "",
-    className,
   );
 
   const handleClick = (e: React.MouseEvent) => {
@@ -199,10 +201,12 @@ function DatePickerTrigger({
       data-testid={testId}
     >
       <span className={elemClass}>
-        <IconCalendarEvent
-          size={16}
-          className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
-        />
+        {!hideCalendarIcon && (
+          <IconCalendarEvent
+            size={16}
+            className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
+          />
+        )}
         <span className="truncate">{displayText}</span>
       </span>
     </button>
