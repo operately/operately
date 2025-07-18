@@ -57,13 +57,13 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     inputs do
       field :project_id, :id
       field :title, :string
-      field :message, :string
+      field :message, :json
       field? :send_notifications_to_everyone, :boolean, default: false
       field? :subscriber_ids, list_of(:id), default: []
     end
 
     outputs do
-      field :discussions, list_of(:discussion), null: true
+      field :discussion, :comment_thread
     end
 
     def call(conn, inputs) do
@@ -76,11 +76,12 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
         %{
           company_id: changes.project.company_id,
           project_id: changes.project.id,
-          update_id: changes.discussion.id
+          discussion_id: changes.thread.id,
+          title: changes.thread.title
         }
       end)
       |> Steps.respond(fn changes ->
-        %{discussion: Serializer.serialize(changes.discussion, level: :essential)}
+        %{discussion: Serializer.serialize(changes.thread, level: :essential)}
       end)
     end
   end
@@ -178,8 +179,9 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
         |> Subscription.insert(me, %{content: message, subscriber_ids: subscriber_ids})
         |> Ecto.Multi.insert(:thread, fn changes ->
           CommentThread.changeset(%{
+            author_id: me.id,
             parent_id: project.id,
-            parent_type: "project",
+            parent_type: :project,
             message: message,
             title: title,
             has_title: true,

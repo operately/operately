@@ -4,7 +4,7 @@ defmodule Operately.Activities.Content.ProjectDiscussionSubmitted do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :project, Operately.Projects.Project
-    belongs_to :discussion, Operately.Messages.Message
+    belongs_to :discussion, Operately.Comments.CommentThread
 
     field :title, :string
   end
@@ -16,14 +16,6 @@ defmodule Operately.Activities.Content.ProjectDiscussionSubmitted do
   end
 
   def build(params) do
-    project = Operately.Projects.get_project!(params["project_id"])
-    discussion = Operately.Updates.get_update!(params["update_id"])
-
-    changeset(%{
-      company_id: project.company_id,
-      project_id: project.id,
-      discussion_id: discussion.id,
-      title: discussion.content["title"]
-    })
+    changeset(params)
   end
 end
