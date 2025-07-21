@@ -36,10 +36,12 @@ export function useForm(props: EditProps | NewProps) {
 
   assertPresent(goal?.targets, "targets must be present in goal");
 
+  const timeframe = props.mode === "edit" ? props.update.timeframe : props.goal.timeframe;
+
   const form = Forms.useForm({
     fields: {
       status: mode === "edit" ? props.update.status : null,
-      dueDate: parseContextualDate(goal.timeframe?.contextualEndDate) || null,
+      dueDate: parseContextualDate(timeframe?.contextualEndDate) || null,
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },
