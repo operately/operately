@@ -2922,7 +2922,7 @@ export interface EditGoalDiscussionResult {}
 
 export interface EditGoalProgressUpdateInput {
   id: Id;
-  dueDate: string | null;
+  dueDate: ContextualDate | null;
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
@@ -3281,7 +3281,7 @@ export interface PostDiscussionResult {
 export interface PostGoalProgressUpdateInput {
   goalId: Id;
   status: string;
-  dueDate: string | null;
+  dueDate: ContextualDate | null;
   content?: Json | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;
@@ -3317,11 +3317,13 @@ export interface PostProjectCheckInResult {
 export interface ProjectDiscussionsCreateInput {
   projectId: Id;
   title: string;
-  body: Json;
+  message: Json;
+  sendNotificationsToEveryone?: boolean;
+  subscriberIds?: Id[];
 }
 
 export interface ProjectDiscussionsCreateResult {
-  discussion: Update;
+  discussion: CommentThread;
 }
 
 export interface ProjectDiscussionsEditInput {

@@ -26,7 +26,7 @@ defmodule Operately.Operations.GoalCheckInTest do
         send_to_everyone: true,
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
-        due_date: ~D[2023-10-01]
+        due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
       })
 
     ctx = Factory.reload(ctx, :goal)
@@ -46,7 +46,7 @@ defmodule Operately.Operations.GoalCheckInTest do
             send_to_everyone: true,
             subscriber_ids: [],
             subscription_parent_type: :goal_update,
-            due_date: ~D[2023-10-01]
+            due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
           })
         end)
 
@@ -78,7 +78,7 @@ defmodule Operately.Operations.GoalCheckInTest do
             send_to_everyone: false,
             subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
             subscription_parent_type: :goal_update,
-            due_date: ~D[2023-10-01]
+            due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
           })
         end)
 

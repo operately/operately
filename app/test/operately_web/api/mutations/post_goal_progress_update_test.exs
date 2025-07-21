@@ -47,7 +47,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                    status: "on_track",
                    content: RichText.rich_text("Content", :as_string),
                    new_target_values: new_target_values(goal),
-                   due_date: "2028-12-31"
+                   due_date: %{date: "2028-12-31", date_type: "day", value: "Dec 31, 2028"}
                  })
 
         assert code == @test.expected
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
                  new_target_values: new_target_values(ctx.goal),
-                 due_date: "2028-12-31"
+                 due_date: %{date: "2028-12-31", date_type: "day", value: "Dec 31, 2028"}
                })
 
       updates = Goals.list_updates(ctx.goal)
