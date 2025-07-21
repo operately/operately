@@ -1,11 +1,11 @@
 import React from "react";
-import { DatePicker } from "../index";
+import { DateField } from "../index";
 import { SecondaryButton, PrimaryButton } from "../../Button";
 
 interface ActionButtonsProps {
-  selectedDate: DatePicker.ContextualDate | null;
+  selectedDate: DateField.ContextualDate | null;
   onCancel?: () => void;
-  onSetDeadline?: (selectedDate: DatePicker.ContextualDate | null) => void;
+  onSetDeadline?: (selectedDate: DateField.ContextualDate | null) => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ selectedDate, onCancel, onSetDeadline }) => {
