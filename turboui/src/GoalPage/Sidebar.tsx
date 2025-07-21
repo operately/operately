@@ -26,7 +26,6 @@ import {
   IconUserStar,
   IconInfoCircle,
 } from "../icons";
-import { DatePicker } from "../DatePicker";
 
 export function Sidebar(props: GoalPage.State) {
   return (
@@ -49,10 +48,10 @@ function DueDate(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Due Date">
-      <DatePicker
-        initialDate={props.dueDate}
+      <DateField
+        date={props.dueDate}
         onDateSelect={props.setDueDate}
-        triggerLabel="Set date"
+        placeholder="Set date"
         readonly={isReadonly}
         showOverdueWarning={!props.closedAt}
         testId="due-date-field"
@@ -68,7 +67,17 @@ function CompletedOn(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Completed On">
-      <DateField date={props.closedAt} readonly showOverdueWarning={false} />
+      <DateField
+        date={{
+          date: props.closedAt,
+          dateType: "day",
+          value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
+            props.closedAt,
+          ),
+        }}
+        readonly
+        showOverdueWarning={false}
+      />
     </SidebarSection>
   );
 }
