@@ -11,10 +11,11 @@ interface Props {
 }
 
 export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, useStartOfPeriod = false }: Props) {
-  const currentYear = new Date().getFullYear();
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
     const currentYearIndex = visibleYears.indexOf(currentYear);
 
     if (currentYearIndex !== -1 && containerRef.current) {
@@ -34,8 +35,8 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, u
   const handleSelect = (quarter: DatePicker.PeriodOption) => {
     const date = new Date(quarter.value);
     const quarterLabel = `${quarter.label} ${date.getFullYear()}`;
-    setSelectedDate({ dateType: "quarter", date, value: quarterLabel });   
-  }
+    setSelectedDate({ dateType: "quarter", date, value: quarterLabel });
+  };
 
   return (
     <div className="mb-3">
@@ -49,6 +50,7 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, u
                   key={quarter.value}
                   onClick={() => handleSelect(quarter)}
                   isSelected={isSelectedQuarter(quarter.value, year, selectedDate)}
+                  isCurrent={isCurrentQuarter(quarter.value, year)}
                   className="flex-1 py-1 px-2 text-xs"
                 >
                   {quarter.label}
@@ -70,8 +72,24 @@ function isSelectedQuarter(quarterValue: string, year: number, selectedDate?: Da
     const quarter = Math.floor(selectedDate.date.getMonth() / 3) + 1;
     const selectedQuarter = Math.floor(quarterDate.getMonth() / 3) + 1;
 
-    return selectedDate && selectedDate.dateType === "quarter" && selectedDate.date.getFullYear() === year && quarter === selectedQuarter;
-  } catch {
+    return (
+      selectedDate.dateType === "quarter" && quarter === selectedQuarter && selectedDate.date.getFullYear() === year
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
+function isCurrentQuarter(quarterValue: string, year: number): boolean {
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentQuarter = Math.floor(today.getMonth() / 3) + 1;
+
+  try {
+    const quarterDate = new Date(quarterValue);
+    const quarter = Math.floor(quarterDate.getMonth() / 3) + 1;
+    return quarter === currentQuarter && year === currentYear;
+  } catch (e) {
     return false;
   }
 }
