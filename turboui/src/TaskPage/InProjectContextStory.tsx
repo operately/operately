@@ -17,6 +17,7 @@ import {
   asRichText,
   createActiveTaskTimeline,
 } from "./mockData";
+import { DateField } from "../DateField";
 
 const people = genPeople(5);
 
@@ -32,7 +33,11 @@ export function InProjectContextStory() {
     ),
   );
   const [taskStatus, setTaskStatus] = useState<TaskBoardTypes.Status>("in_progress");
-  const [taskDueDate, setTaskDueDate] = useState<Date | undefined>(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000));
+  const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>({
+    date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    dateType: "day",
+    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
+  });
   const [taskAssignees, setTaskAssignees] = useState<TaskPage.Person[]>([mockTaskPeople[1]!]);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
   const [isSubscribed, setIsSubscribed] = useState(false);

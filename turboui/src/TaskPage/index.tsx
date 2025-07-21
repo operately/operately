@@ -4,6 +4,7 @@ import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
+import { DateField } from "../DateField";
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
@@ -47,8 +48,8 @@ export namespace TaskPage {
     status: Status;
     onStatusChange: (newStatus: Status) => void;
 
-    dueDate?: Date;
-    onDueDateChange: (newDate: Date | null) => void;
+    dueDate?: DateField.ContextualDate;
+    onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
 
     assignees?: Person[];
     onAssigneesChange: (newAssignees: Person[]) => void;

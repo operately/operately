@@ -78,7 +78,11 @@ export const mockTasks: Types.Task[] = [
     description: "Create login/signup flows with OAuth integration",
     assignees: [mockPeople.john!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-10"), // Future date
+    dueDate: {
+      date: new Date("2025-05-10"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-05-10"))
+    }, // Future date
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -90,7 +94,11 @@ export const mockTasks: Types.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-01"), // Past due
+    dueDate: {
+      date: new Date("2025-05-01"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-05-01"))
+    }, // Past due
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -119,7 +127,11 @@ export const mockTasks: Types.Task[] = [
     title: "Research competitor pricing strategies",
     status: "pending",
     milestone: mockMilestones.marketExpansion,
-    dueDate: new Date("2025-06-15"), // Future date
+    dueDate: {
+      date: new Date("2025-06-15"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-06-15"))
+    }, // Future date
     points: 3,
     hasDescription: false,
     hasComments: false,
@@ -138,7 +150,11 @@ export const mockTasks: Types.Task[] = [
     title: "Optimize database queries",
     status: "in_progress",
     assignees: [mockPeople.john!],
-    dueDate: new Date("2025-04-30"), // Past due
+    dueDate: {
+      date: new Date("2025-04-30"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-04-30"))
+    }, // Past due
     points: 5,
     hasDescription: true,
     hasComments: true,
@@ -169,7 +185,11 @@ export const mockTasks: Types.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.jane!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-20"),
+    dueDate: {
+      date: new Date("2025-05-20"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-05-20"))
+    },
     points: 5,
     hasDescription: true,
     hasComments: true,
@@ -181,7 +201,11 @@ export const mockTasks: Types.Task[] = [
     status: "done",
     assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-04-15"), // Past due but completed
+    dueDate: {
+      date: new Date("2025-04-15"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-04-15"))
+    }, // Past due but completed
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -202,7 +226,11 @@ export const mockTasks: Types.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-25"),
+    dueDate: {
+      date: new Date("2025-05-25"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-05-25"))
+    },
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -213,7 +241,11 @@ export const mockTasks: Types.Task[] = [
     status: "pending",
     assignees: [mockPeople.jane!],
     milestone: mockMilestones.marketExpansion,
-    dueDate: new Date("2025-08-10"),
+    dueDate: {
+      date: new Date("2025-08-10"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-08-10"))
+    },
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -225,7 +257,11 @@ export const mockTasks: Types.Task[] = [
     status: "done",
     assignees: [mockPeople.john!],
     milestone: mockMilestones.productLaunch,
-    dueDate: new Date("2025-06-01"),
+    dueDate: {
+      date: new Date("2025-06-01"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-06-01"))
+    },
     points: 13,
     hasDescription: true,
     hasComments: true,
@@ -237,7 +273,11 @@ export const mockTasks: Types.Task[] = [
     status: "pending",
     assignees: [mockPeople.emily!],
     milestone: mockMilestones.marketExpansion,
-    dueDate: new Date("2025-07-30"),
+    dueDate: {
+      date: new Date("2025-07-30"),
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date("2025-07-30"))
+    },
     points: 5,
     hasDescription: true,
     hasComments: false,
