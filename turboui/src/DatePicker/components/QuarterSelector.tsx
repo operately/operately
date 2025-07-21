@@ -4,7 +4,7 @@ import { OptionButton } from "./OptionButton";
 import { DatePicker } from "../index";
 
 interface Props {
-  selectedDate?: DatePicker.ContextualDate;
+  selectedDate: DatePicker.ContextualDate | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   visibleYears: number[];
   useStartOfPeriod?: boolean;
@@ -64,7 +64,7 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, u
   );
 }
 
-function isSelectedQuarter(quarterValue: string, year: number, selectedDate?: DatePicker.ContextualDate): boolean {
+function isSelectedQuarter(quarterValue: string, year: number, selectedDate: DatePicker.ContextualDate | null): boolean {
   try {
     if (!selectedDate?.date) return false;
 

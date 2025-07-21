@@ -20,9 +20,9 @@ const DATE_TYPES = [
 
 export namespace DatePicker {
   export interface Props extends TestableElement {
-    onDateSelect?: (selectedDate: ContextualDate | undefined) => void;
+    onDateSelect?: (selectedDate: ContextualDate | null) => void;
     onCancel?: () => void;
-    initialDate?: ContextualDate;
+    initialDate?: ContextualDate | null;
     minYear?: number;
     maxYear?: number;
     triggerLabel?: string;
@@ -73,8 +73,8 @@ export function DatePicker({
   testId = "date-field",
 }: DatePicker.Props) {
   const [open, setOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
-  const [previousSelectedDate, setPreviousSelectedDate] = useState<DatePicker.ContextualDate | undefined>(initialDate);
+  const [selectedDate, setSelectedDate] = useState<DatePicker.ContextualDate | null>(initialDate || null);
+  const [previousSelectedDate, setPreviousSelectedDate] = useState<DatePicker.ContextualDate | null>(initialDate || null);
   const [dateType, setDateType] = useState<DatePicker.DateType>(initialDate?.dateType || "day");
 
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
@@ -109,14 +109,14 @@ export function DatePicker({
     if (selectedDate) {
       onDateSelect?.(selectedDate);
     } else {
-      onDateSelect?.(undefined);
+      onDateSelect?.(null);
     }
   };
 
   const handleClearDate = () => {
-    setSelectedDate(undefined);
-    setPreviousSelectedDate(undefined);
-    onDateSelect?.(undefined);
+    setSelectedDate(null);
+    setPreviousSelectedDate(null);
+    onDateSelect?.(null);
     setDateType("day");
     setOpen(false);
   };
@@ -159,7 +159,7 @@ export function DatePicker({
 }
 
 interface DatePickerTriggerProps extends TestableElement {
-  selectedDate?: DatePicker.ContextualDate;
+  selectedDate: DatePicker.ContextualDate | null;
   label: string;
   onClick: () => void;
   readonly: boolean;
@@ -229,9 +229,9 @@ function DatePickerTrigger({
 interface DatePickerContentProps {
   dateType: DatePicker.DateType;
   setDateType: React.Dispatch<React.SetStateAction<DatePicker.DateType>>;
-  selectedDate?: DatePicker.ContextualDate;
-  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate | undefined>>;
-  onDateSelect?: (selectedDate: DatePicker.ContextualDate | undefined) => void;
+  selectedDate: DatePicker.ContextualDate | null;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate | null>>;
+  onDateSelect?: (selectedDate: DatePicker.ContextualDate | null) => void;
   onCancel?: () => void;
   onClearDate?: () => void;
   yearOptions: number[];

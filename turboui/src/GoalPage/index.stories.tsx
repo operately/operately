@@ -66,7 +66,7 @@ const defaultSpace: GoalPage.Space = {
 function Component(props: Partial<GoalPage.Props>) {
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
   const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
-  const [dueDate, setDueDate] = React.useState<DatePicker.ContextualDate | undefined>(props.dueDate || undefined);
+  const [dueDate, setDueDate] = React.useState<DatePicker.ContextualDate | null>(props.dueDate || null);
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
   const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
   const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);

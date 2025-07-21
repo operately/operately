@@ -8,8 +8,8 @@ import { DatePicker } from "turboui";
  * @param {ContextualDate | null | undefined} obj The ContextualDate object to parse.
  * @returns {DatePicker.ContextualDate | undefined} The DatePicker.ContextualDate object that was parsed, or undefined if the input was null or undefined.
  */
-export function parseContextualDate(obj: ContextualDate | undefined | null): DatePicker.ContextualDate | undefined {
-  if (!obj) return;
+export function parseContextualDate(obj: ContextualDate | undefined | null): DatePicker.ContextualDate | null {
+  if (!obj) return null;
 
   return {
     date: new Date(obj.date),

@@ -41,7 +41,7 @@ export function useForm(props: EditProps | NewProps) {
   const form = Forms.useForm({
     fields: {
       status: mode === "edit" ? props.update.status : null,
-      dueDate: parseContextualDate(timeframe?.contextualEndDate) || null,
+      dueDate: parseContextualDate(timeframe?.contextualEndDate),
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
     },

@@ -72,7 +72,10 @@ export const Default: Story = {
  */
 export const VariantComparison: Story = {
   tags: ["autodocs"],
-  render: () => {
+  args: {
+    initialDate: null,
+  },
+  render: (args) => {
     const today = new Date();
 
     return (
@@ -83,6 +86,7 @@ export const VariantComparison: Story = {
             <div>
               <h3 className="text-sm font-medium mb-2">Normal</h3>
               <DatePicker
+                {...args}
                 initialDate={{
                   date: today,
                   dateType: "day",
@@ -284,7 +288,10 @@ export const ReadOnly: Story = {
  */
 export const WithoutCalendarIcon: Story = {
   tags: ["autodocs"],
-  render: () => {
+  args: {
+    initialDate: null,
+  },
+  render: (args) => {
     const today = new Date();
     const formattedDate = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(
       today,
@@ -299,6 +306,7 @@ export const WithoutCalendarIcon: Story = {
               <div>
                 <h3 className="text-sm font-medium mb-2">Inline Variant</h3>
                 <DatePicker
+                  {...args}
                   initialDate={{
                     date: today,
                     dateType: "day",
@@ -310,6 +318,7 @@ export const WithoutCalendarIcon: Story = {
               <div>
                 <h3 className="text-sm font-medium mb-2">Form Field Variant</h3>
                 <DatePicker
+                  {...args}
                   initialDate={{
                     date: today,
                     dateType: "day",

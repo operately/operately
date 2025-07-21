@@ -4,7 +4,7 @@ import { OptionButton } from "./OptionButton";
 import { DatePicker } from "../index";
 
 interface Props {
-  selectedDate?: DatePicker.ContextualDate;
+  selectedDate: DatePicker.ContextualDate | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   visibleYears: number[];
   useStartOfPeriod?: boolean;
@@ -64,7 +64,7 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, use
   );
 }
 
-function isSelectedMonth(monthValue: string, year: number, selectedDate?: DatePicker.ContextualDate) {
+function isSelectedMonth(monthValue: string, year: number, selectedDate: DatePicker.ContextualDate | null) {
   return Boolean(
     selectedDate &&
       selectedDate.dateType === "month" &&
