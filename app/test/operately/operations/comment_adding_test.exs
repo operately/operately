@@ -197,7 +197,7 @@ defmodule Operately.Operations.CommentAddingTest do
           send_to_everyone: false,
           subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
           subscription_parent_type: :goal_update,
-          due_date: ~D[2023-10-01]
+          due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
         })
 
       update = Repo.preload(update, :goal)

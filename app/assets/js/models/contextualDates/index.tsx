@@ -26,7 +26,7 @@ export function parseContextualDate(obj: ContextualDate | undefined | null): Dat
  */
 export function serializeContextualDate(obj: DatePicker.ContextualDate | undefined | null): ContextualDate | null {
   if (!obj) return null;
-  
+
   return {
     date: Time.toDateWithoutTime(obj.date),
     dateType: obj.dateType,
