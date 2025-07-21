@@ -73,7 +73,7 @@ defmodule Operately.Demo.Goals do
         target_values: target_values,
         subscription_parent_type: :goal_update,
         subscriber_ids: [],
-        due_date: goal.timeframe.end_date
+        due_date: goal.timeframe.contextual_end_date
       })
   end
 

@@ -1,4 +1,5 @@
 import { Target, Goal } from "@/models/goals";
+import { DatePicker } from "turboui";
 
 export type FieldValue =
   | number
@@ -9,6 +10,7 @@ export type FieldValue =
   | Date
   | Goal
   | Target[]
+  | DatePicker.ContextualDate
   | FieldObject
   | FieldObject[]
   | FieldValue[];
