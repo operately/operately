@@ -3,6 +3,7 @@ import React from "react";
 import { TaskPage } from ".";
 import { InProjectContextStory } from "./InProjectContextStory";
 import { PageNew } from "../Page";
+import { DateField } from "../DateField";
 import {
   mockTaskPeople,
   mockMilestones,
@@ -36,7 +37,7 @@ function Component(props: Partial<TaskPage.Props>) {
   const [name, setName] = React.useState(props.name || "");
   const [description, setDescription] = React.useState(props.description || null);
   const [status, setStatus] = React.useState(props.status || "pending");
-  const [dueDate, setDueDate] = React.useState<Date | undefined>(props.dueDate);
+  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
   const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(props.assignees || []);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
@@ -261,7 +262,11 @@ export const LongContent: Story = {
       ],
     ),
     status: "pending",
-    dueDate: new Date(2024, 3, 1), // April 1, 2024
+    dueDate: {
+      date: new Date(2024, 3, 1), // April 1, 2024
+      dateType: "day",
+      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(2024, 3, 1))
+    },
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
     timelineItems: createLongContentTimeline(),

@@ -30,11 +30,10 @@ function DueDate(props: TaskPage.State) {
     <SidebarSection title="Due Date">
       <DateField
         date={props.dueDate ?? null}
-        setDate={props.onDueDateChange}
+        onDateSelect={props.onDueDateChange}
         readonly={!props.canEdit}
         showOverdueWarning={!isCompleted}
-        emptyStateText="Set due date"
-        emptyStateReadonlyText="No due date set"
+        placeholder="Set due date"
       />
       <OverdueWarning {...props} />
     </SidebarSection>
@@ -181,11 +180,11 @@ function Actions(props: TaskPage.State) {
 }
 
 function OverdueWarning(props: TaskPage.State) {
-  if (!props.dueDate) return null;
-  if (!isOverdue(props.dueDate)) return null;
+  if (!props.dueDate || !props.dueDate.date) return null;
+  if (!isOverdue(props.dueDate.date)) return null;
   if (props.status === "done" || props.status === "canceled") return null; // Don't show overdue for completed tasks
 
-  const duration = durationHumanized(props.dueDate, new Date());
+  const duration = durationHumanized(props.dueDate.date, new Date());
 
   return (
     <div className="mt-2">
