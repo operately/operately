@@ -1,7 +1,7 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateMonths } from "../utils";
 import { OptionButton } from "./OptionButton";
-import { DatePicker } from "../index"
+import { DatePicker } from "../index";
 
 interface Props {
   selectedDate?: DatePicker.ContextualDate;
@@ -11,10 +11,11 @@ interface Props {
 }
 
 export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, useStartOfPeriod = false }: Props) {
-  const currentYear = new Date().getFullYear(); // Should be 2025
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
+    const today = new Date();
+    const currentYear = today.getFullYear();
     const currentYearIndex = visibleYears.indexOf(currentYear);
 
     if (currentYearIndex !== -1 && containerRef.current) {
@@ -49,6 +50,7 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, use
                   key={month.value}
                   onClick={() => handleSelect(month)}
                   isSelected={isSelectedMonth(month.value, year, selectedDate)}
+                  isCurrent={isCurrentMonth(month.value, year)}
                   className="py-1 px-2 text-xs"
                 >
                   {month.label}
@@ -65,8 +67,17 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, use
 function isSelectedMonth(monthValue: string, year: number, selectedDate?: DatePicker.ContextualDate) {
   return Boolean(
     selectedDate &&
-    selectedDate.dateType === "month" &&
-    selectedDate.date?.getMonth() === new Date(monthValue).getMonth() &&
-    selectedDate.date?.getFullYear() === year
+      selectedDate.dateType === "month" &&
+      selectedDate.date?.getMonth() === new Date(monthValue).getMonth() &&
+      selectedDate.date?.getFullYear() === year,
   );
+}
+
+function isCurrentMonth(monthValue: string, year: number) {
+  const monthDate = new Date(monthValue);
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth();
+
+  return monthDate.getMonth() === currentMonth && year === currentYear;
 }
