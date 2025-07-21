@@ -132,17 +132,19 @@ function OverviewIssue({ goal }: { goal: Goals.Goal }) {
 }
 
 function OverviewDueDate() {
-  const [dueDate] = Forms.useFieldValue<Date | null>("dueDate");
+  const [dueDate] = Forms.useFieldValue<DatePicker.ContextualDate | null>("dueDate");
 
   if (dueDate) {
-    if (dueDate < new Date()) {
+    const { date } = dueDate;
+
+    if (date < new Date()) {
       return (
         <span>
-          {durationHumanized(dueDate, new Date())} <mark data-highlight="bgRed">overdue</mark>.
+          {durationHumanized(date, new Date())} <mark data-highlight="bgRed">overdue</mark>.
         </span>
       );
     } else {
-      return <span>{durationHumanized(new Date(), dueDate)} until the deadline.</span>;
+      return <span>{durationHumanized(new Date(), date)} until the deadline.</span>;
     }
   } else {
     return <span>No due date set.</span>;
