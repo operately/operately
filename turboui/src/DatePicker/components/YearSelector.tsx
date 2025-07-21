@@ -51,6 +51,7 @@ export function YearSelector({ selectedDate, setSelectedDate, years, useStartOfP
               ref={year === currentYear ? currentYearRef : undefined}
               onClick={() => handleSelect(year)}
               isSelected={isSelectedYear(year, selectedDate)}
+              isCurrent={year === currentYear}
               className="px-3 py-1.5 text-sm"
             >
               {year}

@@ -56,7 +56,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
     const className = classNames(
       "w-7 h-7 text-xs rounded-full transition-colors",
       isSelected && "border border-blue-500 bg-blue-50 text-blue-700",
-      isToday && !isSelected && "bg-blue-100 text-blue-600 hover:bg-blue-200",
+      isToday && !isSelected && "border border-blue-300 text-blue-600 hover:bg-blue-50",
       !isSelected && !isToday && "hover:bg-gray-100 hover:text-blue-500",
     );
 
