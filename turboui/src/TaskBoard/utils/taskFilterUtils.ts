@@ -36,7 +36,7 @@ function applyFilter(task: Types.Task, filter: Types.FilterCondition): boolean {
     case "content":
       return applyContentFilter(task, filter);
     case "due_date":
-      return applyDateFilter(task.dueDate, filter);
+      return applyDateFilter(task.dueDate?.date, filter);
     case "created_date":
     case "updated_date":
     case "started_date":

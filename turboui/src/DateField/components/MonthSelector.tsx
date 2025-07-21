@@ -1,11 +1,11 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateMonths } from "../utils";
 import { OptionButton } from "./OptionButton";
-import { DatePicker } from "../index";
+import { DateField } from "../index";
 
 interface Props {
-  selectedDate: DatePicker.ContextualDate | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
+  selectedDate: DateField.ContextualDate | null;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate>>;
   visibleYears: number[];
   useStartOfPeriod?: boolean;
 }
@@ -32,7 +32,7 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, use
     }
   }, []);
 
-  const handleSelect = (month: DatePicker.PeriodOption) => {
+  const handleSelect = (month: DateField.PeriodOption) => {
     const date = new Date(month.value);
     const value = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(date);
     setSelectedDate({ date, dateType: "month", value });
@@ -64,7 +64,7 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, use
   );
 }
 
-function isSelectedMonth(monthValue: string, year: number, selectedDate: DatePicker.ContextualDate | null) {
+function isSelectedMonth(monthValue: string, year: number, selectedDate: DateField.ContextualDate | null) {
   return Boolean(
     selectedDate &&
       selectedDate.dateType === "month" &&

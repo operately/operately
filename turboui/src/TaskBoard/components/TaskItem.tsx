@@ -21,7 +21,7 @@ interface TaskItemProps {
 export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeople }: TaskItemProps) {
   // Local state for the assignee and due date
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
-  const [currentDueDate, setCurrentDueDate] = useState<Date | null>(task.dueDate || null);
+  const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
 
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
@@ -45,13 +45,13 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
 
   // Handle due date change locally and notify parent
   const handleDueDateChange = useCallback(
-    (newDueDate: Date | null) => {
+    (newDueDate: DateField.ContextualDate | null) => {
       setCurrentDueDate(newDueDate);
 
       // Notify parent component if callback is provided
       if (onTaskUpdate && task.id) {
         onTaskUpdate(task.id, {
-          dueDate: newDueDate || undefined, // Convert null to undefined for Task type compatibility
+          dueDate: newDueDate || undefined,
         });
       }
     },
@@ -120,13 +120,11 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
             {currentDueDate || !onTaskUpdate ? (
               <DateField
                 date={currentDueDate}
-                setDate={handleDueDateChange}
+                onDateSelect={handleDueDateChange}
                 variant="inline"
-                iconSize={14}
-                textSize="text-xs"
-                showIcon={false}
+                hideCalendarIcon={true}
                 showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
-                emptyStateText="Set due date"
+                placeholder="Set due date"
                 readonly={!onTaskUpdate}
               />
             ) : (
@@ -134,13 +132,11 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
               <div className="opacity-0 group-hover/due-date:opacity-100 transition-opacity">
                 <DateField
                   date={null}
-                  setDate={handleDueDateChange}
+                  onDateSelect={handleDueDateChange}
                   variant="inline"
-                  iconSize={14}
-                  textSize="text-xs"
-                  showIcon={false}
+                  hideCalendarIcon={true}
                   showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
-                  emptyStateText="Set due date"
+                  placeholder="Set due date"
                   readonly={false}
                 />
               </div>
