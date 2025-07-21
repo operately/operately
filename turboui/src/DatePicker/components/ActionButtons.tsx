@@ -3,9 +3,9 @@ import { DatePicker } from "../index";
 import { SecondaryButton, PrimaryButton } from "../../Button";
 
 interface ActionButtonsProps {
-  selectedDate: DatePicker.ContextualDate | undefined;
+  selectedDate: DatePicker.ContextualDate | null;
   onCancel?: () => void;
-  onSetDeadline?: (selectedDate: DatePicker.ContextualDate | undefined) => void;
+  onSetDeadline?: (selectedDate: DatePicker.ContextualDate | null) => void;
 }
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({ selectedDate, onCancel, onSetDeadline }) => {

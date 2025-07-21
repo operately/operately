@@ -106,8 +106,8 @@ export namespace GoalPage {
     reviewer: Person | null;
     setReviewer: (person: Person | null) => void;
 
-    dueDate: DatePicker.ContextualDate | undefined;
-    setDueDate: (date: DatePicker.ContextualDate | undefined) => void;
+    dueDate: DatePicker.ContextualDate | null;
+    setDueDate: (date: DatePicker.ContextualDate | null) => void;
 
     contributors: Contributor[];
     targets: GoalTargetList.Target[];
