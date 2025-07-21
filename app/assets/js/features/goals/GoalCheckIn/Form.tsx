@@ -228,14 +228,10 @@ function Label({ text, info, className = "" }: { text: string; className?: strin
 function DueDateSelector() {
   const [value, setValue] = Forms.useFieldValue<DatePicker.ContextualDate | null>("dueDate");
 
-  const handleDateSelect = (selectedDate: DatePicker.ContextualDate | undefined) => {
-    setValue(selectedDate || null);
-  };
-
   return (
     <div>
       <Label text="Due Date" info="Set a new due date for the goal." />
-      <DatePicker initialDate={value || undefined} onDateSelect={handleDateSelect} variant="form-field" />
+      <DatePicker initialDate={value} onDateSelect={setValue} variant="form-field" />
     </div>
   );
 }

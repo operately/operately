@@ -4,7 +4,7 @@ import { DatePicker } from "../index";
 import { getYearDate } from "../utils";
 
 interface Props {
-  selectedDate?: DatePicker.ContextualDate;
+  selectedDate: DatePicker.ContextualDate | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
   years: number[];
   useStartOfPeriod?: boolean;
@@ -63,7 +63,7 @@ export function YearSelector({ selectedDate, setSelectedDate, years, useStartOfP
   );
 }
 
-function isSelectedYear(year: number, selectedDate?: DatePicker.ContextualDate): boolean {
+function isSelectedYear(year: number, selectedDate: DatePicker.ContextualDate | null): boolean {
   if (!selectedDate?.date) return false;
 
   return selectedDate.dateType === "year" && selectedDate.date.getFullYear() === year;
