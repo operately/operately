@@ -10,7 +10,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
   inputs do
     field :goal_id, :id, null: false
     field :status, :string, null: false
-    field :due_date, :date, null: true
+    field :due_date, :contextual_date, null: true
 
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
