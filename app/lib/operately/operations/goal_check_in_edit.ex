@@ -121,23 +121,16 @@ defmodule Operately.Operations.GoalCheckInEdit do
     else
       contextual_start_date = %{
         date_type: :day,
-        value: Date.to_iso8601(goal.inserted_at),
+        value: Calendar.strftime(goal.inserted_at, "%b %d, %Y"),
         date: goal.inserted_at
       }
 
-      contextual_end_date = %{
-        date_type: :day,
-        value: Date.to_iso8601(due_date),
-        date: due_date
-      }
-
-      # Return timeframe with both old fields and new contextual date fields
       %{
         type: "days",
         start_date: goal.inserted_at,
-        end_date: due_date,
+        end_date: due_date.date,
         contextual_start_date: contextual_start_date,
-        contextual_end_date: contextual_end_date
+        contextual_end_date: due_date
       }
     end
   end

@@ -2922,7 +2922,7 @@ export interface EditGoalDiscussionResult {}
 
 export interface EditGoalProgressUpdateInput {
   id: Id;
-  dueDate: string | null;
+  dueDate: ContextualDate | null;
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;

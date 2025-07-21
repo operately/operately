@@ -8,7 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
 
   inputs do
     field :id, :id, null: false
-    field :due_date, :date, null: true
+    field :due_date, :contextual_date, null: true
 
     field? :status, :string, null: true
     field? :content, :json, null: true
