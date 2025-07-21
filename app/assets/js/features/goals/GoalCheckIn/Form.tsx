@@ -12,7 +12,7 @@ import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { DateField, Tooltip, IconInfoCircle } from "turboui";
+import { Tooltip, IconInfoCircle, DatePicker } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {
@@ -224,12 +224,16 @@ function Label({ text, info, className = "" }: { text: string; className?: strin
 }
 
 function DueDateSelector() {
-  const [value, setValue] = Forms.useFieldValue<Date | null>("dueDate");
+  const [value, setValue] = Forms.useFieldValue<DatePicker.ContextualDate | null>("dueDate");
+
+  const handleDateSelect = (selectedDate: DatePicker.ContextualDate | undefined) => {
+    setValue(selectedDate || null);
+  };
 
   return (
     <div>
       <Label text="Due Date" info="Set a new due date for the goal." />
-      <DateField date={value} setDate={setValue} variant="form-field" emptyStateText="No due date set" />
+      <DatePicker initialDate={value || undefined} onDateSelect={handleDateSelect} variant="form-field" />
     </div>
   );
 }
