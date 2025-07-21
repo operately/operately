@@ -211,7 +211,7 @@ function DatePickerTrigger({
       onClick={handleClick}
       disabled={readonly}
       aria-readonly={readonly}
-      data-testid={testId}
+      data-test-id={testId}
     >
       <span className={elemClass}>
         {!hideCalendarIcon && (
