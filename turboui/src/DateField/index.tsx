@@ -31,6 +31,7 @@ export namespace DateField {
     variant?: "inline" | "form-field";
     hideCalendarIcon?: boolean;
     useStartOfPeriod?: boolean;
+    size?: "std" | "small";
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -70,6 +71,7 @@ export function DateField({
   variant = "inline",
   hideCalendarIcon = false,
   useStartOfPeriod = false,
+  size = "std",
   testId = "date-field",
 }: DateField.Props) {
   const [open, setOpen] = useState(false);
@@ -134,6 +136,7 @@ export function DateField({
             variant={variant}
             hideCalendarIcon={hideCalendarIcon}
             testId={testId}
+            size={size}
           />
         </div>
       </Popover.Trigger>
@@ -166,6 +169,7 @@ interface DatePickerTriggerProps extends TestableElement {
   showOverdueWarning: boolean;
   variant: "inline" | "form-field";
   hideCalendarIcon: boolean;
+  size: "std" | "small";
 }
 
 function DatePickerTrigger({
@@ -176,6 +180,7 @@ function DatePickerTrigger({
   showOverdueWarning,
   variant,
   hideCalendarIcon,
+  size,
   testId,
 }: DatePickerTriggerProps) {
   const triggerClassName = classNames(
@@ -201,7 +206,7 @@ function DatePickerTrigger({
       "text-content-error": isDateOverdue && showOverdueWarning,
       "text-content-dimmed": !selectedDate,
     },
-    "text-sm",
+    size === "small" ? "text-xs" : "text-sm",
   );
 
   return (
@@ -216,7 +221,7 @@ function DatePickerTrigger({
       <span className={elemClass}>
         {!hideCalendarIcon && (
           <IconCalendarEvent
-            size={16}
+            size={size === "small" ? 12 : 16}
             className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
           />
         )}

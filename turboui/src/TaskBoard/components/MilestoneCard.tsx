@@ -158,6 +158,7 @@ export function MilestoneCard({
                     showOverdueWarning={true}
                     placeholder="Set due date"
                     readonly={!onMilestoneUpdate}
+                    size="small"
                   />
                 ) : (
                   /* Empty state that appears on hover */
@@ -169,6 +170,7 @@ export function MilestoneCard({
                       showOverdueWarning={true}
                       placeholder="Set due date"
                       readonly={false}
+                      size="small"
                     />
                   </div>
                 )}
