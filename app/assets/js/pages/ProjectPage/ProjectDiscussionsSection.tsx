@@ -2,6 +2,7 @@ import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { Avatar, Link, SecondaryButton } from "turboui";
+import { usePaths } from "../../routes/paths";
 
 interface ProjectDiscussionsSectionProps {
   project: Projects.Project;
@@ -9,8 +10,11 @@ interface ProjectDiscussionsSectionProps {
 }
 
 export function ProjectDiscussionsSection({ project, discussions }: ProjectDiscussionsSectionProps) {
+  const paths = usePaths();
+  const newPath = paths.projectDiscussionNewPath(project.id);
+
   const addButton = (
-    <SecondaryButton linkTo={"#"} testId="add-discussions-button" size="xs">
+    <SecondaryButton linkTo={newPath} testId="add-discussions-button" size="xs">
       Start discussion
     </SecondaryButton>
   );
@@ -44,12 +48,14 @@ function DiscussionsZeroState() {
 }
 
 function DiscussionsList({ discussions }: { discussions: Projects.Discussion[] }) {
+  const paths = usePaths();
+
   return (
     <div className="grid grid-cols-4 gap-4">
       {discussions!.map((discussion: any, index: number) => (
         <div key={index} className="flex items-center gap-2">
           <Avatar person={discussion.author} size={20} />
-          <Link to={`#`}>{discussion.title}</Link>
+          <Link to={paths.projectDiscussionPath(discussion.id)}>{discussion.title}</Link>
         </div>
       ))}
     </div>

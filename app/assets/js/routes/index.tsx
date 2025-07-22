@@ -155,12 +155,15 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/resources/new", pages.ProjectAddResourcePage),
         pageRoute("projects/:projectID/contributors", pages.ProjectContributorsPage),
         pageRoute("projects/:projectID/contributors/add", pages.ProjectContributorsAddPage),
+        pageRoute("projects/:projectID/discussions/new", pages.ProjectDiscussionNewPage),
         pageRoute("projects/:id", pages.ProjectPage),
 
         pageRoute("project-check-ins/:id", pages.ProjectCheckInPage),
         pageRoute("project-check-ins/:id/edit", pages.ProjectCheckInEditPage),
         pageRoute("project-resources/:id/edit", pages.ProjectEditResourcePage),
         pageRoute("project-contribs/:id/edit", pages.ProjectContributorsEditPage),
+        // pageRoute("project-discussions/:id", pages.ProjectDiscussionPage),
+        // pageRoute("project-discussions/:id/edit", pages.ProjectDiscussionEditPage),
 
         pageRoute("milestones/:id", pages.ProjectMilestonePage),
 
