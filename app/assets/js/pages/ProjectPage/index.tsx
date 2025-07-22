@@ -1,4 +1,3 @@
-import * as Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
@@ -8,7 +7,6 @@ import * as React from "react";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
-import { fetchAll } from "../../utils/async";
 import { banner } from "./Banner";
 import { CheckInSection } from "./CheckInSection";
 import { ContributorsSection } from "./ContributorsSection";
@@ -22,19 +20,21 @@ import { ResourcesSection } from "./ResourcesSection";
 import { StatusOverview } from "./StatusOverview";
 import { TimelineSection } from "./TimelineSection";
 
+import Api from "@/api";
+
 export default { name: "ProjectPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   project: Projects.Project;
   company: Companies.Company;
+  discussions: Projects.Discussion[];
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  return fetchAll({
-    company: Companies.getCompany({
-      id: params.companyId,
-    }).then((d) => d.company!),
-    project: Projects.getProject({
+  const [company, discussions, project] = await Promise.all([
+    Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
+    Api.project_discussions.list({ projectId: params.id }).then((data) => data.discussions!),
+    Projects.getProject({
       id: params.id,
       includeSpace: true,
       includeGoal: true,
@@ -49,14 +49,13 @@ async function loader({ params }): Promise<LoaderResult> {
       includeRetrospective: true,
       includeUnreadNotifications: true,
     }).then((data) => data.project!),
-    discussions: Api.projectDiscussions.list({
-      projectId: params.id,
-    }),
-  });
+  ]);
+
+  return { project, company, discussions };
 }
 
 function Page() {
-  const { project, company } = Pages.useLoadedData() as LoaderResult;
+  const { project, company, discussions } = Pages.useLoadedData() as LoaderResult;
 
   assertPresent(project.notifications, "Project notifications must be defined");
   useClearNotificationsOnLoad(project.notifications);
@@ -76,7 +75,9 @@ function Page() {
             <ProjectDescriptionSection project={project} />
             <TimelineSection project={project} />
             <CheckInSection project={project} />
-            {Companies.hasFeature(company, "project_discussions") && <ProjectDiscussionsSection project={project} />}
+            {Companies.hasFeature(company, "project_discussions") && (
+              <ProjectDiscussionsSection project={project} discussions={discussions} />
+            )}
             <ResourcesSection project={project} />
           </div>
 
