@@ -6,6 +6,7 @@ export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
 export type Milestone = api.Milestone;
 export type ProjectRetrospective = api.ProjectRetrospective;
+export type Discussion = api.CommentThread;
 
 export {
   getProject,
