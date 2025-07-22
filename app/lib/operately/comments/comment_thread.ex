@@ -23,6 +23,10 @@ defmodule Operately.Comments.CommentThread do
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
+    field :project, :any, virtual: true
+    field :space, :any, virtual: true
+    field :notifications, :any, virtual: true
+    field :can_comment, :boolean, virtual: true
 
     timestamps()
   end
@@ -45,7 +49,14 @@ defmodule Operately.Comments.CommentThread do
     end
   end
 
-  def set_potential_subscribers(activity) do
+  def set_potential_subscribers(thread = %__MODULE__{}) do
+    project = Operately.Repo.preload(thread.project, contributors: :person)
+    subs = Notifications.Subscriber.from_project_contributor(project.contributors)
+
+    Map.put(thread, :potential_subscribers, subs)
+  end
+
+  def set_potential_subscribers(activity = %Operately.Activities.Activity{}) do
     goal =
       activity.content["goal_id"]
       |> Operately.Goals.get_goal()
@@ -67,5 +78,50 @@ defmodule Operately.Comments.CommentThread do
       order_by: [desc: ct.inserted_at]
     )
     |> Operately.Repo.all()
+  end
+
+  def load_unread_notifications(thread, person) do
+    if thread.parent_type == :project do
+      activity = Repo.preload(thread, :activity).activity
+
+      notifications =
+        from(n in Operately.Notifications.Notification,
+          where: n.activity_id == ^activity.id,
+          where: n.person_id == ^person.id and not n.read,
+          select: n
+        )
+        |> Operately.Repo.all()
+
+      Map.put(thread, :notifications, notifications)
+    else
+      raise ArgumentError, "Unread notifications can only be loaded for project comment threads"
+    end
+  end
+
+  def load_project(thread) do
+    if thread.parent_type == :project do
+      project = Operately.Projects.get_project!(thread.parent_id)
+      Map.put(thread, :project, project)
+    else
+      raise ArgumentError, "Project can only be loaded for project comment threads"
+    end
+  end
+
+  def load_space(thread) do
+    if thread.parent_type == :project do
+      space = Operately.Groups.get_group!(thread.project.group_id)
+      Map.put(thread, :space, space)
+    else
+      raise ArgumentError, "Space can only be loaded for project comment threads"
+    end
+  end
+
+  def load_permissions(thread) do
+    if thread.parent_type == :project do
+      can_comment = Operately.Projects.Permissions.calculate(thread.request_info.access_level).can_comment
+      Map.put(thread, :can_comment, can_comment)
+    else
+      raise ArgumentError, "Permissions can only be loaded for project comment threads"
+    end
   end
 end

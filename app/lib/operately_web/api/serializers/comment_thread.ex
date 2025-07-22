@@ -6,7 +6,13 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Comments.CommentThread do
       message: Jason.encode!(thread.message),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(thread.inserted_at),
       author: OperatelyWeb.Api.Serializer.serialize(thread.author),
-      reactions: OperatelyWeb.Api.Serializer.serialize(thread.reactions)
+      reactions: OperatelyWeb.Api.Serializer.serialize(thread.reactions),
+      notifications: OperatelyWeb.Api.Serializer.serialize(thread.notifications),
+      project: OperatelyWeb.Api.Serializer.serialize(thread.project),
+      space: OperatelyWeb.Api.Serializer.serialize(thread.space),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(thread.subscription_list),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(thread.potential_subscribers),
+      can_comment: thread.can_comment
     }
   end
 
