@@ -854,8 +854,10 @@ export interface CommentThread {
   author?: Person | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
-  project?: Project;
   notifications?: Notification[];
+  project?: Project;
+  space?: Space;
+  canComment?: boolean;
 }
 
 export interface Company {

@@ -20,7 +20,7 @@ import RichContent from "turboui/src/RichContent";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { usePaths } from "../../routes/paths";
 
-export default { name: "GoalActivityPage", loader, Page } as PageModule;
+export default { name: "ProjectDiscussionPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   discussion: Projects.Discussion;
@@ -103,8 +103,8 @@ function Nav() {
   return (
     <Paper.Navigation
       items={[
-        { to: paths.spacePath(discussion.space?.id!), label: discussion.space.name! },
-        { to: paths.projectPath(discussion.project.id!), label: discussion.project.name! },
+        { to: paths.spacePath(discussion.space!.id!), label: discussion.space!.name! },
+        { to: paths.projectPath(discussion.project!.id!), label: discussion.project!.name! },
       ]}
     />
   );
@@ -131,35 +131,25 @@ function DiscussionReactions() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
 
   assertPresent(discussion.reactions, "discussion.reactions must be present");
-  assertPresent(discussion.permissions.canComment, "discussion.permissions.canComment must be present");
+  assertPresent(discussion.canComment, "discussion.canComment must be present");
 
   const reactions = discussion.reactions.map((r) => r!);
   const entity = Reactions.entity(discussion.id!, "comment_thread");
   const addReactionForm = useReactionsForm(entity, reactions);
 
-  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.permissions.canComment} />;
+  return <ReactionList size={24} form={addReactionForm} canAddReaction={discussion.canComment} />;
 }
 
 function Comments() {
   const { discussion } = Pages.useLoadedData<LoaderResult>();
-  const project = discussion.project!;
 
-  assertPresent(discussion.permissions?.canComment, "permissions must be present in discussion");
-
-  const commentsForm = useComments({
-    thread: discussion.commentThread,
-    project: project,
-    parentType: "comment_thread",
-  });
+  assertPresent(discussion.canComment, "discussion.canComment must be present");
+  const commentsForm = useComments({ thread: discussion, parentType: "comment_thread", project: discussion.project! });
 
   return (
     <>
       <div className="border-t border-stroke-base mt-8" />
-      <CommentSection
-        form={commentsForm}
-        commentParentType="comment_thread"
-        canComment={discussion.permissions.canComment}
-      />
+      <CommentSection form={commentsForm} commentParentType="comment_thread" canComment={discussion.canComment!} />
     </>
   );
 }
