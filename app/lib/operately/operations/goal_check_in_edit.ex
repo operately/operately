@@ -11,7 +11,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> maybe_update_targets(goal.targets, attrs.new_target_values)
     |> update_subscriptions(attrs.content)
     |> maybe_update_goal(goal, attrs)
-    |> record_activity(author, goal)
+    |> record_activity(author, goal, check_in)
     |> Repo.transaction()
     |> Repo.extract_result(:check_in)
   end
@@ -91,13 +91,18 @@ defmodule Operately.Operations.GoalCheckInEdit do
     end)
   end
 
-  defp record_activity(multi, author, goal) do
+  defp record_activity(multi, author, goal, check_in) do
     multi
     |> Activities.insert_sync(author.id, :goal_check_in_edit, fn changes ->
+      old_timeframe = check_in.timeframe
+      new_timeframe = changes.check_in.timeframe
+
       %{
         company_id: goal.company_id,
         goal_id: goal.id,
-        check_in_id: changes.check_in.id
+        check_in_id: changes.check_in.id,
+        old_timeframe: old_timeframe,
+        new_timeframe: new_timeframe
       }
     end)
   end
@@ -126,9 +131,6 @@ defmodule Operately.Operations.GoalCheckInEdit do
       }
 
       %{
-        type: "days",
-        start_date: goal.inserted_at,
-        end_date: due_date.date,
         contextual_start_date: contextual_start_date,
         contextual_end_date: due_date
       }
