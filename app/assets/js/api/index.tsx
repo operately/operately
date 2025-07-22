@@ -2905,25 +2905,6 @@ export interface EditDiscussionResult {
   discussion?: Discussion | null;
 }
 
-export interface EditGoalInput {
-  goalId?: Id | null;
-  parentGoalId?: Id | null;
-  name?: string | null;
-  championId?: Id | null;
-  reviewerId?: Id | null;
-  timeframe?: Timeframe | null;
-  addedTargets?: CreateTargetInput[] | null;
-  updatedTargets?: UpdateTargetInput[] | null;
-  description?: string | null;
-  anonymousAccessLevel?: number | null;
-  companyAccessLevel?: number | null;
-  spaceAccessLevel?: number | null;
-}
-
-export interface EditGoalResult {
-  goal?: Goal | null;
-}
-
 export interface EditGoalDiscussionInput {
   activityId?: Id | null;
   title?: string | null;
@@ -3943,10 +3924,6 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_discussion", input);
   }
 
-  async editGoal(input: EditGoalInput): Promise<EditGoalResult> {
-    return this.client.post("/edit_goal", input);
-  }
-
   async editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return this.client.post("/edit_goal_discussion", input);
   }
@@ -4745,10 +4722,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.editDiscussion(input);
   }
 
-  editGoal(input: EditGoalInput): Promise<EditGoalResult> {
-    return this.apiNamespaceRoot.editGoal(input);
-  }
-
   editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
     return this.apiNamespaceRoot.editGoalDiscussion(input);
   }
@@ -5277,9 +5250,6 @@ export async function editCompany(input: EditCompanyInput): Promise<EditCompanyR
 }
 export async function editDiscussion(input: EditDiscussionInput): Promise<EditDiscussionResult> {
   return defaultApiClient.editDiscussion(input);
-}
-export async function editGoal(input: EditGoalInput): Promise<EditGoalResult> {
-  return defaultApiClient.editGoal(input);
 }
 export async function editGoalDiscussion(input: EditGoalDiscussionInput): Promise<EditGoalDiscussionResult> {
   return defaultApiClient.editGoalDiscussion(input);
@@ -5981,10 +5951,6 @@ export function useEditDiscussion(): UseMutationHookResult<EditDiscussionInput, 
   return useMutation<EditDiscussionInput, EditDiscussionResult>((input) => defaultApiClient.editDiscussion(input));
 }
 
-export function useEditGoal(): UseMutationHookResult<EditGoalInput, EditGoalResult> {
-  return useMutation<EditGoalInput, EditGoalResult>((input) => defaultApiClient.editGoal(input));
-}
-
 export function useEditGoalDiscussion(): UseMutationHookResult<EditGoalDiscussionInput, EditGoalDiscussionResult> {
   return useMutation<EditGoalDiscussionInput, EditGoalDiscussionResult>((input) =>
     defaultApiClient.editGoalDiscussion(input),
@@ -6545,8 +6511,6 @@ export default {
   useEditCompany,
   editDiscussion,
   useEditDiscussion,
-  editGoal,
-  useEditGoal,
   editGoalDiscussion,
   useEditGoalDiscussion,
   editGoalProgressUpdate,

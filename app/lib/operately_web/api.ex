@@ -163,7 +163,6 @@ defmodule OperatelyWeb.Api do
   mutation(:edit_company, M.EditCompany)
   mutation(:edit_comment, M.EditComment)
   mutation(:edit_discussion, M.EditDiscussion)
-  mutation(:edit_goal, M.EditGoal)
   mutation(:edit_goal_discussion, M.EditGoalDiscussion)
   mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
   mutation(:edit_goal_timeframe, M.EditGoalTimeframe)
