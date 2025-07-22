@@ -1,8 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectDiscussions do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
-  # alias Operately.Updates.Update
-  alias Operately.Updates
   alias Operately.Projects.Project
   alias OperatelyWeb.Api.Serializer
 
@@ -80,6 +78,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
           title: changes.thread.title
         }
       end)
+      |> Steps.connect_activity_to_discussion()
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.thread, level: :essential)}
       end)
@@ -92,7 +91,8 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     inputs do
       field :id, :id
       field :title, :string
-      field :body, :json
+      field :message, :json
+      field? :subscriber_ids, list_of(:id), default: []
     end
 
     outputs do
@@ -103,8 +103,8 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
-      |> Steps.check_discussion_permissions(:can_edit)
-      |> Steps.update_discussion(inputs.title, inputs.body)
+      |> Steps.check_discussion_permissions(:can_comment)
+      |> Steps.update_discussion(inputs.title, inputs.message, inputs.subscriber_ids)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.updated_discussion, level: :essential)}
       end)
@@ -133,16 +133,9 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
     def find_discussion(multi, discussion_id) do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
-        case Updates.get_update_with_space_and_access_level(discussion_id, me.id) do
-          {:ok, discussion} ->
-            if discussion.type == :project_discussion do
-              {:ok, discussion}
-            else
-              {:error, {:not_found, "Discussion not found"}}
-            end
-
-          {:error, _} ->
-            {:error, {:not_found, "Discussion not found"}}
+        case Operately.Comments.CommentThread.get(me, id: discussion_id) do
+          {:ok, discussion} -> {:ok, discussion}
+          {:error, _} -> {:error, {:not_found, "Discussion not found"}}
         end
       end)
     end
@@ -192,23 +185,24 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       end)
     end
 
-    def update_discussion(multi, _title, _body) do
-      Ecto.Multi.run(multi, :updated_discussion, fn _repo, %{discussion: _discussion} ->
-        # content = Operately.Updates.Types.ProjectDiscussion.build(title, body)
-
-        # attrs = %{
-        #   content: content,
-        #   title: title
-        # }
-
-        # case Updates.update_update(discussion, attrs) do
-        #   {:ok, updated_discussion} -> {:ok, updated_discussion}
-        #   {:error, changeset} -> {:error, changeset}
-        # end
-
-        # Placeholder for actual implementation
-        {:error, :not_implemented}
+    def connect_activity_to_discussion(multi) do
+      Ecto.Multi.run(multi, :activity_with_thread, fn _, changes ->
+        Operately.Activities.update_activity(changes.activity, %{comment_thread_id: changes.thread.id})
       end)
+    end
+
+    def update_discussion(multi, title, message, subscriber_ids) do
+      alias Operately.Comments.CommentThread
+      alias Operately.Operations.Notifications.Subscription
+
+      multi
+      |> Ecto.Multi.update(:updated_discussion, fn changes ->
+        CommentThread.changeset(changes.discussion, %{title: title, message: message})
+      end)
+      |> Ecto.Multi.run(:subscription_list, fn _, changes ->
+        {:ok, Operately.Repo.preload(changes.discussion, subscription_list: :subscriptions).subscription_list}
+      end)
+      |> Subscription.update_mentioned_people(%{content: message, subscriber_ids: subscriber_ids})
     end
 
     def save_activity(multi, activity_type, callback) do
