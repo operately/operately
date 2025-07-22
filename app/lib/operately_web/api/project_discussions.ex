@@ -1,8 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectDiscussions do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
-  # alias Operately.Updates.Update
-  alias Operately.Updates
   alias Operately.Projects.Project
   alias OperatelyWeb.Api.Serializer
 
@@ -104,7 +102,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       conn
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
-      |> Steps.check_discussion_permissions(:can_edit)
+      |> Steps.check_discussion_permissions(:can_comment)
       |> Steps.update_discussion(inputs.title, inputs.message, inputs.subscriber_ids)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.updated_discussion, level: :essential)}
@@ -134,7 +132,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
     def find_discussion(multi, discussion_id) do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
-        case Operately.Comments.CommentThread.get(me, id: discussion_id) do
+        case Operately.Comments.CommentThread.get(:system, id: discussion_id) do
           {:ok, discussion} -> {:ok, discussion}
           {:error, _} -> {:error, {:not_found, "Discussion not found"}}
         end
@@ -188,15 +186,14 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
     def update_discussion(multi, title, message, subscriber_ids) do
       alias Operately.Comments.CommentThread
-      alias Operately.Notifications.SubscriptionList
       alias Operately.Operations.Notifications.Subscription
 
       multi
-      |> Ecto.Multi.update(:update_discussion, fn changes ->
+      |> Ecto.Multi.update(:updated_discussion, fn changes ->
         CommentThread.changeset(changes.discussion, %{title: title, message: message})
       end)
       |> Ecto.Multi.run(:subscription_list, fn _, changes ->
-        SubscriptionList.get(changes.me, parent_id: changes.discussion.id, opts: [preload: :subscriptions])
+        {:ok, Operately.Repo.preload(changes.discussion, subscription_list: :subscriptions).subscription_list}
       end)
       |> Subscription.update_mentioned_people(%{content: message, subscriber_ids: subscriber_ids})
     end

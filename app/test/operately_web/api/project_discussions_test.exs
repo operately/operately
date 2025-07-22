@@ -2,12 +2,6 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
   alias Operately.Support.RichText
   use OperatelyWeb.TurboCase
 
-  alias Operately.Access.Binding
-
-  import Operately.PeopleFixtures
-  import Operately.GroupsFixtures
-  import Operately.ProjectsFixtures
-
   setup ctx do
     ctx
     |> Factory.setup()
@@ -164,7 +158,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       # Verify the discussion was updated in the database
       discussion = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
       assert discussion.title == "Updated Discussion Title"
-      assert discussion.message == RichText.rich_text("Updated content", :as_string)
+      assert discussion.message == RichText.rich_text("Updated content")
     end
   end
 end
