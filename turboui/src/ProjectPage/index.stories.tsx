@@ -6,6 +6,8 @@ import { genPeople } from "../utils/storybook/genPeople";
 import { mockTasks, mockEmptyTasks, mockMilestones } from "../TaskBoard/tests/mockData";
 import { ResourceManager } from "../ResourceManager";
 import * as TaskBoardTypes from "../TaskBoard/types";
+import { DateField } from "../DateField";
+import { createContextualDate } from "../DateField/mockData";
 
 // Helper function to create rich text content for check-ins
 function asRichText(content: string): any {
@@ -152,10 +154,10 @@ export const Default: Story = {
     });
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[2] || null);
     const [startedAt, setStartedAt] = useState<Date | null>(new Date(2025, 2, 15)); // March 15, 2025
-    const [dueAt, setDueAt] = useState<Date | null>(() => {
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() => {
       const oneMonthFromToday = new Date();
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
-      return oneMonthFromToday;
+      return createContextualDate(oneMonthFromToday, "day");
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
 
@@ -290,7 +292,7 @@ export const ReadOnly: Story = {
     const dueAt = (() => {
       const oneMonthFromToday = new Date();
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
-      return oneMonthFromToday;
+      return createContextualDate(oneMonthFromToday, "day");
     })();
 
     return (
@@ -356,10 +358,10 @@ export const EmptyTasks: Story = {
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[3] || null);
     const [startedAt, setStartedAt] = useState<Date | null>(new Date(2025, 3, 1)); // April 1, 2025
-    const [dueAt, setDueAt] = useState<Date | null>(() => {
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() => {
       const oneMonthFromToday = new Date();
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
-      return oneMonthFromToday;
+      return createContextualDate(oneMonthFromToday, "day");
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
 
@@ -456,7 +458,7 @@ export const EmptyProject: Story = {
   render: () => {
     const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const [startedAt, setStartedAt] = useState<Date | null>(null);
-    const [dueAt, setDueAt] = useState<Date | null>(null);
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(null);
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
 
     const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
@@ -618,10 +620,10 @@ export const PausedProject: Story = {
     });
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[2] || null);
     const [startedAt, setStartedAt] = useState<Date | null>(new Date(2025, 2, 15)); // March 15, 2025
-    const [dueAt, setDueAt] = useState<Date | null>(() => {
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() => {
       const oneMonthFromToday = new Date();
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
-      return oneMonthFromToday;
+      return createContextualDate(oneMonthFromToday, "day");
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
 
@@ -759,7 +761,7 @@ export const ClosedProject: Story = {
     });
     const [reviewer] = useState<ProjectPage.Person | null>(people[1] || null);
     const startedAt = new Date(2025, 1, 1); // February 1, 2025
-    const dueAt = new Date(2025, 5, 26); // June 26, 2025
+    const dueAt = createContextualDate("2025-05-26", "day"); // June 26, 2025
     const closedAt = new Date(2025, 5, 26); // June 26, 2025
 
     return (

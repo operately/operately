@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { Page } from "../Page";
 import { DateField } from "./index";
+import { createContextualDate } from "./mockData";
 
 /**
  * DateField is a component that allows users to select dates in various formats:
@@ -49,11 +50,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(today),
-                  }}
+                  date={createContextualDate(today, "day")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -62,11 +59,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(twoWeeksAgo),
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "day")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -75,11 +68,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Last Year</h3>
                 <Component 
-                  date={{
-                    date: lastYear,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(lastYear),
-                  }}
+                  date={createContextualDate(lastYear, "day")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -88,11 +77,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Next Year</h3>
                 <Component 
-                  date={{
-                    date: nextYear,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(nextYear),
-                  }}
+                  date={createContextualDate(nextYear, "day")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -101,11 +86,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(today),
-                  }}
+                  date={createContextualDate(today, "day")}
                   showOverdueWarning 
                   readonly 
                   variant="inline" 
@@ -115,11 +96,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only + Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(twoWeeksAgo),
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "day")}
                   showOverdueWarning 
                   readonly 
                   variant="inline" 
@@ -153,11 +130,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "month",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(today),
-                  }}
+                  date={createContextualDate(today, "month")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -166,11 +139,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "month",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(twoWeeksAgo),
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "month")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -179,11 +148,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "month",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(today),
-                  }}
+                  date={createContextualDate(today, "month")}
                   showOverdueWarning 
                   readonly 
                   variant="inline" 
@@ -198,11 +163,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "quarter",
-                    value: `Q${Math.floor(today.getMonth() / 3) + 1} ${today.getFullYear()}`,
-                  }}
+                  date={createContextualDate(today, "quarter")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -211,11 +172,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "quarter",
-                    value: `Q${Math.floor(twoWeeksAgo.getMonth() / 3) + 1} ${twoWeeksAgo.getFullYear()}`,
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "quarter")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -224,11 +181,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "quarter",
-                    value: `Q${Math.floor(today.getMonth() / 3) + 1} ${today.getFullYear()}`,
-                  }}
+                  date={createContextualDate(today, "quarter")}
                   showOverdueWarning 
                   readonly 
                   variant="inline" 
@@ -243,11 +196,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "year",
-                    value: today.getFullYear().toString(),
-                  }}
+                  date={createContextualDate(today, "year")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -256,11 +205,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "year",
-                    value: twoWeeksAgo.getFullYear().toString(),
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "year")}
                   showOverdueWarning 
                   variant="inline" 
                 />
@@ -269,11 +214,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "year",
-                    value: today.getFullYear().toString(),
-                  }}
+                  date={createContextualDate(today, "year")}
                   showOverdueWarning 
                   readonly 
                   variant="inline" 
@@ -288,11 +229,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Day Selection</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(today),
-                  }}
+                  date={createContextualDate(today, "day")}
                   showOverdueWarning 
                   hideCalendarIcon={true}
                   variant="inline" 
@@ -302,11 +239,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(twoWeeksAgo),
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "day")}
                   showOverdueWarning 
                   hideCalendarIcon={true}
                   variant="inline" 
@@ -316,11 +249,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(today),
-                  }}
+                  date={createContextualDate(today, "day")}
                   showOverdueWarning 
                   readonly 
                   hideCalendarIcon={true}
@@ -336,11 +265,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Day Selection</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(today),
-                  }}
+                  date={createContextualDate(today, "day")}
                   showOverdueWarning 
                   variant="form-field" 
                 />
@@ -349,11 +274,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Month Selection</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "month",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short" }).format(today),
-                  }}
+                  date={createContextualDate(today, "month")}
                   showOverdueWarning 
                   variant="form-field" 
                 />
@@ -362,11 +283,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Quarter Selection</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "quarter",
-                    value: `Q${Math.floor(today.getMonth() / 3) + 1} ${today.getFullYear()}`,
-                  }}
+                  date={createContextualDate(today, "quarter")}
                   showOverdueWarning 
                   variant="form-field" 
                 />
@@ -375,11 +292,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Year Selection</h3>
                 <Component 
-                  date={{
-                    date: today,
-                    dateType: "year",
-                    value: today.getFullYear().toString(),
-                  }}
+                  date={createContextualDate(today, "year")}
                   showOverdueWarning 
                   variant="form-field" 
                 />
@@ -388,11 +301,7 @@ export const AllStates: Story = {
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
                 <Component 
-                  date={{
-                    date: twoWeeksAgo,
-                    dateType: "day",
-                    value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(twoWeeksAgo),
-                  }}
+                  date={createContextualDate(twoWeeksAgo, "day")}
                   showOverdueWarning 
                   variant="form-field" 
                 />

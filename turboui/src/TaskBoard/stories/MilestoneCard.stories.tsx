@@ -4,6 +4,7 @@ import { MilestoneCard } from "../components/MilestoneCard";
 import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
+import { createContextualDate } from "../../DateField/mockData";
 
 /**
  * MilestoneCard displays a milestone with its tasks, combining a header with progress
@@ -177,7 +178,7 @@ type Story = StoryObj<typeof meta>;
 const sampleMilestone: Types.Milestone = {
   id: "milestone-1",
   name: "Q2 Release",
-  dueDate: new Date(new Date().setDate(new Date().getDate() + 10)),
+  dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 10)), "day"),
   hasDescription: true,
   hasComments: true,
   commentCount: 3,

@@ -53,7 +53,7 @@ interface MilestonePageProps {
   onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
   onTaskReorder?: (tasks: Types.Task[]) => void;
   onCommentCreate?: (comment: string) => void;
-  onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
   onMilestoneNameChange?: (name: string) => Promise<boolean>;
@@ -374,7 +374,7 @@ export function MilestonePage({
 // Sidebar component for milestone details
 interface MilestoneSidebarProps {
   milestone: Types.Milestone;
-  onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
   createdBy?: Types.Person;
   createdAt?: Date;
@@ -425,22 +425,21 @@ function SidebarDueDate({
   canEdit,
 }: {
   milestone: Types.Milestone;
-  onDueDateChange?: (milestoneId: string, dueDate: Date | null) => void;
+  onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
   canEdit: boolean;
 }) {
   return (
     <SidebarSection title="Due Date">
       <DateField
         date={milestone.dueDate || null}
-        setDate={(date) => {
+        onDateSelect={(date) => {
           if (onDueDateChange) {
             onDueDateChange(milestone.id, date);
           }
         }}
         readonly={!canEdit}
         showOverdueWarning={true}
-        emptyStateText="Set due date"
-        emptyStateReadonlyText="No due date set"
+        placeholder="Set due date"
       />
     </SidebarSection>
   );

@@ -28,7 +28,7 @@ export interface Person {
 export interface Milestone {
   id: string;
   name: string;
-  dueDate?: Date;
+  dueDate?: DateField.ContextualDate;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;

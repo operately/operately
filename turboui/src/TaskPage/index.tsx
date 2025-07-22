@@ -20,7 +20,7 @@ export namespace TaskPage {
   export interface Milestone {
     id: string;
     title: string;
-    dueDate?: Date;
+    dueDate?: DateField.ContextualDate;
     status?: "pending" | "complete" | "overdue";
     projectLink?: string;
   }

@@ -4,12 +4,13 @@ import * as React from "react";
 import { IconCircleX, IconExternalLink, IconSearch, IconFlag, IconPlus } from "../icons";
 import FormattedTime from "../FormattedTime";
 import classNames from "../utils/classnames";
+import { DateField } from "../DateField";
 
 export interface Milestone {
   id: string;
   name?: string;
   title?: string;
-  dueDate?: Date;
+  dueDate?: DateField.ContextualDate;
   status?: string;
   hasDescription?: boolean;
   hasComments?: boolean;
@@ -154,9 +155,9 @@ function Trigger({ state }: { state: State }) {
           <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div className="truncate">
             <div className="text-sm font-medium">{state.milestone.name || state.milestone.title}</div>
-            {state.milestone.dueDate && (
+            {state.milestone.dueDate?.date && (
               <div className="text-xs text-content-dimmed">
-                Due <FormattedTime time={state.milestone.dueDate} format="short-date" />
+                Due <FormattedTime time={state.milestone.dueDate.date} format="short-date" />
               </div>
             )}
           </div>
@@ -441,9 +442,9 @@ function DialogSearch({ state }: { state: State }) {
               <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
               <div className="truncate">
                 <div className="text-sm truncate">{milestone.name || milestone.title}</div>
-                {milestone.dueDate && (
+                {milestone.dueDate?.date && (
                   <div className="text-xs text-content-dimmed">
-                    Due <FormattedTime time={milestone.dueDate} format="short-date" />
+                    Due <FormattedTime time={milestone.dueDate.date} format="short-date" />
                   </div>
                 )}
               </div>

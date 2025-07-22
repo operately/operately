@@ -61,9 +61,9 @@ export const Default: Story = {
               {createdMilestones.map((milestone) => (
                 <li key={milestone.id} className="p-2 bg-surface-dimmed rounded-md">
                   <div className="font-medium">{milestone.name}</div>
-                  {milestone.dueDate && (
+                  {milestone.dueDate?.date && (
                     <div className="text-sm text-content-subtle">
-                      Due: {milestone.dueDate.toLocaleDateString()}
+                      Due: {milestone.dueDate.date.toLocaleDateString()}
                     </div>
                   )}
                 </li>
