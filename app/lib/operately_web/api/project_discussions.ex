@@ -9,10 +9,18 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
     inputs do
       field :id, :id
+
+      field? :include_unread_notifications, :boolean, default: false
+      field? :include_permissions, :boolean, default: true
+      field? :include_subscriptions_list, :boolean, default: false
+      field? :include_potential_subscribers, :boolean, default: false
+      field? :include_unread_project_notifications, :boolean, default: false
+      field? :include_project, :boolean, default: false
+      field? :include_space, :boolean, default: false
     end
 
     outputs do
-      field :discussion, :update
+      field :discussion, :comment_thread
     end
 
     def call(conn, inputs) do

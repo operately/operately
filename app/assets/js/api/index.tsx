@@ -854,6 +854,8 @@ export interface CommentThread {
   author?: Person | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
+  project?: Project;
+  notifications?: Notification[];
 }
 
 export interface Company {
@@ -2320,10 +2322,17 @@ export interface ListSpaceToolsResult {
 
 export interface ProjectDiscussionsGetInput {
   id: Id;
+  includeUnreadNotifications?: boolean;
+  includePermissions?: boolean;
+  includeSubscriptionsList?: boolean;
+  includePotentialSubscribers?: boolean;
+  includeUnreadProjectNotifications?: boolean;
+  includeProject?: boolean;
+  includeSpace?: boolean;
 }
 
 export interface ProjectDiscussionsGetResult {
-  discussion: Update;
+  discussion: CommentThread;
 }
 
 export interface ProjectDiscussionsListInput {

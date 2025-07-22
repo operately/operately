@@ -1418,6 +1418,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :author, :person, null: true
     field? :subscription_list, :subscription_list, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
+    field? :project, :project
+    field? :notifications, list_of(:notification)
   end
 
   object :comment do

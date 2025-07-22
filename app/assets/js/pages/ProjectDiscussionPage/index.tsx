@@ -31,7 +31,7 @@ async function loader({ params }): Promise<LoaderResult> {
     discussion: await Api.project_discussions
       .get({
         id: params.id,
-        includeUnreadProjectNotifications: true,
+        includeUnreadNotifications: true,
         includePermissions: true,
         includeSubscriptionsList: true,
         includePotentialSubscribers: true,
@@ -49,7 +49,7 @@ function Page() {
   useClearNotificationsOnLoad(discussion.notifications);
 
   return (
-    <Pages.Page title={[discussion.title!, discussion.project.name!]}>
+    <Pages.Page title={[discussion.title!, discussion.project!.name!]}>
       <Paper.Root>
         <Nav />
 
