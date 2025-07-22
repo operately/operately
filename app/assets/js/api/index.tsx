@@ -1234,6 +1234,7 @@ export interface ProjectPermissions {
   canCommentOnCheckIn?: boolean | null;
   canCommentOnRetrospective?: boolean | null;
   canCommentOnMilestone?: boolean | null;
+  canComment?: boolean;
 }
 
 export interface ProjectRetrospective {
@@ -3329,7 +3330,8 @@ export interface ProjectDiscussionsCreateResult {
 export interface ProjectDiscussionsEditInput {
   id: Id;
   title: string;
-  body: Json;
+  message: Json;
+  subscriberIds?: Id[];
 }
 
 export interface ProjectDiscussionsEditResult {
