@@ -163,7 +163,7 @@ export function createAppRoutes() {
         pageRoute("project-resources/:id/edit", pages.ProjectEditResourcePage),
         pageRoute("project-contribs/:id/edit", pages.ProjectContributorsEditPage),
         pageRoute("project-discussions/:id", pages.ProjectDiscussionPage),
-        // pageRoute("project-discussions/:id/edit", pages.ProjectDiscussionEditPage),
+        pageRoute("project-discussions/:id/edit", pages.ProjectDiscussionEditPage),
 
         pageRoute("milestones/:id", pages.ProjectMilestonePage),
 
