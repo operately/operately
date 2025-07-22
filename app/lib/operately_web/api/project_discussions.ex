@@ -153,11 +153,8 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     end
 
     def list_discussions(multi) do
-      Ecto.Multi.run(multi, :discussions, fn _repo, %{project: _project} ->
-        # discussions = Updates.list_updates(project.id, :project, :project_discussion)
-        # {:ok, discussions}
-
-        {:error, :not_implemented}
+      Ecto.Multi.run(multi, :discussions, fn _repo, %{project: project} ->
+        {:ok, Operately.Comments.CommentThread.list_for_project(project.id)}
       end)
     end
 
