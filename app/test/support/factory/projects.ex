@@ -19,7 +19,7 @@ defmodule Operately.Support.Factory.Projects do
       company_id: ctx.company.id,
       group_id: ctx[space_name].id,
       company_access_level: company_access_level,
-      space_access_level: space_access_level,
+      space_access_level: space_access_level
     }
 
     project =
@@ -42,18 +42,20 @@ defmodule Operately.Support.Factory.Projects do
     level = Keyword.get(opts, :permissions, :full_access)
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
 
-    person  = Operately.PeopleFixtures.person_fixture_with_account(%{
-      company_id: ctx.company.id,
-      full_name: name
-    })
+    person =
+      Operately.PeopleFixtures.person_fixture_with_account(%{
+        company_id: ctx.company.id,
+        full_name: name
+      })
 
-    reviewer = Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
-      project_id: project.id,
-      person_id: person.id,
-      permissions: Binding.from_atom(level),
-      responsibility: responsibility,
-      role: role
-    })
+    reviewer =
+      Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
+        project_id: project.id,
+        person_id: person.id,
+        permissions: Binding.from_atom(level),
+        responsibility: responsibility,
+        role: role
+      })
 
     Map.put(ctx, testid, reviewer)
   end
@@ -75,7 +77,7 @@ defmodule Operately.Support.Factory.Projects do
     level = Keyword.get(opts, :permissions, :edit_access)
     responsibility = Keyword.get(opts, :responsibility, "Project Manager & Developer")
 
-    person  =
+    person =
       case Keyword.get(opts, testid) do
         nil ->
           Operately.PeopleFixtures.person_fixture_with_account(%{
@@ -83,16 +85,18 @@ defmodule Operately.Support.Factory.Projects do
             full_name: name
           })
 
-        person -> person
+        person ->
+          person
       end
 
-    contributor = Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
-      project_id: project.id,
-      person_id: person.id,
-      permissions: Binding.from_atom(level),
-      responsibility: responsibility,
-      role: role
-    })
+    contributor =
+      Operately.ProjectsFixtures.contributor_fixture(ctx.creator, %{
+        project_id: project.id,
+        person_id: person.id,
+        permissions: Binding.from_atom(level),
+        responsibility: responsibility,
+        role: role
+      })
 
     Map.put(ctx, testid, contributor)
   end
@@ -101,10 +105,11 @@ defmodule Operately.Support.Factory.Projects do
     project = Map.fetch!(ctx, project_name)
     author = Map.fetch!(ctx, author_name)
 
-    retrospective = Operately.ProjectsFixtures.retrospective_fixture(%{
-      project_id: project.id,
-      author_id: author.id,
-    })
+    retrospective =
+      Operately.ProjectsFixtures.retrospective_fixture(%{
+        project_id: project.id,
+        author_id: author.id
+      })
 
     Map.put(ctx, testid, retrospective)
   end
@@ -114,11 +119,13 @@ defmodule Operately.Support.Factory.Projects do
     author = Map.fetch!(ctx, author_name)
     status = Keyword.get(opts, :status, "on_track")
 
-    check_in = Operately.ProjectsFixtures.check_in_fixture(%{
-      project_id: project.id,
-      author_id: author.id,
-      status: status,
-    })
+    check_in =
+      Operately.ProjectsFixtures.check_in_fixture(%{
+        project_id: project.id,
+        author_id: author.id,
+        status: status
+      })
+
     {:ok, project} = Operately.Projects.update_project(project, %{last_check_in_id: check_in.id})
 
     ctx
@@ -131,7 +138,7 @@ defmodule Operately.Support.Factory.Projects do
 
     attrs = %{
       project_id: project.id,
-      title: Keyword.get(opts, :title, "Milestone #{testid}"),
+      title: Keyword.get(opts, :title, "Milestone #{testid}")
     }
 
     milestone = Operately.ProjectsFixtures.milestone_fixture(ctx.creator, attrs)
@@ -155,7 +162,7 @@ defmodule Operately.Support.Factory.Projects do
   def edit_project_space_members_access(ctx, project_name, access_level) do
     project = Map.fetch!(ctx, project_name)
 
-    context= Access.get_context!(project_id: project.id)
+    context = Access.get_context!(project_id: project.id)
     group = Access.get_group!(group_id: project.group_id, tag: :standard)
     binding = Operately.Access.get_binding(group_id: group.id, context_id: context.id)
 
@@ -167,9 +174,10 @@ defmodule Operately.Support.Factory.Projects do
   def set_project_next_check_in_date(ctx, project_name, date) do
     project = Map.fetch!(ctx, project_name)
 
-    {:ok, project} = Operately.Projects.update_project(project, %{
-      next_check_in_scheduled_at: date
-    })
+    {:ok, project} =
+      Operately.Projects.update_project(project, %{
+        next_check_in_scheduled_at: date
+      })
 
     Map.put(ctx, project_name, project)
   end
@@ -177,9 +185,10 @@ defmodule Operately.Support.Factory.Projects do
   def set_project_milestone_deadline(ctx, milestone_name, date) do
     milestone = Map.fetch!(ctx, milestone_name)
 
-    {:ok, milestone} = Operately.Projects.update_milestone(milestone, %{
-      deadline_at: date
-    })
+    {:ok, milestone} =
+      Operately.Projects.update_milestone(milestone, %{
+        deadline_at: date
+      })
 
     Map.put(ctx, milestone_name, milestone)
   end
@@ -187,14 +196,15 @@ defmodule Operately.Support.Factory.Projects do
   def close_project(ctx, project_name) do
     project = Map.fetch!(ctx, project_name)
 
-    {:ok, _} = Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
+    {:ok, _} =
+      Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
         retrospective: RichText.rich_text("some content"),
         content: %{},
         success_status: "achieved",
         send_to_everyone: true,
         subscription_parent_type: :project_retrospective,
         subscriber_ids: []
-    })
+      })
 
     project = Repo.reload(project)
     Map.put(ctx, project_name, project)
@@ -212,20 +222,54 @@ defmodule Operately.Support.Factory.Projects do
     creator = Map.fetch!(ctx, creator_name)
     milestone = Map.fetch!(ctx, milestone_name)
 
-    {:ok, _} = Operately.Comments.create_milestone_comment(
-      creator,
-      milestone,
-      "complete",
-      %{
-        content: %{"message" => RichText.rich_text("some content")},
-        author_id: creator.id,
-        entity_id: milestone.id,
-        entity_type: :project_milestone,
-      }
-    )
+    {:ok, _} =
+      Operately.Comments.create_milestone_comment(
+        creator,
+        milestone,
+        "complete",
+        %{
+          content: %{"message" => RichText.rich_text("some content")},
+          author_id: creator.id,
+          entity_id: milestone.id,
+          entity_type: :project_milestone
+        }
+      )
+
     milestone = Repo.reload(milestone)
 
     Map.put(ctx, milestone_name, milestone)
+  end
+
+  def add_project_discussion(ctx, testid, project_name, opts \\ []) do
+    project = Map.fetch!(ctx, project_name)
+
+    title = Keyword.get(opts, :title, "Discussion #{testid}")
+    message = Keyword.get(opts, :message, RichText.rich_text("Hello"))
+    author = Keyword.get(opts, :author, ctx.creator)
+
+    alias Operately.Operations.Notifications.SubscriptionList
+    alias Operately.Operations.Notifications.Subscription
+    alias Operately.Comments.CommentThread
+
+    {:ok, thread} =
+      Ecto.Multi.new()
+      |> SubscriptionList.insert(%{send_to_everyone: true, subscription_parent_type: :comment_thread})
+      |> Subscription.insert(author, %{content: message, subscriber_ids: []})
+      |> Ecto.Multi.insert(:thread, fn changes ->
+        CommentThread.changeset(%{
+          author_id: author.id,
+          parent_id: project.id,
+          parent_type: :project,
+          message: message,
+          title: title,
+          has_title: true,
+          subscription_list_id: changes.subscription_list.id
+        })
+      end)
+      |> SubscriptionList.update(:thread)
+      |> Operately.Repo.transaction()
+
+    Map.put(ctx, testid, thread)
   end
 
   #
@@ -242,9 +286,10 @@ defmodule Operately.Support.Factory.Projects do
 
   defp set_started_at(project, opts) do
     if opts[:started_at] do
-      {:ok, project} = Operately.Projects.update_project(project, %{
-        started_at: Keyword.get(opts, :started_at)
-      })
+      {:ok, project} =
+        Operately.Projects.update_project(project, %{
+          started_at: Keyword.get(opts, :started_at)
+        })
 
       project
     else
@@ -254,9 +299,10 @@ defmodule Operately.Support.Factory.Projects do
 
   defp set_deadline(project, opts) do
     if opts[:deadline] do
-      {:ok, project} = Operately.Projects.update_project(project, %{
-        deadline: Keyword.get(opts, :deadline)
-      })
+      {:ok, project} =
+        Operately.Projects.update_project(project, %{
+          deadline: Keyword.get(opts, :deadline)
+        })
 
       project
     else
