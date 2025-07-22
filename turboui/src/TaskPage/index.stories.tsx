@@ -3,6 +3,7 @@ import React from "react";
 import { TaskPage } from ".";
 import { InProjectContextStory } from "./InProjectContextStory";
 import { PageNew } from "../Page";
+import { DateField } from "../DateField";
 import {
   mockTaskPeople,
   mockMilestones,
@@ -19,6 +20,7 @@ import {
   createLongContentTimeline,
   currentUser,
 } from "./mockData";
+import { createContextualDate } from "../DateField/mockData";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -36,7 +38,7 @@ function Component(props: Partial<TaskPage.Props>) {
   const [name, setName] = React.useState(props.name || "");
   const [description, setDescription] = React.useState(props.description || null);
   const [status, setStatus] = React.useState(props.status || "pending");
-  const [dueDate, setDueDate] = React.useState<Date | undefined>(props.dueDate);
+  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
   const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(props.assignees || []);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
@@ -184,7 +186,7 @@ export const Default: Story = {
       ],
     ),
     status: "in_progress",
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
     assignees: [mockTaskPeople[0]!],
     milestone: mockMilestones[1], // Beta Release
     timelineItems: createActiveTaskTimeline(),
@@ -222,7 +224,7 @@ export const CompletedTask: Story = {
       ],
     ),
     status: "done",
-    dueDate: new Date(2024, 0, 10), // January 10, 2024 (completed before due date)
+    dueDate: createContextualDate(new Date(2024, 0, 10), "day"),
     assignees: [mockTaskPeople[3]!],
     milestone: mockMilestones[0], // MVP Launch (completed)
     timelineItems: createCompletedTaskTimeline(),
@@ -237,7 +239,7 @@ export const OverdueTask: Story = {
     name: "Fix critical security vulnerability",
     description: asRichText("Critical security issue found in authentication module. Needs immediate attention. 🚨"),
     status: "in_progress",
-    dueDate: new Date(2024, 0, 5), // January 5, 2024 (overdue)
+    dueDate: createContextualDate(new Date(2024, 0, 5), "day"),
     assignees: [mockTaskPeople[0]!],
     timelineItems: createOverdueTaskTimeline(),
   },
@@ -261,7 +263,7 @@ export const LongContent: Story = {
       ],
     ),
     status: "pending",
-    dueDate: new Date(2024, 3, 1), // April 1, 2024
+    dueDate: createContextualDate(new Date(2024, 3, 1), "day"),
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
     timelineItems: createLongContentTimeline(),

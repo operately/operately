@@ -1,4 +1,5 @@
 import * as Types from "../types";
+import { createContextualDate } from "../../DateField/mockData";
 import { genPeople } from "../../utils/storybook/genPeople";
 
 // Labels removed in current iteration
@@ -19,7 +20,7 @@ export const mockMilestones = {
   q2Release: {
     id: "1",
     name: "Q2 Release",
-    dueDate: new Date("2025-06-30"),
+    dueDate: createContextualDate("2025-06-30", "day"),
     hasDescription: true,
     hasComments: true,
     commentCount: 5,
@@ -28,7 +29,7 @@ export const mockMilestones = {
   productLaunch: {
     id: "2",
     name: "Product Launch",
-    dueDate: new Date("2025-08-15"),
+    dueDate: createContextualDate("2025-08-15", "day"),
     hasDescription: true,
     hasComments: true,
     commentCount: 3,
@@ -37,7 +38,7 @@ export const mockMilestones = {
   marketExpansion: {
     id: "3",
     name: "Market Expansion",
-    dueDate: new Date("2025-09-30"),
+    dueDate: createContextualDate("2025-09-30", "day"),
     hasDescription: false,
     hasComments: false,
     status: "active",
@@ -45,7 +46,7 @@ export const mockMilestones = {
   completedMilestone1: {
     id: "5",
     name: "Initial Research Phase",
-    dueDate: new Date("2025-03-15"),
+    dueDate: createContextualDate("2025-03-15", "day"),
     hasDescription: true,
     hasComments: true,
     commentCount: 8,
@@ -54,7 +55,7 @@ export const mockMilestones = {
   completedMilestone2: {
     id: "6",
     name: "Design System Foundation",
-    dueDate: new Date("2025-04-30"),
+    dueDate: createContextualDate("2025-04-30", "day"),
     hasDescription: true,
     hasComments: false,
     status: "completed",
@@ -78,7 +79,7 @@ export const mockTasks: Types.Task[] = [
     description: "Create login/signup flows with OAuth integration",
     assignees: [mockPeople.john!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-10"), // Future date
+    dueDate: createContextualDate("2025-05-10", "day"),
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -90,7 +91,7 @@ export const mockTasks: Types.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-01"), // Past due
+    dueDate: createContextualDate("2025-05-01", "day"),
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -119,7 +120,7 @@ export const mockTasks: Types.Task[] = [
     title: "Research competitor pricing strategies",
     status: "pending",
     milestone: mockMilestones.marketExpansion,
-    dueDate: new Date("2025-06-15"), // Future date
+    dueDate: createContextualDate("2025-06-15", "day"),
     points: 3,
     hasDescription: false,
     hasComments: false,
@@ -138,7 +139,7 @@ export const mockTasks: Types.Task[] = [
     title: "Optimize database queries",
     status: "in_progress",
     assignees: [mockPeople.john!],
-    dueDate: new Date("2025-04-30"), // Past due
+    dueDate: createContextualDate("2025-04-30", "day"),
     points: 5,
     hasDescription: true,
     hasComments: true,
@@ -169,7 +170,7 @@ export const mockTasks: Types.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.jane!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-20"),
+    dueDate: createContextualDate("2025-05-20", "day"),
     points: 5,
     hasDescription: true,
     hasComments: true,
@@ -181,7 +182,7 @@ export const mockTasks: Types.Task[] = [
     status: "done",
     assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-04-15"), // Past due but completed
+    dueDate: createContextualDate("2025-04-15", "day"),
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -202,7 +203,7 @@ export const mockTasks: Types.Task[] = [
     status: "in_progress",
     assignees: [mockPeople.bob!],
     milestone: mockMilestones.q2Release,
-    dueDate: new Date("2025-05-25"),
+    dueDate: createContextualDate("2025-05-25", "day"),
     points: 3,
     hasDescription: true,
     hasComments: false,
@@ -213,7 +214,7 @@ export const mockTasks: Types.Task[] = [
     status: "pending",
     assignees: [mockPeople.jane!],
     milestone: mockMilestones.marketExpansion,
-    dueDate: new Date("2025-08-10"),
+    dueDate: createContextualDate("2025-08-10", "day"),
     points: 8,
     hasDescription: true,
     hasComments: true,
@@ -225,7 +226,7 @@ export const mockTasks: Types.Task[] = [
     status: "done",
     assignees: [mockPeople.john!],
     milestone: mockMilestones.productLaunch,
-    dueDate: new Date("2025-06-01"),
+    dueDate: createContextualDate("2025-06-01", "day"),
     points: 13,
     hasDescription: true,
     hasComments: true,
@@ -237,7 +238,7 @@ export const mockTasks: Types.Task[] = [
     status: "pending",
     assignees: [mockPeople.emily!],
     milestone: mockMilestones.marketExpansion,
-    dueDate: new Date("2025-07-30"),
+    dueDate: createContextualDate("2025-07-30", "day"),
     points: 5,
     hasDescription: true,
     hasComments: false,

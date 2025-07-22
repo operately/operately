@@ -8,6 +8,7 @@ import { Tabs, useTabs } from "../Tabs";
 import { PageHeader } from "../ProjectPage/PageHeader";
 import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
 import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
+import { createContextualDate } from "../DateField/mockData";
 
 const people = genPeople(5);
 
@@ -19,7 +20,7 @@ const targetMilestone = { ...Object.values(mockMilestones)[0]!, status: "active"
 const emptyMilestone: TaskBoardTypes.Milestone = {
   id: "milestone-empty-project",
   name: "Q3 Planning Phase",
-  dueDate: new Date(new Date().setDate(new Date().getDate() + 30)), // 30 days from now
+  dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 30)), "day"),
   hasDescription: false,
   hasComments: false,
   status: "active",

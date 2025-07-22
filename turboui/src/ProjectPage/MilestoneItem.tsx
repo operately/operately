@@ -17,7 +17,7 @@ interface MilestoneItemProps {
 export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: MilestoneItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(milestone.name);
-  const [editDueDate, setEditDueDate] = useState<Date | null>(milestone.dueDate || null);
+  const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate || null);
 
   const handleSave = () => {
     onUpdate?.(milestone.id, {
@@ -62,7 +62,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
                 className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base"
                 autoFocus
               />
-              <DateField date={editDueDate} setDate={setEditDueDate} placeholder="Due date (optional)" />
+              <DateField date={editDueDate} onDateSelect={setEditDueDate} placeholder="Due date (optional)" />
               <div className="flex gap-2">
                 <Button size="sm" onClick={handleSave} disabled={!editName.trim()}>
                   Save
@@ -116,17 +116,17 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
             )}
           </div>
         </div>
-        {milestone.dueDate && (
+        {milestone.dueDate?.date && (
           <div
             className={classNames(
               "text-sm mt-1 flex items-center gap-1",
-              !isCompleted && milestone.dueDate < new Date(new Date().setHours(0, 0, 0, 0))
+              !isCompleted && milestone.dueDate?.date < new Date(new Date().setHours(0, 0, 0, 0))
                 ? "text-content-error"
                 : "text-content-dimmed",
             )}
           >
             <IconCalendar size={14} />
-            <FormattedTime time={milestone.dueDate} format="short-date" />
+            <FormattedTime time={milestone.dueDate.date} format="short-date" />
           </div>
         )}
       </div>

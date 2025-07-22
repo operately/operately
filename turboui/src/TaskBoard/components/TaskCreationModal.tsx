@@ -31,7 +31,7 @@ export function TaskCreationModal({
 }: TaskCreationModalProps) {
   // Form state
   const [title, setTitle] = useState("");
-  const [dueDate, setDueDate] = useState<Date | null>(null);
+  const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [assignee, setAssignee] = useState<Types.Person | null>(null);
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
   const [createMore, setCreateMore] = useState(false);
@@ -133,8 +133,8 @@ export function TaskCreationModal({
             <DateField
               variant="form-field"
               date={dueDate}
-              setDate={setDueDate}
-              emptyStateText="Set due date"
+              onDateSelect={setDueDate}
+              placeholder="Set due date"
               testId="due-date"
             />
           </div>

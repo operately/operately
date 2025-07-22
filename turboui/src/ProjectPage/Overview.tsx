@@ -254,7 +254,7 @@ function useProjectDescriptionState({
 function TimelineSection(props: ProjectPage.State) {
   const [showAddForm, setShowAddForm] = useState(false);
   const [newMilestoneName, setNewMilestoneName] = useState("");
-  const [newMilestoneDueDate, setNewMilestoneDueDate] = useState<Date | null>(null);
+  const [newMilestoneDueDate, setNewMilestoneDueDate] = useState<DateField.ContextualDate | null>(null);
   const [addMore, setAddMore] = useState(false);
 
   const milestones = props.milestones || [];
@@ -273,7 +273,7 @@ function TimelineSection(props: ProjectPage.State) {
     if (!a.dueDate && !b.dueDate) return 0;
     if (!a.dueDate) return 1;
     if (!b.dueDate) return -1;
-    return a.dueDate.getTime() - b.dueDate.getTime();
+    return a.dueDate.date?.getTime() - b.dueDate.date?.getTime();
   };
 
   const sortedUpcoming = upcomingMilestones.sort(sortByDueDate);
@@ -349,9 +349,8 @@ function TimelineSection(props: ProjectPage.State) {
               />
               <DateField
                 date={newMilestoneDueDate}
-                setDate={setNewMilestoneDueDate}
-                placeholder="Target date (optional)"
-                emptyStateText="Set target date"
+                onDateSelect={setNewMilestoneDueDate}
+                placeholder="Set target date"
               />
               <div className="flex items-center gap-4">
                 <div className="flex gap-2">

@@ -2,6 +2,7 @@ import { TaskPage } from "./index";
 import { TaskActivity } from "../Timeline";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
+import { createContextualDate } from "../DateField/mockData";
 
 // Timeline people (with profile links)
 export const timelinePeople: TimelinePerson[] = [
@@ -40,28 +41,28 @@ export const mockMilestones: TaskPage.Milestone[] = [
   {
     id: "milestone-2",
     title: "MVP Launch",
-    dueDate: new Date(2024, 0, 30), // January 30, 2024 (earliest)
+    dueDate: createContextualDate("2024-01-30", "day"), // January 30, 2024 (earliest)
     status: "complete",
     projectLink: "/projects/mobile-app/milestones/mvp",
   },
   {
     id: "milestone-1",
     title: "Beta Release",
-    dueDate: new Date(2024, 1, 15), // February 15, 2024
+    dueDate: createContextualDate("2024-02-15", "day"), // February 15, 2024
     status: "pending",
     projectLink: "/projects/mobile-app/milestones/beta",
   },
   {
     id: "milestone-3",
     title: "User Testing Phase",
-    dueDate: new Date(2024, 2, 10), // March 10, 2024
+    dueDate: createContextualDate("2024-03-10", "day"), // March 10, 2024
     status: "pending",
     projectLink: "/projects/mobile-app/milestones/testing",
   },
   {
     id: "milestone-4",
     title: "Performance Optimization",
-    dueDate: new Date(2024, 3, 5), // April 5, 2024
+    dueDate: createContextualDate("2024-04-05", "day"), // April 5, 2024
     status: "pending",
     projectLink: "/projects/mobile-app/milestones/performance",
   },
@@ -103,11 +104,11 @@ export const searchMilestones = async ({ query }: { query: string }): Promise<Ta
 
   // Sort by due date (earliest first), then by title for those without due dates
   return filtered.sort((a, b) => {
-    if (a.dueDate && b.dueDate) {
-      return a.dueDate.getTime() - b.dueDate.getTime();
+    if (a.dueDate?.date && b.dueDate?.date) {
+      return a.dueDate.date.getTime() - b.dueDate.date.getTime();
     }
-    if (a.dueDate && !b.dueDate) return -1; // Items with due dates come first
-    if (!a.dueDate && b.dueDate) return 1;
+    if (a.dueDate?.date && !b.dueDate?.date) return -1; // Items with due dates come first
+    if (!a.dueDate?.date && b.dueDate?.date) return 1;
     return a.title.localeCompare(b.title); // Alphabetical for no due dates
   });
 };

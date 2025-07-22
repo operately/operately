@@ -77,16 +77,17 @@ function ProjectDates(props: any) {
       <SidebarSection title="Start date">
         <DateField
           date={props.startedAt || null}
-          setDate={props.setStartedAt || (() => {})}
+          onDateSelect={props.setStartedAt || (() => {})}
           readonly={!props.canEdit}
           placeholder="Set start date"
           showOverdueWarning={false}
+          useStartOfPeriod={true}
         />
       </SidebarSection>
       <SidebarSection title="Due date">
         <DateField
           date={props.dueAt || null}
-          setDate={props.setDueAt || (() => {})}
+          onDateSelect={props.setDueAt || (() => {})}
           readonly={!props.canEdit}
           placeholder="Set due date"
         />

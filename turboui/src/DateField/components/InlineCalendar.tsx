@@ -1,11 +1,11 @@
 import React from "react";
 import { IconChevronLeft, IconChevronRight } from "../../icons";
-import { DatePicker } from "../index";
+import { DateField } from "../index";
 import classNames from "../../utils/classnames";
 
 interface Props {
-  selectedDate: DatePicker.ContextualDate | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate | null>>;
+  selectedDate: DateField.ContextualDate | null;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate | null>>;
 }
 
 export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
@@ -102,7 +102,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
   );
 }
 
-function isSelectedDay(day: number, month: number, year: number, selectedDate: DatePicker.ContextualDate | null): boolean {
+function isSelectedDay(day: number, month: number, year: number, selectedDate: DateField.ContextualDate | null): boolean {
   return Boolean(
     selectedDate &&
       selectedDate.dateType === "day" &&
