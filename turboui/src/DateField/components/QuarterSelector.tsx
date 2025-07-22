@@ -1,11 +1,11 @@
 import React, { useRef, useLayoutEffect } from "react";
 import { generateQuarters } from "../utils";
 import { OptionButton } from "./OptionButton";
-import { DatePicker } from "../index";
+import { DateField } from "../index";
 
 interface Props {
-  selectedDate: DatePicker.ContextualDate | null;
-  setSelectedDate: React.Dispatch<React.SetStateAction<DatePicker.ContextualDate>>;
+  selectedDate: DateField.ContextualDate | null;
+  setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate>>;
   visibleYears: number[];
   useStartOfPeriod?: boolean;
 }
@@ -32,7 +32,7 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, u
     }
   }, []);
 
-  const handleSelect = (quarter: DatePicker.PeriodOption) => {
+  const handleSelect = (quarter: DateField.PeriodOption) => {
     const date = new Date(quarter.value);
     const quarterLabel = `${quarter.label} ${date.getFullYear()}`;
     setSelectedDate({ dateType: "quarter", date, value: quarterLabel });
@@ -64,7 +64,7 @@ export function QuarterSelector({ selectedDate, setSelectedDate, visibleYears, u
   );
 }
 
-function isSelectedQuarter(quarterValue: string, year: number, selectedDate: DatePicker.ContextualDate | null): boolean {
+function isSelectedQuarter(quarterValue: string, year: number, selectedDate: DateField.ContextualDate | null): boolean {
   try {
     if (!selectedDate?.date) return false;
 

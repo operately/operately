@@ -4,6 +4,8 @@ import { MilestonePage } from "./index";
 import * as Types from "../TaskBoard/types";
 import { InProjectContextStory, EmptyMilestoneInProjectContextStory } from "./InProjectContextStory";
 import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
+import { DateField } from "../DateField";
+import { createContextualDate } from "../DateField/mockData";
 
 /**
  * MilestonePage displays a standalone page for a single milestone and its tasks.
@@ -26,7 +28,7 @@ type Story = StoryObj<typeof meta>;
 const sampleMilestone: Types.Milestone = {
   id: "milestone-1",
   name: "Q2 Feature Release",
-  dueDate: new Date(new Date().setDate(new Date().getDate() + 15)), // 15 days from now
+  dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 15)), "day"),
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
@@ -64,7 +66,7 @@ const createSampleTasks = (): Types.Task[] => [
     status: "pending",
     milestone: sampleMilestone,
     assignees: [mockPeople[2]!],
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 5)),
+    dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 5)), "day"),
   },
   {
     id: "task-5",
@@ -78,7 +80,7 @@ const createSampleTasks = (): Types.Task[] => [
     title: "Create presentation for stakeholders",
     status: "in_progress",
     milestone: sampleMilestone,
-    dueDate: new Date(new Date().setDate(new Date().getDate() + 2)),
+    dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 2)), "day"),
     hasComments: true,
     commentCount: 1,
   },
@@ -124,7 +126,7 @@ export const Default: Story = {
     };
 
     // Handler for due date changes
-    const handleDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+    const handleDueDateChange = (milestoneId: string, dueDate: DateField.ContextualDate | null) => {
       console.log("Due date changed:", { milestoneId, dueDate });
       // If dueDate is null, we're clearing the date
       if (dueDate === null) {
@@ -220,7 +222,7 @@ export const EmptyMilestone: Story = {
     const [isSubscribed, setIsSubscribed] = useState(true);
 
     // Handler for due date changes
-    const handleDueDateChange = (milestoneId: string, dueDate: Date | null) => {
+    const handleDueDateChange = (milestoneId: string, dueDate: DateField.ContextualDate | null) => {
       console.log("Due date changed:", { milestoneId, dueDate });
       // If dueDate is null, we're clearing the date
       if (dueDate === null) {

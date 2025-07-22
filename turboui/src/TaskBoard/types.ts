@@ -1,3 +1,5 @@
+import { DateField } from "../DateField";
+
 /**
  * TaskBoard component types
  *
@@ -26,7 +28,7 @@ export interface Person {
 export interface Milestone {
   id: string;
   name: string;
-  dueDate?: Date;
+  dueDate?: DateField.ContextualDate;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
@@ -44,7 +46,7 @@ export interface Task {
   assignees?: Person[];
   milestone?: Milestone;
   points?: number;
-  dueDate?: Date;
+  dueDate?: DateField.ContextualDate;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;

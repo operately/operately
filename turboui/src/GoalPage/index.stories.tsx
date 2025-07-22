@@ -6,7 +6,7 @@ import { PrivacyField } from "../PrivacyField";
 import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
-import { DatePicker } from "../DatePicker";
+import { DateField } from "../DateField";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -66,7 +66,7 @@ const defaultSpace: GoalPage.Space = {
 function Component(props: Partial<GoalPage.Props>) {
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
   const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
-  const [dueDate, setDueDate] = React.useState<DatePicker.ContextualDate | null>(props.dueDate || null);
+  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(props.dueDate || null);
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
   const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
   const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);

@@ -58,7 +58,11 @@ export function MilestoneCreationModal({
     
     // Add optional fields if they exist
     if (dueDate) {
-      newMilestone.dueDate = new Date(dueDate);
+      newMilestone.dueDate = {
+        date: new Date(dueDate),
+        dateType: "day",
+        value: dueDate,
+      };
     }
     
     // Submit the milestone

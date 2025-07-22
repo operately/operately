@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
 import { MilestoneField, Milestone } from "./index";
+import { createContextualDate } from "../DateField/mockData";
 
 const meta: Meta<typeof MilestoneField> = {
   title: "Components/TaskBoard/MilestoneField",
@@ -24,35 +25,35 @@ const mockMilestones: Milestone[] = [
   {
     id: "3",
     name: "MVP Release",
-    dueDate: new Date("2023-12-20"),
+    dueDate: createContextualDate(new Date("2023-12-20"), "day"),
     status: "overdue" as const,
     projectLink: "/projects/mvp",
   },
   {
     id: "1",
     name: "Project Alpha Launch",
-    dueDate: new Date("2024-01-15"),
+    dueDate: createContextualDate(new Date("2024-01-15"), "day"),
     status: "pending" as const,
     projectLink: "/projects/alpha",
   },
   {
     id: "5",
     name: "Database Migration",
-    dueDate: new Date("2024-01-30"),
+    dueDate: createContextualDate(new Date("2024-01-30"), "day"),
     status: "pending" as const,
     projectLink: "/projects/migration",
   },
   {
     id: "2",
     name: "Beta Testing Complete",
-    dueDate: new Date("2024-02-01"),
+    dueDate: createContextualDate(new Date("2024-02-01"), "day"),
     status: "complete" as const,
     projectLink: "/projects/beta",
   },
   {
     id: "4",
     name: "User Research Phase",
-    dueDate: new Date("2024-03-10"),
+    dueDate: createContextualDate(new Date("2024-03-10"), "day"),
     status: "pending" as const,
     projectLink: "/projects/research",
   },
@@ -83,11 +84,11 @@ const Template = (args: any) => {
 
     // Sort by due date (earliest first), then by title for those without due dates
     return filtered.sort((a, b) => {
-      if (a.dueDate && b.dueDate) {
-        return a.dueDate.getTime() - b.dueDate.getTime();
+      if (a.dueDate?.date && b.dueDate?.date) {
+        return a.dueDate.date.getTime() - b.dueDate.date.getTime();
       }
-      if (a.dueDate && !b.dueDate) return -1; // Items with due dates come first
-      if (!a.dueDate && b.dueDate) return 1;
+      if (a.dueDate?.date && !b.dueDate?.date) return -1; // Items with due dates come first
+      if (!a.dueDate?.date && b.dueDate?.date) return 1;
       return (a.name || a.title || "").localeCompare((b.name || b.title || "")); // Alphabetical for no due dates
     });
   };

@@ -98,7 +98,7 @@ export function MilestoneCard({
   };
 
   // Handle milestone due date change
-  const handleMilestoneDueDateChange = (newDueDate: Date | null) => {
+  const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
     if (onMilestoneUpdate) {
       onMilestoneUpdate(milestone.id, { dueDate: newDueDate || undefined });
     }
@@ -153,13 +153,10 @@ export function MilestoneCard({
                 {milestone.dueDate || !onMilestoneUpdate ? (
                   <DateField
                     date={milestone.dueDate || null}
-                    setDate={handleMilestoneDueDateChange}
+                    onDateSelect={handleMilestoneDueDateChange}
                     variant="inline"
-                    iconSize={12}
-                    textSize="text-xs"
-                    showIcon={false}
                     showOverdueWarning={true}
-                    emptyStateText="Set due date"
+                    placeholder="Set due date"
                     readonly={!onMilestoneUpdate}
                   />
                 ) : (
@@ -167,13 +164,10 @@ export function MilestoneCard({
                   <div className="opacity-0 group-hover/milestone-due-date:opacity-100 transition-opacity">
                     <DateField
                       date={null}
-                      setDate={handleMilestoneDueDateChange}
+                      onDateSelect={handleMilestoneDueDateChange}
                       variant="inline"
-                      iconSize={12}
-                      textSize="text-xs"
-                      showIcon={false}
                       showOverdueWarning={true}
-                      emptyStateText="Set due date"
+                      placeholder="Set due date"
                       readonly={false}
                     />
                   </div>
