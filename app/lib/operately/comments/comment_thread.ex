@@ -1,5 +1,6 @@
 defmodule Operately.Comments.CommentThread do
   use Operately.Schema
+  use Operately.Repo.Getter
   alias Operately.Notifications
 
   schema "comment_threads" do

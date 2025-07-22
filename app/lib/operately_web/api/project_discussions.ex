@@ -134,16 +134,9 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
     def find_discussion(multi, discussion_id) do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
-        case Updates.get_update_with_space_and_access_level(discussion_id, me.id) do
-          {:ok, discussion} ->
-            if discussion.type == :project_discussion do
-              {:ok, discussion}
-            else
-              {:error, {:not_found, "Discussion not found"}}
-            end
-
-          {:error, _} ->
-            {:error, {:not_found, "Discussion not found"}}
+        case Operately.Comments.CommentThread.get(me, id: discussion_id) do
+          {:ok, discussion} -> {:ok, discussion}
+          {:error, _} -> {:error, {:not_found, "Discussion not found"}}
         end
       end)
     end

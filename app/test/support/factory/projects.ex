@@ -267,6 +267,14 @@ defmodule Operately.Support.Factory.Projects do
         })
       end)
       |> SubscriptionList.update(:thread)
+      |> Operately.Activities.insert_sync(author.id, :project_discussion_submitted, fn changes ->
+        %{
+          company_id: project.company_id,
+          project_id: project.id,
+          discussion_id: changes.thread.id,
+          title: changes.thread.title
+        }
+      end)
       |> Operately.Repo.transaction()
 
     Map.put(ctx, testid, res.thread)
