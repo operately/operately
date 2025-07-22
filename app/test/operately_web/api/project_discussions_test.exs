@@ -14,28 +14,30 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert {401, _} = query(ctx.conn, [:project_discussions, :get], %{})
     end
 
-    # test "it requires an id", ctx do
-    #   ctx = Factory.log_in_person(ctx, :creator)
+    test "it requires an id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #   assert {400, res} = query(ctx.conn, [:project_discussions, :get], %{})
-    #   assert res.message == "Missing required fields: id"
-    # end
+      assert {400, res} = query(ctx.conn, [:project_discussions, :get], %{})
+      assert res.message == "Missing required fields: id"
+    end
 
-    # test "it returns 404 if the discussion does not exist", ctx do
-    #   ctx = Factory.log_in_person(ctx, :creator)
+    test "it returns 404 if the discussion does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #   discussion_id = Ecto.UUID.generate() |> Paths.update_id()
-    #   assert {404, res} = query(ctx.conn, [:project_discussions, :get], %{id: discussion_id})
-    #   assert res.message == "Discussion not found"
-    # end
+      discussion_id = Ecto.UUID.generate() |> Operately.ShortUuid.encode!()
+      assert {404, res} = query(ctx.conn, [:project_discussions, :get], %{id: discussion_id})
+      assert res.message == "Discussion not found"
+    end
 
-    # test "it returns the discussion", ctx do
-    #   ctx = Factory.log_in_person(ctx, :creator)
-    #   ctx = create_project_discussion(ctx)
+    test "it returns the discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
 
-    #   assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: Paths.update_id(ctx.discussion)})
-    #   assert res.discussion.id == Paths.update_id(ctx.discussion)
-    # end
+      id = Paths.comment_thread_id(ctx.discussion)
+
+      assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: id})
+      assert res.discussion.id == id
+    end
   end
 
   describe "list project discussions" do
