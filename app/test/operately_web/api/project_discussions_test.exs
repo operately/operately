@@ -148,22 +148,22 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert res.message == "Discussion not found"
     end
 
-    #   test "it updates the discussion", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
-    #     ctx = create_project_discussion(ctx)
+    test "it updates the discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
 
-    #     inputs = %{
-    #       id: Paths.update_id(ctx.discussion),
-    #       title: "Updated Discussion Title",
-    #       body: rich_text_content("Updated content")
-    #     }
+      inputs = %{
+        id: Paths.update_id(ctx.discussion),
+        title: "Updated Discussion Title",
+        message: RichText.rich_text("Updated content", :as_string)
+      }
 
-    #     assert {200, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
-    #     assert res.discussion.title == "Updated Discussion Title"
+      assert {200, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
+      assert res.discussion.title == "Updated Discussion Title"
 
-    #     # Verify the discussion was updated in the database
-    #     discussion = Operately.Repo.get(Operately.Updates.Update, ctx.discussion.id)
-    #     assert discussion.content["title"] == "Updated Discussion Title"
-    #   end
+      # Verify the discussion was updated in the database
+      discussion = Operately.Repo.get(Operately.Updates.Update, ctx.discussion.id)
+      assert discussion.content["title"] == "Updated Discussion Title"
+    end
   end
 end
