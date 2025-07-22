@@ -6,6 +6,8 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
   defmodule Get do
     use TurboConnect.Query
+    use OperatelyWeb.Api.Helpers
+    alias Operately.Comments.CommentThread
 
     inputs do
       field :id, :id
@@ -26,11 +28,35 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_discussion(inputs.id)
+      |> Steps.find_discussion(inputs.id, find_opts(conn, inputs))
       |> Steps.check_discussion_permissions(:can_view)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.discussion, level: :essential)}
       end)
+    end
+
+    defp find_opts(conn, inputs) do
+      [
+        preload: preload(inputs),
+        after_load: after_load(conn, inputs)
+      ]
+    end
+
+    defp preload(inputs) do
+      Inputs.parse_includes(inputs,
+        always_include: [:author, reactions: :person],
+        include_subscriptions_list: :subscription_list
+      )
+    end
+
+    defp after_load(conn, inputs) do
+      Inputs.parse_includes(inputs,
+        include_unread_notifications: fn ct -> CommentThread.load_unread_notifications(ct, conn.assigns.current_person) end,
+        include_project: &CommentThread.load_project/1,
+        include_space: &CommentThread.load_space/1,
+        include_potential_subscribers: &CommentThread.set_potential_subscribers/1,
+        include_permissions: &CommentThread.load_permissions/1
+      )
     end
   end
 
@@ -139,9 +165,9 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       end)
     end
 
-    def find_discussion(multi, discussion_id) do
+    def find_discussion(multi, discussion_id, opts \\ []) do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
-        case Operately.Comments.CommentThread.get(me, id: discussion_id) do
+        case Operately.Comments.CommentThread.get(me, id: discussion_id, opts: opts) do
           {:ok, discussion} -> {:ok, discussion}
           {:error, _} -> {:error, {:not_found, "Discussion not found"}}
         end
