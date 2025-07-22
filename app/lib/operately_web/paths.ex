@@ -287,8 +287,13 @@ defmodule OperatelyWeb.Paths do
 
   def comment_thread_id(comment_thread) do
     id = Operately.ShortUuid.encode!(comment_thread.id)
-    date = comment_thread.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
-    OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+
+    if comment_thread.title do
+      OperatelyWeb.Api.Helpers.id_with_comments(comment_thread.title, id)
+    else
+      date = comment_thread.inserted_at |> NaiveDateTime.to_date() |> Date.to_string()
+      OperatelyWeb.Api.Helpers.id_with_comments(date, id)
+    end
   end
 
   def milestone_id(milestone) do
