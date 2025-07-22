@@ -152,6 +152,18 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId, "check-ins", "new"]);
   }
 
+  projectDiscussionNewPath(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "discussions", "new"]);
+  }
+
+  projectDiscussionPath(discussionId: string) {
+    return this.createCompanyPath(["project-discussions", discussionId]);
+  }
+
+  projectDiscussionEditPath(discussionId: string) {
+    return this.createCompanyPath(["project-discussions", discussionId, "edit"]);
+  }
+
   projectNewPath({ goalId }: { goalId: string }) {
     return this.createCompanyPath(["projects", "new"]) + "?goalId=" + goalId;
   }
