@@ -20,6 +20,7 @@ import {
   createLongContentTimeline,
   currentUser,
 } from "./mockData";
+import { createContextualDate } from "../DateField/mockData";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -185,7 +186,7 @@ export const Default: Story = {
       ],
     ),
     status: "in_progress",
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
     assignees: [mockTaskPeople[0]!],
     milestone: mockMilestones[1], // Beta Release
     timelineItems: createActiveTaskTimeline(),
@@ -223,7 +224,7 @@ export const CompletedTask: Story = {
       ],
     ),
     status: "done",
-    dueDate: new Date(2024, 0, 10), // January 10, 2024 (completed before due date)
+    dueDate: createContextualDate(new Date(2024, 0, 10), "day"),
     assignees: [mockTaskPeople[3]!],
     milestone: mockMilestones[0], // MVP Launch (completed)
     timelineItems: createCompletedTaskTimeline(),
@@ -238,7 +239,7 @@ export const OverdueTask: Story = {
     name: "Fix critical security vulnerability",
     description: asRichText("Critical security issue found in authentication module. Needs immediate attention. 🚨"),
     status: "in_progress",
-    dueDate: new Date(2024, 0, 5), // January 5, 2024 (overdue)
+    dueDate: createContextualDate(new Date(2024, 0, 5), "day"),
     assignees: [mockTaskPeople[0]!],
     timelineItems: createOverdueTaskTimeline(),
   },
@@ -262,11 +263,7 @@ export const LongContent: Story = {
       ],
     ),
     status: "pending",
-    dueDate: {
-      date: new Date(2024, 3, 1), // April 1, 2024
-      dateType: "day",
-      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(2024, 3, 1))
-    },
+    dueDate: createContextualDate(new Date(2024, 3, 1), "day"),
     assignees: [mockTaskPeople[1]!],
     milestone: mockMilestones[3], // Performance Optimization
     timelineItems: createLongContentTimeline(),

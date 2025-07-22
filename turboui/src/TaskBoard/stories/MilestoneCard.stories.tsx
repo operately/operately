@@ -191,11 +191,7 @@ const sampleTasks: Types.Task[] = [
     title: "Implement login functionality",
     status: "pending" as Types.Status,
     milestone: sampleMilestone,
-    dueDate: {
-      date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
-      dateType: "day",
-      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000))
-    },
+    dueDate: createContextualDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), "day"),
     hasDescription: true,
   },
   {
@@ -206,11 +202,7 @@ const sampleTasks: Types.Task[] = [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
     ],
     milestone: sampleMilestone,
-    dueDate: {
-      date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago (overdue)
-      dateType: "day",
-      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000))
-    },
+    dueDate: createContextualDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), "day"), // 2 days ago (overdue)
     hasDescription: true,
   },
   {
@@ -223,11 +215,7 @@ const sampleTasks: Types.Task[] = [
     hasComments: true,
     commentCount: 2,
     milestone: sampleMilestone,
-    dueDate: {
-      date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-      dateType: "day",
-      value: new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
-    },
+    dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"), // 7 days from now
   },
   {
     id: "task-4",
