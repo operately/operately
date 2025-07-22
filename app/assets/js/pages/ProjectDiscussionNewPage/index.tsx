@@ -21,7 +21,7 @@ interface LoaderResult {
 async function loader({ params }): Promise<LoaderResult> {
   return {
     project: await Projects.getProject({
-      id: params.projectId,
+      id: params.projectID,
       includeChampion: true,
       includeReviewer: true,
       includeSpace: true,
@@ -36,6 +36,7 @@ function Page() {
   return (
     <Pages.Page title={["New Discussion", project.name!]}>
       <Paper.Root>
+        <Nav />
         <Paper.Body>
           <Form />
         </Paper.Body>
@@ -44,7 +45,21 @@ function Page() {
   );
 }
 
-export function Form() {
+function Nav() {
+  const paths = usePaths();
+  const { project } = Pages.useLoadedData<LoaderResult>();
+
+  return (
+    <Paper.Navigation
+      items={[
+        { to: paths.spacePath(project.space?.id!), label: project.space?.name! },
+        { to: paths.projectPath(project.id!), label: project.name! },
+      ]}
+    />
+  );
+}
+
+function Form() {
   const { project } = Pages.useLoadedData<LoaderResult>();
   const paths = usePaths();
 
