@@ -139,12 +139,13 @@ export function useForm({ discussion, subscriptionsState }: UseFormProps) {
   const paths = usePaths();
   const navigate = useNavigate();
 
-  const [title, setTitle] = React.useState("");
+  const [title, setTitle] = React.useState(discussion.title || "");
 
   const editor = TipTapEditor.useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 text-lg",
     mentionSearchScope: { type: "project", id: discussion.project!.id! },
+    content: discussion.message ? JSON.parse(discussion.message) : undefined,
   });
 
   const [submitting, setSubmitting] = React.useState(false);
