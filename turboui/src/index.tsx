@@ -17,7 +17,10 @@ export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./WorkMap";
 
+import RichContent from "./RichContent";
+
 export { InfoCallout } from "./Callouts";
+export { DateField } from "./DateField";
 export { FormattedTime } from "./FormattedTime";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
@@ -31,4 +34,4 @@ export { SwitchToggle } from "./SwitchToggle";
 export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
-export { DateField } from "./DateField";
+export { RichContent };

@@ -57,6 +57,7 @@ import ProjectContributorsAddPage from "./ProjectContributorsAddPage";
 import ProjectContributorsEditPage from "./ProjectContributorsEditPage";
 import ProjectContributorsPage from "./ProjectContributorsPage";
 import ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
+import ProjectDiscussionPage from "./ProjectDiscussionPage";
 import ProjectEditAccessLevelsPage from "./ProjectEditAccessLevelsPage";
 import ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
 import ProjectEditGoalPage from "./ProjectEditGoalPage";
@@ -157,6 +158,7 @@ export default {
   ProjectContributorsEditPage,
   ProjectContributorsPage,
   ProjectDiscussionNewPage,
+  ProjectDiscussionPage,
   ProjectEditAccessLevelsPage,
   ProjectEditDescriptionPage,
   ProjectEditGoalPage,
