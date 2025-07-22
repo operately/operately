@@ -52,29 +52,31 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert res.message == "Missing required fields: project_id"
     end
 
-    #   test "it returns 404 if the project does not exist", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+    test "it returns 404 if the project does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #     project_id = Ecto.UUID.generate() |> Paths.project_id()
-    #     assert {404, res} = query(ctx.conn, [:project_discussions, :list], %{project_id: project_id})
-    #     assert res.message == "Project not found"
-    #   end
+      project_id = Ecto.UUID.generate() |> Operately.ShortUuid.encode!()
+      assert {404, res} = query(ctx.conn, [:project_discussions, :list], %{project_id: project_id})
+      assert res.message == "Project not found"
+    end
 
-    #   test "it returns discussions for the project", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
-    #     ctx = create_project_discussion(ctx)
+    test "it returns discussions for the project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project_discussion(ctx, :discussion1, :project)
+      ctx = Factory.add_project_discussion(ctx, :discussion2, :project)
 
-    #     assert {200, res} = query(ctx.conn, [:project_discussions, :list], %{project_id: Paths.project_id(ctx.project)})
-    #     assert length(res.discussions) == 1
-    #     assert hd(res.discussions).id == Paths.update_id(ctx.discussion)
-    #   end
+      assert {200, res} = query(ctx.conn, [:project_discussions, :list], %{project_id: Paths.project_id(ctx.project)})
+      assert length(res.discussions) == 2
+      assert hd(res.discussions).id == Paths.comment_thread_id(ctx.discussion1)
+      assert hd(tl(res.discussions)).id == Paths.comment_thread_id(ctx.discussion2)
+    end
 
-    #   test "it returns empty list when no discussions exist", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+    test "it returns empty list when no discussions exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #     assert {200, res} = query(ctx.conn, [:project_discussions, :list], %{project_id: Paths.project_id(ctx.project)})
-    #     assert res.discussions == []
-    #   end
+      assert {200, res} = query(ctx.conn, [:project_discussions, :list], %{project_id: Paths.project_id(ctx.project)})
+      assert res.discussions == []
+    end
   end
 
   describe "create project discussion" do

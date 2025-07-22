@@ -60,4 +60,12 @@ defmodule Operately.Comments.CommentThread do
     comment_thread = Map.put(activity.comment_thread, :potential_subscribers, subs)
     Map.put(activity, :comment_thread, comment_thread)
   end
+
+  def list_for_project(project_id) do
+    from(ct in __MODULE__,
+      where: ct.parent_type == :project and ct.parent_id == ^project_id,
+      order_by: [desc: ct.inserted_at]
+    )
+    |> Operately.Repo.all()
+  end
 end
