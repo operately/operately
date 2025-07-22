@@ -2342,7 +2342,7 @@ export interface ProjectDiscussionsListInput {
 }
 
 export interface ProjectDiscussionsListResult {
-  discussions: Update[];
+  discussions: CommentThread[];
 }
 
 export interface SearchPeopleInput {

@@ -68,7 +68,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     end
 
     outputs do
-      field :discussions, list_of(:update)
+      field :discussions, list_of(:comment_thread)
     end
 
     def call(conn, inputs) do

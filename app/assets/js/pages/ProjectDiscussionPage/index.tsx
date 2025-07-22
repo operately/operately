@@ -91,7 +91,7 @@ function Content() {
 
   return (
     <div className="my-8">
-      <RichContent content={discussion!.message!} mentionedPersonLookup={peopleLookup} />
+      <RichContent content={JSON.parse(discussion!.message!)} mentionedPersonLookup={peopleLookup} />
     </div>
   );
 }
