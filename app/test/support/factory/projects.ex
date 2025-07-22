@@ -250,6 +250,7 @@ defmodule Operately.Support.Factory.Projects do
     alias Operately.Operations.Notifications.SubscriptionList
     alias Operately.Operations.Notifications.Subscription
     alias Operately.Comments.CommentThread
+    alias Operately.Activities
 
     {:ok, res} =
       Ecto.Multi.new()
@@ -267,13 +268,16 @@ defmodule Operately.Support.Factory.Projects do
         })
       end)
       |> SubscriptionList.update(:thread)
-      |> Operately.Activities.insert_sync(author.id, :project_discussion_submitted, fn changes ->
+      |> Activities.insert_sync(author.id, :project_discussion_submitted, fn changes ->
         %{
           company_id: project.company_id,
           project_id: project.id,
           discussion_id: changes.thread.id,
           title: changes.thread.title
         }
+      end)
+      |> Ecto.Multi.run(:activity_with_thread, fn _, changes ->
+        Activities.update_activity(changes.activity, %{comment_thread_id: changes.thread.id})
       end)
       |> Operately.Repo.transaction()
 

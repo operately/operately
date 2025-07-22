@@ -78,6 +78,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
           title: changes.thread.title
         }
       end)
+      |> Steps.connect_activity_to_discussion()
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.thread, level: :essential)}
       end)
@@ -132,7 +133,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
 
     def find_discussion(multi, discussion_id) do
       Ecto.Multi.run(multi, :discussion, fn _repo, %{me: me} ->
-        case Operately.Comments.CommentThread.get(:system, id: discussion_id) do
+        case Operately.Comments.CommentThread.get(me, id: discussion_id) do
           {:ok, discussion} -> {:ok, discussion}
           {:error, _} -> {:error, {:not_found, "Discussion not found"}}
         end
@@ -181,6 +182,12 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
           })
         end)
         |> SubscriptionList.update(:thread)
+      end)
+    end
+
+    def connect_activity_to_discussion(multi) do
+      Ecto.Multi.run(multi, :activity_with_thread, fn _, changes ->
+        Operately.Activities.update_activity(changes.activity, %{comment_thread_id: changes.thread.id})
       end)
     end
 
