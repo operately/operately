@@ -251,7 +251,7 @@ defmodule Operately.Support.Factory.Projects do
     alias Operately.Operations.Notifications.Subscription
     alias Operately.Comments.CommentThread
 
-    {:ok, thread} =
+    {:ok, res} =
       Ecto.Multi.new()
       |> SubscriptionList.insert(%{send_to_everyone: true, subscription_parent_type: :comment_thread})
       |> Subscription.insert(author, %{content: message, subscriber_ids: []})
@@ -269,7 +269,7 @@ defmodule Operately.Support.Factory.Projects do
       |> SubscriptionList.update(:thread)
       |> Operately.Repo.transaction()
 
-    Map.put(ctx, testid, thread)
+    Map.put(ctx, testid, res.thread)
   end
 
   #
