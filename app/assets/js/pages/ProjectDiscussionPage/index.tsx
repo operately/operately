@@ -16,7 +16,7 @@ import { Avatar, IconEdit } from "turboui";
 
 import Api from "@/api";
 import FormattedTime from "@/components/FormattedTime";
-import RichContent from "turboui/src/RichContent";
+import { RichContent } from "turboui";
 import { useMe, useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { usePaths } from "../../routes/paths";
 
