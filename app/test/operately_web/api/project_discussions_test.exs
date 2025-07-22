@@ -136,12 +136,12 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
     test "it returns 404 if the discussion does not exist", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      discussion_id = Ecto.UUID.generate() |> Paths.update_id()
+      discussion_id = Ecto.UUID.generate() |> Operately.ShortUuid.encode!()
 
       inputs = %{
         id: discussion_id,
         title: "Updated Discussion",
-        body: rich_text_content()
+        message: RichText.rich_text("Updated content", :as_string)
       }
 
       assert {404, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)

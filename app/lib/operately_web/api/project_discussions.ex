@@ -92,7 +92,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
     inputs do
       field :id, :id
       field :title, :string
-      field :body, :json
+      field :message, :json
     end
 
     outputs do
@@ -104,7 +104,7 @@ defmodule OperatelyWeb.Api.ProjectDiscussions do
       |> Steps.start_transaction()
       |> Steps.find_discussion(inputs.id)
       |> Steps.check_discussion_permissions(:can_edit)
-      |> Steps.update_discussion(inputs.title, inputs.body)
+      |> Steps.update_discussion(inputs.title, inputs.message)
       |> Steps.respond(fn changes ->
         %{discussion: Serializer.serialize(changes.updated_discussion, level: :essential)}
       end)
