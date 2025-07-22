@@ -2,12 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { TaskCreationModal } from "../components/TaskCreationModal";
 import { PrimaryButton } from "../../Button";
+import { createContextualDate } from "../../DateField/mockData";
 
 // Sample data for all the stories
 const sampleMilestones = [
-  { id: "milestone-1", name: "Sprint 1", dueDate: new Date(2025, 5, 20) },
-  { id: "milestone-2", name: "Sprint 2", dueDate: new Date(2025, 6, 3) },
-  { id: "milestone-3", name: "Product Launch", dueDate: new Date(2025, 6, 15) },
+  { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day") },
+  { id: "milestone-2", name: "Sprint 2", dueDate: createContextualDate("2025-07-03", "day") },
+  { id: "milestone-3", name: "Product Launch", dueDate: createContextualDate("2025-07-15", "day") },
 ];
 
 const samplePeople = [

@@ -14,6 +14,7 @@ import { Overview } from "./Overview";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { ResourceManager } from "../ResourceManager";
 import { StatusBanner } from "./StatusBanner";
+import { DateField } from "../DateField";
 
 export namespace ProjectPage {
   export interface Space {
@@ -69,8 +70,8 @@ export namespace ProjectPage {
 
     startedAt?: Date | null;
     setStartedAt?: (date: Date | null) => void;
-    dueAt?: Date | null;
-    setDueAt?: (date: Date | null) => void;
+    dueAt?: DateField.ContextualDate | null;
+    setDueAt?: (date: DateField.ContextualDate | null) => void;
 
     status: BadgeStatus;
     state: "active" | "closed" | "paused";

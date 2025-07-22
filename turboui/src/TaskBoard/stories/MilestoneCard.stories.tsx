@@ -4,6 +4,7 @@ import { MilestoneCard } from "../components/MilestoneCard";
 import * as Types from "../types";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
+import { createContextualDate } from "../../DateField/mockData";
 
 /**
  * MilestoneCard displays a milestone with its tasks, combining a header with progress
@@ -177,7 +178,7 @@ type Story = StoryObj<typeof meta>;
 const sampleMilestone: Types.Milestone = {
   id: "milestone-1",
   name: "Q2 Release",
-  dueDate: new Date(new Date().setDate(new Date().getDate() + 10)),
+  dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 10)), "day"),
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
@@ -190,7 +191,7 @@ const sampleTasks: Types.Task[] = [
     title: "Implement login functionality",
     status: "pending" as Types.Status,
     milestone: sampleMilestone,
-    dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3 days from now
+    dueDate: createContextualDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), "day"),
     hasDescription: true,
   },
   {
@@ -201,7 +202,7 @@ const sampleTasks: Types.Task[] = [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
     ],
     milestone: sampleMilestone,
-    dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago (overdue)
+    dueDate: createContextualDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), "day"), // 2 days ago (overdue)
     hasDescription: true,
   },
   {
@@ -214,7 +215,7 @@ const sampleTasks: Types.Task[] = [
     hasComments: true,
     commentCount: 2,
     milestone: sampleMilestone,
-    dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
+    dueDate: createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"), // 7 days from now
   },
   {
     id: "task-4",
