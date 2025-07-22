@@ -126,6 +126,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                 showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
                 placeholder="Set due date"
                 readonly={!onTaskUpdate}
+                size="small"
               />
             ) : (
               /* Empty state that appears on hover */
@@ -138,6 +139,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                   showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
                   placeholder="Set due date"
                   readonly={false}
+                  size="small"
                 />
               </div>
             )}

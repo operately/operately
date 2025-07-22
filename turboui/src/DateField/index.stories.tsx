@@ -25,13 +25,7 @@ type Story = StoryObj<typeof meta>;
 
 const Component = (args: Partial<DateField.Props>) => {
   const [date, setDate] = React.useState<DateField.ContextualDate | null>(args.date || null);
-  return (
-    <DateField 
-      {...args} 
-      date={date} 
-      onDateSelect={(newDate) => setDate(newDate)} 
-    />
-  );
+  return <DateField {...args} date={date} onDateSelect={(newDate) => setDate(newDate)} />;
 };
 
 export const AllStates: Story = {
@@ -49,77 +43,47 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
-                <Component 
-                  date={createContextualDate(today, "day")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
-                <Component 
-                  date={createContextualDate(twoWeeksAgo, "day")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(twoWeeksAgo, "day")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Last Year</h3>
-                <Component 
-                  date={createContextualDate(lastYear, "day")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(lastYear, "day")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Next Year</h3>
-                <Component 
-                  date={createContextualDate(nextYear, "day")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(nextYear, "day")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
-                <Component 
-                  date={createContextualDate(today, "day")}
-                  showOverdueWarning 
-                  readonly 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "day")} showOverdueWarning readonly variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only + Overdue</h3>
-                <Component 
+                <Component
                   date={createContextualDate(twoWeeksAgo, "day")}
-                  showOverdueWarning 
-                  readonly 
-                  variant="inline" 
+                  showOverdueWarning
+                  readonly
+                  variant="inline"
                 />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Empty</h3>
-                <Component 
-                  date={null} 
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={null} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Empty + Read-Only</h3>
-                <Component 
-                  date={null} 
-                  showOverdueWarning 
-                  readonly 
-                  variant="inline" 
-                />
+                <Component date={null} showOverdueWarning readonly variant="inline" />
               </div>
             </div>
           </div>
@@ -129,30 +93,17 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
-                <Component 
-                  date={createContextualDate(today, "month")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "month")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
-                <Component 
-                  date={createContextualDate(twoWeeksAgo, "month")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(twoWeeksAgo, "month")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
-                <Component 
-                  date={createContextualDate(today, "month")}
-                  showOverdueWarning 
-                  readonly 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "month")} showOverdueWarning readonly variant="inline" />
               </div>
             </div>
           </div>
@@ -162,30 +113,17 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
-                <Component 
-                  date={createContextualDate(today, "quarter")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "quarter")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
-                <Component 
-                  date={createContextualDate(twoWeeksAgo, "quarter")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(twoWeeksAgo, "quarter")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
-                <Component 
-                  date={createContextualDate(today, "quarter")}
-                  showOverdueWarning 
-                  readonly 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "quarter")} showOverdueWarning readonly variant="inline" />
               </div>
             </div>
           </div>
@@ -195,30 +133,17 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Normal</h3>
-                <Component 
-                  date={createContextualDate(today, "year")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "year")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
-                <Component 
-                  date={createContextualDate(twoWeeksAgo, "year")}
-                  showOverdueWarning 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(twoWeeksAgo, "year")} showOverdueWarning variant="inline" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
-                <Component 
-                  date={createContextualDate(today, "year")}
-                  showOverdueWarning 
-                  readonly 
-                  variant="inline" 
-                />
+                <Component date={createContextualDate(today, "year")} showOverdueWarning readonly variant="inline" />
               </div>
             </div>
           </div>
@@ -228,32 +153,32 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Day Selection</h3>
-                <Component 
+                <Component
                   date={createContextualDate(today, "day")}
-                  showOverdueWarning 
+                  showOverdueWarning
                   hideCalendarIcon={true}
-                  variant="inline" 
+                  variant="inline"
                 />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
-                <Component 
+                <Component
                   date={createContextualDate(twoWeeksAgo, "day")}
-                  showOverdueWarning 
+                  showOverdueWarning
                   hideCalendarIcon={true}
-                  variant="inline" 
+                  variant="inline"
                 />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Read-Only</h3>
-                <Component 
+                <Component
                   date={createContextualDate(today, "day")}
-                  showOverdueWarning 
-                  readonly 
+                  showOverdueWarning
+                  readonly
                   hideCalendarIcon={true}
-                  variant="inline" 
+                  variant="inline"
                 />
               </div>
             </div>
@@ -264,55 +189,121 @@ export const AllStates: Story = {
             <div className="grid grid-cols-3 gap-8">
               <div>
                 <h3 className="text-sm font-bold mb-2">Day Selection</h3>
-                <Component 
-                  date={createContextualDate(today, "day")}
-                  showOverdueWarning 
-                  variant="form-field" 
-                />
+                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="form-field" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Month Selection</h3>
-                <Component 
-                  date={createContextualDate(today, "month")}
-                  showOverdueWarning 
-                  variant="form-field" 
-                />
+                <Component date={createContextualDate(today, "month")} showOverdueWarning variant="form-field" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Quarter Selection</h3>
-                <Component 
-                  date={createContextualDate(today, "quarter")}
-                  showOverdueWarning 
-                  variant="form-field" 
-                />
+                <Component date={createContextualDate(today, "quarter")} showOverdueWarning variant="form-field" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Year Selection</h3>
-                <Component 
-                  date={createContextualDate(today, "year")}
-                  showOverdueWarning 
-                  variant="form-field" 
-                />
+                <Component date={createContextualDate(today, "year")} showOverdueWarning variant="form-field" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Overdue</h3>
-                <Component 
-                  date={createContextualDate(twoWeeksAgo, "day")}
-                  showOverdueWarning 
-                  variant="form-field" 
-                />
+                <Component date={createContextualDate(twoWeeksAgo, "day")} showOverdueWarning variant="form-field" />
               </div>
 
               <div>
                 <h3 className="text-sm font-bold mb-2">Empty</h3>
-                <Component 
-                  date={null} 
-                  showOverdueWarning 
-                  variant="form-field" 
+                <Component date={null} showOverdueWarning variant="form-field" />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-stroke-base pt-12">
+            <h2 className="text-lg font-bold mb-8">Size Variants</h2>
+            <div className="grid grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-sm font-bold mb-2">Standard Size (Day)</h3>
+                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" size="std" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Day)</h3>
+                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" size="small" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Standard Size (Month)</h3>
+                <Component date={createContextualDate(today, "month")} showOverdueWarning variant="inline" size="std" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Month)</h3>
+                <Component
+                  date={createContextualDate(today, "month")}
+                  showOverdueWarning
+                  variant="inline"
+                  size="small"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Standard Size (Quarter)</h3>
+                <Component
+                  date={createContextualDate(today, "quarter")}
+                  showOverdueWarning
+                  variant="inline"
+                  size="std"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Quarter)</h3>
+                <Component
+                  date={createContextualDate(today, "quarter")}
+                  showOverdueWarning
+                  variant="inline"
+                  size="small"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Standard Size (Year)</h3>
+                <Component
+                  date={createContextualDate(today, "year")}
+                  showOverdueWarning
+                  variant="inline"
+                  size="std"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Year)</h3>
+                <Component
+                  date={createContextualDate(today, "year")}
+                  showOverdueWarning
+                  variant="inline"
+                  size="small"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Standard Size (Form Field)</h3>
+                <Component
+                  date={createContextualDate(today, "day")}
+                  showOverdueWarning
+                  variant="form-field"
+                  size="std"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Form Field)</h3>
+                <Component
+                  date={createContextualDate(today, "day")}
+                  showOverdueWarning
+                  variant="form-field"
+                  size="small"
                 />
               </div>
             </div>
