@@ -177,6 +177,82 @@ defmodule Operately.AI.Tools do
     })
   end
 
+  @doc """
+  Posts a message to a project.
+
+  Expects the following arguments:
+  - "title": The title of the message.
+  - "message": The markdown message to post to the project.
+  - "project_id": The ID of the project to which the message will be posted.
+
+  Expected context:
+  - :person - The person posting the message.
+  """
+  def post_project_message do
+    Function.new!(%{
+      name: "post_project_message",
+      description: "Posts a message to the project.",
+      parameters_schema: %{
+        type: "object",
+        properties: %{
+          project_id: %{
+            type: "string",
+            description: "The ID of the project to which the message will be posted."
+          },
+          title: %{
+            type: "string",
+            description: "The title of the message."
+          },
+          message: %{
+            type: "string",
+            description: "The markdown message to post to the project."
+          }
+        },
+        required: ["title", "message"]
+      },
+      function: fn args, context ->
+        log_details = [
+          "TOOL USE: post_project_message",
+          "  Project ID: #{args["project_id"]}",
+          "  Title: #{args["title"]}",
+          "",
+          args["message"] |> line_break(at: 80) |> indent(with: "  ")
+        ]
+
+        log(context, Enum.join(log_details, "\n") <> "\n")
+
+        me = Map.get(context, :person)
+        title = Map.get(args, "title")
+        project_id = Map.get(args, "project_id")
+        message = Map.get(args, "message") |> Operately.Demo.PoorMansMarkdown.from_markdown(%{})
+
+        conn = %{
+          assigns: %{
+            current_person: me
+          }
+        }
+
+        {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(project_id)
+
+        args =
+          %{
+            project_id: id,
+            title: title,
+            message: message,
+            send_notifications_to_everyone: true,
+            subscriber_ids: []
+          }
+
+        if context.agent_run.sandbox_mode do
+          {:ok, "posted"}
+        else
+          {:ok, resp} = OperatelyWeb.Api.ProjectDiscussions.Create.call(conn, args)
+          Jason.encode(resp)
+        end
+      end
+    })
+  end
+
   defp log(context, msg) do
     if Map.has_key?(context, :agent_run) do
       Operately.People.AgentRun.append_log(context.agent_run.id, msg)
