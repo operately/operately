@@ -126,62 +126,44 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert {401, _} = mutation(ctx.conn, [:project_discussions, :edit], %{})
     end
 
-    #   test "it requires id, title, and body", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+    test "it requires id, title, and body", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #     assert {400, res} = mutation(ctx.conn, [:project_discussions, :edit], %{})
-    #     assert res.message == "Missing required fields: id, title, body"
-    #   end
+      assert {400, res} = mutation(ctx.conn, [:project_discussions, :edit], %{})
+      assert res.message == "Missing required fields: id, title, message"
+    end
 
-    #   test "it returns 404 if the discussion does not exist", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
+    test "it returns 404 if the discussion does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
 
-    #     discussion_id = Ecto.UUID.generate() |> Paths.update_id()
+      discussion_id = Ecto.UUID.generate() |> Operately.ShortUuid.encode!()
 
-    #     inputs = %{
-    #       id: discussion_id,
-    #       title: "Updated Discussion",
-    #       body: rich_text_content()
-    #     }
+      inputs = %{
+        id: discussion_id,
+        title: "Updated Discussion",
+        message: RichText.rich_text("Updated content", :as_string)
+      }
 
-    #     assert {404, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
-    #     assert res.message == "Discussion not found"
-    #   end
+      assert {404, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
+      assert res.message == "Discussion not found"
+    end
 
-    #   test "it updates the discussion", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
-    #     ctx = create_project_discussion(ctx)
+    test "it updates the discussion", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
 
-    #     inputs = %{
-    #       id: Paths.update_id(ctx.discussion),
-    #       title: "Updated Discussion Title",
-    #       body: rich_text_content("Updated content")
-    #     }
+      inputs = %{
+        id: Paths.update_id(ctx.discussion),
+        title: "Updated Discussion Title",
+        message: RichText.rich_text("Updated content", :as_string)
+      }
 
-    #     assert {200, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
-    #     assert res.discussion.title == "Updated Discussion Title"
+      assert {200, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
+      assert res.discussion.title == "Updated Discussion Title"
 
-    #     # Verify the discussion was updated in the database
-    #     discussion = Operately.Repo.get(Operately.Updates.Update, ctx.discussion.id)
-    #     assert discussion.content["title"] == "Updated Discussion Title"
-    #   end
-
-    #   test "only the author can edit the discussion", ctx do
-    #     ctx = Factory.log_in_person(ctx, :creator)
-    #     ctx = create_project_discussion(ctx)
-
-    #     # Log in as a different user
-    #     ctx = Factory.add_company_member(ctx, :other_user)
-    #     ctx = Factory.log_in_person(ctx, :other_user)
-
-    #     inputs = %{
-    #       id: Paths.update_id(ctx.discussion),
-    #       title: "Updated Discussion Title",
-    #       body: rich_text_content("Updated content")
-    #     }
-
-    #     assert {403, res} = mutation(ctx.conn, [:project_discussions, :edit], inputs)
-    #     assert res.message == "You don't have permission to perform this action"
-    #   end
+      # Verify the discussion was updated in the database
+      discussion = Operately.Repo.get(Operately.Updates.Update, ctx.discussion.id)
+      assert discussion.content["title"] == "Updated Discussion Title"
+    end
   end
 end
