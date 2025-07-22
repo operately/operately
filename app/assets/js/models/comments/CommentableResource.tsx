@@ -1,10 +1,9 @@
-import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/resourceHubs";
+import { CommentThread } from "@/models/activities";
+import { Discussion } from "@/models/discussions";
+import { Update } from "@/models/goalCheckIns";
 import { ProjectCheckIn } from "@/models/projectCheckIns";
 import { ProjectRetrospective } from "@/models/projects";
-import { Update } from "@/models/goalCheckIns";
-import { Goal } from "@/models/goals";
-import { Discussion } from "@/models/discussions";
-import { CommentThread } from "@/models/activities";
+import { ResourceHubDocument, ResourceHubFile, ResourceHubLink } from "@/models/resourceHubs";
 
 interface ParentDiscussion {
   discussion: Discussion;
@@ -43,8 +42,9 @@ interface ParentGoalUpdate {
 
 interface ParentCommentThread {
   thread: CommentThread;
-  goal: Goal;
   parentType: "comment_thread";
+  goal?: { id: string };
+  project?: { id: string };
 }
 
 export type CommentableResource =

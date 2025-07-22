@@ -111,7 +111,16 @@ function findMentionedScope(props: Comments.CommentableResource): SearchScope {
       assertPresent(props.update?.goal?.id, "goal must be present in update");
       return { type: "goal", id: props.update.goal.id };
     case "comment_thread":
-      assertPresent(props.goal?.id, "Goal must be provided along with CommentThread");
-      return { type: "goal", id: props.goal.id };
+      if (props.goal) {
+        assertPresent(props.goal?.id, "Goal must be provided along with CommentThread");
+        return { type: "goal", id: props.goal.id };
+      }
+
+      if (props.thread.project) {
+        assertPresent(props.thread.project.id, "Project must be present in CommentThread");
+        return { type: "project", id: props.thread.project.id };
+      }
+
+      throw new Error("CommentThread must have either goal or project defined");
   }
 }
