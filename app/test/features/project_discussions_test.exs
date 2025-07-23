@@ -19,17 +19,18 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.assert_discussion_page_displayed()
   end
 
-  # feature "commenting on a discussion", ctx do
-  #   ctx
-  #   |> Steps.given_a_discussion_exists()
-  #   |> Steps.visit_discussion_page()
-  #   |> Steps.fill_in_comment("This is a comment")
-  #   |> Steps.submit_comment()
-  #   |> Steps.assert_comment_displayed("This is a comment")
-  #   |> Steps.assert_comment_feed_posted()
-  #   |> Steps.assert_comment_notification_sent()
-  #   |> Steps.assert_comment_email_sent()
-  # end
+  feature "commenting on a discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.visit_discussion_page()
+    |> Steps.leave_comment("This is a comment")
+    |> Steps.assert_comment_submitted("This is a comment")
+
+    #   |> Steps.assert_comment_displayed("This is a comment")
+    #   |> Steps.assert_comment_feed_posted()
+    #   |> Steps.assert_comment_notification_sent()
+    #   |> Steps.assert_comment_email_sent()
+  end
 
   feature "writing a new discussion", ctx do
     ctx

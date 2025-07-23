@@ -128,4 +128,33 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
       action: "posted: New Discussion"
     })
   end
+
+  step :leave_comment, ctx, comment do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(comment)
+    |> UI.click(testid: "post-comment")
+    |> UI.sleep(500)
+  end
+
+  step :assert_comment_submitted, ctx, message do
+    attempts(ctx, 5, fn ->
+      comment = last_comment(ctx)
+
+      assert comment != nil
+      assert comment.author_id == ctx.reviewer.id
+      assert comment.message == RichText.rich_text(message)
+
+      ctx
+    end)
+  end
+
+  #
+  # Helper functions
+  #
+
+  defp last_comment(ctx) do
+    record = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
+    Operately.Updates.list_comments(record.id, :comment_thread) |> Enum.at(-1)
+  end
 end
