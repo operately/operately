@@ -17,7 +17,6 @@ export {
   useDeleteGoal,
   useDisconnectGoalFromProject,
   useEditGoalDiscussion,
-  useEditGoalTimeframe,
   useGetGoals,
   useReopenGoal,
 } from "@/api";

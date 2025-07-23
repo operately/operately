@@ -2925,18 +2925,6 @@ export interface EditGoalProgressUpdateResult {
   update?: GoalProgressUpdate | null;
 }
 
-export interface EditGoalTimeframeInput {
-  id?: Id | null;
-  timeframe?: Timeframe | null;
-  comment?: string | null;
-  sendNotificationsToEveryone?: boolean | null;
-  subscriberIds?: Id[] | null;
-}
-
-export interface EditGoalTimeframeResult {
-  goal?: Goal | null;
-}
-
 export interface EditKeyResourceInput {
   id?: string | null;
   title?: string | null;
@@ -3932,10 +3920,6 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_goal_progress_update", input);
   }
 
-  async editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
-    return this.client.post("/edit_goal_timeframe", input);
-  }
-
   async editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
     return this.client.post("/edit_key_resource", input);
   }
@@ -4730,10 +4714,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.editGoalProgressUpdate(input);
   }
 
-  editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
-    return this.apiNamespaceRoot.editGoalTimeframe(input);
-  }
-
   editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
     return this.apiNamespaceRoot.editKeyResource(input);
   }
@@ -5258,9 +5238,6 @@ export async function editGoalProgressUpdate(
   input: EditGoalProgressUpdateInput,
 ): Promise<EditGoalProgressUpdateResult> {
   return defaultApiClient.editGoalProgressUpdate(input);
-}
-export async function editGoalTimeframe(input: EditGoalTimeframeInput): Promise<EditGoalTimeframeResult> {
-  return defaultApiClient.editGoalTimeframe(input);
 }
 export async function editKeyResource(input: EditKeyResourceInput): Promise<EditKeyResourceResult> {
   return defaultApiClient.editKeyResource(input);
@@ -5966,12 +5943,6 @@ export function useEditGoalProgressUpdate(): UseMutationHookResult<
   );
 }
 
-export function useEditGoalTimeframe(): UseMutationHookResult<EditGoalTimeframeInput, EditGoalTimeframeResult> {
-  return useMutation<EditGoalTimeframeInput, EditGoalTimeframeResult>((input) =>
-    defaultApiClient.editGoalTimeframe(input),
-  );
-}
-
 export function useEditKeyResource(): UseMutationHookResult<EditKeyResourceInput, EditKeyResourceResult> {
   return useMutation<EditKeyResourceInput, EditKeyResourceResult>((input) => defaultApiClient.editKeyResource(input));
 }
@@ -6515,8 +6486,6 @@ export default {
   useEditGoalDiscussion,
   editGoalProgressUpdate,
   useEditGoalProgressUpdate,
-  editGoalTimeframe,
-  useEditGoalTimeframe,
   editKeyResource,
   useEditKeyResource,
   editParentFolderInResourceHub,
