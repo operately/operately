@@ -4,18 +4,19 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
 
   alias Operately.{
     Activities,
-    Comments,
     Projects,
     Updates,
     Goals,
     Groups,
-    ResourceHubs,
+    ResourceHubs
   }
+
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.Projects.Retrospective
   alias Operately.ResourceHubs.{Document, File, Link}
   alias Operately.Operations.ReactionAdding
+  alias Operately.Comments.CommentThread
 
   inputs do
     field? :entity_id, :id, null: true
@@ -56,7 +57,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
     case type do
       :project_check_in -> Projects.get_check_in_with_access_level(id, person.id)
       :project_retrospective -> Retrospective.get(person, id: id)
-      :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
+      :comment_thread -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :goal_update -> Update.get(person, id: id)
       :message -> Message.get(person, id: id)
       :comment -> Updates.get_comment_with_access_level(id, person.id, parent_type)
@@ -99,6 +100,7 @@ defmodule OperatelyWeb.Api.Mutations.AddReaction do
   end
 
   defp parse_comment_parent(nil), do: :ok
+
   defp parse_comment_parent(parent_type) do
     String.to_existing_atom(parent_type)
   end
