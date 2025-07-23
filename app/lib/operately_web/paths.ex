@@ -113,6 +113,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "projects", project_id(project)])
   end
 
+  def project_discussion_path(company = %Company{}, discussion) do
+    create_path([company_id(company), "project-discussions", comment_thread_id(discussion)])
+  end
+
   def project_check_in_path(company = %Company{}, check_in) do
     create_path([company_id(company), "project-check-ins", project_check_in_id(check_in)])
   end
