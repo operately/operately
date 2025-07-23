@@ -11,13 +11,13 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.assert_discussion_listed()
   end
 
-  # feature "view a discussion", ctx do
-  #   ctx
-  #   |> Steps.given_a_discussion_exists()
-  #   |> Steps.visit_project_page()
-  #   |> Steps.click_on_discussion()
-  #   |> Steps.assert_discussion_page_displayed()
-  # end
+  feature "view a discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.visit_project_page()
+    |> Steps.click_on_discussion()
+    |> Steps.assert_discussion_page_displayed()
+  end
 
   # feature "commenting on a discussion", ctx do
   #   ctx

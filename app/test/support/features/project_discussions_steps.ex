@@ -17,9 +17,9 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :given_several_discussions_exist, ctx do
     ctx
-    |> Factory.add_project_discussion(:discussion1, :project, title: "Discussion 1", content: "Content for discussion 1")
-    |> Factory.add_project_discussion(:discussion2, :project, title: "Discussion 2", content: "Content for discussion 2")
-    |> Factory.add_project_discussion(:discussion3, :project, title: "Discussion 3", content: "Content for discussion 3")
+    |> Factory.add_project_discussion(:discussion1, :project, title: "Discussion 1", message: "Content for discussion 1")
+    |> Factory.add_project_discussion(:discussion2, :project, title: "Discussion 2", message: "Content for discussion 2")
+    |> Factory.add_project_discussion(:discussion3, :project, title: "Discussion 3", message: "Content for discussion 3")
   end
 
   step :visit_project_page, ctx do
@@ -31,5 +31,19 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> UI.assert_text("Discussion 1")
     |> UI.assert_text("Discussion 2")
     |> UI.assert_text("Discussion 3")
+  end
+
+  step :given_a_discussion_exists, ctx do
+    ctx |> Factory.add_project_discussion(:discussion, :project, title: "Existing Discussion", message: "Content for existing discussion")
+  end
+
+  step :click_on_discussion, ctx do
+    ctx |> UI.click_link("Existing Discussion")
+  end
+
+  step :assert_discussion_page_displayed, ctx do
+    ctx
+    |> UI.assert_text("Existing Discussion")
+    |> UI.assert_text("Content for existing discussion")
   end
 end
