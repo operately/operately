@@ -372,32 +372,6 @@ defmodule Operately.AccessActivityContextAssignerTest do
 
       assert activity.access_context_id == ctx.goal.access_context.id
     end
-
-    test "goal_timeframe_editing action", ctx do
-      Operately.Operations.GoalTimeframeEditing.run(
-        ctx.author,
-        ctx.goal,
-        %{
-          timeframe: %{
-            type: "days",
-            start_date: Date.utc_today(),
-            end_date: Date.add(Date.utc_today(), 5)
-          },
-          content: %{},
-          subscription_parent_type: :comment_thread,
-          send_notifications_to_everyone: false,
-          subscriber_ids: []
-        }
-      )
-
-      activity =
-        from(a in Activities.Activity,
-          where: a.content["goal_id"] == ^ctx.goal.id and a.action == "goal_timeframe_editing"
-        )
-        |> Repo.one()
-
-      assert activity.access_context_id == ctx.goal.access_context.id
-    end
   end
 
   describe "assigns access_context to project activities" do

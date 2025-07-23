@@ -47,9 +47,8 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussionsT
     discussions = Enum.map(1..3, fn _ -> create_goal_discussion(ctx, goal) end)
     closed_thread = close_goal(ctx, goal)
     reopened_thread = reopen_goal(ctx, goal)
-    timeframe_thread = edit_timeframe(ctx, goal)
 
-    [closed_thread, reopened_thread, timeframe_thread | discussions]
+    [closed_thread, reopened_thread | discussions]
   end
 
   defp assert_subscriptions_created(threads, person_ids) do
@@ -109,23 +108,6 @@ defmodule Operately.Data.Change054CreateSubscriptionsForExistingGoalDiscussionsT
     })
 
     get_comment_thread(goal.id, "goal_reopening")
-    |> set_subscription_list_id_to_nil()
-  end
-
-  defp edit_timeframe(ctx, goal) do
-    {:ok, goal} = Operately.Operations.GoalTimeframeEditing.run(ctx.creator, goal, %{
-      timeframe: %{
-        type: "days",
-        start_date: Date.utc_today(),
-        end_date: Date.add(Date.utc_today(), 5)
-      },
-      content: Operately.Support.RichText.rich_text("content"),
-      send_to_everyone: true,
-      subscriber_ids: [],
-      subscription_parent_type: :comment_thread
-    })
-
-    get_comment_thread(goal.id, "goal_timeframe_editing")
     |> set_subscription_list_id_to_nil()
   end
 
