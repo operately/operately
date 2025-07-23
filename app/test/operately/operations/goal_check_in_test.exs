@@ -34,6 +34,49 @@ defmodule Operately.Operations.GoalCheckInTest do
     assert ctx.goal.last_update_status == update.status
   end
 
+  test "creating goal update creates activity with old and new timeframes", ctx do
+    ctx = Factory.add_goal(ctx, :goal2, :space, timeframe: %{
+      type: "year",
+      start_date: ~D[2023-01-01],
+      end_date: ~D[2023-12-31],
+      contextual_end_date: %{
+        date_type: :year,
+        date: ~D[2023-12-31],
+        value: "2023"
+      }
+    })
+
+    {:ok, update} =
+      GoalCheckIn.run(ctx.champion, ctx.goal2, %{
+        goal_id: ctx.goal2.id,
+        status: "on_track",
+        target_values: [],
+        content: RichText.rich_text("Some content"),
+        send_to_everyone: true,
+        subscriber_ids: [],
+        subscription_parent_type: :goal_update,
+        due_date: %{date: ~D[2024-06-30], date_type: :quarter, value: "Q2 2024"}
+      })
+
+    activity = get_activity(update, "goal_check_in")
+
+    # Verify activity content
+    assert activity.content["company_id"] == ctx.company.id
+    assert activity.content["space_id"] == ctx.goal2.group_id
+    assert activity.content["goal_id"] == ctx.goal2.id
+    assert activity.content["update_id"] == update.id
+
+    # Verify old timeframe content
+    assert activity.content["old_timeframe"]["contextual_end_date"]["date_type"] == "year"
+    assert activity.content["old_timeframe"]["contextual_end_date"]["date"] == Date.to_iso8601(~D[2023-12-31])
+    assert activity.content["old_timeframe"]["contextual_end_date"]["value"] == "2023"
+
+    # Verify new timeframe content
+    assert activity.content["new_timeframe"]["contextual_end_date"]["date_type"] == "quarter"
+    assert activity.content["new_timeframe"]["contextual_end_date"]["date"] == Date.to_iso8601(~D[2024-06-30])
+    assert activity.content["new_timeframe"]["contextual_end_date"]["value"] == "Q2 2024"
+  end
+
   describe "notifications" do
     test "Creating goal update notifies everyone", ctx do
       {:ok, update} =
