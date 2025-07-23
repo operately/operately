@@ -1,7 +1,7 @@
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { Avatar, Link, SecondaryButton } from "turboui";
+import { Avatar, FormattedTime, Link, SecondaryButton } from "turboui";
 import { usePaths } from "../../routes/paths";
 
 interface ProjectDiscussionsSectionProps {
@@ -51,11 +51,20 @@ function DiscussionsList({ discussions }: { discussions: Projects.Discussion[] }
   const paths = usePaths();
 
   return (
-    <div className="grid grid-cols-4 gap-4">
+    <div className="flex flex-col gap-2 mb-4">
       {discussions!.map((discussion: any, index: number) => (
         <div key={index} className="flex items-center gap-2">
-          <Avatar person={discussion.author} size={20} />
-          <Link to={paths.projectDiscussionPath(discussion.id)}>{discussion.title}</Link>
+          <Avatar person={discussion.author} size={32} />
+
+          <div>
+            <Link to={paths.projectDiscussionPath(discussion.id)} className="font-medium block">
+              {discussion.title}
+            </Link>
+            <div className="text-xs">
+              <span className="">{discussion.author.fullName}</span> &middot;{" "}
+              <FormattedTime time={discussion.insertedAt} format="relative" />
+            </div>
+          </div>
         </div>
       ))}
     </div>
