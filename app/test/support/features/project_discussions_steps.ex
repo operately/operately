@@ -6,7 +6,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.NotificationsSteps
-  # alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.EmailSteps
 
   step :setup, ctx do
     ctx
@@ -114,6 +114,16 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     ctx
     |> UI.login_as(reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "posted: New Discussion"
+    })
+  end
+
+  step :assert_new_discussion_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
       author: ctx.creator,
       action: "posted: New Discussion"
     })
