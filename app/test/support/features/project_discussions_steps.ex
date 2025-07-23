@@ -152,7 +152,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> login_as_reviewer()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "posted: New Comment"
+      action: "commented on Existing Discussion"
     })
   end
 
@@ -163,6 +163,15 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
       to: ctx.reviewer,
       author: ctx.creator,
       action: "commented on: Existing Discussion"
+    })
+  end
+
+  step :assert_comment_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.creator,
+      title: "posted Existing Discussion"
     })
   end
 

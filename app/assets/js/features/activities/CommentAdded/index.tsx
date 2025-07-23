@@ -8,6 +8,7 @@ import type {
   ActivityContentGoalDiscussionCreation,
   ActivityContentGoalReopening,
   ActivityContentGoalTimeframeEditing,
+  ActivityContentProjectDiscussionSubmitted,
 } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
@@ -30,6 +31,10 @@ const CommentAdded: ActivityHandler = {
       .with("goal_closing", () => paths.goalActivityPath(commentedActivity.id!))
       .with("goal_discussion_creation", () => paths.goalActivityPath(commentedActivity.id!))
       .with("goal_reopening", () => paths.goalActivityPath(commentedActivity.id!))
+      .with("project_discussion_submitted", () => {
+        const projectSubmitted = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
+        return paths.projectDiscussionPath(projectSubmitted.discussion!.id!);
+      })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -100,6 +105,18 @@ const CommentAdded: ActivityHandler = {
           return feedTitle(activity, "commented on the", activityLink, "in the", goalLink(goal), "goal");
         }
       })
+      .with("project_discussion_submitted", () => {
+        const c = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
+        const discussionTitle = commentedActivity.commentThread!.title;
+        const path = paths.projectDiscussionPath(c.discussionId!);
+        const activityLink = <Link to={path}>{discussionTitle}</Link>;
+
+        if (page === "project") {
+          return feedTitle(activity, "commented on the", activityLink);
+        } else {
+          return feedTitle(activity, "commented on the", activityLink, "in the project discussion");
+        }
+      })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -132,6 +149,7 @@ const CommentAdded: ActivityHandler = {
       .with("goal_closing", () => "goal closing")
       .with("goal_discussion_creation", () => commentedActivity.commentThread!.title)
       .with("goal_reopening", () => "goal reopening")
+      .with("project_discussion_submitted", () => commentedActivity.commentThread!.title)
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);
       });
@@ -158,6 +176,10 @@ const CommentAdded: ActivityHandler = {
       .with("goal_reopening", () => {
         const c = commentedActivity.content as ActivityContentGoalReopening;
         return c.goal!.name!;
+      })
+      .with("project_discussion_submitted", () => {
+        const c = commentedActivity.content as ActivityContentProjectDiscussionSubmitted;
+        return c.title!;
       })
       .otherwise(() => {
         throw new Error("Comment added not implemented for action: " + commentedActivity.action);

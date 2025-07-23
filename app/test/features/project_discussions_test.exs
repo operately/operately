@@ -26,10 +26,8 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.leave_comment("This is a comment")
     |> Steps.assert_comment_submitted("This is a comment")
     |> Steps.assert_comment_email_sent()
-
-    # |> Steps.assert_comment_notification_sent()
-
-    #   |> Steps.assert_comment_feed_posted()
+    |> Steps.assert_comment_notification_sent()
+    |> Steps.assert_comment_feed_posted()
   end
 
   feature "writing a new discussion", ctx do

@@ -471,6 +471,7 @@ export interface ActivityContentProjectDiscussionSubmitted {
   discussionId?: string | null;
   title?: string | null;
   project?: Project | null;
+  discussion?: CommentThread | null;
 }
 
 export interface ActivityContentProjectGoalConnection {
