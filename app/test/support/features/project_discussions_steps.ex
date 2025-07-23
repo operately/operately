@@ -1,5 +1,7 @@
 defmodule Operately.Support.Features.ProjectDiscussionSteps do
   use Operately.FeatureCase
+  alias Operately.Support.RichText
+
   import Ecto.Query, only: [from: 2]
 
   # alias Operately.Support.Features.ProjectSteps
@@ -25,6 +27,10 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :visit_project_page, ctx do
     ctx |> UI.visit(OperatelyWeb.Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :visit_discussion_page, ctx do
+    ctx |> UI.visit(OperatelyWeb.Paths.project_discussion_path(ctx.company, ctx.discussion))
   end
 
   step :assert_discussion_listed, ctx do
@@ -68,6 +74,26 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     attempts(ctx, 5, fn ->
       record = Operately.Repo.one(from d in Operately.Comments.CommentThread, where: d.title == ^title)
       assert record != nil
+
+      ctx
+    end)
+  end
+
+  step :click_edit_discussion, ctx do
+    ctx
+    |> UI.click(testid: "options")
+    |> UI.click(testid: "edit")
+  end
+
+  step :save_discussion_edit, ctx do
+    ctx |> UI.click(testid: "post-discussion")
+  end
+
+  step :assert_discussion_updated, ctx, content do
+    attempts(ctx, 5, fn ->
+      record = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
+      assert record != nil
+      assert record.message == RichText.rich_text(content)
 
       ctx
     end)

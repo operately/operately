@@ -45,13 +45,13 @@ defmodule Operately.Features.ProjectDiscussionTest do
     # |> Steps.assert_new_discussion_email_sent()
   end
 
-  # feature "editing a discussion", ctx do
-  #   ctx
-  #   |> Steps.given_a_discussion_exists()
-  #   |> Steps.visit_discussion_page()
-  #   |> Steps.click_edit_discussion()
-  #   |> Steps.fill_in_discussion_content("Updated content")
-  #   |> Steps.submit_discussion()
-  #   |> Steps.assert_discussion_updated("Updated content")
-  # end
+  feature "editing a discussion", ctx do
+    ctx
+    |> Steps.given_a_discussion_exists()
+    |> Steps.visit_discussion_page()
+    |> Steps.click_edit_discussion()
+    |> Steps.fill_in_discussion_content("Updated content")
+    |> Steps.save_discussion_edit()
+    |> Steps.assert_discussion_updated("Updated content")
+  end
 end
