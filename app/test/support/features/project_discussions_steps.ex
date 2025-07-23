@@ -142,8 +142,8 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
       comment = last_comment(ctx)
 
       assert comment != nil
-      assert comment.author_id == ctx.reviewer.id
-      assert comment.message == RichText.rich_text(message)
+      assert comment.author_id == ctx.creator.id
+      assert comment.content == %{"message" => RichText.rich_text(message)}
 
       ctx
     end)
