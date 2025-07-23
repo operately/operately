@@ -5,7 +5,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Support.Features.FeedSteps
-  # alias Operately.Support.Features.NotificationsSteps
+  alias Operately.Support.Features.NotificationsSteps
   # alias Operately.Support.Features.EmailSteps
 
   step :setup, ctx do
@@ -14,6 +14,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> Factory.enable_feature("project_discussions")
     |> Factory.add_space(:marketing)
     |> Factory.add_project(:project, :marketing)
+    |> Factory.add_project_reviewer(:reviewer, :project)
     |> Factory.log_in_person(:creator)
   end
 
@@ -103,7 +104,18 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.creator,
-      title: "started a new discussion: New Discussion"
+      title: "posted New Discussion"
+    })
+  end
+
+  step :assert_new_discussion_notification_sent, ctx do
+    reviewer = Map.fetch!(ctx, :reviewer) |> Operately.Repo.preload(:person) |> Map.get(:person)
+
+    ctx
+    |> UI.login_as(reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "posted: New Discussion"
     })
   end
 end
