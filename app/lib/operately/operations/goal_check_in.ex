@@ -55,11 +55,16 @@ defmodule Operately.Operations.GoalCheckIn do
   defp record_activity(multi, author, goal) do
     multi
     |> Activities.insert_sync(author.id, :goal_check_in, fn changes ->
+      old_timeframe = goal.timeframe
+      new_timeframe = changes.update.timeframe
+
       %{
         company_id: goal.company_id,
         space_id: goal.group_id,
         goal_id: goal.id,
-        update_id: changes.update.id
+        update_id: changes.update.id,
+        old_timeframe: old_timeframe,
+        new_timeframe: new_timeframe
       }
     end)
   end
