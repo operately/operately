@@ -155,6 +155,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
+  # Legacy activity
   def serialize_content("goal_timeframe_editing", content) do
     %{
       goal: serialize_goal(content["goal"]),

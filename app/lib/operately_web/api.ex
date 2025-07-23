@@ -165,7 +165,6 @@ defmodule OperatelyWeb.Api do
   mutation(:edit_discussion, M.EditDiscussion)
   mutation(:edit_goal_discussion, M.EditGoalDiscussion)
   mutation(:edit_goal_progress_update, M.EditGoalProgressUpdate)
-  mutation(:edit_goal_timeframe, M.EditGoalTimeframe)
   mutation(:edit_space, M.EditSpace)
   mutation(:edit_key_resource, M.EditKeyResource)
   mutation(:edit_project_check_in, M.EditProjectCheckIn)
