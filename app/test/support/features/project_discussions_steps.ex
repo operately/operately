@@ -4,7 +4,6 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   import Ecto.Query, only: [from: 2]
 
-  # alias Operately.Support.Features.ProjectSteps
   # alias Operately.Support.Features.FeedSteps
   # alias Operately.Support.Features.NotificationsSteps
   # alias Operately.Support.Features.EmailSteps
