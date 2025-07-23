@@ -27,7 +27,11 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
   def get_where(activity) do
     cond do
       activity.content["goal_id"] ->
-        project = Operately.Goals.get_goal!(activity.content["goal_id"])
+        goal = Operately.Goals.get_goal!(activity.content["goal_id"])
+        goal.name
+
+      activity.content["project_id"] ->
+        project = Operately.Projects.get_project!(activity.content["project_id"])
         project.name
 
       true ->
@@ -37,7 +41,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
 
   def get_action(activity) do
     comment_thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
-    activity = Operately.Activities.get_activity!(comment_thread.parent_id)
+    activity = Operately.Repo.preload(comment_thread, :activity).activity
 
     cond do
       activity.action == "goal_timeframe_editing" ->
@@ -54,6 +58,9 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
       activity.action == "goal_reopening" ->
         "commented on goal reopening"
 
+      activity.action == "project_discussion_submitted" ->
+        "commented on the discussion: #{comment_thread.title}"
+
       true ->
         raise "Unsupported action: #{activity.action}"
     end
@@ -61,7 +68,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
 
   def get_link(company, activity, comment) do
     comment_thread = Operately.Comments.get_thread!(activity.content["comment_thread_id"])
-    activity = Operately.Activities.get_activity!(comment_thread.parent_id)
+    activity = Operately.Repo.preload(comment_thread, :activity).activity
     activity = Repo.preload(activity, :comment_thread)
 
     cond do
@@ -77,9 +84,11 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
       activity.action == "goal_reopening" ->
         Paths.goal_activity_path(company, activity, comment) |> Paths.to_url()
 
+      activity.action == "project_discussion_submitted" ->
+        Paths.project_discussion_path(company, comment_thread) |> Paths.to_url()
+
       true ->
         raise "Unsupported action"
     end
   end
-
 end

@@ -25,10 +25,9 @@ defmodule Operately.Features.ProjectDiscussionTest do
     |> Steps.visit_discussion_page()
     |> Steps.leave_comment("This is a comment")
     |> Steps.assert_comment_submitted("This is a comment")
+    |> Steps.assert_comment_notification_sent()
 
-    #   |> Steps.assert_comment_displayed("This is a comment")
     #   |> Steps.assert_comment_feed_posted()
-    #   |> Steps.assert_comment_notification_sent()
     #   |> Steps.assert_comment_email_sent()
   end
 
