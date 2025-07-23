@@ -6,11 +6,11 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize(activities) when is_list(activities) do
     Enum.map(activities, fn activity ->
-      serialize(activity, [comment_thread: :minimal])
+      serialize(activity, comment_thread: :minimal)
     end)
   end
 
-  def serialize(activity, [comment_thread: comment_thread]) do
+  def serialize(activity, comment_thread: comment_thread) do
     %{
       id: OperatelyWeb.Paths.activity_id(activity),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(activity.inserted_at),
@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       comment_thread: activity.comment_thread && serialize_comment_thread(activity.comment_thread, comment_thread),
       content: serialize_content(activity.action, activity.content),
       notifications: OperatelyWeb.Api.Serializer.serialize(activity.notifications),
-      permissions: OperatelyWeb.Api.Serializer.serialize(activity.permissions, level: :full),
+      permissions: OperatelyWeb.Api.Serializer.serialize(activity.permissions, level: :full)
     }
   end
 
@@ -27,7 +27,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       id: Operately.ShortUuid.encode!(comment_thread.id),
       message: Jason.encode!(comment_thread.message),
-      title: comment_thread.title,
+      title: comment_thread.title
     }
   end
 
@@ -37,17 +37,19 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       message: Jason.encode!(comment_thread.message),
       title: comment_thread.title,
       reactions: OperatelyWeb.Api.Serializer.serialize(comment_thread.reactions),
-      comments: Ecto.assoc_loaded?(comment_thread.comments) && Enum.map(comment_thread.comments, fn c ->
-        %{
-          id: c.id,
-          content: Jason.encode!(c.content),
-          inserted_at: OperatelyWeb.Api.Serializer.serialize(c.inserted_at),
-          author: OperatelyWeb.Api.Serializer.serialize(c.author, level: :essential),
-          reactions: OperatelyWeb.Api.Serializer.serialize(c.reactions),
-        }
-      end),
+      comments:
+        Ecto.assoc_loaded?(comment_thread.comments) &&
+          Enum.map(comment_thread.comments, fn c ->
+            %{
+              id: c.id,
+              content: Jason.encode!(c.content),
+              inserted_at: OperatelyWeb.Api.Serializer.serialize(c.inserted_at),
+              author: OperatelyWeb.Api.Serializer.serialize(c.author, level: :essential),
+              reactions: OperatelyWeb.Api.Serializer.serialize(c.reactions)
+            }
+          end),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(comment_thread.subscription_list),
-      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(comment_thread.potential_subscribers),
+      potential_subscribers: OperatelyWeb.Api.Serializer.serialize(comment_thread.potential_subscribers)
     }
   end
 
@@ -58,7 +60,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("comment_added", content) do
     %{
       comment: serialize_comment(content["comment"]),
-      activity: content.activity && serialize(content.activity, [comment_thread: :minimal])
+      activity: content.activity && serialize(content.activity, comment_thread: :minimal)
     }
   end
 
@@ -72,7 +74,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("company_admin_removed", content) do
     %{
       company: OperatelyWeb.Api.Serializer.serialize(content["company"], level: :essential),
-      person: OperatelyWeb.Api.Serializer.serialize(content["person"], level: :essential),
+      person: OperatelyWeb.Api.Serializer.serialize(content["person"], level: :essential)
     }
   end
 
@@ -246,7 +248,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
 
   def serialize_content("project_pausing", content) do
     %{
-      project: Serializer.serialize(content["project"], level: :essential),
+      project: Serializer.serialize(content["project"], level: :essential)
     }
   end
 
@@ -279,14 +281,14 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("space_member_removed", content) do
     %{
       space: serialize_space(content["space"]),
-      member: %{id: content["member"].id, full_name: content["member"].full_name},
+      member: %{id: content["member"].id, full_name: content["member"].full_name}
     }
   end
 
   def serialize_content("space_members_added", content) do
     %{
       space: serialize_space(content["space"]),
-      members: Enum.map(content["members"], fn m -> %{id: m.person_id, full_name: m.person_name} end),
+      members: Enum.map(content["members"], fn m -> %{id: m.person_id, full_name: m.person_name} end)
     }
   end
 
@@ -339,18 +341,19 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   #
 
   def serialize_goal(nil), do: nil
+
   def serialize_goal(goal) do
     %{
       id: Paths.goal_id(goal),
       name: goal.name,
-      my_role: goal.my_role,
+      my_role: goal.my_role
     }
   end
 
   def serialize_space(space) do
     %{
       id: OperatelyWeb.Paths.space_id(space),
-      name: space.name,
+      name: space.name
     }
   end
 
@@ -358,7 +361,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{
       id: OperatelyWeb.Paths.message_id(message),
       title: message.title,
-      body: message.body,
+      body: message.body
     }
   end
 
@@ -390,11 +393,12 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   end
 
   defp serialize_comment(nil), do: nil
+
   defp serialize_comment(comment) do
     %{
       id: comment.id,
       content: Jason.encode!(comment.content),
-      inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at),
+      inserted_at: OperatelyWeb.Api.Serializer.serialize(comment.inserted_at)
     }
   end
 end
