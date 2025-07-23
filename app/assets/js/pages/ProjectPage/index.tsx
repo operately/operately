@@ -1,6 +1,5 @@
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Companies from "@/models/companies";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
@@ -26,13 +25,11 @@ export default { name: "ProjectPage", loader, Page } as PageModule;
 
 interface LoaderResult {
   project: Projects.Project;
-  company: Companies.Company;
   discussions: Projects.Discussion[];
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  const [company, discussions, project] = await Promise.all([
-    Companies.getCompany({ id: params.companyId }).then((d) => d.company!),
+  const [discussions, project] = await Promise.all([
     Api.project_discussions.list({ projectId: params.id }).then((data) => data.discussions!),
     Projects.getProject({
       id: params.id,
@@ -51,11 +48,11 @@ async function loader({ params }): Promise<LoaderResult> {
     }).then((data) => data.project!),
   ]);
 
-  return { project, company, discussions };
+  return { project, discussions };
 }
 
 function Page() {
-  const { project, company, discussions } = Pages.useLoadedData() as LoaderResult;
+  const { project, discussions } = Pages.useLoadedData() as LoaderResult;
 
   assertPresent(project.notifications, "Project notifications must be defined");
   useClearNotificationsOnLoad(project.notifications);
@@ -75,9 +72,7 @@ function Page() {
             <ProjectDescriptionSection project={project} />
             <TimelineSection project={project} />
             <CheckInSection project={project} />
-            {Companies.hasFeature(company, "project_discussions") && (
-              <ProjectDiscussionsSection project={project} discussions={discussions} />
-            )}
+            <ProjectDiscussionsSection project={project} discussions={discussions} />
             <ResourcesSection project={project} />
           </div>
 
