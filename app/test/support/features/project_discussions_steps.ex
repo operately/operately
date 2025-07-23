@@ -109,10 +109,8 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   end
 
   step :assert_new_discussion_notification_sent, ctx do
-    reviewer = Map.fetch!(ctx, :reviewer) |> Operately.Repo.preload(:person) |> Map.get(:person)
-
     ctx
-    |> UI.login_as(reviewer)
+    |> login_as_reviewer()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
       action: "posted: New Discussion"
@@ -127,5 +125,67 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
       author: ctx.creator,
       action: "posted: New Discussion"
     })
+  end
+
+  step :leave_comment, ctx, comment do
+    ctx
+    |> UI.click(testid: "add-comment")
+    |> UI.fill_rich_text(comment)
+    |> UI.click(testid: "post-comment")
+    |> UI.sleep(500)
+  end
+
+  step :assert_comment_submitted, ctx, message do
+    attempts(ctx, 5, fn ->
+      comment = last_comment(ctx)
+
+      assert comment != nil
+      assert comment.author_id == ctx.creator.id
+      assert comment.content == %{"message" => RichText.rich_text(message)}
+
+      ctx
+    end)
+  end
+
+  step :assert_comment_notification_sent, ctx do
+    ctx
+    |> login_as_reviewer()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "commented on Existing Discussion"
+    })
+  end
+
+  step :assert_comment_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      author: ctx.creator,
+      action: "commented on: Existing Discussion"
+    })
+  end
+
+  step :assert_comment_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> FeedSteps.assert_feed_item_exists(%{
+      author: ctx.creator,
+      title: "posted Existing Discussion"
+    })
+  end
+
+  #
+  # Helper functions
+  #
+
+  defp last_comment(ctx) do
+    record = Operately.Repo.get(Operately.Comments.CommentThread, ctx.discussion.id)
+    Operately.Updates.list_comments(record.id, :comment_thread) |> Enum.at(-1)
+  end
+
+  def login_as_reviewer(ctx) do
+    person = Map.fetch!(ctx, :reviewer) |> Operately.Repo.preload(:person) |> Map.get(:person)
+    ctx |> UI.login_as(person)
   end
 end

@@ -43,7 +43,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
         space_id: entity.project.group_id,
         project_id: entity.project_id,
         retrospective_id: entity.id,
-        comment_id: changes.comment.id,
+        comment_id: changes.comment.id
       }
     end)
   end
@@ -56,7 +56,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
         resource_hub_id: entity.resource_hub.id,
         document_id: entity.id,
         node_id: entity.node.id,
-        comment_id: changes.comment.id,
+        comment_id: changes.comment.id
       }
     end)
   end
@@ -69,7 +69,7 @@ defmodule Operately.Operations.CommentAdding.Activity do
         resource_hub_id: entity.resource_hub.id,
         file_id: entity.id,
         node_id: entity.node.id,
-        comment_id: changes.comment.id,
+        comment_id: changes.comment.id
       }
     end)
   end
@@ -82,13 +82,13 @@ defmodule Operately.Operations.CommentAdding.Activity do
         resource_hub_id: entity.resource_hub.id,
         link_id: entity.id,
         node_id: entity.node.id,
-        comment_id: changes.comment.id,
+        comment_id: changes.comment.id
       }
     end)
   end
 
   def insert(multi, creator, action = :comment_added, %Operately.Comments.CommentThread{} = entity) do
-    activity = Operately.Activities.get_activity!(entity.parent_id)
+    activity = Operately.Repo.preload(entity, :activity).activity
 
     Activities.insert_sync(multi, creator.id, action, fn changes ->
       fields = %{
