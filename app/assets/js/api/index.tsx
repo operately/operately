@@ -1495,11 +1495,8 @@ export interface Task {
 }
 
 export interface Timeframe {
-  startDate?: string | null;
-  endDate?: string | null;
-  type?: string | null;
-  contextualStartDate?: ContextualDate;
-  contextualEndDate?: ContextualDate;
+  contextualStartDate: ContextualDate;
+  contextualEndDate: ContextualDate;
 }
 
 export interface Update {

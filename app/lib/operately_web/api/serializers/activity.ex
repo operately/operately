@@ -1,6 +1,4 @@
 defmodule OperatelyWeb.Api.Serializers.Activity do
-  alias OperatelyWeb.Api.Serializers.Timeframe
-  alias Operately.Activities.Content.GoalEditing
   alias OperatelyWeb.Paths
   alias OperatelyWeb.Api.Serializer
 
@@ -133,8 +131,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       goal: serialize_goal(content["goal"]),
       new_name: content["new_name"],
       old_name: content["old_name"],
-      new_timeframe: Timeframe.serialize(GoalEditing.previous_timeframe(content)),
-      old_timeframe: Timeframe.serialize(GoalEditing.current_timeframe(content)),
+      new_timeframe: OperatelyWeb.Api.Serializer.serialize(content["new_timeframe"], level: :essential),
+      old_timeframe: OperatelyWeb.Api.Serializer.serialize(content["old_timeframe"], level: :essential),
       new_champion_id: content["new_champion_id"],
       old_champion_id: content["old_champion_id"],
       new_champion: OperatelyWeb.Api.Serializer.serialize(content["new_champion"], level: :essential),
@@ -159,8 +157,8 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
   def serialize_content("goal_timeframe_editing", content) do
     %{
       goal: serialize_goal(content["goal"]),
-      new_timeframe: Timeframe.serialize(content["new_timeframe"]),
-      old_timeframe: Timeframe.serialize(content["old_timeframe"])
+      new_timeframe: OperatelyWeb.Api.Serializer.serialize(content["new_timeframe"], level: :essential),
+      old_timeframe: OperatelyWeb.Api.Serializer.serialize(content["old_timeframe"], level: :essential)
     }
   end
 
