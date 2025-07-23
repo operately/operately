@@ -4,17 +4,18 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
 
   alias Operately.{
     Activities,
-    Comments,
     Projects,
     Goals,
     Groups,
-    ResourceHubs,
+    ResourceHubs
   }
+
   alias Operately.Goals.Update
   alias Operately.Messages.Message
   alias Operately.ResourceHubs.{Document, File, Link}
   alias Operately.Projects.{CheckIn, Retrospective}
   alias Operately.Operations.CommentAdding
+  alias Operately.Comments.CommentThread
 
   inputs do
     field? :entity_id, :string, null: true
@@ -56,7 +57,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     case type do
       :project_check_in -> CheckIn.get(person, id: id, opts: [preload: :project])
       :project_retrospective -> Retrospective.get(person, id: id, opts: [preload: :project])
-      :comment_thread -> Comments.get_thread_with_activity_and_access_level(id, person.id)
+      :comment_thread -> CommentThread.get(person, id: id, opts: [preload: :activity])
       :goal_update -> Update.get(person, id: id, opts: [preload: :goal])
       :message -> Message.get(person, id: id, opts: [preload: :space])
       :resource_hub_document -> Document.get(person, id: id, opts: [preload: [:resource_hub, :node]])
@@ -69,7 +70,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_check_in)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_retrospective)
-      :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
+      :comment_thread -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
