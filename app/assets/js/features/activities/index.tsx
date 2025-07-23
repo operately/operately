@@ -113,6 +113,7 @@ export const DISPLAYED_IN_FEED = [
   "project_resuming",
   "project_timeline_edited",
   "project_retrospective_commented",
+  "project_discussion_submitted",
   "resource_hub_document_created",
   "resource_hub_document_edited",
   "resource_hub_document_commented",
@@ -179,6 +180,7 @@ import ProjectContributorEdited from "@/features/activities/ProjectContributorEd
 import ProjectContributorRemoved from "@/features/activities/ProjectContributorRemoved";
 import ProjectContributorsAddition from "@/features/activities/ProjectContributorsAddition";
 import ProjectCreated from "@/features/activities/ProjectCreated";
+import ProjectDiscussionSubmitted from "@/features/activities/ProjectDiscussionSubmitted";
 import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
 import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
 import ProjectKeyResourceAdded from "@/features/activities/ProjectKeyResourceAdded";
@@ -215,11 +217,11 @@ import GoalDueDateUpdating from "./GoalDueDateUpdating";
 import GoalReviewerUpdating from "./GoalReviewerUpdating";
 
 import { Paths } from "../../routes/paths";
-import GoalNameUpdating from './GoalNameUpdating';
-import GoalSpaceUpdating from './GoalSpaceUpdating';
-import GoalTargetAdding from './GoalTargetAdding';
-import GoalTargetDeleting from './GoalTargetDeleting';
-import GoalTargetUpdating from './GoalTargetUpdating';
+import GoalNameUpdating from "./GoalNameUpdating";
+import GoalSpaceUpdating from "./GoalSpaceUpdating";
+import GoalTargetAdding from "./GoalTargetAdding";
+import GoalTargetDeleting from "./GoalTargetDeleting";
+import GoalTargetUpdating from "./GoalTargetUpdating";
 
 function handler(activity: Activity) {
   return match(activity.action)
@@ -294,6 +296,7 @@ function handler(activity: Activity) {
     .with("goal_target_adding", () => GoalTargetAdding)
     .with("goal_target_deleting", () => GoalTargetDeleting)
     .with("goal_target_updating", () => GoalTargetUpdating)
+    .with("project_discussion_submitted", () => ProjectDiscussionSubmitted)
     .otherwise(() => {
       throw new Error("Unknown activity action: " + activity.action);
     });
