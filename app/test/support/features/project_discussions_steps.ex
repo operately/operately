@@ -11,7 +11,6 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.enable_feature("project_discussions")
     |> Factory.add_space(:marketing)
     |> Factory.add_project(:project, :marketing)
     |> Factory.add_project_reviewer(:reviewer, :project)
