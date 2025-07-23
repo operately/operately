@@ -27,6 +27,7 @@ defmodule Operately.Activities.Preloader do
     |> preload(Operately.ResourceHubs.Document)
     |> preload(Operately.ResourceHubs.Link)
     |> preload(Operately.ResourceHubs.Node)
+    |> preload(Operately.Comments.CommentThread)
     |> preload_sub_activities()
   end
 
@@ -100,7 +101,8 @@ defmodule Operately.Activities.Preloader do
           subreferences ++ acc
 
         is_list(v) ->
-          Enum.with_index(v) |> Enum.reduce(acc, fn {item, index}, acc ->
+          Enum.with_index(v)
+          |> Enum.reduce(acc, fn {item, index}, acc ->
             refs = references(activity_id, item, schema) |> Enum.map(fn {id, f, s, i} -> {id, [k, index | f], s, i} end)
             refs ++ acc
           end)
@@ -110,7 +112,6 @@ defmodule Operately.Activities.Preloader do
       end
     end)
   end
-
 
   #
   # Checks if the given field is a reference to a schema that is not loaded.
@@ -129,7 +130,9 @@ defmodule Operately.Activities.Preloader do
     case value do
       %Ecto.Association.NotLoaded{__owner__: owner_schema, __field__: field} ->
         owner_schema.__schema__(:association, field).queryable == schema
-      _ -> false
+
+      _ ->
+        false
     end
   end
 
@@ -170,16 +173,18 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp inject(activity, references, records) do
-    found = Enum.filter(references, fn {activity_id, _, _, ref_id} ->
-      activity_id == activity.id && Map.has_key?(records, ref_id)
-    end)
+    found =
+      Enum.filter(references, fn {activity_id, _, _, ref_id} ->
+        activity_id == activity.id && Map.has_key?(records, ref_id)
+      end)
 
-    content = Enum.reduce(found, activity.content, fn {_, path, _, ref_id}, acc ->
-      ref = Map.get(records, ref_id)
-      path = ref_path_to_access_path(path)
+    content =
+      Enum.reduce(found, activity.content, fn {_, path, _, ref_id}, acc ->
+        ref = Map.get(records, ref_id)
+        path = ref_path_to_access_path(path)
 
-      put_in(acc, path, ref)
-    end)
+        put_in(acc, path, ref)
+      end)
 
     %{activity | content: content}
   end
@@ -194,7 +199,9 @@ defmodule Operately.Activities.Preloader do
           |> Operately.Activities.cast_content()
           |> Operately.Repo.preload([:author, comment_thread: [comments: :author, reactions: :person]])
           |> preload()
-        _ -> v
+
+        _ ->
+          v
       end
     end)
   end
@@ -207,10 +214,11 @@ defmodule Operately.Activities.Preloader do
     Enum.map(activities, fn a ->
       keys = Map.keys(Map.from_struct(a.content))
 
-      content = Enum.reduce(keys, a.content, fn k, acc ->
-        mapped = fun.(k, Map.get(a.content, k))
-        Map.put(acc, k, mapped)
-      end)
+      content =
+        Enum.reduce(keys, a.content, fn k, acc ->
+          mapped = fun.(k, Map.get(a.content, k))
+          Map.put(acc, k, mapped)
+        end)
 
       %{a | content: content}
     end)
