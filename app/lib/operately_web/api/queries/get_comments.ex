@@ -10,8 +10,8 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   alias Operately.Activities.Activity
 
   inputs do
-    field? :entity_id, :string, null: true
-    field? :entity_type, :string, null: true
+    field :entity_id, :string
+    field :entity_type, :string
   end
 
   outputs do
@@ -28,11 +28,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :project_check_in, person) do
-    from(c in Comment,
-      join: check_in in CheckIn, on: c.entity_id == check_in.id,
-      join: p in assoc(check_in, :project), as: :project,
-      where: c.entity_id == ^id and c.entity_type == :project_check_in
-    )
+    from(c in Comment, join: check_in in CheckIn, on: c.entity_id == check_in.id, join: p in assoc(check_in, :project), as: :project, where: c.entity_id == ^id and c.entity_type == :project_check_in)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
@@ -41,8 +37,10 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   defp load(id, :project_retrospective, person) do
     from(c in Comment,
-      join: retro in Operately.Projects.Retrospective, on: c.entity_id == retro.id,
-      join: project in assoc(retro, :project), as: :project,
+      join: retro in Operately.Projects.Retrospective,
+      on: c.entity_id == retro.id,
+      join: project in assoc(retro, :project),
+      as: :project,
       where: retro.id == ^id and c.entity_type == :project_retrospective
     )
     |> preload_resources()
@@ -52,10 +50,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :goal_update, person) do
-    from(c in Comment,
-      join: u in Operately.Goals.Update, on: c.entity_id == u.id, as: :update,
-      where: u.id == ^id
-    )
+    from(c in Comment, join: u in Operately.Goals.Update, on: c.entity_id == u.id, as: :update, where: u.id == ^id)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :update)
     |> Repo.all()
@@ -63,10 +58,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :message, person) do
-    from(c in Comment,
-      join: m in Operately.Messages.Message, on: c.entity_id == m.id, as: :message,
-      where: m.id == ^id
-    )
+    from(c in Comment, join: m in Operately.Messages.Message, on: c.entity_id == m.id, as: :message, where: m.id == ^id)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :message)
     |> Repo.all()
@@ -75,8 +67,11 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   defp load(id, :comment_thread, person) do
     from(c in Comment,
-      join: t in CommentThread, on: c.entity_id == t.id,
-      join: a in Activity, on: t.parent_id == a.id, as: :activity,
+      join: t in CommentThread,
+      on: c.entity_id == t.id,
+      join: a in Activity,
+      on: a.comment_thread_id == t.id,
+      as: :activity,
       where: c.entity_id == ^id and c.entity_type == :comment_thread
     )
     |> preload_resources()
@@ -86,10 +81,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :resource_hub_document, person) do
-    from(c in Comment,
-      join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :document,
-      where: d.id == ^id
-    )
+    from(c in Comment, join: d in Operately.ResourceHubs.Document, on: c.entity_id == d.id, as: :document, where: d.id == ^id)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :document)
     |> Repo.all()
@@ -97,10 +89,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :resource_hub_file, person) do
-    from(c in Comment,
-      join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :file,
-      where: f.id == ^id
-    )
+    from(c in Comment, join: f in Operately.ResourceHubs.File, on: c.entity_id == f.id, as: :file, where: f.id == ^id)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :file)
     |> Repo.all()
@@ -108,10 +97,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load(id, :resource_hub_link, person) do
-    from(c in Comment,
-      join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :link,
-      where: l.id == ^id
-    )
+    from(c in Comment, join: l in Operately.ResourceHubs.Link, on: c.entity_id == l.id, as: :link, where: l.id == ^id)
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :link)
     |> Repo.all()
@@ -126,7 +112,7 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   end
 
   defp load_notifications(comments, person, action: action) do
-    comment_ids = Enum.map(comments, &(&1.id))
+    comment_ids = Enum.map(comments, & &1.id)
 
     notifications =
       from(n in Operately.Notifications.Notification,

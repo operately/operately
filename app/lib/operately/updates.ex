@@ -368,7 +368,7 @@ defmodule Operately.Updates do
           join: t in Operately.Comments.CommentThread,
           on: t.id == c.entity_id,
           join: a in Activities.Activity,
-          on: t.parent_id == a.id,
+          on: a.comment_thread_id == t.id,
           as: :resource,
           where: c.id == ^id
         )
