@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.ProjectDiscussionSteps do
   use Operately.FeatureCase
+  import Ecto.Query, only: [from: 2]
 
   # alias Operately.Support.Features.ProjectSteps
   # alias Operately.Support.Features.FeedSteps
@@ -45,5 +46,30 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     ctx
     |> UI.assert_text("Existing Discussion")
     |> UI.assert_text("Content for existing discussion")
+  end
+
+  step :click_new_discussion, ctx do
+    ctx |> UI.click(testid: "add-discussions-button")
+  end
+
+  step :fill_in_discussion_title, ctx, title do
+    ctx |> UI.fill(testid: "discussion-title", with: title)
+  end
+
+  step :fill_in_discussion_content, ctx, content do
+    ctx |> UI.fill_rich_text(content)
+  end
+
+  step :submit_discussion, ctx do
+    ctx |> UI.click(testid: "post-discussion")
+  end
+
+  step :assert_discussion_created, ctx, title do
+    attempts(ctx, 5, fn ->
+      record = Operately.Repo.one(from d in Operately.Comments.CommentThread, where: d.title == ^title)
+      assert record != nil
+
+      ctx
+    end)
   end
 end

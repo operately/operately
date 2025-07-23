@@ -31,18 +31,19 @@ defmodule Operately.Features.ProjectDiscussionTest do
   #   |> Steps.assert_comment_email_sent()
   # end
 
-  # feature "writing a new discussion", ctx do
-  #   ctx
-  #   |> Steps.visit_project_page()
-  #   |> Steps.click_new_discussion()
-  #   |> Steps.fill_in_discussion_title("New Discussion")
-  #   |> Steps.fill_in_discussion_content("Discussion content goes here")
-  #   |> Steps.submit_discussion()
-  #   |> Steps.assert_discussion_created("New Discussion")
-  #   |> Steps.assert_new_discussion_feed_posted()
-  #   |> Steps.assert_new_discussion_notification_sent()
-  #   |> Steps.assert_new_discussion_email_sent()
-  # end
+  feature "writing a new discussion", ctx do
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.click_new_discussion()
+    |> Steps.fill_in_discussion_title("New Discussion")
+    |> Steps.fill_in_discussion_content("Discussion content goes here")
+    |> Steps.submit_discussion()
+    |> Steps.assert_discussion_created("New Discussion")
+
+    # |> Steps.assert_new_discussion_feed_posted()
+    # |> Steps.assert_new_discussion_notification_sent()
+    # |> Steps.assert_new_discussion_email_sent()
+  end
 
   # feature "editing a discussion", ctx do
   #   ctx
