@@ -70,7 +70,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
     case type do
       :project_check_in -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_check_in)
       :project_retrospective -> Projects.Permissions.check(parent.request_info.access_level, :can_comment_on_retrospective)
-      :comment_thread -> Activities.Permissions.check(parent.activity.requester_access_level, :can_comment_on_thread)
+      :comment_thread -> Activities.Permissions.check(parent.request_info.access_level, :can_comment_on_thread)
       :goal_update -> Goals.Update.Permissions.check(parent.request_info.access_level, parent, parent.request_info.requester.id, :can_comment)
       :message -> Groups.Permissions.check(parent.request_info.access_level, :can_comment_on_discussions)
       :resource_hub_document -> ResourceHubs.Permissions.check(parent.request_info.access_level, :can_comment_on_document)
