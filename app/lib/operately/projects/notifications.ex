@@ -31,11 +31,13 @@ defmodule Operately.Projects.Notifications do
   end
 
   def get_discussion_subscribers(discussion_id, opts \\ []) do
+    ignore = Keyword.get(opts, :ignore, [])
     preload = [subscription_list: [subscriptions: :person], access_context: []]
+
     {:ok, discussion} = Operately.Comments.CommentThread.get(:system, id: discussion_id, opts: [preload: preload])
     people = discussion.subscription_list.subscriptions |> Enum.map(& &1.person)
 
-    SubscribersLoader.load_for_notifications(discussion, people, opts)
+    SubscribersLoader.load_for_notifications(discussion, people, ignore)
   end
 
   #

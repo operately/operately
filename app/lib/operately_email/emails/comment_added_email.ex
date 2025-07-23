@@ -59,7 +59,7 @@ defmodule OperatelyEmail.Emails.CommentAddedEmail do
         "commented on goal reopening"
 
       activity.action == "project_discussion_submitted" ->
-        "commented on the discussion: #{comment_thread.title}"
+        "commented on: #{comment_thread.title}"
 
       true ->
         raise "Unsupported action: #{activity.action}"

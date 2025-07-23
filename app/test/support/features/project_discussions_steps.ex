@@ -156,6 +156,16 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     })
   end
 
+  step :assert_comment_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      author: ctx.creator,
+      action: "commented on: Existing Discussion"
+    })
+  end
+
   #
   # Helper functions
   #
