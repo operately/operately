@@ -244,7 +244,7 @@ defmodule Operately.Support.Factory.Projects do
     project = Map.fetch!(ctx, project_name)
 
     title = Keyword.get(opts, :title, "Discussion #{testid}")
-    message = Keyword.get(opts, :message, RichText.rich_text("Hello"))
+    message = RichText.rich_text(Keyword.get(opts, :message, "Hello"))
     author = Keyword.get(opts, :author, ctx.creator)
 
     alias Operately.Operations.Notifications.SubscriptionList
