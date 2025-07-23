@@ -5,12 +5,14 @@ defmodule Operately.Operations.CommentAdding do
   alias Operately.Operations.CommentAdding.{Activity, Subscriptions}
 
   def run(creator, entity, entity_type, content) do
-    changeset = Comment.changeset(%{
-      author_id: creator.id,
-      entity_id: entity.id,
-      entity_type: String.to_existing_atom(entity_type),
-      content: %{"message" => content}
-    })
+    changeset =
+      Comment.changeset(%{
+        author_id: creator.id,
+        entity_id: entity.id,
+        entity_type: String.to_existing_atom(entity_type),
+        content: %{"message" => content}
+      })
+
     action = find_action(entity)
 
     Multi.new()
@@ -24,7 +26,8 @@ defmodule Operately.Operations.CommentAdding do
         OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment.entity_id}")
         {:ok, comment}
 
-      error -> error
+      error ->
+        error
     end
   end
 

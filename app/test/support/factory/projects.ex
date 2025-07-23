@@ -252,10 +252,13 @@ defmodule Operately.Support.Factory.Projects do
     alias Operately.Comments.CommentThread
     alias Operately.Activities
 
+    contribs = Operately.Repo.preload(project, contributors: :person).contributors
+    subscriber_ids = Enum.map(contribs, & &1.person_id)
+
     {:ok, res} =
       Ecto.Multi.new()
       |> SubscriptionList.insert(%{send_to_everyone: true, subscription_parent_type: :comment_thread})
-      |> Subscription.insert(author, %{content: message, subscriber_ids: []})
+      |> Subscription.insert(author, %{content: message, subscriber_ids: subscriber_ids})
       |> Ecto.Multi.insert(:thread, fn changes ->
         CommentThread.changeset(%{
           author_id: author.id,

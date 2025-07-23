@@ -22,50 +22,45 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
   describe "permissions" do
     @project_table [
-      %{company: :no_access,      space: :no_access,      project: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      project: :view_access,    expected: 403},
-      %{company: :no_access,      space: :no_access,      project: :comment_access, expected: 200},
-      %{company: :no_access,      space: :no_access,      project: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :no_access,      project: :full_access,    expected: 200},
-
-      %{company: :no_access,      space: :view_access,    project: :no_access,      expected: 403},
-      %{company: :no_access,      space: :comment_access, project: :no_access,      expected: 200},
-      %{company: :no_access,      space: :edit_access,    project: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    project: :no_access,      expected: 200},
-
-      %{company: :view_access,    space: :no_access,      project: :no_access,      expected: 403},
-      %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, project: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, project: :view_access, expected: 403},
+      %{company: :no_access, space: :no_access, project: :comment_access, expected: 200},
+      %{company: :no_access, space: :no_access, project: :edit_access, expected: 200},
+      %{company: :no_access, space: :no_access, project: :full_access, expected: 200},
+      %{company: :no_access, space: :view_access, project: :no_access, expected: 403},
+      %{company: :no_access, space: :comment_access, project: :no_access, expected: 200},
+      %{company: :no_access, space: :edit_access, project: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, project: :no_access, expected: 200},
+      %{company: :view_access, space: :no_access, project: :no_access, expected: 403},
+      %{company: :comment_access, space: :no_access, project: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, project: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, project: :no_access, expected: 200}
     ]
 
     @goal_table [
-      %{company: :no_access,      space: :no_access,      goal: :no_access,      expected: 404},
-      %{company: :no_access,      space: :no_access,      goal: :champion,       expected: 200},
-      %{company: :no_access,      space: :no_access,      goal: :reviewer,       expected: 200},
-
-      %{company: :no_access,      space: :view_access,    goal: :no_access,      expected: 403},
-      %{company: :no_access,      space: :comment_access, goal: :no_access,      expected: 200},
-      %{company: :no_access,      space: :edit_access,    goal: :no_access,      expected: 200},
-      %{company: :no_access,      space: :full_access,    goal: :no_access,      expected: 200},
-
-      %{company: :view_access,    space: :no_access,      goal: :no_access,      expected: 403},
-      %{company: :comment_access, space: :no_access,      goal: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      goal: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      goal: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, goal: :no_access, expected: 404},
+      %{company: :no_access, space: :no_access, goal: :champion, expected: 200},
+      %{company: :no_access, space: :no_access, goal: :reviewer, expected: 200},
+      %{company: :no_access, space: :view_access, goal: :no_access, expected: 403},
+      %{company: :no_access, space: :comment_access, goal: :no_access, expected: 200},
+      %{company: :no_access, space: :edit_access, goal: :no_access, expected: 200},
+      %{company: :no_access, space: :full_access, goal: :no_access, expected: 200},
+      %{company: :view_access, space: :no_access, goal: :no_access, expected: 403},
+      %{company: :comment_access, space: :no_access, goal: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, goal: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, goal: :no_access, expected: 200}
     ]
 
     @space_table [
-      %{company: :no_access,      space: :no_access,      expected: 404},
-      %{company: :no_access,      space: :view_access,    expected: 403},
-      %{company: :no_access,      space: :comment_access, expected: 200},
-      %{company: :no_access,      space: :edit_access,    expected: 200},
-      %{company: :no_access,      space: :full_access,    expected: 200},
-
-      %{company: :view_access,    space: :no_access,      expected: 403},
-      %{company: :comment_access, space: :no_access,      expected: 200},
-      %{company: :edit_access,    space: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :no_access, space: :no_access, expected: 404},
+      %{company: :no_access, space: :view_access, expected: 403},
+      %{company: :no_access, space: :comment_access, expected: 200},
+      %{company: :no_access, space: :edit_access, expected: 200},
+      %{company: :no_access, space: :full_access, expected: 200},
+      %{company: :view_access, space: :no_access, expected: 403},
+      %{company: :comment_access, space: :no_access, expected: 200},
+      %{company: :edit_access, space: :no_access, expected: 200},
+      %{company: :full_access, space: :no_access, expected: 200}
     ]
 
     setup ctx do
@@ -80,11 +75,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         check_in = create_check_in(ctx.creator, project)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.project_check_in_id(check_in),
-          entity_type: "project_check_in",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.project_check_in_id(check_in),
+                   entity_type: "project_check_in",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -92,8 +88,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(check_in.id, :project_check_in)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -104,11 +104,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id})
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.project_retrospective_id(retrospective),
-          entity_type: "project_retrospective",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.project_retrospective_id(retrospective),
+                   entity_type: "project_retrospective",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -116,8 +117,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(retrospective.id, :project_retrospective)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -128,19 +133,25 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         doc = document_fixture(resource_hub.id, ctx.creator.id)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.document_id(doc),
-          entity_type: "resource_hub_document",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.document_id(doc),
+                   entity_type: "resource_hub_document",
+                   emoji: "👍"
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             reaction = get_reaction(doc.id, :resource_hub_document)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -151,19 +162,25 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         file = file_fixture(resource_hub, ctx.creator)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.file_id(file),
-          entity_type: "resource_hub_file",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.file_id(file),
+                   entity_type: "resource_hub_file",
+                   emoji: "👍"
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             reaction = get_reaction(file.id, :resource_hub_file)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -174,19 +191,25 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         resource_hub = resource_hub_fixture(ctx.creator, space)
         link = link_fixture(resource_hub, ctx.creator)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.link_id(link),
-          entity_type: "resource_hub_link",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.link_id(link),
+                   entity_type: "resource_hub_link",
+                   emoji: "👍"
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             reaction = get_reaction(link.id, :resource_hub_link)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -197,11 +220,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
         thread = create_comment_thread(goal)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_thread_id(thread),
-          entity_type: "comment_thread",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_thread_id(thread),
+                   entity_type: "comment_thread",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -209,8 +233,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(thread.id, :comment_thread)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -221,11 +249,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         goal = create_goal(ctx, space, @test.company, @test.space, @test.goal)
         update = create_goal_update(ctx, goal)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.goal_update_id(update),
-          entity_type: "goal_update",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.goal_update_id(update),
+                   entity_type: "goal_update",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -233,8 +262,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(update.id, :goal_update)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -245,11 +278,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         board = messages_board_fixture(space.id)
         message = message_fixture(ctx.creator.id, board.id)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.message_id(message),
-          entity_type: "message",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.message_id(message),
+                   entity_type: "message",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -257,8 +291,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(message.id, :message)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -270,12 +308,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         check_in = create_check_in(ctx.creator, project)
         comment = create_comment(ctx, check_in, "project_check_in")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "project_check_in",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "project_check_in",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -283,8 +322,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -296,12 +339,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         retrospective = retrospective_fixture(%{project_id: project.id, author_id: ctx.creator.id}) |> Repo.preload(:project)
         comment = create_comment(ctx, retrospective, "project_retrospective")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "project_retrospective",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "project_retrospective",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -309,8 +353,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -322,12 +370,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         milestone = milestone_fixture(ctx.creator, %{project_id: project.id})
         comment = create_milestone_comment(ctx, milestone)
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "milestone",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "milestone",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -335,8 +384,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -348,12 +401,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         thread = create_comment_thread(goal)
         comment = create_comment(ctx, thread, "comment_thread")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "comment_thread",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "comment_thread",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -361,8 +415,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -374,12 +432,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         update = create_goal_update(ctx, goal)
         comment = create_comment(ctx, update, "update")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "goal_update",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "goal_update",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -387,8 +446,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -400,12 +463,13 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         message = message_fixture(ctx.creator.id, board.id) |> Repo.preload(:space)
         comment = create_comment(ctx, message, "message")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "message",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "message",
+                   emoji: "👍"
+                 })
 
         assert code == @test.expected
 
@@ -413,8 +477,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -426,20 +494,26 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         doc = document_fixture(resource_hub.id, ctx.creator.id) |> Repo.preload(resource_hub: :space)
         comment = create_comment(ctx, doc, "resource_hub_document")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "resource_hub_document",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "resource_hub_document",
+                   emoji: "👍"
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -451,20 +525,26 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         file = file_fixture(resource_hub, ctx.creator) |> Repo.preload(:resource_hub)
         comment = create_comment(ctx, file, "resource_hub_file")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "resource_hub_file",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "resource_hub_file",
+                   emoji: "👍"
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -476,20 +556,26 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
         link = link_fixture(resource_hub, ctx.creator) |> Repo.preload(:resource_hub)
         comment = create_comment(ctx, link, "resource_hub_link")
 
-        assert {code, res} = mutation(ctx.conn, :add_reaction, %{
-          entity_id: Paths.comment_id(comment),
-          entity_type: "comment",
-          parent_type: "resource_hub_link",
-          emoji: "👍"
-        })
+        assert {code, res} =
+                 mutation(ctx.conn, :add_reaction, %{
+                   entity_id: Paths.comment_id(comment),
+                   entity_type: "comment",
+                   parent_type: "resource_hub_link",
+                   emoji: "👍"
+                 })
+
         assert code == @test.expected
 
         case @test.expected do
           200 ->
             reaction = get_reaction(comment.id, :comment)
             assert res.reaction == Serializer.serialize(reaction, level: :essential)
-          403 -> assert res.message == "You don't have permission to perform this action"
-          404 -> assert res.message == "The requested resource was not found"
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
         end
       end
     end
@@ -507,11 +593,12 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
     end
 
     test "add reaction to a discussion", ctx do
-      assert {200, res} = mutation(ctx.conn, :add_reaction, %{
-        entity_id: Paths.message_id(ctx.hello_message),
-        entity_type: "message",
-        emoji: "👍"
-      })
+      assert {200, res} =
+               mutation(ctx.conn, :add_reaction, %{
+                 entity_id: Paths.message_id(ctx.hello_message),
+                 entity_type: "message",
+                 emoji: "👍"
+               })
 
       reaction = hd(Operately.Updates.list_reactions(ctx.hello_message.id, :message))
       assert reaction.emoji == "👍"
@@ -532,67 +619,84 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
   end
 
   defp create_space(ctx, company_members_level, space_members_level) do
-    space = group_fixture(ctx.creator, %{
-      company_id: ctx.company.id,
-      company_permissions: Binding.from_atom(company_members_level),
-    })
+    space =
+      group_fixture(ctx.creator, %{
+        company_id: ctx.company.id,
+        company_permissions: Binding.from_atom(company_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     space
   end
 
   defp create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project
   end
 
   defp create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
-    attrs = case goal_member_level do
-      :champion -> [champion_id: ctx.person.id]
-      :reviewer -> [reviewer_id: ctx.person.id]
-      _ -> []
-    end
+    attrs =
+      case goal_member_level do
+        :champion -> [champion_id: ctx.person.id]
+        :reviewer -> [reviewer_id: ctx.person.id]
+        _ -> []
+      end
 
-    goal = goal_fixture(ctx.creator, Enum.into(attrs, %{
-      space_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    }))
+    goal =
+      goal_fixture(
+        ctx.creator,
+        Enum.into(attrs, %{
+          space_id: space.id,
+          company_access_level: Binding.from_atom(company_members_level),
+          space_access_level: Binding.from_atom(space_members_level)
+        })
+      )
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [
+          %{
+            id: ctx.person.id,
+            access_level: Binding.from_atom(space_members_level)
+          }
+        ])
     end
 
     goal
@@ -600,7 +704,10 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
 
   defp create_comment_thread(goal) do
     activity = from(a in Activity, where: a.action == "goal_created" and a.content["goal_id"] == ^goal.id) |> Repo.one!()
-    comment_thread_fixture([parent_id: activity.id])
+    thread = comment_thread_fixture(parent_id: activity.id)
+    {:ok, _} = Operately.Repo.update(Operately.Activities.Activity.changeset(activity, %{comment_thread_id: thread.id}))
+
+    thread
   end
 
   defp create_goal_update(ctx, goal) do
@@ -619,15 +726,17 @@ defmodule OperatelyWeb.Api.Mutations.AddReactionTest do
   end
 
   defp create_milestone_comment(ctx, milestone) do
-    {:ok, milestone_comment} = Operately.Comments.create_milestone_comment(
-      ctx.creator,
-      milestone,
-      "none",
-      %{
-        content: %{"message" => RichText.rich_text("Content")},
-        author_id: ctx.creator.id,
-      }
-    )
+    {:ok, milestone_comment} =
+      Operately.Comments.create_milestone_comment(
+        ctx.creator,
+        milestone,
+        "none",
+        %{
+          content: %{"message" => RichText.rich_text("Content")},
+          author_id: ctx.creator.id
+        }
+      )
+
     Operately.Updates.get_comment!(milestone_comment.comment_id)
   end
 end
