@@ -14,7 +14,6 @@ import { PasswordInput } from "./PasswordInput";
 import { CheckboxInput } from "./CheckboxInput";
 import { SelectStatus } from "./SelectStatus";
 import { MultiPeopleSelectField } from "./MultiPeopleSelectField";
-import { TimeframeField } from "./TimeframeField";
 import { NumberInput } from "./NumberInput";
 
 import { useForm } from "./useForm";
@@ -43,6 +42,5 @@ export default {
   MultiPeopleSelectField,
   CheckboxInput,
   SelectStatus,
-  TimeframeField,
   NumberInput,
 };

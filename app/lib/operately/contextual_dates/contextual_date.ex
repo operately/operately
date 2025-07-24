@@ -75,4 +75,67 @@ defmodule Operately.ContextualDates.ContextualDate do
   end
 
   def valid_types, do: @valid_types
+
+  def create_year_date(date) do
+    year = date.year
+    %__MODULE__{
+      date_type: :year,
+      value: to_string(year),
+      date: date
+    }
+  end
+
+  def create_quarter_date(date) do
+    %__MODULE__{
+      date_type: :quarter,
+      value: "#{get_quarter(date)} #{date.year}",
+      date: date
+    }
+  end
+
+  def create_month_date(date) do
+    %__MODULE__{
+      date_type: :month,
+      value: Calendar.strftime(date, "%b %Y"),
+      date: date
+    }
+  end
+
+  def create_day_date(date) do
+    %__MODULE__{
+      date_type: :day,
+      value: Calendar.strftime(date, "%b %-d, %Y"),
+      date: date
+    }
+  end
+
+  def create_date(date, type) when type in @valid_types do
+    case type do
+      :year -> create_year_date(date)
+      :quarter -> create_quarter_date(date)
+      :month -> create_month_date(date)
+      :day -> create_day_date(date)
+    end
+  end
+
+  def from_string(string_date, type) when type in @valid_types do
+    date = Date.from_iso8601!(string_date)
+    create_date(date, type)
+  end
+
+  def parse_json(nil), do: nil
+
+  def parse_json(json) when is_binary(json) do
+    parse_json(Jason.decode!(json))
+  end
+
+  def parse_json(map) do
+    %{"date" => date, "date_type" => type, "value" => value} = map
+
+    %__MODULE__{
+      date: Date.from_iso8601!(date),
+      date_type: String.to_existing_atom(type),
+      value: value
+    }
+  end
 end

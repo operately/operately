@@ -142,8 +142,8 @@ defmodule OperatelyWeb.Api.Goals do
           company_id: changes.goal.company_id,
           space_id: changes.goal.group_id,
           goal_id: changes.goal.id,
-          old_due_date: changes.goal.timeframe && changes.goal.timeframe.end_date,
-          new_due_date: changes.updated_goal.timeframe && changes.updated_goal.timeframe.end_date
+          old_due_date: Operately.Goals.Timeframe.end_date(changes.goal.timeframe),
+          new_due_date: Operately.Goals.Timeframe.end_date(changes.updated_goal.timeframe)
         }
       end)
       |> Steps.commit()
@@ -572,9 +572,6 @@ defmodule OperatelyWeb.Api.Goals do
 
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
-                type: "days",
-                start_date: goal.inserted_at,
-                end_date: new_due_date.date,
                 contextual_start_date: contextual_start_date,
                 contextual_end_date: new_due_date
               }
@@ -593,9 +590,6 @@ defmodule OperatelyWeb.Api.Goals do
 
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
-                type: "days",
-                start_date: goal.timeframe.start_date,
-                end_date: new_due_date.date,
                 contextual_start_date: contextual_start_date,
                 contextual_end_date: new_due_date
               }

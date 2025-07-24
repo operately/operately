@@ -76,9 +76,6 @@ defmodule Operately.Activities.Content.GoalEditing do
     field :old_name, :string
     field :new_name, :string
 
-    field :old_timeframe, :string # deprecated, use previous_timeframe
-    field :new_timeframe, :string # deprecated, use current_timeframe
-
     embeds_one :previous_timeframe, Operately.Goals.Timeframe
     embeds_one :current_timeframe, Operately.Goals.Timeframe
 
@@ -106,21 +103,5 @@ defmodule Operately.Activities.Content.GoalEditing do
 
   def build(params) do
     changeset(params)
-  end
-
-  def previous_timeframe(content) do
-    if content["previous_timeframe"] do
-      content["previous_timeframe"]
-    else
-      Operately.Goals.Timeframe.convert_old_timeframe(content["old_timeframe"])
-    end
-  end
-
-  def current_timeframe(content) do
-    if content["current_timeframe"] do
-      content["current_timeframe"]
-    else
-      Operately.Goals.Timeframe.convert_old_timeframe(content["new_timeframe"])
-    end
   end
 end
