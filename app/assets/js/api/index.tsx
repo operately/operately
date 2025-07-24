@@ -1494,8 +1494,8 @@ export interface Task {
 }
 
 export interface Timeframe {
-  contextualStartDate: ContextualDate;
-  contextualEndDate: ContextualDate;
+  contextualStartDate: ContextualDate | null;
+  contextualEndDate: ContextualDate | null;
 }
 
 export interface Update {
@@ -1834,8 +1834,8 @@ export interface GetBindedPeopleResult {
 }
 
 export interface GetCommentsInput {
-  entityId?: string | null;
-  entityType?: string | null;
+  entityId: string;
+  entityType: string;
 }
 
 export interface GetCommentsResult {

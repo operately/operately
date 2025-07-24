@@ -34,6 +34,7 @@ defmodule Operately.Projects.Project do
 
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
+    embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.validate_status()
@@ -88,6 +89,7 @@ defmodule Operately.Projects.Project do
       :last_check_in_status,
       :next_update_scheduled_at
     ])
+    |> cast_embed(:timeframe)
     |> validate_required([
       :name,
       :company_id,

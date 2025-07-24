@@ -4,11 +4,16 @@ defmodule Operately.Projects.EditTimelineOperation do
 
   alias Operately.Activities
   alias Operately.Projects.{Project, Milestone}
+  alias Operately.ContextualDates.ContextualDate
 
   def run(author, project, attrs) do
     changeset = Project.changeset(project, %{
       started_at: attrs.project_start_date,
-      deadline: attrs.project_due_date
+      deadline: attrs.project_due_date,
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(attrs.project_start_date),
+        contextual_end_date: ContextualDate.create_day_date(attrs.project_due_date),
+      }
     })
 
     Multi.new()
