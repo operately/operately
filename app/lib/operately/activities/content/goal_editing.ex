@@ -76,8 +76,8 @@ defmodule Operately.Activities.Content.GoalEditing do
     field :old_name, :string
     field :new_name, :string
 
-    embeds_one :previous_timeframe, Operately.Goals.Timeframe
-    embeds_one :current_timeframe, Operately.Goals.Timeframe
+    embeds_one :previous_timeframe, Operately.ContextualDates.Timeframe
+    embeds_one :current_timeframe, Operately.ContextualDates.Timeframe
 
     belongs_to :old_champion, Operately.People.Person
     belongs_to :new_champion, Operately.People.Person

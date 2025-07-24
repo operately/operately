@@ -13,7 +13,7 @@ defmodule Operately.Activities.Content.GoalCreated do
 
     # deprecated, use new_timeframe instead
     field :timeframe, :string
-    embeds_one :new_timeframe, Operately.Goals.Timeframe
+    embeds_one :new_timeframe, Operately.ContextualDates.Timeframe
   end
 
   def changeset(attrs) do

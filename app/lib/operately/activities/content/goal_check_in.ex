@@ -7,8 +7,8 @@ defmodule Operately.Activities.Content.GoalCheckIn do
     belongs_to :goal, Operately.Goals.Goal
     belongs_to :update, Operately.Goals.Update
 
-    embeds_one :old_timeframe, Operately.Goals.Timeframe
-    embeds_one :new_timeframe, Operately.Goals.Timeframe
+    embeds_one :old_timeframe, Operately.ContextualDates.Timeframe
+    embeds_one :new_timeframe, Operately.ContextualDates.Timeframe
   end
 
   def changeset(attrs) do

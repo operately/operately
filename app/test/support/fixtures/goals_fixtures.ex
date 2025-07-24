@@ -1,7 +1,7 @@
 defmodule Operately.GoalsFixtures do
   alias Operately.Goals
   alias Operately.Access.Binding
-  alias Operately.Goals.Timeframe
+  alias Operately.ContextualDates.Timeframe
 
   def goal_fixture(creator, attrs \\ %{}) do
     attrs =

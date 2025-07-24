@@ -6,8 +6,8 @@ defmodule Operately.Activities.Content.GoalTimeframeEditing do
     belongs_to :space, Operately.Groups.Group
     belongs_to :goal, Operately.Goals.Goal
 
-    embeds_one :old_timeframe, Operately.Goals.Timeframe
-    embeds_one :new_timeframe, Operately.Goals.Timeframe
+    embeds_one :old_timeframe, Operately.ContextualDates.Timeframe
+    embeds_one :new_timeframe, Operately.ContextualDates.Timeframe
   end
 
   def changeset(attrs) do
