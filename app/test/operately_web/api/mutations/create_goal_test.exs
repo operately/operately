@@ -166,7 +166,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
   #
 
   defp request(conn, ctx, attrs \\ []) do
-    timeframe = Operately.Goals.Timeframe.current_quarter()
+    timeframe = Operately.ContextualDates.Timeframe.current_quarter()
 
     mutation(conn, :create_goal, Enum.into(attrs, %{
       space_id: Paths.space_id(ctx.space),

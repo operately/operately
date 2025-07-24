@@ -29,7 +29,7 @@ defmodule Operately.Goals.Goal do
     field :last_update_status, Ecto.Enum, values: Update.valid_statuses()
     field :next_update_scheduled_at, :utc_datetime
 
-    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
+    embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
     field :deprecated_timeframe, :string
 
     field :closed_at, :utc_datetime

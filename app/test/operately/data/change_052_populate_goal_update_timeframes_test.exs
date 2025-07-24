@@ -1,7 +1,7 @@
 defmodule Operately.Data.Change051PopulateGoalLastCheckInsTest do
   use Operately.DataCase
   alias Operately.Repo
-  alias Operately.Goals.Timeframe
+  alias Operately.ContextualDates.Timeframe
 
   setup ctx do
     ctx

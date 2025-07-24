@@ -71,7 +71,7 @@ defmodule Operately.Assignments.LoaderTest do
       |> Factory.add_goal(:not_started_goal, :space,
         champion: :champion,
         reviewer: :reviewer,
-        timeframe: Operately.Goals.Timeframe.next_quarter()
+        timeframe: Operately.ContextualDates.Timeframe.next_quarter()
       )
       |> set_update_schedule(:late_goal1, past_date())
       |> set_update_schedule(:late_goal2, past_date())

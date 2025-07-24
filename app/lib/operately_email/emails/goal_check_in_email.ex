@@ -3,7 +3,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
   alias Operately.Goals.Update
   alias Operately.Goals.Update.Permissions
-  alias Operately.Goals.Timeframe
+  alias Operately.ContextualDates.Timeframe
 
   alias OperatelyWeb.Paths
   alias __MODULE__.OverviewMsg

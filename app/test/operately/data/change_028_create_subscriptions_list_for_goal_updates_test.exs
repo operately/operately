@@ -7,7 +7,7 @@ defmodule Operately.Data.Change028CreateSubscriptionsListForGoalUpdatesTest do
 
   alias Operately.Notifications
   alias Operately.Notifications.Subscription
-  alias Operately.Goals.Timeframe
+  alias Operately.ContextualDates.Timeframe
 
   setup ctx do
     company = company_fixture(%{})

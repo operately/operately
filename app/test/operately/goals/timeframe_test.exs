@@ -1,7 +1,7 @@
 defmodule Operately.Goals.TimeframeTest do
   use Operately.DataCase
 
-  alias Operately.Goals.Timeframe
+  alias Operately.ContextualDates.Timeframe
 
   test "changeset/1 with valid data returns no errors" do
     changeset = Timeframe.changeset(%{type: "year", start_date: ~D[2020-01-01], end_date: ~D[2020-12-31]})
