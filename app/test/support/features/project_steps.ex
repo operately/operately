@@ -17,7 +17,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       name: name,
       champion_id: ctx.champion.id,
       reviewer_id: ctx.reviewer.id,
-      timeframe: Operately.Goals.Timeframe.year_timeframe(~D[2021-01-01]),
+      timeframe: Operately.ContextualDates.Timeframe.year_timeframe(~D[2021-01-01]),
       targets: [
         %{
           name: "First response time",

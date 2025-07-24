@@ -142,8 +142,8 @@ defmodule OperatelyWeb.Api.Goals do
           company_id: changes.goal.company_id,
           space_id: changes.goal.group_id,
           goal_id: changes.goal.id,
-          old_due_date: Operately.Goals.Timeframe.end_date(changes.goal.timeframe),
-          new_due_date: Operately.Goals.Timeframe.end_date(changes.updated_goal.timeframe)
+          old_due_date: Operately.ContextualDates.Timeframe.end_date(changes.goal.timeframe),
+          new_due_date: Operately.ContextualDates.Timeframe.end_date(changes.updated_goal.timeframe)
         }
       end)
       |> Steps.commit()

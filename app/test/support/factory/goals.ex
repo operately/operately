@@ -1,6 +1,6 @@
 defmodule Operately.Support.Factory.Goals do
   alias Operately.Access.Binding
-  alias Operately.Goals.Timeframe
+  alias Operately.ContextualDates.Timeframe
   alias Operately.Support.RichText
 
   def add_goal(ctx, testid, space_name, opts \\ []) do

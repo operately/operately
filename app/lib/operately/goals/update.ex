@@ -18,7 +18,7 @@ defmodule Operately.Goals.Update do
 
     field :message, :map
     field :status, Ecto.Enum, values: @valid_statuses
-    embeds_one :timeframe, Operately.Goals.Timeframe, on_replace: :delete
+    embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
 
     field :acknowledged_at, :utc_datetime
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id

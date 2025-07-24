@@ -1,4 +1,4 @@
-defmodule Operately.Goals.Timeframe do
+defmodule Operately.ContextualDates.Timeframe do
   use Ecto.Schema
   import Ecto.Changeset
 
