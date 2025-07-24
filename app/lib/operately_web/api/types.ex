@@ -1074,7 +1074,6 @@ defmodule OperatelyWeb.Api.Types do
     field :id, :string, null: false
     field :name, :string, null: false
     field :status, :goal_status, null: false
-    field :due_date, :date, null: true
 
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
@@ -1672,13 +1671,18 @@ defmodule OperatelyWeb.Api.Types do
     field :next_step, :string, null: false
     field :is_new, :boolean, null: false
     field :completed_on, :date, null: true
-    field :timeframe, :timeframe, null: true
+    field :timeframe, :work_map_item_timeframe, null: true
     field :children, list_of(:work_map_item), null: false
     field :type, :work_map_item_type, null: false
     field :item_path, :string, null: false
     field :privacy, :work_map_item_privacy, null: false
 
     field? :assignees, list_of(:person), null: true
+  end
+
+  object :work_map_item_timeframe do
+    field :start_date, :date, null: true
+    field :end_date, :date, null: true
   end
 
   enum(:success_status, values: [:achieved, :missed])

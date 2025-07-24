@@ -940,7 +940,6 @@ export interface Goal {
   id: string;
   name: string;
   status: GoalStatus;
-  dueDate: string | null;
   insertedAt?: string | null;
   updatedAt?: string | null;
   nextUpdateScheduledAt?: string | null;
@@ -1618,12 +1617,17 @@ export interface WorkMapItem {
   nextStep: string;
   isNew: boolean;
   completedOn: string | null;
-  timeframe: Timeframe | null;
+  timeframe: WorkMapItemTimeframe | null;
   children: WorkMapItem[];
   type: WorkMapItemType;
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
+}
+
+export interface WorkMapItemTimeframe {
+  startDate: string | null;
+  endDate: string | null;
 }
 
 export type ActivityContent =

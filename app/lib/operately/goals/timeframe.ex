@@ -100,4 +100,12 @@ defmodule Operately.Goals.Timeframe do
       contextual_end_date: ContextualDate.create_quarter_date(end_date)
     }
   end
+
+  def start_date(nil), do: nil
+  def start_date(%__MODULE__{contextual_start_date: nil}), do: nil
+  def start_date(%__MODULE__{contextual_start_date: contextual_date}), do: contextual_date.date
+
+  def end_date(nil), do: nil
+  def end_date(%__MODULE__{contextual_end_date: nil}), do: nil
+  def end_date(%__MODULE__{contextual_end_date: contextual_date}), do: contextual_date.date
 end

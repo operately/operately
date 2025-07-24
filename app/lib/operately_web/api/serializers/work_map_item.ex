@@ -39,15 +39,19 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
     end
   end
 
-  defp timeframe(item = %{type: :goal}) do
-    OperatelyWeb.Api.Serializer.serialize(item.timeframe)
+  defp timeframe(%{timeframe: nil}), do: %{start_date: nil, end_date: nil}
+
+  defp timeframe(%{type: :goal, timeframe: timeframe}) do
+    %{
+      start_date: Operately.Goals.Timeframe.start_date(timeframe),
+      end_date: Operately.Goals.Timeframe.end_date(timeframe)
+    }
   end
 
   defp timeframe(_item = %{type: :project, timeframe: timeframe}) do
     %{
       start_date: timeframe["start_date"] || timeframe[:start_date],
       end_date: timeframe["end_date"] || timeframe[:end_date],
-      type: timeframe["type"] || timeframe[:type],
     }
   end
 end
