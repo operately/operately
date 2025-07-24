@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.Access
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.ContextualDates.ContextualDate
 
   def setup(ctx) do
     ctx
@@ -17,9 +18,8 @@ defmodule Operately.Support.Features.GoalSteps do
       champion: :champion,
       reviewer: :reviewer,
       timeframe: %{
-        start_date: Operately.Time.days_ago(10) |> Operately.Time.as_date(),
-        end_date: Operately.Time.days_from_now(10) |> Operately.Time.as_date(),
-        type: "days"
+        contextual_start_date: Operately.Time.days_ago(10) |> ContextualDate.create_day_date(),
+        contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date(),
       },
       parent_goal: :parent_goal
     )

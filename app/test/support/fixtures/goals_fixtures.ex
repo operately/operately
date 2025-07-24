@@ -9,7 +9,7 @@ defmodule Operately.GoalsFixtures do
         name: "some name",
         champion_id: attrs[:champion_id] || creator.id,
         reviewer_id: attrs[:reviewer_id] || creator.id,
-        timeframe: Timeframe.current_quarter(),
+        timeframe: Timeframe.current_quarter(:as_map),
         targets: [
           %{
             name: "First response time",

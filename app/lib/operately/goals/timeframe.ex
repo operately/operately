@@ -53,11 +53,20 @@ defmodule Operately.Goals.Timeframe do
     }
   end
 
+  def current_quarter(:as_map), do: current_quarter() |> Map.from_struct()
   def current_quarter do
-    Date.utc_today()
-    |> ContextualDate.create_quarter_date()
+    today = Date.utc_today()
+    year = today.year
+
+    cond do
+      today.month in 1..3 -> quarter_timeframe(year, "01-01", "03-31")
+      today.month in 4..6 -> quarter_timeframe(year, "04-01", "06-30")
+      today.month in 7..9 -> quarter_timeframe(year, "07-01", "09-30")
+      today.month in 10..12 -> quarter_timeframe(year, "10-01", "12-31")
+    end
   end
 
+  def next_quarter(:as_map), do: next_quarter() |> Map.from_struct()
   def next_quarter do
     today = Date.utc_today()
     year = today.year
