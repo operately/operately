@@ -206,7 +206,7 @@ function EditInstructionsModal({
   return (
     <Modal title={title} isOpen={isOpen} onClose={onClose} closeOnBackdropClick={false} size="large">
       <textarea
-        className="w-full p-2 border border-surface-outline rounded-md text-xs"
+        className="w-full p-2 border border-surface-outline rounded-md text-xs bg-surface-base text-content-base placeholder-content-subtle focus:outline-none focus:ring-1 focus:ring-accent-1"
         rows={30}
         value={buffer}
         onChange={(e) => setBuffer(e.target.value)}
