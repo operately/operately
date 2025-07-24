@@ -1,7 +1,7 @@
 import { WorkMapItem, getFlatWorkMap, getWorkMap, useCreateGoal, useCreateProject } from "@/api";
 import { Paths, usePaths } from "@/routes/paths";
 import React from "react";
-import { TimeframeSelector, WorkMap } from "turboui";
+import { WorkMap } from "turboui";
 import { accessLevelAsNumber } from "../goals";
 
 /**
@@ -33,7 +33,6 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
   return {
     startDate: timeframe.startDate || undefined,
     endDate: timeframe.endDate || undefined,
-    type: (timeframe.type || undefined) as TimeframeSelector.TimeframeType,
   };
 };
 

@@ -1,5 +1,3 @@
-import * as Timeframes from "@/utils/timeframes";
-
 import { Goal } from "@/models/goals";
 import { Person } from "@/models/people";
 import { Project } from "@/models/projects";
@@ -9,7 +7,7 @@ import { GoalNode } from "./goalNode";
 import { Node } from "./node";
 import { ProjectNode } from "./projectNode";
 
-export type SortColumn = "name" | "space" | "timeframe" | "progress" | "lastCheckIn" | "champion";
+export type SortColumn = "name" | "space" |  "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
 
 export interface TreeOptions {
@@ -30,7 +28,6 @@ export interface TreeOptions {
   personId?: string;
 
   goalId?: string;
-  timeframe?: Timeframes.Timeframe;
 }
 
 export type Tree = Node[];
@@ -197,7 +194,6 @@ class TreeFilter {
       this.spaceFilter(node) &&
       this.personFilter(node) &&
       this.statusFilter(node) &&
-      this.timeframeFilter(node) &&
       this.myRoleFilter(node)
     );
   }
@@ -222,15 +218,6 @@ class TreeFilter {
     if (this.options.showCompleted && (node.isClosed || node.hasClosedDescendant())) return true;
 
     return false;
-  }
-
-  private timeframeFilter(node: Node): boolean {
-    if (!this.options.timeframe) return true;
-
-    const timeframe = node.activeTimeframe();
-    if (!timeframe) return false;
-
-    return Timeframes.hasOverlap(this.options.timeframe, timeframe);
   }
 
   private myRoleFilter(node: Node): boolean {
