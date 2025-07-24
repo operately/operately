@@ -65,10 +65,7 @@ function Form() {
 
   assertPresent(project.potentialSubscribers, "potentialSubscribers must be present in project");
 
-  const subscriptionsState = useSubscriptions(project.potentialSubscribers, {
-    ignoreMe: true,
-    notifyPrioritySubscribers: true,
-  });
+  const subscriptionsState = useSubscriptions(project.potentialSubscribers, { ignoreMe: true });
 
   const form = useForm({ project, subscriptionsState });
 

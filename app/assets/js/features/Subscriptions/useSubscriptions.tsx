@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { compareIds } from "@/routes/paths";
 import { Subscriber } from "@/models/notifications";
+import { compareIds } from "@/routes/paths";
 import { Options } from ".";
 
 export interface SubscriptionsState {
@@ -20,10 +20,10 @@ interface Opts {
   ignoreMe?: boolean;
 }
 
-export function useSubscriptions(subscribers: Subscriber[], opts?: Opts): SubscriptionsState {
+export function useSubscriptions(allSubscribers: Subscriber[], opts?: Opts): SubscriptionsState {
   const me = useMe();
 
-  subscribers = opts?.ignoreMe ? subscribers.filter((s) => !compareIds(s.person!.id, me?.id)) : subscribers;
+  const subscribers = opts?.ignoreMe ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id)) : allSubscribers;
   const alwaysNotify = useMemo(() => findPrioritySubscribers(subscribers, opts), []);
 
   const [selectedSubscribers, setSelectedSubscribers] = useState<Subscriber[]>(
