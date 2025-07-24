@@ -36,17 +36,17 @@ defmodule Operately.Goals.Timeframe do
   end
 
   def current_year do
-    date = Date.utc_today()
-
-    %__MODULE__{
-      contextual_start_date: ContextualDate.create_year_date(beginning_of_year(date)),
-      contextual_end_date: ContextualDate.create_year_date(end_of_year(date))
-    }
+    Date.utc_today()
+    |> year_timeframe()
   end
 
   def last_year do
-    date = Date.utc_today() |> Date.add(-365)
+    Date.utc_today()
+    |> Date.add(-365)
+    |> year_timeframe()
+  end
 
+  def year_timeframe(date) do
     %__MODULE__{
       contextual_start_date: ContextualDate.create_year_date(beginning_of_year(date)),
       contextual_end_date: ContextualDate.create_year_date(end_of_year(date))
