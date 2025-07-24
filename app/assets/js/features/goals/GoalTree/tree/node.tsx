@@ -3,7 +3,6 @@ import type { SortColumn, SortDirection } from "./";
 import * as People from "@/models/people";
 import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
-import * as Timeframes from "@/utils/timeframes";
 
 import { compareIds, Paths } from "@/routes/paths";
 
@@ -44,9 +43,7 @@ export abstract class Node {
   public startedAt: Date;
 
   abstract childrenInfoLabel(): string | null;
-  abstract compareTimeframe(b: Node): number;
   abstract linkTo(paths: Paths): string;
-  abstract activeTimeframe(): Timeframes.Timeframe | null;
 
   asGoalNode() {
     return this as unknown as GoalNode;
@@ -132,7 +129,6 @@ export abstract class Node {
 
     const result = match(column)
       .with("name", () => this.compareName(b))
-      .with("timeframe", () => this.compareTimeframe(b))
       .with("lastCheckIn", () => this.compareLastCheckIn(b))
       .with("champion", () => this.compareChampion(b))
       .with("space", () => this.compareSpace(b))

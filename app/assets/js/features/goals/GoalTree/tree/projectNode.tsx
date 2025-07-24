@@ -1,6 +1,5 @@
 import * as Spaces from "@/models/spaces";
 import * as Time from "@/utils/time";
-import * as Timeframes from "@/utils/timeframes";
 
 import { ProjectCheckIn } from "@/api";
 import { Project, ProjectRetrospective } from "@/models/projects";
@@ -45,35 +44,12 @@ export class ProjectNode extends Node {
     this.startedAt = Time.parseDate(project.startedAt)!;
   }
 
-  activeTimeframe(): Timeframes.Timeframe {
-    if (!this.isClosed) {
-      return {
-        startDate: Time.parseDate(this.project.startedAt),
-        endDate: new Date(),
-        type: "days",
-      };
-    } else {
-      return {
-        startDate: Time.parseDate(this.project.startedAt),
-        endDate: Time.parseDate(this.project.closedAt!),
-        type: "days",
-      };
-    }
-  }
-
   linkTo(paths): string {
     return paths.projectPath(this.project!.id!);
   }
 
   childrenInfoLabel(): string | null {
     return null;
-  }
-
-  compareTimeframe(b: Node): number {
-    const aTime = Time.parseDate(this.project.deadline);
-    const bTime = Time.parseDate((b as ProjectNode).project.deadline);
-
-    return Time.compareAsc(aTime, bTime);
   }
 
   private calculateProgress(): number {

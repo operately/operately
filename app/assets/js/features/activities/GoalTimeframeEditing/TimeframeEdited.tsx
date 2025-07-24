@@ -10,14 +10,11 @@ interface Props {
 }
 
 export function TimeframeEdited({ oldTimeframe, newTimeframe }: Props) {
-  const start = Timeframes.parse(oldTimeframe);
-  const end = Timeframes.parse(newTimeframe);
-
   return (
     <div className="my-2 flex items-center gap-1 text-sm">
       <div className="flex items-center gap-1 font-medium">
         <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
-          {Timeframes.format(start)}
+          {Timeframes.getTimeframeRange(oldTimeframe)}
         </div>
       </div>
 
@@ -25,7 +22,7 @@ export function TimeframeEdited({ oldTimeframe, newTimeframe }: Props) {
 
       <div className="flex items-center gap-1 font-medium">
         <div className="border border-stroke-base rounded-md px-2 bg-stone-400/20 font-medium text-sm">
-          {Timeframes.format(end)}
+          {Timeframes.getTimeframeRange(newTimeframe)}
         </div>
       </div>
     </div>

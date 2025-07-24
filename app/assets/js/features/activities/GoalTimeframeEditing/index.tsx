@@ -34,15 +34,15 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
-    const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
+    const oldTimeframe = content(activity).oldTimeframe!;
+    const newTimeframe = content(activity).newTimeframe!;
 
     return (
       <div className="mt-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 font-medium">
             <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
-              {Timeframes.format(oldTimeframe)}
+              {Timeframes.getTimeframeRange(oldTimeframe)}
             </div>
           </div>
 
@@ -50,7 +50,7 @@ const GoalTimeframeEditing: ActivityHandler = {
 
           <div className="flex items-center gap-1 font-medium">
             <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
-              {Timeframes.format(newTimeframe)}
+              {Timeframes.getTimeframeRange(newTimeframe)}
             </div>
           </div>
         </div>
@@ -127,8 +127,8 @@ function content(activity: Activity): ActivityContentGoalTimeframeEditing {
 }
 
 function extendedOrShortened(activity: Activity) {
-  const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
-  const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
+  const oldTimeframe = content(activity).oldTimeframe!;
+  const newTimeframe = content(activity).newTimeframe!;
 
   if (Timeframes.compareDuration(oldTimeframe, newTimeframe) === 1) {
     return "extended";
@@ -138,8 +138,8 @@ function extendedOrShortened(activity: Activity) {
 }
 
 function days(activity: Activity) {
-  const oldTimeframe = Timeframes.parse(content(activity).oldTimeframe!);
-  const newTimeframe = Timeframes.parse(content(activity).newTimeframe!);
+  const oldTimeframe = content(activity).oldTimeframe!;
+  const newTimeframe = content(activity).newTimeframe!;
 
   const diff = Timeframes.dayCount(newTimeframe) - Timeframes.dayCount(oldTimeframe);
   return Math.abs(diff);

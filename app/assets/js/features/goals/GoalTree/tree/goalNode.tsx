@@ -7,12 +7,10 @@ import { Node } from "./node";
 import * as Spaces from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
-import * as Timeframes from "@/utils/timeframes";
 
 export class GoalNode extends Node {
   public goal: Goal;
   public lastCheckIn: GoalProgressUpdate | null | undefined;
-  private timeframe: Timeframes.Timeframe | null;
 
   constructor(goal: Goal) {
     assertPresent(goal.space, "space must be present in goal");
@@ -42,39 +40,14 @@ export class GoalNode extends Node {
     this.space = goal.space as Spaces.Space;
     this.spaceId = goal.space.id!;
 
-    this.timeframe = this.calcTimeframe();
     this.startedAt = this.calcStartedAt();
   }
 
   calcStartedAt(): Date {
     if (this.goal.timeframe) {
-      return Timeframes.parse(this.goal.timeframe).startDate!;
+      return Time.parseDate(this.goal.timeframe.contextualEndDate?.date)!;
     } else {
       return Time.parse(this.goal.insertedAt)!;
-    }
-  }
-
-  calcTimeframe(): Timeframes.Timeframe | null {
-    if (this.goal.timeframe) {
-      return Timeframes.parse(this.goal.timeframe);
-    } else {
-      return null;
-    }
-  }
-
-  activeTimeframe(): Timeframes.Timeframe | null {
-    if (this.timeframe) {
-      if (this.isClosed) {
-        return this.timeframe;
-      } else {
-        return {
-          startDate: this.startedAt,
-          endDate: new Date(),
-          type: "days",
-        };
-      }
-    } else {
-      return null;
     }
   }
 
@@ -95,17 +68,6 @@ export class GoalNode extends Node {
     } else {
       return "";
     }
-  }
-
-  compareTimeframe(b: GoalNode): number {
-    const timeframeA = this.timeframe;
-    const timeframeB = b.timeframe;
-
-    if (!timeframeA && !timeframeB) return 0;
-    if (!timeframeA) return -1; // nulls first
-    if (!timeframeB) return 1; // nulls first
-
-    return Time.compareAsc(timeframeA.endDate, timeframeB.endDate);
   }
 
   totalNestedSubGoals(): number {

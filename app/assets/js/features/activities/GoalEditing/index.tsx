@@ -87,12 +87,12 @@ function NewName({ content }: { content: ActivityContentGoalEditing }) {
 }
 
 function Timeframe({ content }: { content: ActivityContentGoalEditing }) {
-  const oldTimeframe = Timeframes.parse(content.newTimeframe!);
-  const newTimeframe = Timeframes.parse(content.oldTimeframe!);
+  const oldTimeframe = content.newTimeframe!;
+  const newTimeframe = content.oldTimeframe!;
 
   if (Timeframes.equalDates(oldTimeframe, newTimeframe)) return null;
 
-  return <div>The timeframe was changed to {Timeframes.format(newTimeframe)}.</div>;
+  return <div>The timeframe was changed to {Timeframes.getTimeframeRange(newTimeframe)}.</div>;
 }
 
 function Champion({ content }: { content: ActivityContentGoalEditing }) {
@@ -157,8 +157,8 @@ function DeletedTargets({ content }: { content: ActivityContentGoalEditing }) {
 }
 
 function shortDesc(content: ActivityContentGoalEditing): string {
-  const oldTimeframe = Timeframes.parse(content.oldTimeframe!);
-  const newTimeframe = Timeframes.parse(content.newTimeframe!);
+  const oldTimeframe = content.oldTimeframe!;
+  const newTimeframe = content.newTimeframe!;
 
   const changes = {
     name: content.oldName !== content.newName,
