@@ -3,6 +3,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
 
   alias Operately.Goals.Update
   alias Operately.Goals.Update.Permissions
+  alias Operately.Goals.Timeframe
 
   alias OperatelyWeb.Paths
   alias __MODULE__.OverviewMsg
@@ -60,7 +61,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
         paragraph(
           status_msg(status) ++
             reviewer_note(status, update.goal.reviewer) ++
-            due_date(update.timeframe && update.timeframe.end_date)
+            due_date(Timeframe.end_date(update.timeframe))
         )
       ])
     end
