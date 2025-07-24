@@ -3,7 +3,6 @@ import React from "react";
 import { Page } from "../../Page";
 import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
-import { TimeframeSelector } from "../../TimeframeSelector";
 
 import { SpaceField } from "../../SpaceField";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
@@ -90,7 +89,6 @@ export namespace WorkMap {
   interface Timeframe {
     startDate?: string;
     endDate?: string;
-    type?: TimeframeSelector.TimeframeType;
   }
 
   export interface Item {

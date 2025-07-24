@@ -1,5 +1,4 @@
 import { PrivacyIndicator } from "../../PrivacyIndicator";
-import { TimeframeSelector } from "../../TimeframeSelector";
 import { currentMonth, currentQuarter, currentYear } from "../../utils/timeframes";
 import WorkMap from "../components";
 
@@ -30,9 +29,8 @@ const people = {
   },
 };
 
-function getTimeframe(timeframe: TimeframeSelector.Timeframe) {
+function getTimeframe(timeframe) {
   return {
-    ...timeframe,
     startDate: timeframe.startDate?.toISOString(),
     endDate: timeframe.endDate?.toISOString(),
   };
@@ -96,7 +94,6 @@ export const mockItems: WorkMap.Item[] = [
         timeframe: {
           startDate: "2024-01-15T00:00:00.000Z",
           endDate: "2025-03-31T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -119,7 +116,6 @@ export const mockItems: WorkMap.Item[] = [
         timeframe: {
           startDate: "2024-01-01T00:00:00.000Z",
           endDate: "2025-02-07T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -160,7 +156,6 @@ export const mockItems: WorkMap.Item[] = [
             timeframe: {
               startDate: "2024-06-15T00:00:00.000Z",
               endDate: "2024-10-01T00:00:00.000Z",
-              type: "days",
             },
             children: [],
           },
@@ -241,7 +236,6 @@ export const mockItems: WorkMap.Item[] = [
                 timeframe: {
                   startDate: "2025-04-15T00:00:00.000Z",
                   endDate: "2025-07-30T00:00:00.000Z",
-                  type: "days",
                 },
                 children: [],
               },
@@ -265,7 +259,6 @@ export const mockItems: WorkMap.Item[] = [
             timeframe: {
               startDate: "2024-03-01T00:00:00.000Z",
               endDate: "2025-04-30T00:00:00.000Z",
-              type: "days",
             },
             privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
             children: [],
@@ -291,7 +284,6 @@ export const mockItems: WorkMap.Item[] = [
         timeframe: {
           startDate: "2025-02-01T00:00:00.000Z",
           endDate: "2025-04-20T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -352,7 +344,6 @@ export const mockItems: WorkMap.Item[] = [
             timeframe: {
               startDate: "2025-04-01T00:00:00.000Z",
               endDate: "2025-08-01T00:00:00.000Z",
-              type: "days",
             },
             children: [],
           },
@@ -398,7 +389,6 @@ export const mockItems: WorkMap.Item[] = [
     timeframe: {
       startDate: "2023-02-01T00:00:00.000Z",
       endDate: "2023-12-31T00:00:00.000Z",
-      type: "days",
     },
     children: [
       {
@@ -419,7 +409,6 @@ export const mockItems: WorkMap.Item[] = [
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
           startDate: "2024-03-01T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -444,7 +433,6 @@ export const mockItems: WorkMap.Item[] = [
     timeframe: {
       startDate: "2024-03-01T00:00:00.000Z",
       endDate: "2028-12-31T00:00:00.000Z",
-      type: "days",
     },
     children: [
       {
@@ -466,7 +454,6 @@ export const mockItems: WorkMap.Item[] = [
         timeframe: {
           startDate: "2024-03-01T00:00:00.000Z",
           endDate: "2025-06-30T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -613,7 +600,6 @@ export const onlyProjects: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-01-10T00:00:00.000Z",
       endDate: "2025-09-30T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -636,7 +622,6 @@ export const onlyProjects: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-02-15T00:00:00.000Z",
       endDate: "2025-10-31T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -659,7 +644,6 @@ export const onlyProjects: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-03-01T00:00:00.000Z",
       endDate: "2025-07-31T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -723,7 +707,6 @@ export const onlyCompleted: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-01-15T00:00:00.000Z",
       endDate: "2025-04-01T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -757,7 +740,6 @@ export const createMockItem = (
     timeframe: {
       startDate: "2025-01-15T00:00:00.000Z",
       endDate: "2025-06-30T00:00:00.000Z",
-      type: "days",
     },
   };
 
@@ -797,7 +779,6 @@ export const createMockItem = (
       timeframe: {
         startDate: "2025-01-01T00:00:00.000Z",
         endDate: "2025-12-31T00:00:00.000Z",
-        type: "days",
       },
     };
   }
@@ -855,7 +836,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         timeframe: {
           startDate: "2025-01-10T00:00:00.000Z",
           endDate: "2025-03-15T00:00:00.000Z",
-          type: "days",
         },
         children: [
           {
@@ -877,7 +857,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             timeframe: {
               startDate: "2025-01-15T00:00:00.000Z",
               endDate: "2025-02-20T00:00:00.000Z",
-              type: "days",
             },
             children: [],
           },
@@ -900,7 +879,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             timeframe: {
               startDate: "2025-02-15T00:00:00.000Z",
               endDate: "2025-03-10T00:00:00.000Z",
-              type: "days",
             },
             children: [],
           },
@@ -925,7 +903,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         timeframe: {
           startDate: "2025-02-01T00:00:00.000Z",
           endDate: "2025-08-30T00:00:00.000Z",
-          type: "days",
         },
         children: [
           {
@@ -947,7 +924,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             timeframe: {
               startDate: "2025-02-15T00:00:00.000Z",
               endDate: "2025-06-30T00:00:00.000Z",
-              type: "days",
             },
             children: [],
           },
@@ -970,7 +946,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             timeframe: {
               startDate: "2025-03-01T00:00:00.000Z",
               endDate: "2025-07-15T00:00:00.000Z",
-              type: "days",
             },
             children: [],
           },
@@ -1015,7 +990,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         timeframe: {
           startDate: "2025-02-01T00:00:00.000Z",
           endDate: "2025-06-15T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -1038,7 +1012,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         timeframe: {
           startDate: "2025-03-15T00:00:00.000Z",
           endDate: "2025-09-30T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -1063,7 +1036,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-03-01T00:00:00.000Z",
       endDate: "2025-07-31T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -1086,7 +1058,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-01-05T00:00:00.000Z",
       endDate: "2025-04-10T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -1109,7 +1080,6 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     timeframe: {
       startDate: "2025-02-01T00:00:00.000Z",
       endDate: "2025-05-30T00:00:00.000Z",
-      type: "days",
     },
     children: [],
   },
@@ -1135,7 +1105,6 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
     timeframe: {
       startDate: "2024-01-01T00:00:00.000Z",
       endDate: "2025-03-15T00:00:00.000Z",
-      type: "days",
     },
     children: [
       {
@@ -1157,7 +1126,6 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
         timeframe: {
           startDate: "2024-04-01T00:00:00.000Z",
           endDate: "2025-06-30T00:00:00.000Z",
-          type: "days",
         },
         children: [
           {
@@ -1179,7 +1147,6 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
             timeframe: {
               startDate: "2024-11-01T00:00:00.000Z",
               endDate: "2025-02-01T00:00:00.000Z",
-              type: "days",
             },
             children: [
               {
@@ -1201,7 +1168,6 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
                 timeframe: {
                   startDate: "2025-01-15T00:00:00.000Z",
                   endDate: "2025-04-30T00:00:00.000Z",
-                  type: "days",
                 },
                 children: [],
               },
@@ -1228,7 +1194,6 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
         timeframe: {
           startDate: "2024-05-01T00:00:00.000Z",
           endDate: "2025-07-15T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },
@@ -1251,7 +1216,6 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
         timeframe: {
           startDate: "2024-03-15T00:00:00.000Z",
           endDate: "2025-05-20T00:00:00.000Z",
-          type: "days",
         },
         children: [],
       },

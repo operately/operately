@@ -9,6 +9,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
+  alias Operately.ContextualDates.ContextualDate
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -36,9 +37,8 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       champion_id: champion.id,
       reviewer_id: reviewer.id,
       timeframe: %{
-        type: "year",
-        start_date: ~D[2021-01-01],
-        end_date: ~D[2021-12-31]
+        contextual_start_date: ContextualDate.create_year_date(~D[2021-01-01]),
+        contextual_end_date: ContextualDate.create_year_date(~D[2021-12-31])
       },
       company_access_level: Binding.comment_access(),
       space_access_level: Binding.edit_access(),
