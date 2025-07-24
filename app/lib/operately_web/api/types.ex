@@ -1378,8 +1378,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :timeframe do
-    field :contextual_start_date, :contextual_date
-    field :contextual_end_date, :contextual_date
+    field :contextual_start_date, :contextual_date, null: true
+    field :contextual_end_date, :contextual_date, null: true
   end
 
   enum(:contextual_date_type, values: Operately.ContextualDates.ContextualDate.valid_types())
