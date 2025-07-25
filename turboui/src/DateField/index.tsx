@@ -26,6 +26,8 @@ export namespace DateField {
     date?: ContextualDate | null;
     minYear?: number;
     maxYear?: number;
+    minDateLimit?: Date;
+    maxDateLimit?: Date;
     placeholder?: string;
     readonly?: boolean;
     showOverdueWarning?: boolean;
@@ -74,6 +76,8 @@ export function DateField({
   useStartOfPeriod = false,
   size = "std",
   testId = "date-field",
+  minDateLimit,
+  maxDateLimit,
 }: DateField.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
@@ -155,6 +159,8 @@ export function DateField({
             yearOptions={yearOptions}
             testId={testId}
             useStartOfPeriod={useStartOfPeriod}
+            minDateLimit={minDateLimit}
+            maxDateLimit={maxDateLimit}
           />
         </Popover.Content>
       </Popover.Portal>
@@ -256,6 +262,8 @@ interface DatePickerContentProps {
   yearOptions: number[];
   testId: string;
   useStartOfPeriod?: boolean;
+  minDateLimit?: Date;
+  maxDateLimit?: Date;
 }
 
 function DatePickerContent(props: DatePickerContentProps) {
@@ -269,6 +277,9 @@ function DatePickerContent(props: DatePickerContentProps) {
     onClearDate,
     yearOptions,
     testId,
+    minDateLimit,
+    maxDateLimit,
+    useStartOfPeriod,
   } = props;
 
   return (
@@ -285,7 +296,12 @@ function DatePickerContent(props: DatePickerContentProps) {
 
       {dateType === "day" && (
         <div className="mb-3">
-          <InlineCalendar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+          <InlineCalendar
+            selectedDate={selectedDate}
+            setSelectedDate={setSelectedDate}
+            minDateLimit={minDateLimit}
+            maxDateLimit={maxDateLimit}
+          />
         </div>
       )}
 
@@ -294,7 +310,9 @@ function DatePickerContent(props: DatePickerContentProps) {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           visibleYears={yearOptions}
-          useStartOfPeriod={props.useStartOfPeriod}
+          useStartOfPeriod={useStartOfPeriod}
+          minDateLimit={minDateLimit}
+          maxDateLimit={maxDateLimit}
         />
       )}
 
@@ -303,7 +321,9 @@ function DatePickerContent(props: DatePickerContentProps) {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           visibleYears={yearOptions}
-          useStartOfPeriod={props.useStartOfPeriod}
+          useStartOfPeriod={useStartOfPeriod}
+          minDateLimit={minDateLimit}
+          maxDateLimit={maxDateLimit}
         />
       )}
 
@@ -312,7 +332,9 @@ function DatePickerContent(props: DatePickerContentProps) {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
           years={yearOptions}
-          useStartOfPeriod={props.useStartOfPeriod}
+          useStartOfPeriod={useStartOfPeriod}
+          minDateLimit={minDateLimit}
+          maxDateLimit={maxDateLimit}
         />
       )}
 

@@ -8,9 +8,18 @@ interface Props {
   setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate>>;
   years: number[];
   useStartOfPeriod?: boolean;
+  minDateLimit?: Date;
+  maxDateLimit?: Date;
 }
 
-export function YearSelector({ selectedDate, setSelectedDate, years, useStartOfPeriod = false }: Props) {
+export function YearSelector({
+  selectedDate,
+  setSelectedDate,
+  years,
+  useStartOfPeriod = false,
+  minDateLimit,
+  maxDateLimit,
+}: Props) {
   const currentYear = new Date().getFullYear();
   const currentYearRef = useRef<HTMLButtonElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -45,18 +54,24 @@ export function YearSelector({ selectedDate, setSelectedDate, years, useStartOfP
     <div className="mb-3">
       <div ref={containerRef} className="max-h-48 overflow-y-auto p-2">
         <div className="flex flex-col space-y-1 mx-auto">
-          {years.map((year) => (
-            <OptionButton
-              key={year}
-              ref={year === currentYear ? currentYearRef : undefined}
-              onClick={() => handleSelect(year)}
-              isSelected={isSelectedYear(year, selectedDate)}
-              isCurrent={year === currentYear}
-              className="px-3 py-1.5 text-sm"
-            >
-              {year}
-            </OptionButton>
-          ))}
+          {years.map((year) => {
+            // Check if year is disabled (outside of min/max range)
+            const isDisabled = isYearDisabled(year, minDateLimit, maxDateLimit);
+
+            return (
+              <OptionButton
+                key={year}
+                ref={year === currentYear ? currentYearRef : undefined}
+                onClick={() => !isDisabled && handleSelect(year)}
+                isSelected={isSelectedYear(year, selectedDate)}
+                isCurrent={year === currentYear}
+                isDisabled={isDisabled}
+                className="px-3 py-1.5 text-sm"
+              >
+                {year}
+              </OptionButton>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -67,4 +82,24 @@ function isSelectedYear(year: number, selectedDate: DateField.ContextualDate | n
   if (!selectedDate?.date) return false;
 
   return selectedDate.dateType === "year" && selectedDate.date.getFullYear() === year;
+}
+
+function isYearDisabled(year: number, minDateLimit?: Date, maxDateLimit?: Date): boolean {
+  if (minDateLimit) {
+    const minYear = minDateLimit.getFullYear();
+
+    if (year < minYear) {
+      return true;
+    }
+  }
+
+  if (maxDateLimit) {
+    const maxYear = maxDateLimit.getFullYear();
+
+    if (year > maxYear) {
+      return true;
+    }
+  }
+
+  return false;
 }
