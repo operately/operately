@@ -282,6 +282,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :updated_at, :date, null: true
     field? :started_at, :date, null: true
     field? :deadline, :date, null: true
+    field? :timeframe, :timeframe
     field? :next_update_scheduled_at, :date, null: true
     field? :next_check_in_scheduled_at, :date, null: true
     field? :privacy, :string, null: true
