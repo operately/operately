@@ -2,13 +2,16 @@ import React from "react";
 import { IconChevronLeft, IconChevronRight } from "../../icons";
 import { DateField } from "../index";
 import classNames from "../../utils/classnames";
+import * as time from "../../utils/time";
 
 interface Props {
   selectedDate: DateField.ContextualDate | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate | null>>;
+  minDateLimit?: Date;
+  maxDateLimit?: Date;
 }
 
-export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
+export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, maxDateLimit }: Props) {
   const [calendarDate, setCalendarDate] = React.useState(new Date());
 
   const today = new Date();
@@ -49,19 +52,25 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
     const isSelected = isSelectedDay(day, currentMonth, currentYear, selectedDate);
     const isToday = today.getDate() === day && today.getMonth() === currentMonth && today.getFullYear() === currentYear;
 
+    // Check if the date is disabled (outside of min/max range)
+    const isDisabled = isDateDisabled(date, minDateLimit, maxDateLimit);
+
     const handleDayClick = (day: Date) => {
+      if (isDisabled) return; // Prevent selection if disabled
       const value = new Intl.DateTimeFormat("en-US", { year: "numeric", month: "short", day: "numeric" }).format(day);
       setSelectedDate({ date: day, dateType: "day", value });
     };
+
     const className = classNames(
       "w-7 h-7 text-xs rounded-full transition-colors",
       isSelected && "border border-blue-500 bg-blue-50 text-blue-700",
-      isToday && !isSelected && "border border-blue-300 text-blue-600 hover:bg-blue-50",
-      !isSelected && !isToday && "hover:bg-gray-100 hover:text-blue-500",
+      isToday && !isSelected && !isDisabled && "border border-blue-300 text-blue-600 hover:bg-blue-50",
+      !isSelected && !isToday && !isDisabled && "hover:bg-gray-100 hover:text-blue-500",
+      isDisabled && "opacity-50 cursor-not-allowed line-through text-gray-400",
     );
 
     days.push(
-      <button key={day} onClick={() => handleDayClick(date)} className={className}>
+      <button key={day} onClick={() => handleDayClick(date)} className={className} disabled={isDisabled}>
         {day}
       </button>,
     );
@@ -102,7 +111,12 @@ export function InlineCalendar({ selectedDate, setSelectedDate }: Props) {
   );
 }
 
-function isSelectedDay(day: number, month: number, year: number, selectedDate: DateField.ContextualDate | null): boolean {
+function isSelectedDay(
+  day: number,
+  month: number,
+  year: number,
+  selectedDate: DateField.ContextualDate | null,
+): boolean {
   return Boolean(
     selectedDate &&
       selectedDate.dateType === "day" &&
@@ -110,4 +124,16 @@ function isSelectedDay(day: number, month: number, year: number, selectedDate: D
       selectedDate.date.getMonth() === month &&
       selectedDate.date.getFullYear() === year,
   );
+}
+
+function isDateDisabled(date: Date, minDateLimit?: Date, maxDateLimit?: Date): boolean {
+  if (minDateLimit && time.compareAsc(date, minDateLimit) < 0) {
+    return true;
+  }
+
+  if (maxDateLimit && time.compareAsc(date, maxDateLimit) > 0) {
+    return true;
+  }
+
+  return false;
 }
