@@ -38,6 +38,16 @@ defmodule OperatelyWeb.Api.ProjectDiscussionsTest do
       assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: id})
       assert res.discussion.id == id
     end
+
+    test "include space", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project_discussion(ctx, :discussion, :project)
+
+      id = Paths.comment_thread_id(ctx.discussion)
+
+      assert {200, res} = query(ctx.conn, [:project_discussions, :get], %{id: id, include_space: true})
+      assert res.discussion.space.id == Paths.space_id(ctx.marketing)
+    end
   end
 
   describe "list project discussions" do
