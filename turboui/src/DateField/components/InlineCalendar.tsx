@@ -127,16 +127,12 @@ function isSelectedDay(
 }
 
 function isDateDisabled(date: Date, minDateLimit?: Date, maxDateLimit?: Date): boolean {
-  if (minDateLimit) {
-    if (time.compareAsc(date, minDateLimit) < 0) {
-      return true;
-    }
+  if (minDateLimit && time.compareAsc(date, minDateLimit) < 0) {
+    return true;
   }
 
-  if (maxDateLimit) {
-    if (time.compareAsc(date, maxDateLimit) > 0) {
-      return true;
-    }
+  if (maxDateLimit && time.compareAsc(date, maxDateLimit) > 0) {
+    return true;
   }
 
   return false;

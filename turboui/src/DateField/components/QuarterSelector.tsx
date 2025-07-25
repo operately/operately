@@ -111,16 +111,12 @@ function isCurrentQuarter(quarterValue: string, year: number): boolean {
 }
 
 function isQuarterDisabled(quarterDate: Date, minDateLimit?: Date, maxDateLimit?: Date): boolean {
-  if (minDateLimit) {
-    if (compareQuartersOnly(quarterDate, minDateLimit) < 0) {
-      return true;
-    }
+  if (minDateLimit && compareQuartersOnly(quarterDate, minDateLimit) < 0) {
+    return true;
   }
 
-  if (maxDateLimit) {
-    if (compareQuartersOnly(quarterDate, maxDateLimit) > 0) {
-      return true;
-    }
+  if (maxDateLimit && compareQuartersOnly(quarterDate, maxDateLimit) > 0) {
+    return true;
   }
 
   return false;

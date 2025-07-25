@@ -85,20 +85,16 @@ function isSelectedYear(year: number, selectedDate: DateField.ContextualDate | n
 }
 
 function isYearDisabled(year: number, minDateLimit?: Date, maxDateLimit?: Date): boolean {
-  if (minDateLimit) {
-    const minYear = minDateLimit.getFullYear();
+  const minYear = minDateLimit?.getFullYear();
 
-    if (year < minYear) {
-      return true;
-    }
+  if (minYear && year < minYear) {
+    return true;
   }
 
-  if (maxDateLimit) {
-    const maxYear = maxDateLimit.getFullYear();
+  const maxYear = maxDateLimit?.getFullYear();
 
-    if (year > maxYear) {
-      return true;
-    }
+  if (maxYear && year > maxYear) {
+    return true;
   }
 
   return false;

@@ -99,16 +99,12 @@ function isCurrentMonth(monthValue: string, year: number) {
 }
 
 function isMonthDisabled(monthDate: Date, minDateLimit?: Date, maxDateLimit?: Date): boolean {
-  if (minDateLimit) {
-    if (compareMonthsOnly(monthDate, minDateLimit) < 0) {
-      return true;
-    }
+  if (minDateLimit && compareMonthsOnly(monthDate, minDateLimit) < 0) {
+    return true;
   }
 
-  if (maxDateLimit) {
-    if (compareMonthsOnly(monthDate, maxDateLimit) > 0) {
-      return true;
-    }
+  if (maxDateLimit && compareMonthsOnly(monthDate, maxDateLimit) > 0) {
+    return true;
   }
 
   return false;
