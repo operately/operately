@@ -8,9 +8,18 @@ interface Props {
   setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate>>;
   visibleYears: number[];
   useStartOfPeriod?: boolean;
+  minDateLimit?: Date;
+  maxDateLimit?: Date;
 }
 
-export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, useStartOfPeriod = false }: Props) {
+export function MonthSelector({
+  selectedDate,
+  setSelectedDate,
+  visibleYears,
+  useStartOfPeriod = false,
+  minDateLimit,
+  maxDateLimit,
+}: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useLayoutEffect(() => {
@@ -45,17 +54,24 @@ export function MonthSelector({ selectedDate, setSelectedDate, visibleYears, use
           <div key={year} className="mb-4 last:mb-0">
             <div className="text-xs font-medium text-gray-500 mb-1">{year}</div>
             <div className="grid grid-cols-4 gap-1">
-              {generateMonths(year, useStartOfPeriod).map((month) => (
-                <OptionButton
-                  key={month.value}
-                  onClick={() => handleSelect(month)}
-                  isSelected={isSelectedMonth(month.value, year, selectedDate)}
-                  isCurrent={isCurrentMonth(month.value, year)}
-                  className="py-1 px-2 text-xs"
-                >
-                  {month.label}
-                </OptionButton>
-              ))}
+              {generateMonths(year, useStartOfPeriod).map((month) => {
+                const monthDate = new Date(month.value);
+                // Check if month is disabled (outside of min/max range)
+                const isDisabled = isMonthDisabled(monthDate, minDateLimit, maxDateLimit);
+
+                return (
+                  <OptionButton
+                    key={month.value}
+                    onClick={() => !isDisabled && handleSelect(month)}
+                    isSelected={isSelectedMonth(month.value, year, selectedDate)}
+                    isCurrent={isCurrentMonth(month.value, year)}
+                    isDisabled={isDisabled}
+                    className="py-1 px-2 text-xs"
+                  >
+                    {month.label}
+                  </OptionButton>
+                );
+              })}
             </div>
           </div>
         ))}
@@ -80,4 +96,38 @@ function isCurrentMonth(monthValue: string, year: number) {
   const currentMonth = today.getMonth();
 
   return monthDate.getMonth() === currentMonth && year === currentYear;
+}
+
+function isMonthDisabled(monthDate: Date, minDateLimit?: Date, maxDateLimit?: Date): boolean {
+  if (minDateLimit && compareMonthsOnly(monthDate, minDateLimit) < 0) {
+    return true;
+  }
+
+  if (maxDateLimit && compareMonthsOnly(monthDate, maxDateLimit) > 0) {
+    return true;
+  }
+
+  return false;
+}
+
+/**
+ * Compares two dates by month and year only
+ * Returns:
+ * -1 if date1's month/year is before date2's month/year
+ *  0 if date1's month/year is the same as date2's month/year
+ *  1 if date1's month/year is after date2's month/year
+ */
+function compareMonthsOnly(date1: Date, date2: Date): number {
+  // Compare years first
+  if (date1.getFullYear() !== date2.getFullYear()) {
+    return date1.getFullYear() < date2.getFullYear() ? -1 : 1;
+  }
+
+  // If years are the same, compare months
+  if (date1.getMonth() !== date2.getMonth()) {
+    return date1.getMonth() < date2.getMonth() ? -1 : 1;
+  }
+
+  // If both year and month are the same
+  return 0;
 }

@@ -7,18 +7,22 @@ interface DatePickerOptionButtonProps {
   className?: string;
   ref?: React.Ref<HTMLButtonElement>;
   isCurrent?: boolean;
+  isDisabled?: boolean;
 }
 
 export const OptionButton = React.forwardRef<HTMLButtonElement, DatePickerOptionButtonProps>(
-  ({ children, isSelected, onClick, className = "", isCurrent = false }, ref) => {
+  ({ children, isSelected, onClick, className = "", isCurrent = false, isDisabled = false }, ref) => {
     return (
       <button
         ref={ref}
         onClick={onClick}
+        disabled={isDisabled}
         className={`
           rounded text-center transition-colors
           ${
-            isSelected
+            isDisabled
+              ? "opacity-50 cursor-not-allowed line-through text-gray-400"
+              : isSelected
               ? "bg-blue-50 text-blue-700 font-medium"
               : isCurrent
               ? "border border-blue-300 text-blue-600 hover:bg-blue-50"
