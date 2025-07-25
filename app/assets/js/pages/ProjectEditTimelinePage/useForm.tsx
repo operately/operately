@@ -4,7 +4,10 @@ import * as React from "react";
 
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
+import { DateField } from "turboui";
+import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
+import { assertPresent } from "@/utils/assertions";
 
 interface Error {
   field: string;
@@ -14,11 +17,11 @@ interface Error {
 export interface FormState {
   projectId: string;
 
-  startTime: Date | null;
-  setStartTime: (date: Date | null) => void;
+  startTime: DateField.ContextualDate | null;
+  setStartTime: (date: DateField.ContextualDate | null) => void;
 
-  dueDate: Date | null;
-  setDueDate: (date: Date | null) => void;
+  dueDate: DateField.ContextualDate | null;
+  setDueDate: (date: DateField.ContextualDate | null) => void;
 
   milestoneList: MilestoneListState;
   milestoneBeingEdited: string | null;
@@ -34,15 +37,17 @@ export interface FormState {
 }
 
 export function useForm(project: Projects.Project): FormState {
+  assertPresent(project.timeframe);
+
   const paths = usePaths();
   const navigate = useNavigate();
   const milestonesPath = paths.projectMilestonesPath(project.id!);
 
-  const oldStart = Time.parseDate(project.startedAt);
-  const oldDue = Time.parseDate(project.deadline);
+  const oldStart = parseContextualDate(project.timeframe.contextualStartDate);
+  const oldDue = parseContextualDate(project.timeframe.contextualEndDate);
 
-  const [startTime, setStartTime] = React.useState<Date | null>(oldStart);
-  const [dueDate, setDueDate] = React.useState<Date | null>(oldDue);
+  const [startTime, setStartTime] = React.useState<DateField.ContextualDate | null>(oldStart);
+  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(oldDue);
   const [milestoneBeingEdited, setMilestoneBeingEdited] = React.useState<string | null>(null);
 
   const submitted = React.useRef(false);
@@ -51,8 +56,8 @@ export function useForm(project: Projects.Project): FormState {
   const milestoneList = useMilestoneListState(project);
 
   const hasChanges = React.useMemo(() => {
-    if (Time.dateChanged(startTime, oldStart)) return true;
-    if (Time.dateChanged(dueDate, oldDue)) return true;
+    if (Time.dateChanged(startTime?.date || null, oldStart?.date || null)) return true;
+    if (Time.dateChanged(dueDate?.date || null, oldDue?.date || null)) return true;
     if (milestoneList.hasChanges) return true;
 
     return false;
@@ -63,8 +68,8 @@ export function useForm(project: Projects.Project): FormState {
   const submit = async () => {
     await edit({
       projectId: project.id,
-      projectStartDate: startTime && Time.toDateWithoutTime(startTime),
-      projectDueDate: dueDate && Time.toDateWithoutTime(dueDate),
+      projectStartDate: serializeContextualDate(startTime),
+      projectDueDate: serializeContextualDate(dueDate),
       newMilestones: milestoneList.newMilestones.map((m) => ({
         title: m.title,
         description: m.description,
