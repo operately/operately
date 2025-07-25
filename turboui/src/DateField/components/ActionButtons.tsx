@@ -17,10 +17,10 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({ selectedDate, onCa
 
   return (
     <div className="grid grid-cols-2 gap-2 mt-6">
-      <SecondaryButton onClick={() => onCancel?.()} size="sm">
+      <SecondaryButton onClick={() => onCancel?.()} size="sm" testId="date-field-cancel">
         Cancel
       </SecondaryButton>
-      <PrimaryButton onClick={handleConfirm} disabled={!selectedDate} size="sm">
+      <PrimaryButton onClick={handleConfirm} disabled={!selectedDate} size="sm" testId="date-field-confirm">
         <span className="whitespace-nowrap">Confirm</span>
       </PrimaryButton>
     </div>
