@@ -254,7 +254,7 @@ release.tag.docker:
 	docker push operately/operately:$(VERSION)
 
 release.build.singlehost:
-	elixir rel/single-host/build.exs $(VERSION)
+	elixir app/rel/single-host/build.exs $(VERSION)
 
 release.push.github.release:
-	elixir rel/make-github-release.exs $(VERSION)
+	elixir app/rel/make-github-release.exs $(VERSION)
