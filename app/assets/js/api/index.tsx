@@ -1131,6 +1131,7 @@ export interface Project {
   updatedAt?: string | null;
   startedAt?: string | null;
   deadline?: string | null;
+  timeframe?: Timeframe;
   nextUpdateScheduledAt?: string | null;
   nextCheckInScheduledAt?: string | null;
   privacy?: string | null;
@@ -2987,8 +2988,8 @@ export interface EditProjectRetrospectiveResult {
 
 export interface EditProjectTimelineInput {
   projectId?: string | null;
-  projectStartDate?: string | null;
-  projectDueDate?: string | null;
+  projectStartDate: ContextualDate | null;
+  projectDueDate: ContextualDate | null;
   milestoneUpdates?: EditProjectTimelineMilestoneUpdateInput[] | null;
   newMilestones?: EditProjectTimelineNewMilestoneInput[] | null;
 }
