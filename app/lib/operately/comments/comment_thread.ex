@@ -109,6 +109,7 @@ defmodule Operately.Comments.CommentThread do
 
   def load_space(thread) do
     if thread.parent_type == :project do
+      thread = ensure_project_loaded(thread)
       space = Operately.Groups.get_group!(thread.project.group_id)
       Map.put(thread, :space, space)
     else
@@ -122,6 +123,15 @@ defmodule Operately.Comments.CommentThread do
       Map.put(thread, :can_comment, can_comment)
     else
       raise ArgumentError, "Permissions can only be loaded for project comment threads"
+    end
+  end
+
+  defp ensure_project_loaded(thread) do
+    if thread.project do
+      thread
+    else
+      thread = load_project(thread)
+      if thread.project, do: thread, else: raise(ArgumentError, "Project could not be loaded")
     end
   end
 end
