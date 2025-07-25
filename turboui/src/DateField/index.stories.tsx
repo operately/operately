@@ -223,13 +223,28 @@ export const AllStates: Story = {
             <h2 className="text-lg font-bold mb-8">Size Variants</h2>
             <div className="grid grid-cols-3 gap-8">
               <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Day)</h3>
+                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" size="small" />
+              </div>
+
+              <div>
                 <h3 className="text-sm font-bold mb-2">Standard Size (Day)</h3>
                 <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" size="std" />
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Small Size (Day)</h3>
-                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" size="small" />
+                <h3 className="text-sm font-bold mb-2">Large Size (Day)</h3>
+                <Component date={createContextualDate(today, "day")} showOverdueWarning variant="inline" size="lg" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Month)</h3>
+                <Component
+                  date={createContextualDate(today, "month")}
+                  showOverdueWarning
+                  variant="inline"
+                  size="small"
+                />
               </div>
 
               <div>
@@ -238,9 +253,14 @@ export const AllStates: Story = {
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Small Size (Month)</h3>
+                <h3 className="text-sm font-bold mb-2">Large Size (Month)</h3>
+                <Component date={createContextualDate(today, "month")} showOverdueWarning variant="inline" size="lg" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Quarter)</h3>
                 <Component
-                  date={createContextualDate(today, "month")}
+                  date={createContextualDate(today, "quarter")}
                   showOverdueWarning
                   variant="inline"
                   size="small"
@@ -258,22 +278,12 @@ export const AllStates: Story = {
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Small Size (Quarter)</h3>
+                <h3 className="text-sm font-bold mb-2">Large Size (Quarter)</h3>
                 <Component
                   date={createContextualDate(today, "quarter")}
                   showOverdueWarning
                   variant="inline"
-                  size="small"
-                />
-              </div>
-
-              <div>
-                <h3 className="text-sm font-bold mb-2">Standard Size (Year)</h3>
-                <Component
-                  date={createContextualDate(today, "year")}
-                  showOverdueWarning
-                  variant="inline"
-                  size="std"
+                  size="lg"
                 />
               </div>
 
@@ -283,6 +293,26 @@ export const AllStates: Story = {
                   date={createContextualDate(today, "year")}
                   showOverdueWarning
                   variant="inline"
+                  size="small"
+                />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Standard Size (Year)</h3>
+                <Component date={createContextualDate(today, "year")} showOverdueWarning variant="inline" size="std" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Large Size (Year)</h3>
+                <Component date={createContextualDate(today, "year")} showOverdueWarning variant="inline" size="lg" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Small Size (Form Field)</h3>
+                <Component
+                  date={createContextualDate(today, "day")}
+                  showOverdueWarning
+                  variant="form-field"
                   size="small"
                 />
               </div>
@@ -298,12 +328,12 @@ export const AllStates: Story = {
               </div>
 
               <div>
-                <h3 className="text-sm font-bold mb-2">Small Size (Form Field)</h3>
+                <h3 className="text-sm font-bold mb-2">Large Size (Form Field)</h3>
                 <Component
                   date={createContextualDate(today, "day")}
                   showOverdueWarning
                   variant="form-field"
-                  size="small"
+                  size="lg"
                 />
               </div>
             </div>
