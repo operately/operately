@@ -75,6 +75,14 @@ export function compareAsc(date1: Date | null, date2: Date | null, { nullsFirst 
   return datefsn.compareAsc(date1!, date2!);
 }
 
+export function compareDesc(date1: Date | null, date2: Date | null, { nullsFirst = false } = {}) {
+  if (!date1 && !date2) return 0;
+  if (!date1 && date2) return nullsFirst ? -1 : 1;
+  if (date1 && !date2) return nullsFirst ? 1 : -1;
+
+  return datefsn.compareDesc(date1!, date2!);
+}
+
 export function parse(date: string | Date | null | undefined) {
   if (date === null || date === undefined) {
     return null;
