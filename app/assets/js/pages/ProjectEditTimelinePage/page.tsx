@@ -3,12 +3,11 @@ import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { PrimaryButton, SecondaryButton, DateField } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { useForm, FormState } from "./useForm";
 
-import { DateSelector } from "./DateSelector";
 import { MilestoneList } from "./MilestoneList";
 import { unstable_usePrompt } from "react-router-dom";
 
@@ -82,17 +81,18 @@ function Section({ title }) {
   );
 }
 
-function StartDate({ form }) {
+function StartDate({ form }: { form: FormState }) {
   return (
     <div className="flex flex-col gap-1 flex-1">
       <div className="uppercase text-xs text-content-accent font-bold">Start Date</div>
       <div className="flex-1">
-        <DateSelector
+        <DateField
           date={form.startTime}
-          onChange={form.setStartTime}
-          minDate={null}
-          maxDate={form.dueDate}
+          onDateSelect={form.setStartTime}
+          placeholder="Not set"
+          variant="form-field"
           testId="project-start"
+          maxDateLimit={form.dueDate?.date}
         />
       </div>
     </div>
@@ -104,12 +104,13 @@ function DueDate({ form }) {
     <div className="flex flex-col gap-1 flex-1">
       <div className="uppercase text-xs text-content-accent font-bold">Due Date</div>
       <div className="flex-1">
-        <DateSelector
+        <DateField
           date={form.dueDate}
-          onChange={form.setDueDate}
-          minDate={form.startTime}
-          maxDate={null}
+          onDateSelect={form.setDueDate}
+          placeholder="Not set"
+          variant="form-field"
           testId="project-due"
+          minDateLimit={form.startTime?.date}
         />
       </div>
     </div>

@@ -32,7 +32,6 @@ defmodule Operately.ContextualDates.Timeframe do
     |> cast(attrs, [])
     |> cast_embed(:contextual_start_date)
     |> cast_embed(:contextual_end_date)
-    |> validate_required([:contextual_start_date, :contextual_end_date])
   end
 
   def current_year do
