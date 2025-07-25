@@ -10,6 +10,7 @@ import ActionButtons from "./components/ActionButtons";
 import classNames from "../utils/classnames";
 import { isOverdue } from "../utils/time";
 import { createTestId, TestableElement } from "../TestableElement";
+import { match } from "ts-pattern";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -31,7 +32,7 @@ export namespace DateField {
     variant?: "inline" | "form-field";
     hideCalendarIcon?: boolean;
     useStartOfPeriod?: boolean;
-    size?: "std" | "small";
+    size?: "std" | "small" | "lg";
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -169,7 +170,7 @@ interface DatePickerTriggerProps extends TestableElement {
   showOverdueWarning: boolean;
   variant: "inline" | "form-field";
   hideCalendarIcon: boolean;
-  size: "std" | "small";
+  size: "std" | "small" | "lg";
 }
 
 function DatePickerTrigger({
@@ -183,11 +184,33 @@ function DatePickerTrigger({
   size,
   testId,
 }: DatePickerTriggerProps) {
+  let displayText = selectedDate?.value || label;
+  const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
+
+  const fieldSize = match(size)
+    .with("std", () => "border border-surface-outline rounded-lg w-full px-2 py-1.5")
+    .with("small", () => "border border-surface-outline rounded-lg w-full px-1.5 py-1")
+    .with("lg", () => "border border-surface-outline rounded-lg w-full px-2.5 py-2")
+    .exhaustive();
+
+  const elementSize = match(size)
+    .with("std", () => "text-sm gap-1.5")
+    .with("small", () => "text-xs gap-1")
+    .with("lg", () => "text-base gap-2")
+    .exhaustive();
+
+  const elemClass = classNames(
+    "flex items-center",
+    {
+      "text-content-error": isDateOverdue && showOverdueWarning,
+      "text-content-dimmed": !selectedDate,
+    },
+    elementSize,
+  );
+
   const triggerClassName = classNames(
     "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
-    variant === "inline"
-      ? "rounded-lg px-1.5 py-1 -mx-1.5 -my-1"
-      : "border border-surface-outline rounded-lg w-full px-2 py-1.5",
+    variant === "inline" ? "rounded-lg px-1.5 py-1 -mx-1.5 -my-1" : fieldSize,
     !readonly ? "hover:bg-surface-dimmed" : "",
   );
 
@@ -195,19 +218,6 @@ function DatePickerTrigger({
     e.preventDefault();
     onClick();
   };
-
-  let displayText = selectedDate?.value || label;
-  const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
-
-  const elemClass = classNames(
-    {
-      "flex items-center": true,
-      "gap-1.5": true,
-      "text-content-error": isDateOverdue && showOverdueWarning,
-      "text-content-dimmed": !selectedDate,
-    },
-    size === "small" ? "text-xs" : "text-sm",
-  );
 
   return (
     <button
@@ -221,7 +231,11 @@ function DatePickerTrigger({
       <span className={elemClass}>
         {!hideCalendarIcon && (
           <IconCalendarEvent
-            size={size === "small" ? 12 : 16}
+            size={match(size)
+              .with("small", () => 12)
+              .with("std", () => 16)
+              .with("lg", () => 18)
+              .exhaustive()}
             className={isDateOverdue && showOverdueWarning ? "text-content-error -mt-[1px]" : "-mt-[1px]"}
           />
         )}
@@ -276,15 +290,30 @@ function DatePickerContent(props: DatePickerContentProps) {
       )}
 
       {dateType === "month" && (
-        <MonthSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} visibleYears={yearOptions} useStartOfPeriod={props.useStartOfPeriod} />
+        <MonthSelector
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          visibleYears={yearOptions}
+          useStartOfPeriod={props.useStartOfPeriod}
+        />
       )}
 
       {dateType === "quarter" && (
-        <QuarterSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} visibleYears={yearOptions} useStartOfPeriod={props.useStartOfPeriod} />
+        <QuarterSelector
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          visibleYears={yearOptions}
+          useStartOfPeriod={props.useStartOfPeriod}
+        />
       )}
 
       {dateType === "year" && (
-        <YearSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} years={yearOptions} useStartOfPeriod={props.useStartOfPeriod} />
+        <YearSelector
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          years={yearOptions}
+          useStartOfPeriod={props.useStartOfPeriod}
+        />
       )}
 
       <ActionButtons selectedDate={selectedDate} onCancel={onCancel} onSetDeadline={onDateSelect} />
