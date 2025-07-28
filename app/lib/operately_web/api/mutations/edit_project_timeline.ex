@@ -9,8 +9,8 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
   inputs do
     field? :project_id, :string, null: true
 
-    field? :project_start_date, :date, null: true
-    field? :project_due_date, :date, null: true
+    field :project_start_date, :contextual_date, null: true
+    field :project_due_date, :contextual_date, null: true
 
     field? :milestone_updates, list_of(:edit_project_timeline_milestone_update_input), null: true
     field? :new_milestones, list_of(:edit_project_timeline_new_milestone_input), null: true
@@ -48,8 +48,8 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
     {:ok, %{
       project_id: project_id,
 
-      project_start_date: parse_date(inputs.project_start_date),
-      project_due_date: inputs[:project_due_date] && parse_date(inputs.project_due_date),
+      project_start_date: inputs.project_start_date,
+      project_due_date: inputs.project_due_date,
 
       milestone_updates: Enum.map(inputs.milestone_updates, fn update ->
         {:ok, milestone_id} = decode_id(update.id)

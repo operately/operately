@@ -23,8 +23,8 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "manage-timeline")
     |> UI.click(testid: "edit-timeline")
-    |> UI.select_day_in_datepicker(testid: "project-start", date: attrs.started_at)
-    |> UI.select_day_in_datepicker(testid: "project-due", date: attrs.deadline)
+    |> UI.select_day_in_date_field(testid: "project-start", date: attrs.started_at)
+    |> UI.select_day_in_date_field(testid: "project-due", date: attrs.deadline)
     |> UI.foreach(attrs.milestones, fn milestone, ctx ->
       ctx
       |> UI.click(testid: "add-milestone")
