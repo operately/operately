@@ -8,7 +8,7 @@ defmodule Operately.AI.Tools do
   alias Operately.People.AgentRun
 
   def add_agent_task do
-    Function.new!(%{
+    new_agent_tool(%{
       name: "add_agent_task",
       description: "Adds a task to the agent run.",
       parameters_schema: %{
@@ -25,8 +25,6 @@ defmodule Operately.AI.Tools do
         if context.agent_run.status != :planning do
           {:error, "Cannot add task when agent run is not in planning phase."}
         else
-          log(context, "TOOL USE: add_agent_task. Name: #{args["name"]}\n")
-
           agent_run = Map.get(context, :agent_run)
           name = Map.get(args, "name")
 
@@ -44,12 +42,10 @@ defmodule Operately.AI.Tools do
   - :person - The person for whom the work map is requested.
   """
   def work_map do
-    Function.new!(%{
+    new_agent_tool(%{
       name: "get_work_map",
       description: "Returns all goals and projects for a given person.",
       function: fn _, context ->
-        log(context, "TOOL USE: get_work_map\n")
-
         person = Map.get(context, :person)
 
         {:ok, workmap} = GetWorkMapQuery.execute(person, %{company_id: person.company_id})
@@ -71,7 +67,7 @@ defmodule Operately.AI.Tools do
   - :agent_run_id - The ID of the agent run.
   """
   def get_goal_details do
-    Function.new!(%{
+    new_agent_tool(%{
       name: "get_goal_details",
       description: "Returns the details of the goal.",
       parameters_schema: %{
@@ -85,8 +81,6 @@ defmodule Operately.AI.Tools do
         required: ["id"]
       },
       function: fn args, context ->
-        log(context, "TOOL USE: get_goal_details. ID=#{args["id"]}\n")
-
         case OperatelyWeb.Api.Helpers.decode_id(Map.get(args, "id")) do
           {:ok, id} ->
             me = Map.get(context, :person)
@@ -115,7 +109,7 @@ defmodule Operately.AI.Tools do
   - :person - The person posting the message.
   """
   def post_goal_message do
-    Function.new!(%{
+    new_agent_tool(%{
       name: "post_goal_message",
       description: "Posts a message to the goal.",
       parameters_schema: %{
@@ -138,7 +132,6 @@ defmodule Operately.AI.Tools do
       },
       function: fn args, context ->
         log_details = [
-          "TOOL USE: post_goal_message",
           "  Goal ID: #{args["goal_id"]}",
           "  Title: #{args["title"]}",
           "",
@@ -189,7 +182,7 @@ defmodule Operately.AI.Tools do
   - :person - The person posting the message.
   """
   def post_project_message do
-    Function.new!(%{
+    new_agent_tool(%{
       name: "post_project_message",
       description: "Posts a message to the project.",
       parameters_schema: %{
@@ -212,7 +205,6 @@ defmodule Operately.AI.Tools do
       },
       function: fn args, context ->
         log_details = [
-          "TOOL USE: post_project_message",
           "  Project ID: #{args["project_id"]}",
           "  Title: #{args["title"]}",
           "",
@@ -251,6 +243,34 @@ defmodule Operately.AI.Tools do
         end
       end
     })
+  end
+
+  #
+  # Helper functions
+  #
+
+  # Creates a new agent tool with logging functionality.
+  # This function wraps the tool's function to log its usage and output.
+  defp new_agent_tool(attrs) do
+    with_logs = fn args, context ->
+      log(context, "TOOL USE: #{attrs.name}\n")
+
+      if Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
+        log(context, "TOOL INPUT:\n" <> inspect(args) <> "\n")
+      end
+
+      result = attrs.function.(args, context)
+
+      if Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
+        log(context, "TOOL OUTPUT: #{inspect(result)}\n")
+      end
+
+      result
+    end
+
+    attrs
+    |> Map.put(:function, with_logs)
+    |> Function.new!()
   end
 
   defp log(context, msg) do
