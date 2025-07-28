@@ -109,7 +109,7 @@ defmodule Operately.WorkMaps.WorkMapItem do
       is_new: false,
       children: children,
       completed_on: project.closed_at,
-      timeframe: project_timeframe(project),
+      timeframe: project.timeframe,
       type: :project,
       company: project.company,
       resource: project,
@@ -130,14 +130,6 @@ defmodule Operately.WorkMaps.WorkMapItem do
       goal.reviewer
     ]
     |> Enum.reject(&is_nil/1)
-  end
-
-  defp project_timeframe(project = %Project{}) do
-    %{
-      start_date: project.started_at,
-      end_date: project.deadline,
-      type: "days"
-    }
   end
 
   defp find_privacy(item) do

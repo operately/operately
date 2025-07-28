@@ -41,7 +41,7 @@ export class ProjectNode extends Node {
     this.lastCheckIn = project.lastCheckIn;
     this.lastCheckInStatus = project.lastCheckIn?.status || "on_track";
 
-    this.startedAt = Time.parseDate(project.startedAt)!;
+    this.startedAt = Time.parseDate(project.timeframe?.contextualStartDate?.date)!;
   }
 
   linkTo(paths): string {

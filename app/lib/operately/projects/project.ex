@@ -32,8 +32,6 @@ defmodule Operately.Projects.Project do
     field :name, :string
     field :private, :boolean, default: false
 
-    field :started_at, :utc_datetime
-    field :deadline, :utc_datetime
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
@@ -73,8 +71,6 @@ defmodule Operately.Projects.Project do
       :name,
       :description,
       :group_id,
-      :started_at,
-      :deadline,
       :goal_id,
       :next_check_in_scheduled_at,
       :health,
