@@ -1211,6 +1211,7 @@ defmodule OperatelyWeb.Api.Types do
     field :planning_instructions, :string
     field :task_execution_instructions, :string
     field :daily_run, :boolean
+    field :verbose_logs, :boolean
   end
 
   object :agent_run do
