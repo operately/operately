@@ -1,3 +1,5 @@
+import { DateField } from ".";
+
 export const getCurrentYear = () => new Date().getFullYear();
 
 export const generateQuarters = (year = getCurrentYear(), useStartOfPeriod = false) => [
@@ -9,7 +11,11 @@ export const generateQuarters = (year = getCurrentYear(), useStartOfPeriod = fal
 
 export const generateMonths = (year = getCurrentYear(), useStartOfPeriod = false) => [
   { value: useStartOfPeriod ? `${year}-01-01` : `${year}-01-31`, label: "Jan", name: "January" },
-  { value: useStartOfPeriod ? `${year}-02-01` : `${year}-02-${year % 4 === 0 ? "29" : "28"}`, label: "Feb", name: "February" }, // Leap year handling
+  {
+    value: useStartOfPeriod ? `${year}-02-01` : `${year}-02-${year % 4 === 0 ? "29" : "28"}`,
+    label: "Feb",
+    name: "February",
+  }, // Leap year handling
   { value: useStartOfPeriod ? `${year}-03-01` : `${year}-03-31`, label: "Mar", name: "March" },
   { value: useStartOfPeriod ? `${year}-04-01` : `${year}-04-30`, label: "Apr", name: "April" },
   { value: useStartOfPeriod ? `${year}-05-01` : `${year}-05-31`, label: "May", name: "May" },
@@ -25,3 +31,27 @@ export const generateMonths = (year = getCurrentYear(), useStartOfPeriod = false
 export const getYearDate = (year: number, useStartOfPeriod = false) => {
   return useStartOfPeriod ? new Date(year, 0, 1) : new Date(year, 11, 31);
 };
+
+/**
+ * Formats the date display text, omitting the year if it matches the current year
+ * @param date The selected date object
+ * @returns Formatted date string
+ */
+export function getDateWithoutCurrentYear(date: DateField.ContextualDate) {
+  if (date.dateType !== "day") {
+    return date.value;
+  }
+
+  const parts = date.value.split(",");
+
+  if (parts.length === 2) {
+    const currentYear = new Date().getFullYear();
+    const selectedYear = parseInt(parts[1]!.trim());
+
+    if (selectedYear === currentYear) {
+      return parts[0]!.trim();
+    }
+  }
+
+  return date.value;
+}

@@ -3,8 +3,9 @@ import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
+import { parseContextualDate } from "@/models/contextualDates";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
-import { Link, SecondaryButton } from "turboui";
+import { Link, SecondaryButton, DateField } from "turboui";
 import { DimmedLabel } from "./Label";
 
 import FormattedTime from "@/components/FormattedTime";
@@ -12,6 +13,7 @@ import { assertPresent } from "@/utils/assertions";
 import { match } from "ts-pattern";
 
 import { usePaths } from "@/routes/paths";
+
 export function TimelineSection({ project }: { project: Projects.Project }) {
   return (
     <div className="border-t border-stroke-base py-6">
@@ -56,25 +58,27 @@ function Content({ project }) {
 }
 
 function StartDate({ project }: { project: Projects.Project }) {
+  const date = parseContextualDate(project.timeframe?.contextualStartDate);
+
   return (
     <div>
       <DimmedLabel>Start Date</DimmedLabel>
       <div className="font-semibold">
-        {/* <FormattedTime time={project.startedAt!} format="short-date" /> */}
-        {project.timeframe?.contextualStartDate?.value}
+        <DateField date={date} hideCalendarIcon readonly />
       </div>
     </div>
   );
 }
 
 function EndDate({ project }: { project: Projects.Project }) {
+  const date = parseContextualDate(project.timeframe?.contextualEndDate);
+
   return (
     <div>
       <DimmedLabel>Due Date</DimmedLabel>
       {project.timeframe?.contextualEndDate ? (
         <div className="font-semibold">
-          {/* <FormattedTime time={project.deadline} format="short-date" /> */}
-          {project.timeframe?.contextualEndDate?.value}
+          <DateField date={date} hideCalendarIcon readonly />
         </div>
       ) : (
         <div>
