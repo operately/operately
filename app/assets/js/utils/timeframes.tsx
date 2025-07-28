@@ -29,7 +29,7 @@ export function hasOverlap(a: api.Timeframe, b: api.Timeframe): boolean {
   const endDateB = Time.parseDate(b.contextualEndDate?.date);
 
   if (!startDateA || !endDateA || !startDateB || !endDateB) return false;
-  
+
   return Time.compareAsc(startDateA, endDateB) <= 0 && Time.compareAsc(startDateB, endDateA) <= 0;
 }
 
@@ -37,7 +37,9 @@ export function hasOverlap(a: api.Timeframe, b: api.Timeframe): boolean {
 // Comparison functions
 //
 
-export function equalDates(a: api.Timeframe, b: api.Timeframe): boolean {
+export function equalDates(a?: api.Timeframe | null, b?: api.Timeframe | null): boolean {
+  if (!a || !b) return a === b;
+
   const startDateA = Time.parseDate(a.contextualStartDate?.date);
   const startDateB = Time.parseDate(b.contextualStartDate?.date);
   const endDateA = Time.parseDate(a.contextualEndDate?.date);
