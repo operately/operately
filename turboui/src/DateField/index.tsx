@@ -11,6 +11,7 @@ import classNames from "../utils/classnames";
 import { isOverdue } from "../utils/time";
 import { createTestId, TestableElement } from "../TestableElement";
 import { match } from "ts-pattern";
+import { getDateWithoutCurrentYear } from "./utils";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -190,7 +191,7 @@ function DatePickerTrigger({
   size,
   testId,
 }: DatePickerTriggerProps) {
-  let displayText = selectedDate?.value || label;
+  let displayText = selectedDate ? getDateWithoutCurrentYear(selectedDate) : label;
   const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
 
   const fieldSize = match(size)
