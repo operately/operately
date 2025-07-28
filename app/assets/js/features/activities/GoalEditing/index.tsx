@@ -157,8 +157,8 @@ function DeletedTargets({ content }: { content: ActivityContentGoalEditing }) {
 }
 
 function shortDesc(content: ActivityContentGoalEditing): string {
-  const oldTimeframe = content.oldTimeframe!;
-  const newTimeframe = content.newTimeframe!;
+  const oldTimeframe = content.oldTimeframe;
+  const newTimeframe = content.newTimeframe;
 
   const changes = {
     name: content.oldName !== content.newName,
