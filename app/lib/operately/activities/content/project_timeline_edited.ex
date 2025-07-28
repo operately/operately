@@ -42,11 +42,11 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     belongs_to :space, Operately.Groups.Group
     belongs_to :project, Operately.Projects.Project
 
-    field :old_start_date, :utc_datetime
-    field :new_start_date, :utc_datetime
+    field :old_start_date, :date
+    field :new_start_date, :date
 
-    field :old_end_date, :utc_datetime
-    field :new_end_date, :utc_datetime
+    field :old_end_date, :date
+    field :new_end_date, :date
 
     embeds_many :milestone_updates, MilestoneUpdate
     embeds_many :new_milestones, NewMilestones
