@@ -51,6 +51,7 @@ function Page() {
           <TaskExecutionInstructions state={state} />
           <SandboxModeToggle state={state} />
           <DailyRunToggle state={state} />
+          <VerboseLogsToggle state={state} />
         </div>
 
         {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
@@ -110,6 +111,23 @@ function DailyRunToggle({ state }: { state: State }) {
 
       <div className="flex items-center gap-2">
         <SwitchToggle label="" value={state.dailyRun.value} setValue={state.dailyRun.setValue} />
+      </div>
+    </div>
+  );
+}
+
+function VerboseLogsToggle({ state }: { state: State }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-center justify-between gap-4">
+      <div>
+        <label className="font-bold text-sm mb-1">Verbose Logs</label>
+        <div className="text-xs text-surface-text-secondary max-w-xl">
+          When enabled, the agent will produce detailed logs for each run. This is useful for debugging and
+          understanding agent behavior.
+        </div>
+      </div>
+      <div className="flex items-center gap-2">
+        <SwitchToggle label="" value={state.verboseLogs.value} setValue={state.verboseLogs.setValue} />
       </div>
     </div>
   );

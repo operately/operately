@@ -24,6 +24,7 @@ export interface State {
   taskExectionInstructions: TaskExecutionInstructionsState;
   sandboxMode: SandboxModeState;
   dailyRun: DailyRunState;
+  verboseLogs: VerboseLogsState;
 }
 
 export function usePageState(): State {
@@ -42,6 +43,7 @@ export function usePageState(): State {
   const definition = useDefinition();
   const planningInstructions = usePlanningInstructions();
   const taskExectionInstructions = useTaskExecutionInstructions();
+  const verboseLogs = useVerboseLogs();
 
   const runAgent = async () => {
     if (creatingRun) return;
@@ -93,6 +95,7 @@ export function usePageState(): State {
     definition,
     planningInstructions,
     taskExectionInstructions,
+    verboseLogs,
   };
 }
 
@@ -268,6 +271,39 @@ function useDailyRun(): DailyRunState {
     } catch (error) {
       setEnabled(oldEnabled);
       showErrorToast("Network error", "Reverting to previous daily run setting");
+    }
+  };
+
+  return {
+    value,
+    setValue: setValue,
+  };
+}
+
+interface VerboseLogsState {
+  value: boolean;
+  setValue: (newEnabled: boolean) => Promise<void>;
+}
+
+function useVerboseLogs(): VerboseLogsState {
+  const { agent } = Pages.useLoadedData<LoaderResult>();
+
+  const [value, setEnabled] = React.useState<boolean>(agent.agentDef!.verboseLogs);
+
+  React.useEffect(() => {
+    setEnabled(agent.agentDef!.verboseLogs);
+  }, [agent.agentDef!.verboseLogs]);
+
+  const setValue = async (newEnabled: boolean) => {
+    const oldEnabled = value;
+
+    try {
+      setEnabled(newEnabled);
+      await Api.ai.editAgentVerbosity({ id: agent.id, verbose: newEnabled });
+      showSuccessToast("Success", "Verbose logs setting updated successfully");
+    } catch (error) {
+      setEnabled(oldEnabled);
+      showErrorToast("Network error", "Reverting to previous verbose logs setting");
     }
   };
 
