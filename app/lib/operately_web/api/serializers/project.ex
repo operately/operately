@@ -21,6 +21,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       started_at: OperatelyWeb.Api.Serializer.serialize(project.started_at),
       closed_at: OperatelyWeb.Api.Serializer.serialize(project.closed_at),
       deadline: OperatelyWeb.Api.Serializer.serialize(project.deadline),
+      timeframe: OperatelyWeb.Api.Serializer.serialize(project.timeframe),
       is_archived: project.deleted_at != nil,
       is_outdated: Operately.Projects.outdated?(project),
       space: OperatelyWeb.Api.Serializer.serialize(project.group),
