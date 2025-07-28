@@ -60,7 +60,8 @@ function StartDate({ project }: { project: Projects.Project }) {
     <div>
       <DimmedLabel>Start Date</DimmedLabel>
       <div className="font-semibold">
-        <FormattedTime time={project.startedAt!} format="short-date" />
+        {/* <FormattedTime time={project.startedAt!} format="short-date" /> */}
+        {project.timeframe?.contextualStartDate?.value}
       </div>
     </div>
   );
@@ -70,9 +71,10 @@ function EndDate({ project }: { project: Projects.Project }) {
   return (
     <div>
       <DimmedLabel>Due Date</DimmedLabel>
-      {project.deadline ? (
+      {project.timeframe?.contextualEndDate ? (
         <div className="font-semibold">
-          <FormattedTime time={project.deadline} format="short-date" />
+          {/* <FormattedTime time={project.deadline} format="short-date" /> */}
+          {project.timeframe?.contextualEndDate?.value}
         </div>
       ) : (
         <div>
@@ -86,8 +88,8 @@ function EndDate({ project }: { project: Projects.Project }) {
 function Progress({ project }: { project: Projects.Project }) {
   if (project.status === "closed") return <CompletedProgress project={project} />;
 
-  const start = Time.parse(project.startedAt);
-  const end = Time.parse(project.deadline);
+  const start = Time.parse(project.timeframe?.contextualStartDate?.date);
+  const end = Time.parse(project.timeframe?.contextualEndDate?.date);
 
   if (!start) return null;
   if (!end) return null;
@@ -115,7 +117,7 @@ function CompletedProgress({ project }: { project: Projects.Project }) {
 
 function CompletedProgressDiff({ project }: { project: Projects.Project }) {
   const closedAt = Time.parseDate(project.closedAt);
-  const deadline = Time.parseDate(project.deadline);
+  const deadline = Time.parseDate(project.timeframe?.contextualEndDate?.date);
 
   if (!closedAt) return null;
   if (!deadline) return null;

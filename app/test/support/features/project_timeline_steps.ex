@@ -2,7 +2,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
   use Operately.FeatureCase
 
   alias Operately.Time
-
+  alias Operately.ContextualDates.ContextualDate
   alias Operately.Support.Features.{
     UI,
     EmailSteps,
@@ -193,8 +193,10 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_a_project_with_a_defined_timeline_exists, ctx do
     Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15),
-      deadline: Time.days_from_now(10)
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(Time.days_ago(15)),
+        contextual_end_date: ContextualDate.create_day_date(Time.days_from_now(10))
+      }
     ])
     |> Factory.add_project_reviewer(:reviewer, :project)
   end
@@ -233,8 +235,10 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_an_overdue_project_exists, ctx do
     Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15),
-      deadline: Time.days_ago(5)
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(Time.days_ago(15)),
+        contextual_end_date: ContextualDate.create_day_date(Time.days_ago(4))
+      },
     ])
   end
 
@@ -246,8 +250,10 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
 
   step :given_a_completed_project_exists, ctx do
     ctx = Factory.add_project(ctx, :project, :product, [
-      started_at: Time.days_ago(15),
-      deadline: Time.days_ago(5)
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(Time.days_ago(15)),
+        contextual_end_date: ContextualDate.create_day_date(Time.days_ago(5))
+      },
     ])
 
     ctx = close_project(ctx, ctx.project, Time.days_ago(10))
@@ -268,7 +274,12 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
   end
 
   step :given_a_closed_overdue_project_exists, ctx do
-    ctx = Factory.add_project(ctx, :project, :product, [started_at: Time.days_ago(15), deadline: Time.days_ago(5)])
+    ctx = Factory.add_project(ctx, :project, :product, [
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(Time.days_ago(15)),
+        contextual_end_date: ContextualDate.create_day_date(Time.days_ago(5))
+      },
+    ])
     ctx = close_project(ctx, ctx.project, Time.days_ago(0))
     ctx
   end
