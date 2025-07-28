@@ -274,8 +274,8 @@ function MilestoneForm({
         <DateSelector
           date={dueDate}
           onChange={setDueDate}
-          minDate={form.startTime}
-          maxDate={form.dueDate}
+          minDate={form.startTime?.date}
+          maxDate={form.dueDate?.date}
           placeholder="Select due date"
           testId="new-milestone-due"
           error={errors.includes("dueDate")}

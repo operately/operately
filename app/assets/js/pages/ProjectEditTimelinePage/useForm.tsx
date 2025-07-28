@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import { DateField } from "turboui";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
-import { assertPresent } from "@/utils/assertions";
 
 interface Error {
   field: string;
@@ -37,14 +36,12 @@ export interface FormState {
 }
 
 export function useForm(project: Projects.Project): FormState {
-  assertPresent(project.timeframe);
-
   const paths = usePaths();
   const navigate = useNavigate();
   const milestonesPath = paths.projectMilestonesPath(project.id!);
 
-  const oldStart = parseContextualDate(project.timeframe.contextualStartDate);
-  const oldDue = parseContextualDate(project.timeframe.contextualEndDate);
+  const oldStart = parseContextualDate(project.timeframe?.contextualStartDate);
+  const oldDue = parseContextualDate(project.timeframe?.contextualEndDate);
 
   const [startTime, setStartTime] = React.useState<DateField.ContextualDate | null>(oldStart);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(oldDue);
