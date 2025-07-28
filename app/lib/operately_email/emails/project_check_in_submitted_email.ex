@@ -81,14 +81,18 @@ defmodule OperatelyEmail.Emails.ProjectCheckInSubmittedEmail do
     def reviewer_note(:off_track, reviewer),
       do: [text(" "), text(Person.first_name(reviewer) <> "'s"), text(" help is needed.")]
 
-    defp due_date(%{deadline: nil}), do: []
-    defp due_date(%{deadline: date}) do
-      days = Date.diff(date, Date.utc_today())
-      duration = human_duration(abs(days))
+    defp due_date(%{timeframe: nil}), do: []
+    defp due_date(%{timeframe: timeframe}) do
+      case Operately.ContextualDates.Timeframe.end_date(timeframe) do
+        nil -> []
+        date ->
+          days = Date.diff(date, Date.utc_today())
+          duration = human_duration(abs(days))
 
-      cond do
-        days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
-        days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
+          cond do
+            days < 0 -> [text(" "), text(duration), text(" "), bg_red("overdue.")]
+            days > 0 -> [text(" "), text(duration), text(" "), text("until the deadline.")]
+          end
       end
     end
 

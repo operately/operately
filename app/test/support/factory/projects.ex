@@ -28,8 +28,7 @@ defmodule Operately.Support.Factory.Projects do
       |> maybe_add_key(:reviewer_id, reviewer && ctx[reviewer].id)
       |> maybe_add_key(:goal_id, goal && ctx[goal].id)
       |> Operately.ProjectsFixtures.project_fixture()
-      |> set_deadline(opts)
-      |> set_started_at(opts)
+      |> set_timeframe(opts)
 
     Map.put(ctx, testid, project)
   end
@@ -299,24 +298,11 @@ defmodule Operately.Support.Factory.Projects do
     end
   end
 
-  defp set_started_at(project, opts) do
-    if opts[:started_at] do
+  defp set_timeframe(project, opts) do
+    if opts[:timeframe] do
       {:ok, project} =
         Operately.Projects.update_project(project, %{
-          started_at: Keyword.get(opts, :started_at)
-        })
-
-      project
-    else
-      project
-    end
-  end
-
-  defp set_deadline(project, opts) do
-    if opts[:deadline] do
-      {:ok, project} =
-        Operately.Projects.update_project(project, %{
-          deadline: Keyword.get(opts, :deadline)
+          timeframe: Keyword.get(opts, :timeframe)
         })
 
       project

@@ -1130,8 +1130,6 @@ export interface Project {
   name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
-  startedAt?: string | null;
-  deadline?: string | null;
   timeframe?: Timeframe;
   nextUpdateScheduledAt?: string | null;
   nextCheckInScheduledAt?: string | null;
