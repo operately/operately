@@ -255,14 +255,17 @@ defmodule Operately.AI.Tools do
     with_logs = fn args, context ->
       log(context, "TOOL USE: #{attrs.name}\n")
 
-      if Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
+      if args != nil && Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
         log(context, "TOOL INPUT:\n" <> inspect(args) <> "\n")
       end
 
       result = attrs.function.(args, context)
 
       if Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
-        log(context, "TOOL OUTPUT: #{inspect(result)}\n")
+        case result do
+          {:ok, data} -> log(context, "TOOL OUTPUT: #{data}\n")
+          {:error, data} -> log(context, "TOOL ERROR: #{data}\n")
+        end
       end
 
       result
