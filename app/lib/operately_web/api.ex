@@ -31,6 +31,7 @@ defmodule OperatelyWeb.Api do
     mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
     mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
     mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
+    mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
   end
 
   namespace(:goals) do

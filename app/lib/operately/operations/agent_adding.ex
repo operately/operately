@@ -44,7 +44,8 @@ defmodule Operately.Operations.AgentAdding do
     Multi.insert(multi, :definition, fn %{person: person} ->
       Operately.People.AgentDef.changeset(%{
         person_id: person.id,
-        definition: ""
+        definition: "",
+        verbose_logs: false
       })
     end)
   end
