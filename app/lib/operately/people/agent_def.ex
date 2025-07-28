@@ -11,6 +11,7 @@ defmodule Operately.People.AgentDef do
     field :planning_instructions, :string
     field :task_execution_instructions, :string
     field :daily_run, :boolean, default: false
+    field :verbose_logs, :boolean, default: false
 
     timestamps()
   end
@@ -27,7 +28,8 @@ defmodule Operately.People.AgentDef do
       :sandbox_mode,
       :planning_instructions,
       :task_execution_instructions,
-      :daily_run
+      :daily_run,
+      :verbose_logs
     ])
     |> validate_required([:person_id])
     |> assoc_constraint(:person)

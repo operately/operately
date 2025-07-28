@@ -20,6 +20,7 @@ defmodule Operately.People.AgentRun do
     field :definition, :string
     field :planning_instructions, :string
     field :task_execution_instructions, :string
+    field :verbose_logs, :boolean, default: false
 
     timestamps()
   end
@@ -41,7 +42,8 @@ defmodule Operately.People.AgentRun do
       :tasks,
       :definition,
       :planning_instructions,
-      :task_execution_instructions
+      :task_execution_instructions,
+      :verbose_logs
     ])
     |> validate_required([:agent_def_id, :status, :started_at])
     |> validate_inclusion(:status, [:planning, :running, :completed, :failed, :cancelled])
@@ -66,7 +68,8 @@ defmodule Operately.People.AgentRun do
         started_at: DateTime.utc_now(),
         definition: agent_def.definition,
         planning_instructions: agent_def.planning_instructions,
-        task_execution_instructions: agent_def.task_execution_instructions
+        task_execution_instructions: agent_def.task_execution_instructions,
+        verbose_logs: agent_def.verbose_logs
       })
 
     Multi.new()
