@@ -10,7 +10,6 @@ import FormattedTime from "@/components/FormattedTime";
 import { GhostButton, DateField, Link } from "turboui";
 
 import { usePaths } from "@/routes/paths";
-import { assertPresent } from "@/utils/assertions";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { useLoadedData } from "./loader";
@@ -53,14 +52,12 @@ function Title({ project }) {
 }
 
 function Dates({ project }: { project: Project }) {
-  assertPresent(project.timeframe);
-
   return (
     <div className="flex items-center gap-12 mb-8">
       <div className="flex flex-col">
         <div className="font-bold">Start Date</div>
         <DateField
-          date={parseContextualDate(project.timeframe.contextualStartDate)}
+          date={parseContextualDate(project.timeframe?.contextualStartDate)}
           placeholder="No start date"
           readonly
           hideCalendarIcon
@@ -71,7 +68,7 @@ function Dates({ project }: { project: Project }) {
       <div className="flex flex-col">
         <div className="font-bold">Due Date</div>
         <DateField
-          date={parseContextualDate(project.timeframe.contextualEndDate)}
+          date={parseContextualDate(project.timeframe?.contextualEndDate)}
           placeholder="No due date"
           readonly
           hideCalendarIcon
