@@ -70,7 +70,13 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
     );
 
     days.push(
-      <button key={day} onClick={() => handleDayClick(date)} className={className} disabled={isDisabled}>
+      <button
+        key={day}
+        onClick={() => handleDayClick(date)}
+        className={className}
+        disabled={isDisabled}
+        data-test-id={`date-field-day-${day}`}
+      >
         {day}
       </button>,
     );
@@ -87,13 +93,13 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
   return (
     <div className="bg-white border border-gray-300 rounded-lg p-3">
       <div className="flex items-center justify-between mb-2">
-        <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded">
+        <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded" data-testid="date-field-prev-month">
           <IconChevronLeft size={16} stroke={1.5} />
         </button>
-        <h3 className="font-medium text-sm">
+        <h3 className="font-medium text-sm" data-testid="date-field-current-month">
           {monthNames[currentMonth]} {currentYear}
         </h3>
-        <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded">
+        <button onClick={nextMonth} className="p-1 hover:bg-gray-100 rounded" data-testid="date-field-next-month">
           <IconChevronRight size={16} stroke={1.5} />
         </button>
       </div>
