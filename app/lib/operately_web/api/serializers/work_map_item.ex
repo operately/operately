@@ -41,17 +41,10 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
 
   defp timeframe(%{timeframe: nil}), do: %{start_date: nil, end_date: nil}
 
-  defp timeframe(%{type: :goal, timeframe: timeframe}) do
+  defp timeframe(%{timeframe: timeframe}) do
     %{
       start_date: Operately.ContextualDates.Timeframe.start_date(timeframe),
       end_date: Operately.ContextualDates.Timeframe.end_date(timeframe)
-    }
-  end
-
-  defp timeframe(_item = %{type: :project, timeframe: timeframe}) do
-    %{
-      start_date: timeframe["start_date"] || timeframe[:start_date],
-      end_date: timeframe["end_date"] || timeframe[:end_date],
     }
   end
 end

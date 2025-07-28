@@ -28,9 +28,9 @@ export {
 } from "@/api";
 
 export function isOverdue(project: Project) {
-  assertPresent(project.deadline, "project deadlineAt must be defined");
+  assertPresent(project.timeframe, "project timeline must be defined");
 
-  const deadline = Time.parse(project.deadline);
+  const deadline = Time.parse(project.timeframe.contextualEndDate?.date);
 
   return Time.compareAsc(deadline, Time.today()) === -1;
 }
