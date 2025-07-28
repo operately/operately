@@ -789,6 +789,7 @@ export interface AgentDef {
   planningInstructions: string;
   taskExecutionInstructions: string;
   dailyRun: boolean;
+  verboseLogs: boolean;
 }
 
 export interface AgentRun {
@@ -2562,6 +2563,15 @@ export interface AiEditAgentTaskExecutionInstructionsResult {
   success: boolean;
 }
 
+export interface AiEditAgentVerbosityInput {
+  id: Id;
+  verbose: boolean;
+}
+
+export interface AiEditAgentVerbosityResult {
+  success: boolean;
+}
+
 export interface AiRunAgentInput {
   id: Id;
 }
@@ -4281,6 +4291,10 @@ class ApiNamespaceAi {
     input: AiEditAgentTaskExecutionInstructionsInput,
   ): Promise<AiEditAgentTaskExecutionInstructionsResult> {
     return this.client.post("/ai/edit_agent_task_execution_instructions", input);
+  }
+
+  async editAgentVerbosity(input: AiEditAgentVerbosityInput): Promise<AiEditAgentVerbosityResult> {
+    return this.client.post("/ai/edit_agent_verbosity", input);
   }
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
@@ -6746,6 +6760,12 @@ export default {
     useEditAgentPlanningInstructions: () =>
       useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>(
         defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
+      ),
+
+    editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
+    useEditAgentVerbosity: () =>
+      useMutation<AiEditAgentVerbosityInput, AiEditAgentVerbosityResult>(
+        defaultApiClient.apiNamespaceAi.editAgentVerbosity,
       ),
 
     runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
