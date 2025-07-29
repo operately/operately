@@ -4,7 +4,7 @@ defmodule Operately.Projects.EditTimelineOperation do
 
   alias Operately.Activities
   alias Operately.Projects.{Project, Milestone}
-  alias Operately.ContextualDates.Timeframe
+  alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
   def run(author, project, attrs) do
     changeset = Project.changeset(project, %{
@@ -30,7 +30,11 @@ defmodule Operately.Projects.EditTimelineOperation do
       changeset = Operately.Projects.Milestone.changeset(milestone, %{
         title: milestone_update.title,
         description: milestone_update.description,
-        deadline_at: milestone_update.due_time
+        deadline_at: milestone_update.due_time,
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(milestone.inserted_at),
+          contextual_end_date: ContextualDate.create_day_date(milestone_update.due_time),
+        }
       })
 
       multi |> Multi.update("updated_milestone_#{milestone.id}", changeset)
@@ -46,7 +50,11 @@ defmodule Operately.Projects.EditTimelineOperation do
         title: milestone.title,
         description: milestone.description,
         deadline_at: milestone.due_time,
-        tasks_kanban_state: Operately.Tasks.KanbanState.initialize()
+        tasks_kanban_state: Operately.Tasks.KanbanState.initialize(),
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(milestone.due_time),
+        }
       })
 
       multi |> Multi.insert("new_milestone_#{index}", changeset)
