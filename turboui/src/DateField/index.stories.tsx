@@ -418,6 +418,26 @@ export const AllStates: Story = {
               </div>
             </div>
           </div>
+
+          <div className="border-t border-stroke-base pt-12">
+            <h2 className="text-lg font-bold mb-8">Error States</h2>
+            <div className="grid grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-sm font-bold mb-2">Normal (No Error)</h3>
+                <Component date={createContextualDate(today, "day")} variant="form-field" />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">With Error</h3>
+                <Component date={createContextualDate(today, "day")} variant="form-field" error={true} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Empty With Error</h3>
+                <Component date={null} placeholder="Required date..." variant="form-field" error={true} />
+              </div>
+            </div>
+          </div>
         </div>
       </Page>
     );
