@@ -12,6 +12,7 @@ defmodule Operately.People.AgentDef do
     field :task_execution_instructions, :string
     field :daily_run, :boolean, default: false
     field :verbose_logs, :boolean, default: false
+    field :provider, Ecto.Enum, values: [:openai, :claude], default: :claude
 
     timestamps()
   end
@@ -29,7 +30,8 @@ defmodule Operately.People.AgentDef do
       :planning_instructions,
       :task_execution_instructions,
       :daily_run,
-      :verbose_logs
+      :verbose_logs,
+      :provider
     ])
     |> validate_required([:person_id])
     |> assoc_constraint(:person)
