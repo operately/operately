@@ -1,8 +1,8 @@
 import * as Time from "@/utils/time";
-import { Milestone, MilestoneComment, Timeframe } from "@/api";
+import { Milestone, MilestoneComment } from "@/api";
 import { DateField } from "turboui";
 
-export type { Milestone, MilestoneComment, Timeframe };
+export type { Milestone, MilestoneComment };
 export {
   getMilestone,
   useUpdateMilestone,
