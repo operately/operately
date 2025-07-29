@@ -296,7 +296,7 @@ function MilestoneForm({
           placeholder="Select due date"
           variant="form-field"
           testId="new-milestone-due"
-          // error={errors.includes("dueDate")}
+          error={errors.includes("dueDate")}
         />
         {errors.includes("dueDate") && (
           <div className="text-red-500 text-xs mt-1" data-test-id="due-date-error">

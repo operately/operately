@@ -11,22 +11,22 @@ defmodule Operately.Features.ProjectsTimelineTest do
     |> Factory.add_space(:product)
   end
 
-  # feature "defining the project timeline", ctx do
-  #   params = %{
-  #     started_at: Time.day_in_current_month(10),
-  #     deadline: Time.day_in_current_month(20),
-  #     milestones: [
-  #       %{title: "Contract Signed", due_day: Time.day_in_current_month(15)},
-  #       %{title: "Website Launched", due_day: Time.day_in_current_month(16)}
-  #     ]
-  #   }
+  feature "defining the project timeline", ctx do
+    params = %{
+      started_at: Time.day_in_current_month(10),
+      deadline: Time.day_in_current_month(20),
+      milestones: [
+        %{title: "Contract Signed", due_day: Time.day_in_current_month(15)},
+        %{title: "Website Launched", due_day: Time.day_in_current_month(16)}
+      ]
+    }
 
-  #   ctx
-  #   |> Steps.given_a_project_exists()
-  #   |> Steps.when_i_define_the_project_timeline(params)
-  #   |> Steps.assert_the_timeline_and_milestone_are_visible_on_the_project_page(params)
-  #   |> Steps.assert_feed_email_and_notification_are_sent_for_timeline_change()
-  # end
+    ctx
+    |> Steps.given_a_project_exists()
+    |> Steps.when_i_define_the_project_timeline(params)
+    |> Steps.assert_the_timeline_and_milestone_are_visible_on_the_project_page(params)
+    |> Steps.assert_feed_email_and_notification_are_sent_for_timeline_change()
+  end
 
   feature "adding a project milestone", ctx do
     ctx

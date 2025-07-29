@@ -143,8 +143,8 @@ export function DateField({
             showOverdueWarning={showOverdueWarning}
             variant={variant}
             hideCalendarIcon={hideCalendarIcon}
+            testId={testId}
             size={size}
-            testId={createTestId(testId, "trigger")}
             error={error}
           />
         </div>
@@ -181,7 +181,7 @@ interface DatePickerTriggerProps extends TestableElement {
   variant: "inline" | "form-field";
   hideCalendarIcon: boolean;
   size: "std" | "small" | "lg";
-  error?: boolean;
+  error: boolean;
 }
 
 function DatePickerTrigger({
