@@ -29,7 +29,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
       ctx
       |> UI.click(testid: "add-milestone")
       |> UI.fill(testid: "new-milestone-title", with: milestone.title)
-      |> UI.select_day_in_datepicker(testid: "new-milestone-due", date: milestone.due_day)
+      |> UI.select_day_in_date_field(testid: "new-milestone-due", date: milestone.due_day)
       |> UI.click(testid: "save-milestone-button")
     end)
     |> UI.click(testid: "save-changes")
@@ -85,7 +85,7 @@ defmodule Operately.Support.Features.ProjectTimelineSteps do
     |> UI.click(testid: "edit-timeline")
     |> UI.click(testid: "add-milestone")
     |> UI.fill(testid: "new-milestone-title", with: "Website Published")
-    |> UI.select_day_in_datepicker(testid: "new-milestone-due", date: Time.days_from_now(5))
+    |> UI.select_day_in_date_field(testid: "new-milestone-due", date: Time.days_from_now(5))
     |> UI.click(testid: "save-milestone-button")
     |> UI.click(testid: "save-changes")
     |> UI.assert_has(testid: "project-timeline-page")

@@ -28,16 +28,13 @@ defmodule Operately.Features.ProjectsTimelineTest do
   #   |> Steps.assert_feed_email_and_notification_are_sent_for_timeline_change()
   # end
 
-  #
-  # TODO: Reenable this test after DateField is added to milestone form
-  #
-  # feature "adding a project milestone", ctx do
-  #   ctx
-  #   |> Steps.given_a_project_with_a_defined_timeline_exists()
-  #   |> Steps.when_i_add_a_milestone()
-  #   |> Steps.assert_the_milestone_is_visible_on_the_project_page()
-  #   |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_addition()
-  # end
+  feature "adding a project milestone", ctx do
+    ctx
+    |> Steps.given_a_project_with_a_defined_timeline_exists()
+    |> Steps.when_i_add_a_milestone()
+    |> Steps.assert_the_milestone_is_visible_on_the_project_page()
+    |> Steps.assert_feed_email_and_notification_are_sent_for_milestone_addition()
+  end
 
   feature "adding a project milestone without due date raises error", ctx do
     ctx
