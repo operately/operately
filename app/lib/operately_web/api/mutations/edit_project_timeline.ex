@@ -58,7 +58,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
           milestone_id: milestone_id,
           title: update.title,
           description: update[:description] && Jason.decode!(update.description),
-          due_time: parse_date(update.due_time)
+          due_date: update.due_date,
         }
       end),
 
@@ -66,17 +66,9 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimeline do
         %{
           title: milestone.title,
           description: milestone[:description] && Jason.decode!(milestone.description),
-          due_time: parse_date(milestone.due_time)
+          due_date: milestone.due_date,
         }
       end)
     }}
-  end
-
-  defp parse_date(date) do
-    if date do
-      NaiveDateTime.new!(date, ~T[00:00:00])
-    else
-      nil
-    end
   end
 end

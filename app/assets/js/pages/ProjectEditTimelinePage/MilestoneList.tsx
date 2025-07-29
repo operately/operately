@@ -1,23 +1,26 @@
 import * as React from "react";
-import * as Milestones from "@/models/milestones";
+
 import * as TipTapEditor from "@/components/Editor";
-import * as Time from "@/utils/time";
-import { IconPlus, IconFlag3Filled, IconPencil, IconTrash } from "turboui";
+import { IconPlus, IconFlag3Filled, IconPencil, IconTrash, DateField } from "turboui";
 
 import classNames from "classnames";
-import FormattedTime from "@/components/FormattedTime";
 
 import { PrimaryButton, SecondaryButton } from "turboui";
-import { DateSelector } from "./DateSelector";
 import { Summary } from "@/components/RichContent";
 import { FormState } from "./useForm";
+import { ParsedMilestone } from "@/models/milestones";
 
-export function MilestoneList({ form }) {
-  const milestones = Milestones.sortByDeadline(form.milestoneList.milestones);
+export function MilestoneList({ form }: { form: FormState }) {
+  const milestones = form.milestoneList.milestones.sort((m1, m2) => {
+    const d1 = m1.deadline ? +m1.deadline.date : Number.MAX_SAFE_INTEGER;
+    const d2 = m2.deadline ? +m2.deadline.date : Number.MAX_SAFE_INTEGER;
+
+    return d1 - d2;
+  });
 
   return (
     <div className="flex flex-col gap-2 my-3">
-      {milestones.map((m: Milestones.Milestone) => (
+      {milestones.map((m) => (
         <MilestoneListItem key={m.id} milestone={m} form={form} />
       ))}
 
@@ -26,7 +29,7 @@ export function MilestoneList({ form }) {
   );
 }
 
-function AddMilestone({ form }) {
+function AddMilestone({ form }: { form: FormState }) {
   const [active, setActive] = React.useState(false);
 
   const startEditing = React.useCallback(() => {
@@ -47,7 +50,7 @@ function AddMilestone({ form }) {
   }
 }
 
-function AddMilestoneButton({ onClick }) {
+function AddMilestoneButton({ onClick }: { onClick: () => void }) {
   return (
     <div
       className="py-2 px-3 border border-surface-outline bg-surface-accent rounded cursor-pointer hover:bg-surface-dimmed"
@@ -64,17 +67,21 @@ function AddMilestoneButton({ onClick }) {
   );
 }
 
-function AddMilestoneForm({ form, close }) {
-  const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date, description: any) => {
-    form.milestoneList.add({
-      id: id,
-      title,
-      description: description,
-      deadlineAt: Time.parseDate(dueDate),
-    });
+function AddMilestoneForm({ form, close }: { form: FormState; close: () => void }) {
+  const onSubmit = React.useCallback(
+    async (id: string, title: string, deadline: DateField.ContextualDate, description: any) => {
+      form.milestoneList.add({
+        id: id,
+        title,
+        description: description,
+        deadline,
+        deletable: true,
+      });
 
-    close();
-  }, []);
+      close();
+    },
+    [],
+  );
 
   return (
     <MilestoneForm
@@ -89,7 +96,7 @@ function AddMilestoneForm({ form, close }) {
   );
 }
 
-function MilestoneListItem({ milestone, form }) {
+function MilestoneListItem({ milestone, form }: { milestone: ParsedMilestone; form: FormState }) {
   const [editing, setEditing] = React.useState(false);
 
   const edit = () => {
@@ -109,7 +116,13 @@ function MilestoneListItem({ milestone, form }) {
   }
 }
 
-function MilestoneDisplay({ milestone, form, edit }) {
+interface MilestoneDisplayProps {
+  milestone: ParsedMilestone;
+  form: FormState;
+  edit: () => void;
+}
+
+function MilestoneDisplay({ milestone, form, edit }: MilestoneDisplayProps) {
   return (
     <div
       className="py-2 px-3 border border-surface-outline bg-surface-accent rounded"
@@ -123,11 +136,11 @@ function MilestoneDisplay({ milestone, form, edit }) {
           </div>
 
           <div className="text-sm max-w-lg mb-2">
-            <Summary jsonContent={milestone.description} characterCount={200} />
+            {milestone.description && <Summary jsonContent={milestone.description} characterCount={200} />}
           </div>
 
-          <div className="text-sm">
-            Deadline: <FormattedTime time={Time.parseDate(milestone.deadlineAt)!} format="short-date" />
+          <div className="text-sm flex items-center gap-1">
+            Deadline: <DateField date={milestone.deadline} readonly hideCalendarIcon />
           </div>
         </div>
 
@@ -157,24 +170,27 @@ function MilestoneDisplay({ milestone, form, edit }) {
   );
 }
 
-function MilestoneEdit({ milestone, form, close }) {
-  const onSubmit = React.useCallback(async (id: string, title: string, dueDate: Date, description: any) => {
-    await form.milestoneList.edit({
-      id: id,
-      title,
-      description: description,
-      deadlineAt: Time.parseDate(dueDate),
-    });
+function MilestoneEdit({ milestone, form, close }: { milestone: ParsedMilestone; form: FormState; close: () => void }) {
+  const onSubmit = React.useCallback(
+    async (id: string, title: string, deadline: DateField.ContextualDate, description: any) => {
+      await form.milestoneList.edit({
+        id: id,
+        title,
+        description: description,
+        deadline: deadline,
+      });
 
-    close();
-  }, []);
+      close();
+    },
+    [],
+  );
 
   return (
     <MilestoneForm
       form={form}
       id={milestone.id}
       initialTitle={milestone.title}
-      initialDueDate={Time.parseDate(milestone.deadlineAt)}
+      initialDueDate={milestone.deadline}
       initialDescription={milestone.description && JSON.parse(milestone.description)}
       onSubmit={onSubmit}
       onCancel={close}
@@ -182,7 +198,7 @@ function MilestoneEdit({ milestone, form, close }) {
   );
 }
 
-function milestoneTestID(milestone: Milestones.Milestone) {
+function milestoneTestID(milestone: ParsedMilestone) {
   return "milestone-" + milestone.title!.toLowerCase().replace(/\s+/g, "-");
 }
 
@@ -190,9 +206,9 @@ interface MilestoneFormProps {
   form: FormState;
   id: string;
   initialTitle: string;
-  initialDueDate: Date | null;
+  initialDueDate: DateField.ContextualDate | null;
   initialDescription: any;
-  onSubmit: (id: string, title: string, dueDate: Date, description: any) => void;
+  onSubmit: (id: string, title: string, deadline: DateField.ContextualDate | null, description: any) => void;
   onCancel: () => void;
 }
 
@@ -206,7 +222,7 @@ function MilestoneForm({
   onCancel,
 }: MilestoneFormProps) {
   const [title, setTitle] = React.useState(initialTitle);
-  const [dueDate, setDueDate] = React.useState<Date | null>(initialDueDate);
+  const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(initialDueDate);
 
   const { editor } = TipTapEditor.useEditor({
     autoFocus: false,
@@ -236,7 +252,8 @@ function MilestoneForm({
       return false;
     }
 
-    await onSubmit(id, title, dueDate!, JSON.stringify(editor.getJSON()));
+    await onSubmit(id, title, dueDate, JSON.stringify(editor.getJSON()));
+
     return true;
   }, [editor, title, dueDate]);
 
@@ -271,12 +288,13 @@ function MilestoneForm({
       <div className="text-xs uppercase tracking-wide mt-4 mb-1">Due Date</div>
 
       <div className="flex-1 w-64">
-        <DateSelector
+        <DateField
           date={dueDate}
-          onChange={setDueDate}
-          minDate={form.startTime?.date}
-          maxDate={form.dueDate?.date}
+          onDateSelect={setDueDate}
+          minDateLimit={form.startTime?.date}
+          maxDateLimit={form.dueDate?.date}
           placeholder="Select due date"
+          variant="form-field"
           testId="new-milestone-due"
           error={errors.includes("dueDate")}
         />
