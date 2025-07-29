@@ -1,7 +1,8 @@
 import * as Time from "@/utils/time";
-import { Milestone, MilestoneComment } from "@/api";
+import { Milestone, MilestoneComment, Timeframe } from "@/api";
+import { DateField } from "turboui";
 
-export type { Milestone, MilestoneComment };
+export type { Milestone, MilestoneComment, Timeframe };
 export {
   getMilestone,
   useUpdateMilestone,
@@ -9,6 +10,11 @@ export {
   useUpdateMilestoneDescription,
   usePostMilestoneComment,
 } from "@/api";
+
+export interface ParsedMilestone extends Pick<Milestone, "id" | "title" | "description"> {
+  deletable: boolean;
+  deadline: DateField.ContextualDate | null;
+}
 
 export function filterPending(milestones: Milestone[]) {
   return milestones.filter((m) => m.status === "pending");
