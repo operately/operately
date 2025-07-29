@@ -70,6 +70,7 @@ import ProjectMilestonePage from "./ProjectMilestonePage";
 import ProjectMilestonesPage from "./ProjectMilestonesPage";
 import ProjectMovePage from "./ProjectMovePage";
 import ProjectPage from "./ProjectPage";
+import ProjectPageV2Page from "./ProjectPageV2Page";
 import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
@@ -173,6 +174,7 @@ export default {
   ProjectMilestonesPage,
   ProjectMovePage,
   ProjectPage,
+  ProjectPageV2Page,
   ProjectPausePage,
   ProjectResumePage,
   ProjectRetrospectiveEditPage,

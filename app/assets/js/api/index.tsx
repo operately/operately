@@ -790,6 +790,7 @@ export interface AgentDef {
   taskExecutionInstructions: string;
   dailyRun: boolean;
   verboseLogs: boolean;
+  provider: string;
 }
 
 export interface AgentRun {
@@ -2543,6 +2544,15 @@ export interface AiEditAgentPlanningInstructionsResult {
   success: boolean;
 }
 
+export interface AiEditAgentProviderInput {
+  id: Id;
+  provider: string;
+}
+
+export interface AiEditAgentProviderResult {
+  success: boolean;
+}
+
 export interface AiEditAgentSandboxModeInput {
   id: Id;
   mode: boolean;
@@ -4279,6 +4289,10 @@ class ApiNamespaceAi {
     input: AiEditAgentPlanningInstructionsInput,
   ): Promise<AiEditAgentPlanningInstructionsResult> {
     return this.client.post("/ai/edit_agent_planning_instructions", input);
+  }
+
+  async editAgentProvider(input: AiEditAgentProviderInput): Promise<AiEditAgentProviderResult> {
+    return this.client.post("/ai/edit_agent_provider", input);
   }
 
   async editAgentSandboxMode(input: AiEditAgentSandboxModeInput): Promise<AiEditAgentSandboxModeResult> {
@@ -6774,6 +6788,12 @@ export default {
     useEditAgentDefinition: () =>
       useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>(
         defaultApiClient.apiNamespaceAi.editAgentDefinition,
+      ),
+
+    editAgentProvider: (input: AiEditAgentProviderInput) => defaultApiClient.apiNamespaceAi.editAgentProvider(input),
+    useEditAgentProvider: () =>
+      useMutation<AiEditAgentProviderInput, AiEditAgentProviderResult>(
+        defaultApiClient.apiNamespaceAi.editAgentProvider,
       ),
 
     editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
