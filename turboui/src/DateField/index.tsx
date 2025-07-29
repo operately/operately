@@ -36,6 +36,7 @@ export namespace DateField {
     hideCalendarIcon?: boolean;
     useStartOfPeriod?: boolean;
     size?: "std" | "small" | "lg";
+    error?: boolean;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -79,6 +80,7 @@ export function DateField({
   testId = "date-field",
   minDateLimit,
   maxDateLimit,
+  error = false,
 }: DateField.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
@@ -135,14 +137,15 @@ export function DateField({
         <div>
           <DatePickerTrigger
             selectedDate={selectedDate}
-            onClick={handleTriggerClick}
             label={placeholder}
+            onClick={handleTriggerClick}
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
             variant={variant}
             hideCalendarIcon={hideCalendarIcon}
-            testId={testId}
             size={size}
+            testId={createTestId(testId, "trigger")}
+            error={error}
           />
         </div>
       </Popover.Trigger>
@@ -178,6 +181,7 @@ interface DatePickerTriggerProps extends TestableElement {
   variant: "inline" | "form-field";
   hideCalendarIcon: boolean;
   size: "std" | "small" | "lg";
+  error?: boolean;
 }
 
 function DatePickerTrigger({
@@ -190,14 +194,15 @@ function DatePickerTrigger({
   hideCalendarIcon,
   size,
   testId,
+  error,
 }: DatePickerTriggerProps) {
   let displayText = selectedDate ? getDateWithoutCurrentYear(selectedDate) : label;
   const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
 
   const fieldSize = match(size)
-    .with("std", () => "border border-surface-outline rounded-lg w-full px-2 py-1.5")
-    .with("small", () => "border border-surface-outline rounded-lg w-full px-1.5 py-1")
-    .with("lg", () => "border border-surface-outline rounded-lg w-full px-2.5 py-2")
+    .with("std", () => `border ${error ? 'border-red-500' : 'border-surface-outline'} rounded-lg w-full px-2 py-1.5`)
+    .with("small", () => `border ${error ? 'border-red-500' : 'border-surface-outline'} rounded-lg w-full px-1.5 py-1`)
+    .with("lg", () => `border ${error ? 'border-red-500' : 'border-surface-outline'} rounded-lg w-full px-2.5 py-2`)
     .exhaustive();
 
   const elementSize = match(size)
@@ -217,7 +222,7 @@ function DatePickerTrigger({
 
   const triggerClassName = classNames(
     "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
-    variant === "inline" ? "rounded-lg px-1.5 py-1 -mx-1.5 -my-1" : fieldSize,
+    variant === "inline" ? `rounded-lg px-1.5 py-1 -mx-1.5 -my-1 ${error ? 'border border-red-500' : ''}` : fieldSize,
     !readonly ? "hover:bg-surface-dimmed" : "",
   );
 
