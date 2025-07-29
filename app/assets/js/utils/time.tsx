@@ -164,7 +164,7 @@ export function relativeDay(date: Date) {
   return `${days} days ago`;
 }
 
-export function dateChanged(old: Date | null, current: Date | null): boolean {
+export function dateChanged(old: Date | null | undefined, current: Date | null | undefined): boolean {
   if (!old && !current) return false;
   if (!old && current) return true;
   if (old && !current) return true;

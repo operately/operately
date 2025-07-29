@@ -31,10 +31,10 @@ defmodule Operately.Projects.EditTimelineOperation do
       changeset = Operately.Projects.Milestone.changeset(milestone, %{
         title: milestone_update.title,
         description: milestone_update.description,
-        deadline_at: milestone_update.due_time,
+        deadline_at: parse_date(milestone_update.due_date.date),
         timeframe: %{
           contextual_start_date: ContextualDate.create_day_date(started_date),
-          contextual_end_date: ContextualDate.create_day_date(milestone_update.due_time),
+          contextual_end_date: milestone_update.due_date,
         }
       })
 
@@ -50,11 +50,11 @@ defmodule Operately.Projects.EditTimelineOperation do
         project_id: project.id,
         title: milestone.title,
         description: milestone.description,
-        deadline_at: milestone.due_time,
+        deadline_at: parse_date(milestone.due_date.date),
         tasks_kanban_state: Operately.Tasks.KanbanState.initialize(),
         timeframe: %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: ContextualDate.create_day_date(milestone.due_time),
+          contextual_end_date: milestone.due_date,
         }
       })
 
@@ -104,5 +104,13 @@ defmodule Operately.Projects.EditTimelineOperation do
         new_due_date: milestone.deadline_at
       }
     end)
+  end
+
+  defp parse_date(date) do
+    if date do
+      NaiveDateTime.new!(date, ~T[00:00:00])
+    else
+      nil
+    end
   end
 end
