@@ -30,7 +30,7 @@ type LoaderResult = {
   cacheVersion: number;
 };
 
-export async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
+async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
