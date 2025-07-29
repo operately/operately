@@ -25,14 +25,20 @@ defmodule Operately.AI do
   #
 
   def run_agent(run, definition, instructions) do
+    provider =
+      case run.agent_def.provider do
+        :openai -> LangChain.ChatModels.ChatOpenAI.new!()
+        :claude -> LangChain.ChatModels.ChatAnthropic.new!()
+        _ -> raise "Unsupported provider: #{run.agent_def.provider}"
+      end
+
+    context = %{
+      person: run.agent_def.person,
+      agent_run: run
+    }
+
     base =
-      LLMChain.new!(%{
-        llm: ChatAnthropic.new!(),
-        custom_context: %{
-          person: run.agent_def.person,
-          agent_run: run
-        }
-      })
+      LLMChain.new!(%{llm: provider, custom_context: context})
       |> LLMChain.add_tools(Tools.add_agent_task())
       |> LLMChain.add_tools(Tools.work_map())
       |> LLMChain.add_tools(Tools.get_goal_details())
