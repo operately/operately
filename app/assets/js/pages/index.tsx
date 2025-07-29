@@ -70,10 +70,12 @@ import ProjectMilestonePage from "./ProjectMilestonePage";
 import ProjectMilestonesPage from "./ProjectMilestonesPage";
 import ProjectMovePage from "./ProjectMovePage";
 import ProjectPage from "./ProjectPage";
+import ProjectPageV2Page from "./ProjectPageV2Page";
 import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import ProjectRetrospectivePage from "./ProjectRetrospectivePage";
+import ProjectV2Page from "./ProjectV2Page";
 import ResetPasswordPage from "./ResetPasswordPage";
 import ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import ResourceHubDraftsPage from "./ResourceHubDraftsPage";
@@ -172,10 +174,12 @@ export default {
   ProjectMilestonesPage,
   ProjectMovePage,
   ProjectPage,
+  ProjectPageV2Page,
   ProjectPausePage,
   ProjectResumePage,
   ProjectRetrospectiveEditPage,
   ProjectRetrospectivePage,
+  ProjectV2Page,
   ResetPasswordPage,
   ResourceHubDocumentPage,
   ResourceHubDraftsPage,
