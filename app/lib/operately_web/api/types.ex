@@ -1316,11 +1316,12 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :milestone do
-    field? :id, :string, null: true
+    field :id, :string
     field? :project, :project, null: true
-    field? :title, :string, null: true
+    field :title, :string
     field? :status, :string, null: true
     field? :inserted_at, :date, null: true
+    field :timeframe, :timeframe, null: true
     field? :deadline_at, :date, null: true
     field? :completed_at, :date, null: true
     field? :description, :string, null: true
@@ -1578,16 +1579,16 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :edit_project_timeline_milestone_update_input do
-    field? :id, :string, null: true
-    field? :title, :string, null: true
-    field? :description, :string, null: true
-    field? :due_time, :date, null: true
+    field :id, :string
+    field :title, :string
+    field :description, :string, null: true
+    field :due_date, :contextual_date
   end
 
   object :edit_project_timeline_new_milestone_input do
-    field? :title, :string, null: true
-    field? :description, :string, null: true
-    field? :due_time, :date, null: true
+    field :title, :string
+    field :description, :string, null: true
+    field :due_date, :contextual_date
   end
 
   object :goal_progress_update do

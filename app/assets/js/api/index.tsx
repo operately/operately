@@ -926,16 +926,16 @@ export interface EditMemberPermissionsInput {
 }
 
 export interface EditProjectTimelineMilestoneUpdateInput {
-  id?: string | null;
-  title?: string | null;
-  description?: string | null;
-  dueTime?: string | null;
+  id: string;
+  title: string;
+  description: string | null;
+  dueDate: ContextualDate;
 }
 
 export interface EditProjectTimelineNewMilestoneInput {
-  title?: string | null;
-  description?: string | null;
-  dueTime?: string | null;
+  title: string;
+  description: string | null;
+  dueDate: ContextualDate;
 }
 
 export interface Goal {
@@ -1064,11 +1064,12 @@ export interface MessagesBoard {
 }
 
 export interface Milestone {
-  id?: string | null;
+  id: string;
   project?: Project | null;
-  title?: string | null;
+  title: string;
   status?: string | null;
   insertedAt?: string | null;
+  timeframe: Timeframe | null;
   deadlineAt?: string | null;
   completedAt?: string | null;
   description?: string | null;
