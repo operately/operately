@@ -25,6 +25,7 @@ export interface State {
   sandboxMode: SandboxModeState;
   dailyRun: DailyRunState;
   verboseLogs: VerboseLogsState;
+  provider: ProviderState;
 }
 
 export function usePageState(): State {
@@ -44,6 +45,7 @@ export function usePageState(): State {
   const planningInstructions = usePlanningInstructions();
   const taskExectionInstructions = useTaskExecutionInstructions();
   const verboseLogs = useVerboseLogs();
+  const provider = useProvider();
 
   const runAgent = async () => {
     if (creatingRun) return;
@@ -96,6 +98,7 @@ export function usePageState(): State {
     planningInstructions,
     taskExectionInstructions,
     verboseLogs,
+    provider,
   };
 }
 
@@ -310,5 +313,34 @@ function useVerboseLogs(): VerboseLogsState {
   return {
     value,
     setValue: setValue,
+  };
+}
+
+interface ProviderState {
+  value: string;
+  setValue: (newProvider: string) => Promise<void>;
+}
+
+function useProvider(): ProviderState {
+  const { agent } = Pages.useLoadedData<LoaderResult>();
+
+  const [value, setValue] = React.useState<string>(agent.agentDef!.provider);
+
+  const setProvider = async (newProvider: string) => {
+    const oldProvider = value;
+
+    try {
+      setValue(newProvider);
+      await Api.ai.editAgentProvider({ id: agent.id, provider: newProvider });
+      showSuccessToast("Success", "Agent provider updated successfully");
+    } catch (error) {
+      setValue(oldProvider);
+      showErrorToast("Network error", "Reverting to previous provider");
+    }
+  };
+
+  return {
+    value,
+    setValue: setProvider,
   };
 }

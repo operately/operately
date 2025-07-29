@@ -21,6 +21,7 @@ if System.get_env("PHX_SERVER") do
 end
 
 config :langchain, :anthropic_key, System.get_env("ANTHROPIC_API_KEY")
+config :langchain, :openai_key, System.get_env("OPENAI_API_KEY")
 
 config :operately, :demo_builder_allowed, System.get_env("OPERATELY_DEMO_BUILDER_ALLOWED") == "true"
 config :operately, :blob_token_secret_key, System.get_env("OPERATELY_BLOB_TOKEN_SECRET_KEY")

@@ -21,6 +21,7 @@ defmodule Operately.People.AgentRun do
     field :planning_instructions, :string
     field :task_execution_instructions, :string
     field :verbose_logs, :boolean, default: false
+    field :provider, Ecto.Enum, values: [:openai, :claude]
 
     timestamps()
   end
@@ -43,7 +44,8 @@ defmodule Operately.People.AgentRun do
       :definition,
       :planning_instructions,
       :task_execution_instructions,
-      :verbose_logs
+      :verbose_logs,
+      :provider
     ])
     |> validate_required([:agent_def_id, :status, :started_at])
     |> validate_inclusion(:status, [:planning, :running, :completed, :failed, :cancelled])
@@ -69,7 +71,8 @@ defmodule Operately.People.AgentRun do
         definition: agent_def.definition,
         planning_instructions: agent_def.planning_instructions,
         task_execution_instructions: agent_def.task_execution_instructions,
-        verbose_logs: agent_def.verbose_logs
+        verbose_logs: agent_def.verbose_logs,
+        provider: agent_def.provider
       })
 
     Multi.new()

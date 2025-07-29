@@ -52,6 +52,7 @@ function Page() {
           <SandboxModeToggle state={state} />
           <DailyRunToggle state={state} />
           <VerboseLogsToggle state={state} />
+          <ProviderSelector state={state} />
         </div>
 
         {state.expandedRun ? <AgentRunView state={state} /> : <AgentRunList state={state} />}
@@ -301,6 +302,29 @@ function AgentRunView({ state }: { state: State }) {
           <pre className="whitespace-pre-wrap">{run.logs}</pre>
         </div>
       )}
+    </div>
+  );
+}
+
+function ProviderSelector({ state }: { state: State }) {
+  return (
+    <div className="mt-6 p-4 border border-surface-outline rounded-md flex items-center justify-between gap-4">
+      <div>
+        <label className="font-bold text-sm mb-1">LLM Provider</label>
+        <div className="text-xs text-surface-text-secondary max-w-xl">
+          Select the provider for the LLM used by this agent. This will determine the capabilities and behavior of the
+          agent.
+        </div>
+      </div>
+
+      <select
+        className="border border-surface-outline rounded-md p-2 text-xs"
+        value={state.provider.value}
+        onChange={(e) => state.provider.setValue(e.target.value)}
+      >
+        <option value="openai">OpenAI</option>
+        <option value="claude">Claude</option>
+      </select>
     </div>
   );
 }

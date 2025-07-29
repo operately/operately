@@ -8,7 +8,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.AgentDef do
       planning_instructions: agent_def.planning_instructions || "",
       task_execution_instructions: agent_def.task_execution_instructions || "",
       daily_run: agent_def.daily_run,
-      verbose_logs: agent_def.verbose_logs
+      verbose_logs: agent_def.verbose_logs,
+      provider: Atom.to_string(agent_def.provider)
     }
   end
 end
