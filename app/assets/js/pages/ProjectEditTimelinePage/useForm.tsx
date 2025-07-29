@@ -69,14 +69,14 @@ export function useForm(project: Projects.Project): FormState {
       projectDueDate: serializeContextualDate(dueDate),
       newMilestones: milestoneList.newMilestones.map((m) => ({
         title: m.title,
-        description: m.description,
-        dueTime: m.deadlineAt && Time.toDateWithoutTime(m.deadlineAt as Date),
+        description: m.description || null,
+        dueDate: serializeContextualDate(m.deadline)!,
       })),
       milestoneUpdates: milestoneList.updatedMilestones.map((m) => ({
         id: m.id,
         title: m.title,
-        description: m.description,
-        dueTime: m.deadlineAt && Time.toDateWithoutTime(m.deadlineAt as Date),
+        description: m.description || null,
+        dueDate: serializeContextualDate(m.deadline)!,
       })),
     });
 
