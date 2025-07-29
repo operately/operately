@@ -26,13 +26,14 @@ defmodule Operately.Projects.EditTimelineOperation do
   defp update_milestones(multi, attrs) do
     Enum.reduce(attrs.milestone_updates, multi, fn milestone_update, multi ->
       milestone = Operately.Projects.get_milestone!(milestone_update.milestone_id)
+      started_date = Timeframe.start_date(milestone.timeframe) || milestone.inserted_at
 
       changeset = Operately.Projects.Milestone.changeset(milestone, %{
         title: milestone_update.title,
         description: milestone_update.description,
         deadline_at: milestone_update.due_time,
         timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(milestone.inserted_at),
+          contextual_start_date: ContextualDate.create_day_date(started_date),
           contextual_end_date: ContextualDate.create_day_date(milestone_update.due_time),
         }
       })
