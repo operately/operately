@@ -1,9 +1,10 @@
 defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
-  
+
   alias Operately.Projects
   alias Operately.Projects.Permissions
+  alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
   inputs do
     field? :milestone_id, :string, null: true
@@ -34,7 +35,16 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
   end
 
   def update_milestone(milestone, title, deadline) do
-    Operately.Projects.update_milestone(milestone, %{title: title, deadline_at: deadline})
+    started_date = Timeframe.start_date(milestone.timeframe) || milestone.inserted_at
+
+    Operately.Projects.update_milestone(milestone, %{
+      title: title,
+      deadline_at: deadline,
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(started_date),
+        contextual_end_date: ContextualDate.create_day_date(deadline),
+      }
+    })
   end
 
   def serialize(milestone) do
