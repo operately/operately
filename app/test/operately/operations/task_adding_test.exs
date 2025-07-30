@@ -18,7 +18,7 @@ defmodule Operately.Operations.TaskAddingTest do
     assignee = person_fixture_with_account(%{company_id: company.id})
     group = group_fixture(person)
     project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
-    milestone = milestone_fixture(person, %{project_id: project.id, title: "Create a milestone"})
+    milestone = milestone_fixture(%{project_id: project.id, title: "Create a milestone"})
 
     {:ok, person: person, assignee: assignee, milestone: milestone}
   end

@@ -5,6 +5,7 @@ defmodule Operately.Projects.Project do
   alias Operately.Repo
   alias Operately.Access.AccessLevels
   alias Operately.WorkMaps.WorkMapItem
+  alias Operately.ContextualDates.Timeframe
   alias Operately.Projects.{Contributor, Permissions, CheckIn}
 
   @behaviour WorkMapItem
@@ -215,7 +216,15 @@ defmodule Operately.Projects.Project do
           milestones
           |> Enum.filter(fn milestone -> milestone.status == :pending end)
           |> Enum.sort(fn milestone1, milestone2 ->
-            NaiveDateTime.compare(milestone1.deadline_at, milestone2.deadline_at) != :gt
+            date1 = Timeframe.end_date(milestone1.timeframe)
+            date2 = Timeframe.end_date(milestone2.timeframe)
+
+            case {date1, date2} do
+              {nil, nil} -> false
+              {nil, _} -> false
+              {_, nil} -> true
+              {d1, d2} -> Date.compare(d1, d2) != :gt
+            end
           end)
           |> List.first()
 

@@ -19,7 +19,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveProjectMilestone do
     |> run(:id, fn -> decode_id(inputs.milestone_id) end)
     |> run(:milestone, fn ctx -> Projects.get_milestone_with_access_level(ctx.id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.milestone.requester_access_level, :can_edit_milestone) end)
-    |> run(:operation, fn ctx -> Operately.Projects.delete_milestone(ctx.me, ctx.milestone) end)
+    |> run(:operation, fn ctx -> Operately.Projects.delete_milestone(ctx.milestone) end)
     |> run(:serialized, fn ctx -> serialize(ctx.operation) end)
     |> respond()
   end
