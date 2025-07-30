@@ -34,6 +34,10 @@ defmodule Operately.Projects.Project do
     field :private, :boolean, default: false
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
+    # Deprecated:
+    # It should be removed once we are sure that all the migrations have been run
+    field :started_at, :utc_datetime
+    field :deadline, :utc_datetime
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.validate_status()
@@ -84,7 +88,9 @@ defmodule Operately.Projects.Project do
       :success_status,
       :last_check_in_id,
       :last_check_in_status,
-      :next_update_scheduled_at
+      :next_update_scheduled_at,
+      :started_at,
+      :deadline,
     ])
     |> cast_embed(:timeframe)
     |> validate_required([

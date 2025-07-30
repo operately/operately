@@ -14,9 +14,10 @@ defmodule Operately.Data.Change067PopulateProjectTimeframeTest do
     started_at = ~U[2023-01-15 10:00:00Z]
     deadline = ~U[2023-06-30 23:59:59Z]
 
-    ctx = Factory.add_project(ctx, :project, :space, started_at: started_at, deadline: deadline)
+    ctx = Factory.add_project(ctx, :project, :space)
+    project = set_deadline_and_started_at(ctx.project, deadline, started_at)
 
-    assert ctx.project.timeframe == nil
+    assert project.timeframe == nil
 
     Change067PopulateProjectTimeframe.run()
 
@@ -34,12 +35,13 @@ defmodule Operately.Data.Change067PopulateProjectTimeframeTest do
   test "uses inserted_at for start date when started_at is nil", ctx do
     deadline = ~U[2023-06-30 23:59:59Z]
 
-    ctx = Factory.add_project(ctx, :project, :space, deadline: deadline)
+    ctx = Factory.add_project(ctx, :project, :space)
+    project = set_deadline_and_started_at(ctx.project, deadline, nil)
 
     inserted_date = NaiveDateTime.to_date(ctx.project.inserted_at)
     formatted_date = Calendar.strftime(inserted_date, "%b %-d, %Y")
 
-    assert ctx.project.timeframe == nil
+    assert project.timeframe == nil
 
     Change067PopulateProjectTimeframe.run()
 
@@ -56,8 +58,9 @@ defmodule Operately.Data.Change067PopulateProjectTimeframeTest do
 
   test "sets contextual_end_date to nil when both deadline is nil", ctx do
     ctx = Factory.add_project(ctx, :project, :space)
+    project = set_deadline_and_started_at(ctx.project, nil, nil)
 
-    assert ctx.project.timeframe == nil
+    assert project.timeframe == nil
 
     Change067PopulateProjectTimeframe.run()
 
@@ -73,6 +76,10 @@ defmodule Operately.Data.Change067PopulateProjectTimeframeTest do
       |> Factory.add_project(:p2, :space, deadline: ~U[2023-12-31 23:59:59Z])
       |> Factory.add_project(:p3, :space, started_at: ~U[2023-03-01 10:00:00Z])
 
+    set_deadline_and_started_at(ctx.p1, ~U[2023-06-30 23:59:59Z], ~U[2023-01-15 10:00:00Z])
+    set_deadline_and_started_at(ctx.p2, ~U[2023-12-31 23:59:59Z], nil)
+    set_deadline_and_started_at(ctx.p3, nil, ~U[2023-03-01 10:00:00Z])
+
     Change067PopulateProjectTimeframe.run()
 
     p1 = Repo.reload(ctx.p1)
@@ -87,5 +94,16 @@ defmodule Operately.Data.Change067PopulateProjectTimeframeTest do
 
     assert p3.timeframe.contextual_start_date.date == ~D[2023-03-01]
     assert p3.timeframe.contextual_end_date == nil
+  end
+
+  def set_deadline_and_started_at(project, deadline, started_at) do
+    {:ok, project} =
+      Operately.Projects.update_project(project, %{
+        timeframe: nil,
+        deadline: deadline,
+        started_at: started_at
+      })
+
+    project
   end
 end
