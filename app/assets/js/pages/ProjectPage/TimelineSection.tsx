@@ -43,7 +43,7 @@ function ViewTimelineLink({ project }: { project: Projects.Project }) {
   );
 }
 
-function Content({ project }) {
+function Content({ project }: { project: Projects.Project }) {
   return (
     <div>
       <div className="flex items-start gap-12 text-sm mb-6">
@@ -169,9 +169,10 @@ function ProjectMilestones({ project }) {
   }
 }
 
-function MilestonesZeroState({ project }) {
+function MilestonesZeroState({ project }: { project: Projects.Project }) {
   const paths = usePaths();
   const editPath = paths.projectEditTimelinePath(project.id!);
+  assertPresent(project.permissions, "Project permissions must be defined");
 
   const editLink = (
     <SecondaryButton linkTo={editPath} testId="add-milestones-link" size="xs">
@@ -187,7 +188,9 @@ function MilestonesZeroState({ project }) {
   );
 }
 
-function AllMilestonesCompleted({ project }) {
+function AllMilestonesCompleted({ project }: { project: Projects.Project }) {
+  assertPresent(project.permissions, "Project permissions must be defined");
+
   const paths = usePaths();
   const editLink = (
     <Link to={paths.projectEditTimelinePath(project.id!)} testId="add-milestones-link">
@@ -215,11 +218,10 @@ function MilestonesList({ milestones }: { milestones: Projects.Milestone[] }) {
   );
 }
 
-function MilestoneLink({ milestone }) {
+function MilestoneLink({ milestone }: { milestone: Projects.Milestone }) {
   const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
-  const deadline = milestone.deadlineAt;
 
   return (
     <div className="mt-1">
@@ -229,8 +231,11 @@ function MilestoneLink({ milestone }) {
         <Link to={path}>{title}</Link>
       </span>
 
-      <span className="text-sm font-medium">
-        &middot; Due date on <FormattedTime time={deadline} format="short-date" />
+      <span className="text-sm font-medium inline-flex items-center">
+        &middot; Due date on{" "}
+        <span className="inline-block ml-1">
+          <DateField date={parseContextualDate(milestone.timeframe?.contextualEndDate)} readonly hideCalendarIcon />
+        </span>
       </span>
     </div>
   );

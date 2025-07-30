@@ -1,4 +1,3 @@
-import * as Milestones from "@/models/milestones";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import { IconFlag3Filled } from "turboui";
@@ -9,7 +8,7 @@ import FormattedTime from "@/components/FormattedTime";
 import { Link } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
 
-import type { ActivityContentProjectTimelineEdited } from "@/api";
+import type { ActivityContentProjectTimelineEdited, ActivityMilestone } from "@/api";
 import type { Activity } from "@/models/activities";
 import { usePaths } from "@/routes/paths";
 import type { ActivityHandler } from "../interfaces";
@@ -158,7 +157,7 @@ function UpdatedMilestones({ content }: { content: Content }) {
   );
 }
 
-function MilestoneLink({ milestone }: { milestone: Milestones.Milestone }) {
+function MilestoneLink({ milestone }: { milestone: ActivityMilestone }) {
   const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id!);
   const title = milestone.title;
@@ -179,8 +178,8 @@ interface Content {
   newStartDate: Date | null;
   oldDueDate: Date | null;
   newDueDate: Date | null;
-  newMilestones: Milestones.Milestone[];
-  updatedMilestones: Milestones.Milestone[];
+  newMilestones: ActivityMilestone[];
+  updatedMilestones: ActivityMilestone[];
 
   startDateChanged: boolean;
   dueDateChanged: boolean;
@@ -203,8 +202,8 @@ function prepareContent(content: ActivityContentProjectTimelineEdited): Content 
   const oldDuration = calcDuration(oldStartDate, oldEndDate);
   const newDuration = calcDuration(newStartDate, newEndDate);
 
-  const newMilestones = (content.newMilestones || []).filter((m) => m !== null) as Milestones.Milestone[];
-  const updatedMilestones = (content.updatedMilestones || []).filter((m) => m !== null) as Milestones.Milestone[];
+  const newMilestones = (content.newMilestones || []).filter((m) => m !== null) as ActivityMilestone[];
+  const updatedMilestones = (content.updatedMilestones || []).filter((m) => m !== null) as ActivityMilestone[];
 
   return {
     projectId: content.project!.id!,
