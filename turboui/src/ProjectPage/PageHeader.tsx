@@ -25,6 +25,7 @@ export function PageHeader(props: ProjectPage.State) {
             onChange={props.updateProjectName}
             readonly={!props.canEdit}
             trimBeforeSave
+            testId="project-name-field"
           />
 
           <StatusBadge status={props.status} hideIcon className="scale-90 inline-block shrink-0 align-[5px]" />

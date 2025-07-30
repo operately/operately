@@ -1,21 +1,21 @@
 import React, { useState } from "react";
-import { DateField } from "../DateField";
-import { PersonField } from "../PersonField";
 import { ActionList } from "../ActionList";
-import { LastCheckIn } from "../LastCheckIn";
+import { SecondaryButton } from "../Button";
+import { DateField } from "../DateField";
 import { GoalField } from "../GoalField";
 import {
-  IconCopy,
   IconCircleArrowRight,
-  IconPlayerPause,
   IconCircleCheck,
+  IconCopy,
+  IconInfoCircle,
+  IconPlayerPause,
   IconRotateDot,
   IconTrash,
-  IconInfoCircle,
 } from "../icons";
+import { LastCheckIn } from "../LastCheckIn";
 import { NotificationToggle } from "../NotificationToggle";
+import { PersonField } from "../PersonField";
 import { Tooltip } from "../Tooltip";
-import { SecondaryButton } from "../Button";
 
 export function OverviewSidebar(props: any) {
   return (
@@ -119,6 +119,7 @@ function Champion(props: any) {
       }
     >
       <PersonField
+        testId="champion-field"
         person={props.champion}
         setPerson={props.setChampion}
         readonly={!props.canEdit}
@@ -152,6 +153,7 @@ function Reviewer(props: any) {
       }
     >
       <PersonField
+        testId="reviewer-field"
         person={props.reviewer || null}
         setPerson={props.setReviewer || (() => {})}
         readonly={!props.canEdit}
