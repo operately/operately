@@ -1,7 +1,9 @@
-import { Plugin } from "prosemirror-state";
+import { Plugin, PluginKey } from "prosemirror-state";
 import { AddBlobsEditorCommand } from "./AddBlobsEditorCommand";
 
 export const PasteFilePlugin = new Plugin({
+  key: new PluginKey("pasteFilePlugin"),
+
   props: {
     handlePaste(view, event, _slice) {
       if (!view.editable) return false;

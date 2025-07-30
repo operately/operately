@@ -1,9 +1,9 @@
 import { Node } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 
+import { BlobView } from "./BlobView";
 import { DropFilePlugin } from "./DropFilePlugin";
 import { PasteFilePlugin } from "./PasteFilePlugin";
-import { BlobView } from "./BlobView";
 
 export function isUploadInProgress(doc: any) {
   let result = false;
