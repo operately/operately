@@ -1,16 +1,16 @@
 import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
 
-import { IconCircleX, IconExternalLink, IconSearch, IconFlag, IconPlus } from "../icons";
-import FormattedTime from "../FormattedTime";
-import classNames from "../utils/classnames";
 import { DateField } from "../DateField";
+import FormattedTime from "../FormattedTime";
+import { IconCircleX, IconExternalLink, IconFlag, IconPlus, IconSearch } from "../icons";
+import classNames from "../utils/classnames";
 
 export interface Milestone {
   id: string;
   name?: string;
   title?: string;
-  dueDate?: DateField.ContextualDate;
+  dueDate?: DateField.ContextualDate | null;
   status?: string;
   hasDescription?: boolean;
   hasComments?: boolean;

@@ -145,6 +145,9 @@ test.app.build:
 	./devenv bash -c "cd app && MIX_ENV=test mix local.hex --force --if-missing"
 	./devenv bash -c "cd app && MIX_ENV=test mix deps.get"
 	./devenv bash -c "cd app && MIX_ENV=test mix compile"
+	$(MAKE) test.app.js.build
+
+test.app.js.build:
 	./devenv bash -c "cd app && MIX_ENV=test npm install"
 	./devenv bash -c "cd app && MIX_ENV=test npm run build"
 	./devenv bash -c "cd app && MIX_ENV=test mix assets.deploy"
