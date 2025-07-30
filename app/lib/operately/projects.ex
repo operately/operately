@@ -5,7 +5,6 @@ defmodule Operately.Projects do
   alias Ecto.Multi
 
   alias Operately.People.Person
-  alias Operately.Updates
   alias Operately.Activities
   alias Operately.Access.Fetch
 
@@ -131,14 +130,8 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def delete_milestone(person, %Milestone{} = milestone) do
-    Repo.transaction(fn ->
-      {:ok, _} = Updates.record_project_milestone_deleted(person, milestone)
-
-      {:ok, milestone} = Repo.soft_delete(milestone)
-
-      milestone
-    end)
+  def delete_milestone(%Milestone{} = milestone) do
+    Repo.soft_delete(milestone)
   end
 
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do

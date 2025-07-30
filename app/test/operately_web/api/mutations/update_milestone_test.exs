@@ -44,7 +44,11 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneTest do
         assert {code, res} = mutation(ctx.conn, :update_milestone, %{
           milestone_id: Paths.milestone_id(milestone),
           title: "Hello",
-          deadline_at: "2022-01-01"
+          deadline: %{
+            date: "2022-01-01",
+            date_type: "day",
+            value: "Jan 1, 2022"
+          }
         })
 
         assert code == @test.expected
