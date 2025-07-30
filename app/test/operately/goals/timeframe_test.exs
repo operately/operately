@@ -2,67 +2,142 @@ defmodule Operately.Goals.TimeframeTest do
   use Operately.DataCase
 
   alias Operately.ContextualDates.Timeframe
+  alias Operately.ContextualDates.ContextualDate
 
   test "changeset/1 with valid data returns no errors" do
-    changeset = Timeframe.changeset(%{type: "year", start_date: ~D[2020-01-01], end_date: ~D[2020-12-31]})
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_year_date(~D[2020-01-01]),
+      contextual_end_date: ContextualDate.create_year_date(~D[2020-12-31])
+    })
     assert changeset.valid?
 
-    changeset = Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-01-01], end_date: ~D[2020-03-31]})
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_quarter_date(~D[2020-01-01]),
+      contextual_end_date: ContextualDate.create_quarter_date(~D[2020-03-31])
+    })
     assert changeset.valid?
 
-    changeset = Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2020-01-31]})
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_month_date(~D[2020-01-01]),
+      contextual_end_date: ContextualDate.create_month_date(~D[2020-01-31])
+    })
     assert changeset.valid?
 
-    changeset = Timeframe.changeset(%{type: "days", start_date: ~D[2020-01-15], end_date: ~D[2020-01-20]})
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: %ContextualDate{date_type: :day, value: "15 Jan 2020", date: ~D[2020-01-15]},
+      contextual_end_date: %ContextualDate{date_type: :day, value: "20 Jan 2020", date: ~D[2020-01-20]}
+    })
     assert changeset.valid?
   end
 
-  test "changeset/1 validates type" do
-    assert Timeframe.changeset(%{type: "invalid", start_date: ~D[2020-01-01], end_date: ~D[2020-12-31]}).valid? == false
+  test "changeset/1 validates date types" do
+    invalid_contextual_date = %ContextualDate{date_type: :invalid, value: "2020", date: ~D[2020-01-01]}
+
+    assert_raise FunctionClauseError, fn ->
+      Timeframe.changeset(%{
+        contextual_start_date: invalid_contextual_date,
+        contextual_end_date: ContextualDate.create_year_date(~D[2020-12-31])
+      })
+    end
   end
 
-  test "changeset/1 validates year dates" do
-    assert Timeframe.changeset(%{type: "year", start_date: ~D[2020-01-02], end_date: ~D[2020-12-31]}).valid? == false
-    assert Timeframe.changeset(%{type: "year", start_date: ~D[2020-01-01], end_date: ~D[2021-12-31]}).valid? == false
-    assert Timeframe.changeset(%{type: "year", start_date: ~D[2020-01-01], end_date: ~D[2020-12-30]}).valid? == false
+  test "contextual dates validation for years" do
+    # Wrong value format for year
+    changeset = ContextualDate.changeset(%ContextualDate{}, %{
+      date_type: :year,
+      value: "wrong", # Should be "2020"
+      date: ~D[2020-01-01]
+    })
+    refute changeset.valid?
+
+    # Valid year date
+    changeset = ContextualDate.changeset(%ContextualDate{}, %{
+      date_type: :year,
+      value: "2020",
+      date: ~D[2020-01-01]
+    })
+    assert changeset.valid?
   end
 
-  test "changeset/1 validates quarter dates" do
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-01-01], end_date: ~D[2020-03-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-04-01], end_date: ~D[2020-06-30]}).valid? == true
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-07-01], end_date: ~D[2020-09-30]}).valid? == true
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-10-01], end_date: ~D[2020-12-31]}).valid? == true
+  test "valid timeframes with quarter dates" do
+    # Valid quarters
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_quarter_date(~D[2020-01-01]),
+      contextual_end_date: ContextualDate.create_quarter_date(~D[2020-03-31])
+    })
+    assert changeset.valid?
 
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-01-01], end_date: ~D[2020-12-31]}).valid? == false
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-01-01], end_date: ~D[2020-03-30]}).valid? == false
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-02-01], end_date: ~D[2020-04-30]}).valid? == false
-    assert Timeframe.changeset(%{type: "quarter", start_date: ~D[2020-01-01], end_date: ~D[2021-03-31]}).valid? == false
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_quarter_date(~D[2020-04-01]),
+      contextual_end_date: ContextualDate.create_quarter_date(~D[2020-06-30])
+    })
+    assert changeset.valid?
+
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_quarter_date(~D[2020-07-01]),
+      contextual_end_date: ContextualDate.create_quarter_date(~D[2020-09-30])
+    })
+    assert changeset.valid?
+
+    changeset = Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_quarter_date(~D[2020-10-01]),
+      contextual_end_date: ContextualDate.create_quarter_date(~D[2020-12-31])
+    })
+    assert changeset.valid?
   end
 
-  test "changeset/1 validates month dates" do
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2020-01-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-02-01], end_date: ~D[2020-02-29]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-03-01], end_date: ~D[2020-03-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-04-01], end_date: ~D[2020-04-30]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-05-01], end_date: ~D[2020-05-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-06-01], end_date: ~D[2020-06-30]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-07-01], end_date: ~D[2020-07-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-08-01], end_date: ~D[2020-08-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-09-01], end_date: ~D[2020-09-30]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-10-01], end_date: ~D[2020-10-31]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-11-01], end_date: ~D[2020-11-30]}).valid? == true
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-12-01], end_date: ~D[2020-12-31]}).valid? == true
+  test "contextual dates validation for quarters" do
+    # Wrong value format for Q1
+    changeset = ContextualDate.changeset(%ContextualDate{}, %{
+      date_type: :quarter,
+      value: "Wrong Format", # Should be "Q1 2020"
+      date: ~D[2020-01-01]
+    })
+    refute changeset.valid?
 
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2020-01-30]}).valid? == false
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2021-01-31]}).valid? == false
-    assert Timeframe.changeset(%{type: "month", start_date: ~D[2020-01-01], end_date: ~D[2021-01-21]}).valid? == false
+    # Valid quarter date
+    changeset = ContextualDate.changeset(%ContextualDate{}, %{
+      date_type: :quarter,
+      value: "Q1 2020",
+      date: ~D[2020-01-01]
+    })
+    assert changeset.valid?
+  end
+
+  test "valid timeframes with month dates" do
+    assert Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_month_date(~D[2020-01-01]),
+      contextual_end_date: ContextualDate.create_month_date(~D[2020-01-31])
+    }).valid?
+
+    assert Timeframe.changeset(%{
+      contextual_start_date: ContextualDate.create_month_date(~D[2020-02-01]),
+      contextual_end_date: ContextualDate.create_month_date(~D[2020-02-29])
+    }).valid?
+  end
+
+  test "contextual dates validation for months" do
+    # Wrong value format for month
+    changeset = ContextualDate.changeset(%ContextualDate{}, %{
+      date_type: :month,
+      value: "Wrong Format", # Should be "Jan 2020"
+      date: ~D[2020-01-01]
+    })
+    refute changeset.valid?
+
+    # Valid month date
+    changeset = ContextualDate.changeset(%ContextualDate{}, %{
+      date_type: :month,
+      value: "Jan 2020",
+      date: ~D[2020-01-01]
+    })
+    assert changeset.valid?
   end
 
   test "can be constructed from a Timeframe struct" do
     timeframe = %Timeframe{
-      type: "year",
-      start_date: ~D[2020-01-01],
-      end_date: ~D[2020-12-31]
+      contextual_start_date: ContextualDate.create_year_date(~D[2020-01-01]),
+      contextual_end_date: ContextualDate.create_year_date(~D[2020-12-31])
     }
 
     assert Timeframe.changeset(timeframe)
