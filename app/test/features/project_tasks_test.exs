@@ -11,7 +11,7 @@ defmodule Operately.Features.ProjectTasksTest do
     ctx = ProjectSteps.create_project(ctx, name: "Test Project")
     ctx = ProjectSteps.login(ctx)
 
-    milestone = milestone_fixture(ctx.champion, %{project_id: ctx.project.id, title: "The Milestone"})
+    milestone = milestone_fixture(%{project_id: ctx.project.id, title: "The Milestone"})
 
     {:ok, Map.merge(ctx, %{milestone: milestone})}
   end
