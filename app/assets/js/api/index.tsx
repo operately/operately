@@ -3482,9 +3482,9 @@ export interface UnsubscribeFromNotificationsInput {
 export interface UnsubscribeFromNotificationsResult {}
 
 export interface UpdateMilestoneInput {
-  milestoneId?: string | null;
-  title?: string | null;
-  deadlineAt?: string | null;
+  milestoneId: string;
+  title: string;
+  deadline: ContextualDate | null;
 }
 
 export interface UpdateMilestoneResult {
