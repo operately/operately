@@ -736,7 +736,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
       project = project_fixture(%{company_id: ctx.company.id, group_id: group.id, creator_id: ctx.author.id})
       project = Repo.preload(project, :access_context)
 
-      milestone = milestone_fixture(ctx.author, %{project_id: project.id})
+      milestone = milestone_fixture(%{project_id: project.id})
       task = task_fixture(%{ space_id: group.id, creator_id: ctx.author.id, milestone_id: milestone.id})
 
       Map.merge(ctx, %{project: project, task: task})

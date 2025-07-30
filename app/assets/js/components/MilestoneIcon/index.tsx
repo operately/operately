@@ -5,7 +5,7 @@ import { IconFlag3Filled } from "turboui";
 import * as Projects from "@/models/projects";
 
 interface MilestoneIconProps {
-  milestone: Pick<Projects.Milestone, "status" | "deadlineAt">;
+  milestone: Pick<Projects.Milestone, "status" | "timeframe">;
   className?: string;
   size?: number;
 }
@@ -26,7 +26,7 @@ export function MilestoneIcon({ milestone, className, size = 16 }: MilestoneIcon
     }
 
     return classNames(color, className);
-  }, [milestone.status, milestone.deadlineAt, className]);
+  }, [milestone.status, milestone.timeframe, className]);
 
   return <IconFlag3Filled size={size} className={classNameFinal} />;
 }

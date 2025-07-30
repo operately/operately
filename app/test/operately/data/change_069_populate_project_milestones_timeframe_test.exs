@@ -14,9 +14,7 @@ defmodule Operately.Data.Change069PopulateProjectMilestonesTimeframeTest do
   test "populates timeframe with inserted_at for start date and deadline_at for end date", ctx do
     deadline_at = ~U[2023-06-30 23:59:59Z]
 
-    ctx = Factory.add_project_milestone(ctx, :milestone, :project, deadline_at: deadline_at)
-
-    assert ctx.milestone.timeframe == nil
+    ctx = Factory.add_project_milestone(ctx, :milestone, :project, deadline_at: deadline_at, timeframe: %{})
 
     Change069PopulateProjectMilestonesTimeframe.run()
 
@@ -70,9 +68,9 @@ defmodule Operately.Data.Change069PopulateProjectMilestonesTimeframeTest do
   test "updates multiple milestones correctly", ctx do
     ctx =
       ctx
-      |> Factory.add_project_milestone(:m1, :project, deadline_at: ~U[2023-06-30 23:59:59Z])
-      |> Factory.add_project_milestone(:m2, :project, deadline_at: ~U[2023-12-31 23:59:59Z])
-      |> Factory.add_project_milestone(:m3, :project, deadline_at: ~U[2024-01-01 23:59:59Z])
+      |> Factory.add_project_milestone(:m1, :project, deadline_at: ~U[2023-06-30 23:59:59Z], timeframe: %{})
+      |> Factory.add_project_milestone(:m2, :project, deadline_at: ~U[2023-12-31 23:59:59Z], timeframe: %{})
+      |> Factory.add_project_milestone(:m3, :project, deadline_at: ~U[2024-01-01 23:59:59Z], timeframe: %{})
 
     Change069PopulateProjectMilestonesTimeframe.run()
 
