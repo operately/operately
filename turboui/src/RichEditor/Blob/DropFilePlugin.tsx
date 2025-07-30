@@ -1,7 +1,9 @@
-import { Plugin } from "prosemirror-state";
+import { Plugin, PluginKey } from "prosemirror-state";
 import { AddBlobsEditorCommand } from "./AddBlobsEditorCommand";
 
 export const DropFilePlugin = new Plugin({
+  key: new PluginKey("dropFilePlugin"),
+
   props: {
     handleDOMEvents: {
       dragover: (view, _event) => {
