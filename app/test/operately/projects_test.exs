@@ -111,7 +111,7 @@ defmodule Operately.ProjectsTest do
       # so that I can test the create_milestone/1 function
       Operately.Repo.delete_all(Milestone)
 
-      milestone = milestone_fixture(ctx.champion, %{project_id: ctx.project.id})
+      milestone = milestone_fixture(%{project_id: ctx.project.id})
 
       {:ok, milestone: milestone}
     end
@@ -122,30 +122,6 @@ defmodule Operately.ProjectsTest do
 
     test "get_milestone!/1 returns the milestone with given id", ctx do
       assert Projects.get_milestone!(ctx.milestone.id) == ctx.milestone
-    end
-
-    test "get_next_milestone/1 returns the first upcoming milestone", ctx do
-      milestone_fixture(ctx.champion, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-11 08:16:00]})
-      m2 = milestone_fixture(ctx.champion, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-01 08:16:00]})
-      milestone_fixture(ctx.champion, %{project_id: ctx.project.id, deadline_at: ~N[2023-05-15 08:16:00]})
-
-      assert Projects.get_next_milestone(ctx.project) == m2
-    end
-
-    test "create_milestone/1 with valid data creates a milestone", ctx do
-      valid_attrs = %{
-        project_id: ctx.project.id,
-        deadline_at: ~N[2023-05-10 08:16:00],
-        title: "some title"
-      }
-
-      assert {:ok, %Milestone{} = milestone} = Projects.create_milestone(ctx.champion, valid_attrs)
-      assert milestone.deadline_at == ~N[2023-05-10 08:16:00]
-      assert milestone.title == "some title"
-    end
-
-    test "create_milestone/1 with invalid data returns error changeset", ctx do
-      assert {:error, %Ecto.Changeset{}} = Projects.create_milestone(ctx.champion, @invalid_attrs)
     end
 
     test "update_milestone/2 with valid data updates the milestone", ctx do

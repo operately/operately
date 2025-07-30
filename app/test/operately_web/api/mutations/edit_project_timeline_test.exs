@@ -89,7 +89,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
     end
 
     test "updates project milestones", ctx do
-      milestone = milestone_fixture(ctx.person, %{project_id: ctx.project.id})
+      milestone = milestone_fixture(%{project_id: ctx.project.id})
 
       assert {200, _} = mutation(ctx.conn, :edit_project_timeline, %{
         project_id: Paths.project_id(ctx.project),

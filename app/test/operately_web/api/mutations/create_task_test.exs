@@ -229,7 +229,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateTaskTest do
       company_access_level: Binding.no_access(),
       space_access_level: Binding.no_access(),
     }))
-    milestone_fixture(ctx[:creator] || ctx.person, %{project_id: project.id})
+    milestone_fixture(%{project_id: project.id})
   end
 
   defp create_contributor(ctx, milestone, permissions) do

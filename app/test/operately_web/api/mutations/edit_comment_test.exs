@@ -194,7 +194,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the milestone comment, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
-        milestone = milestone_fixture(ctx.creator, %{project_id: project.id})
+        milestone = milestone_fixture(%{project_id: project.id})
         comment = create_milestone_comment(ctx, milestone)
 
         assert {code, res} =

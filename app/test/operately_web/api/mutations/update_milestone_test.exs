@@ -39,7 +39,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneTest do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
-        milestone = create_milestone(ctx, project)
+        milestone = create_milestone(project)
 
         assert {code, res} = mutation(ctx.conn, :update_milestone, %{
           milestone_id: Paths.milestone_id(milestone),
@@ -64,7 +64,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneTest do
   #
   # Helpers
   #
-    
+
   def create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
   end
@@ -81,7 +81,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneTest do
 
     if space_members_level != :no_access do
       {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id, 
+        id: ctx.person.id,
         access_level: Binding.from_atom(space_members_level)
       }])
     end
@@ -89,17 +89,17 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneTest do
     if project_member_level != :no_access do
       {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
         project_id: project.id,
-        person_id: ctx.person.id, 
+        person_id: ctx.person.id,
         permissions: Binding.from_atom(project_member_level),
         responsibility: "some responsibility"
       })
     end
-    
+
     project
   end
 
-  def create_milestone(ctx, project) do
-    milestone_fixture(ctx.creator, %{project_id: project.id})
+  def create_milestone(project) do
+    milestone_fixture(%{project_id: project.id})
   end
 
-end 
+end
