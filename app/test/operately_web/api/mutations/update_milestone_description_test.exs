@@ -100,7 +100,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneDescriptionTest do
   end
 
   def create_milestone(ctx, project) do
-    milestone_fixture(ctx.creator, %{project_id: project.id})
+    milestone_fixture(%{project_id: project.id})
   end
 
 end

@@ -40,7 +40,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateTaskTest do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
-        milestone = create_milestone(ctx, project)
+        milestone = create_milestone(project)
         task = create_task(ctx, milestone)
 
         assert {code, res} = mutation(ctx.conn, :update_task, %{
@@ -102,8 +102,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateTaskTest do
     project
   end
 
-  def create_milestone(ctx, project) do
-    milestone_fixture(ctx.creator, %{project_id: project.id})
+  def create_milestone(project) do
+    milestone_fixture(%{project_id: project.id})
   end
 
   def create_task(ctx, milestone) do

@@ -13,6 +13,7 @@ import { usePaths } from "@/routes/paths";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 import { ProjectPageNavigation } from "@/components/ProjectPageNavigation";
 import { useLoadedData } from "./loader";
+import { assertPresent } from "@/utils/assertions";
 
 export function Page() {
   const { project } = useLoadedData();
@@ -32,7 +33,8 @@ export function Page() {
   );
 }
 
-function Title({ project }) {
+function Title({ project }: { project: Project }) {
+  assertPresent(project.permissions, "Project permissions must be defined");
   const paths = usePaths();
   const editTimeline = paths.projectEditTimelinePath(project.id);
 
@@ -79,7 +81,9 @@ function Dates({ project }: { project: Project }) {
   );
 }
 
-function MilestoneList({ project }) {
+function MilestoneList({ project }: { project: Project }) {
+  assertPresent(project.milestones, "Project milestones must be defined");
+
   let { pending, done } = Milestones.splitByStatus(project.milestones);
 
   pending = Milestones.sortByDeadline(pending);
@@ -117,7 +121,7 @@ function MilestoneList({ project }) {
   );
 }
 
-function PendingItem({ milestone }) {
+function PendingItem({ milestone }: { milestone: Milestones.Milestone }) {
   const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id);
 
@@ -134,7 +138,10 @@ function PendingItem({ milestone }) {
       </div>
 
       <div className="shrink-0 text-sm ml-6">
-        Due Date: <FormattedTime time={milestone.deadlineAt} format="long-date" />
+        Due Date:{" "}
+        <span className="inline-block">
+          <DateField date={parseContextualDate(milestone.timeframe?.contextualEndDate)} readonly hideCalendarIcon />
+        </span>
         {milestone.completedAt && (
           <>
             {" "}
@@ -146,7 +153,7 @@ function PendingItem({ milestone }) {
   );
 }
 
-function DoneItem({ milestone }) {
+function DoneItem({ milestone }: { milestone: Milestones.Milestone }) {
   const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id);
 
@@ -163,7 +170,10 @@ function DoneItem({ milestone }) {
       </div>
 
       <div className="shrink-0 text-sm ml-6">
-        Due Date: <FormattedTime time={milestone.deadlineAt} format="long-date" />
+        Due Date:{" "}
+        <span className="inline-block">
+          <DateField date={parseContextualDate(milestone.timeframe?.contextualEndDate)} readonly hideCalendarIcon />
+        </span>
         {milestone.completedAt && (
           <>
             {" "}

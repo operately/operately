@@ -2,13 +2,17 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.{EmailSteps, NotificationsSteps, FeedSteps}
+  alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
 
   step :given_that_a_milestone_exists, ctx, title do
-    {:ok, milestone} = Operately.Projects.create_milestone(ctx.champion, %{
+    {:ok, milestone} = Operately.Projects.create_milestone(%{
       project_id: ctx.project.id,
       title: title,
-      deadline_at: ~N[2023-06-17 00:00:00]
+      timeframe: %{
+        contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+        contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17]),
+      }
     })
 
     Map.put(ctx, :milestone, milestone)

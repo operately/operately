@@ -144,7 +144,7 @@ defmodule Operately.Support.Factory.Projects do
       |> maybe_add_key(:timeframe, Keyword.get(opts, :timeframe))
 
 
-    milestone = Operately.ProjectsFixtures.milestone_fixture(ctx.creator, attrs)
+    milestone = Operately.ProjectsFixtures.milestone_fixture(attrs)
     milestone = Repo.preload(milestone, :project)
 
     Map.put(ctx, testid, milestone)

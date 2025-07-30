@@ -76,7 +76,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
       test "if action=#{@test.action} and caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
-        milestone = milestone_fixture(ctx.creator, %{project_id: project.id})
+        milestone = milestone_fixture(%{project_id: project.id})
 
         assert {code, res} = mutation(ctx.conn, :post_milestone_comment, %{
           milestone_id: Paths.milestone_id(milestone),
@@ -107,7 +107,7 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneCommentTest do
     tabletest @table do
       test "post comment with action: #{@test.action}", ctx do
         project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
-        milestone = milestone_fixture(ctx.person, %{project_id: project.id})
+        milestone = milestone_fixture(%{project_id: project.id})
 
         assert Comments.list_milestone_comments(milestone.id) == []
 
