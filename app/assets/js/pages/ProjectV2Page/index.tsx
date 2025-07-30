@@ -2,6 +2,7 @@ import Api from "@/api";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
+import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
@@ -14,6 +15,7 @@ import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
+import { parseContextualDate } from "../../models/contextualDates";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -126,11 +128,11 @@ function Page() {
     reviewer: reviewer as ProjectPage.Person | null | undefined,
     setReviewer,
 
-    startedAt: undefined, // Simplified for now
-    setStartedAt: (_date: Date | null) => {
+    startedAt: parseContextualDate(project.timeframe?.contextualStartDate),
+    setStartedAt: (_date: DateField.ContextualDate | null) => {
       // Simplified for now
     },
-    dueAt: undefined, // Simplified for now
+    dueAt: parseContextualDate(project.timeframe?.contextualEndDate),
     setDueAt: (_date: DateField.ContextualDate | null) => {
       // Simplified for now
     },
@@ -150,16 +152,29 @@ function Page() {
 
     // TaskBoard props - simplified for fast implementation
     tasks: [],
-    milestones: [], // Simplified for now
-
-    contributors: project.contributors?.map((c) => prepareContributor(paths, c)).filter(Boolean) || [],
+    milestones: prepareMilestones(paths, project.milestones!),
+    contributors: prepareContributors(paths, project.contributors!),
     checkIns: prepareCheckIns(paths, checkIns),
     mentionedPersonLookup,
+    parentGoal: prepareParentGoal(paths, project.goal),
+    resources: prepareResources(project.keyResources!),
 
     activityFeed: <ProjectFeedItems projectId={project.id!} />,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
+}
+
+function prepareParentGoal(paths: Paths, goal: Goals.Goal | null | undefined): ProjectPage.ParentGoal | null {
+  if (!goal) {
+    return null;
+  }
+
+  return {
+    id: goal.id!,
+    name: goal.name!,
+    link: paths.goalPath(goal.id!),
+  };
 }
 
 function preparePerson(paths: Paths, person: People.Person | null | undefined) {
@@ -282,16 +297,46 @@ function useSpaceSearch(): ProjectPage.Props["spaceSearch"] {
   };
 }
 
-function prepareContributor(paths: Paths, contributor: any): ProjectPage.Person | null {
+function prepareContributors(paths: Paths, contributors: Projects.ProjectContributor[]): ProjectPage.Person[] {
+  return contributors.map((c) => prepareContributor(paths, c)).filter(Boolean) as ProjectPage.Person[];
+}
+
+function prepareContributor(
+  paths: Paths,
+  contributor: Projects.ProjectContributor | null | undefined,
+): ProjectPage.Person | null {
   if (!contributor) {
     return null;
   }
 
   return {
     id: contributor.id!,
-    fullName: contributor.fullName!,
-    avatarUrl: contributor.avatarUrl || "",
-    title: contributor.title || "",
+    fullName: contributor.person!.fullName!,
+    avatarUrl: contributor.person!.avatarUrl || "",
+    title: contributor.person!.title || "",
     profileLink: paths.profilePath(contributor.id!),
   };
+}
+
+function prepareMilestones(paths: Paths, milestones: Projects.Milestone[]): ProjectPage.Milestone[] {
+  return milestones.map((m) => {
+    return {
+      id: m.id!,
+      name: m.title,
+      status: m.status as any,
+      dueDate: parseContextualDate(m.timeframe?.contextualEndDate),
+      link: paths.projectMilestonePath(m.id!),
+    };
+  });
+}
+
+function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {
+  return resources.map((r) => {
+    return {
+      id: r.id!,
+      name: r.title!,
+      url: r.link!,
+      type: r.resourceType as any,
+    };
+  });
 }
