@@ -44,8 +44,16 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
 
         assert {code, res} = mutation(ctx.conn, :edit_project_timeline, %{
           project_id: Paths.project_id(project),
-          project_due_date: Date.to_string(~D[2023-06-15]),
-          project_start_date: Date.to_string(~D[2023-07-15]),
+          project_due_date: %{
+            date: Date.to_string(~D[2023-06-15]),
+            date_type: "day",
+            value: "Jun 15, 2023"
+          },
+          project_start_date: %{
+            date: Date.to_string(~D[2023-07-15]),
+            date_type: "day",
+            value: "Jul 15, 2023"
+          },
           milestone_updates: [],
           new_milestones: [],
         })

@@ -3,7 +3,6 @@ defmodule Operately.AccessActivityContextAssignerTest do
 
   import Ecto.Query
 
-  import Operately.UpdatesFixtures, only: [update_fixture: 1]
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
@@ -30,7 +29,6 @@ defmodule Operately.AccessActivityContextAssignerTest do
       group: Repo.preload(group, :access_context),
       goal: Repo.preload(goal, :access_context),
       project: Repo.preload(project, :access_context),
-      update: update_fixture(%{author_id: author.id, updatable_id: Ecto.UUID.generate(), updatable_type: :goal}),
       comment: comment_fixture(author, %{entity_id: project.id, entity_type: :project_check_in}),
       check_in: check_in_fixture(%{author_id: author.id, project_id: project.id})
     }
@@ -109,7 +107,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "discussion_posting",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", title: "-", discussion_id: ctx.update.id}
+        content: %{space_id: ctx.group.id, company_id: "-", title: "-", discussion_id: Ecto.UUID.generate()}
       }
 
       create_activity(attrs)
@@ -131,7 +129,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "discussion_comment_submitted",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", discussion_id: ctx.update.id, comment_id: ctx.comment.id}
+        content: %{space_id: ctx.group.id, company_id: "-", discussion_id: Ecto.UUID.generate(), comment_id: ctx.comment.id}
       }
 
       create_activity(attrs)
@@ -237,7 +235,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in",
         author_id: ctx.author.id,
-        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id}
+        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: Ecto.UUID.generate()}
       }
 
       create_activity(attrs)
@@ -248,7 +246,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "goal_check_in_acknowledgement",
         author_id: ctx.author.id,
-        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: ctx.update.id}
+        content: %{goal_id: ctx.goal.id, space_id: ctx.group.id, company_id: ctx.company.id, update_id: Ecto.UUID.generate()}
       }
 
       create_activity(attrs)
@@ -476,7 +474,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "project_discussion_submitted",
         author_id: ctx.author.id,
-        content: %{project_id: ctx.project.id, company_id: ctx.company.id, discussion_id: ctx.update.id, title: "some title"}
+        content: %{project_id: ctx.project.id, company_id: ctx.company.id, discussion_id: Ecto.UUID.generate(), title: "some title"}
       }
 
       create_activity(attrs)
