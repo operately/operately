@@ -11,33 +11,34 @@ defmodule Operately.Support.Features.ProjectSteps do
   import Operately.PeopleFixtures
 
   step :given_a_goal_exists, ctx, name: name do
-    {:ok, goal} = Operately.Goals.create_goal(ctx.champion, %{
-      company_id: ctx.company.id,
-      space_id: ctx.group.id,
-      name: name,
-      champion_id: ctx.champion.id,
-      reviewer_id: ctx.reviewer.id,
-      timeframe: Operately.ContextualDates.Timeframe.year_timeframe(~D[2021-01-01]),
-      targets: [
-        %{
-          name: "First response time",
-          from: 30,
-          to: 15,
-          unit: "minutes",
-          index: 0
-        },
-        %{
-          name: "Increase feedback score to 90%",
-          from: 80,
-          to: 90,
-          unit: "percent",
-          index: 1
-        }
-      ],
-      company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
-      anonymous_access_level: Binding.view_access(),
-    })
+    {:ok, goal} =
+      Operately.Goals.create_goal(ctx.champion, %{
+        company_id: ctx.company.id,
+        space_id: ctx.group.id,
+        name: name,
+        champion_id: ctx.champion.id,
+        reviewer_id: ctx.reviewer.id,
+        timeframe: Operately.ContextualDates.Timeframe.year_timeframe(~D[2021-01-01]),
+        targets: [
+          %{
+            name: "First response time",
+            from: 30,
+            to: 15,
+            unit: "minutes",
+            index: 0
+          },
+          %{
+            name: "Increase feedback score to 90%",
+            from: 80,
+            to: 90,
+            unit: "percent",
+            index: 1
+          }
+        ],
+        company_access_level: Binding.comment_access(),
+        space_access_level: Binding.edit_access(),
+        anonymous_access_level: Binding.view_access()
+      })
 
     Map.put(ctx, :goal, goal)
   end
@@ -58,7 +59,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       visibility: "everyone",
       group_id: group.id,
       company_access_level: Binding.view_access(),
-      space_access_level: Binding.comment_access(),
+      space_access_level: Binding.comment_access()
     }
 
     {:ok, project} = Operately.Projects.create_project(params)
@@ -78,8 +79,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     case ctx[:login_as] do
       :champion ->
         UI.login_as(ctx, ctx.champion)
+
       :reviewer ->
         UI.login_as(ctx, ctx.reviewer)
+
       _ ->
         ctx
     end
@@ -163,7 +166,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "connected the project to the #{goal_name} goal",
+      action: "connected the project to the #{goal_name} goal"
     })
   end
 
@@ -172,7 +175,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "connected the #{ctx.project.name} project to the #{goal_name} goal",
+      action: "connected the #{ctx.project.name} project to the #{goal_name} goal"
     })
   end
 
@@ -203,7 +206,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       author: ctx.champion,
-      action: "disconnected the project from the #{goal_name} goal",
+      action: "disconnected the project from the #{goal_name} goal"
     })
   end
 
@@ -212,7 +215,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "disconnected the #{ctx.project.name} project from the Improve support first response time goal",
+      action: "disconnected the #{ctx.project.name} project from the Improve support first response time goal"
     })
   end
 
@@ -307,7 +310,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "paused the #{ctx.project.name} project",
+      action: "paused the #{ctx.project.name} project"
     })
   end
 
@@ -317,7 +320,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "paused the project",
-      author: ctx.champion,
+      author: ctx.champion
     })
   end
 
@@ -354,7 +357,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "resumed the #{ctx.project.name} project",
+      action: "resumed the #{ctx.project.name} project"
     })
   end
 
@@ -364,7 +367,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "resumed the project",
-      author: ctx.champion,
+      author: ctx.champion
     })
   end
 
@@ -405,7 +408,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
   end
 
- step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
+  step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
@@ -440,9 +443,11 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :given_project_has_description, ctx, description: description do
-    {:ok, _project} = Operately.Projects.update_project(ctx.project, %{
-      description: Operately.Support.RichText.rich_text(description)
-    })
+    {:ok, _project} =
+      Operately.Projects.update_project(ctx.project, %{
+        description: Operately.Support.RichText.rich_text(description)
+      })
+
     ctx
   end
 
@@ -484,7 +489,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "added a key resource to the #{ctx.project.name} project",
+      action: "added a key resource to the #{ctx.project.name} project"
     })
   end
 
@@ -494,7 +499,7 @@ defmodule Operately.Support.Features.ProjectSteps do
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "key resource added",
-      author: ctx.champion,
+      author: ctx.champion
     })
   end
 
@@ -517,5 +522,45 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
     |> UI.visit(Paths.feed_path(ctx.company))
     |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
+  end
+
+  #
+  # New page step definitions
+  #
+
+  step :setup, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:product)
+    |> Factory.add_space_member(:champion, :product)
+    |> Factory.add_space_member(:reviewer, :product)
+    |> Factory.add_goal(:parent_goal, :product)
+    |> Factory.add_project(:project, :product, name: "Project alpha")
+    |> Factory.log_in_person(:creator)
+    |> then(fn ctx ->
+      UI.visit(ctx, Paths.project_v2_path(ctx.company, ctx.project))
+    end)
+  end
+
+  #
+  # Changing the goal name
+  #
+
+  step :change_project_name, ctx do
+    ctx
+    |> UI.fill_text_field(testid: "project-name-field", with: "New Project Name")
+  end
+
+  step :assert_project_name_changed, ctx do
+    attempts(ctx, 3, fn ->
+      project = Operately.Repo.reload(ctx.project)
+      assert project.name == "New Project Name"
+    end)
+  end
+
+  step :assert_project_name_changed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "renamed")
   end
 end
