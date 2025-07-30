@@ -2,19 +2,19 @@ import React from "react";
 
 import { PageNew } from "../Page";
 
-import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
+import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
+import { DateField } from "../DateField";
 import { PrivacyField } from "../PrivacyField";
+import { ResourceManager } from "../ResourceManager";
+import { MentionedPersonLookupFn } from "../RichEditor";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
 import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
-import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
-import { MentionedPersonLookupFn } from "../RichEditor";
-import { ResourceManager } from "../ResourceManager";
+import { PageHeader } from "./PageHeader";
 import { StatusBanner } from "./StatusBanner";
-import { DateField } from "../DateField";
 
 export namespace ProjectPage {
   export interface Space {
@@ -47,6 +47,9 @@ export namespace ProjectPage {
     link: string;
   }
 
+  export type Milestone = TaskBoardTypes.Milestone;
+  export type Resource = ResourceManager.Resource;
+
   export interface Props {
     closeLink: string;
     reopenLink: string;
@@ -68,8 +71,8 @@ export namespace ProjectPage {
     setParentGoal?: (goal: ParentGoal | null) => void;
     parentGoalSearch?: (params: { query: string }) => Promise<ParentGoal[]>;
 
-    startedAt?: Date | null;
-    setStartedAt?: (date: Date | null) => void;
+    startedAt?: DateField.ContextualDate | null;
+    setStartedAt?: (date: DateField.ContextualDate | null) => void;
     dueAt?: DateField.ContextualDate | null;
     setDueAt?: (date: DateField.ContextualDate | null) => void;
 
@@ -90,7 +93,7 @@ export namespace ProjectPage {
 
     // TaskBoard props
     tasks: TaskBoardTypes.Task[];
-    milestones?: TaskBoardTypes.Milestone[];
+    milestones?: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
     onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
     onMilestoneCreate?: (milestone: Omit<TaskBoardTypes.Milestone, "id">) => void;
