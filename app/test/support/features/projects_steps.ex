@@ -70,7 +70,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   def add_milestone(ctx, attrs) do
     attrs = %{project_id: ctx.project.id} |> Map.merge(attrs)
 
-    {:ok, _} = Operately.Projects.create_milestone(ctx.champion, attrs)
+    {:ok, _} = Operately.Projects.create_milestone(attrs)
 
     ctx
   end

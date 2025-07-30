@@ -1,6 +1,7 @@
 defmodule Operately.Demo.Projects do
   alias Operately.Demo.Resources
   alias Operately.Projects.Milestone
+  alias Operately.ContextualDates.ContextualDate
 
   def create_projects(resources, data) do
     Resources.create(resources, data, fn {resources, data, _index} ->
@@ -53,8 +54,8 @@ defmodule Operately.Demo.Projects do
     deadline = start |> Date.add(10 + :rand.uniform(20))
 
     Operately.Projects.EditTimelineOperation.run(champion, project, %{
-      project_start_date: DateTime.new!(start, ~T[00:00:00], "Etc/UTC"),
-      project_due_date: DateTime.new!(deadline, ~T[00:00:00], "Etc/UTC"),
+      project_start_date: ContextualDate.create_day_date(start),
+      project_due_date: ContextualDate.create_day_date(deadline),
       milestone_updates: [],
       new_milestones: []
     })
@@ -88,14 +89,14 @@ defmodule Operately.Demo.Projects do
   def create_project_milestones(champion, project, milestones) do
     {:ok, _} =
       Operately.Projects.EditTimelineOperation.run(champion, project, %{
-        project_start_date: project.started_at,
-        project_due_date: project.deadline,
+        project_start_date: ContextualDate.create_day_date(project.started_at),
+        project_due_date: project.deadline && ContextualDate.create_day_date(project.deadline),
         milestone_updates: [],
         new_milestones:
           Enum.map(milestones, fn m ->
             %{
               title: m.title,
-              due_time: yesterday(),
+              due_date: ContextualDate.create_day_date(yesterday()),
               description: Operately.Demo.RichText.from_string(""),
               tasks_kanban_state: %{}
             }

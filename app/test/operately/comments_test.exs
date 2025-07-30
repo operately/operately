@@ -16,7 +16,7 @@ defmodule Operately.CommentsTest do
       person = person_fixture(company_id: company.id)
       group = group_fixture(person, %{company_id: company.id})
       project = project_fixture(company_id: company.id, creator_id: person.id, group_id: group.id)
-      milestone = milestone_fixture(person, %{project_id: project.id, title: "Create a milestone"})
+      milestone = milestone_fixture(%{project_id: project.id, title: "Create a milestone"})
 
       comment_attrs = %{
         author_id: person.id,
