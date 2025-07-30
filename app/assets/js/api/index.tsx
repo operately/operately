@@ -564,8 +564,8 @@ export interface ActivityContentProjectTimelineEdited {
   newStartDate?: string | null;
   oldEndDate?: string | null;
   newEndDate?: string | null;
-  newMilestones?: Milestone[] | null;
-  updatedMilestones?: Milestone[] | null;
+  newMilestones?: ActivityMilestone[] | null;
+  updatedMilestones?: ActivityMilestone[] | null;
 }
 
 export interface ActivityContentResourceHubDocumentCommented {
@@ -771,6 +771,12 @@ export interface ActivityEventDataMilestoneCreate {
 
 export interface ActivityEventDataProjectCreate {
   champion?: Person | null;
+}
+
+export interface ActivityMilestone {
+  id: string;
+  title: string;
+  deadlineAt: string;
 }
 
 export interface ActivityPermissions {
