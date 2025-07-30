@@ -28,11 +28,12 @@ export interface Person {
 export interface Milestone {
   id: string;
   name: string;
-  dueDate?: DateField.ContextualDate;
+  dueDate: DateField.ContextualDate | null;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
   status?: string;
+  link?: string;
 }
 
 /**
@@ -111,11 +112,11 @@ export interface TaskBoardCallbacks {
 /**
  * Filter types for TaskBoard
  */
-export type FilterType = 
-  | "status" 
-  | "assignee" 
-  | "creator" 
-  | "milestone" 
+export type FilterType =
+  | "status"
+  | "assignee"
+  | "creator"
+  | "milestone"
   | "content"
   | "due_date"
   | "created_date"
@@ -143,7 +144,7 @@ export interface TaskBoardProps {
   onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
-  
+
   // Filter functionality
   filters?: FilterCondition[];
   onFiltersChange?: (filters: FilterCondition[]) => void;
