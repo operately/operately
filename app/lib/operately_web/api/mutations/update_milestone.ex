@@ -7,9 +7,9 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
   inputs do
-    field? :milestone_id, :string, null: true
-    field? :title, :string, null: true
-    field? :deadline_at, :string, null: true
+    field :milestone_id, :string
+    field :title, :string
+    field :deadline, :contextual_date, null: true
   end
 
   outputs do
@@ -20,18 +20,11 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
     |> run(:id, fn -> decode_id(inputs.milestone_id) end)
-    |> run(:deadline, fn -> decode_date(inputs.deadline_at) end)
     |> run(:milestone, fn ctx -> Projects.get_milestone_with_access_level(ctx.id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.milestone.requester_access_level, :can_edit_milestone) end)
-    |> run(:operation, fn ctx -> update_milestone(ctx.milestone, inputs.title, ctx.deadline) end)
+    |> run(:operation, fn ctx -> update_milestone(ctx.milestone, inputs.title, inputs.deadline) end)
     |> run(:serialized, fn ctx -> serialize(ctx.operation) end)
     |> respond()
-  end
-
-  def decode_date(date) do
-    with {:ok, date} <- Date.from_iso8601(date) do
-      NaiveDateTime.new(date, ~T[00:00:00])
-    end
   end
 
   def update_milestone(milestone, title, deadline) do
@@ -42,7 +35,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
       deadline_at: deadline,
       timeframe: %{
         contextual_start_date: ContextualDate.create_day_date(started_date),
-        contextual_end_date: ContextualDate.create_day_date(deadline),
+        contextual_end_date: deadline,
       }
     })
   end

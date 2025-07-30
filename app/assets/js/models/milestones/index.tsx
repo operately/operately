@@ -31,11 +31,11 @@ export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}
   let result: Milestone[] = [];
 
   return result.concat(milestones.map((m: Milestone) => m!)).sort((m1, m2) => {
-    let d1 = +Time.parse(m1.deadlineAt)!;
-    let d2 = +Time.parse(m2.deadlineAt)!;
+    const d1 = m1.timeframe?.contextualEndDate?.date ? +m1.timeframe.contextualEndDate.date : Number.MAX_SAFE_INTEGER;
+    const d2 = m2.timeframe?.contextualEndDate?.date ? +m2.timeframe.contextualEndDate.date : Number.MAX_SAFE_INTEGER;
 
     if (reverse) {
-      return d2! - d1;
+      return d2 - d1;
     } else {
       return d1 - d2;
     }
@@ -58,15 +58,17 @@ export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) 
 }
 
 export function daysOverdue(milestone: Milestone) {
-  let deadline = +Time.parse(milestone.deadlineAt)!;
-  let now = +Time.today();
+  const deadline = +(milestone.timeframe?.contextualEndDate?.date || 0);
+  const now = +Time.today();
 
   return Math.ceil((now - deadline) / (1000 * 60 * 60 * 24));
 }
 
 export function isOverdue(milestone: Milestone) {
-  let deadline = +Time.parse(milestone.deadlineAt)!;
-  let now = +Time.today();
+  if (!milestone.timeframe?.contextualEndDate?.date) return false;
+
+  const deadline = +milestone.timeframe.contextualEndDate.date;
+  const now = +Time.today();
 
   return !isDone(milestone) && deadline < now;
 }

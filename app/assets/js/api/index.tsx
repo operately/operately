@@ -1071,7 +1071,6 @@ export interface Milestone {
   status?: string | null;
   insertedAt?: string | null;
   timeframe: Timeframe | null;
-  deadlineAt?: string | null;
   completedAt?: string | null;
   description?: string | null;
   comments?: MilestoneComment[] | null;
@@ -3483,9 +3482,9 @@ export interface UnsubscribeFromNotificationsInput {
 export interface UnsubscribeFromNotificationsResult {}
 
 export interface UpdateMilestoneInput {
-  milestoneId?: string | null;
-  title?: string | null;
-  deadlineAt?: string | null;
+  milestoneId: string;
+  title: string;
+  deadline: ContextualDate | null;
 }
 
 export interface UpdateMilestoneResult {

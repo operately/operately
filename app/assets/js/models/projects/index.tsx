@@ -35,10 +35,10 @@ export function isOverdue(project: Project) {
   return Time.compareAsc(deadline, Time.today()) === -1;
 }
 
-export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "deadlineAt">) {
+export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timeframe">) {
   if (milestone.status !== "pending") return false;
 
-  const day = Time.parseDate(milestone.deadlineAt);
+  const day = Time.parse(milestone.timeframe?.contextualEndDate?.date);
   if (!day) return false;
 
   return !Time.isToday(day) && Time.isPast(day);
