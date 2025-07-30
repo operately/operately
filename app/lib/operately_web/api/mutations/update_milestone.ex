@@ -32,7 +32,6 @@ defmodule OperatelyWeb.Api.Mutations.UpdateMilestone do
 
     Operately.Projects.update_milestone(milestone, %{
       title: title,
-      deadline_at: deadline,
       timeframe: %{
         contextual_start_date: ContextualDate.create_day_date(started_date),
         contextual_end_date: deadline,

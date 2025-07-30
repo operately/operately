@@ -3,6 +3,7 @@ defmodule Operately.ProjectsTest do
 
   alias Operately.Projects
   alias Operately.Access.Binding
+  alias Operately.ContextualDates.ContextualDate
 
   import Operately.ProjectsFixtures
   import Operately.GroupsFixtures
@@ -104,7 +105,7 @@ defmodule Operately.ProjectsTest do
 
     import Operately.ProjectsFixtures
 
-    @invalid_attrs %{deadline_at: nil, title: nil}
+    @invalid_attrs %{timeframe: nil, title: nil}
 
     setup ctx do
       # Projects are automatically assigned some milestones. I clean them up here
@@ -125,10 +126,16 @@ defmodule Operately.ProjectsTest do
     end
 
     test "update_milestone/2 with valid data updates the milestone", ctx do
-      update_attrs = %{deadline_at: ~N[2023-05-11 08:16:00], title: "some updated title"}
+      update_attrs = %{
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17]),
+        },
+        title: "some updated title"
+      }
 
       assert {:ok, %Milestone{} = milestone} = Projects.update_milestone(ctx.milestone, update_attrs)
-      assert milestone.deadline_at == ~N[2023-05-11 08:16:00]
+      assert milestone.timeframe.contextual_end_date.date == ~D[2023-06-17]
       assert milestone.title == "some updated title"
     end
 
@@ -138,7 +145,7 @@ defmodule Operately.ProjectsTest do
     end
 
     test "delete_milestone/1 deletes the milestone", ctx do
-      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.champion, ctx.milestone)
+      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.milestone)
       assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(ctx.milestone.id) end
     end
 
