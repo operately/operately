@@ -6,7 +6,6 @@ type Ref = HTMLFormElement;
 
 import { PrimaryButton, SecondaryButton } from "turboui";
 
-export * from "./dateselector";
 export * from "./radio";
 
 interface Props {
