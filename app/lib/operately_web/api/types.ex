@@ -1323,7 +1323,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :status, :string, null: true
     field? :inserted_at, :date, null: true
     field :timeframe, :timeframe, null: true
-    field? :deadline_at, :date, null: true
     field? :completed_at, :date, null: true
     field? :description, :string, null: true
     field? :comments, list_of(:milestone_comment), null: true

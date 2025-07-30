@@ -1071,7 +1071,6 @@ export interface Milestone {
   status?: string | null;
   insertedAt?: string | null;
   timeframe: Timeframe | null;
-  deadlineAt?: string | null;
   completedAt?: string | null;
   description?: string | null;
   comments?: MilestoneComment[] | null;
