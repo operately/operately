@@ -2,13 +2,17 @@ import * as Forms from "@/components/Form";
 import * as Milestones from "@/models/milestones";
 import * as React from "react";
 
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { DateField, PrimaryButton, SecondaryButton } from "turboui";
 import { MilestoneIcon } from "@/components/MilestoneIcon";
 
-import FormattedTime from "@/components/FormattedTime";
 import { FormState } from "./useForm";
 
-export function Header({ milestone, form }: { milestone: any; form: FormState }) {
+interface Props {
+  milestone: Milestones.Milestone;
+  form: FormState;
+}
+
+export function Header({ milestone, form }: Props) {
   if (form.titleAndDeadline.state === "show") {
     return <Display milestone={milestone} form={form} />;
   } else {
@@ -16,19 +20,19 @@ export function Header({ milestone, form }: { milestone: any; form: FormState })
   }
 }
 
-function Display({ milestone, form }) {
+function Display({ milestone, form }: Props) {
   return (
     <div className="flex flex-col items-center justify-center mb-4">
       <OverdueWarning form={form} />
 
       <div className="border border-stroke-base rounded-full p-4">
-        <MilestoneIcon milestone={{ status: milestone.status, deadlineAt: form.titleAndDeadline.date }} size={40} />
+        <MilestoneIcon milestone={{ status: milestone.status, timeframe: milestone.timeframe }} size={40} />
       </div>
 
       <div className="text-3xl font-extrabold text-content-accent text-center mt-4">{form.titleAndDeadline.title}</div>
 
       <div className="flex items-center text-lg mt-2 mb-4">
-        <FormattedTime time={form.titleAndDeadline.date} format="short-date-with-weekday" />
+        <DateField date={form.titleAndDeadline.date} readonly hideCalendarIcon size="lg" />
       </div>
 
       <Actions milestone={milestone} form={form} />
@@ -51,7 +55,7 @@ function OverdueWarning({ form }: { form: FormState }) {
   return null;
 }
 
-function Actions({ milestone, form }) {
+function Actions({ milestone, form }: Props) {
   if (milestone.status === "pending") {
     const isOverdue = Milestones.isOverdue(form.milestone);
 
@@ -96,15 +100,13 @@ function Edit({ form }: { form: FormState }) {
         error={form.titleAndDeadline.errors.title}
       />
 
-      <Forms.DateSelector
-        label="Due Date"
+      <DateField
         date={form.titleAndDeadline.date!}
-        onChange={form.titleAndDeadline.setDate}
-        minDate={null}
-        maxDate={null}
+        onDateSelect={form.titleAndDeadline.setDate}
         placeholder="Not set"
         testId="due-date"
         error={form.titleAndDeadline.errors.date}
+        variant="form-field"
       />
 
       <div className="flex items-center gap-2 justify-end mt-2">
