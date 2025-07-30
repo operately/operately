@@ -7,7 +7,6 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       status: to_string(milestone.status),
       description: milestone.description && Jason.encode!(milestone.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
-      deadline_at: OperatelyWeb.Api.Serializer.serialize(milestone.deadline_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),
       tasks_kanban_state: %{
         todo: encode_task_ids(milestone.tasks_kanban_state["todo"]),
