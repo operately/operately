@@ -1,13 +1,15 @@
 import * as TipTapEditor from "@/components/Editor";
 import * as Milestones from "@/models/milestones";
 import * as Projects from "@/models/projects";
-import * as Time from "@/utils/time";
 import * as React from "react";
 
 import { useNavigateTo } from "@/routes/useNavigateTo";
 import { useRefresh } from "./loader";
 
+import { DateField } from "turboui";
 import { usePaths } from "@/routes/paths";
+import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
+
 export interface FormState {
   milestone: Milestones.Milestone;
   titleAndDeadline: TitleAndDeadlineState;
@@ -146,10 +148,10 @@ interface TitleAndDeadlineState {
   startEditing: () => void;
 
   title: string;
-  date: Date | null;
+  date: DateField.ContextualDate | null;
 
   setTitle: (value: string) => void;
-  setDate: (value: Date | null) => void;
+  setDate: (value: DateField.ContextualDate | null) => void;
   submit: () => Promise<boolean>;
   cancel: () => void;
 
@@ -164,7 +166,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
 
   const [state, setState] = React.useState<"show" | "edit">("show");
   const [title, setTitle] = React.useState(milestone.title);
-  const [date, setDate] = React.useState(Time.parseDate(milestone.deadlineAt));
+  const [date, setDate] = React.useState(parseContextualDate(milestone.timeframe?.contextualEndDate));
 
   const [titleError, setTitleError] = React.useState(false);
   const [dateError, setDateError] = React.useState(false);
@@ -189,7 +191,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
     await post({
       milestoneId: milestone.id,
       title: title,
-      deadlineAt: Time.toDateWithoutTime(date),
+      deadline: serializeContextualDate(date)
     });
 
     setState("show");
@@ -199,7 +201,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
 
   const cancel = React.useCallback(() => {
     setTitle(milestone.title);
-    setDate(Time.parseDate(milestone.deadlineAt));
+    setDate(parseContextualDate(milestone.timeframe?.contextualEndDate));
     setState("show");
   }, [milestone]);
 
