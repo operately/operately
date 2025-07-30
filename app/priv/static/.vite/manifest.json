@@ -1,15 +1,15 @@
 {
-  "_vendor-RYm9CJC3.js": {
-    "file": "assets/vendor-RYm9CJC3.js",
+  "_vendor-Dl2MCSHY.js": {
+    "file": "assets/vendor-Dl2MCSHY.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-B4Ybpeof.js",
+    "file": "assets/app-B67b1kLT.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-RYm9CJC3.js"
+      "_vendor-Dl2MCSHY.js"
     ]
   }
 }

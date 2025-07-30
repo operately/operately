@@ -1,6 +1,6 @@
-import * as Types from "../types";
 import { createContextualDate } from "../../DateField/mockData";
 import { genPeople } from "../../utils/storybook/genPeople";
+import * as Types from "../types";
 
 // Labels removed in current iteration
 
