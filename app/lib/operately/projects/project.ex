@@ -35,7 +35,7 @@ defmodule Operately.Projects.Project do
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
     # Deprecated:
-    # It should be removed once we are sure that all the migrations have been run
+    # It should be removed once we are sure that all the migrations have run
     field :started_at, :utc_datetime
     field :deadline, :utc_datetime
 

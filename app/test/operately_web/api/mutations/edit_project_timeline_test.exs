@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
   alias Operately.Projects
   alias Operately.Access.Binding
   alias Operately.Support.RichText
+  alias Operately.ContextualDates.Timeframe
 
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
@@ -44,8 +45,16 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
 
         assert {code, res} = mutation(ctx.conn, :edit_project_timeline, %{
           project_id: Paths.project_id(project),
-          project_due_date: Date.to_string(~D[2023-06-15]),
-          project_start_date: Date.to_string(~D[2023-07-15]),
+          project_due_date: %{
+            date: Date.to_string(~D[2023-06-15]),
+            date_type: "day",
+            value: "Jun 15, 2023"
+          },
+          project_start_date: %{
+            date: Date.to_string(~D[2023-07-15]),
+            date_type: "day",
+            value: "Jul 15, 2023"
+          },
           milestone_updates: [],
           new_milestones: [],
         })
@@ -75,8 +84,16 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
 
       assert {200, res} = mutation(ctx.conn, :edit_project_timeline, %{
         project_id: Paths.project_id(ctx.project),
-        project_due_date: Date.to_string(deadline),
-        project_start_date: Date.to_string(started_at),
+        project_due_date: %{
+          date: Date.to_string(deadline),
+          date_type: "day",
+          value: "Jun 15, 2023"
+        },
+        project_start_date: %{
+          date: Date.to_string(started_at),
+          date_type: "day",
+          value: "Jul 15, 2023"
+        },
         milestone_updates: [],
         new_milestones: [],
       })
@@ -84,8 +101,8 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
       project = Repo.reload(ctx.project)
 
       assert res.project == Serializer.serialize(project)
-      assert DateTime.to_date(project.started_at) == started_at
-      assert DateTime.to_date(project.deadline) == deadline
+      assert Timeframe.start_date(project.timeframe) == started_at
+      assert Timeframe.end_date(project.timeframe) == deadline
     end
 
     test "updates project milestones", ctx do
@@ -93,12 +110,24 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
 
       assert {200, _} = mutation(ctx.conn, :edit_project_timeline, %{
         project_id: Paths.project_id(ctx.project),
-        project_due_date: Date.to_string(~D[2023-06-15]),
-        project_start_date: Date.to_string(~D[2023-07-15]),
+        project_due_date: %{
+          date: Date.to_string(~D[2023-06-15]),
+          date_type: "day",
+          value: "Jun 15, 2023"
+        },
+        project_start_date: %{
+          date: Date.to_string(~D[2023-07-15]),
+          date_type: "day",
+          value: "Jul 15, 2023"
+        },
         milestone_updates: [
           %{
             description: RichText.rich_text("New description", :as_string),
-            due_time: Date.to_string(~D[2023-07-10]),
+            due_date: %{
+              date: Date.to_string(~D[2023-07-10]),
+              date_type: "day",
+              value: "Jul 10, 2023"
+            },
             id: Paths.milestone_id(milestone),
             title: "New title"
           }
@@ -117,13 +146,25 @@ defmodule OperatelyWeb.Api.Mutations.EditProjectTimelineTest do
 
       assert {200, _} = mutation(ctx.conn, :edit_project_timeline, %{
         project_id: Paths.project_id(ctx.project),
-        project_due_date: Date.to_string(~D[2023-06-15]),
-        project_start_date: Date.to_string(~D[2023-07-15]),
+        project_due_date: %{
+          date: Date.to_string(~D[2023-06-15]),
+          date_type: "day",
+          value: "Jun 15, 2023"
+        },
+        project_start_date: %{
+          date: Date.to_string(~D[2023-07-15]),
+          date_type: "day",
+          value: "Jul 15, 2023"
+        },
         milestone_updates: [],
         new_milestones: [
           %{
             description: RichText.rich_text("Description", :as_string),
-            due_time: Date.to_string(~D[2023-07-10]),
+            due_date: %{
+              date: Date.to_string(~D[2023-07-10]),
+              date_type: "day",
+              value: "Jul 10, 2023"
+            },
             title: "Brand new milestone"
           }
         ],

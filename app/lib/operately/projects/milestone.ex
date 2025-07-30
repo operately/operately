@@ -14,7 +14,7 @@ defmodule Operately.Projects.Milestone do
 
     #
     # Deprecated:
-    # It should be removed once we are sure that all the migrations have been run
+    # It should be removed once we are sure that all the migrations have run
     field :deadline_at, :naive_datetime
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete

@@ -4,6 +4,7 @@ defmodule Operately.Data.Change039AddSpaceToProjectTimelineEditedActivityTest do
 
   alias Operately.Repo
   alias Operately.Support.RichText
+  alias Operately.ContextualDates.ContextualDate
 
   setup ctx do
     ctx
@@ -15,14 +16,14 @@ defmodule Operately.Data.Change039AddSpaceToProjectTimelineEditedActivityTest do
   test "migration doesn't delete existing data in activity content", ctx do
     attrs = %{
       project_id: ctx.project.id,
-      project_start_date: ~N[2024-10-14 00:00:00],
-      project_due_date: ~N[2024-11-14 00:00:00],
+      project_start_date: ContextualDate.create_day_date(~D[2024-10-14]),
+      project_due_date: ContextualDate.create_day_date(~D[2024-11-14]),
       milestone_updates: [],
       new_milestones: [
         %{
           title: "New milestone",
           description: RichText.rich_text("description"),
-          due_time: ~N[2024-11-14 00:00:00],
+          due_date: ContextualDate.create_day_date(~D[2024-11-14]),
         }
       ],
     }
@@ -42,10 +43,10 @@ defmodule Operately.Data.Change039AddSpaceToProjectTimelineEditedActivityTest do
       milestones = activity.content["new_milestones"]
       assert length(milestones) == 1
       assert hd(milestones)["title"] == "New milestone"
-      assert hd(milestones)["due_date"] == "2024-11-14T00:00:00Z"
+      assert hd(milestones)["due_date"] == "2024-11-14"
 
-      assert activity.content["new_start_date"] == "2024-10-14T00:00:00Z"
-      assert activity.content["new_end_date"] == "2024-11-14T00:00:00Z"
+      assert activity.content["new_start_date"] == "2024-10-14"
+      assert activity.content["new_end_date"] == "2024-11-14"
     end)
   end
 

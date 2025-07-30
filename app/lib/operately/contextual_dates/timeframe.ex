@@ -17,6 +17,13 @@ defmodule Operately.ContextualDates.Timeframe do
   embedded_schema do
     embeds_one :contextual_start_date, ContextualDate
     embeds_one :contextual_end_date, ContextualDate
+
+    #
+    # Deprecated:
+    # It should be removed once we are sure that all the migrations have run
+    field :type, :string
+    field :start_date, :date
+    field :end_date, :date
   end
 
   def changeset(attrs) do
@@ -29,7 +36,7 @@ defmodule Operately.ContextualDates.Timeframe do
 
   def changeset(timeframe, attrs) do
     timeframe
-    |> cast(attrs, [])
+    |> cast(attrs, [:type, :start_date, :end_date])
     |> cast_embed(:contextual_start_date)
     |> cast_embed(:contextual_end_date)
   end
