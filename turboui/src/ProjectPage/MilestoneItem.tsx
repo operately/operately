@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "../Link";
-import { DateField } from "../DateField";
 import { PrimaryButton as Button, SecondaryButton } from "../Button";
-import { IconFlag, IconFlagFilled, IconCalendar } from "../icons";
+import { DateField } from "../DateField";
 import { FormattedTime } from "../FormattedTime";
-import classNames from "../utils/classnames";
+import { IconCalendar, IconFlag, IconFlagFilled } from "../icons";
+import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
+import classNames from "../utils/classnames";
 
 interface MilestoneItemProps {
   milestone: TaskBoardTypes.Milestone;
@@ -99,7 +99,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
         <div className="flex items-start">
           <div className="flex-1 min-w-0 flex items-center gap-4">
             <Link
-              to={`/milestones/${milestone.id}`}
+              to={milestone.link}
               className={classNames(
                 "font-medium text-content-strong hover:text-accent-base transition-colors flex items-center gap-2",
               )}
