@@ -108,35 +108,42 @@ defmodule Operately.AI.Tools.WorkMap do
     state = Map.get(item, :state, "unknown")
     progress = Map.get(item, :progress, 0)
 
-    champion_name =
-      case Map.get(item, :champion) do
-        nil -> "Unassigned"
-        champion -> Map.get(champion, :full_name, "Unknown Champion")
-      end
-
-    space_name =
-      case Map.get(item, :space) do
-        nil -> "No Space"
-        space -> Map.get(space, :name, "Unknown Space")
-      end
-
-    timeframe =
-      case Map.get(item, :timeframe) do
-        nil ->
-          ""
-
-        tf ->
-          start_date = Map.get(tf, :start_date)
-          end_date = Map.get(tf, :end_date)
-
-          case {start_date, end_date} do
-            {nil, nil} -> ""
-            {start_date, nil} -> " | From: #{start_date}"
-            {nil, end_date} -> " | Due: #{end_date}"
-            {start_date, end_date} -> " | From: #{start_date} to #{end_date}"
-          end
-      end
+    champion_name = champion_name(item)
+    space_name = space_name(item)
+    timeframe = format_timeframe(item)
 
     "#{name} (#{type}) [ID: #{id}] | Status: #{status} | State: #{state} | Progress: #{round(progress)}% | Champion: #{champion_name} | Space: #{space_name}#{timeframe}"
+  end
+
+  defp champion_name(item) do
+    case Map.get(item, :owner) do
+      nil -> "Unassigned"
+      champion -> Map.get(champion, :full_name, "Unknown Champion")
+    end
+  end
+
+  defp space_name(item) do
+    case Map.get(item, :space) do
+      nil -> "No Space"
+      space -> Map.get(space, :name, "Unknown Space")
+    end
+  end
+
+  defp format_timeframe(item) do
+    case Map.get(item, :timeframe) do
+      nil ->
+        ""
+
+      tf ->
+        start_date = Map.get(tf, :start_date)
+        end_date = Map.get(tf, :end_date)
+
+        case {start_date, end_date} do
+          {nil, nil} -> ""
+          {start_date, nil} -> " | From: #{start_date}"
+          {nil, end_date} -> " | Due: #{end_date}"
+          {start_date, end_date} -> " | From: #{start_date} to #{end_date}"
+        end
+    end
   end
 end
