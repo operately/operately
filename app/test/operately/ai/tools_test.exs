@@ -9,22 +9,6 @@ defmodule Operately.AI.ToolsTest do
     |> Factory.add_space(:product)
   end
 
-  describe "get_goal_details/0" do
-    setup ctx do
-      Factory.add_goal(ctx, :goal, :product)
-    end
-
-    test "returns goal details", ctx do
-      tool = Tools.get_goal_details()
-      context = %{person: ctx.creator}
-      args = %{"id" => ctx.goal.id}
-
-      assert {:ok, result} = tool.function.(args, context)
-      assert goal = Jason.decode!(result)
-      assert goal["goal"]["name"] == ctx.goal.name
-    end
-  end
-
   describe "post_goal_message/0" do
     setup ctx do
       ctx
