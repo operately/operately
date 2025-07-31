@@ -126,7 +126,7 @@ export namespace GoalPage {
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
 
-    checklistsEnabled: boolean;
+    checklistsEnabled?: boolean;
 
     neglectedGoal: boolean;
 
@@ -143,11 +143,11 @@ export namespace GoalPage {
     updateTargetValue: GoalTargetList.UpdateTargetValueFn;
     updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
     
-    addChecklistItem: Checklist.AddChecklistItemFn;
-    deleteChecklistItem: Checklist.DeleteChecklistItemFn;
-    updateChecklistItem: Checklist.UpdateChecklistItemFn;
-    toggleChecklistItem: Checklist.ToggleChecklistItemFn;
-    updateChecklistItemIndex: Checklist.UpdateChecklistItemIndexFn;
+    addChecklistItem?: Checklist.AddChecklistItemFn;
+    deleteChecklistItem?: Checklist.DeleteChecklistItemFn;
+    updateChecklistItem?: Checklist.UpdateChecklistItemFn;
+    toggleChecklistItem?: Checklist.ToggleChecklistItemFn;
+    updateChecklistItemIndex?: Checklist.UpdateChecklistItemIndexFn;
     
     deleteGoal: () => Promise<void>;
 
