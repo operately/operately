@@ -23,7 +23,7 @@ defmodule Operately.AI.Tools.WorkMap do
 
     Returning a hierarchical view of all goals and projects in your company.
 
-    **Item Format:** Name (Type) [ID: id] | Status | State | Progress | Owner | Space | Timeframe
+    **Item Format:** Name (Type) [ID: id] | Status | State | Progress | Champion | Space | Timeframe
 
     **Valid Statuses:**
     - on_track: Item is progressing as planned
@@ -108,10 +108,10 @@ defmodule Operately.AI.Tools.WorkMap do
     state = Map.get(item, :state, "unknown")
     progress = Map.get(item, :progress, 0)
 
-    owner_name =
-      case Map.get(item, :owner) do
+    champion_name =
+      case Map.get(item, :champion) do
         nil -> "Unassigned"
-        owner -> Map.get(owner, :full_name, "Unknown Owner")
+        champion -> Map.get(champion, :full_name, "Unknown Champion")
       end
 
     space_name =
@@ -137,6 +137,6 @@ defmodule Operately.AI.Tools.WorkMap do
           end
       end
 
-    "#{name} (#{type}) [ID: #{id}] | Status: #{status} | State: #{state} | Progress: #{round(progress)}% | Owner: #{owner_name} | Space: #{space_name}#{timeframe}"
+    "#{name} (#{type}) [ID: #{id}] | Status: #{status} | State: #{state} | Progress: #{round(progress)}% | Champion: #{champion_name} | Space: #{space_name}#{timeframe}"
   end
 end

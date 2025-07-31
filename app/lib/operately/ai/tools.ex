@@ -115,7 +115,7 @@ defmodule Operately.AI.Tools do
           "  Goal ID: #{args["goal_id"]}",
           "  Title: #{args["title"]}",
           "",
-          args["message"] |> line_break(at: 80) |> indent(with: "  ")
+          args["message"] |> indent(with: "  ")
         ]
 
         log(context, Enum.join(log_details, "\n") <> "\n")
@@ -188,7 +188,7 @@ defmodule Operately.AI.Tools do
           "  Project ID: #{args["project_id"]}",
           "  Title: #{args["title"]}",
           "",
-          args["message"] |> line_break(at: 80) |> indent(with: "  ")
+          args["message"] |> indent(with: "  ")
         ]
 
         log(context, Enum.join(log_details, "\n") <> "\n")
@@ -240,19 +240,5 @@ defmodule Operately.AI.Tools do
     |> String.split("\n")
     |> Enum.map(&"#{prefix}#{&1}")
     |> Enum.join("\n")
-  end
-
-  defp line_break(text, at: length) do
-    text
-    |> String.split(" ")
-    |> Enum.reduce({[], 0}, fn word, {lines, current_length} ->
-      if current_length + String.length(word) + 1 > length do
-        {lines ++ ["\n" <> word], String.length(word)}
-      else
-        {lines ++ [word], current_length + String.length(word) + 1}
-      end
-    end)
-    |> elem(0)
-    |> Enum.join(" ")
   end
 end
