@@ -2,6 +2,7 @@ import React from "react";
 
 import { GoalPage } from ".";
 import { WarningCallout } from "../Callouts";
+import { Checklists } from "./Checklists";
 import { Contributors } from "./Contributors";
 import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
@@ -25,6 +26,7 @@ function MainContent(props: GoalPage.State) {
       <Warnings {...props} />
       <Description {...props} />
       <Targets {...props} />
+      <Checklists {...props} />
       <RelatedWork {...props} />
       <Contributors {...props} />
     </div>
