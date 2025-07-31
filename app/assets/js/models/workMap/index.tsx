@@ -3,6 +3,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import React from "react";
 import { WorkMap } from "turboui";
 import { accessLevelAsNumber } from "../goals";
+import { parseContextualDate } from "../contextualDates";
 
 /**
  * Converts an API WorkMapItem to the TurboUI WorkMap.Item type
@@ -31,8 +32,8 @@ const convertTimeframe = (timeframe: WorkMapItem["timeframe"]) => {
   if (!timeframe) return null;
 
   return {
-    startDate: timeframe.startDate || undefined,
-    endDate: timeframe.endDate || undefined,
+    startDate: parseContextualDate(timeframe.contextualStartDate),
+    endDate: parseContextualDate(timeframe.contextualEndDate),
   };
 };
 

@@ -23,8 +23,8 @@ export function sortItemsByClosedDate(items: WorkMap.Item[]): WorkMap.Item[] {
  */
 export function sortItemsByDueDate(items: WorkMap.Item[]): WorkMap.Item[] {
   return [...items].sort((a, b) => {
-    const dateA = parse(a.timeframe?.endDate);
-    const dateB = parse(b.timeframe?.endDate);
+    const dateA = parse(a.timeframe?.endDate?.date);
+    const dateB = parse(b.timeframe?.endDate?.date);
 
     if (!dateA && !dateB) return 0;
     if (!dateA) return 1; // Items without due dates come last
@@ -60,8 +60,8 @@ export function sortItemsByDuration(items: WorkMap.Item[]): WorkMap.Item[] {
 }
 
 function getDuration(item: WorkMap.Item): number | null {
-  const start = parse(item.timeframe?.startDate);
-  const end = parse(item.timeframe?.endDate);
+  const start = parse(item.timeframe?.startDate?.date);
+  const end = parse(item.timeframe?.endDate?.date);
 
   // Calculate duration only if both dates exist and are valid (end is after start)
   return start && end && end > start ? end.getTime() - start.getTime() : null;

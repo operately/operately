@@ -1,3 +1,4 @@
+import { createContextualDate } from "../../DateField/mockData";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 import { currentMonth, currentQuarter, currentYear } from "../../utils/timeframes";
 import WorkMap from "../components";
@@ -31,8 +32,8 @@ const people = {
 
 function getTimeframe(timeframe) {
   return {
-    startDate: timeframe.startDate?.toISOString(),
-    endDate: timeframe.endDate?.toISOString(),
+    startDate: timeframe.startDate ? createContextualDate(timeframe.startDate, "day") : null,
+    endDate: timeframe.endDate ? createContextualDate(timeframe.endDate, "day") : null,
   };
 }
 
@@ -92,8 +93,8 @@ export const mockItems: WorkMap.Item[] = [
         nextStep: "",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-01-15T00:00:00.000Z",
-          endDate: "2025-03-31T00:00:00.000Z",
+          startDate: createContextualDate("2024-01-15T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-03-31T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -114,8 +115,8 @@ export const mockItems: WorkMap.Item[] = [
         nextStep: "All weekly updates are collected",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-01-01T00:00:00.000Z",
-          endDate: "2025-02-07T00:00:00.000Z",
+          startDate: createContextualDate("2024-01-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-02-07T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -154,8 +155,8 @@ export const mockItems: WorkMap.Item[] = [
             nextStep: "Finalize email templates",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2024-06-15T00:00:00.000Z",
-              endDate: "2024-10-01T00:00:00.000Z",
+              startDate: createContextualDate("2024-06-15T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2024-10-01T00:00:00.000Z", "day"),
             },
             children: [],
           },
@@ -234,8 +235,8 @@ export const mockItems: WorkMap.Item[] = [
                 nextStep: "Complete OAuth2 integration",
                 privacy: "secret" as PrivacyIndicator.PrivacyLevels,
                 timeframe: {
-                  startDate: "2025-04-15T00:00:00.000Z",
-                  endDate: "2025-07-30T00:00:00.000Z",
+                  startDate: createContextualDate("2025-04-15T00:00:00.000Z", "day"),
+                  endDate: createContextualDate("2025-07-30T00:00:00.000Z", "day"),
                 },
                 children: [],
               },
@@ -257,8 +258,8 @@ export const mockItems: WorkMap.Item[] = [
             completedOn: null,
             nextStep: "Finalize content outline",
             timeframe: {
-              startDate: "2024-03-01T00:00:00.000Z",
-              endDate: "2025-04-30T00:00:00.000Z",
+              startDate: createContextualDate("2024-03-01T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-04-30T00:00:00.000Z", "day"),
             },
             privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
             children: [],
@@ -282,8 +283,8 @@ export const mockItems: WorkMap.Item[] = [
         nextStep: "Finalize mockups",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2025-02-01T00:00:00.000Z",
-          endDate: "2025-04-20T00:00:00.000Z",
+          startDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-04-20T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -342,8 +343,8 @@ export const mockItems: WorkMap.Item[] = [
             nextStep: "Complete data audit",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2025-04-01T00:00:00.000Z",
-              endDate: "2025-08-01T00:00:00.000Z",
+              startDate: createContextualDate("2025-04-01T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-08-01T00:00:00.000Z", "day"),
             },
             children: [],
           },
@@ -387,8 +388,8 @@ export const mockItems: WorkMap.Item[] = [
     nextStep: "",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2023-02-01T00:00:00.000Z",
-      endDate: "2023-12-31T00:00:00.000Z",
+      startDate: createContextualDate("2023-02-01T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2023-12-31T00:00:00.000Z", "day"),
     },
     children: [
       {
@@ -408,7 +409,8 @@ export const mockItems: WorkMap.Item[] = [
         nextStep: "",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-03-01T00:00:00.000Z",
+          startDate: createContextualDate("2024-03-01T00:00:00.000Z", "day"),
+          endDate: null,
         },
         children: [],
       },
@@ -431,8 +433,8 @@ export const mockItems: WorkMap.Item[] = [
     nextStep: "Complete initial research phase",
     privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2024-03-01T00:00:00.000Z",
-      endDate: "2028-12-31T00:00:00.000Z",
+      startDate: createContextualDate("2024-03-01T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2028-12-31T00:00:00.000Z", "day"),
     },
     children: [
       {
@@ -452,8 +454,8 @@ export const mockItems: WorkMap.Item[] = [
         nextStep: "Evaluate model performance metrics",
         privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-03-01T00:00:00.000Z",
-          endDate: "2025-06-30T00:00:00.000Z",
+          startDate: createContextualDate("2024-03-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-06-30T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -598,8 +600,8 @@ export const onlyProjects: WorkMap.Item[] = [
     nextStep: "Start beta testing",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-01-10T00:00:00.000Z",
-      endDate: "2025-09-30T00:00:00.000Z",
+      startDate: createContextualDate("2025-01-10T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-09-30T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -620,8 +622,8 @@ export const onlyProjects: WorkMap.Item[] = [
     nextStep: "Migrate endpoints",
     privacy: "confidential" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-02-15T00:00:00.000Z",
-      endDate: "2025-10-31T00:00:00.000Z",
+      startDate: createContextualDate("2025-02-15T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-10-31T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -642,8 +644,8 @@ export const onlyProjects: WorkMap.Item[] = [
     nextStep: "Finalize homepage",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-03-01T00:00:00.000Z",
-      endDate: "2025-07-31T00:00:00.000Z",
+      startDate: createContextualDate("2025-03-01T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-07-31T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -705,8 +707,8 @@ export const onlyCompleted: WorkMap.Item[] = [
     nextStep: "",
     privacy: "secret" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-01-15T00:00:00.000Z",
-      endDate: "2025-04-01T00:00:00.000Z",
+      startDate: createContextualDate("2025-01-15T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-04-01T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -738,8 +740,8 @@ export const createMockItem = (
     itemPath: "#",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-01-15T00:00:00.000Z",
-      endDate: "2025-06-30T00:00:00.000Z",
+      startDate: createContextualDate("2025-01-15T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-06-30T00:00:00.000Z", "day"),
     },
   };
 
@@ -767,9 +769,8 @@ export const createMockItem = (
       ...baseItem,
       type: "goal" as const,
       timeframe: {
-        ...year,
-        startDate: year.startDate?.toISOString(),
-        endDate: year.endDate?.toISOString(),
+        startDate: createContextualDate(year.startDate!, "year"),
+        endDate: createContextualDate(year.endDate!, "year"),
       },
     };
   } else {
@@ -777,8 +778,8 @@ export const createMockItem = (
       ...baseItem,
       type: "project" as const,
       timeframe: {
-        startDate: "2025-01-01T00:00:00.000Z",
-        endDate: "2025-12-31T00:00:00.000Z",
+        startDate: createContextualDate("2025-01-01T00:00:00.000Z", "day"),
+        endDate: createContextualDate("2025-12-31T00:00:00.000Z", "day"),
       },
     };
   }
@@ -834,8 +835,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         nextStep: "",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2025-01-10T00:00:00.000Z",
-          endDate: "2025-03-15T00:00:00.000Z",
+          startDate: createContextualDate("2025-01-10T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-03-15T00:00:00.000Z", "day"),
         },
         children: [
           {
@@ -855,8 +856,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             nextStep: "",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2025-01-15T00:00:00.000Z",
-              endDate: "2025-02-20T00:00:00.000Z",
+              startDate: createContextualDate("2025-01-15T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-02-20T00:00:00.000Z", "day"),
             },
             children: [],
           },
@@ -877,8 +878,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             nextStep: "",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2025-02-15T00:00:00.000Z",
-              endDate: "2025-03-10T00:00:00.000Z",
+              startDate: createContextualDate("2025-02-15T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-03-10T00:00:00.000Z", "day"),
             },
             children: [],
           },
@@ -901,8 +902,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         nextStep: "Address performance issues in beta",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2025-02-01T00:00:00.000Z",
-          endDate: "2025-08-30T00:00:00.000Z",
+          startDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-08-30T00:00:00.000Z", "day"),
         },
         children: [
           {
@@ -922,8 +923,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             nextStep: "Fix critical performance bottleneck",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2025-02-15T00:00:00.000Z",
-              endDate: "2025-06-30T00:00:00.000Z",
+              startDate: createContextualDate("2025-02-15T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-06-30T00:00:00.000Z", "day"),
             },
             children: [],
           },
@@ -944,8 +945,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
             nextStep: "Complete user testing for new UI",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2025-03-01T00:00:00.000Z",
-              endDate: "2025-07-15T00:00:00.000Z",
+              startDate: createContextualDate("2025-03-01T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-07-15T00:00:00.000Z", "day"),
             },
             children: [],
           },
@@ -988,8 +989,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         nextStep: "Finalize tutorial videos",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2025-02-01T00:00:00.000Z",
-          endDate: "2025-06-15T00:00:00.000Z",
+          startDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-06-15T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -1010,8 +1011,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
         nextStep: "Waiting for new support team hires",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2025-03-15T00:00:00.000Z",
-          endDate: "2025-09-30T00:00:00.000Z",
+          startDate: createContextualDate("2025-03-15T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-09-30T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -1034,8 +1035,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     nextStep: "Complete API documentation section",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-03-01T00:00:00.000Z",
-      endDate: "2025-07-31T00:00:00.000Z",
+      startDate: createContextualDate("2025-03-01T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-07-31T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -1056,8 +1057,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     nextStep: "",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-01-05T00:00:00.000Z",
-      endDate: "2025-04-10T00:00:00.000Z",
+      startDate: createContextualDate("2025-01-05T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-04-10T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -1078,8 +1079,8 @@ export const singleSpaceWorkMap: WorkMap.Item[] = [
     nextStep: "Update requirements based on new product direction",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2025-02-01T00:00:00.000Z",
-      endDate: "2025-05-30T00:00:00.000Z",
+      startDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-05-30T00:00:00.000Z", "day"),
     },
     children: [],
   },
@@ -1103,8 +1104,8 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
     nextStep: "Completed",
     privacy: "internal" as PrivacyIndicator.PrivacyLevels,
     timeframe: {
-      startDate: "2024-01-01T00:00:00.000Z",
-      endDate: "2025-03-15T00:00:00.000Z",
+      startDate: createContextualDate("2024-01-01T00:00:00.000Z", "day"),
+      endDate: createContextualDate("2025-03-15T00:00:00.000Z", "day"),
     },
     children: [
       {
@@ -1124,8 +1125,8 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
         nextStep: "Finalize service boundaries",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-04-01T00:00:00.000Z",
-          endDate: "2025-06-30T00:00:00.000Z",
+          startDate: createContextualDate("2024-04-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-06-30T00:00:00.000Z", "day"),
         },
         children: [
           {
@@ -1145,8 +1146,8 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
             nextStep: "Missed deadline",
             privacy: "internal" as PrivacyIndicator.PrivacyLevels,
             timeframe: {
-              startDate: "2024-11-01T00:00:00.000Z",
-              endDate: "2025-02-01T00:00:00.000Z",
+              startDate: createContextualDate("2024-11-01T00:00:00.000Z", "day"),
+              endDate: createContextualDate("2025-02-01T00:00:00.000Z", "day"),
             },
             children: [
               {
@@ -1166,8 +1167,8 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
                 nextStep: "Resolve configuration issues",
                 privacy: "internal" as PrivacyIndicator.PrivacyLevels,
                 timeframe: {
-                  startDate: "2025-01-15T00:00:00.000Z",
-                  endDate: "2025-04-30T00:00:00.000Z",
+                  startDate: createContextualDate("2025-01-15T00:00:00.000Z", "day"),
+                  endDate: createContextualDate("2025-04-30T00:00:00.000Z", "day"),
                 },
                 children: [],
               },
@@ -1192,8 +1193,8 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
         nextStep: "Complete data migration plan",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-05-01T00:00:00.000Z",
-          endDate: "2025-07-15T00:00:00.000Z",
+          startDate: createContextualDate("2024-05-01T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-07-15T00:00:00.000Z", "day"),
         },
         children: [],
       },
@@ -1214,8 +1215,8 @@ export const closedParentWithOngoingChildren: WorkMap.Item[] = [
         nextStep: "Implement automated testing",
         privacy: "internal" as PrivacyIndicator.PrivacyLevels,
         timeframe: {
-          startDate: "2024-03-15T00:00:00.000Z",
-          endDate: "2025-05-20T00:00:00.000Z",
+          startDate: createContextualDate("2024-03-15T00:00:00.000Z", "day"),
+          endDate: createContextualDate("2025-05-20T00:00:00.000Z", "day"),
         },
         children: [],
       },

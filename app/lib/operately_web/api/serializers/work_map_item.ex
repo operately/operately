@@ -18,7 +18,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       next_step: item.next_step,
       is_new: item.is_new,
       completed_on: OperatelyWeb.Api.Serializer.serialize(item.completed_on),
-      timeframe: timeframe(item),
+      timeframe: OperatelyWeb.Api.Serializer.serialize(item.timeframe),
       children: OperatelyWeb.Api.Serializer.serialize(item.children),
       privacy: OperatelyWeb.Api.Serializer.serialize(item.privacy),
       assignees: OperatelyWeb.Api.Serializer.serialize(item.assignees)
@@ -37,14 +37,5 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.WorkMaps.WorkMapItem do
       item.type == :goal -> Paths.goal_path(item.company, item.resource)
       item.type == :project -> Paths.project_path(item.company, item.resource)
     end
-  end
-
-  defp timeframe(%{timeframe: nil}), do: %{start_date: nil, end_date: nil}
-
-  defp timeframe(%{timeframe: timeframe}) do
-    %{
-      start_date: Operately.ContextualDates.Timeframe.start_date(timeframe),
-      end_date: Operately.ContextualDates.Timeframe.end_date(timeframe)
-    }
   end
 end
