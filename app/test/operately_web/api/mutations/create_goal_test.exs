@@ -5,6 +5,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
 
   alias Operately.Access
   alias Operately.Access.Binding
+  alias Operately.ContextualDates.Timeframe
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -166,18 +167,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
   #
 
   defp request(conn, ctx, attrs \\ []) do
-    timeframe = Operately.ContextualDates.Timeframe.current_quarter()
+    timeframe = Timeframe.current_quarter() |> Serializer.serialize()
 
     mutation(conn, :create_goal, Enum.into(attrs, %{
       space_id: Paths.space_id(ctx.space),
       name: "goal",
       reviewer_id: Paths.person_id(ctx.person),
       champion_id: Paths.person_id(ctx.person),
-      timeframe: %{
-        start_date: Date.to_string(timeframe.start_date),
-        end_date: Date.to_string(timeframe.end_date),
-        type: timeframe.type,
-      },
+      timeframe: timeframe,
       targets: [
         %{name: "name", from: 10, to: 20, unit: "-", index: 1},
         %{name: "another", from: 10, to: 20, unit: "-", index: 2},

@@ -1,6 +1,7 @@
 defmodule Operately.ProjectsFixtures do
   alias Operately.Support.RichText
   alias Operately.Access.Binding
+  alias Operately.ContextualDates.ContextualDate
 
   @moduledoc """
   This module defines test helpers for creating
@@ -32,14 +33,17 @@ defmodule Operately.ProjectsFixtures do
   @doc """
   Generate a milestone.
   """
-  def milestone_fixture(creator, attrs) do
+  def milestone_fixture(attrs) do
     attrs = attrs
       |> Enum.into(%{
-        deadline_at: ~N[2023-05-10 08:16:00],
-        title: "some title"
+        title: "some title",
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(~D[2023-05-10]),
+        }
       })
 
-    {:ok, milestone} = Operately.Projects.create_milestone(creator, attrs)
+    {:ok, milestone} = Operately.Projects.create_milestone(attrs)
 
     milestone
   end

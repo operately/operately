@@ -1,5 +1,7 @@
 defmodule OperatelyWeb.Api.GoalsTest do
   alias Operately.Support.RichText
+  alias Operately.ContextualDates.Timeframe
+
   use OperatelyWeb.TurboCase
 
   setup ctx do
@@ -286,7 +288,7 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)
-      assert ctx.goal.timeframe.end_date == ~D[2026-01-01]
+      assert Timeframe.end_date(ctx.goal.timeframe) == ~D[2026-01-01]
     end
 
     test "it can update the due date to nil", ctx do

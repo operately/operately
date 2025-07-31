@@ -211,7 +211,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescriptionTest do
       company_access_level: Binding.no_access(),
       space_access_level: Binding.no_access(),
     }))
-    milestone = milestone_fixture(ctx[:creator] || ctx.person, %{project_id: project.id})
+    milestone = milestone_fixture(%{project_id: project.id})
 
     task_fixture(%{
       creator_id: ctx[:creator_id] || ctx.person.id,

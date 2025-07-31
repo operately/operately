@@ -83,7 +83,10 @@ defmodule Operately.DemoTest do
     assert {:ok, goal1} = Operately.Goals.Goal.get(:system, company_id: company.id, name: "Yearly Goal")
     assert {:ok, goal2} = Operately.Goals.Goal.get(:system, company_id: company.id, name: "Quarterly Goal")
 
-    assert goal1.timeframe.type == "year"
-    assert goal2.timeframe.type == "quarter"
+    assert goal1.timeframe.contextual_start_date.date_type == :year
+    assert goal1.timeframe.contextual_end_date.date_type == :year
+
+    assert goal2.timeframe.contextual_start_date.date_type == :quarter
+    assert goal2.timeframe.contextual_end_date.date_type == :quarter
   end
 end

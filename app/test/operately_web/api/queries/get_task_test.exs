@@ -155,7 +155,7 @@ defmodule OperatelyWeb.Api.Queries.GetTaskTest do
       company_access_level: Keyword.get(opts, :company_access, Binding.no_access()),
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
-    milestone = milestone_fixture(ctx.creator, %{ project_id: project.id })
+    milestone = milestone_fixture(%{ project_id: project.id })
 
     task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id})
   end

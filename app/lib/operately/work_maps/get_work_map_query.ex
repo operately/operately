@@ -172,7 +172,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp preload_project_milestones(query) do
     subquery = from(m in Operately.Projects.Milestone,
-      select: %{id: m.id, title: m.title, status: m.status, deadline_at: m.deadline_at}
+      select: %{id: m.id, title: m.title, status: m.status, timeframe: m.timeframe}
     )
 
     preload(query, [], milestones: ^subquery)
