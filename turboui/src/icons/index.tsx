@@ -11,6 +11,8 @@ import IconArrowBackUp from "@tabler/icons-react/dist/esm/icons/IconArrowBackUp.
 import IconArrowForwardUp from "@tabler/icons-react/dist/esm/icons/IconArrowForwardUp.mjs";
 import IconArrowLeft from "@tabler/icons-react/dist/esm/icons/IconArrowLeft.mjs";
 import IconArrowRight from "@tabler/icons-react/dist/esm/icons/IconArrowRight.mjs";
+import IconArrowsMaximize from "@tabler/icons-react/dist/esm/icons/IconArrowsMaximize.mjs";
+import IconArrowsMinimize from "@tabler/icons-react/dist/esm/icons/IconArrowsMinimize.mjs";
 import IconBell from "@tabler/icons-react/dist/esm/icons/IconBell.mjs";
 import IconBellOff from "@tabler/icons-react/dist/esm/icons/IconBellOff.mjs";
 import IconBinaryTree2 from "@tabler/icons-react/dist/esm/icons/IconBinaryTree2.mjs";
@@ -162,6 +164,8 @@ export {
   IconArrowForwardUp,
   IconArrowLeft,
   IconArrowRight,
+  IconArrowsMaximize,
+  IconArrowsMinimize,
   IconBell,
   IconBellOff,
   IconBinaryTree2,

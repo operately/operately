@@ -6,6 +6,8 @@ import {
   Avatar,
   DimmedLink,
   FormattedTime,
+  IconArrowsMaximize,
+  IconArrowsMinimize,
   IconChevronRight,
   IconX,
   Modal,
@@ -284,8 +286,16 @@ function AgentRunView({ state }: { state: State }) {
 
   const run = state.expandedRun;
 
+  //
+  // Determine the class based on whether the run is maximized or not
+  // If maximized, it takes the full screen, otherwise it is a scrollable container
+  //
+  const normal = "overflow-y-scroll h-full flex flex-col border border-surface-outline";
+  const maximized = "fixed inset-0 z-50 bg-surface-base flex flex-col";
+  const klass = state.expandedRunFullscreen ? maximized : normal;
+
   return (
-    <div className="overflow-y-scroll h-full flex flex-col border border-surface-outline">
+    <div className={klass}>
       <div className="flex items-center justify-between p-2">
         <div className="text-xs uppercase">
           {run.status} {run.sandboxMode ? "(Sandbox Mode)" : ""}
@@ -293,6 +303,7 @@ function AgentRunView({ state }: { state: State }) {
 
         <div className="text-xs text-surface-text-secondary flex items-center gap-2">
           <FormattedTime time={run.startedAt} format="relative" />
+          <FullscreenButton state={state} />
           <IconX onClick={() => state.closeRun()} className="cursor-pointer" size={16} />
         </div>
       </div>
@@ -304,6 +315,12 @@ function AgentRunView({ state }: { state: State }) {
       )}
     </div>
   );
+}
+
+function FullscreenButton({ state }: { state: State }) {
+  const Icon = state.expandedRunFullscreen ? IconArrowsMinimize : IconArrowsMaximize;
+
+  return <Icon onClick={state.toggleExpandedRunFullscreen} className="cursor-pointer" size={14} />;
 }
 
 function ProviderSelector({ state }: { state: State }) {
