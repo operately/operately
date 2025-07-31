@@ -39,8 +39,11 @@ defmodule Operately.AI.Tools.WorkMap do
     ---
     """
 
+    # Filter out closed items unless they have non-closed children
+    filtered_work_map = Enum.filter(work_map, &should_show_item?/1)
+
     tree_content =
-      case work_map do
+      case filtered_work_map do
         [] ->
           "Company Work Map\n└── (No items found)"
 
@@ -75,11 +78,12 @@ defmodule Operately.AI.Tools.WorkMap do
     # Format the main item line
     main_line = "#{full_prefix}#{current_prefix}#{format_item_details(item)}"
 
-    # Format children if they exist
+    # Format children if they exist - filter them as well
     children = Map.get(item, :children, [])
+    filtered_children = Enum.filter(children, &should_show_item?/1)
 
     children_lines =
-      case children do
+      case filtered_children do
         [] ->
           []
 
@@ -145,5 +149,42 @@ defmodule Operately.AI.Tools.WorkMap do
           {start_date, end_date} -> " | From: #{start_date} to #{end_date}"
         end
     end
+  end
+
+  # Filter function to determine if an item should be shown
+  # Show item if:
+  # 1. It's not closed, OR
+  # 2. It's closed but has children that are not closed
+  defp should_show_item?(item) do
+    state = Map.get(item, :state, "unknown")
+
+    case state do
+      "closed" ->
+        # If closed, only show if it has non-closed children
+        children = Map.get(item, :children, [])
+        has_non_closed_children?(children)
+
+      _ ->
+        # Show all non-closed items
+        true
+    end
+  end
+
+  # Check if any children (recursively) are not closed
+  defp has_non_closed_children?(children) do
+    Enum.any?(children, fn child ->
+      child_state = Map.get(child, :state, "unknown")
+
+      case child_state do
+        "closed" ->
+          # If this child is closed, check if it has non-closed children
+          grandchildren = Map.get(child, :children, [])
+          has_non_closed_children?(grandchildren)
+
+        _ ->
+          # This child is not closed
+          true
+      end
+    end)
   end
 end
