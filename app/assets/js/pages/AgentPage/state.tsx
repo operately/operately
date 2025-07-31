@@ -12,12 +12,17 @@ export interface State {
   runs: AgentRun[];
   companyAdminPath: string;
   companyAiAgentsPath: string;
+
   runAgent: () => Promise<void>;
+  creatingRun: boolean;
+
   expandedRun: AgentRun | null;
   expandRun: (runId: AgentRun) => void;
   closeRun: () => void;
-  creatingRun: boolean;
   refreshRun: () => void;
+
+  expandedRunFullscreen: boolean;
+  toggleExpandedRunFullscreen: () => void;
 
   definition: DefinitionState;
   planningInstructions: PlanningInstructionsState;
@@ -32,6 +37,7 @@ export function usePageState(): State {
   const { agent, runs: loadedRuns } = Pages.useLoadedData<LoaderResult>();
 
   const [expandedRun, setExpandedRun] = React.useState<AgentRun | null>(null);
+  const [expandedRunFullscreen, setExpandedRunFullscreen] = React.useState<boolean>(false);
   const [runs, setRuns] = React.useState<AgentRun[]>(loadedRuns);
   const [creatingRun, setCreatingRun] = React.useState<boolean>(false);
 
@@ -71,6 +77,7 @@ export function usePageState(): State {
 
   const closeRun = () => {
     setExpandedRun(null);
+    setExpandedRunFullscreen(false);
   };
 
   const refreshRun = async () => {
@@ -78,6 +85,10 @@ export function usePageState(): State {
 
     const updatedRun = await Api.ai.getAgentRun({ id: expandedRun.id }).then((d) => d.run);
     setExpandedRun(updatedRun);
+  };
+
+  const toggleExpandedRunFullscreen = () => {
+    setExpandedRunFullscreen((prev) => !prev);
   };
 
   return {
@@ -91,6 +102,8 @@ export function usePageState(): State {
     closeRun,
     creatingRun,
     refreshRun,
+    expandedRunFullscreen,
+    toggleExpandedRunFullscreen,
 
     dailyRun,
     sandboxMode,
