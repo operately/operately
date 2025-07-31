@@ -1,11 +1,12 @@
 import React from "react";
 import { useMemo } from "react";
-import { isPast, parse } from "../../../utils/time";
+import { isPast } from "../../../utils/time";
 
 import { WorkMap } from "..";
 import { useItemStatus } from "../../hooks/useItemStatus";
 import classNames from "../../../utils/classnames";
 import FormattedTime from "../../../FormattedTime";
+import { DateField } from "../../../DateField";
 
 interface Props {
   tab: WorkMap.Filter;
@@ -24,8 +25,8 @@ export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props
   const isPastDueDate = useMemo(() => isDueDatePast(timeframe?.endDate), [timeframe]);
 
   const textClassName = classNames("text-sm whitespace-nowrap", {
-    "text-content-error": isPastDueDate && !isCompleted && !isFailed  && !isPending,
-    "text-content-base": !(isPastDueDate && !isCompleted && !isFailed  && !isPending),
+    "text-content-error": isPastDueDate && !isCompleted && !isFailed && !isPending,
+    "text-content-base": !(isPastDueDate && !isCompleted && !isFailed && !isPending),
     "line-through text-content-dimmed": isCompleted || isFailed,
     "text-content-dimmed": isPending,
   });
@@ -38,18 +39,18 @@ export function DueDateCell({ tab, status, completedOn, timeframe, hide }: Props
         </span>
       ) : (
         <span className={textClassName}>
-          {timeframe?.endDate ? <FormattedTime time={timeframe.endDate} format="short-date" /> : "N/A"}
+          <DateField date={timeframe?.endDate} readonly hideCalendarIcon placeholder="N/A" />
         </span>
       )}
     </td>
   );
 }
 
-function isDueDatePast(dueDate: string | null | undefined): boolean {
+function isDueDatePast(dueDate: DateField.ContextualDate | null | undefined): boolean {
   if (!dueDate) return false;
 
   try {
-    const date = parse(dueDate);
+    const { date } = dueDate;
     if (!date) return false;
 
     return isPast(date);

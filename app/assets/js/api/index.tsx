@@ -1625,17 +1625,12 @@ export interface WorkMapItem {
   nextStep: string;
   isNew: boolean;
   completedOn: string | null;
-  timeframe: WorkMapItemTimeframe | null;
+  timeframe: Timeframe | null;
   children: WorkMapItem[];
   type: WorkMapItemType;
   itemPath: string;
   privacy: WorkMapItemPrivacy;
   assignees?: Person[] | null;
-}
-
-export interface WorkMapItemTimeframe {
-  startDate: string | null;
-  endDate: string | null;
 }
 
 export type ActivityContent =

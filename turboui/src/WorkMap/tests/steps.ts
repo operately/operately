@@ -125,7 +125,7 @@ export const assertChildrenHidden = async (canvasElement, step, names) => {
 export const assertZeroState = async (canvasElement, step) => {
   await step("Assert that 'Nothing here' text is present", async () => {
     const canvas = within(canvasElement);
-    const emptyStateText = canvas.getByText("🍃 Nothing here");
+    const emptyStateText = canvas.getByText("Nothing here yet.");
     expect(emptyStateText).toBeInTheDocument();
   });
 };
@@ -158,9 +158,9 @@ export const assertStatusBadge = async (canvasElement, step, label, color: Label
 
     switch (color) {
       case "green":
-        expect(statusBadge.className).toContain("bg-green-50");
-        expect(statusBadge.className).toContain("text-green-700");
-        expect(statusBadge?.className).toContain("border-green-200");
+        expect(statusBadge.className).toContain("bg-callout-success-bg");
+        expect(statusBadge.className).toContain("text-callout-success-content");
+        expect(statusBadge?.className).toContain("border-emerald-200");
         break;
       case "amber":
         expect(statusBadge.className).toContain("bg-amber-50");
@@ -207,7 +207,7 @@ export const assertProgressBar = async (canvasElement, step, progress, color: La
         expect(innerBar?.className).toContain("bg-red-400");
         break;
       case "green":
-        expect(innerBar?.className).toContain("bg-green-400");
+        expect(innerBar?.className).toContain("bg-emerald-400");
         break;
     }
   });
