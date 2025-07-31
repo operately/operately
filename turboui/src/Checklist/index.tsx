@@ -82,8 +82,8 @@ export function Checklist(props: Checklist.Props) {
         <div className="mt-1">
           <div className="text-content-dimmed text-sm">
             {props.canEdit
-              ? "Add checklist items to track qualitative progress."
-              : "The champion didn't yet add checklist items for this goal."}
+              ? "Create a checklist to track qualitative progress or binary outcomes."
+              : "This goal doesn't have a checklist."}
           </div>
         </div>
       )}
@@ -123,7 +123,7 @@ function ChecklistSectionHeader({
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <h3 className="text-lg font-semibold">Checklist</h3>
+        <h2 className="font-semibold">Checklist</h2>
         {totalCount > 0 && (
           <div className="flex items-center gap-2">
             <PieChart size={20} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
@@ -201,10 +201,12 @@ function ChecklistItemAdd({ state }: { state: State }) {
       name: data.name,
     });
 
-    if (result && createMore) {
-      reset();
-    } else {
-      state.cancelAdd();
+    if (result) {
+      if (createMore) {
+        reset();
+      } else {
+        state.cancelAdd();
+      }
     }
   };
 
@@ -212,6 +214,9 @@ function ChecklistItemAdd({ state }: { state: State }) {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSubmit(onSubmit)();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      state.cancelAdd();
     }
   };
 
@@ -220,9 +225,9 @@ function ChecklistItemAdd({ state }: { state: State }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
           testId="checklist-item-name"
-          label="Item"
+          label="Check"
           autoFocus
-          placeholder="e.g. Complete user research interviews"
+          placeholder="e.g. Sign the contract"
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
           {...register("name", { required: "Can't be empty" })}
@@ -235,7 +240,7 @@ function ChecklistItemAdd({ state }: { state: State }) {
               Cancel
             </SecondaryButton>
             <PrimaryButton size="xs" type="submit" testId="save">
-              Add Item
+              Add Check
             </PrimaryButton>
           </div>
         </div>
@@ -272,7 +277,7 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
     <InlineModal index={item.index}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textfield
-          label="Item"
+          label="Check"
           error={errors.name?.message as string}
           onKeyDown={handleKeyDown}
           {...register("name", { required: "Can't be empty" })}
