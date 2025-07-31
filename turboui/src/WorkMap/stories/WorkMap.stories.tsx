@@ -56,7 +56,7 @@ export const Default: Story = {
     },
   },
   play: async ({ canvasElement, step }) => {
-    await Steps.assertRowsNumber(canvasElement, step, 14);
+    await Steps.assertRowsNumber(canvasElement, step, 15);
   },
 };
 

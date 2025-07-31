@@ -4,6 +4,7 @@ import { Page } from "../../Page";
 import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
+import { DateField } from "../../DateField";
 import { SpaceField } from "../../SpaceField";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { AddItemModal } from "./AddItemModal";
@@ -87,8 +88,8 @@ export namespace WorkMap {
   }
 
   interface Timeframe {
-    startDate?: string;
-    endDate?: string;
+    startDate: DateField.ContextualDate | null;
+    endDate: DateField.ContextualDate | null;
   }
 
   export interface Item {

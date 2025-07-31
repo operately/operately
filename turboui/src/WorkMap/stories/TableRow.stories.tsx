@@ -95,7 +95,7 @@ export const CompletedGoal: Story = {
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Launch new marketing campaign");
 
-    await Steps.assertStatusBadge(canvasElement, step, "Completed", "green");
+    await Steps.assertStatusBadge(canvasElement, step, "Achieved", "green");
   },
 };
 
@@ -311,7 +311,7 @@ export const CompletedProject: Story = {
   play: async ({ canvasElement, step }) => {
     await Steps.assertItemHasLineThrough(canvasElement, step, "Update documentation");
 
-    await Steps.assertStatusBadge(canvasElement, step, "Completed", "green");
+    await Steps.assertStatusBadge(canvasElement, step, "Achieved", "green");
   },
 };
 
