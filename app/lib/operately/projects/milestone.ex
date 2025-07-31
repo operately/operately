@@ -12,8 +12,12 @@ defmodule Operately.Projects.Milestone do
     field :status, Ecto.Enum, values: [:pending, :done], default: :pending
     field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control], default: :concept
 
-    embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
+    #
+    # Deprecated:
+    # It should be removed once we are sure that all the migrations have run
     field :deadline_at, :naive_datetime
+
+    embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
     field :completed_at, :naive_datetime
 
     field :description, :map
@@ -36,7 +40,7 @@ defmodule Operately.Projects.Milestone do
 
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :deadline_at, :project_id, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state])
+    |> cast(attrs, [:title, :project_id, :deadline_at, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state])
     |> cast_embed(:timeframe)
     |> validate_required([:title, :tasks_kanban_state, :project_id])
   end

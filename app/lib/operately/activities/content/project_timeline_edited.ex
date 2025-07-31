@@ -10,8 +10,8 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
       field :old_title, :string
       field :new_title, :string
 
-      field :old_due_date, :utc_datetime
-      field :new_due_date, :utc_datetime
+      field :old_due_date, :date
+      field :new_due_date, :date
     end
 
     def changeset(update, attrs) do
@@ -27,7 +27,7 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     embedded_schema do
       field :milestone_id, :string
       field :title, :string
-      field :due_date, :utc_datetime
+      field :due_date, :date
     end
 
     def changeset(update, attrs) do

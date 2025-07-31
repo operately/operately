@@ -5,6 +5,7 @@ defmodule Operately.Projects.Project do
   alias Operately.Repo
   alias Operately.Access.AccessLevels
   alias Operately.WorkMaps.WorkMapItem
+  alias Operately.ContextualDates.Timeframe
   alias Operately.Projects.{Contributor, Permissions, CheckIn}
 
   @behaviour WorkMapItem
@@ -33,6 +34,10 @@ defmodule Operately.Projects.Project do
     field :private, :boolean, default: false
 
     embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
+    # Deprecated:
+    # It should be removed once we are sure that all the migrations have run
+    field :started_at, :utc_datetime
+    field :deadline, :utc_datetime
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
     field :last_check_in_status, Ecto.Enum, values: CheckIn.validate_status()
@@ -83,7 +88,9 @@ defmodule Operately.Projects.Project do
       :success_status,
       :last_check_in_id,
       :last_check_in_status,
-      :next_update_scheduled_at
+      :next_update_scheduled_at,
+      :started_at,
+      :deadline,
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
@@ -215,7 +222,15 @@ defmodule Operately.Projects.Project do
           milestones
           |> Enum.filter(fn milestone -> milestone.status == :pending end)
           |> Enum.sort(fn milestone1, milestone2 ->
-            NaiveDateTime.compare(milestone1.deadline_at, milestone2.deadline_at) != :gt
+            date1 = Timeframe.end_date(milestone1.timeframe)
+            date2 = Timeframe.end_date(milestone2.timeframe)
+
+            case {date1, date2} do
+              {nil, nil} -> false
+              {nil, _} -> false
+              {_, nil} -> true
+              {d1, d2} -> Date.compare(d1, d2) != :gt
+            end
           end)
           |> List.first()
 

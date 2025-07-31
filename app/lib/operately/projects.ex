@@ -5,7 +5,6 @@ defmodule Operately.Projects do
   alias Ecto.Multi
 
   alias Operately.People.Person
-  alias Operately.Updates
   alias Operately.Activities
   alias Operately.Access.Fetch
 
@@ -107,16 +106,6 @@ defmodule Operately.Projects do
       where: m.title == ^milestone_name)
   end
 
-  def get_next_milestone(project) do
-    query = from m in Milestone,
-      where: m.project_id == ^project.id,
-      where: m.status == ^:pending,
-      order_by: [asc: m.deadline_at],
-      limit: 1
-
-    Repo.one(query)
-  end
-
   def get_milestone_with_access_level(milestone_id, person_id) do
     from(m in Milestone, as: :resource, where: m.id == ^milestone_id)
     |> Fetch.get_resource_with_access_level(person_id)
@@ -130,19 +119,9 @@ defmodule Operately.Projects do
     Repo.all(query)
   end
 
-  def create_milestone(creator, attrs) do
-    Repo.transaction(fn ->
-      result = %Milestone{} |> Milestone.changeset(attrs) |> Repo.insert()
-
-      case result do
-        {:ok, milestone} ->
-          {:ok, _} = Updates.record_project_milestone_creation(creator, milestone)
-          milestone
-
-        {:error, changeset} ->
-          Repo.rollback(changeset)
-      end
-    end)
+  def create_milestone(attrs) do
+    Milestone.changeset(attrs)
+    |> Repo.insert()
   end
 
   def update_milestone(%Milestone{} = milestone, attrs) do
@@ -151,14 +130,8 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def delete_milestone(person, %Milestone{} = milestone) do
-    Repo.transaction(fn ->
-      {:ok, _} = Updates.record_project_milestone_deleted(person, milestone)
-
-      {:ok, milestone} = Repo.soft_delete(milestone)
-
-      milestone
-    end)
+  def delete_milestone(%Milestone{} = milestone) do
+    Repo.soft_delete(milestone)
   end
 
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do

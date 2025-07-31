@@ -62,7 +62,7 @@ defmodule Operately.Assignments.Loader do
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
       where: g.reviewer_id in ^all_person_ids or g.champion_id == ^person_id,
-      where: fragment("(g0.timeframe->>'start_date' <= ? OR g0.timeframe->>'start_date' IS NULL)", ^to_string(current_date))
+      where: fragment("(g0.timeframe->'contextual_start_date'->>'date' <= ? OR g0.timeframe->'contextual_start_date'->>'date' IS NULL)", ^to_string(current_date))
     )
     |> Repo.all()
   end

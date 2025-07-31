@@ -622,8 +622,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_start_date, :date, null: true
     field? :old_end_date, :date, null: true
     field? :new_end_date, :date, null: true
-    field? :new_milestones, list_of(:milestone), null: true
-    field? :updated_milestones, list_of(:milestone), null: true
+    field? :new_milestones, list_of(:activity_milestone), null: true
+    field? :updated_milestones, list_of(:activity_milestone), null: true
+  end
+
+  object :activity_milestone do
+    field :id, :string
+    field :title, :string
+    field :deadline_at, :date
   end
 
   object :update_content_project_milestone_deadline_changed do
@@ -1323,7 +1329,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :status, :string, null: true
     field? :inserted_at, :date, null: true
     field :timeframe, :timeframe, null: true
-    field? :deadline_at, :date, null: true
     field? :completed_at, :date, null: true
     field? :description, :string, null: true
     field? :comments, list_of(:milestone_comment), null: true

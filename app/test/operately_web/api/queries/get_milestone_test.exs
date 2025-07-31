@@ -173,7 +173,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestoneTest do
       space_access_level: Keyword.get(opts, :space_access, Binding.no_access()),
     })
 
-    milestone_fixture(ctx.creator, %{ project_id: project.id })
+    milestone_fixture(%{ project_id: project.id })
     |> Serializer.serialize(level: :essential)
   end
 
