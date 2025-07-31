@@ -24,8 +24,8 @@ export function Targets(props: GoalPage.Props) {
         <div className="mt-1">
           <div className="text-content-dimmed text-sm">
             {props.canEdit
-              ? "Add targets to measure progress and celebrate wins."
-              : "The champion didn't yet set targets for this goal."}
+              ? "Add targets to track quantitative progress with numbers."
+              : "The champion hasn't yet set targets for this goal."}
           </div>
         </div>
       )}
