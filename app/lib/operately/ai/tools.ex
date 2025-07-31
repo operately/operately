@@ -3,12 +3,13 @@ defmodule Operately.AI.Tools do
   Provides AI tools for interacting with Operately's API.
   """
 
-  alias LangChain.Function
-  alias Operately.WorkMaps.GetWorkMapQuery
+  alias Operately.AI.Tools.Base
   alias Operately.People.AgentRun
 
+  defdelegate work_map(), to: Operately.AI.Tools.WorkMap
+
   def add_agent_task do
-    new_agent_tool(%{
+    Base.new_tool(%{
       name: "add_agent_task",
       description: "Adds a task to the agent run.",
       parameters_schema: %{
@@ -36,27 +37,6 @@ defmodule Operately.AI.Tools do
   end
 
   @doc """
-  Returns a tool that retrieves the work map for a given person.
-
-  Expected context:
-  - :person - The person for whom the work map is requested.
-  """
-  def work_map do
-    new_agent_tool(%{
-      name: "get_work_map",
-      description: "Returns all goals and projects for a given person.",
-      function: fn _, context ->
-        person = Map.get(context, :person)
-
-        {:ok, workmap} = GetWorkMapQuery.execute(person, %{company_id: person.company_id})
-        api_serialized = OperatelyWeb.Api.Serializer.serialize(workmap, level: :essential)
-
-        Jason.encode(api_serialized)
-      end
-    })
-  end
-
-  @doc """
   Provides details of a goal.
 
   Expects the following arguments:
@@ -67,7 +47,7 @@ defmodule Operately.AI.Tools do
   - :agent_run_id - The ID of the agent run.
   """
   def get_goal_details do
-    new_agent_tool(%{
+    Base.new_tool(%{
       name: "get_goal_details",
       description: "Returns the details of the goal.",
       parameters_schema: %{
@@ -109,7 +89,7 @@ defmodule Operately.AI.Tools do
   - :person - The person posting the message.
   """
   def post_goal_message do
-    new_agent_tool(%{
+    Base.new_tool(%{
       name: "post_goal_message",
       description: "Posts a message to the goal.",
       parameters_schema: %{
@@ -182,7 +162,7 @@ defmodule Operately.AI.Tools do
   - :person - The person posting the message.
   """
   def post_project_message do
-    new_agent_tool(%{
+    Base.new_tool(%{
       name: "post_project_message",
       description: "Posts a message to the project.",
       parameters_schema: %{
@@ -248,33 +228,6 @@ defmodule Operately.AI.Tools do
   #
   # Helper functions
   #
-
-  # Creates a new agent tool with logging functionality.
-  # This function wraps the tool's function to log its usage and output.
-  defp new_agent_tool(attrs) do
-    with_logs = fn args, context ->
-      log(context, "TOOL USE: #{attrs.name}\n")
-
-      if args != nil && Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
-        log(context, "TOOL INPUT:\n" <> inspect(args) <> "\n")
-      end
-
-      result = attrs.function.(args, context)
-
-      if Map.has_key?(context, :agent_run) && context.agent_run.verbose_logs do
-        case result do
-          {:ok, data} -> log(context, "TOOL OUTPUT: #{data}\n")
-          {:error, data} -> log(context, "TOOL ERROR: #{data}\n")
-        end
-      end
-
-      result
-    end
-
-    attrs
-    |> Map.put(:function, with_logs)
-    |> Function.new!()
-  end
 
   defp log(context, msg) do
     if Map.has_key?(context, :agent_run) do
