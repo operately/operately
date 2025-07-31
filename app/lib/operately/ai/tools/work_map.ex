@@ -23,7 +23,7 @@ defmodule Operately.AI.Tools.WorkMap do
 
     Returning a hierarchical view of all goals and projects in your company.
 
-    **Item Format:** Name (Type) | Status | State | Progress | Owner | Space | Timeframe
+    **Item Format:** Name (Type) [ID: id] | Status | State | Progress | Owner | Space | Timeframe
 
     **Valid Statuses:**
     - on_track: Item is progressing as planned
@@ -40,26 +40,31 @@ defmodule Operately.AI.Tools.WorkMap do
     """
 
     tree_content =
-      work_map
-      |> Enum.with_index()
-      |> Enum.map(fn {item, index} ->
-        is_last = index == length(work_map) - 1
-        format_item(item, [], is_last)
-      end)
-      |> Enum.join("\n\n")
+      case work_map do
+        [] ->
+          "Company Work Map\n└── (No items found)"
+
+        items ->
+          root_header = "Company Work Map"
+
+          formatted_items =
+            items
+            |> Enum.with_index()
+            |> Enum.map(fn {item, index} ->
+              is_last = index == length(items) - 1
+              format_item(item, [], is_last)
+            end)
+            |> Enum.join("\n")
+
+          "#{root_header}\n#{formatted_items}"
+      end
 
     "#{legend}\n#{tree_content}"
   end
 
   defp format_item(item, prefixes, is_last) do
-    # Current item prefix - only add tree characters for non-root items
-    current_prefix =
-      if Enum.empty?(prefixes) do
-        # No prefix for root level items
-        ""
-      else
-        if is_last, do: "└── ", else: "├── "
-      end
+    # Current item prefix - always add tree characters
+    current_prefix = if is_last, do: "└── ", else: "├── "
 
     # Build the full prefix from parent prefixes
     full_prefix =
@@ -96,6 +101,7 @@ defmodule Operately.AI.Tools.WorkMap do
   end
 
   defp format_item_details(item) do
+    id = Map.get(item, :id, "unknown")
     name = Map.get(item, :name, "Unnamed")
     type = Map.get(item, :type, "unknown")
     status = Map.get(item, :status, "unknown")
@@ -131,6 +137,6 @@ defmodule Operately.AI.Tools.WorkMap do
           end
       end
 
-    "#{name} (#{type}) | Status: #{status} | State: #{state} | Progress: #{round(progress)}% | Owner: #{owner_name} | Space: #{space_name} #{timeframe}"
+    "#{name} (#{type}) [ID: #{id}] | Status: #{status} | State: #{state} | Progress: #{round(progress)}% | Owner: #{owner_name} | Space: #{space_name}#{timeframe}"
   end
 end
