@@ -21,6 +21,8 @@ defmodule Operately.AI.ToolsTest do
 
       assert {:ok, result} = tool.function.(args, context)
       assert result =~ ctx.goal.name
+
+      IO.puts(result)
     end
   end
 end
