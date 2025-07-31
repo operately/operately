@@ -8,11 +8,6 @@ import { DateField } from "turboui";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { MilestoneListState, useMilestoneListState } from "./useMilestoneListState";
 
-interface Error {
-  field: string;
-  message: string;
-}
-
 export interface FormState {
   projectId: string;
 
@@ -28,7 +23,7 @@ export interface FormState {
 
   submit: () => void;
   cancel: () => void;
-  errors: Error[];
+  errors: string[];
   hasChanges: boolean;
   submitting: boolean;
 
@@ -46,6 +41,7 @@ export function useForm(project: Projects.Project): FormState {
   const [startTime, setStartTime] = React.useState<DateField.ContextualDate | null>(oldStart);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(oldDue);
   const [milestoneBeingEdited, setMilestoneBeingEdited] = React.useState<string | null>(null);
+  const [errors, setErrors] = useErrors([startTime]);
 
   const submitted = React.useRef(false);
   const canceled = React.useRef(false);
@@ -63,6 +59,11 @@ export function useForm(project: Projects.Project): FormState {
   const [edit, { loading }] = Projects.useEditProjectTimeline();
 
   const submit = async () => {
+    if (!startTime) {
+      setErrors(prev => [...prev, "startTime"]);
+      return;
+    }
+
     await edit({
       projectId: project.id,
       projectStartDate: serializeContextualDate(startTime),
@@ -89,8 +90,6 @@ export function useForm(project: Projects.Project): FormState {
     navigate(milestonesPath);
   };
 
-  const errors = [];
-
   return {
     projectId: project.id!,
 
@@ -115,4 +114,14 @@ export function useForm(project: Projects.Project): FormState {
       return hasChanges;
     },
   };
+}
+
+function useErrors(deps: any[]) {
+  const [errors, setErrors] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    setErrors([]);
+  }, deps);
+
+  return [errors, setErrors] as const;
 }
