@@ -49,10 +49,6 @@ function Header({ form }: { form: FormState }) {
           </div>
         )}
       </Paper.Banner>
-
-      {form.errors.length > 0 && (
-        <div className="text-content-error text-sm font-medium text-center mb-4">Please fill out all fields</div>
-      )}
     </div>
   );
 }
@@ -93,7 +89,14 @@ function StartDate({ form }: { form: FormState }) {
           variant="form-field"
           testId="project-start"
           maxDateLimit={form.dueDate?.date}
+          error={form.errors.includes("startTime")}
         />
+
+        {form.errors.includes("startTime") && (
+          <div className="text-red-500 text-xs mt-1" data-test-id="due-date-error">
+            Start date is required
+          </div>
+        )}
       </div>
     </div>
   );
