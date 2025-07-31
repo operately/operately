@@ -1,6 +1,7 @@
 import React from "react";
 import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
+import type { Checklist } from "../Checklist";
 
 import { PageNew } from "../Page";
 
@@ -111,6 +112,7 @@ export namespace GoalPage {
 
     contributors: Contributor[];
     targets: GoalTargetList.Target[];
+    checklistItems: Checklist.ChecklistItem[];
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
     discussions: Discussion[];
@@ -123,6 +125,8 @@ export namespace GoalPage {
     canEdit: boolean;
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
+
+    checklistsEnabled?: boolean;
 
     neglectedGoal: boolean;
 
@@ -138,6 +142,13 @@ export namespace GoalPage {
     updateTarget: GoalTargetList.UpdateTargetFn;
     updateTargetValue: GoalTargetList.UpdateTargetValueFn;
     updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
+    
+    addChecklistItem?: Checklist.AddChecklistItemFn;
+    deleteChecklistItem?: Checklist.DeleteChecklistItemFn;
+    updateChecklistItem?: Checklist.UpdateChecklistItemFn;
+    toggleChecklistItem?: Checklist.ToggleChecklistItemFn;
+    updateChecklistItemIndex?: Checklist.UpdateChecklistItemIndexFn;
+    
     deleteGoal: () => Promise<void>;
 
     activityFeed: React.ReactNode;

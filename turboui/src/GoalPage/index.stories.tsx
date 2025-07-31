@@ -70,6 +70,7 @@ function Component(props: Partial<GoalPage.Props>) {
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
   const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
   const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);
+  const [checklistItems, setChecklistItems] = React.useState(props.checklistItems || []);
   const [accessLevels, setAccessLevels] = React.useState<PrivacyField.AccessLevels>(
     props.accessLevels || {
       company: "view",
@@ -77,12 +78,58 @@ function Component(props: Partial<GoalPage.Props>) {
     },
   );
 
+  React.useEffect(() => {
+    setChecklistItems(props.checklistItems || []);
+  }, [props.checklistItems]);
+
+  const checklistHandlers = {
+    addChecklistItem: async (inputs: { name: string }) => {
+      const newItem = {
+        id: Date.now().toString(),
+        name: inputs.name,
+        completed: false,
+        index: checklistItems.length,
+        mode: "view" as const,
+      };
+      setChecklistItems((prev) => [...prev, newItem]);
+      return { success: true, id: newItem.id };
+    },
+    deleteChecklistItem: async (id: string) => {
+      setChecklistItems((prev) => prev.filter((item) => item.id !== id));
+      return true;
+    },
+    updateChecklistItem: async (inputs: { itemId: string; name: string }) => {
+      setChecklistItems((prev) => prev.map((item) => (item.id === inputs.itemId ? { ...item, name: inputs.name } : item)));
+      return true;
+    },
+    toggleChecklistItem: async (id: string, completed: boolean) => {
+      setChecklistItems((prev) => prev.map((item) => (item.id === id ? { ...item, completed } : item)));
+      return true;
+    },
+    updateChecklistItemIndex: async (id: string, index: number) => {
+      setChecklistItems((prev) => {
+        const oldIndex = prev.findIndex((item) => item.id === id);
+        if (oldIndex === -1) return prev;
+        
+        const newItems = [...prev];
+        const [removed] = newItems.splice(oldIndex, 1);
+        if (removed) {
+          newItems.splice(index, 0, removed);
+        }
+        
+        return newItems.map((item, idx) => ({ ...item, index: idx }));
+      });
+      return true;
+    },
+  };
+
   const defaults = {
     description,
     status: "on_track" as const,
     state: "active" as const,
     spaceName: "Product",
     targets: [],
+    checklistsEnabled: true, // Enable by default in stories
     relatedWorkItems: [],
     checkIns: [],
     discussions: [],
@@ -96,6 +143,7 @@ function Component(props: Partial<GoalPage.Props>) {
     <GoalPage
       {...defaults}
       {...props}
+      checklistItems={checklistItems}
       goalName={goalName}
       setGoalName={setGoalName}
       space={space}
@@ -131,6 +179,7 @@ function Component(props: Partial<GoalPage.Props>) {
       updateTarget={async (_inputs) => true}
       updateTargetValue={async (_id, _value) => true}
       updateTargetIndex={async (_id, _index) => true}
+      {...checklistHandlers}
       deleteGoal={deleteGoal}
     />
   );
@@ -206,6 +255,44 @@ const mockTargets = [
     to: 99.99,
     value: 99.8,
     unit: "%",
+    mode: "view" as const,
+  },
+];
+
+const mockChecklistItems = [
+  {
+    id: "1",
+    name: "Complete user research interviews",
+    completed: true,
+    index: 0,
+    mode: "view" as const,
+  },
+  {
+    id: "2",
+    name: "Design and validate wireframes",
+    completed: true,
+    index: 1,
+    mode: "view" as const,
+  },
+  {
+    id: "3",
+    name: "Set up development environment",
+    completed: false,
+    index: 2,
+    mode: "view" as const,
+  },
+  {
+    id: "4",
+    name: "Implement core AI features",
+    completed: false,
+    index: 3,
+    mode: "view" as const,
+  },
+  {
+    id: "5",
+    name: "Conduct security review",
+    completed: false,
+    index: 4,
     mode: "view" as const,
   },
 ];
@@ -371,8 +458,8 @@ const contributors: GoalPage.Contributor[] = genPeople(10).map((p, i) => {
     i < contributions.length
       ? contributions[i]
       : contributions.length > 0
-      ? contributions[contributions.length - 1]
-      : [];
+        ? contributions[contributions.length - 1]
+        : [];
 
   return {
     person,
@@ -431,6 +518,7 @@ export const Default: Story = {
     reviewer: genPerson(),
     checkIns: mockCheckIns,
     targets: mockTargets,
+    checklistItems: mockChecklistItems,
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
@@ -445,10 +533,57 @@ export const DefaultReadOnly: Story = {
     reviewer: genPerson(),
     checkIns: mockCheckIns,
     targets: mockTargets,
+    checklistItems: mockChecklistItems,
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,
     canEdit: false,
+  },
+};
+
+export const OnlyTargets: Story = {
+  args: {
+    description: description,
+    champion: genPerson(),
+    reviewer: genPerson(),
+    checkIns: mockCheckIns,
+    targets: mockTargets,
+    checklistItems: [], // Empty checklist items array
+    discussions: mockDiscussions,
+    contributors: contributors,
+    relatedWorkItems: mockRelatedWorkItems,
+    canEdit: true,
+  },
+};
+
+export const OnlyChecklists: Story = {
+  args: {
+    description: description,
+    champion: genPerson(),
+    reviewer: genPerson(),
+    checkIns: mockCheckIns,
+    targets: [], // Empty targets array
+    checklistItems: mockChecklistItems,
+    discussions: mockDiscussions,
+    contributors: contributors,
+    relatedWorkItems: mockRelatedWorkItems,
+    canEdit: true,
+  },
+};
+
+export const ChecklistsDisabled: Story = {
+  args: {
+    description: description,
+    champion: genPerson(),
+    reviewer: genPerson(),
+    checkIns: mockCheckIns,
+    targets: mockTargets,
+    checklistItems: mockChecklistItems, // Items present but feature disabled
+    checklistsEnabled: false, // Feature disabled
+    discussions: mockDiscussions,
+    contributors: contributors,
+    relatedWorkItems: mockRelatedWorkItems,
+    canEdit: true,
   },
 };
 

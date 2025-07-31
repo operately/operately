@@ -182,12 +182,15 @@ function Page() {
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
+    checklistItems: [],
     checkIns: prepareCheckIns(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
     peopleSearch,
+
+    checklistsEnabled: false,
 
     addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
       return Api.goals
@@ -254,6 +257,31 @@ function Page() {
           console.error("Failed to update target index", e);
           return false;
         });
+    },
+
+    addChecklistItem: async function (_inputs): Promise<{ id: string; success: boolean }> {
+      console.error("Checklist feature not implemented yet");
+      return { id: "", success: false };
+    },
+
+    deleteChecklistItem: async function (_id: string): Promise<boolean> {
+      console.error("Checklist feature not implemented yet");
+      return false;
+    },
+
+    updateChecklistItem: async function (_inputs): Promise<boolean> {
+      console.error("Checklist feature not implemented yet");
+      return false;
+    },
+
+    toggleChecklistItem: async function (_id: string, _completed: boolean): Promise<boolean> {
+      console.error("Checklist feature not implemented yet");
+      return false;
+    },
+
+    updateChecklistItemIndex: async function (_id: string, _index: number): Promise<boolean> {
+      console.error("Checklist feature not implemented yet");
+      return false;
     },
 
     updateDescription: function (description: any | null): Promise<boolean> {
