@@ -1,7 +1,7 @@
 import * as Companies from "@/models/companies";
 import { Checklist } from "turboui";
 
-export interface Checklists {
+interface Checklists {
   enabled: boolean;
 
   items: Checklist.ChecklistItem[];
