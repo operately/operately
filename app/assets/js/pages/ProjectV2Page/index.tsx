@@ -2,8 +2,8 @@ import Api from "@/api";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
-import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
+import * as Goals from "@/models/goals";
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 
@@ -82,13 +82,13 @@ function Page() {
   });
 
   const [champion, setChampion] = usePageField({
-    value: (data) => preparePerson(paths, data.project.champion),
+    value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
     update: (_v) => Promise.resolve(true), // Simplified for now
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
-    value: (data) => preparePerson(paths, data.project.reviewer),
+    value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
     update: (_v) => Promise.resolve(true), // Simplified for now
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
@@ -106,6 +106,18 @@ function Page() {
   });
 
   const spaceSearch = useSpaceSearch();
+
+  const championSearch = People.usePersonFieldSearch({
+    scope: { type: "space", id: project.space.id },
+    ignoredIds: [champion?.id!, reviewer?.id!],
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
+
+  const reviewerSearch = People.usePersonFieldSearch({
+    scope: { type: "space", id: project.space.id },
+    ignoredIds: [champion?.id!, reviewer?.id!],
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
 
   const props: ProjectPage.Props = {
     closeLink: paths.projectClosePath(project.id!),
@@ -136,9 +148,11 @@ function Page() {
 
     champion: champion as ProjectPage.Person | null,
     setChampion,
+    championSearch,
 
     reviewer: reviewer as ProjectPage.Person | null | undefined,
     setReviewer,
+    reviewerSearch,
 
     startedAt: startedDate,
     setStartedAt: setStartedDate,
@@ -185,27 +199,13 @@ function prepareParentGoal(paths: Paths, goal: Goals.Goal | null | undefined): P
   };
 }
 
-function preparePerson(paths: Paths, person: People.Person | null | undefined) {
-  if (!person) {
-    return null;
-  } else {
-    return {
-      id: person.id!,
-      fullName: person.fullName!,
-      title: person.title || "",
-      avatarUrl: person.avatarUrl || "",
-      profileLink: paths.profilePath(person.id!),
-    };
-  }
-}
-
 function prepareCheckIns(paths: Paths, checkIns: any[]): ProjectPage.CheckIn[] {
   return checkIns.map((checkIn) => {
     assertPresent(checkIn.author, "author must be present in check-in");
 
     return {
       id: checkIn.id!,
-      author: preparePerson(paths, checkIn.author)!,
+      author: People.parsePersonForTurboUi(paths, checkIn.author)!,
       date: Time.parse(checkIn.insertedAt!)!,
       link: paths.projectCheckInPath(checkIn.id!),
       content: JSON.parse(checkIn.description!),

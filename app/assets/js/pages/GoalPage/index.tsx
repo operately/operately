@@ -96,13 +96,13 @@ function Page() {
   });
 
   const [champion, setChampion] = usePageField({
-    value: (data) => preparePerson(paths, data.goal.champion),
+    value: (data) => People.parsePersonForTurboUi(paths, data.goal.champion),
     update: (v) => Api.goals.updateChampion({ goalId: goal.id!, championId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
-    value: (data) => preparePerson(paths, data.goal.reviewer),
+    value: (data) => People.parsePersonForTurboUi(paths, data.goal.reviewer),
     update: (v) => Api.goals.updateReviewer({ goalId: goal.id!, reviewerId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
@@ -113,16 +113,16 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
   });
 
-  const championSearch = usePeopleSearch({
+  const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: goal.space.id! },
     ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => preparePerson(paths, p)!,
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
-  const reviewerSearch = usePeopleSearch({
+  const reviewerSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: goal.space.id! },
     ignoredIds: [champion?.id!, reviewer?.id!],
-    transformResult: (p) => preparePerson(paths, p)!,
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
   const parentGoalSearch = useParentGoalSearch(goal);
@@ -301,27 +301,13 @@ function Page() {
   return <GoalPage key={goal.id!} {...props} />;
 }
 
-function preparePerson(paths: Paths, person: People.Person | null | undefined) {
-  if (!person) {
-    return null;
-  } else {
-    return {
-      id: person.id!,
-      fullName: person.fullName!,
-      title: person.title || "",
-      avatarUrl: person.avatarUrl || "",
-      profileLink: paths.profilePath(person.id!),
-    };
-  }
-}
-
 function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage.Props["checkIns"] {
   return checkIns.map((checkIn) => {
     assertPresent(checkIn.author, "author must be present in check-in");
 
     return {
       id: checkIn.id!,
-      author: preparePerson(paths, checkIn.author)!,
+      author: People.parsePersonForTurboUi(paths, checkIn.author)!,
       date: Time.parse(checkIn.insertedAt!)!,
       link: paths.goalCheckInPath(checkIn.id!),
       content: JSON.parse(checkIn.message!),
@@ -450,45 +436,13 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
   return [state, updateState];
 }
 
-interface UsePeopleSearch<T> {
-  ignoredIds?: string[];
-  scope: People.SearchScope;
-  transformResult?: (people: People.Person) => T;
-}
-
-interface PeopleSearchParams {
-  query: string;
-  ignoredIds?: string[];
-}
-
-type PeopleSearchFn<T> = (callParams: PeopleSearchParams) => Promise<T[]>;
-
-function usePeopleSearch<T>(hookParams: UsePeopleSearch<T>): PeopleSearchFn<T> {
-  const transform = hookParams.transformResult || ((person) => person as unknown as T);
-
-  return async (callParams: PeopleSearchParams): Promise<T[]> => {
-    const query = callParams.query.trim();
-    const ignoredIds = (hookParams.ignoredIds || []).concat(callParams.ignoredIds || []);
-
-    const result = await Api.searchPeople({
-      query,
-      ignoredIds,
-      searchScopeType: hookParams.scope.type,
-      searchScopeId: hookParams.scope.id,
-    });
-
-    const people = result.people || [];
-    return people.map((person) => transform(person!)) as T[];
-  };
-}
-
 function prepareDiscussions(paths: Paths, discussions: GoalDiscussion[]): GoalPage.Props["discussions"] {
   return discussions.map((discussion) => {
     return {
       id: discussion.id,
       date: Time.parse(discussion.insertedAt)!,
       title: discussion.title,
-      author: preparePerson(paths, discussion.author)!,
+      author: People.parsePersonForTurboUi(paths, discussion.author)!,
       link: paths.goalDiscussionPath(discussion.id),
       content: JSON.parse(discussion.content),
       commentCount: discussion.commentCount,
@@ -508,7 +462,7 @@ function prepareRetrospective(
     link: paths.goalRetrospectivePath(retrospective.id),
     date: Time.parse(retrospective.insertedAt)!,
     content: JSON.parse(retrospective.content),
-    author: preparePerson(paths, retrospective.author)!,
+    author: People.parsePersonForTurboUi(paths, retrospective.author)!,
   };
 }
 
