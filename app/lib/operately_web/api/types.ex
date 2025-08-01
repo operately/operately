@@ -117,6 +117,14 @@ defmodule OperatelyWeb.Api.Types do
     field :new_champion, :person
   end
 
+  object :activity_content_project_reviewer_updating do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :old_reviewer, :person
+    field :new_reviewer, :person
+  end
+
   object :activity_content_message_archiving do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
@@ -509,6 +517,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_due_date_updating,
       :activity_content_project_start_date_updating,
       :activity_content_project_champion_updating,
+      :activity_content_project_reviewer_updating,
       :activity_content_project_review_submitted,
       :activity_content_project_timeline_edited,
       :activity_content_space_joining,

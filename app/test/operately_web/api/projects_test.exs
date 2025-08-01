@@ -221,4 +221,64 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     |> Operately.Repo.all(where: [action: action, resource_id: project_id])
     |> length()
   end
+
+  describe "update reviewer" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_reviewer], %{reviewer_id: ctx.new_champion.id})
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it updates the reviewer", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: Paths.person_id(ctx.new_champion)
+      })
+      assert res.success == true
+
+      project = Repo.reload(ctx.project) |> Repo.preload(:reviewer)
+      assert project.reviewer.id == ctx.new_champion.id
+    end
+
+    test "it can update the reviewer to nil", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # First set a reviewer
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: Paths.person_id(ctx.new_champion)
+      })
+
+      # Then remove the reviewer
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: nil
+      })
+      assert res.success == true
+
+      project = Repo.reload(ctx.project) |> Repo.preload(:reviewer)
+      assert project.reviewer == nil
+    end
+
+    test "it creates an activity when reviewer is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.project.id, "project_reviewer_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_reviewer], %{
+        project_id: Paths.project_id(ctx.project),
+        reviewer_id: Paths.person_id(ctx.new_champion)
+      })
+
+      after_count = count_activities(ctx.project.id, "project_reviewer_updating")
+      assert after_count == before_count + 1
+    end
+  end
 end

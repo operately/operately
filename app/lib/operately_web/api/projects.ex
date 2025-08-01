@@ -101,6 +101,38 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateReviewer do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :reviewer_id, :id, null: true
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_contributors)
+      |> Steps.update_project_reviewer(inputs.reviewer_id)
+      |> Steps.save_activity(:project_reviewer_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          old_reviewer_id: changes.current_reviewer && changes.current_reviewer.person_id,
+          new_reviewer_id: inputs.reviewer_id
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -221,6 +253,54 @@ defmodule OperatelyWeb.Api.Projects do
         case new_champion_id do
           nil -> {:ok, nil}
           _ -> Operately.Access.bind_person(project.access_context, new_champion_id, Binding.full_access(), :champion)
+        end
+      end)
+    end
+
+    def update_project_reviewer(multi, new_reviewer_id) do
+      multi
+      |> Ecto.Multi.run(:current_reviewer, fn _repo, %{project: project} ->
+        reviewer = Repo.get_by(Contributor, project_id: project.id, role: :reviewer)
+        {:ok, reviewer}
+      end)
+      |> Ecto.Multi.run(:handle_current_reviewer, fn _repo, changes ->
+        case changes.current_reviewer do
+          nil -> {:ok, nil}
+          current_reviewer ->
+            Contributor.changeset(current_reviewer, %{role: :contributor})
+            |> Repo.update()
+        end
+      end)
+      |> Ecto.Multi.run(:add_new_reviewer, fn _repo, %{project: project} ->
+        case new_reviewer_id do
+          nil ->
+            {:ok, nil}
+          _ ->
+            # Check if this person is already a contributor
+            case Repo.get_by(Contributor, project_id: project.id, person_id: new_reviewer_id) do
+              nil ->
+                # Create new contributor with reviewer role
+                Contributor.changeset(%{project_id: project.id, person_id: new_reviewer_id, role: :reviewer})
+                |> Repo.insert()
+              existing ->
+                # Update existing contributor to reviewer role
+                existing
+                |> Contributor.changeset(%{role: :reviewer})
+                |> Repo.update()
+            end
+        end
+      end)
+      |> Ecto.Multi.run(:remove_previous_access_binding, fn _repo, %{project: project, current_reviewer: current_reviewer} ->
+        case current_reviewer do
+          nil -> {:ok, nil}
+          # Update binding to remove :reviewer tag
+          reviewer -> Operately.Access.bind_person(project.access_context, reviewer.person_id, Binding.full_access(), nil)
+        end
+      end)
+      |> Ecto.Multi.run(:add_new_access_binding, fn _repo, %{project: project} ->
+        case new_reviewer_id do
+          nil -> {:ok, nil}
+          _ -> Operately.Access.bind_person(project.access_context, new_reviewer_id, Binding.full_access(), :reviewer)
         end
       end)
     end

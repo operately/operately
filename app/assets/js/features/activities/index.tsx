@@ -65,6 +65,7 @@ export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
   "project_champion_updating",
+  "project_reviewer_updating",
   "project_due_date_updating",
   "project_start_date_updating",
   "goal_target_updating",
@@ -220,6 +221,7 @@ import GoalDueDateUpdating from "./GoalDueDateUpdating";
 import GoalReviewerUpdating from "./GoalReviewerUpdating";
 import ProjectChampionUpdating from "./ProjectChampionUpdating";
 import ProjectDueDateUpdating from "./ProjectDueDateUpdating";
+import ProjectReviewerUpdating from "./ProjectReviewerUpdating";
 import ProjectStartDateUpdating from "./ProjectStartDateUpdating";
 
 import { Paths } from "../../routes/paths";
@@ -305,6 +307,7 @@ function handler(activity: Activity) {
     .with("project_discussion_submitted", () => ProjectDiscussionSubmitted)
     .with("project_champion_updating", () => ProjectChampionUpdating)
     .with("project_due_date_updating", () => ProjectDueDateUpdating)
+    .with("project_reviewer_updating", () => ProjectReviewerUpdating)
     .with("project_start_date_updating", () => ProjectStartDateUpdating)
     .otherwise(() => {
       throw new Error("Unknown activity action: " + activity.action);

@@ -70,26 +70,26 @@ function Page() {
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
-    update: (v) => Api.editProjectName({ projectId: project.id!, name: v }).then(() => true),
+    update: (v) => Api.editProjectName({ projectId: project.id, name: v }).then(() => true),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
   });
 
   const [space, setSpace] = usePageField({
     value: (data) => prepareSpace(paths, data.project.space),
-    update: (v) => Api.moveProjectToSpace({ projectId: project.id!, spaceId: v.id }).then(() => true),
+    update: (v) => Api.moveProjectToSpace({ projectId: project.id, spaceId: v.id }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
   const [champion, setChampion] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
-    update: (v) => Api.projects.updateChampion({ projectId: project.id!, championId: v?.id ?? null }),
+    update: (v) => Api.projects.updateChampion({ projectId: project.id, championId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
   const [reviewer, setReviewer] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.reviewer),
-    update: (_v) => Promise.resolve(true), // Simplified for now
+    update: (v) => Api.projects.updateReviewer({ projectId: project.id, reviewerId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
