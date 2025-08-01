@@ -392,6 +392,14 @@ export interface ActivityContentProjectArchived {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectChampionUpdating {
+  company: Company;
+  space: Space;
+  project: Project;
+  oldChampion: Person;
+  newChampion: Person;
+}
+
 export interface ActivityContentProjectCheckInAcknowledged {
   projectId?: string | null;
   checkInId?: string | null;
@@ -1694,6 +1702,7 @@ export type ActivityContent =
   | ActivityContentProjectReviewRequestSubmitted
   | ActivityContentProjectDueDateUpdating
   | ActivityContentProjectStartDateUpdating
+  | ActivityContentProjectChampionUpdating
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
   | ActivityContentSpaceJoining
@@ -3358,6 +3367,15 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectsUpdateChampionInput {
+  projectId: Id;
+  championId: Id | null;
+}
+
+export interface ProjectsUpdateChampionResult {
+  success: boolean | null;
+}
+
 export interface ProjectsUpdateDueDateInput {
   projectId: Id;
   dueDate: ContextualDate | null;
@@ -4353,6 +4371,10 @@ class ApiNamespaceAi {
 
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
+
+  async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
+    return this.client.post("/projects/update_champion", input);
+  }
 
   async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
     return this.client.post("/projects/update_due_date", input);
@@ -6866,6 +6888,12 @@ export default {
     useUpdateStartDate: () =>
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
         defaultApiClient.apiNamespaceProjects.updateStartDate,
+      ),
+
+    updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
+    useUpdateChampion: () =>
+      useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
+        defaultApiClient.apiNamespaceProjects.updateChampion,
       ),
   },
 };

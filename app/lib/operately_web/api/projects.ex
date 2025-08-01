@@ -1,6 +1,10 @@
 defmodule OperatelyWeb.Api.Projects do
   alias __MODULE__.SharedMultiSteps, as: Steps
 
+  alias Operately.Access.Binding
+  alias Operately.Projects.Contributor
+  alias Operately.Repo
+
   defmodule UpdateDueDate do
     use TurboConnect.Mutation
 
@@ -58,6 +62,38 @@ defmodule OperatelyWeb.Api.Projects do
           project_id: changes.project.id,
           old_start_date: Operately.ContextualDates.Timeframe.start_date(changes.project.timeframe),
           new_start_date: Operately.ContextualDates.Timeframe.start_date(changes.updated_project.timeframe)
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule UpdateChampion do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :champion_id, :id, null: true
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_contributors)
+      |> Steps.update_project_champion(inputs.champion_id)
+      |> Steps.save_activity(:project_champion_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          old_champion_id: changes.current_champion && changes.current_champion.person_id,
+          new_champion_id: inputs.champion_id
         }
       end)
       |> Steps.commit()
@@ -137,6 +173,54 @@ defmodule OperatelyWeb.Api.Projects do
                 contextual_end_date: project.timeframe.contextual_end_date
               }
             })
+        end
+      end)
+    end
+
+    def update_project_champion(multi, new_champion_id) do
+      multi
+      |> Ecto.Multi.run(:current_champion, fn _repo, %{project: project} ->
+        champion = Repo.get_by(Contributor, project_id: project.id, role: :champion)
+        {:ok, champion}
+      end)
+      |> Ecto.Multi.run(:handle_current_champion, fn _repo, changes ->
+        case changes.current_champion do
+          nil -> {:ok, nil}
+          current_champion ->
+            Contributor.changeset(current_champion, %{role: :contributor})
+            |> Repo.update()
+        end
+      end)
+      |> Ecto.Multi.run(:add_new_champion, fn _repo, %{project: project} ->
+        case new_champion_id do
+          nil ->
+            {:ok, nil}
+          _ ->
+            # Check if this person is already a contributor
+            case Repo.get_by(Contributor, project_id: project.id, person_id: new_champion_id) do
+              nil ->
+                # Create new contributor with champion role
+                Contributor.changeset(%{project_id: project.id, person_id: new_champion_id, role: :champion})
+                |> Repo.insert()
+              existing ->
+                # Update existing contributor to champion role
+                existing
+                |> Contributor.changeset(%{role: :champion})
+                |> Repo.update()
+            end
+        end
+      end)
+      |> Ecto.Multi.run(:remove_previous_access_binding, fn _repo, %{project: project, current_champion: current_champion} ->
+        case current_champion do
+          nil -> {:ok, nil}
+          # Update binding to remove :champion tag
+          champion -> Operately.Access.bind_person(project.access_context, champion.person_id, Binding.full_access(), nil)
+        end
+      end)
+      |> Ecto.Multi.run(:add_new_access_binding, fn _repo, %{project: project} ->
+        case new_champion_id do
+          nil -> {:ok, nil}
+          _ -> Operately.Access.bind_person(project.access_context, new_champion_id, Binding.full_access(), :champion)
         end
       end)
     end
