@@ -56,6 +56,11 @@ defmodule OperatelyWeb.Api do
     mutation(:update_access_levels, OperatelyWeb.Api.Goals.UpdateAccessLevels)
   end
 
+  namespace(:projects) do
+    mutation(:update_due_date, OperatelyWeb.Api.Projects.UpdateDueDate)
+    mutation(:update_start_date, OperatelyWeb.Api.Projects.UpdateStartDate)
+  end
+
   namespace(:spaces) do
     query(:search, OperatelyWeb.Api.Spaces.Search)
   end
