@@ -86,7 +86,8 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_key_resource_added",
     "project_key_resource_deleted",
     "project_start_date_updating",
-    "project_due_date_updating"
+    "project_due_date_updating",
+    "project_champion_updating"
   ]
 
   @task_actions [

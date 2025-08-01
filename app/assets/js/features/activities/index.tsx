@@ -64,6 +64,7 @@ const ActivityHandler: interfaces.ActivityHandler = {
 export default ActivityHandler;
 
 export const DISPLAYED_IN_FEED = [
+  "project_champion_updating",
   "project_due_date_updating",
   "project_start_date_updating",
   "goal_target_updating",
@@ -217,6 +218,7 @@ import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 import GoalChampionUpdating from "./GoalChampionUpdating";
 import GoalDueDateUpdating from "./GoalDueDateUpdating";
 import GoalReviewerUpdating from "./GoalReviewerUpdating";
+import ProjectChampionUpdating from "./ProjectChampionUpdating";
 import ProjectDueDateUpdating from "./ProjectDueDateUpdating";
 import ProjectStartDateUpdating from "./ProjectStartDateUpdating";
 
@@ -301,6 +303,7 @@ function handler(activity: Activity) {
     .with("goal_target_deleting", () => GoalTargetDeleting)
     .with("goal_target_updating", () => GoalTargetUpdating)
     .with("project_discussion_submitted", () => ProjectDiscussionSubmitted)
+    .with("project_champion_updating", () => ProjectChampionUpdating)
     .with("project_due_date_updating", () => ProjectDueDateUpdating)
     .with("project_start_date_updating", () => ProjectStartDateUpdating)
     .otherwise(() => {
