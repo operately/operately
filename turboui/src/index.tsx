@@ -20,6 +20,7 @@ export * from "./WorkMap";
 import RichContent from "./RichContent";
 
 export { InfoCallout } from "./Callouts";
+export { Checklist } from "./Checklist";
 export { DateField } from "./DateField";
 export { FormattedTime } from "./FormattedTime";
 export { GoalAddPage } from "./GoalAddForm";
