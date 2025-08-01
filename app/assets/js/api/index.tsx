@@ -574,6 +574,14 @@ export interface ActivityContentProjectReviewSubmitted {
   project?: Project | null;
 }
 
+export interface ActivityContentProjectReviewerUpdating {
+  company: Company;
+  space: Space;
+  project: Project;
+  oldReviewer: Person;
+  newReviewer: Person;
+}
+
 export interface ActivityContentProjectStartDateUpdating {
   company: Company;
   space: Space;
@@ -1703,6 +1711,7 @@ export type ActivityContent =
   | ActivityContentProjectDueDateUpdating
   | ActivityContentProjectStartDateUpdating
   | ActivityContentProjectChampionUpdating
+  | ActivityContentProjectReviewerUpdating
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
   | ActivityContentSpaceJoining
@@ -3385,6 +3394,15 @@ export interface ProjectsUpdateDueDateResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateReviewerInput {
+  projectId: Id;
+  reviewerId: Id | null;
+}
+
+export interface ProjectsUpdateReviewerResult {
+  success: boolean | null;
+}
+
 export interface ProjectsUpdateStartDateInput {
   projectId: Id;
   startDate: ContextualDate | null;
@@ -4378,6 +4396,10 @@ class ApiNamespaceProjects {
 
   async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
     return this.client.post("/projects/update_due_date", input);
+  }
+
+  async updateReviewer(input: ProjectsUpdateReviewerInput): Promise<ProjectsUpdateReviewerResult> {
+    return this.client.post("/projects/update_reviewer", input);
   }
 
   async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
@@ -6888,6 +6910,12 @@ export default {
     useUpdateStartDate: () =>
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
         defaultApiClient.apiNamespaceProjects.updateStartDate,
+      ),
+
+    updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
+    useUpdateReviewer: () =>
+      useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>(
+        defaultApiClient.apiNamespaceProjects.updateReviewer,
       ),
 
     updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
