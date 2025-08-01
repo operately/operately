@@ -77,6 +77,22 @@ defmodule OperatelyWeb.Api.Types do
     field :new_due_date, :date, null: true
   end
 
+  object :activity_content_project_due_date_updating do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :old_due_date, :date, null: true
+    field :new_due_date, :date, null: true
+  end
+
+  object :activity_content_project_start_date_updating do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :old_start_date, :date, null: true
+    field :new_start_date, :date, null: true
+  end
+
   object :activity_content_goal_reviewer_updating do
     field :company, :company
     field :space, :space
@@ -482,6 +498,8 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_review_acknowledged,
       :activity_content_project_review_commented,
       :activity_content_project_review_request_submitted,
+      :activity_content_project_due_date_updating,
+      :activity_content_project_start_date_updating,
       :activity_content_project_review_submitted,
       :activity_content_project_timeline_edited,
       :activity_content_space_joining,
