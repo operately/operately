@@ -60,6 +60,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_due_date, OperatelyWeb.Api.Projects.UpdateDueDate)
     mutation(:update_start_date, OperatelyWeb.Api.Projects.UpdateStartDate)
     mutation(:update_champion, OperatelyWeb.Api.Projects.UpdateChampion)
+    mutation(:update_reviewer, OperatelyWeb.Api.Projects.UpdateReviewer)
   end
 
   namespace(:spaces) do
