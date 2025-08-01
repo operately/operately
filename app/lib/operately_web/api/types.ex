@@ -1204,11 +1204,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :person do
-    field :id, :string, null: false
-    field :full_name, :string, null: false
-    field :title, :string, null: false
-    field :avatar_url, :string, null: true
-    field :email, :string, null: false
+    field :id, :string
+    field :full_name, :string
+    field :title, :string
+    field :avatar_url, :string
+    field :email, :string
 
     field? :timezone, :string, null: true
     field? :send_daily_summary, :boolean, null: true
