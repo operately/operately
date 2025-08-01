@@ -1124,7 +1124,7 @@ export interface Person {
   id: string;
   fullName: string;
   title: string;
-  avatarUrl: string | null;
+  avatarUrl: string;
   email: string;
   timezone?: string | null;
   sendDailySummary?: boolean | null;

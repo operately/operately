@@ -16,6 +16,7 @@ import { LastCheckIn } from "../LastCheckIn";
 import { NotificationToggle } from "../NotificationToggle";
 import { PersonField } from "../PersonField";
 import { Tooltip } from "../Tooltip";
+import { ProjectPage } from ".";
 
 export function OverviewSidebar(props: any) {
   return (
@@ -71,7 +72,7 @@ function ParentGoal(props: any) {
   );
 }
 
-function ProjectDates(props: any) {
+function ProjectDates(props: ProjectPage.State) {
   return (
     <div className="space-y-4">
       <SidebarSection title="Start date">
@@ -96,7 +97,7 @@ function ProjectDates(props: any) {
   );
 }
 
-function Champion(props: any) {
+function Champion(props: ProjectPage.State) {
   return (
     <SidebarSection
       title={
@@ -123,7 +124,7 @@ function Champion(props: any) {
         person={props.champion}
         setPerson={props.setChampion}
         readonly={!props.canEdit}
-        searchPeople={async () => []} // TODO: Add person search
+        searchPeople={props.championSearch}
         emptyStateMessage="Set champion"
         emptyStateReadOnlyMessage="No champion"
       />
@@ -131,7 +132,7 @@ function Champion(props: any) {
   );
 }
 
-function Reviewer(props: any) {
+function Reviewer(props: ProjectPage.State) {
   return (
     <SidebarSection
       title={
@@ -157,7 +158,7 @@ function Reviewer(props: any) {
         person={props.reviewer || null}
         setPerson={props.setReviewer || (() => {})}
         readonly={!props.canEdit}
-        searchPeople={async () => []} // TODO: Add person search
+        searchPeople={props.reviewerSearch}
         emptyStateMessage="Set reviewer"
         emptyStateReadOnlyMessage="No reviewer"
       />
