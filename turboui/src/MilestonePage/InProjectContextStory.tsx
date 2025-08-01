@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { MilestonePage } from "./index";
-import { genPeople } from "../utils/storybook/genPeople";
+import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { mockTasks, mockMilestones } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageNew } from "../Page";
@@ -105,6 +105,8 @@ export function InProjectContextStory() {
     searchPeople: mockSearchPeople,
     filters: filters,
     onFiltersChange: setFilters,
+    championSearch: searchPeopleFn,
+    reviewerSearch: searchPeopleFn
   };
 
   const tabs = useTabs("tasks", [
@@ -255,6 +257,8 @@ export function EmptyMilestoneInProjectContextStory() {
     searchPeople: mockSearchPeople,
     filters: filters,
     onFiltersChange: setFilters,
+    championSearch: searchPeopleFn,
+    reviewerSearch: searchPeopleFn
   };
 
   const tabs = useTabs("tasks", [
