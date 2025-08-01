@@ -6,7 +6,7 @@ import { createContextualDate } from "../DateField/mockData";
 import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
-import { genPeople } from "../utils/storybook/genPeople";
+import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { ProjectPage } from "./index";
 
 // Helper function to create rich text content for check-ins
@@ -281,6 +281,8 @@ export const Default: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },
@@ -349,6 +351,8 @@ export const ReadOnly: Story = {
         onResourceRemove={() => {}}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },
@@ -455,6 +459,8 @@ export const EmptyTasks: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },
@@ -552,6 +558,8 @@ export const EmptyProject: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={[]}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },
@@ -609,6 +617,8 @@ export const EmptyProjectReadOnly: Story = {
         onResourceRemove={() => {}}
         contributors={[]}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },
@@ -749,6 +759,8 @@ export const PausedProject: Story = {
         onResourceRemove={handleResourceRemove}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },
@@ -821,6 +833,8 @@ export const ClosedProject: Story = {
         onResourceRemove={() => {}}
         contributors={mockContributors}
         manageTeamLink="/projects/1/team"
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
       />
     );
   },

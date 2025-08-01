@@ -6,6 +6,7 @@ import { Paths } from "../../routes/paths";
 export type Person = api.Person;
 
 export { getPeople, getPerson, updateProfile, useGetMe, useGetPeople } from "@/api";
+export { usePersonFieldSearch } from "./usePersonFieldSearch";
 
 export type SearchScope =
   | { type: "company"; id?: undefined }
@@ -49,6 +50,20 @@ export function usePeopleSearch(scope: SearchScope) {
     });
     return res.people as Person[];
   };
+}
+
+export function parsePersonForTurboUi(paths: Paths, person: Person | null | undefined) {
+  if (!person) {
+    return null;
+  } else {
+    return {
+      id: person.id!,
+      fullName: person.fullName!,
+      title: person.title || "",
+      avatarUrl: person.avatarUrl || "",
+      profileLink: paths.profilePath(person.id!),
+    };
+  }
 }
 
 export function usePossibleManagersSearch(personId: string) {
