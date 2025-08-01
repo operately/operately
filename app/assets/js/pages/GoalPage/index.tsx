@@ -2,6 +2,7 @@ import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } fro
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
+import * as Companies from "@/models/companies";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
@@ -17,10 +18,11 @@ import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
+import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v24-GoalPage.goal-${id}`;
+  return `v26-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -29,6 +31,7 @@ type LoaderResult = {
     workMap: WorkMapItem[];
     checkIns: GoalProgressUpdate[];
     discussions: GoalDiscussion[];
+    company: Companies.Company;
   };
 
   cacheVersion: number;
@@ -55,6 +58,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
         discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
+        company: Companies.getCompany({ id: params.companyId! }).then((d) => d.company!),
       }),
   });
 }
@@ -62,7 +66,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
+  const { goal, workMap, checkIns, discussions, company } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -127,7 +131,7 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(goal);
   const spaceSearch = useSpaceSearch();
-  const checklists = useChecklists();
+  const checklists = useChecklists({ company: company });
 
   const deleteGoal = async () => {
     try {

@@ -1,3 +1,4 @@
+import * as Companies from "@/models/companies";
 import { Checklist } from "turboui";
 
 export interface Checklists {
@@ -11,9 +12,15 @@ export interface Checklists {
   updateIndex: Checklist.UpdateChecklistItemIndexFn;
 }
 
-export function useChecklists(): Checklists {
+interface UseChecklistsParams {
+  company: Companies.Company;
+}
+
+export function useChecklists(params: UseChecklistsParams): Checklists {
+  console.log(params.company);
+
   return {
-    enabled: false,
+    enabled: Companies.hasFeature(params.company, "checklists"),
     items: [],
 
     add: async function (_inputs): Promise<{ id: string; success: boolean }> {
