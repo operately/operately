@@ -9,13 +9,13 @@ import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
-import { DateField, ProjectPage, showErrorToast } from "turboui";
+import { ProjectPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
-import { parseContextualDate } from "../../models/contextualDates";
+import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -93,6 +93,18 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
+  const [dueDate, setDueDate] = usePageField({
+    value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualEndDate),
+    update: (v) => Api.projects.updateDueDate({ projectId: project.id, dueDate: serializeContextualDate(v) }),
+    onError: () => showErrorToast("Network Error", "Reverted the due date to its previous value."),
+  });
+
+  const [startedDate, setStartedDate] = usePageField({
+    value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualStartDate),
+    update: (v) => Api.projects.updateStartDate({ projectId: project.id, startDate: serializeContextualDate(v) }),
+    onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
+  });
+
   const spaceSearch = useSpaceSearch();
 
   const props: ProjectPage.Props = {
@@ -128,14 +140,10 @@ function Page() {
     reviewer: reviewer as ProjectPage.Person | null | undefined,
     setReviewer,
 
-    startedAt: parseContextualDate(project.timeframe?.contextualStartDate),
-    setStartedAt: (_date: DateField.ContextualDate | null) => {
-      // Simplified for now
-    },
-    dueAt: parseContextualDate(project.timeframe?.contextualEndDate),
-    setDueAt: (_date: DateField.ContextualDate | null) => {
-      // Simplified for now
-    },
+    startedAt: startedDate,
+    setStartedAt: setStartedDate,
+    dueAt: dueDate,
+    setDueAt: setDueDate,
 
     status: project.status as any,
     state: project.closedAt ? "closed" : project.status === "paused" ? "paused" : "active",

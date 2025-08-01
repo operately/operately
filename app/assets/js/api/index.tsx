@@ -474,6 +474,14 @@ export interface ActivityContentProjectDiscussionSubmitted {
   discussion?: CommentThread | null;
 }
 
+export interface ActivityContentProjectDueDateUpdating {
+  company: Company;
+  space: Space;
+  project: Project;
+  oldDueDate: string | null;
+  newDueDate: string | null;
+}
+
 export interface ActivityContentProjectGoalConnection {
   project?: Project | null;
   goal?: Goal | null;
@@ -556,6 +564,14 @@ export interface ActivityContentProjectReviewSubmitted {
   projectId?: string | null;
   reviewId?: string | null;
   project?: Project | null;
+}
+
+export interface ActivityContentProjectStartDateUpdating {
+  company: Company;
+  space: Space;
+  project: Project;
+  oldStartDate: string | null;
+  newStartDate: string | null;
 }
 
 export interface ActivityContentProjectTimelineEdited {
@@ -1676,6 +1692,8 @@ export type ActivityContent =
   | ActivityContentProjectReviewAcknowledged
   | ActivityContentProjectReviewCommented
   | ActivityContentProjectReviewRequestSubmitted
+  | ActivityContentProjectDueDateUpdating
+  | ActivityContentProjectStartDateUpdating
   | ActivityContentProjectReviewSubmitted
   | ActivityContentProjectTimelineEdited
   | ActivityContentSpaceJoining
@@ -3340,6 +3358,24 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectsUpdateDueDateInput {
+  projectId: Id;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectsUpdateDueDateResult {
+  success: boolean | null;
+}
+
+export interface ProjectsUpdateStartDateInput {
+  projectId: Id;
+  startDate: ContextualDate | null;
+}
+
+export interface ProjectsUpdateStartDateResult {
+  success: boolean | null;
+}
+
 export interface PublishDiscussionInput {
   id?: Id | null;
 }
@@ -4315,6 +4351,18 @@ class ApiNamespaceAi {
   }
 }
 
+class ApiNamespaceProjects {
+  constructor(private client: ApiClient) {}
+
+  async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
+    return this.client.post("/projects/update_due_date", input);
+  }
+
+  async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
+    return this.client.post("/projects/update_start_date", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -4323,6 +4371,7 @@ export class ApiClient {
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceAi: ApiNamespaceAi;
+  public apiNamespaceProjects: ApiNamespaceProjects;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
@@ -4330,6 +4379,7 @@ export class ApiClient {
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
+    this.apiNamespaceProjects = new ApiNamespaceProjects(this);
   }
 
   setBasePath(basePath: string) {
@@ -6801,6 +6851,21 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
         defaultApiClient.apiNamespaceAi.editAgentDailyRun,
+      ),
+  },
+
+  projects: {
+    updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
+    useUpdateDueDate: () =>
+      useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>(
+        defaultApiClient.apiNamespaceProjects.updateDueDate,
+      ),
+
+    updateStartDate: (input: ProjectsUpdateStartDateInput) =>
+      defaultApiClient.apiNamespaceProjects.updateStartDate(input),
+    useUpdateStartDate: () =>
+      useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
+        defaultApiClient.apiNamespaceProjects.updateStartDate,
       ),
   },
 };
