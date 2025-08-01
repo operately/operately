@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TaskPage } from "./index";
-import { genPeople } from "../utils/storybook/genPeople";
+import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
@@ -70,6 +70,8 @@ export function InProjectContextStory() {
     searchPeople: searchTaskPeople,
     filters: [],
     onFiltersChange: () => {},
+    championSearch: searchPeopleFn,
+    reviewerSearch: searchPeopleFn
   };
 
   // Show TaskPage within the Tasks tab - simulates navigating to a specific task
