@@ -83,7 +83,7 @@ function Page() {
 
   const [champion, setChampion] = usePageField({
     value: (data) => People.parsePersonForTurboUi(paths, data.project.champion),
-    update: (_v) => Promise.resolve(true), // Simplified for now
+    update: (v) => Api.projects.updateChampion({ projectId: project.id!, championId: v?.id ?? null }),
     onError: () => showErrorToast("Network Error", "Reverted the champion to its previous value."),
   });
 
