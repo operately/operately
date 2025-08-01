@@ -1,7 +1,8 @@
-import * as React from "react";
 import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
 import { PageModule } from "@/routes/types";
+import * as React from "react";
 
+import * as Companies from "@/models/companies";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
@@ -17,10 +18,11 @@ import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
+import { useChecklists } from "./useChecklists";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v24-GoalPage.goal-${id}`;
+  return `v26-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -29,6 +31,7 @@ type LoaderResult = {
     workMap: WorkMapItem[];
     checkIns: GoalProgressUpdate[];
     discussions: GoalDiscussion[];
+    company: Companies.Company;
   };
 
   cacheVersion: number;
@@ -55,6 +58,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
         discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
+        company: Companies.getCompany({ id: params.companyId! }).then((d) => d.company!),
       }),
   });
 }
@@ -62,7 +66,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
+  const { goal, workMap, checkIns, discussions, company } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -127,6 +131,7 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(goal);
   const spaceSearch = useSpaceSearch();
+  const checklists = useChecklists({ company: company });
 
   const deleteGoal = async () => {
     try {
@@ -182,15 +187,12 @@ function Page() {
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
-    checklistItems: [],
     checkIns: prepareCheckIns(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
     mentionedPersonLookup,
     peopleSearch,
-
-    checklistsEnabled: false,
 
     addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
       return Api.goals
@@ -259,30 +261,13 @@ function Page() {
         });
     },
 
-    addChecklistItem: async function (_inputs): Promise<{ id: string; success: boolean }> {
-      console.error("Checklist feature not implemented yet");
-      return { id: "", success: false };
-    },
-
-    deleteChecklistItem: async function (_id: string): Promise<boolean> {
-      console.error("Checklist feature not implemented yet");
-      return false;
-    },
-
-    updateChecklistItem: async function (_inputs): Promise<boolean> {
-      console.error("Checklist feature not implemented yet");
-      return false;
-    },
-
-    toggleChecklistItem: async function (_id: string, _completed: boolean): Promise<boolean> {
-      console.error("Checklist feature not implemented yet");
-      return false;
-    },
-
-    updateChecklistItemIndex: async function (_id: string, _index: number): Promise<boolean> {
-      console.error("Checklist feature not implemented yet");
-      return false;
-    },
+    checklistsEnabled: checklists.enabled,
+    checklistItems: checklists.items,
+    addChecklistItem: checklists.add,
+    deleteChecklistItem: checklists.delete,
+    updateChecklistItem: checklists.update,
+    toggleChecklistItem: checklists.toggle,
+    updateChecklistItemIndex: checklists.updateIndex,
 
     updateDescription: function (description: any | null): Promise<boolean> {
       return Api.goals
