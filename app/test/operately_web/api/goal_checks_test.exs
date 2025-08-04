@@ -75,7 +75,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       }
 
       assert {403, res} = mutation(ctx.conn, [:goals, :add_check], inputs)
-      assert res.message == "Forbidden"
+      assert res.message == "You don't have permission to perform this action"
     end
   end
 
@@ -143,7 +143,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       }
 
       assert {403, res} = mutation(ctx.conn, [:goals, :delete_check], inputs)
-      assert res.message == "Forbidden"
+      assert res.message == "You don't have permission to perform this action"
     end
   end
 
@@ -216,7 +216,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       }
 
       assert {403, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
-      assert res.message == "Forbidden"
+      assert res.message == "You don't have permission to perform this action"
     end
   end
 
@@ -303,7 +303,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       }
 
       assert {403, res} = mutation(ctx.conn, [:goals, :update_check_index], inputs)
-      assert res.message == "Forbidden"
+      assert res.message == "You don't have permission to perform this action"
     end
 
     defp check_order(goal_id) do
@@ -401,7 +401,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       }
 
       assert {403, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
-      assert res.message == "Forbidden"
+      assert res.message == "You don't have permission to perform this action"
     end
   end
 end

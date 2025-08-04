@@ -207,10 +207,10 @@ defmodule OperatelyWeb.Api.GoalChecks do
     def respond(result, ok_callback, error_callback \\ &handle_error/1) do
       case result do
         {:ok, changes} ->
-          ok_callback.(changes)
+          {:ok, ok_callback.(changes)}
 
         {:error, _, :idempotent, changes} ->
-          ok_callback.(changes)
+          {:ok, ok_callback.(changes)}
 
         e ->
           error_callback.(e)
