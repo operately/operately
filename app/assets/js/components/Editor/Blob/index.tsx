@@ -3,6 +3,7 @@ import { ReactNodeViewRenderer } from "@tiptap/react";
 
 import { DropFilePlugin } from "./DropFilePlugin";
 import { PasteFilePlugin } from "./PasteFilePlugin";
+import { PasteHtmlImagesPlugin } from "./PasteHtmlImagesPlugin";
 import { BlobView } from "./BlobView";
 
 export function isUploadInProgress(doc: any) {
@@ -67,7 +68,7 @@ const BlobExtension = Node.create({
   },
 
   addProseMirrorPlugins() {
-    return [PasteFilePlugin, DropFilePlugin];
+    return [PasteFilePlugin, PasteHtmlImagesPlugin, DropFilePlugin];
   },
 });
 
