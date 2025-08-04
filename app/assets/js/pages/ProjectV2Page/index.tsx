@@ -322,16 +322,16 @@ function prepareContributor(
   paths: Paths,
   contributor: Projects.ProjectContributor | null | undefined,
 ): ProjectPage.Person | null {
-  if (!contributor) {
+  if (!contributor?.person) {
     return null;
   }
 
   return {
-    id: contributor.id!,
-    fullName: contributor.person!.fullName!,
-    avatarUrl: contributor.person!.avatarUrl || "",
-    title: contributor.person!.title || "",
-    profileLink: paths.profilePath(contributor.id!),
+    id: contributor.id,
+    fullName: contributor.person.fullName,
+    avatarUrl: contributor.person.avatarUrl || "",
+    title: contributor.person.title || "",
+    profileLink: paths.profilePath(contributor.person.id),
   };
 }
 

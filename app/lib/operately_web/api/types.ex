@@ -1585,11 +1585,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project_contributor do
-    field? :id, :string, null: true
-    field? :responsibility, :string, null: true
-    field? :role, :string, null: true
+    field :id, :string
+    field :responsibility, :string, null: true
+    field :role, :string, null: true
     field? :person, :person, null: true
-    field? :access_level, :integer, null: true
+    field :access_level, :integer, null: true
     field? :project, :project, null: true
   end
 
