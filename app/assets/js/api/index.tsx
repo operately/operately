@@ -3122,6 +3122,16 @@ export interface EditSubscriptionsListInput {
 
 export interface EditSubscriptionsListResult {}
 
+export interface GoalsAddCheckInput {
+  goalId: Id;
+  name: string;
+}
+
+export interface GoalsAddCheckResult {
+  checkId: Id;
+  success: boolean;
+}
+
 export interface GoalsAddTargetInput {
   goalId: Id;
   name: string;
@@ -3135,6 +3145,15 @@ export interface GoalsAddTargetResult {
   success: boolean | null;
 }
 
+export interface GoalsDeleteCheckInput {
+  goalId: Id;
+  checkId: Id;
+}
+
+export interface GoalsDeleteCheckResult {
+  success: boolean;
+}
+
 export interface GoalsDeleteTargetInput {
   goalId: Id;
   targetId: Id;
@@ -3142,6 +3161,15 @@ export interface GoalsDeleteTargetInput {
 
 export interface GoalsDeleteTargetResult {
   success: boolean | null;
+}
+
+export interface GoalsToggleCheckInput {
+  goalId: Id;
+  checkId: Id;
+}
+
+export interface GoalsToggleCheckResult {
+  success: boolean;
 }
 
 export interface GoalsUpdateAccessLevelsInput {
@@ -3160,6 +3188,26 @@ export interface GoalsUpdateChampionInput {
 
 export interface GoalsUpdateChampionResult {
   success: boolean | null;
+}
+
+export interface GoalsUpdateCheckInput {
+  goalId: Id;
+  checkId: Id;
+  name: string;
+}
+
+export interface GoalsUpdateCheckResult {
+  success: boolean;
+}
+
+export interface GoalsUpdateCheckIndexInput {
+  goalId: Id;
+  checkId: Id;
+  index: number;
+}
+
+export interface GoalsUpdateCheckIndexResult {
+  success: boolean;
 }
 
 export interface GoalsUpdateDescriptionInput {
@@ -4270,12 +4318,24 @@ class ApiNamespaceGoals {
     return this.client.get("/goals/parent_goal_search", input);
   }
 
+  async addCheck(input: GoalsAddCheckInput): Promise<GoalsAddCheckResult> {
+    return this.client.post("/goals/add_check", input);
+  }
+
   async addTarget(input: GoalsAddTargetInput): Promise<GoalsAddTargetResult> {
     return this.client.post("/goals/add_target", input);
   }
 
+  async deleteCheck(input: GoalsDeleteCheckInput): Promise<GoalsDeleteCheckResult> {
+    return this.client.post("/goals/delete_check", input);
+  }
+
   async deleteTarget(input: GoalsDeleteTargetInput): Promise<GoalsDeleteTargetResult> {
     return this.client.post("/goals/delete_target", input);
+  }
+
+  async toggleCheck(input: GoalsToggleCheckInput): Promise<GoalsToggleCheckResult> {
+    return this.client.post("/goals/toggle_check", input);
   }
 
   async updateAccessLevels(input: GoalsUpdateAccessLevelsInput): Promise<GoalsUpdateAccessLevelsResult> {
@@ -4284,6 +4344,14 @@ class ApiNamespaceGoals {
 
   async updateChampion(input: GoalsUpdateChampionInput): Promise<GoalsUpdateChampionResult> {
     return this.client.post("/goals/update_champion", input);
+  }
+
+  async updateCheck(input: GoalsUpdateCheckInput): Promise<GoalsUpdateCheckResult> {
+    return this.client.post("/goals/update_check", input);
+  }
+
+  async updateCheckIndex(input: GoalsUpdateCheckIndexInput): Promise<GoalsUpdateCheckIndexResult> {
+    return this.client.post("/goals/update_check_index", input);
   }
 
   async updateDescription(input: GoalsUpdateDescriptionInput): Promise<GoalsUpdateDescriptionResult> {
@@ -6786,13 +6854,27 @@ export default {
     useUpdateTarget: () =>
       useMutation<GoalsUpdateTargetInput, GoalsUpdateTargetResult>(defaultApiClient.apiNamespaceGoals.updateTarget),
 
+    addCheck: (input: GoalsAddCheckInput) => defaultApiClient.apiNamespaceGoals.addCheck(input),
+    useAddCheck: () =>
+      useMutation<GoalsAddCheckInput, GoalsAddCheckResult>(defaultApiClient.apiNamespaceGoals.addCheck),
+
     deleteTarget: (input: GoalsDeleteTargetInput) => defaultApiClient.apiNamespaceGoals.deleteTarget(input),
     useDeleteTarget: () =>
       useMutation<GoalsDeleteTargetInput, GoalsDeleteTargetResult>(defaultApiClient.apiNamespaceGoals.deleteTarget),
 
+    updateCheckIndex: (input: GoalsUpdateCheckIndexInput) => defaultApiClient.apiNamespaceGoals.updateCheckIndex(input),
+    useUpdateCheckIndex: () =>
+      useMutation<GoalsUpdateCheckIndexInput, GoalsUpdateCheckIndexResult>(
+        defaultApiClient.apiNamespaceGoals.updateCheckIndex,
+      ),
+
     updateDueDate: (input: GoalsUpdateDueDateInput) => defaultApiClient.apiNamespaceGoals.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
+
+    updateCheck: (input: GoalsUpdateCheckInput) => defaultApiClient.apiNamespaceGoals.updateCheck(input),
+    useUpdateCheck: () =>
+      useMutation<GoalsUpdateCheckInput, GoalsUpdateCheckResult>(defaultApiClient.apiNamespaceGoals.updateCheck),
 
     updateDescription: (input: GoalsUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceGoals.updateDescription(input),
@@ -6805,12 +6887,20 @@ export default {
     useUpdateSpace: () =>
       useMutation<GoalsUpdateSpaceInput, GoalsUpdateSpaceResult>(defaultApiClient.apiNamespaceGoals.updateSpace),
 
+    toggleCheck: (input: GoalsToggleCheckInput) => defaultApiClient.apiNamespaceGoals.toggleCheck(input),
+    useToggleCheck: () =>
+      useMutation<GoalsToggleCheckInput, GoalsToggleCheckResult>(defaultApiClient.apiNamespaceGoals.toggleCheck),
+
     updateTargetValue: (input: GoalsUpdateTargetValueInput) =>
       defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
     useUpdateTargetValue: () =>
       useMutation<GoalsUpdateTargetValueInput, GoalsUpdateTargetValueResult>(
         defaultApiClient.apiNamespaceGoals.updateTargetValue,
       ),
+
+    deleteCheck: (input: GoalsDeleteCheckInput) => defaultApiClient.apiNamespaceGoals.deleteCheck(input),
+    useDeleteCheck: () =>
+      useMutation<GoalsDeleteCheckInput, GoalsDeleteCheckResult>(defaultApiClient.apiNamespaceGoals.deleteCheck),
 
     updateChampion: (input: GoalsUpdateChampionInput) => defaultApiClient.apiNamespaceGoals.updateChampion(input),
     useUpdateChampion: () =>
