@@ -4,7 +4,7 @@ import classNames from "../../utils/classnames";
 import { IconCircleDashed, IconCircleDot, IconCircleCheckFilled, IconX, IconChevronDown, IconCheck } from "../../icons";
 
 // Custom CircleCheck SVG component based on Linear's design
-// 
+//
 // Why custom instead of Tabler's IconCircleCheckFilled:
 // - Tabler icons have built-in whitespace within their 24x24 viewBox and use stroke-based design
 // - This makes the checkmark inside IconCircleCheckFilled very small and hard to see
@@ -34,6 +34,29 @@ const CustomCircleCheck = ({ size = 14, className = "" }: { size?: number; class
   </svg>
 );
 
+// Custom CircleX SVG component for canceled status
+// Similar to CustomCircleCheck but with an X instead of checkmark, in grey
+const CustomCircleX = ({ size = 14, className = "" }: { size?: number; className?: string }) => (
+  <svg
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    className={`${className} flex-shrink-0`}
+    role="img"
+    focusable="false"
+    aria-hidden="true"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ width: size, height: size }}
+  >
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM16.24 9.26C16.63 8.87 16.63 8.24 16.24 7.85C15.85 7.46 15.22 7.46 14.83 7.85L12 10.68L9.17 7.85C8.78 7.46 8.15 7.46 7.76 7.85C7.37 8.24 7.37 8.87 7.76 9.26L10.59 12.09L7.76 14.92C7.37 15.31 7.37 15.94 7.76 16.33C8.15 16.72 8.78 16.72 9.17 16.33L12 13.5L14.83 16.33C15.22 16.72 15.85 16.72 16.24 16.33C16.63 15.94 16.63 15.31 16.24 14.92L13.41 12.09L16.24 9.26Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
 // Import types from the shared types module
 import * as Types from "../types";
 
@@ -42,6 +65,7 @@ const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className
 const ColoredIconCircleCheckFilled = (props: any) => <CustomCircleCheck {...props} className="text-success" />;
 const ColoredIconCheck = (props: any) => <IconCheck {...props} className="text-success" />;
 const ColoredIconX = (props: any) => <IconX {...props} className="text-red-500" />;
+const ColoredIconCircleX = (props: any) => <CustomCircleX {...props} className="text-content-dimmed" />;
 
 // Map task status to labels and icons
 const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?: string; buttonColor?: string }> = {
@@ -58,7 +82,12 @@ const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?:
     color: "text-success",
     buttonColor: "text-success",
   },
-  canceled: { label: "Canceled", icon: ColoredIconX, color: "text-red-500", buttonColor: "text-red-500" },
+  canceled: {
+    label: "Canceled",
+    icon: ColoredIconCircleX,
+    color: "text-content-dimmed",
+    buttonColor: "text-content-dimmed",
+  },
 };
 
 interface StatusSelectorProps {
