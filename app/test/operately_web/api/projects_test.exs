@@ -216,6 +216,78 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "update parent goal" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{})
+    end
+
+    test "it requires edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:user)
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.log_in_person(:user)
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
+        project_id: Paths.project_id(ctx.project),
+        goal_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it sets the parent goal", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:parent_goal, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
+        project_id: Paths.project_id(ctx.project),
+        goal_id: Paths.goal_id(ctx.parent_goal)
+      })
+
+      updated_project = Repo.reload(ctx.project)
+      assert updated_project.goal_id == ctx.parent_goal.id
+    end
+
+    test "it clears the parent goal when goal_id is null", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:parent_goal, :engineering)
+        |> Factory.add_project(:project2, :engineering, goal: :parent_goal)
+        |> Factory.log_in_person(:creator)
+
+      assert ctx.project2.goal_id == ctx.parent_goal.id
+
+      assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
+        project_id: Paths.project_id(ctx.project2),
+        goal_id: nil
+      })
+
+      updated_project = Repo.reload(ctx.project2)
+      assert updated_project.goal_id == nil
+    end
+
+    test "it creates an activity", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:parent_goal, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      # Count activities before
+      before_count = count_activities(ctx.project.id, :project_goal_connection)
+
+      assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
+        project_id: Paths.project_id(ctx.project),
+        goal_id: Paths.goal_id(ctx.parent_goal)
+      })
+
+      # Count activities after
+      after_count = count_activities(ctx.project.id, :project_goal_connection)
+
+      assert after_count == before_count + 1
+    end
+  end
+
   describe "parent goal search" do
     test "it requires authentication", ctx do
       assert {401, _} = query(ctx.conn, [:projects, :parent_goal_search], %{})
