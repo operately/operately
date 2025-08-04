@@ -2385,6 +2385,15 @@ export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
 }
 
+export interface ProjectsParentGoalSearchInput {
+  query: string;
+  projectId: Id;
+}
+
+export interface ProjectsParentGoalSearchResult {
+  goals: Goal[];
+}
+
 export interface SearchPeopleInput {
   query?: string | null;
   ignoredIds?: string[] | null;
@@ -4255,6 +4264,30 @@ class ApiNamespaceSpaces {
   }
 }
 
+class ApiNamespaceProjects {
+  constructor(private client: ApiClient) {}
+
+  async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
+    return this.client.get("/projects/parent_goal_search", input);
+  }
+
+  async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
+    return this.client.post("/projects/update_champion", input);
+  }
+
+  async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
+    return this.client.post("/projects/update_due_date", input);
+  }
+
+  async updateReviewer(input: ProjectsUpdateReviewerInput): Promise<ProjectsUpdateReviewerResult> {
+    return this.client.post("/projects/update_reviewer", input);
+  }
+
+  async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
+    return this.client.post("/projects/update_start_date", input);
+  }
+}
+
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
@@ -4387,43 +4420,23 @@ class ApiNamespaceAi {
   }
 }
 
-class ApiNamespaceProjects {
-  constructor(private client: ApiClient) {}
-
-  async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
-    return this.client.post("/projects/update_champion", input);
-  }
-
-  async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
-    return this.client.post("/projects/update_due_date", input);
-  }
-
-  async updateReviewer(input: ProjectsUpdateReviewerInput): Promise<ProjectsUpdateReviewerResult> {
-    return this.client.post("/projects/update_reviewer", input);
-  }
-
-  async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
-    return this.client.post("/projects/update_start_date", input);
-  }
-}
-
 export class ApiClient {
   private basePath: string;
   private headers: any;
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
+  public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceAi: ApiNamespaceAi;
-  public apiNamespaceProjects: ApiNamespaceProjects;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
+    this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
-    this.apiNamespaceProjects = new ApiNamespaceProjects(this);
   }
 
   setBasePath(basePath: string) {
@@ -6741,6 +6754,38 @@ export default {
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
   },
 
+  projects: {
+    parentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
+      defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
+    useParentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
+      useQuery<ProjectsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceProjects.parentGoalSearch(input)),
+
+    updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
+    useUpdateDueDate: () =>
+      useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>(
+        defaultApiClient.apiNamespaceProjects.updateDueDate,
+      ),
+
+    updateStartDate: (input: ProjectsUpdateStartDateInput) =>
+      defaultApiClient.apiNamespaceProjects.updateStartDate(input),
+    useUpdateStartDate: () =>
+      useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
+        defaultApiClient.apiNamespaceProjects.updateStartDate,
+      ),
+
+    updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
+    useUpdateReviewer: () =>
+      useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>(
+        defaultApiClient.apiNamespaceProjects.updateReviewer,
+      ),
+
+    updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
+    useUpdateChampion: () =>
+      useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
+        defaultApiClient.apiNamespaceProjects.updateChampion,
+      ),
+  },
+
   goals: {
     parentGoalSearch: (input: GoalsParentGoalSearchInput) => defaultApiClient.apiNamespaceGoals.parentGoalSearch(input),
     useParentGoalSearch: (input: GoalsParentGoalSearchInput) =>
@@ -6895,33 +6940,6 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
         defaultApiClient.apiNamespaceAi.editAgentDailyRun,
-      ),
-  },
-
-  projects: {
-    updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
-    useUpdateDueDate: () =>
-      useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>(
-        defaultApiClient.apiNamespaceProjects.updateDueDate,
-      ),
-
-    updateStartDate: (input: ProjectsUpdateStartDateInput) =>
-      defaultApiClient.apiNamespaceProjects.updateStartDate(input),
-    useUpdateStartDate: () =>
-      useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
-        defaultApiClient.apiNamespaceProjects.updateStartDate,
-      ),
-
-    updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
-    useUpdateReviewer: () =>
-      useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>(
-        defaultApiClient.apiNamespaceProjects.updateReviewer,
-      ),
-
-    updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
-    useUpdateChampion: () =>
-      useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
-        defaultApiClient.apiNamespaceProjects.updateChampion,
       ),
   },
 };

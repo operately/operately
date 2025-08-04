@@ -19,6 +19,7 @@ import {
 } from "./mockData";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
+import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 
 const people = genPeople(5);
 
@@ -71,7 +72,10 @@ export function InProjectContextStory() {
     filters: [],
     onFiltersChange: () => {},
     championSearch: searchPeopleFn,
-    reviewerSearch: searchPeopleFn
+    reviewerSearch: searchPeopleFn,
+    setParentGoal: () => {},
+    parentGoal: null,
+    parentGoalSearch: parentGoalSearchFn,
   };
 
   // Show TaskPage within the Tasks tab - simulates navigating to a specific task

@@ -70,9 +70,9 @@ export namespace ProjectPage {
     setReviewer?: (person: Person | null) => void;
     reviewerSearch: SearchFn;
 
-    parentGoal?: ParentGoal | null;
-    setParentGoal?: (goal: ParentGoal | null) => void;
-    parentGoalSearch?: (params: { query: string }) => Promise<ParentGoal[]>;
+    parentGoal: ParentGoal | null;
+    setParentGoal: (goal: ParentGoal | null) => void;
+    parentGoalSearch: (params: { query: string }) => Promise<ParentGoal[]>;
 
     startedAt?: DateField.ContextualDate | null;
     setStartedAt?: (date: DateField.ContextualDate | null) => void;
