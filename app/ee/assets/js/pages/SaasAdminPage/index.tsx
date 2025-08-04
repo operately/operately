@@ -34,6 +34,7 @@ function CompanyList() {
   return (
     <div>
       <TableRow header>
+        <div>#</div>
         <div>Company</div>
         <div className="text-right">People</div>
         <div className="text-right">Spaces</div>
@@ -44,8 +45,9 @@ function CompanyList() {
         <div className="text-right">Created At</div>
       </TableRow>
 
-      {companies.map((company) => (
+      {companies.map((company, index) => (
         <TableRow key={company.id} linkTo={`/admin/companies/${company.id}`}>
+          <div>{index + 1}</div>
           <div>{company.name}</div>
           <div className="text-right">{company.peopleCount}</div>
           <div className="text-right">{company.spacesCount}</div>
@@ -87,7 +89,7 @@ function TableRow({ header, children, linkTo }: { header?: boolean; children: Re
     "cursor-pointer": !header,
   });
 
-  const style = { gridTemplateColumns: "4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr" };
+  const style = { gridTemplateColumns: "0.5fr 4fr 1fr 1fr 1fr 1fr 1fr 1.5fr 1.5fr" };
 
   if (linkTo) {
     return <DivLink to={linkTo} className={className} style={style} children={children} />;
