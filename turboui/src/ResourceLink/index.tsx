@@ -212,7 +212,7 @@ function EditResourceModal({
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           <div className="flex items-center gap-3">
             <IconLink size={20} className="text-content-base" />
-            <h2 className="text-xl font-semibold text-content-base">Edit project link</h2>
+            <h2 className="text-xl font-semibold text-content-base">Edit resource</h2>
           </div>
 
           <div className="space-y-4">
