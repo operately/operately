@@ -578,15 +578,16 @@ defmodule OperatelyWeb.Api.Goals do
             })
 
           true ->
-            contextual_start_date = if goal.timeframe.contextual_start_date do
-              Map.from_struct(goal.timeframe.contextual_start_date)
-            else
-              %{
-                date_type: :day,
-                value: Calendar.strftime(goal.timeframe.start_date, "%b %d, %Y"),
-                date: goal.timeframe.start_date
-              }
-            end
+            contextual_start_date =
+              if goal.timeframe.contextual_start_date do
+                Map.from_struct(goal.timeframe.contextual_start_date)
+              else
+                %{
+                  date_type: :day,
+                  value: Calendar.strftime(goal.timeframe.start_date, "%b %d, %Y"),
+                  date: goal.timeframe.start_date
+                }
+              end
 
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
