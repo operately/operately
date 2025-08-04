@@ -7,6 +7,7 @@ import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeop
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
 import { DateField } from "../DateField";
+import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -22,26 +23,6 @@ const addTarget = (): Promise<{ id: string; success: boolean }> =>
 
 const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
 const deleteGoal = (): Promise<void> => new Promise((resolve) => resolve());
-
-const parentGoalSearch = async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
-  return [
-    {
-      id: "1",
-      name: "Accelerate product growth",
-      link: "/goals/1",
-    },
-    {
-      id: "2",
-      name: "Improve customer satisfaction",
-      link: "/goals/2",
-    },
-    {
-      id: "3",
-      name: "Expand market reach",
-      link: "/goals/3",
-    },
-  ].filter((goal) => goal.name.toLowerCase().includes(query.toLowerCase()));
-};
 
 const spaceSearch = async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
   return [
@@ -160,7 +141,7 @@ function Component(props: Partial<GoalPage.Props>) {
       addSubprojectLink="#"
       parentGoal={parentGoal}
       setParentGoal={setParentGoal}
-      parentGoalSearch={parentGoalSearch}
+      parentGoalSearch={parentGoalSearchFn}
       champion={champion}
       setChampion={setChampion}
       reviewer={reviewer}

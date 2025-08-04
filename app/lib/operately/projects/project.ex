@@ -149,7 +149,8 @@ defmodule Operately.Projects.Project do
 
   # Scopes
 
-  import Ecto.Query, only: [from: 2]
+  import Operately.Access.Filters, only: [filter_by_view_access: 2]
+  import Ecto.Query, only: [from: 2, from: 1, where: 3, limit: 2, order_by: 3]
 
   def scope_company(query, company_id) do
     from p in query, where: p.company_id == ^company_id
@@ -195,6 +196,21 @@ defmodule Operately.Projects.Project do
   def order_by_name(query) do
     from p in query, order_by: [asc: p.name]
   end
+
+  def search_potential_parent_goals(project, requester, search_term) do
+    from(g in Operately.Goals.Goal)
+    |> where([g], g.company_id == ^project.company_id)
+    |> where([g], ilike(g.name, ^"%#{search_term}%"))
+    |> where([g], is_nil(g.closed_at))
+    |> filter_by_view_access(requester.id)
+    |> maybe_exclude_goal_by_id(project.goal_id)
+    |> order_by([g], asc: g.name)
+    |> limit(10)
+    |> Operately.Repo.all()
+  end
+
+  defp maybe_exclude_goal_by_id(q, nil), do: q
+  defp maybe_exclude_goal_by_id(q, goal_id), do: where(q, [g], g.id != ^goal_id)
 
   # After load hooks
 
