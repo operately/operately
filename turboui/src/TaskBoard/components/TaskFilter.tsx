@@ -8,12 +8,13 @@ import {
   IconCircle,
   IconCircleDashed,
   IconCircleDot,
-  IconCircleCheck,
   IconUser,
   IconCalendar,
   IconMessage,
   IconFlag,
   IconX,
+  IconCircleCheckCustom,
+  IconCircleXCustom,
 } from "../../icons";
 import classNames from "../../utils/classnames";
 import * as Types from "../types";
@@ -24,8 +25,8 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 const taskStatusConfig: Record<Types.Status, { label: string; icon: React.ReactNode; color?: string }> = {
   pending: { label: "Not started", icon: <IconCircleDashed size={14} />, color: "text-content-dimmed" },
   in_progress: { label: "In progress", icon: <IconCircleDot size={14} />, color: "text-brand-1" },
-  done: { label: "Done", icon: <IconCircleCheck size={14} />, color: "text-success" },
-  canceled: { label: "Canceled", icon: <IconX size={14} />, color: "text-red-500" },
+  done: { label: "Done", icon: <IconCircleCheckCustom size={14} />, color: "text-success" },
+  canceled: { label: "Canceled", icon: <IconCircleXCustom size={14} />, color: "text-content-dimmed" },
 };
 
 interface FilterOption {
@@ -492,7 +493,7 @@ export function TaskFilter({ filters, onFiltersChange, tasks }: TaskFilterProps)
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="bg-surface-base border border-surface-outline rounded-lg shadow-lg p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-semibold text-content-base mb-4">Search content</h3>
-            
+
             <input
               type="text"
               value={contentSearchTerm}
