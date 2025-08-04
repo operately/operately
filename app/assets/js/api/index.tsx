@@ -1216,11 +1216,11 @@ export interface ProjectCheckIn {
 }
 
 export interface ProjectContributor {
-  id?: string | null;
-  responsibility?: string | null;
-  role?: string | null;
+  id: string;
+  responsibility: string | null;
+  role: string | null;
   person?: Person | null;
-  accessLevel?: number | null;
+  accessLevel: number | null;
   project?: Project | null;
 }
 
