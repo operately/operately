@@ -17,27 +17,28 @@ type Story = StoryObj<typeof meta>;
 const mockResources: ResourceManager.Resource[] = [
   {
     id: "resource-1",
-    name: "Tasks",
+    name: "Tasks Spreadsheet",
     url: "https://docs.google.com/spreadsheets/d/1234567890",
-    type: "google_sheet",
   },
   {
     id: "resource-2", 
     name: "Issue description",
     url: "https://github.com/company/repo/issues/123",
-    type: "github",
   },
   {
     id: "resource-3",
     name: "Project Slack Channel",
     url: "https://company.slack.com/channels/project-redesign",
-    type: "slack",
   },
   {
     id: "resource-4",
     name: "Requirements Document",
     url: "https://docs.google.com/document/d/abc123",
-    type: "google_doc",
+  },
+  {
+    id: "resource-5",
+    name: "",
+    url: "https://example.com/unnamed-resource",
   },
 ];
 

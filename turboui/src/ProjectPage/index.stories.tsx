@@ -130,15 +130,18 @@ const mockCheckIns: ProjectPage.CheckIn[] = [
 const mockResources: ResourceManager.Resource[] = [
   {
     id: "resource-1",
-    name: "Tasks",
+    name: "Tasks Spreadsheet",
     url: "https://docs.google.com/spreadsheets/d/1234567890",
-    type: "google_sheet",
   },
   {
     id: "resource-2",
     name: "Issue description",
     url: "https://github.com/company/repo/issues/123",
-    type: "github",
+  },
+  {
+    id: "resource-3",
+    name: "Design Mockups",
+    url: "https://www.figma.com/file/abc123",
   },
 ];
 
