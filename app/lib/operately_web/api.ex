@@ -54,6 +54,12 @@ defmodule OperatelyWeb.Api do
     mutation(:update_champion, OperatelyWeb.Api.Goals.UpdateChampion)
     mutation(:update_reviewer, OperatelyWeb.Api.Goals.UpdateReviewer)
     mutation(:update_access_levels, OperatelyWeb.Api.Goals.UpdateAccessLevels)
+
+    mutation(:add_check, OperatelyWeb.Api.GoalChecks.Add)
+    mutation(:delete_check, OperatelyWeb.Api.GoalChecks.Delete)
+    mutation(:update_check, OperatelyWeb.Api.GoalChecks.Update)
+    mutation(:update_check_index, OperatelyWeb.Api.GoalChecks.UpdateIndex)
+    mutation(:toggle_check, OperatelyWeb.Api.GoalChecks.Toggle)
   end
 
   namespace(:projects) do
