@@ -93,6 +93,12 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the reviewer to its previous value."),
   });
 
+  const [parentGoal, setParentGoal] = usePageField({
+    value: (data: { project: Projects.Project }) => Goals.parseParentGoalForTurboUi(paths, data.project.goal),
+    update: (v) => Api.projects.updateParentGoal({ projectId: project.id, goalId: v && v.id }),
+    onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
+  });
+
   const [dueDate, setDueDate] = usePageField({
     value: (data: { project: Projects.Project }) => parseContextualDate(data.project.timeframe?.contextualEndDate),
     update: (v) => Api.projects.updateDueDate({ projectId: project.id, dueDate: serializeContextualDate(v) }),
@@ -147,8 +153,8 @@ function Page() {
     setSpace,
     spaceSearch,
 
-    parentGoal: Goals.parseParentGoalForTurboUi(paths, project.goal),
-    setParentGoal: (() => {}),
+    parentGoal,
+    setParentGoal,
     parentGoalSearch,
 
     champion: champion as ProjectPage.Person | null,

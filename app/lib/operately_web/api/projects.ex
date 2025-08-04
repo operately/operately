@@ -127,6 +127,37 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateParentGoal do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :goal_id, :id, null: true
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_goal)
+      |> Steps.update_parent_goal(inputs.goal_id)
+      |> Steps.save_activity(:project_goal_connection, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          goal_id: inputs.goal_id,
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule UpdateReviewer do
     use TurboConnect.Mutation
 
@@ -287,6 +318,12 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :goals, fn _repo, %{project: project, me: me} ->
         goals = Operately.Projects.Project.search_potential_parent_goals(project, me, search_term)
         {:ok, goals}
+      end)
+    end
+
+    def update_parent_goal(multi, goal_id) do
+      Ecto.Multi.update(multi, :updated_project, fn %{project: project} ->
+        Operately.Projects.Project.changeset(project, %{goal_id: goal_id})
       end)
     end
 
