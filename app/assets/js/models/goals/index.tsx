@@ -1,4 +1,5 @@
 import * as api from "@/api";
+import { Paths } from "@/routes/paths";
 
 export type Goal = api.Goal;
 export type Target = api.Target;
@@ -97,4 +98,12 @@ export function accessLevelsAsNumbers(levels: {
     company: accessLevelAsNumber(levels.company),
     space: accessLevelAsNumber(levels.space),
   };
+}
+
+export function parseParentGoalForTurboUi(paths: Paths, g: Goal | null | undefined) {
+  if (!g) {
+    return null;
+  } else {
+    return { id: g.id, link: paths.goalPath(g.id), name: g.name };
+  }
 }

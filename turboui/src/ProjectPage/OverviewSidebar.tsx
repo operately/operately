@@ -56,14 +56,14 @@ function LastCheckInSection(props: any) {
   );
 }
 
-function ParentGoal(props: any) {
+function ParentGoal(props: ProjectPage.State) {
   return (
     <SidebarSection title="Parent goal">
       <GoalField
         testId="parent-goal-field"
-        goal={props.parentGoal || null}
-        setGoal={props.setParentGoal || (() => {})}
-        searchGoals={props.parentGoalSearch || (async () => [])}
+        goal={props.parentGoal}
+        setGoal={props.setParentGoal}
+        searchGoals={props.parentGoalSearch}
         readonly={!props.canEdit}
         emptyStateMessage="Set parent goal"
         emptyStateReadOnlyMessage="No parent goal"

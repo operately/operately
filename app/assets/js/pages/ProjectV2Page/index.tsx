@@ -105,6 +105,7 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
+  const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
 
   const championSearch = People.usePersonFieldSearch({
@@ -146,6 +147,10 @@ function Page() {
     setSpace,
     spaceSearch,
 
+    parentGoal: Goals.parseParentGoalForTurboUi(paths, project.goal),
+    setParentGoal: (() => {}),
+    parentGoalSearch,
+
     champion: champion as ProjectPage.Person | null,
     setChampion,
     championSearch,
@@ -178,25 +183,12 @@ function Page() {
     contributors: prepareContributors(paths, project.contributors!),
     checkIns: prepareCheckIns(paths, checkIns),
     mentionedPersonLookup,
-    parentGoal: prepareParentGoal(paths, project.goal),
     resources: prepareResources(project.keyResources!),
 
     activityFeed: <ProjectFeedItems projectId={project.id!} />,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
-}
-
-function prepareParentGoal(paths: Paths, goal: Goals.Goal | null | undefined): ProjectPage.ParentGoal | null {
-  if (!goal) {
-    return null;
-  }
-
-  return {
-    id: goal.id!,
-    name: goal.name!,
-    link: paths.goalPath(goal.id!),
-  };
 }
 
 function prepareCheckIns(paths: Paths, checkIns: any[]): ProjectPage.CheckIn[] {
@@ -302,6 +294,17 @@ function useSpaceSearch(): ProjectPage.Props["spaceSearch"] {
       name: space.name!,
       link: paths.spacePath(space.id!),
     }));
+  };
+}
+
+function useParentGoalSearch(project: Projects.Project): ProjectPage.Props["parentGoalSearch"] {
+  const paths = usePaths();
+
+  return async ({ query }: { query: string }): Promise<ProjectPage.ParentGoal[]> => {
+    const data = await Api.projects.parentGoalSearch({ query: query.trim(), projectId: project.id });
+    const goals = data.goals.map((g) => Goals.parseParentGoalForTurboUi(paths, g));
+
+    return goals.filter((g) => g !== null).map((g) => g);
   };
 }
 

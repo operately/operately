@@ -8,7 +8,14 @@ import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { accessLevelsAsNumbers, accessLevelsAsStrings, getGoal, Goal, Target } from "@/models/goals";
+import {
+  accessLevelsAsNumbers,
+  accessLevelsAsStrings,
+  getGoal,
+  Goal,
+  parseParentGoalForTurboUi,
+  Target,
+} from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
 import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast } from "turboui";
@@ -112,7 +119,7 @@ function Page() {
   });
 
   const [parentGoal, setParentGoal] = usePageField({
-    value: (data) => prepareParentGoal(paths, data.goal.parentGoal),
+    value: (data) => parseParentGoalForTurboUi(paths, data.goal.parentGoal),
     update: (v) => Api.goals.updateParentGoal({ goalId: goal.id!, parentGoalId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
   });
@@ -302,14 +309,6 @@ function prepareCheckIns(paths: Paths, checkIns: GoalProgressUpdate[]): GoalPage
   });
 }
 
-function prepareParentGoal(paths: Paths, g: Goal | null | undefined): GoalPage.Props["parentGoal"] {
-  if (!g) {
-    return null;
-  } else {
-    return { id: g!.id!, link: paths.goalPath(g!.id!), name: g!.name! };
-  }
-}
-
 function prepareWorkMapData(items: WorkMapItem[]): GoalPage.Props["relatedWorkItems"] {
   return items.map((item) => {
     assertPresent(item.assignees);
@@ -456,7 +455,7 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
 
   return async ({ query }: { query: string }): Promise<GoalPage.ParentGoal[]> => {
     const data = await Api.goals.parentGoalSearch({ query: query.trim(), goalId: goal.id! });
-    const goals = data.goals.map((g) => prepareParentGoal(paths, g));
+    const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);
   };
