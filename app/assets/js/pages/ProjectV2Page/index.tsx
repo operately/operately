@@ -304,7 +304,7 @@ function useParentGoalSearch(project: Projects.Project): ProjectPage.Props["pare
     const data = await Api.projects.parentGoalSearch({ query: query.trim(), projectId: project.id });
     const goals = data.goals.map((g) => Goals.parseParentGoalForTurboUi(paths, g));
 
-    return goals.filter((g) => g !== null).map((g) => g);
+    return goals.map((g) => g!);
   };
 }
 
