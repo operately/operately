@@ -4,6 +4,32 @@ defmodule OperatelyWeb.Api.Projects do
   alias Operately.Access.Binding
   alias Operately.Projects.Contributor
   alias Operately.Repo
+  alias OperatelyWeb.Api.Serializer
+
+  defmodule ParentGoalSearch do
+    use TurboConnect.Query
+
+    inputs do
+      field :query, :string, null: false
+      field :project_id, :id, null: false
+    end
+
+    outputs do
+      field :goals, list_of(:goal), null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.find_potential_parent_goals(inputs.query)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{goals: Serializer.serialize(changes.goals, level: :essential)}
+      end)
+    end
+  end
 
   defmodule UpdateDueDate do
     use TurboConnect.Mutation
@@ -254,6 +280,13 @@ defmodule OperatelyWeb.Api.Projects do
           nil -> {:ok, nil}
           _ -> Operately.Access.bind_person(project.access_context, new_champion_id, Binding.full_access(), :champion)
         end
+      end)
+    end
+
+    def find_potential_parent_goals(multi, search_term) do
+      Ecto.Multi.run(multi, :goals, fn _repo, %{project: project, me: me} ->
+        goals = Operately.Projects.Project.search_potential_parent_goals(project, me, search_term)
+        {:ok, goals}
       end)
     end
 

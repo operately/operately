@@ -216,10 +216,63 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
-  defp count_activities(project_id, action) do
-    Operately.Activities.Activity
-    |> Operately.Repo.all(where: [action: action, resource_id: project_id])
-    |> length()
+  describe "parent goal search" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :parent_goal_search], %{})
+    end
+
+    test "it requires view permission", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:user)
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.log_in_person(:user)
+
+
+      assert {404, _} = query(ctx.conn, [:projects, :parent_goal_search], %{
+        project_id: Paths.project_id(ctx.project),
+        query: "test"
+      })
+    end
+
+    test "it returns goals matching the search query", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal1, :engineering, name: "Test Goal One")
+        |> Factory.add_goal(:goal2, :engineering, name: "Test Goal Two")
+        |> Factory.add_goal(:goal3, :engineering, name: "Another Goal")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :parent_goal_search], %{
+        project_id: Paths.project_id(ctx.project),
+        query: "test"
+      })
+
+      goal_ids = Enum.map(goals, & &1.id)
+
+      assert Paths.goal_id(ctx.goal1) in goal_ids
+      assert Paths.goal_id(ctx.goal2) in goal_ids
+      refute Paths.goal_id(ctx.goal3) in goal_ids
+    end
+
+    test "it excludes the project's current goal if it exists", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal1, :engineering, name: "Test Goal")
+        |> Factory.add_goal(:goal2, :engineering, name: "Test Goal")
+        |> Factory.add_project(:another_project, :engineering, goal: :goal1)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, %{goals: goals}} = query(ctx.conn, [:projects, :parent_goal_search], %{
+        project_id: Paths.project_id(ctx.another_project),
+        query: "test"
+      })
+
+      goal_ids = Enum.map(goals, & &1.id)
+
+      refute Paths.goal_id(ctx.goal1) in goal_ids
+      assert Paths.goal_id(ctx.goal2) in goal_ids
+    end
   end
 
   describe "update reviewer" do
@@ -280,5 +333,15 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       after_count = count_activities(ctx.project.id, "project_reviewer_updating")
       assert after_count == before_count + 1
     end
+  end
+
+  #
+  # Helpers
+  #
+
+  defp count_activities(project_id, action) do
+    Operately.Activities.Activity
+    |> Operately.Repo.all(where: [action: action, resource_id: project_id])
+    |> length()
   end
 end
