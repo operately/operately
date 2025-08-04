@@ -237,6 +237,14 @@ defmodule OperatelyWeb.Paths do
     OperatelyWeb.Api.Helpers.id_with_comments(name, id)
   end
 
+  def goal_check_id(check_id) when is_binary(check_id) do
+    Operately.ShortUuid.encode!(check_id)
+  end
+
+  def goal_check_id(%Operately.Goals.Check{id: id}) do
+    Operately.ShortUuid.encode!(id)
+  end
+
   def goal_discussion_id(%{id: id, title: title}) do
     id = Operately.ShortUuid.encode!(id)
     OperatelyWeb.Api.Helpers.id_with_comments(title, id)
@@ -398,5 +406,9 @@ defmodule OperatelyWeb.Paths do
     end
 
     "/" <> Enum.join(parts, "/")
+  end
+
+  def decode_id(id) when is_binary(id) do
+    Operately.ShortUuid.decode!(id)
   end
 end
