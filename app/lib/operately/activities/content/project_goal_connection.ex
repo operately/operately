@@ -11,7 +11,7 @@ defmodule Operately.Activities.Content.ProjectGoalConnection do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required(__schema__(:fields) -- [:goal_id])
   end
 
   def build(params) do
