@@ -9,6 +9,7 @@ import { PageHeader } from "../ProjectPage/PageHeader";
 import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
 import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 import { createContextualDate } from "../DateField/mockData";
+import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 
 const people = genPeople(5);
 
@@ -106,7 +107,10 @@ export function InProjectContextStory() {
     filters: filters,
     onFiltersChange: setFilters,
     championSearch: searchPeopleFn,
-    reviewerSearch: searchPeopleFn
+    reviewerSearch: searchPeopleFn,
+    setParentGoal: () => {},
+    parentGoal: null,
+    parentGoalSearch: parentGoalSearchFn,
   };
 
   const tabs = useTabs("tasks", [
@@ -258,7 +262,10 @@ export function EmptyMilestoneInProjectContextStory() {
     filters: filters,
     onFiltersChange: setFilters,
     championSearch: searchPeopleFn,
-    reviewerSearch: searchPeopleFn
+    reviewerSearch: searchPeopleFn,
+    setParentGoal: () => {},
+    parentGoal: null,
+    parentGoalSearch: parentGoalSearchFn,
   };
 
   const tabs = useTabs("tasks", [
