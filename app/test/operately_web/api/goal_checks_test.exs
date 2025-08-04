@@ -10,13 +10,13 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
   describe "add" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_checks, :add], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :add_check], %{})
     end
 
     test "it requires a goal_id and name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goal_checks, :add], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :add_check], %{})
       assert res.message == "Missing required fields: goal_id, name"
     end
 
@@ -24,7 +24,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       goal_id = Ecto.UUID.generate() |> Paths.goal_id()
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :add], %{goal_id: goal_id, name: "Test Check"})
+      assert {404, res} = mutation(ctx.conn, [:goals, :add_check], %{goal_id: goal_id, name: "Test Check"})
       assert res.message == "Goal not found"
     end
 
@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         name: "New Check"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :add], inputs)
+      assert {200, res} = mutation(ctx.conn, [:goals, :add_check], inputs)
       assert res.success == true
       assert res.check_id != nil
 
@@ -54,13 +54,13 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       # Add first check
       inputs1 = %{goal_id: Paths.goal_id(ctx.goal), name: "First Check"}
-      assert {200, res1} = mutation(ctx.conn, [:goal_checks, :add], inputs1)
+      assert {200, res1} = mutation(ctx.conn, [:goals, :add_check], inputs1)
       check1 = Repo.get(Operately.Goals.Check, Paths.decode_id(res1.check_id))
       assert check1.index == 1
 
       # Add second check
       inputs2 = %{goal_id: Paths.goal_id(ctx.goal), name: "Second Check"}
-      assert {200, res2} = mutation(ctx.conn, [:goal_checks, :add], inputs2)
+      assert {200, res2} = mutation(ctx.conn, [:goals, :add_check], inputs2)
       check2 = Repo.get(Operately.Goals.Check, Paths.decode_id(res2.check_id))
       assert check2.index == 2
     end
@@ -74,7 +74,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         name: "New Check"
       }
 
-      assert {403, res} = mutation(ctx.conn, [:goal_checks, :add], inputs)
+      assert {403, res} = mutation(ctx.conn, [:goals, :add_check], inputs)
       assert res.message == "Forbidden"
     end
   end
@@ -85,13 +85,13 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
     end
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_checks, :delete], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :delete_check], %{})
     end
 
     test "it requires a goal_id and check_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goal_checks, :delete], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :delete_check], %{})
       assert res.message == "Missing required fields: goal_id, check_id"
     end
 
@@ -103,7 +103,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :delete], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :delete_check], inputs)
       assert res.message == "Goal not found"
     end
 
@@ -115,7 +115,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Ecto.UUID.generate() |> Paths.goal_check_id()
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :delete], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :delete_check], inputs)
       assert res.message == "Check not found"
     end
 
@@ -127,7 +127,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :delete], inputs)
+      assert {200, res} = mutation(ctx.conn, [:goals, :delete_check], inputs)
       assert res.success == true
 
       assert Repo.get(Operately.Goals.Check, ctx.check.id) == nil
@@ -142,7 +142,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {403, res} = mutation(ctx.conn, [:goal_checks, :delete], inputs)
+      assert {403, res} = mutation(ctx.conn, [:goals, :delete_check], inputs)
       assert res.message == "Forbidden"
     end
   end
@@ -153,13 +153,13 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
     end
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_checks, :update], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_check], %{})
     end
 
     test "it requires a goal_id, check_id and name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goal_checks, :update], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_check], %{})
       assert res.message == "Missing required fields: goal_id, check_id, name"
     end
 
@@ -172,7 +172,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         name: "Updated Check"
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :update], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
       assert res.message == "Goal not found"
     end
 
@@ -185,7 +185,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         name: "Updated Check"
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :update], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
       assert res.message == "Check not found"
     end
 
@@ -198,7 +198,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         name: "Updated Check Name"
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :update], inputs)
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
       assert res.success == true
 
       check = Repo.get(Operately.Goals.Check, ctx.check.id)
@@ -215,7 +215,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         name: "Updated Check"
       }
 
-      assert {403, res} = mutation(ctx.conn, [:goal_checks, :update], inputs)
+      assert {403, res} = mutation(ctx.conn, [:goals, :update_check], inputs)
       assert res.message == "Forbidden"
     end
   end
@@ -235,13 +235,13 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
     end
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_checks, :update_index], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_check_index], %{})
     end
 
     test "it requires a goal_id, check_id and index", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goal_checks, :update_index], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_check_index], %{})
       assert res.message == "Missing required fields: goal_id, check_id, index"
     end
 
@@ -254,7 +254,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         index: 1
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :update_index], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_check_index], inputs)
       assert res.message == "Goal not found"
     end
 
@@ -267,7 +267,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         index: 1
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :update_index], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :update_check_index], inputs)
       assert res.message == "Check not found"
     end
 
@@ -277,17 +277,17 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(ctx.check3)}
 
       # moving check3 to the first position
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :update_index], Map.put(inputs, :index, 1))
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 1))
       assert res.success == true
       assert check_order(ctx.goal.id) == [ctx.check3.id, ctx.check1.id, ctx.check2.id]
 
       # moving check3 to the second position
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :update_index], Map.put(inputs, :index, 2))
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 2))
       assert res.success == true
       assert check_order(ctx.goal.id) == [ctx.check1.id, ctx.check3.id, ctx.check2.id]
 
       # moving check3 to the last position
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :update_index], Map.put(inputs, :index, 3))
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 3))
       assert res.success == true
       assert check_order(ctx.goal.id) == [ctx.check1.id, ctx.check2.id, ctx.check3.id]
     end
@@ -302,7 +302,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         index: 1
       }
 
-      assert {403, res} = mutation(ctx.conn, [:goal_checks, :update_index], inputs)
+      assert {403, res} = mutation(ctx.conn, [:goals, :update_check_index], inputs)
       assert res.message == "Forbidden"
     end
 
@@ -320,13 +320,13 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
     end
 
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:goal_checks, :toggle], %{})
+      assert {401, _} = mutation(ctx.conn, [:goals, :toggle_check], %{})
     end
 
     test "it requires a goal_id and check_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:goal_checks, :toggle], %{})
+      assert {400, res} = mutation(ctx.conn, [:goals, :toggle_check], %{})
       assert res.message == "Missing required fields: goal_id, check_id"
     end
 
@@ -338,7 +338,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :toggle], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
       assert res.message == "Goal not found"
     end
 
@@ -350,7 +350,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Ecto.UUID.generate() |> Paths.goal_check_id()
       }
 
-      assert {404, res} = mutation(ctx.conn, [:goal_checks, :toggle], inputs)
+      assert {404, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
       assert res.message == "Check not found"
     end
 
@@ -365,7 +365,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :toggle], inputs)
+      assert {200, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
       assert res.success == true
 
       check = Repo.get(Operately.Goals.Check, ctx.check.id)
@@ -384,7 +384,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {200, res} = mutation(ctx.conn, [:goal_checks, :toggle], inputs)
+      assert {200, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
       assert res.success == true
 
       check = Repo.get(Operately.Goals.Check, ctx.check.id)
@@ -400,7 +400,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
         check_id: Paths.goal_check_id(ctx.check)
       }
 
-      assert {403, res} = mutation(ctx.conn, [:goal_checks, :toggle], inputs)
+      assert {403, res} = mutation(ctx.conn, [:goals, :toggle_check], inputs)
       assert res.message == "Forbidden"
     end
   end

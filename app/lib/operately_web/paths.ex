@@ -407,4 +407,8 @@ defmodule OperatelyWeb.Paths do
 
     "/" <> Enum.join(parts, "/")
   end
+
+  def decode_id(id) when is_binary(id) do
+    Operately.ShortUuid.decode!(id)
+  end
 end
