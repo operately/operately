@@ -40,7 +40,7 @@ defmodule Operately.Projects.Project do
     field :deadline, :utc_datetime
 
     belongs_to :last_check_in, CheckIn, foreign_key: :last_check_in_id
-    field :last_check_in_status, Ecto.Enum, values: CheckIn.validate_status()
+    field :last_check_in_status, Ecto.Enum, values: CheckIn.valid_status()
     field :next_check_in_scheduled_at, :utc_datetime
 
     field :health, Ecto.Enum, values: [:on_track, :at_risk, :off_track, :paused, :unknown], default: :on_track
@@ -107,7 +107,7 @@ defmodule Operately.Projects.Project do
       project.success_status -> project.success_status
       project.status == "paused" -> :paused
       Operately.Projects.outdated?(project) -> :outdated
-      project.last_check_in -> project.last_check_in.status
+      project.last_check_in_status -> project.last_check_in_status
       true -> :pending
     end
   end
