@@ -288,7 +288,9 @@ function Subscribers(props: Props) {
 }
 
 function Checks(props: Props) {
-  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>([]);
+  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>(() => {
+    return props.goal.checklist!.map((item) => ({ ...item, mode: "view" as const }));
+  });
 
   if (items.length === 0) {
     return null;
