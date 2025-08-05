@@ -82,6 +82,31 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     end)
   end
 
+  #
+  # Updating a check
+  #
+
+  step :update_goal_check, ctx do
+    ctx
+    |> UI.hover(testid: UI.testid(["checklist-item", ctx.check.name]))
+    |> UI.click(testid: UI.testid(["checklist-item-menu", OperatelyWeb.Paths.goal_check_id(ctx.check)]))
+    |> UI.click(testid: "edit")
+    |> UI.fill(testid: "textfield", with: "Updated Check")
+    |> UI.click(testid: "save")
+    |> UI.sleep(300)
+  end
+
+  step :assert_goal_check_updated, ctx do
+    attempts(ctx, 5, fn ->
+      checks = Operately.Repo.preload(ctx.goal, :checks).checks
+      assert Enum.any?(checks, fn check -> check.name == "Updated Check" end)
+    end)
+  end
+
+  #
+  # Utility
+  #
+
   defp create_timeframe do
     alias Operately.ContextualDates.ContextualDate
 

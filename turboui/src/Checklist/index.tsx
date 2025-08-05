@@ -286,7 +286,7 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(item.id)} type="button">
             Cancel
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit">
+          <PrimaryButton size="xs" type="submit" testId="save">
             Save
           </PrimaryButton>
         </div>
