@@ -7,6 +7,7 @@ export type ChecklistItemState = Checklist.ChecklistItem & {
 
 export interface State {
   items: ChecklistItemState[];
+  togglable: boolean;
 
   addActive: boolean;
 
@@ -108,7 +109,7 @@ export function useChecklistState(props: Checklist.InternalProps): State {
       if (removed) {
         newItems.splice(indexInDropZone, 0, removed);
       }
-      
+
       // Update indices to match new positions
       return newItems.map((item, index) => ({ ...item, index }));
     });
@@ -132,6 +133,7 @@ export function useChecklistState(props: Checklist.InternalProps): State {
 
   return {
     items,
+    togglable: props.togglable ?? true,
     addActive,
     addItem,
     deleteItem,
