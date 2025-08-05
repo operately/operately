@@ -274,6 +274,14 @@ export interface ActivityContentGoalCheckRemoving {
   name: string;
 }
 
+export interface ActivityContentGoalCheckToggled {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  name: string;
+  completed: boolean;
+}
+
 export interface ActivityContentGoalClosing {
   successStatus: SuccessStatus;
   goal: Goal;

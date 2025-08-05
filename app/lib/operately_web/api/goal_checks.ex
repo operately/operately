@@ -134,6 +134,15 @@ defmodule OperatelyWeb.Api.GoalChecks do
       |> Steps.check_permissions(:can_edit)
       |> Steps.find_check(inputs.check_id)
       |> Steps.toggle_check()
+      |> Steps.save_activity(:goal_check_toggled, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          name: changes.updated_check.name,
+          completed: changes.updated_check.completed
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end

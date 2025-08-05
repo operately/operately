@@ -137,6 +137,18 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     end)
   end
 
+  step :assert_check_completed_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "marked a checklist item as completed", ctx.check.name)
+  end
+
+  step :assert_check_pending_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "marked a checklist item as pending", ctx.check.name)
+  end
+
   #
   # Utility
   #
