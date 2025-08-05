@@ -131,7 +131,7 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(goal);
   const spaceSearch = useSpaceSearch();
-  const checklists = useChecklists({ company: company });
+  const checklists = useChecklists({ company: company, goalId: goal.id! });
 
   const deleteGoal = async () => {
     try {
