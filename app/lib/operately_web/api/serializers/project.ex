@@ -4,7 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       id: OperatelyWeb.Paths.project_id(project),
       name: project.name,
       privacy: OperatelyWeb.Api.Serializer.serialize(project.privacy),
-      status: Operately.Projects.Project.status(project),
+      status: Operately.Projects.Project.status(project) |> Atom.to_string(),
       success_status: Atom.to_string(project.success_status),
       goal_id: project.goal_id && OperatelyWeb.Paths.goal_id(project.goal_id),
     }
@@ -35,7 +35,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       access_levels: OperatelyWeb.Api.Serializer.serialize(project.access_levels, level: :full),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(project.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(project.notifications),
-      state: Operately.Projects.Project.state(project),
+      state: Operately.Projects.Project.state(project) |> Atom.to_string(),
     })
   end
 
