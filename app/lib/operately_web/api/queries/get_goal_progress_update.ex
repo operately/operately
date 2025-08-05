@@ -14,6 +14,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
     field? :include_goal, :boolean, null: true
     field? :include_goal_space, :boolean, null: true
     field? :include_goal_targets, :boolean, null: true
+    field? :include_goal_checklist, :boolean, null: true
     field? :include_reviewer, :boolean, null: true
     field? :include_champion, :boolean, null: true
     field? :include_space_members, :boolean, null: true
