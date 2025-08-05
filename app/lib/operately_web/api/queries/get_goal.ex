@@ -22,6 +22,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field? :include_potential_subscribers, :boolean, null: true
     field? :include_unread_notifications, :boolean, null: true
     field? :include_retrospective, :boolean, null: true
+    field? :include_checklist, :boolean
   end
 
   outputs do
@@ -73,6 +74,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
       include_space_members: [group: [:members, :company]],
       include_potential_subscribers: [:reviewer, :champion, group: :members],
       include_last_check_in: [last_update: [:author, [reactions: :person]]],
+      include_checklist: [:checks],
       always_include: [targets: from(t in Target, order_by: t.index)],
       always_include: :parent_goal
     )

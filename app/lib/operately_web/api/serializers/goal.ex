@@ -39,7 +39,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Goal do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(goal.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(goal.notifications),
       next_update_scheduled_at: OperatelyWeb.Api.Serializer.serialize(goal.next_update_scheduled_at),
-      retrospective: OperatelyWeb.Api.Serializer.serialize(goal.retrospective, level: :essential)
+      retrospective: OperatelyWeb.Api.Serializer.serialize(goal.retrospective, level: :essential),
+      checklist: OperatelyWeb.Api.Serializer.serialize(goal.checks, level: :essential)
     })
   end
 
