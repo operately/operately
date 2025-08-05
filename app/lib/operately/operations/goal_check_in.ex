@@ -26,7 +26,7 @@ defmodule Operately.Operations.GoalCheckIn do
     |> SubscriptionList.update(:update)
     |> update_goal(goal, attrs)
     |> update_targets(targets, attrs.target_values)
-    |> update_checklist(checklist)
+    |> update_checklist(goal, checklist)
     |> record_activity(author, goal)
     |> Repo.transaction()
     |> Repo.extract_result(:update)
@@ -54,13 +54,15 @@ defmodule Operately.Operations.GoalCheckIn do
     end)
   end
 
-  defp update_checklist(multi, checklist) do
+  defp update_checklist(multi, goal, checklist) do
+    checks = Operately.Repo.preload(goal, :checks).checks
+
     Enum.reduce(checklist, multi, fn item, multi ->
-      check = Operately.Repo.one(Operately.Goals.Check, item.id)
+      check = Enum.find(checks, fn check -> check.id == item.id end)
 
       if check do
         changeset = Operately.Goals.Check.changeset(check, %{completed: item.completed, index: item.index})
-        Multi.insert(multi, {:check, item.id}, changeset)
+        Multi.update(multi, "update-check-#{check.id}", changeset)
       else
         multi
       end
