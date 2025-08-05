@@ -31,7 +31,8 @@ defmodule Operately.Goals do
     "goal_target_deleting",
     "goal_target_updating",
     "goal_check_adding",
-    "goal_check_removing"
+    "goal_check_removing",
+    "goal_check_toggled"
   ]
 
   def goal_actions, do: @goal_actions

@@ -30,6 +30,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :integer, null: true
   end
 
+  object :activity_content_goal_check_toggled do
+    field :company, :company
+    field :space, :space
+    field :goal, :goal
+    field :name, :string
+    field :completed, :boolean
+  end
+
   object :activity_content_goal_check_removing do
     field :company, :company
     field :space, :space

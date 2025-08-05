@@ -45,5 +45,7 @@ defmodule Operately.Features.GoalChecksTest do
     |> Steps.assert_check_completed()
     |> Steps.toggle_goal_check()
     |> Steps.assert_check_pending()
+    |> Steps.assert_check_completed_feed_posted()
+    |> Steps.assert_check_pending_feed_posted()
   end
 end
