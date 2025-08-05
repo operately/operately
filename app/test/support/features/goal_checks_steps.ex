@@ -59,6 +59,29 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     end)
   end
 
+  #
+  # Deleting a goal check
+  #
+
+  step :given_a_check_exists, ctx do
+    ctx |> Factory.add_goal_check(:check, :goal, name: "Check to Delete")
+  end
+
+  step :delete_goal_check, ctx do
+    ctx
+    |> UI.hover(testid: UI.testid(["checklist-item", ctx.check.name]))
+    |> UI.click(testid: UI.testid(["checklist-item-menu", OperatelyWeb.Paths.goal_check_id(ctx.check)]))
+    |> UI.click(testid: "delete")
+    |> UI.sleep(300)
+  end
+
+  step :assert_goal_check_deleted, ctx do
+    attempts(ctx, 5, fn ->
+      checks = Operately.Repo.preload(ctx.goal, :checks).checks
+      refute Enum.any?(checks, fn check -> check.name == "Check to Delete" end)
+    end)
+  end
+
   defp create_timeframe do
     alias Operately.ContextualDates.ContextualDate
 

@@ -19,13 +19,13 @@ defmodule Operately.Features.GoalChecksTest do
     |> Steps.assert_goal_check_added()
   end
 
-  # feature "deleting a goal check", ctx do
-  #   ctx
-  #   |> Steps.given_a_check_exists()
-  #   |> Steps.visit_goal_page()
-  #   |> Steps.delete_goal_check()
-  #   |> Steps.assert_goal_check_deleted()
-  # end
+  feature "deleting a goal check", ctx do
+    ctx
+    |> Steps.given_a_check_exists()
+    |> Steps.visit_goal_page()
+    |> Steps.delete_goal_check()
+    |> Steps.assert_goal_check_deleted()
+  end
 
   # feature "updating a goal check", ctx do
   #   ctx
