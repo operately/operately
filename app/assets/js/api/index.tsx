@@ -234,6 +234,13 @@ export interface ActivityContentGoalChampionUpdating {
   newChampion: Person;
 }
 
+export interface ActivityContentGoalCheckAdding {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  name: string;
+}
+
 export interface ActivityContentGoalCheckIn {
   goalId?: string | null;
   goal?: Goal | null;
@@ -1996,6 +2003,7 @@ export interface GetGoalProgressUpdateInput {
   includeGoal?: boolean | null;
   includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
+  includeGoalChecklist?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
   includeSpaceMembers?: boolean | null;
@@ -3010,6 +3018,7 @@ export interface EditGoalProgressUpdateInput {
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
+  checklist?: GoalCheck[];
 }
 
 export interface EditGoalProgressUpdateResult {
