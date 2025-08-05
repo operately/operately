@@ -48,14 +48,17 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
   end
 
   defp load(ctx, inputs) do
-    Update.get(ctx.me, id: ctx.id, opts: [
-      preload: preload(inputs),
-      after_load: after_load(inputs, ctx.me),
-    ])
+    Update.get(ctx.me,
+      id: ctx.id,
+      opts: [
+        preload: preload(inputs),
+        after_load: after_load(inputs, ctx.me)
+      ]
+    )
   end
 
   defp preload(inputs) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_author: :author,
       include_acknowledged_by: :acknowledged_by,
       include_reactions: [reactions: :person],
@@ -66,15 +69,15 @@ defmodule OperatelyWeb.Api.Queries.GetGoalProgressUpdate do
       include_reviewer: [goal: :reviewer],
       include_space_members: [goal: [group: [:members, :company]]],
       include_subscriptions_list: :subscription_list,
-      include_potential_subscribers: [:access_context, goal: [:champion, :reviewer, group: :members]],
-    ])
+      include_potential_subscribers: [:access_context, goal: [:champion, :reviewer, group: :members]]
+    )
   end
 
   defp after_load(inputs, me) do
-    Inputs.parse_includes(inputs, [
+    Inputs.parse_includes(inputs,
       include_potential_subscribers: &Update.set_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(me),
       include_permissions: &Update.preload_permissions/1
-    ])
+    )
   end
 end

@@ -23,6 +23,7 @@ defmodule Operately.Goals.Update do
     field :acknowledged_at, :utc_datetime
     belongs_to :acknowledged_by, Operately.People.Person, foreign_key: :acknowledged_by_id
     embeds_many :targets, Operately.Goals.Update.Target, on_replace: :delete
+    embeds_many :checks, Operately.Goals.Update.Check, on_replace: :delete
 
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
