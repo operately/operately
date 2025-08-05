@@ -1,0 +1,51 @@
+defmodule Operately.Support.Features.GoalChecksSteps do
+  use Operately.FeatureCase
+
+  step :setup, ctx do
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:product)
+    |> Factory.add_space_member(:champion, :product)
+    |> Factory.add_space_member(:reviewer, :product)
+    |> Factory.add_goal(:parent_goal, :product)
+    |> Factory.add_goal(:goal, :product,
+      name: "Improve support first response time",
+      champion: :champion,
+      reviewer: :reviewer,
+      timeframe: create_timeframe(),
+      parent_goal: :parent_goal
+    )
+    |> Factory.log_in_person(:champion)
+    |> Factory.enable_feature("checklists")
+  end
+
+  #
+  # Listing existing goal checks
+  #
+
+  step :given_goal_has_multiple_checks, ctx do
+    ctx
+    |> Factory.add_goal_check(:check1, :goal, name: "Check 1")
+    |> Factory.add_goal_check(:check2, :goal, name: "Check 2")
+    |> Factory.add_goal_check(:check3, :goal, name: "Check 3")
+  end
+
+  step :visit_goal_page, ctx do
+    UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :assert_goal_checks_listed, ctx do
+    UI.assert_text(ctx, "Check 1")
+    UI.assert_text(ctx, "Check 2")
+    UI.assert_text(ctx, "Check 3")
+  end
+
+  defp create_timeframe do
+    alias Operately.ContextualDates.ContextualDate
+
+    %{
+      contextual_start_date: Operately.Time.days_ago(10) |> ContextualDate.create_day_date(),
+      contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date()
+    }
+  end
+end
