@@ -44,7 +44,7 @@ export function useForm(props: EditProps | NewProps) {
       dueDate: parseContextualDate(timeframe?.contextualEndDate),
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
-      checklist: mode === "edit" ? props.update.checklist : props.goal.checklist || [],
+      checklist: mode === "edit" ? sortByIndex(props.update.checklist || []) : sortByIndex(props.goal.checklist || []),
     },
     cancel: () => {
       if (mode === "new") {
@@ -92,4 +92,8 @@ export function useForm(props: EditProps | NewProps) {
   });
 
   return form;
+}
+
+function sortByIndex(items: any[]) {
+  return [...items].sort((a, b) => (a.index ?? 0) - (b.index ?? 0));
 }
