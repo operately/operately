@@ -56,5 +56,5 @@ defmodule Operately.Projects.CheckIn do
     %{check_in | potential_subscribers: subs}
   end
 
-  def validate_status, do: @valid_statuses
+  def valid_status, do: @valid_statuses
 end
