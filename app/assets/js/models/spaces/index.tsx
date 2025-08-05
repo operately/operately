@@ -1,6 +1,6 @@
 import Api, * as api from "@/api";
 import { SpaceField } from "turboui/src/SpaceField";
-import { usePaths } from "../../routes/paths";
+import { Paths, usePaths } from "../../routes/paths";
 
 export {
   listSpaceTools,
@@ -36,5 +36,13 @@ export function useSpaceSearch(): SpaceField.SearchSpaceFn {
       name: space.name!,
       link: paths.spacePath(space.id!),
     }));
+  };
+}
+
+export function parseSpaceForTurboUI(paths: Paths, space: api.Space) {
+  return {
+    id: space.id,
+    name: space.name,
+    link: paths.spacePath(space.id),
   };
 }

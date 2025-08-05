@@ -16,6 +16,7 @@ import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
+import { parseSpaceForTurboUI } from "@/models/spaces";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -76,7 +77,7 @@ function Page() {
   });
 
   const [space, setSpace] = usePageField({
-    value: (data) => prepareSpace(paths, data.project.space),
+    value: (data) => parseSpaceForTurboUI(paths, data.project.space),
     update: (v) => Api.moveProjectToSpace({ projectId: project.id, spaceId: v.id }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
@@ -211,14 +212,6 @@ function prepareCheckIns(paths: Paths, checkIns: any[]): ProjectPage.CheckIn[] {
       status: checkIn.status!,
     };
   });
-}
-
-function prepareSpace(paths: Paths, space: any): ProjectPage.Space {
-  return {
-    id: space.id!,
-    name: space.name!,
-    link: paths.spacePath(space.id!),
-  };
 }
 
 function ProjectFeedItems({ projectId }: { projectId: string }) {

@@ -1,4 +1,4 @@
-import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
+import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective } from "@/api";
 import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
@@ -27,6 +27,7 @@ import { fetchAll } from "../../utils/async";
 
 import { Paths, usePaths } from "@/routes/paths";
 import { useChecklists } from "./useChecklists";
+import { parseSpaceForTurboUI } from "@/models/spaces";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
@@ -98,7 +99,7 @@ function Page() {
   });
 
   const [space, setSpace] = usePageField({
-    value: (data) => prepareSpace(paths, data.goal.space),
+    value: (data) => parseSpaceForTurboUI(paths, data.goal.space),
     update: (v) => Api.goals.updateSpace({ goalId: goal.id!, spaceId: v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
@@ -461,14 +462,6 @@ function useParentGoalSearch(goal: Goal): GoalPage.Props["parentGoalSearch"] {
     const goals = data.goals.map((g) => parseParentGoalForTurboUi(paths, g));
 
     return goals.map((g) => g!);
-  };
-}
-
-function prepareSpace(paths: Paths, space: Space): GoalPage.Space {
-  return {
-    id: space.id!,
-    name: space.name!,
-    link: paths.spacePath(space.id!),
   };
 }
 
