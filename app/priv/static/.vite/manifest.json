@@ -1,15 +1,15 @@
 {
-  "_vendor-Bfq3Zftu.js": {
-    "file": "assets/vendor-Bfq3Zftu.js",
+  "_vendor-BB-18C4m.js": {
+    "file": "assets/vendor-BB-18C4m.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-DFmn01xg.js",
+    "file": "assets/app-BcPab-69.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-Bfq3Zftu.js"
+      "_vendor-BB-18C4m.js"
     ]
   }
 }

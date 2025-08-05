@@ -46,12 +46,14 @@ export namespace Checklist {
 
     sectionTitle?: string;
     sectionTitleBottomMargin?: string;
+    togglable?: boolean;
   }
 
   export interface InternalProps {
     items: ChecklistItem[];
 
     showEditButton?: boolean;
+    togglable?: boolean;
 
     addActive?: boolean;
     onAddActiveChange?: (active: boolean) => void;
@@ -69,8 +71,10 @@ export function Checklist(props: Checklist.Props) {
   const completedCount = props.items.filter((item) => item.completed).length;
   const totalCount = props.items.length;
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
   const sectionTitle = props.sectionTitle || "Checklist";
   const sectionTitlBottomMargin = props.sectionTitleBottomMargin || "mb-3";
+  const togglable = props.togglable ?? true;
 
   return (
     <div>
@@ -80,6 +84,7 @@ export function Checklist(props: Checklist.Props) {
         completedCount={completedCount}
         totalCount={totalCount}
         canEdit={props.canEdit}
+        togglable={togglable}
         addActive={addActive}
         onAddClick={() => setAddActive(true)}
       />
@@ -98,6 +103,7 @@ export function Checklist(props: Checklist.Props) {
         <ChecklistInternal
           items={props.items}
           showEditButton={props.canEdit}
+          togglable={togglable}
           addActive={addActive}
           onAddActiveChange={setAddActive}
           addItem={props.addItem}
@@ -116,6 +122,7 @@ function ChecklistSectionHeader({
   completedCount,
   totalCount,
   canEdit,
+  togglable,
   addActive,
   onAddClick,
   title,
@@ -124,6 +131,7 @@ function ChecklistSectionHeader({
   completedCount: number;
   totalCount: number;
   canEdit: boolean;
+  togglable: boolean;
   addActive: boolean;
   onAddClick: () => void;
   title: string;
@@ -140,7 +148,7 @@ function ChecklistSectionHeader({
             </span>
           </div>
         )}
-        {canEdit && !addActive && (
+        {canEdit && !addActive && togglable && (
           <SecondaryButton size="xxs" onClick={onAddClick} testId="add-checklist-item">
             Add
           </SecondaryButton>
@@ -153,8 +161,10 @@ function ChecklistSectionHeader({
 function ChecklistInternal(props: Checklist.InternalProps) {
   const state = useChecklistState(props);
 
+  const handleDrop = state.togglable ? state.reorder : () => false;
+
   return (
-    <DragAndDropProvider onDrop={state.reorder}>
+    <DragAndDropProvider onDrop={handleDrop}>
       <ChecklistItemList state={state} />
     </DragAndDropProvider>
   );
@@ -329,7 +339,9 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
 
   const handleCheckboxChange = (e: React.MouseEvent) => {
     e.stopPropagation();
-    state.toggleItem(item.id, !item.completed);
+    if (state.togglable) {
+      state.toggleItem(item.id, !item.completed);
+    }
   };
 
   const undraggedStyle = itemStyle(item.id);
@@ -338,23 +350,28 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
   const dragGripClass = classNames(
     "absolute -left-5 mt-0.5 text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
     {
-      "cursor-grab": !isDragging,
-      "cursor-grabbing": isDragging,
-      "opacity-100": isDragging,
+      "cursor-grab": !isDragging && state.togglable,
+      "cursor-grabbing": isDragging && state.togglable,
+      "opacity-100": isDragging && state.togglable,
+      hidden: !state.togglable,
     },
   );
 
+  const groupClass = classNames("group relative flex items-start gap-2 rounded", {
+    "hover:bg-surface-highlight transition-colors": state.togglable,
+  });
+
   return (
     <div
-      className="group relative flex items-start gap-2 rounded hover:bg-surface-highlight transition-colors"
+      className={groupClass}
       ref={ref}
       style={isDragging ? draggedStyle : undraggedStyle}
       data-test-id={createTestId("checklist-item", item.name)}
     >
       <IconGripVertical size={16} className={dragGripClass} />
-      <ChecklistItemCheckbox item={item} onClick={handleCheckboxChange} />
+      <ChecklistItemCheckbox item={item} onClick={handleCheckboxChange} togglable={state.togglable} />
       <ChecklistItemName item={item} />
-      {item.editButtonVisible && (
+      {item.editButtonVisible && state.togglable && (
         <ChecklistItemEditButton state={state} item={item} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
       )}
     </div>
@@ -372,14 +389,25 @@ function ChecklistItemName({ item }: { item: ChecklistItemState }) {
 function ChecklistItemCheckbox({
   item,
   onClick,
+  togglable = true,
 }: {
   item: ChecklistItemState;
   onClick: (e: React.MouseEvent) => void;
+  togglable?: boolean;
 }) {
+  const buttonClassName = classNames(
+    "w-5 h-5 mt-0.5 border border-surface-outline rounded flex items-center justify-center flex-shrink-0",
+    {
+      "hover:bg-surface-base transition-colors cursor-pointer": togglable,
+      "opacity-50": !togglable,
+    },
+  );
+
   return (
     <button
       onClick={onClick}
-      className="w-5 h-5 mt-0.5 border border-surface-outline rounded flex items-center justify-center hover:bg-surface-base transition-colors flex-shrink-0"
+      className={buttonClassName}
+      disabled={!togglable}
       data-test-id={createTestId("checkbox", item.name)}
     >
       {item.completed && (
