@@ -20,6 +20,14 @@ defmodule OperatelyWeb.Api.GoalChecks do
       |> Steps.find_goal(inputs.goal_id)
       |> Steps.check_permissions(:can_edit)
       |> Steps.add_check(inputs.name)
+      |> Steps.save_activity(:goal_check_adding, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          name: changes.added_check.name
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn changes -> %{success: true, check_id: OperatelyWeb.Paths.goal_check_id(changes.added_check.id)} end)
     end
@@ -243,6 +251,12 @@ defmodule OperatelyWeb.Api.GoalChecks do
       |> Operately.Repo.preload(:checks)
       |> Map.get(:checks, [])
       |> Enum.count()
+    end
+
+    def save_activity(multi, activity_type, callback) do
+      Ecto.Multi.merge(multi, fn changes ->
+        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ -> callback.(changes) end)
+      end)
     end
   end
 end
