@@ -52,6 +52,14 @@ defmodule OperatelyWeb.Api.GoalChecks do
       |> Steps.check_permissions(:can_edit)
       |> Steps.find_check(inputs.check_id)
       |> Steps.delete_check()
+      |> Steps.save_activity(:goal_check_removing, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          name: changes.deleted_check.name
+        }
+      end)
       |> Steps.commit()
       |> Steps.respond(fn _ -> %{success: true} end)
     end

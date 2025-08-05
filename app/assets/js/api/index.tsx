@@ -267,6 +267,13 @@ export interface ActivityContentGoalCheckInEdit {
   checkInId?: string | null;
 }
 
+export interface ActivityContentGoalCheckRemoving {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  name: string;
+}
+
 export interface ActivityContentGoalClosing {
   successStatus: SuccessStatus;
   goal: Goal;
@@ -3018,7 +3025,7 @@ export interface EditGoalProgressUpdateInput {
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
-  checklist?: GoalCheck[];
+  checklist?: GoalCheckUpdate[];
 }
 
 export interface EditGoalProgressUpdateResult {
