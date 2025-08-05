@@ -1,6 +1,8 @@
 import * as Time from "@/utils/time";
 import { Milestone, MilestoneComment } from "@/api";
 import { DateField } from "turboui";
+import { Paths } from "@/routes/paths";
+import { parseContextualDate } from "../contextualDates";
 
 export type { Milestone, MilestoneComment };
 export {
@@ -14,6 +16,18 @@ export {
 export interface ParsedMilestone extends Pick<Milestone, "id" | "title" | "description"> {
   deletable: boolean;
   deadline: DateField.ContextualDate | null;
+}
+
+export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
+  return milestones.map((m) => {
+    return {
+      id: m.id!,
+      name: m.title,
+      status: m.status,
+      dueDate: parseContextualDate(m.timeframe?.contextualEndDate),
+      link: paths.projectMilestonePath(m.id!),
+    };
+  });
 }
 
 export function filterPending(milestones: Milestone[]) {

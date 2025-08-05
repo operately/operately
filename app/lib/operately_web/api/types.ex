@@ -1369,14 +1369,16 @@ defmodule OperatelyWeb.Api.Types do
     field? :goal, :goal, null: true
   end
 
+  enum(:milestone_status, values: Operately.Projects.Milestone.valid_status())
+
   object :milestone do
     field :id, :string
     field? :project, :project, null: true
     field :title, :string
-    field? :status, :string, null: true
-    field? :inserted_at, :date, null: true
+    field :status, :milestone_status
+    field :inserted_at, :date
     field :timeframe, :timeframe, null: true
-    field? :completed_at, :date, null: true
+    field :completed_at, :date
     field? :description, :string, null: true
     field? :comments, list_of(:milestone_comment), null: true
     field? :tasks_kanban_state, :string, null: true

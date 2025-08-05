@@ -1116,10 +1116,10 @@ export interface Milestone {
   id: string;
   project?: Project | null;
   title: string;
-  status?: string | null;
-  insertedAt?: string | null;
+  status: MilestoneStatus;
+  insertedAt: string;
   timeframe: Timeframe | null;
-  completedAt?: string | null;
+  completedAt: string;
   description?: string | null;
   comments?: MilestoneComment[] | null;
   tasksKanbanState?: string | null;
@@ -1776,6 +1776,8 @@ export type GoalStatus =
   | "off_track"
   | "pending"
   | "outdated";
+
+export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 

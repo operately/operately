@@ -2,6 +2,8 @@ defmodule Operately.Projects.Milestone do
   use Operately.Schema
   use Operately.Repo.Getter
 
+  @valid_statuses [:pending, :done]
+
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
     has_one :access_context, through: [:project, :access_context]
@@ -9,7 +11,7 @@ defmodule Operately.Projects.Milestone do
     has_many :tasks, Operately.Tasks.Task
 
     field :title, :string
-    field :status, Ecto.Enum, values: [:pending, :done], default: :pending
+    field :status, Ecto.Enum, values: @valid_statuses, default: :pending
     field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control], default: :concept
 
     #
@@ -56,6 +58,8 @@ defmodule Operately.Projects.Milestone do
     |> changeset(%{status: :done, completed_at: DateTime.utc_now()})
     |> Operately.Repo.update()
   end
+
+  def valid_status, do: @valid_statuses
 
   #
   # After load hooks
