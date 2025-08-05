@@ -1,13 +1,28 @@
 import React from "react";
-import { GoalPage } from ".";
 import { PrimaryButton, SecondaryButton } from "../Button";
 
 import Modal from "../Modal";
 import { SpaceField } from "../SpaceField";
 
-export function MoveModal(props: GoalPage.State) {
+namespace MoveModal {
+  export interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
+  export interface Props {
+    isMoveModalOpen: boolean;
+    closeMoveModal: () => void;
+    space: Space;
+    setSpace: (space: Space) => void;
+    spaceSearch: (params: { query: string }) => Promise<Space[]>;
+  }
+}
+
+export function MoveModal(props: MoveModal.Props) {
   const [isMoving, setIsMoving] = React.useState(false);
-  const [selectedSpace, setSelectedSpace] = React.useState<GoalPage.Space | null>(props.space);
+  const [selectedSpace, setSelectedSpace] = React.useState<MoveModal.Space | null>(props.space);
 
   React.useEffect(() => setSelectedSpace(props.space), [props.space]);
 

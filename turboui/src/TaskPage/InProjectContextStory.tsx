@@ -20,6 +20,7 @@ import {
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
+import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 
 const people = genPeople(5);
 
@@ -35,10 +36,14 @@ export function InProjectContextStory() {
     ),
   );
   const [taskStatus, setTaskStatus] = useState<TaskBoardTypes.Status>("in_progress");
-  const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>(createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"));
+  const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>(
+    createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
+  );
   const [taskAssignees, setTaskAssignees] = useState<TaskPage.Person[]>([mockTaskPeople[1]!]);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [space, setSpace] = useState({ id: "1", name: "Product", link: "#" });
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
 
   // Mock project state for header
   const mockProjectState = {
@@ -47,9 +52,9 @@ export function InProjectContextStory() {
     projectName: "Mobile App Redesign",
     description:
       "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
-    space: { id: "1", name: "Product", link: "#" },
-    setSpace: () => {},
-    spaceSearch: async () => [],
+    space,
+    setSpace,
+    spaceSearch: spaceSearchFn,
     champion: people[0] || null,
     setChampion: () => {},
     status: "on_track" as const,
@@ -77,6 +82,9 @@ export function InProjectContextStory() {
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
     contributors: [],
+    isMoveModalOpen,
+    openMoveModal: () => setIsMoveModalOpen(true),
+    closeMoveModal: () => setIsMoveModalOpen(false),
   };
 
   // Show TaskPage within the Tasks tab - simulates navigating to a specific task

@@ -212,7 +212,7 @@ function NotificationSection(_props: any) {
   );
 }
 
-function Actions(props: any) {
+function Actions(props: ProjectPage.State) {
   const actions = [
     {
       type: "action" as const,
@@ -223,7 +223,7 @@ function Actions(props: any) {
     {
       type: "action" as const,
       label: "Move to another space",
-      onClick: () => console.log("Move to another space"),
+      onClick: props.openMoveModal,
       icon: IconCircleArrowRight,
       hidden: !props.canEdit,
     },
