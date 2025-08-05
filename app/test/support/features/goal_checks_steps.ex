@@ -64,7 +64,7 @@ defmodule Operately.Support.Features.GoalChecksSteps do
   #
 
   step :given_a_check_exists, ctx do
-    ctx |> Factory.add_goal_check(:check, :goal, name: "Check to Delete")
+    ctx |> Factory.add_goal_check(:check, :goal, name: "Check 1")
   end
 
   step :delete_goal_check, ctx do
@@ -100,6 +100,28 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     attempts(ctx, 5, fn ->
       checks = Operately.Repo.preload(ctx.goal, :checks).checks
       assert Enum.any?(checks, fn check -> check.name == "Updated Check" end)
+    end)
+  end
+
+  #
+  # Toggling a check
+  #
+
+  step :toggle_goal_check, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["checkbox", ctx.check.name]))
+    |> UI.sleep(300)
+  end
+
+  step :assert_check_completed, ctx do
+    attempts(ctx, 5, fn ->
+      assert Factory.reload(ctx, :check).check.completed
+    end)
+  end
+
+  step :assert_check_pending, ctx do
+    attempts(ctx, 5, fn ->
+      refute Factory.reload(ctx, :check).check.completed
     end)
   end
 
