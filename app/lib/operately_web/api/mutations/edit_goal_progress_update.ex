@@ -13,7 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     field? :status, :string, null: true
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
-    field? :checklist, list_of(:goal_check)
+    field? :checklist, list_of(:goal_check_update)
   end
 
   outputs do

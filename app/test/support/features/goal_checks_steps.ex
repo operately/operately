@@ -88,6 +88,12 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     end)
   end
 
+  step :assert_check_removing_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "removed a checklist item", "Check to Delete")
+  end
+
   #
   # Updating a check
   #
