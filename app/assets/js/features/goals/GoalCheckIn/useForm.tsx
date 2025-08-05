@@ -62,7 +62,11 @@ export function useForm(props: EditProps | NewProps) {
         content: JSON.stringify(form.values.description),
         newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
         dueDate: serializeContextualDate(form.values.dueDate),
-        // checklist: form.values.checklist!.map((item) => ({ id: item.id, completed: item.completed })),
+        checklist: form.values.checklist!.map((item) => ({
+          id: item.id,
+          completed: item.completed,
+          index: item.index,
+        })),
       };
 
       if (mode === "new") {
