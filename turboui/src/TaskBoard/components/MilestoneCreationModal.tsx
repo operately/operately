@@ -54,6 +54,7 @@ export function MilestoneCreationModal({
       name: name.trim(),
       hasDescription: false,
       hasComments: false,
+      status: "pending",
     };
     
     // Add optional fields if they exist

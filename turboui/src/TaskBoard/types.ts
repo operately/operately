@@ -32,7 +32,7 @@ export interface Milestone {
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
-  status?: string;
+  status: "pending" | "done";
   link?: string;
 }
 

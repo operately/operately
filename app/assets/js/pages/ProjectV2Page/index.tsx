@@ -17,6 +17,7 @@ import { fetchAll } from "../../utils/async";
 import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { parseSpaceForTurboUI } from "@/models/spaces";
+import { parseMilestonesForTurboUi } from "@/models/milestones";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -187,7 +188,7 @@ function Page() {
 
     // TaskBoard props - simplified for fast implementation
     tasks: [],
-    milestones: prepareMilestones(paths, project.milestones!),
+    milestones: parseMilestonesForTurboUi(paths, project.milestones!),
     contributors: prepareContributors(paths, project.contributors!),
     checkIns: prepareCheckIns(paths, checkIns),
     mentionedPersonLookup,
@@ -327,18 +328,6 @@ function prepareContributor(
     title: contributor.person.title || "",
     profileLink: paths.profilePath(contributor.person.id),
   };
-}
-
-function prepareMilestones(paths: Paths, milestones: Projects.Milestone[]): ProjectPage.Milestone[] {
-  return milestones.map((m) => {
-    return {
-      id: m.id!,
-      name: m.title,
-      status: m.status as any,
-      dueDate: parseContextualDate(m.timeframe?.contextualEndDate),
-      link: paths.projectMilestonePath(m.id!),
-    };
-  });
 }
 
 function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {

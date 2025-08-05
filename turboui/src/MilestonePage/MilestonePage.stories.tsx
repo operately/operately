@@ -32,7 +32,7 @@ const sampleMilestone: Types.Milestone = {
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
-  status: "active", // Add initial status
+  status: "pending", // Add initial status
 };
 
 // Create a set of tasks for the milestone
@@ -217,7 +217,7 @@ export const EmptyMilestone: Story = {
       name: "New Initiative Planning",
       hasDescription: true,
       hasComments: false,
-      status: "active", // Add initial status
+      status: "pending", // Add initial status
     });
     const [isSubscribed, setIsSubscribed] = useState(true);
 

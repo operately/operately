@@ -788,7 +788,7 @@ export const ClosedProject: Story = {
     // All milestones completed for closed project
     const completedMilestones = Object.values(mockMilestones).map((milestone) => ({
       ...milestone,
-      status: "completed" as const,
+      status: "done" as const,
     }));
     const [milestones] = useState<TaskBoardTypes.Milestone[]>(completedMilestones);
     const [parentGoal] = useState<ProjectPage.ParentGoal | null>({

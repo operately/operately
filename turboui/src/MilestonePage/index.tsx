@@ -221,8 +221,8 @@ export function MilestonePage({
                     trimBeforeSave
                   />
                   <StatusBadge
-                    status={milestone.status === "completed" ? "completed" : "in_progress"}
-                    customLabel={milestone.status === "completed" ? undefined : "Active"}
+                    status={milestone.status === "done" ? "completed" : "in_progress"}
+                    customLabel={milestone.status === "done" ? undefined : "Active"}
                     hideIcon={true}
                   />
                 </div>
@@ -455,7 +455,7 @@ function SidebarStatus({
   canEdit: boolean;
 }) {
   // Assume milestone has a status field (you may need to add this to Types.Milestone)
-  const isCompleted = milestone.status === "completed";
+  const isCompleted = milestone.status === "done";
 
   const handleStatusToggle = () => {
     if (onMilestoneUpdate) {

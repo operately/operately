@@ -97,7 +97,7 @@ export namespace ProjectPage {
 
     // TaskBoard props
     tasks: TaskBoardTypes.Task[];
-    milestones?: Milestone[];
+    milestones: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
     onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
     onMilestoneCreate?: (milestone: Omit<TaskBoardTypes.Milestone, "id">) => void;
