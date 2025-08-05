@@ -45,6 +45,7 @@ export namespace Checklist {
     updateItemIndex: UpdateChecklistItemIndexFn;
 
     sectionTitle?: string;
+    sectionTitleBottomMargin?: string;
   }
 
   export interface InternalProps {
@@ -69,6 +70,7 @@ export function Checklist(props: Checklist.Props) {
   const totalCount = props.items.length;
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
   const sectionTitle = props.sectionTitle || "Checklist";
+  const sectionTitlBottomMargin = props.sectionTitleBottomMargin || "mb-3";
 
   return (
     <div>
@@ -92,7 +94,7 @@ export function Checklist(props: Checklist.Props) {
         </div>
       )}
 
-      <div className="mt-3">
+      <div className={sectionTitlBottomMargin}>
         <ChecklistInternal
           items={props.items}
           showEditButton={props.canEdit}

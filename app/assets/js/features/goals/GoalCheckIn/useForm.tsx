@@ -2,8 +2,8 @@ import { Update, useEditGoalProgressUpdate, usePostGoalProgressUpdate } from "@/
 import { Goal } from "@/models/goals";
 import { useNavigate } from "react-router-dom";
 
-import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as Pages from "@/components/Pages";
+import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 
 import Forms from "@/components/Forms";
 import { emptyContent } from "@/components/RichContent";
@@ -44,6 +44,7 @@ export function useForm(props: EditProps | NewProps) {
       dueDate: parseContextualDate(timeframe?.contextualEndDate),
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
+      checklist: goal.checklist,
     },
     cancel: () => {
       if (mode === "new") {
@@ -60,7 +61,8 @@ export function useForm(props: EditProps | NewProps) {
         status: form.values.status!,
         content: JSON.stringify(form.values.description),
         newTargetValues: JSON.stringify(form.values.targets!.map((t) => ({ id: t.id, value: t.value }))),
-        dueDate: serializeContextualDate(form.values.dueDate)
+        dueDate: serializeContextualDate(form.values.dueDate),
+        // checklist: form.values.checklist!.map((item) => ({ id: item.id, completed: item.completed })),
       };
 
       if (mode === "new") {

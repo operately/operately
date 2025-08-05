@@ -287,10 +287,8 @@ function Subscribers(props: Props) {
   );
 }
 
-function Checks(props: Props) {
-  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>(() => {
-    return props.goal.checklist!.map((item) => ({ ...item, mode: "view" as const }));
-  });
+function Checks() {
+  const [items, setItems] = Forms.useFieldValue<Goals.Check[]>("checklist");
 
   if (items.length === 0) {
     return null;
@@ -301,22 +299,33 @@ function Checks(props: Props) {
     return Promise.resolve({} as any);
   };
 
-  const toggle = async (item: Checklist.ChecklistItem) => {
-    const updatedItems = items.map((i) => (i.id === item.id ? { ...i, completed: !i.completed } : i));
-
+  const toggle = async (id: string) => {
+    const updatedItems = items.map((i) => (i.id === id ? { ...i, completed: !i.completed } : i));
     setItems(updatedItems);
-    return Promise.resolve({} as any);
+    return true;
+  };
+
+  const updateItemIndex = async (id: string, newIndex: number) => {
+    const updatedItems = [...items];
+    const itemIndex = updatedItems.findIndex((i) => i.id === id);
+    if (itemIndex === -1) return false;
+    const [item] = updatedItems.splice(itemIndex, 1);
+    if (item) {
+      updatedItems.splice(newIndex, 0, item);
+    }
+    setItems(updatedItems);
+    return true;
   };
 
   return (
     <Checklist
-      items={items}
+      items={items.map((item) => ({ ...item, mode: "view" as const }))}
       canEdit={false}
       addItem={noOp}
       deleteItem={noOp}
       updateItem={noOp}
       toggleItem={toggle}
-      updateItemIndex={noOp}
+      updateItemIndex={updateItemIndex}
       sectionTitle="Update Checklist"
     />
   );
