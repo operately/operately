@@ -10,6 +10,7 @@ import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck }
 import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 import { createContextualDate } from "../DateField/mockData";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
+import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 
 const people = genPeople(5);
 
@@ -30,7 +31,11 @@ const emptyMilestone: TaskBoardTypes.Milestone = {
 // Filter tasks for this milestone
 const milestoneTasks = mockTasks.filter((task) => task.milestone?.id === targetMilestone.id);
 
-
+const defaultSpace = {
+  id: "1",
+  name: "Product",
+  link: "#",
+}
 
 /**
  * Full Project Context - Shows MilestonePage within a ProjectPage-like structure
@@ -40,6 +45,8 @@ export function InProjectContextStory() {
   const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [space, setSpace] = useState(defaultSpace);
 
   const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
     console.log("Task status change:", taskId, newStatus);
@@ -82,8 +89,8 @@ export function InProjectContextStory() {
     projectName: "Mobile App Redesign",
     description:
       "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
-    space: { id: "1", name: "Product", link: "#" },
-    setSpace: () => {},
+    space,
+    setSpace,
     spaceSearch: async () => [],
     champion: people[0] || null,
     setChampion: () => {},
@@ -112,6 +119,10 @@ export function InProjectContextStory() {
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
     contributors: [],
+    isMoveModalOpen,
+    openMoveModal: () => setIsMoveModalOpen(true),
+    closeMoveModal: () => setIsMoveModalOpen(false),
+    searchSpace: spaceSearchFn,
   };
 
   const tabs = useTabs("tasks", [
@@ -196,6 +207,8 @@ export function EmptyMilestoneInProjectContextStory() {
   const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([emptyMilestone]);
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [space, setSpace] = useState(defaultSpace);
 
   const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
     console.log("Task status change:", taskId, newStatus);
@@ -238,9 +251,9 @@ export function EmptyMilestoneInProjectContextStory() {
     projectName: "Mobile App Redesign",
     description:
       "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
-    space: { id: "1", name: "Product", link: "#" },
-    setSpace: () => {},
-    spaceSearch: async () => [],
+    space,
+    setSpace,
+    spaceSearch: spaceSearchFn,
     champion: people[0] || null,
     setChampion: () => {},
     status: "on_track" as const,
@@ -268,6 +281,9 @@ export function EmptyMilestoneInProjectContextStory() {
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
     contributors: [],
+    isMoveModalOpen,
+    openMoveModal: () => setIsMoveModalOpen(true),
+    closeMoveModal: () => setIsMoveModalOpen(false),
   };
 
   const tabs = useTabs("tasks", [

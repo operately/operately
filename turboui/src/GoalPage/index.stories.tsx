@@ -8,6 +8,7 @@ import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
 import { DateField } from "../DateField";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
+import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -23,14 +24,6 @@ const addTarget = (): Promise<{ id: string; success: boolean }> =>
 
 const deleteTarget = (): Promise<boolean> => new Promise((resolve) => resolve(true));
 const deleteGoal = (): Promise<void> => new Promise((resolve) => resolve());
-
-const spaceSearch = async ({ query }: { query: string }): Promise<GoalPage.Space[]> => {
-  return [
-    { id: "1", name: "Product Development", link: "/spaces/1" },
-    { id: "2", name: "Marketing", link: "/spaces/2" },
-    { id: "3", name: "Engineering", link: "/spaces/3" },
-  ].filter((space) => space.name.toLowerCase().includes(query.toLowerCase()));
-};
 
 const defaultParentGoal: GoalPage.ParentGoal = {
   id: "1",
@@ -129,7 +122,7 @@ function Component(props: Partial<GoalPage.Props>) {
       setGoalName={setGoalName}
       space={space}
       setSpace={setSpace}
-      spaceSearch={spaceSearch}
+      spaceSearch={spaceSearchFn}
       accessLevels={accessLevels}
       setAccessLevels={setAccessLevels}
       workmapLink="#"
