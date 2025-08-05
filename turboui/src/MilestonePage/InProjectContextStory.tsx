@@ -15,8 +15,8 @@ import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 const people = genPeople(5);
 
 
-// Get a specific milestone from mock data and add status
-const targetMilestone = { ...Object.values(mockMilestones)[0]!, status: "active" }; // Q2 Feature Release
+// Get a specific milestone from mock data
+const targetMilestone: TaskBoardTypes.Milestone = { ...Object.values(mockMilestones)[0]!, status: "pending" }; // Q2 Feature Release
 
 // Create an empty milestone for the empty story
 const emptyMilestone: TaskBoardTypes.Milestone = {
@@ -25,7 +25,7 @@ const emptyMilestone: TaskBoardTypes.Milestone = {
   dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 30)), "day"),
   hasDescription: false,
   hasComments: false,
-  status: "active",
+  status: "pending",
 };
 
 // Filter tasks for this milestone
@@ -204,7 +204,13 @@ export function InProjectContextStory() {
  */
 export function EmptyMilestoneInProjectContextStory() {
   const [tasks, setTasks] = useState<TaskBoardTypes.Task[]>([]); // Empty tasks array
-  const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([emptyMilestone]);
+  const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(
+    // Ensure all milestones have the correct status types
+    Object.values(mockMilestones).map(m => ({
+      ...m,
+      status: m.status === "done" ? "done" : "pending"
+    })) as TaskBoardTypes.Milestone[]
+  );
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);

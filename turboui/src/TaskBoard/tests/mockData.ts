@@ -16,7 +16,7 @@ export const mockPeople: Record<string, Types.Person> = {
 };
 
 // Mock milestones
-export const mockMilestones = {
+export const mockMilestones: Record<string, Types.Milestone> = {
   q2Release: {
     id: "1",
     name: "Q2 Release",
@@ -24,7 +24,7 @@ export const mockMilestones = {
     hasDescription: true,
     hasComments: true,
     commentCount: 5,
-    status: "active",
+    status: "pending",
   },
   productLaunch: {
     id: "2",
@@ -33,7 +33,7 @@ export const mockMilestones = {
     hasDescription: true,
     hasComments: true,
     commentCount: 3,
-    status: "active",
+    status: "pending",
   },
   marketExpansion: {
     id: "3",
@@ -41,7 +41,7 @@ export const mockMilestones = {
     dueDate: createContextualDate("2025-09-30", "day"),
     hasDescription: false,
     hasComments: false,
-    status: "active",
+    status: "pending",
   },
   completedMilestone1: {
     id: "5",
@@ -50,7 +50,7 @@ export const mockMilestones = {
     hasDescription: true,
     hasComments: true,
     commentCount: 8,
-    status: "completed",
+    status: "done",
   },
   completedMilestone2: {
     id: "6",
@@ -58,7 +58,7 @@ export const mockMilestones = {
     dueDate: createContextualDate("2025-04-30", "day"),
     hasDescription: true,
     hasComments: false,
-    status: "completed",
+    status: "done",
   },
   emptyMilestone: {
     id: "4",
@@ -66,7 +66,7 @@ export const mockMilestones = {
     dueDate: undefined,
     hasDescription: false,
     hasComments: false,
-    status: "active",
+    status: "pending",
   },
 };
 

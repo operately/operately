@@ -265,8 +265,8 @@ function TimelineSection(props: ProjectPage.State) {
   );
 
   // Separate upcoming and completed milestones
-  const upcomingMilestones = validMilestones.filter((m) => m.status !== "completed");
-  const completedMilestones = validMilestones.filter((m) => m.status === "completed");
+  const upcomingMilestones = validMilestones.filter((m) => m.status !== "done");
+  const completedMilestones = validMilestones.filter((m) => m.status === "done");
 
   // Sort by due date
   const sortByDueDate = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
@@ -285,7 +285,7 @@ function TimelineSection(props: ProjectPage.State) {
     const newMilestone: Omit<TaskBoardTypes.Milestone, "id"> = {
       name: newMilestoneName,
       dueDate: newMilestoneDueDate || undefined,
-      status: "active",
+      status: "pending",
     };
 
     props.onMilestoneCreate?.(newMilestone);
@@ -334,106 +334,100 @@ function TimelineSection(props: ProjectPage.State) {
       </div>
 
       <div className="space-y-6">
-        {/* Add Milestone Form */}
-        {showAddForm && (
-          <div className="bg-surface-dimmed rounded-lg p-4 border-2 border-dashed border-stroke-base">
-            <div className="space-y-3">
-              <input
-                type="text"
-                placeholder="Milestone name"
-                value={newMilestoneName}
-                onChange={(e) => setNewMilestoneName(e.target.value)}
-                className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base"
-                autoFocus
-                onKeyDown={handleInputKeyDown}
-              />
-              <DateField
-                date={newMilestoneDueDate}
-                onDateSelect={setNewMilestoneDueDate}
-                placeholder="Set target date"
-              />
-              <div className="flex items-center gap-4">
-                <div className="flex gap-2">
-                  <Button size="sm" onClick={handleAddMilestone} disabled={!newMilestoneName.trim()}>
-                    Add milestone
-                  </Button>
-                  <SecondaryButton size="sm" onClick={() => setShowAddForm(false)}>
-                    Cancel
-                  </SecondaryButton>
-                </div>
-                <label className="flex items-center gap-2 text-sm">
-                  <input type="checkbox" checked={addMore} onChange={(e) => setAddMore(e.target.checked)} />
-                  Add more
-                </label>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Upcoming Milestones */}
         {sortedUpcoming.length > 0 && (
           <div>
             <h3 className="text-sm font-medium text-content-accent mb-3">Upcoming</h3>
-            <div className="space-y-2">
-              {sortedUpcoming.map((milestone, index) => (
-                <MilestoneItem
-                  key={milestone.id}
-                  milestone={milestone}
-                  canEdit={props.canEdit}
-                  onUpdate={props.onMilestoneUpdate}
-                  isLast={index === sortedUpcoming.length - 1}
-                />
-              ))}
-            </div>
+            <MilestoneList
+              milestones={sortedUpcoming}
+              canEdit={props.canEdit}
+              onMilestoneUpdate={props.onMilestoneUpdate}
+            />
           </div>
         )}
 
-        {/* Completed Milestones */}
         {sortedCompleted.length > 0 && (
           <CollapsibleSection title={`Show ${completedCount} completed`} defaultCollapsed>
-            <div className="space-y-2">
-              {sortedCompleted.map((milestone, index) => (
-                <MilestoneItem
-                  key={milestone.id}
-                  milestone={milestone}
-                  canEdit={props.canEdit}
-                  onUpdate={props.onMilestoneUpdate}
-                  isLast={index === sortedCompleted.length - 1}
-                />
-              ))}
-            </div>
+            <MilestoneList
+              milestones={sortedCompleted}
+              canEdit={props.canEdit}
+              onMilestoneUpdate={props.onMilestoneUpdate}
+            />
           </CollapsibleSection>
         )}
 
-        {/* Empty State */}
-        {validMilestones.length === 0 && (
-          <div className="text-center py-8 text-content-dimmed">
-            <IconFlag size={48} className="mx-auto mb-4 text-content-subtle" />
-            <p className="text-sm mb-1">No milestones yet</p>
-            {props.canEdit && (
-              <div>
-                <p className="text-xs mb-4">Add milestones to track key deliverables and deadlines</p>
-                <GhostButton size="sm" onClick={() => setShowAddForm(true)}>
-                  Add your first milestone
-                </GhostButton>
-              </div>
-            )}
-          </div>
-        )}
+        <EmptyState canEdit={props.canEdit} setShowAddForm={setShowAddForm} display={validMilestones.length === 0} />
+
+        <AddMilestoneForm
+          showAddForm={showAddForm}
+          newMilestoneName={newMilestoneName}
+          setNewMilestoneName={setNewMilestoneName}
+          newMilestoneDueDate={newMilestoneDueDate}
+          setNewMilestoneDueDate={setNewMilestoneDueDate}
+          addMore={addMore}
+          setAddMore={setAddMore}
+          handleAddMilestone={handleAddMilestone}
+          handleInputKeyDown={handleInputKeyDown}
+          setShowAddForm={setShowAddForm}
+        />
       </div>
     </div>
   );
 }
 
-function CollapsibleSection({
-  title,
-  children,
-  defaultCollapsed = false,
-}: {
+interface EmptyStateProps {
+  display: boolean;
+  canEdit: boolean;
+  setShowAddForm: (show: boolean) => void;
+}
+
+function EmptyState({ canEdit, setShowAddForm, display }: EmptyStateProps) {
+  if (!display) return null;
+
+  return (
+    <div className="text-center py-8 text-content-dimmed">
+      <IconFlag size={48} className="mx-auto mb-4 text-content-subtle" />
+      <p className="text-sm mb-1">No milestones yet</p>
+      {canEdit && (
+        <div>
+          <p className="text-xs mb-4">Add milestones to track key deliverables and deadlines</p>
+          <GhostButton size="sm" onClick={() => setShowAddForm(true)}>
+            Add your first milestone
+          </GhostButton>
+        </div>
+      )}
+    </div>
+  );
+}
+
+interface MilestoneListProps {
+  milestones: TaskBoardTypes.Milestone[];
+  canEdit: boolean;
+  onMilestoneUpdate?: (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => void;
+}
+
+function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneListProps) {
+  return (
+    <div className="space-y-2">
+      {milestones.map((milestone, index) => (
+        <MilestoneItem
+          key={milestone.id}
+          milestone={milestone}
+          canEdit={canEdit}
+          onUpdate={onMilestoneUpdate}
+          isLast={index === milestones.length - 1}
+        />
+      ))}
+    </div>
+  );
+}
+
+interface CollapsibleSectionProps {
   title: string;
   children: React.ReactNode;
   defaultCollapsed?: boolean;
-}) {
+}
+
+function CollapsibleSection({ title, children, defaultCollapsed = false }: CollapsibleSectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
   return (
@@ -459,5 +453,64 @@ function ResourcesSection(props: ProjectPage.State) {
       onResourceRemove={props.onResourceRemove}
       canEdit={props.canEdit}
     />
+  );
+}
+
+interface AddMilestoneFormProps {
+  showAddForm: boolean;
+  newMilestoneName: string;
+  setNewMilestoneName: (name: string) => void;
+  newMilestoneDueDate: DateField.ContextualDate | null;
+  setNewMilestoneDueDate: (date: DateField.ContextualDate | null) => void;
+  addMore: boolean;
+  setAddMore: (addMore: boolean) => void;
+  handleAddMilestone: () => void;
+  handleInputKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  setShowAddForm: (show: boolean) => void;
+}
+
+function AddMilestoneForm({
+  showAddForm,
+  newMilestoneName,
+  setNewMilestoneName,
+  newMilestoneDueDate,
+  setNewMilestoneDueDate,
+  addMore,
+  setAddMore,
+  handleAddMilestone,
+  handleInputKeyDown,
+  setShowAddForm,
+}: AddMilestoneFormProps) {
+  if (!showAddForm) return null;
+
+  return (
+    <div className="bg-surface-dimmed rounded-lg p-4 border-2 border-dashed border-stroke-base">
+      <div className="space-y-3">
+        <input
+          type="text"
+          placeholder="Milestone name"
+          value={newMilestoneName}
+          onChange={(e) => setNewMilestoneName(e.target.value)}
+          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base"
+          autoFocus
+          onKeyDown={handleInputKeyDown}
+        />
+        <DateField date={newMilestoneDueDate} onDateSelect={setNewMilestoneDueDate} placeholder="Set target date" />
+        <div className="flex items-center gap-4">
+          <div className="flex gap-2">
+            <Button size="sm" onClick={handleAddMilestone} disabled={!newMilestoneName.trim()}>
+              Add milestone
+            </Button>
+            <SecondaryButton size="sm" onClick={() => setShowAddForm(false)}>
+              Cancel
+            </SecondaryButton>
+          </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" checked={addMore} onChange={(e) => setAddMore(e.target.checked)} />
+            Add more
+          </label>
+        </div>
+      </div>
+    </div>
   );
 }

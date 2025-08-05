@@ -161,6 +161,7 @@ export function TaskCreationModal({
                 const convertedMilestone: Types.Milestone = {
                   ...newMilestone,
                   name: newMilestone.name || newMilestone.title || "",
+                  status: "pending",
                 };
                 setMilestone(convertedMilestone);
               } else {

@@ -182,6 +182,7 @@ const sampleMilestone: Types.Milestone = {
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
+  status: "pending",
 };
 
 // Sample tasks for this milestone

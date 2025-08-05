@@ -33,7 +33,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
     setIsEditing(false);
   };
 
-  const isCompleted = milestone.status === "completed";
+  const isCompleted = milestone.status === "done";
 
   if (isEditing) {
     return (
