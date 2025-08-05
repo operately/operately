@@ -44,7 +44,7 @@ export function useForm(props: EditProps | NewProps) {
       dueDate: parseContextualDate(timeframe?.contextualEndDate),
       targets: mode === "edit" ? props.update.goalTargetUpdates : goal.targets,
       description: mode === "edit" ? JSON.parse(props.update.message!) : emptyContent(),
-      checklist: goal.checklist,
+      checklist: mode === "edit" ? props.update.checklist : props.goal.checklist || [],
     },
     cancel: () => {
       if (mode === "new") {

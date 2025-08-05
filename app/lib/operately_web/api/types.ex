@@ -1654,6 +1654,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :acknowledging_person, :person, null: true
     field? :reactions, list_of(:reaction), null: true
     field? :goal_target_updates, list_of(:goal_target_updates), null: true
+    field? :checklist, list_of(:goal_check_update), null: true
     field? :comments_count, :integer, null: true
     field? :goal, :goal, null: true
     field? :subscription_list, :subscription_list, null: true

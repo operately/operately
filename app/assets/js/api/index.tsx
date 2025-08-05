@@ -1063,6 +1063,7 @@ export interface GoalProgressUpdate {
   acknowledgingPerson?: Person | null;
   reactions?: Reaction[] | null;
   goalTargetUpdates?: GoalTargetUpdates[] | null;
+  checklist?: GoalCheckUpdate[] | null;
   commentsCount?: number | null;
   goal?: Goal | null;
   subscriptionList?: SubscriptionList | null;
@@ -1990,7 +1991,6 @@ export interface GetGoalProgressUpdateInput {
   includeGoal?: boolean | null;
   includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
-  includeGoalChecklist?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
   includeSpaceMembers?: boolean | null;
