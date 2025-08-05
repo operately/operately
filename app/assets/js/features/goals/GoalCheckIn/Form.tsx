@@ -12,7 +12,7 @@ import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { Tooltip, IconInfoCircle, DateField } from "turboui";
+import { Checklist, DateField, IconInfoCircle, Tooltip } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {
@@ -35,6 +35,7 @@ export function Form(props: Props) {
         <FullEditDisabledMessage {...props} />
         <StatusAndDueDate {...props} />
         <Targets {...props} />
+        <Checks {...props} />
         <Description {...props} />
       </div>
 
@@ -283,5 +284,40 @@ function Subscribers(props: Props) {
     <div className="mt-6">
       <SubscribersSelector state={props.subscriptionsState!} spaceName={props.goal!.space!.name!} />
     </div>
+  );
+}
+
+function Checks(props: Props) {
+  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>(() => {
+    return props.goal.checklist!.map((item) => ({ ...item, mode: "view" as const }));
+  });
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  const noOp = async (...args: any[]) => {
+    console.warn("Checklist operation not allowed in this mode", ...args);
+    return Promise.resolve({} as any);
+  };
+
+  const toggle = async (item: Checklist.ChecklistItem) => {
+    const updatedItems = items.map((i) => (i.id === item.id ? { ...i, completed: !i.completed } : i));
+
+    setItems(updatedItems);
+    return Promise.resolve({} as any);
+  };
+
+  return (
+    <Checklist
+      items={items}
+      canEdit={false}
+      addItem={noOp}
+      deleteItem={noOp}
+      updateItem={noOp}
+      toggleItem={toggle}
+      updateItemIndex={noOp}
+      sectionTitle="Update Checklist"
+    />
   );
 }
