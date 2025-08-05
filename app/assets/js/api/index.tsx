@@ -267,6 +267,13 @@ export interface ActivityContentGoalCheckInEdit {
   checkInId?: string | null;
 }
 
+export interface ActivityContentGoalCheckRemoving {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  name: string;
+}
+
 export interface ActivityContentGoalClosing {
   successStatus: SuccessStatus;
   goal: Goal;
