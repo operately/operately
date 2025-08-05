@@ -36,3 +36,7 @@ export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
 export { RichContent };
+
+export { DropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";
+export { PasteFilePlugin } from "./RichEditor/Blob/PasteFilePlugin";
+export { PasteHtmlImagesPlugin } from "./RichEditor/Blob/PasteHtmlImagesPlugin";
