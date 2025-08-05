@@ -118,7 +118,7 @@ export namespace ProjectPage {
     onResourceEdit?: (id: string, resource: Partial<ResourceManager.Resource>) => void;
     onResourceRemove?: (id: string) => void;
 
-    moveModealOpen?: boolean;
+    moveModalOpen?: boolean;
   }
 
   export interface State extends Props {
@@ -129,7 +129,7 @@ export namespace ProjectPage {
 }
 
 function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
-  const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModealOpen || false);
+  const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModalOpen || false);
 
   return {
     ...props,
