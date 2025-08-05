@@ -43,6 +43,9 @@ export namespace Checklist {
     updateItem: UpdateChecklistItemFn;
     toggleItem: ToggleChecklistItemFn;
     updateItemIndex: UpdateChecklistItemIndexFn;
+
+    sectionTitle?: string;
+    sectionTitleBottomMargin?: string;
   }
 
   export interface InternalProps {
@@ -66,10 +69,13 @@ export function Checklist(props: Checklist.Props) {
   const completedCount = props.items.filter((item) => item.completed).length;
   const totalCount = props.items.length;
   const completionPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+  const sectionTitle = props.sectionTitle || "Checklist";
+  const sectionTitlBottomMargin = props.sectionTitleBottomMargin || "mb-3";
 
   return (
     <div>
       <ChecklistSectionHeader
+        title={sectionTitle}
         completionPercentage={completionPercentage}
         completedCount={completedCount}
         totalCount={totalCount}
@@ -88,7 +94,7 @@ export function Checklist(props: Checklist.Props) {
         </div>
       )}
 
-      <div className="mt-3">
+      <div className={sectionTitlBottomMargin}>
         <ChecklistInternal
           items={props.items}
           showEditButton={props.canEdit}
@@ -112,6 +118,7 @@ function ChecklistSectionHeader({
   canEdit,
   addActive,
   onAddClick,
+  title,
 }: {
   completionPercentage: number;
   completedCount: number;
@@ -119,11 +126,12 @@ function ChecklistSectionHeader({
   canEdit: boolean;
   addActive: boolean;
   onAddClick: () => void;
+  title: string;
 }) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
-        <h2 className="font-semibold">Checklist</h2>
+        <h2 className="font-semibold">{title}</h2>
         {totalCount > 0 && (
           <div className="flex items-center gap-2">
             <PieChart size={20} slices={[{ percentage: completionPercentage, color: "var(--color-green-500)" }]} />
