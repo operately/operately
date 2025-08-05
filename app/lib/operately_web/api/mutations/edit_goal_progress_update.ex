@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     field? :status, :string, null: true
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
+    field? :checklist, list_of(:goal_check)
   end
 
   outputs do
@@ -23,7 +24,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     Action.new()
     |> Action.run(:me, fn -> find_me(conn) end)
     |> Action.run(:attrs, fn -> parse_inputs(inputs) end)
-    |> Action.run(:update, fn ctx -> Update.get(ctx.me, id: inputs.id, opts: [preload: [goal: :targets]]) end)
+    |> Action.run(:update, fn ctx -> Update.get(ctx.me, id: inputs.id, opts: [preload: [goal: [:targets, :checks]]]) end)
     |> Action.run(:check_permissions, fn ctx -> Permissions.check(ctx.update.request_info.access_level, ctx.update, ctx.me.id, :can_edit) end)
     |> Action.run(:operation, fn ctx -> GoalCheckInEdit.run(ctx.me, ctx.update.goal, ctx.update, ctx.attrs) end)
     |> Action.run(:serialized, fn ctx -> {:ok, %{update: OperatelyWeb.Api.Serializer.serialize(ctx.update, level: :full)}} end)
@@ -53,7 +54,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
            {:ok, id} = decode_id(t["id"])
            %{"id" => id, "value" => t["value"]}
          end),
-       due_date: inputs.due_date
+       due_date: inputs.due_date,
+       checklist: inputs.checklist || []
      }}
   end
 end

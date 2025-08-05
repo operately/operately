@@ -26,7 +26,8 @@ defmodule Operately.Operations.GoalCheckInTest do
         send_to_everyone: true,
         subscriber_ids: [],
         subscription_parent_type: :goal_update,
-        due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
+        due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"},
+        checklist: []
       })
 
     ctx = Factory.reload(ctx, :goal)
@@ -35,22 +36,26 @@ defmodule Operately.Operations.GoalCheckInTest do
   end
 
   test "creating goal update creates activity with old and new timeframes", ctx do
-    ctx = Factory.add_goal(ctx, :goal2, :space, timeframe: %{
-      type: "year",
-      start_date: ~D[2023-01-01],
-      end_date: ~D[2023-12-31],
-      contextual_end_date: %{
-        date_type: :year,
-        date: ~D[2023-12-31],
-        value: "2023"
-      }
-    })
+    ctx =
+      Factory.add_goal(ctx, :goal2, :space,
+        timeframe: %{
+          type: "year",
+          start_date: ~D[2023-01-01],
+          end_date: ~D[2023-12-31],
+          contextual_end_date: %{
+            date_type: :year,
+            date: ~D[2023-12-31],
+            value: "2023"
+          }
+        }
+      )
 
     {:ok, update} =
       GoalCheckIn.run(ctx.champion, ctx.goal2, %{
         goal_id: ctx.goal2.id,
         status: "on_track",
         target_values: [],
+        checklist: [],
         content: RichText.rich_text("Some content"),
         send_to_everyone: true,
         subscriber_ids: [],
@@ -89,7 +94,8 @@ defmodule Operately.Operations.GoalCheckInTest do
             send_to_everyone: true,
             subscriber_ids: [],
             subscription_parent_type: :goal_update,
-            due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
+            due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"},
+            checklist: []
           })
         end)
 
@@ -121,7 +127,8 @@ defmodule Operately.Operations.GoalCheckInTest do
             send_to_everyone: false,
             subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
             subscription_parent_type: :goal_update,
-            due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
+            due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"},
+            checklist: []
           })
         end)
 
@@ -148,6 +155,7 @@ defmodule Operately.Operations.GoalCheckInTest do
           goal_id: ctx.goal.id,
           status: "off_track",
           target_values: [],
+          checklist: [],
           content: RichText.rich_text("Some content"),
           send_to_everyone: true,
           subscriber_ids: [],

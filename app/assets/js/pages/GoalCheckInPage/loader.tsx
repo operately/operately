@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
+import * as Goals from "@/models/goals";
 
 import { assertPresent } from "@/utils/assertions";
 

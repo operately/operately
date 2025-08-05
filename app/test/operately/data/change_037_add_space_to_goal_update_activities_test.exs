@@ -28,6 +28,7 @@ defmodule Operately.Data.Change037AddSpaceToGoalUpdateActivitiesTest do
               status: "on_track",
               target_values: [],
               content: RichText.rich_text("content"),
+              checklist: [],
               send_to_everyone: false,
               subscription_parent_type: :goal_update,
               subscriber_ids: [],
