@@ -40,6 +40,25 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     UI.assert_text(ctx, "Check 3")
   end
 
+  #
+  # Adding a new goal check
+  #
+
+  step :add_goal_check, ctx do
+    ctx
+    |> UI.click(testid: "add-checklist-item")
+    |> UI.fill(testid: "checklist-item-name", with: "New Check")
+    |> UI.click(testid: "save")
+    |> UI.sleep(300)
+  end
+
+  step :assert_goal_check_added, ctx do
+    attempts(ctx, 5, fn ->
+      checks = Operately.Repo.preload(ctx.goal, :checks).checks
+      assert Enum.any?(checks, fn check -> check.name == "New Check" end)
+    end)
+  end
+
   defp create_timeframe do
     alias Operately.ContextualDates.ContextualDate
 

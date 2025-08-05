@@ -12,12 +12,12 @@ defmodule Operately.Features.GoalChecksTest do
     |> Steps.assert_goal_checks_listed()
   end
 
-  # feature "adding a new goal check", ctx do
-  #   ctx
-  #   |> Steps.visit_goal_page()
-  #   |> Steps.add_goal_check()
-  #   |> Steps.assert_goal_check_added()
-  # end
+  feature "adding a new goal check", ctx do
+    ctx
+    |> Steps.visit_goal_page()
+    |> Steps.add_goal_check()
+    |> Steps.assert_goal_check_added()
+  end
 
   # feature "deleting a goal check", ctx do
   #   ctx
