@@ -1232,6 +1232,7 @@ export interface ProjectCheckIn {
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  commentsCount?: number | null;
 }
 
 export interface ProjectContributor {
@@ -1996,6 +1997,7 @@ export interface GetGoalProgressUpdateInput {
   includeGoal?: boolean | null;
   includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
+  includeGoalChecklist?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
   includeSpaceMembers?: boolean | null;
@@ -2128,10 +2130,10 @@ export interface GetProjectCheckInResult {
 }
 
 export interface GetProjectCheckInsInput {
-  projectId?: string | null;
-  includeAuthor?: boolean | null;
-  includeProject?: boolean | null;
-  includeReactions?: boolean | null;
+  projectId: string;
+  includeAuthor?: boolean;
+  includeProject?: boolean;
+  includeReactions?: boolean;
 }
 
 export interface GetProjectCheckInsResult {
@@ -3010,6 +3012,7 @@ export interface EditGoalProgressUpdateInput {
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
+  checklist?: GoalCheck[];
 }
 
 export interface EditGoalProgressUpdateResult {

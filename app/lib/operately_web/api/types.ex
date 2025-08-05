@@ -1571,6 +1571,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :subscription_list, :subscription_list, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :comments_count, :integer, null: true
   end
 
   object :activity_content_project_check_in_commented do
