@@ -166,8 +166,8 @@ function Reviewer(props: ProjectPage.State) {
   );
 }
 
-function Contributors(props: any) {
-  const contributors = props.contributors || [];
+function Contributors(props: ProjectPage.State) {
+  const contributors = props.contributors.filter((c) => ![props.champion?.id, props.reviewer?.id].includes(c.id));
 
   return (
     <SidebarSection title="Contributors">

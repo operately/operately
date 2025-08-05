@@ -327,7 +327,7 @@ function prepareContributor(
   }
 
   return {
-    id: contributor.id,
+    id: contributor.person.id,
     fullName: contributor.person.fullName,
     avatarUrl: contributor.person.avatarUrl || "",
     title: contributor.person.title || "",
