@@ -1184,6 +1184,7 @@ export interface Project {
   nextCheckInScheduledAt?: string | null;
   privacy?: string | null;
   status: string;
+  state?: WorkMapItemState;
   successStatus: SuccessStatus;
   closedAt?: string | null;
   retrospective?: ProjectRetrospective | null;
@@ -1211,14 +1212,14 @@ export interface Project {
 }
 
 export interface ProjectCheckIn {
-  id?: string | null;
-  status?: string | null;
-  insertedAt?: string | null;
-  description?: string | null;
-  author?: Person | null;
-  project?: Project | null;
-  acknowledgedAt?: string | null;
-  acknowledgedBy?: Person | null;
+  id: string;
+  status: ProjectCheckInStatus;
+  insertedAt: string | null;
+  description: string | null;
+  author: Person | null;
+  project: Project | null;
+  acknowledgedAt: string | null;
+  acknowledgedBy: Person | null;
   reactions?: Reaction[] | null;
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
@@ -1775,6 +1776,8 @@ export type GoalStatus =
   | "off_track"
   | "pending"
   | "outdated";
+
+export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 
 export type SuccessStatus = "achieved" | "missed";
 
