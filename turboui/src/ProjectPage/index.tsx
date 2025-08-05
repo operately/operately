@@ -16,6 +16,7 @@ import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 import { StatusBanner } from "./StatusBanner";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { MoveModal } from "../Modal/MoveModal";
 
 export namespace ProjectPage {
   export interface Space {
@@ -116,14 +117,26 @@ export namespace ProjectPage {
     onResourceAdd?: (resource: Omit<ResourceManager.Resource, "id">) => void;
     onResourceEdit?: (id: string, resource: Partial<ResourceManager.Resource>) => void;
     onResourceRemove?: (id: string) => void;
+
+    moveModalOpen?: boolean;
   }
 
-  export interface State extends Props {}
+  export interface State extends Props {
+    isMoveModalOpen: boolean;
+    openMoveModal: () => void;
+    closeMoveModal: () => void;
+  }
 }
 
 function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
+  const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModalOpen || false);
+
   return {
     ...props,
+
+    isMoveModalOpen,
+    openMoveModal: () => setIsMoveModalOpen(true),
+    closeMoveModal: () => setIsMoveModalOpen(false),
   };
 }
 
@@ -180,6 +193,8 @@ export function ProjectPage(props: ProjectPage.Props) {
         )}
         {tabs.active === "activity" && <div className="flex-1 overflow-auto p-4">Activity content will go here</div>}
       </div>
+
+      <MoveModal {...state} />
     </PageNew>
   );
 }

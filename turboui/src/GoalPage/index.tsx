@@ -17,7 +17,7 @@ import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
-import { MoveModal } from "./MoveModal";
+import { MoveModal } from "../Modal/MoveModal";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 

@@ -8,6 +8,7 @@ import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mo
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { ProjectPage } from "./index";
+import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 
 // Helper function to create rich text content for check-ins
 function asRichText(content: string): any {
@@ -72,6 +73,12 @@ const mockContributors: ProjectPage.Person[] = [
     title: "Quality Assurance & Testing",
   },
 ];
+
+const defaultSpace: ProjectPage.Space = {
+  id: "1",
+  name: "Product",
+  link: "#",
+};
 
 // Mock search function for people
 const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoardTypes.Person[]> => {
@@ -166,6 +173,7 @@ export const Default: Story = {
       return createContextualDate(oneMonthFromToday, "day");
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
+    const [space, setSpace] = useState(defaultSpace);
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
       console.log("Task status change:", taskId, newStatus);
@@ -243,9 +251,9 @@ export const Default: Story = {
         reopenLink="#"
         projectName="Mobile App Redesign"
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={people[0] || null}
         setChampion={() => {}}
         reviewer={reviewer}
@@ -302,6 +310,7 @@ export const ReadOnly: Story = {
       oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
       return createContextualDate(oneMonthFromToday, "day");
     })();
+    const [space, setSpace] = useState(defaultSpace);
 
     return (
       <ProjectPage
@@ -309,9 +318,9 @@ export const ReadOnly: Story = {
         reopenLink="#"
         projectName="Mobile App Redesign"
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={people[0] || null}
         setChampion={() => {}}
         reviewer={reviewer}
@@ -377,6 +386,7 @@ export const EmptyTasks: Story = {
       return createContextualDate(oneMonthFromToday, "day");
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
+    const [space, setSpace] = useState(defaultSpace);
 
     const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -421,9 +431,9 @@ export const EmptyTasks: Story = {
         reopenLink="#"
         projectName="Mobile App Redesign"
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={people[0] || null}
         setChampion={() => {}}
         reviewer={reviewer}
@@ -475,6 +485,7 @@ export const EmptyProject: Story = {
     const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(null);
     const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(null);
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
+    const [space, setSpace] = useState(defaultSpace);
 
     const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -522,9 +533,9 @@ export const EmptyProject: Story = {
         reopenLink="#"
         projectName="New Project"
         description={undefined}
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={null}
         setChampion={() => {}}
         status="on_track"
@@ -574,6 +585,7 @@ export const EmptyProjectReadOnly: Story = {
     const [milestones] = useState<TaskBoardTypes.Milestone[]>([]);
     const startedAt = null; // No start date for empty read-only project
     const dueAt = null; // No due date for empty read-only project
+    const [space, setSpace] = useState(defaultSpace);
 
     return (
       <ProjectPage
@@ -581,9 +593,9 @@ export const EmptyProjectReadOnly: Story = {
         reopenLink="#"
         projectName="Mobile App Redesign"
         description=""
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={null}
         setChampion={() => {}}
         status="on_track"
@@ -648,6 +660,7 @@ export const PausedProject: Story = {
       return createContextualDate(oneMonthFromToday, "day");
     });
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
+    const [space, setSpace] = useState(defaultSpace);
 
     const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
       console.log("Task status change:", taskId, newStatus);
@@ -721,9 +734,9 @@ export const PausedProject: Story = {
         reopenLink="#"
         projectName="AI Chatbot Prototype"
         description="<p>This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.</p>"
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={people[0] || null}
         setChampion={() => {}}
         reviewer={reviewer}
@@ -784,6 +797,7 @@ export const ClosedProject: Story = {
       link: "/goals/2",
     });
     const [reviewer] = useState<ProjectPage.Person | null>(people[1] || null);
+    const [space, setSpace] = useState(defaultSpace);
     const startedAt = createContextualDate("2025-03-01", "day"); // March 1, 2025
     const dueAt = createContextualDate("2025-05-26", "day"); // June 26, 2025
     const closedAt = new Date(2025, 5, 26); // June 26, 2025
@@ -794,9 +808,9 @@ export const ClosedProject: Story = {
         reopenLink="#"
         projectName="Work Map GA"
         description="<p>We're going towards turning the work maps on for everyone and removing legacy UI.</p><p>Milestones (will add after bug is fixed):</p><ul><li>No bugs / papercuts in current work maps</li><li>My work</li><li>Profile pages that show work maps in new layout</li><li>New home section</li></ul>"
-        space={{ id: "1", name: "Product", link: "#" }}
-        setSpace={() => {}}
-        spaceSearch={async () => []}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
         champion={people[0] || null}
         setChampion={() => {}}
         reviewer={reviewer}
