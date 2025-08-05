@@ -294,6 +294,7 @@ export const Default: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },
@@ -365,6 +366,7 @@ export const ReadOnly: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },
@@ -474,6 +476,7 @@ export const EmptyTasks: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },
@@ -574,6 +577,7 @@ export const EmptyProject: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },
@@ -634,6 +638,7 @@ export const EmptyProjectReadOnly: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },
@@ -777,6 +782,7 @@ export const PausedProject: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },
@@ -852,6 +858,7 @@ export const ClosedProject: Story = {
         manageTeamLink="/projects/1/team"
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
+        newCheckInLink="#"
       />
     );
   },

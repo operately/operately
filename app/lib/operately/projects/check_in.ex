@@ -24,6 +24,7 @@ defmodule Operately.Projects.CheckIn do
     # populated with after load hooks
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
+    field :comment_count, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -54,6 +55,25 @@ defmodule Operately.Projects.CheckIn do
       |> Notifications.Subscriber.from_project_child()
 
     %{check_in | potential_subscribers: subs}
+  end
+
+  def preload_comment_count(check_ins) when is_list(check_ins) do
+    ids = Enum.map(check_ins, & &1.id)
+
+    comment_counts =
+      Repo.all(
+        from c in Operately.Updates.Comment,
+          where: c.entity_type == :project_check_in and c.entity_id in ^ids,
+          group_by: c.entity_id,
+          select: {c.entity_id, count(c.id)}
+      )
+
+    comment_counts_map = Map.new(comment_counts)
+
+    Enum.map(check_ins, fn check_in ->
+      comment_count = Map.get(comment_counts_map, check_in.id, 0)
+      Map.put(check_in, :comment_count, comment_count)
+    end)
   end
 
   def valid_status, do: @valid_statuses

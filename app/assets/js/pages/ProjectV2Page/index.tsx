@@ -18,6 +18,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { parseMilestonesForTurboUi } from "@/models/milestones";
+import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -70,6 +71,8 @@ function Page() {
   assertPresent(project.space);
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
+  assertPresent(project.contributors);
+  assertPresent(project.milestones);
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
@@ -188,32 +191,17 @@ function Page() {
 
     // TaskBoard props - simplified for fast implementation
     tasks: [],
-    milestones: parseMilestonesForTurboUi(paths, project.milestones!),
-    contributors: prepareContributors(paths, project.contributors!),
-    checkIns: prepareCheckIns(paths, checkIns),
+    milestones: parseMilestonesForTurboUi(paths, project.milestones),
+    contributors: prepareContributors(paths, project.contributors),
+    checkIns: parseCheckInsForTurboUi(paths, checkIns),
     mentionedPersonLookup,
     resources: prepareResources(project.keyResources!),
+    newCheckInLink: paths.projectCheckInNewPath(project.id),
 
-    activityFeed: <ProjectFeedItems projectId={project.id!} />,
+    activityFeed: <ProjectFeedItems projectId={project.id} />,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
-}
-
-function prepareCheckIns(paths: Paths, checkIns: any[]): ProjectPage.CheckIn[] {
-  return checkIns.map((checkIn) => {
-    assertPresent(checkIn.author, "author must be present in check-in");
-
-    return {
-      id: checkIn.id!,
-      author: People.parsePersonForTurboUi(paths, checkIn.author)!,
-      date: Time.parse(checkIn.insertedAt!)!,
-      link: paths.projectCheckInPath(checkIn.id!),
-      content: JSON.parse(checkIn.description!),
-      commentCount: checkIn.commentsCount!,
-      status: checkIn.status!,
-    };
-  });
 }
 
 function ProjectFeedItems({ projectId }: { projectId: string }) {
