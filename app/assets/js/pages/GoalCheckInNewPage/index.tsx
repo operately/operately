@@ -25,6 +25,7 @@ async function loader({ params }): Promise<LoaderResult> {
       includeSpace: true,
       includeReviewer: true,
       includePotentialSubscribers: true,
+      includeChecklist: true,
     }).then((data) => data.goal!),
   };
 }

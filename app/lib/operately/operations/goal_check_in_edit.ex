@@ -9,6 +9,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
     |> set_if_full_edit_allowed(goal, check_in)
     |> update_check_in(check_in, attrs)
     |> maybe_update_targets(goal.targets, attrs.new_target_values)
+    |> maybe_update_checks(goal.checks, attrs.checklist || [])
     |> update_subscriptions(attrs.content)
     |> maybe_update_goal(goal, attrs)
     |> record_activity(author, goal, check_in)
@@ -37,6 +38,7 @@ defmodule Operately.Operations.GoalCheckInEdit do
           status: attrs.status,
           message: attrs.content,
           targets: encode_new_target_values(attrs.new_target_values, check_in),
+          checks: attrs.checklist,
           timeframe: to_timeframe(check_in.goal, attrs[:due_date])
         })
       else
@@ -65,6 +67,31 @@ defmodule Operately.Operations.GoalCheckInEdit do
       id = "target-#{target.id}"
 
       Multi.update(multi, id, changeset)
+    end)
+  end
+
+  defp maybe_update_checks(multi, checks, checklist) do
+    Multi.merge(multi, fn changes ->
+      if changes.full_edit_allowed do
+        update_checks(checks, checklist)
+      else
+        # no-op
+        Multi.new()
+      end
+    end)
+  end
+
+  defp update_checks(checks, checklist) do
+    Enum.reduce(checklist, Multi.new(), fn item, multi ->
+      check = Enum.find(checks, fn check -> check.id == item.id end)
+
+      if check do
+        changeset = Operately.Goals.Check.changeset(check, %{completed: item.completed, index: item.index})
+        Multi.update(multi, "update-check-#{check.id}", changeset)
+      else
+        # no-op for new checks
+        multi
+      end
     end)
   end
 

@@ -47,7 +47,8 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                    status: "on_track",
                    content: RichText.rich_text("Content", :as_string),
                    new_target_values: new_target_values(goal),
-                   due_date: %{date: "2028-12-31", date_type: "day", value: "Dec 31, 2028"}
+                   due_date: %{date: "2028-12-31", date_type: "day", value: "Dec 31, 2028"},
+                   checklist: []
                  })
 
         assert code == @test.expected
@@ -78,6 +79,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
                  new_target_values: new_target_values(ctx.goal),
+                 checklist: [],
                  due_date: %{date: "2028-12-31", date_type: "day", value: "Dec 31, 2028"}
                })
 
@@ -94,6 +96,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                  status: "caution",
                  content: RichText.rich_text("Content", :as_string),
                  new_target_values: new_target_values(ctx.goal),
+                 checklist: [],
                  due_date: nil
                })
 
@@ -127,7 +130,8 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                  new_target_values: new_target_values(ctx.goal),
                  send_notifications_to_everyone: true,
                  subscriber_ids: Enum.map(ctx.people, &Paths.person_id(&1)),
-                 due_date: nil
+                 due_date: nil,
+                 checklist: []
                })
 
       {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.update.id)
@@ -157,7 +161,8 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                  new_target_values: new_target_values(ctx.goal),
                  send_notifications_to_everyone: false,
                  subscriber_ids: [],
-                 due_date: nil
+                 due_date: nil,
+                 checklist: []
                })
 
       subscriptions = fetch_subscriptions(res)
@@ -181,7 +186,8 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdateTest do
                  new_target_values: new_target_values(ctx.goal),
                  send_notifications_to_everyone: true,
                  subscriber_ids: Enum.map(people, &Paths.person_id(&1)),
-                 due_date: nil
+                 due_date: nil,
+                 checklist: []
                })
 
       subscriptions = fetch_subscriptions(res)
