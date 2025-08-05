@@ -317,6 +317,7 @@ function Checks(props: Props) {
       updateItem={noOp}
       toggleItem={toggle}
       updateItemIndex={noOp}
+      sectionTitle="Update Checklist"
     />
   );
 }
