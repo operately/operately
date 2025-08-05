@@ -1022,6 +1022,13 @@ export interface GoalCheck {
   updatedAt: string;
 }
 
+export interface GoalCheckUpdate {
+  id: Id;
+  name: string;
+  completed: boolean;
+  index: number;
+}
+
 export interface GoalDiscussion {
   id: Id;
   title: string;
@@ -1056,6 +1063,7 @@ export interface GoalProgressUpdate {
   acknowledgingPerson?: Person | null;
   reactions?: Reaction[] | null;
   goalTargetUpdates?: GoalTargetUpdates[] | null;
+  checklist?: GoalCheckUpdate[] | null;
   commentsCount?: number | null;
   goal?: Goal | null;
   subscriptionList?: SubscriptionList | null;
@@ -3392,6 +3400,7 @@ export interface PostGoalProgressUpdateInput {
   goalId: Id;
   status: string;
   dueDate: ContextualDate | null;
+  checklist: GoalCheckUpdate[];
   content?: Json | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;
