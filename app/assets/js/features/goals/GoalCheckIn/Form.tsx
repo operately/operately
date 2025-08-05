@@ -287,7 +287,7 @@ function Subscribers(props: Props) {
   );
 }
 
-function Checks() {
+function Checks(props: Props) {
   const [items, setItems] = Forms.useFieldValue<Goals.Check[]>("checklist");
 
   if (items.length === 0) {
@@ -326,7 +326,7 @@ function Checks() {
       updateItem={noOp}
       toggleItem={toggle}
       updateItemIndex={updateItemIndex}
-      sectionTitle="Update Checklist"
+      sectionTitle={props.mode === "view" ? "Checklist" : "Update Checklist"}
     />
   );
 }
