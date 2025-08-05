@@ -83,6 +83,9 @@ export function InProjectContextStory() {
     parentGoalSearch: parentGoalSearchFn,
     contributors: [],
     isMoveModalOpen,
+    newCheckInLink: "#",
+    checkIns: [],
+    mentionedPersonLookup: mockMentionedPersonLookup,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
   };
