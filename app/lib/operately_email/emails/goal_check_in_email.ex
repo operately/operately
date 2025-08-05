@@ -11,13 +11,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
   def send(person, activity) do
     update_id = activity.content["update_id"]
 
-    {:ok, update} =
-      Update.get(person,
-        id: update_id,
-        opts: [
-          preload: [goal: [:company, :reviewer, :targets], author: []]
-        ]
-      )
+    {:ok, update} = load_update(update_id, person)
 
     company = update.goal.company
     author = update.author
@@ -37,6 +31,7 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     |> assign(:cta_text, cta_text)
     |> assign(:overview, OverviewMsg.construct(update))
     |> assign(:targets, update.goal.targets)
+    |> assign(:checks, sort_by_index(update.checks))
     |> render("goal_check_in")
   end
 
@@ -48,6 +43,19 @@ defmodule OperatelyEmail.Emails.GoalCheckInEmail do
     else
       {"View Check-In", url}
     end
+  end
+
+  defp load_update(update_id, person) do
+    Update.get(person,
+      id: update_id,
+      opts: [
+        preload: [goal: [:company, :reviewer, :targets, :checks], author: []]
+      ]
+    )
+  end
+
+  defp sort_by_index(checks) do
+    Enum.sort_by(checks, & &1.index)
   end
 
   defmodule OverviewMsg do
