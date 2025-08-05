@@ -34,7 +34,7 @@ export function GoalsAndProjects(props: Props) {
 
 function calculateState(goals: Goal[], projects: Project[]): "zero" | "regular" | "all-done" {
   const allGoalsClosed = goals.every((g) => g.closedAt);
-  const allProjectsClosed = projects.every((p) => p.status === "closed");
+  const allProjectsClosed = projects.every((p) => p.state === "closed");
 
   if (goals.length === 0 && projects.length === 0) {
     return "zero";
