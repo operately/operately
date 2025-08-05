@@ -502,6 +502,14 @@ defmodule Operately.Support.Features.UI do
     Operately.Support.Features.FeedSteps.assert_feed_item_exists(ctx, %{author: author, title: title})
   end
 
+  def assert_feed_item(ctx, author, title, content) do
+    Operately.Support.Features.FeedSteps.assert_feed_item_exists(ctx, %{
+      author: author,
+      title: title,
+      subtitle: content
+    })
+  end
+
   def testid(parts) when is_list(parts) do
     parts
     |> Enum.map(&testid/1)
@@ -587,14 +595,14 @@ defmodule Operately.Support.Features.UI do
       end
       |> click(testid: "date-field-confirm")
     end)
-
   end
 
   defp navigate_to_month(ctx, date) do
     target_month = date.month
     target_year = date.year
 
-    max_iterations = 24  # Limit to prevent infinite loops
+    # Limit to prevent infinite loops
+    max_iterations = 24
     navigate_to_month_recursive(ctx, target_month, target_year, max_iterations)
   end
 
@@ -605,13 +613,14 @@ defmodule Operately.Support.Features.UI do
     current_month = current_date.month
     current_year = current_date.year
 
-    is_future = (target_year > current_year) || (target_year == current_year && target_month > current_month)
+    is_future = target_year > current_year || (target_year == current_year && target_month > current_month)
 
-    updated_ctx = if is_future do
-      click(ctx, testid: "date-field-next-month")
-    else
-      click(ctx, testid: "date-field-prev-month")
-    end
+    updated_ctx =
+      if is_future do
+        click(ctx, testid: "date-field-next-month")
+      else
+        click(ctx, testid: "date-field-prev-month")
+      end
 
     navigate_to_month_recursive(updated_ctx, target_month, target_year, iterations_left - 1)
   end
