@@ -17,6 +17,7 @@ import { PageHeader } from "./PageHeader";
 import { StatusBanner } from "./StatusBanner";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MoveModal } from "../Modal/MoveModal";
+import { CheckIns } from "./CheckIns";
 
 export namespace ProjectPage {
   export interface Space {
@@ -58,6 +59,7 @@ export namespace ProjectPage {
 
     projectName: string;
     description?: string;
+    newCheckInLink: string;
 
     space: Space;
     setSpace: (space: Space) => void;
@@ -109,8 +111,8 @@ export namespace ProjectPage {
 
     contributors: Person[];
     manageTeamLink?: string;
-    checkIns?: CheckIn[];
-    mentionedPersonLookup?: MentionedPersonLookupFn;
+    checkIns: CheckIn[];
+    mentionedPersonLookup: MentionedPersonLookupFn;
 
     // Resource management
     resources?: ResourceManager.Resource[];
@@ -187,7 +189,7 @@ export function ProjectPage(props: ProjectPage.Props) {
             />
           </div>
         )}
-        {tabs.active === "check-ins" && <div className="flex-1 overflow-auto p-4">Check-ins content will go here</div>}
+        {tabs.active === "check-ins" && <CheckIns {...state} />}
         {tabs.active === "discussions" && (
           <div className="flex-1 overflow-auto p-4">Discussions content will go here</div>
         )}

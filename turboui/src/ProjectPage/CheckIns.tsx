@@ -1,9 +1,9 @@
 import React from "react";
-import { GoalPage } from ".";
+import { ProjectPage } from ".";
 import { PrimaryButton } from "../Button";
 import { CheckInCard } from "../CheckInCard";
 
-export function CheckIns(props: GoalPage.State) {
+export function CheckIns(props: ProjectPage.State) {
   const showCheckInButton = props.canEdit && props.state !== "closed";
 
   return (
