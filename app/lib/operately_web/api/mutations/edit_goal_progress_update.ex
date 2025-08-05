@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
     field? :status, :string, null: true
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
+    field? :checklist, list_of(:goal_check)
   end
 
   outputs do
@@ -53,7 +54,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdate do
            {:ok, id} = decode_id(t["id"])
            %{"id" => id, "value" => t["value"]}
          end),
-       due_date: inputs.due_date
+       due_date: inputs.due_date,
+       checklist: inputs.checklist || []
      }}
   end
 end
