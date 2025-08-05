@@ -19,6 +19,7 @@ defmodule Operately.Operations.GoalCheckIn do
         status: attrs.status,
         message: attrs.content,
         targets: encoded_new_target_values,
+        checks: checklist,
         subscription_list_id: changes.subscription_list.id,
         timeframe: to_timeframe(goal, attrs.due_date)
       })

@@ -52,6 +52,7 @@ defmodule Operately.Goals.Update do
       :subscription_list_id
     ])
     |> cast_embed(:targets)
+    |> cast_embed(:checks)
     |> cast_embed(:timeframe)
     |> validate_required([
       :goal_id,

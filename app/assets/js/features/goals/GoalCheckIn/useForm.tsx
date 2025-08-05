@@ -65,6 +65,7 @@ export function useForm(props: EditProps | NewProps) {
         checklist: form.values.checklist!.map((item) => ({
           id: item.id,
           completed: item.completed,
+          name: item.name,
           index: item.index,
         })),
       };
