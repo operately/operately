@@ -1012,6 +1012,15 @@ export interface Goal {
   retrospective?: GoalRetrospective | null;
 }
 
+export interface GoalCheck {
+  id: Id;
+  name: string;
+  completed: boolean;
+  index: number;
+  insertedAt: string;
+  updatedAt: string;
+}
+
 export interface GoalDiscussion {
   id: Id;
   title: string;
@@ -1958,6 +1967,7 @@ export interface GetGoalInput {
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
   includeRetrospective?: boolean | null;
+  includeChecklist?: boolean;
 }
 
 export interface GetGoalResult {
