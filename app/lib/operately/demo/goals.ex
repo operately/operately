@@ -71,6 +71,7 @@ defmodule Operately.Demo.Goals do
         status: "on_track",
         content: Operately.Demo.RichText.from_string(data.content),
         target_values: target_values,
+        checklist: data[:checklist] || [],
         subscription_parent_type: :goal_update,
         subscriber_ids: [],
         due_date: goal.timeframe.contextual_end_date

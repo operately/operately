@@ -13,7 +13,6 @@ export async function loader({ params }): Promise<LoaderResult> {
   const update = await GoalCheckIns.getGoalProgressUpdate({
     id: params.id,
     includeGoalTargets: true,
-    includeGoalChecklist: true,
     includeAcknowledgedBy: true,
     includeReactions: true,
     includeAuthor: true,
