@@ -24,6 +24,22 @@
 
 <%= spacer() %>
 
+<%= if @checks && length(@checks) > 0 do %>
+  <%= title("Checklist", font_size: "16") %>
+
+  <%= row do %>
+    <ul style="list-style-type: none; margin: 0; padding-left: 0px;">
+      <%= for check <- @checks do %>
+        <li style="font-size: 16px; margin-bottom: 8px;">
+          <span style="font-family: monospace;"><%= if check.completed, do: "[✓]", else: "[ ]" %></span> <%= check.name %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
 <%= title("Key wins, obstacles and needs", font_size: "16") %>
 
 <%= row do %>
