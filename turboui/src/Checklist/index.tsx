@@ -6,12 +6,12 @@ import { DragAndDropProvider, useDraggable, useDraggingAnimation, useDropZone } 
 
 import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
-import { State, ChecklistItemState, useChecklistState } from "./useChecklistState";
+import { ChecklistItemState, State, useChecklistState } from "./useChecklistState";
 
 import { Textfield } from "../forms/Textfield";
-import { createTestId } from "../TestableElement";
 import { PieChart } from "../PieChart";
 import { SwitchToggle } from "../SwitchToggle";
+import { createTestId } from "../TestableElement";
 
 export namespace Checklist {
   export type ChecklistItem = {
@@ -286,7 +286,7 @@ function ChecklistItemEdit({ state, item }: { state: State; item: ChecklistItemS
           <SecondaryButton size="xs" onClick={() => state.cancelEdit(item.id)} type="button">
             Cancel
           </SecondaryButton>
-          <PrimaryButton size="xs" type="submit">
+          <PrimaryButton size="xs" type="submit" testId="save">
             Save
           </PrimaryButton>
         </div>
@@ -405,7 +405,7 @@ function ChecklistItemEditButton({
       <button
         className="menu-button p-1.5 text-content-dimmed hover:text-content-base hover:bg-surface-dimmed rounded-full"
         onClick={() => setIsMenuOpen(!isMenuOpen)}
-        data-test-id={`checklist-item-menu-${item.id}`}
+        data-test-id={createTestId("checklist-item-menu", item.id)}
       >
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
           <circle cx="8" cy="3" r="1" fill="currentColor" />
