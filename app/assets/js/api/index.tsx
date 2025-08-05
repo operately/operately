@@ -3025,7 +3025,7 @@ export interface EditGoalProgressUpdateInput {
   status?: string | null;
   content?: Json | null;
   newTargetValues?: string | null;
-  checklist?: GoalCheck[];
+  checklist?: GoalCheckUpdate[];
 }
 
 export interface EditGoalProgressUpdateResult {
