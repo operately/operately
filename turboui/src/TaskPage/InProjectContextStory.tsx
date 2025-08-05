@@ -76,6 +76,7 @@ export function InProjectContextStory() {
     setParentGoal: () => {},
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
+    contributors: [],
   };
 
   // Show TaskPage within the Tasks tab - simulates navigating to a specific task
