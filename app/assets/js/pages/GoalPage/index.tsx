@@ -1,4 +1,5 @@
 import Api, { GoalDiscussion, GoalProgressUpdate, GoalRetrospective, Space } from "@/api";
+import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
@@ -37,6 +38,7 @@ type LoaderResult = {
     goal: Goal;
     workMap: WorkMapItem[];
     checkIns: GoalProgressUpdate[];
+    checklist: Goals.Check[];
     discussions: GoalDiscussion[];
     company: Companies.Company;
   };
@@ -61,6 +63,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAccessLevels: true,
           includePrivacy: true,
           includeRetrospective: true,
+          includeChecklist: true,
         }).then((d) => d.goal!),
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),

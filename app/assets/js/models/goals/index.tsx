@@ -4,6 +4,7 @@ import { Paths } from "@/routes/paths";
 export type Goal = api.Goal;
 export type Target = api.Target;
 export type Timeframe = api.Timeframe;
+export type Check = api.GoalCheck;
 
 export {
   createGoalDiscussion,
