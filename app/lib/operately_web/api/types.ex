@@ -317,6 +317,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :next_check_in_scheduled_at, :date, null: true
     field? :privacy, :string, null: true
     field :status, :string
+    field? :state, :work_map_item_state, null: false
     field :success_status, :success_status
     field? :closed_at, :date, null: true
     field? :retrospective, :project_retrospective, null: true
@@ -1553,15 +1554,17 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project, null: true
   end
 
+  enum(:project_check_in_status, values: Operately.Projects.CheckIn.valid_status())
+
   object :project_check_in do
-    field? :id, :string, null: true
-    field? :status, :string, null: true
-    field? :inserted_at, :date, null: true
-    field? :description, :string, null: true
-    field? :author, :person, null: true
-    field? :project, :project, null: true
-    field? :acknowledged_at, :datetime, null: true
-    field? :acknowledged_by, :person, null: true
+    field :id, :string
+    field :status, :project_check_in_status
+    field :inserted_at, :date, null: true
+    field :description, :string, null: true
+    field :author, :person, null: true
+    field :project, :project, null: true
+    field :acknowledged_at, :datetime, null: true
+    field :acknowledged_by, :person, null: true
     field? :reactions, list_of(:reaction), null: true
     field? :subscription_list, :subscription_list, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
