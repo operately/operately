@@ -89,7 +89,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
                  status: "off_track",
                  content: RichText.rich_text("content", :as_string),
                  new_target_values: Jason.encode!([]),
-                 due_date: nil
+                 due_date: nil,
+                 checklist: []
                })
 
       {:ok, list} =
@@ -109,7 +110,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
                  status: "off_track",
                  content: RichText.rich_text(mentioned_people: [ctx.company_creator]),
                  new_target_values: Jason.encode!([]),
-                 due_date: nil
+                 due_date: nil,
+                 checklist: []
                })
 
       subscriptions =
@@ -133,7 +135,8 @@ defmodule OperatelyWeb.Api.Mutations.EditGoalProgressUpdateTest do
       status: "on_track",
       content: RichText.rich_text("Edited content", :as_string),
       new_target_values: targets,
-      due_date: nil
+      due_date: nil,
+      checklist: []
     })
   end
 

@@ -155,6 +155,7 @@ defmodule Operately.Operations.CommentAddingTest do
           status: "on_track",
           goal_id: ctx.goal.id,
           target_values: [],
+          checklist: [],
           content: RichText.rich_text("Some content"),
           send_to_everyone: true,
           subscriber_ids: [],
@@ -197,7 +198,8 @@ defmodule Operately.Operations.CommentAddingTest do
           send_to_everyone: false,
           subscriber_ids: [ctx.reviewer.id, ctx.champion.id],
           subscription_parent_type: :goal_update,
-          due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"}
+          due_date: %{date: ~D[2023-10-01], date_type: :day, value: "Oct 1, 2023"},
+          checklist: []
         })
 
       update = Repo.preload(update, :goal)
@@ -234,7 +236,8 @@ defmodule Operately.Operations.CommentAddingTest do
           send_to_everyone: false,
           subscriber_ids: [],
           subscription_parent_type: :goal_update,
-          due_date: nil
+          due_date: nil,
+          checklist: []
         })
 
       update = Repo.preload(update, :goal)
