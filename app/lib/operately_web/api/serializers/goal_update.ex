@@ -5,7 +5,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update do
       status: Atom.to_string(update.status),
       message: Jason.encode!(update.message),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(update.inserted_at),
-      goal_target_updates: parse_targets(update.targets),
+      goal_target_updates: serialize_targets(update.targets),
+      checklist: serialize_checks(update.checks),
       timeframe: OperatelyWeb.Api.Serializer.serialize(update.timeframe),
       acknowledged: !!update.acknowledged_at,
       acknowledged_at: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_at)
@@ -20,7 +21,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update do
       acknowledging_person: OperatelyWeb.Api.Serializer.serialize(update.acknowledged_by),
       reactions: OperatelyWeb.Api.Serializer.serialize(update.reactions),
       comments_count: update.comment_count || 0,
-      goal_target_updates: parse_targets(update.targets),
+      goal_target_updates: serialize_targets(update.targets),
+      checklist: serialize_checks(update.checks),
       subscription_list: OperatelyWeb.Api.Serializer.serialize(update.subscription_list),
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(update.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(update.notifications),
@@ -28,6 +30,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Update do
     })
   end
 
-  defp parse_targets(nil), do: []
-  defp parse_targets(targets), do: Enum.map(targets, &Map.from_struct(&1))
+  defp serialize_targets(nil), do: []
+  defp serialize_targets(targets), do: Enum.map(targets, &Map.from_struct(&1))
+
+  defp serialize_checks(nil), do: []
+  defp serialize_checks(checks), do: Enum.map(checks, &Map.from_struct(&1))
 end
