@@ -9,7 +9,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.GoalChe
       space: Serializer.serialize(content["space"], level: :essential),
       goal_id: Serializer.serialize(content["goal_id"], level: :essential),
       goal: Serializer.serialize(content["goal"], level: :essential),
-      name: Serializer.serialize(content["name"], level: :essential)
+      name: Serializer.serialize(content["name"], level: :essential),
+      completed: content["completed"]
     }
   end
 end
