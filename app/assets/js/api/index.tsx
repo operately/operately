@@ -1983,6 +1983,7 @@ export interface GetGoalProgressUpdateInput {
   includeGoal?: boolean | null;
   includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
+  includeGoalChecklist?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
   includeSpaceMembers?: boolean | null;
@@ -3389,6 +3390,7 @@ export interface PostGoalProgressUpdateInput {
   goalId: Id;
   status: string;
   dueDate: ContextualDate | null;
+  checklist: GoalCheck[];
   content?: Json | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;
