@@ -11,6 +11,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
     field :goal_id, :id, null: false
     field :status, :string, null: false
     field :due_date, :contextual_date, null: true
+    field :checklist, list_of(:goal_check_update)
 
     field? :content, :json, null: true
     field? :new_target_values, :string, null: true
@@ -69,6 +70,7 @@ defmodule OperatelyWeb.Api.Mutations.PostGoalProgressUpdate do
        content: inputs.content,
        status: String.to_atom(inputs.status),
        due_date: inputs.due_date,
+       checklist: inputs.checklist,
        send_to_everyone: inputs[:send_notifications_to_everyone] || false,
        subscription_parent_type: :goal_update,
        subscriber_ids: subscriber_ids || []
