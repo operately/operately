@@ -39,6 +39,7 @@ const standaloneTestMilestone: Types.Milestone = {
   dueDate: undefined, // Using undefined instead of null to match the type definition
   hasDescription: false,
   hasComments: false,
+  status: "pending"
 };
 
 /**

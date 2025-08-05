@@ -4,11 +4,12 @@ import { TaskCreationModal } from "../components/TaskCreationModal";
 import { PrimaryButton } from "../../Button";
 import { createContextualDate } from "../../DateField/mockData";
 
-// Sample data for all the stories
-const sampleMilestones = [
-  { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day") },
-  { id: "milestone-2", name: "Sprint 2", dueDate: createContextualDate("2025-07-03", "day") },
-  { id: "milestone-3", name: "Product Launch", dueDate: createContextualDate("2025-07-15", "day") },
+import * as Types from "../types";
+
+const sampleMilestones: Types.Milestone[] = [
+  { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day"), status: "pending" },
+  { id: "milestone-2", name: "Sprint 2", dueDate: createContextualDate("2025-07-03", "day"), status: "pending" },
+  { id: "milestone-3", name: "Product Launch", dueDate: createContextualDate("2025-07-15", "day"), status: "pending" },
 ];
 
 const samplePeople = [
