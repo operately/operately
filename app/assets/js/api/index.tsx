@@ -1022,6 +1022,13 @@ export interface GoalCheck {
   updatedAt: string;
 }
 
+export interface GoalCheckUpdate {
+  id: Id;
+  name: string;
+  completed: boolean;
+  index: number;
+}
+
 export interface GoalDiscussion {
   id: Id;
   title: string;
@@ -1983,6 +1990,7 @@ export interface GetGoalProgressUpdateInput {
   includeGoal?: boolean | null;
   includeGoalSpace?: boolean | null;
   includeGoalTargets?: boolean | null;
+  includeGoalChecklist?: boolean | null;
   includeReviewer?: boolean | null;
   includeChampion?: boolean | null;
   includeSpaceMembers?: boolean | null;
@@ -3389,6 +3397,7 @@ export interface PostGoalProgressUpdateInput {
   goalId: Id;
   status: string;
   dueDate: ContextualDate | null;
+  checklist: GoalCheckUpdate[];
   content?: Json | null;
   newTargetValues?: string | null;
   sendNotificationsToEveryone?: boolean | null;

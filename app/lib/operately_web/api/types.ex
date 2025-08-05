@@ -1674,6 +1674,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :previous_value, :float, null: true
   end
 
+  object :goal_check_update do
+    field :id, :id
+    field :name, :string
+    field :completed, :boolean
+    field :index, :integer
+  end
+
   object :subscription_list do
     field? :id, :string, null: true
     field? :parent_type, :string, null: true

@@ -12,7 +12,7 @@ import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { Tooltip, IconInfoCircle, DateField } from "turboui";
+import { Checklist, DateField, IconInfoCircle, Tooltip } from "turboui";
 import { StatusSelector } from "./StatusSelector";
 
 interface Props {
@@ -35,6 +35,7 @@ export function Form(props: Props) {
         <FullEditDisabledMessage {...props} />
         <StatusAndDueDate {...props} />
         <Targets {...props} />
+        <Checks {...props} />
         <Description {...props} />
       </div>
 
@@ -283,5 +284,49 @@ function Subscribers(props: Props) {
     <div className="mt-6">
       <SubscribersSelector state={props.subscriptionsState!} spaceName={props.goal!.space!.name!} />
     </div>
+  );
+}
+
+function Checks() {
+  const [items, setItems] = Forms.useFieldValue<Goals.Check[]>("checklist");
+
+  if (items.length === 0) {
+    return null;
+  }
+
+  const noOp = async (...args: any[]) => {
+    console.warn("Checklist operation not allowed in this mode", ...args);
+    return Promise.resolve({} as any);
+  };
+
+  const toggle = async (id: string) => {
+    const updatedItems = items.map((i) => (i.id === id ? { ...i, completed: !i.completed } : i));
+    setItems(updatedItems);
+    return true;
+  };
+
+  const updateItemIndex = async (id: string, newIndex: number) => {
+    const updatedItems = [...items];
+    const itemIndex = updatedItems.findIndex((i) => i.id === id);
+    if (itemIndex === -1) return false;
+    const [item] = updatedItems.splice(itemIndex, 1);
+    if (item) {
+      updatedItems.splice(newIndex, 0, item);
+    }
+    setItems(updatedItems);
+    return true;
+  };
+
+  return (
+    <Checklist
+      items={items.map((item) => ({ ...item, mode: "view" as const }))}
+      canEdit={false}
+      addItem={noOp}
+      deleteItem={noOp}
+      updateItem={noOp}
+      toggleItem={toggle}
+      updateItemIndex={updateItemIndex}
+      sectionTitle="Update Checklist"
+    />
   );
 }
