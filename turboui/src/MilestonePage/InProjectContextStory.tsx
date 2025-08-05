@@ -111,6 +111,7 @@ export function InProjectContextStory() {
     setParentGoal: () => {},
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
+    contributors: [],
   };
 
   const tabs = useTabs("tasks", [
@@ -266,6 +267,7 @@ export function EmptyMilestoneInProjectContextStory() {
     setParentGoal: () => {},
     parentGoal: null,
     parentGoalSearch: parentGoalSearchFn,
+    contributors: [],
   };
 
   const tabs = useTabs("tasks", [
