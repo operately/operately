@@ -90,7 +90,7 @@ function EndDate({ project }: { project: Projects.Project }) {
 }
 
 function Progress({ project }: { project: Projects.Project }) {
-  if (project.status === "closed") return <CompletedProgress project={project} />;
+  if (project.state === "closed") return <CompletedProgress project={project} />;
 
   const start = Time.parse(project.timeframe?.contextualStartDate?.date);
   const end = Time.parse(project.timeframe?.contextualEndDate?.date);

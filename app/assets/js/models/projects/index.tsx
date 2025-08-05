@@ -46,11 +46,11 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timefr
 }
 
 export function isPausable(project: Project) {
-  return project.status === "active";
+  return project.state === "active";
 }
 
 export function isResumable(project: Project) {
-  return project.status === "paused";
+  return project.state === "paused";
 }
 
 export function useContributorSearchFn(project: Project) {

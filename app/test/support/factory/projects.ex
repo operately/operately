@@ -125,7 +125,10 @@ defmodule Operately.Support.Factory.Projects do
         status: status
       })
 
-    {:ok, project} = Operately.Projects.update_project(project, %{last_check_in_id: check_in.id})
+    {:ok, project} = Operately.Projects.update_project(project, %{
+      last_check_in_id: check_in.id,
+      last_check_in_status: status,
+    })
 
     ctx
     |> Map.put(testid, check_in)
