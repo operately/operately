@@ -67,6 +67,7 @@ function Page() {
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(project.space);
+  assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
 
   const [projectName, setProjectName] = usePageField({
@@ -171,8 +172,8 @@ function Page() {
     dueAt: dueDate,
     setDueAt: setDueDate,
 
-    status: project.status as any,
-    state: project.closedAt ? "closed" : project.status === "paused" ? "paused" : "active",
+    status: project.status,
+    state: project.state,
     closedAt: Time.parse(project.closedAt),
 
     canEdit: project.permissions?.canEditName || false,

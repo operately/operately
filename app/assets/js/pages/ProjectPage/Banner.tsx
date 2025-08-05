@@ -9,7 +9,7 @@ import FormattedTime from "@/components/FormattedTime";
 
 import { usePaths } from "@/routes/paths";
 export function banner(project: Projects.Project) {
-  return match(project.status)
+  return match(project.state)
     .with("closed", () => <ProjectClosedBanner project={project} />)
     .with("paused", () => <ProjectPausedBanner project={project} />)
     .otherwise(() => null);
