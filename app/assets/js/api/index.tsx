@@ -1246,6 +1246,7 @@ export interface ProjectCheckIn {
   subscriptionList?: SubscriptionList | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  commentsCount?: number | null;
 }
 
 export interface ProjectContributor {
@@ -2143,10 +2144,10 @@ export interface GetProjectCheckInResult {
 }
 
 export interface GetProjectCheckInsInput {
-  projectId?: string | null;
-  includeAuthor?: boolean | null;
-  includeProject?: boolean | null;
-  includeReactions?: boolean | null;
+  projectId: string;
+  includeAuthor?: boolean;
+  includeProject?: boolean;
+  includeReactions?: boolean;
 }
 
 export interface GetProjectCheckInsResult {

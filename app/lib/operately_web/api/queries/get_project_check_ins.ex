@@ -7,10 +7,10 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
   alias Operately.Projects.CheckIn
 
   inputs do
-    field? :project_id, :string, null: true
-    field? :include_author, :boolean, null: true
-    field? :include_project, :boolean, null: true
-    field? :include_reactions, :boolean, null: true
+    field :project_id, :string
+    field? :include_author, :boolean
+    field? :include_project, :boolean
+    field? :include_reactions, :boolean
   end
 
   outputs do
@@ -35,6 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
     |> include_requested(requested)
     |> filter_by_view_access(person.id, join_parent: :project)
     |> Repo.all()
+    |> CheckIn.preload_comment_count()
   end
 
   def include_requested(query, requested) do

@@ -8,7 +8,7 @@ import { PrimaryButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import { DivLink } from "../Link";
 import { Summary } from "../RichContent";
-import { CommentCountIndicator } from "./CommentCountIndicator";
+import { CommentCountIndicator } from "../CommentCountIndicator";
 
 export function Discussions(props: GoalPage.State) {
   if (props.discussions.length === 0 && !props.canEdit) return null;
