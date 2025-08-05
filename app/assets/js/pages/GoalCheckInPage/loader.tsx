@@ -1,6 +1,6 @@
 import * as Pages from "@/components/Pages";
-import * as Goals from "@/models/goals";
 import * as GoalCheckIns from "@/models/goalCheckIns";
+import * as Goals from "@/models/goals";
 
 import { assertPresent } from "@/utils/assertions";
 
@@ -13,6 +13,7 @@ export async function loader({ params }): Promise<LoaderResult> {
   const update = await GoalCheckIns.getGoalProgressUpdate({
     id: params.id,
     includeGoalTargets: true,
+    includeGoalChecklist: true,
     includeAcknowledgedBy: true,
     includeReactions: true,
     includeAuthor: true,
