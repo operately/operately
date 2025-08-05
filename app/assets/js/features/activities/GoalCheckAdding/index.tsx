@@ -30,9 +30,9 @@ const GoalCheckAdding: ActivityHandler = {
     const goal = content(props.activity).goal!;
 
     if (props.page === "goal") {
-      return feedTitle(props.activity, "added a new checklist items");
+      return feedTitle(props.activity, "added a new checklist item");
     } else {
-      return feedTitle(props.activity, "added a new checklist items", "on", goalLink(goal));
+      return feedTitle(props.activity, "added a new checklist item", "on", goalLink(goal));
     }
   },
 

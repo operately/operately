@@ -59,6 +59,12 @@ defmodule Operately.Support.Features.GoalChecksSteps do
     end)
   end
 
+  step :assert_check_added_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "added a new checklist item", "New Check")
+  end
+
   #
   # Deleting a goal check
   #
