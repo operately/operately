@@ -23,15 +23,12 @@ interface UseChecklistsParams {
 }
 
 export function useChecklists(params: UseChecklistsParams): Checklists {
-  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>(() => {
-    return params.initialChecklist.map((check) => ({
-      id: check.id,
-      name: check.name,
-      completed: check.completed,
-      index: check.index,
-      mode: "view",
-    }));
-  });
+  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>([]);
+
+  React.useEffect(() => {
+    const sorted = params.initialChecklist.sort((a, b) => a.index - b.index);
+    setItems(sorted.map((check) => ({ ...check, mode: "view" as const })));
+  }, [params.initialChecklist]);
 
   return {
     enabled: Companies.hasFeature(params.company, "checklists"),
