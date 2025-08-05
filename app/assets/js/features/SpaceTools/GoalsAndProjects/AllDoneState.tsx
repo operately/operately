@@ -117,7 +117,7 @@ function calcStats(props: Props): Stats {
   });
 
   props.projects.forEach((project) => {
-    if (project.status !== "closed") return;
+    if (project.state !== "closed") return;
 
     const date = Time.parse(project.closedAt);
     if (!date) return;
