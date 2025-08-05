@@ -1,4 +1,5 @@
 import * as Companies from "@/models/companies";
+import * as Goals from "@/models/goals";
 import * as React from "react";
 
 import Api from "@/api";
@@ -18,10 +19,16 @@ interface Checklists {
 interface UseChecklistsParams {
   company: Companies.Company;
   goalId: string;
+  initialChecklist: Goals.Check[];
 }
 
 export function useChecklists(params: UseChecklistsParams): Checklists {
   const [items, setItems] = React.useState<Checklist.ChecklistItem[]>([]);
+
+  React.useEffect(() => {
+    const sorted = params.initialChecklist.sort((a, b) => a.index - b.index);
+    setItems(sorted.map((check) => ({ ...check, mode: "view" as const })));
+  }, [params.initialChecklist]);
 
   return {
     enabled: Companies.hasFeature(params.company, "checklists"),
