@@ -1010,6 +1010,7 @@ export interface Goal {
   notifications?: Notification[] | null;
   success?: boolean | null;
   retrospective?: GoalRetrospective | null;
+  checklist?: GoalCheck[];
 }
 
 export interface GoalCheck {

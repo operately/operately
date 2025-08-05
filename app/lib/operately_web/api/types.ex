@@ -1146,6 +1146,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :notifications, list_of(:notification), null: true
     field? :success, :boolean, null: true
     field? :retrospective, :goal_retrospective, null: true
+    field? :checklist, list_of(:goal_check)
   end
 
   object :goal_check do
