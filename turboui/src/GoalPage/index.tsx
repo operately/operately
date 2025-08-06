@@ -109,6 +109,8 @@ export namespace GoalPage {
 
     dueDate: DateField.ContextualDate | null;
     setDueDate: (date: DateField.ContextualDate | null) => void;
+    startDate: DateField.ContextualDate | null;
+    setStartDate: (date: DateField.ContextualDate | null) => void;
 
     contributors: Contributor[];
     targets: GoalTargetList.Target[];

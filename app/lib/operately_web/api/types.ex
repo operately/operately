@@ -99,6 +99,14 @@ defmodule OperatelyWeb.Api.Types do
     field :new_due_date, :date, null: true
   end
 
+  object :activity_content_goal_start_date_updating do
+    field :company, :company
+    field :space, :space
+    field :goal, :goal
+    field :old_start_date, :date, null: true
+    field :new_start_date, :date, null: true
+  end
+
   object :activity_content_project_due_date_updating do
     field :company, :company
     field :space, :space

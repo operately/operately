@@ -34,12 +34,30 @@ export function Sidebar(props: GoalPage.State) {
       <CompletedOn {...props} />
       <LastCheckInSection {...props} />
       <ParentGoal {...props} />
+      <StartDate {...props} />
       <DueDate {...props} />
       <Champion {...props} />
       <Reviewer {...props} />
       <Privacy {...props} />
       <Actions {...props} />
     </div>
+  );
+}
+
+function StartDate(props: GoalPage.State) {
+  const isReadonly = !props.canEdit || !!props.closedAt;
+
+  return (
+    <SidebarSection title="Start Date">
+      <DateField
+        date={props.startDate}
+        onDateSelect={props.setStartDate}
+        placeholder="Set date"
+        readonly={isReadonly}
+        testId="start-date-field"
+        useStartOfPeriod
+      />
+    </SidebarSection>
   );
 }
 
