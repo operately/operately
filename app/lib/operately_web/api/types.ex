@@ -1497,7 +1497,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project
     field? :space, :space
     field? :can_comment, :boolean
-    field? :comments_count, :integer, null: true
   end
 
   object :comment do

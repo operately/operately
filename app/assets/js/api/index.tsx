@@ -921,7 +921,6 @@ export interface CommentThread {
   project?: Project;
   space?: Space;
   canComment?: boolean;
-  commentsCount?: number | null;
 }
 
 export interface Company {
