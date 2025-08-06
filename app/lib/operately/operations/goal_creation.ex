@@ -27,7 +27,7 @@ defmodule Operately.Operations.GoalCreation do
         group_id: attrs[:space_id],
         champion_id: attrs[:champion_id],
         reviewer_id: attrs[:reviewer_id],
-        timeframe: attrs[:timeframe],
+        timeframe: attrs[:timeframe] || default_timeframe(),
         parent_goal_id: attrs[:parent_goal_id],
         description: attrs[:description] && Jason.decode!(attrs[:description]),
         creator_id: creator.id,
@@ -109,5 +109,12 @@ defmodule Operately.Operations.GoalCreation do
         })
       end)
     end)
+  end
+
+  defp default_timeframe do
+    %{
+      contextual_start_date: Operately.ContextualDates.ContextualDate.create_day_date(Date.utc_today()),
+      contextual_end_date: nil,
+    }
   end
 end

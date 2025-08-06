@@ -367,6 +367,14 @@ export interface ActivityContentGoalSpaceUpdating {
   oldSpace: Space;
 }
 
+export interface ActivityContentGoalStartDateUpdating {
+  company: Company;
+  space: Space;
+  goal: Goal;
+  oldStartDate: string | null;
+  newStartDate: string | null;
+}
+
 export interface ActivityContentGoalTargetAdding {
   company: Company;
   space: Space;
@@ -3326,6 +3334,15 @@ export interface GoalsUpdateSpaceResult {
   success: boolean | null;
 }
 
+export interface GoalsUpdateStartDateInput {
+  goalId: Id;
+  startDate: ContextualDate | null;
+}
+
+export interface GoalsUpdateStartDateResult {
+  success: boolean | null;
+}
+
 export interface GoalsUpdateTargetInput {
   goalId: Id;
   targetId: Id;
@@ -4476,6 +4493,10 @@ class ApiNamespaceGoals {
 
   async updateSpace(input: GoalsUpdateSpaceInput): Promise<GoalsUpdateSpaceResult> {
     return this.client.post("/goals/update_space", input);
+  }
+
+  async updateStartDate(input: GoalsUpdateStartDateInput): Promise<GoalsUpdateStartDateResult> {
+    return this.client.post("/goals/update_start_date", input);
   }
 
   async updateTarget(input: GoalsUpdateTargetInput): Promise<GoalsUpdateTargetResult> {
@@ -6994,6 +7015,12 @@ export default {
     updateCheck: (input: GoalsUpdateCheckInput) => defaultApiClient.apiNamespaceGoals.updateCheck(input),
     useUpdateCheck: () =>
       useMutation<GoalsUpdateCheckInput, GoalsUpdateCheckResult>(defaultApiClient.apiNamespaceGoals.updateCheck),
+
+    updateStartDate: (input: GoalsUpdateStartDateInput) => defaultApiClient.apiNamespaceGoals.updateStartDate(input),
+    useUpdateStartDate: () =>
+      useMutation<GoalsUpdateStartDateInput, GoalsUpdateStartDateResult>(
+        defaultApiClient.apiNamespaceGoals.updateStartDate,
+      ),
 
     updateDescription: (input: GoalsUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceGoals.updateDescription(input),

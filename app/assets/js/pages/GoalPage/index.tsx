@@ -104,6 +104,12 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the space to its previous value."),
   });
 
+  const [startDate, setStartDate] = usePageField({
+    value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualStartDate),
+    update: (v) => Api.goals.updateStartDate({ goalId: goal.id!, startDate: serializeContextualDate(v) }),
+    onError: () => showErrorToast("Network Error", "Reverted the start date to its previous value."),
+  });
+
   const [dueDate, setDueDate] = usePageField({
     value: (data: { goal: Goal }) => parseContextualDate(data.goal.timeframe?.contextualEndDate),
     update: (v) => Api.goals.updateDueDate({ goalId: goal.id!, dueDate: serializeContextualDate(v) }),
@@ -185,6 +191,8 @@ function Page() {
 
     dueDate,
     setDueDate,
+    startDate,
+    setStartDate,
 
     champion,
     setChampion,

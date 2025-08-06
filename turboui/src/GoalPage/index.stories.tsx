@@ -41,6 +41,7 @@ function Component(props: Partial<GoalPage.Props>) {
   const [goalName, setGoalName] = React.useState<string>(props.goalName || "Launch AI Platform");
   const [space, setSpace] = React.useState<GoalPage.Space>(props.space || defaultSpace);
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | null>(props.dueDate || null);
+  const [startDate, setStartDate] = React.useState<DateField.ContextualDate | null>(props.startDate || null);
   const [champion, setChampion] = React.useState<GoalPage.Person | null>(props.champion || null);
   const [reviewer, setReviewer] = React.useState<GoalPage.Person | null>(props.reviewer || null);
   const [parentGoal, setParentGoal] = React.useState<GoalPage.ParentGoal | null>(props.parentGoal || defaultParentGoal);
@@ -141,6 +142,8 @@ function Component(props: Partial<GoalPage.Props>) {
       setReviewer={setReviewer}
       dueDate={dueDate}
       setDueDate={setDueDate}
+      startDate={startDate}
+      setStartDate={setStartDate}
       canEdit={props.canEdit ?? true}
       mentionedPersonLookup={async (_id: string) => null}
       peopleSearch={searchPeopleFn}
