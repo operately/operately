@@ -18,6 +18,7 @@ import { StatusBanner } from "./StatusBanner";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MoveModal } from "../Modal/MoveModal";
 import { CheckIns } from "./CheckIns";
+import { Discussions } from "./Discussions";
 
 export namespace ProjectPage {
   export interface Space {
@@ -44,6 +45,16 @@ export namespace ProjectPage {
     status: BadgeStatus;
   }
 
+  export interface Discussion {
+    id: string;
+    title: string;
+    author: Person;
+    date: Date;
+    link: string;
+    content: string;
+    commentCount: number;
+  }
+
   export interface ParentGoal {
     id: string;
     name: string;
@@ -60,6 +71,7 @@ export namespace ProjectPage {
     projectName: string;
     description?: string;
     newCheckInLink: string;
+    newDiscussionLink: string;
 
     space: Space;
     setSpace: (space: Space) => void;
@@ -112,6 +124,7 @@ export namespace ProjectPage {
     contributors: Person[];
     manageTeamLink?: string;
     checkIns: CheckIn[];
+    discussions: Discussion[];
     mentionedPersonLookup: MentionedPersonLookupFn;
 
     // Resource management
@@ -190,9 +203,7 @@ export function ProjectPage(props: ProjectPage.Props) {
           </div>
         )}
         {tabs.active === "check-ins" && <CheckIns {...state} />}
-        {tabs.active === "discussions" && (
-          <div className="flex-1 overflow-auto p-4">Discussions content will go here</div>
-        )}
+        {tabs.active === "discussions" && <Discussions {...state} />}
         {tabs.active === "activity" && <div className="flex-1 overflow-auto p-4">Activity content will go here</div>}
       </div>
 

@@ -907,10 +907,10 @@ export interface Comment {
 }
 
 export interface CommentThread {
-  id?: string | null;
-  insertedAt?: string | null;
-  title?: string | null;
-  message?: string | null;
+  id: string;
+  insertedAt: string;
+  title: string | null;
+  message: string | null;
   reactions?: Reaction[] | null;
   comments?: Comment[] | null;
   commentsCount?: number | null;
@@ -921,6 +921,7 @@ export interface CommentThread {
   project?: Project;
   space?: Space;
   canComment?: boolean;
+  commentsCount?: number | null;
 }
 
 export interface Company {
