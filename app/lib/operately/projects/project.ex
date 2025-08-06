@@ -90,7 +90,7 @@ defmodule Operately.Projects.Project do
       :last_check_in_status,
       :next_update_scheduled_at,
       :started_at,
-      :deadline,
+      :deadline
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
@@ -310,5 +310,12 @@ defmodule Operately.Projects.Project do
 
   def get_access_context(project_id) when is_binary(project_id) do
     Operately.Access.get_context!(project_id: project_id)
+  end
+
+  def list_discussions(project_id) do
+    project_id
+    |> Operately.Comments.CommentThread.list_for_project()
+    |> Operately.Repo.preload([:author])
+    |> Operately.Updates.Comment.load_comments_count()
   end
 end

@@ -17,8 +17,7 @@ defmodule Operately.MD.GoalTest do
         parent_goal: [],
         projects: [],
         champion: [],
-        reviewer: [],
-        discussions: [:author]
+        reviewer: []
       )
 
     rendered = Operately.MD.Goal.render(goal)
