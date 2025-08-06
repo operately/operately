@@ -18,7 +18,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { parseMilestonesForTurboUi } from "@/models/milestones";
-import { parseCheckInsForTurboUi } from "@/models/projectCheckIns";
+import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -29,8 +29,8 @@ function pageCacheKey(id: string): string {
 type LoaderResult = {
   data: {
     project: Projects.Project;
-    checkIns: any[];
-    discussions: any[];
+    checkIns: ProjectCheckIn[];
+    discussions: Projects.Discussion[];
   };
   cacheVersion: number;
 };
@@ -64,7 +64,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 
 function Page() {
   const paths = usePaths();
-  const { project, checkIns } = PageCache.useData(loader).data;
+  const { project, checkIns, discussions } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -194,9 +194,11 @@ function Page() {
     milestones: parseMilestonesForTurboUi(paths, project.milestones),
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
+    discussions: prepareDiscussions(paths, discussions),
     mentionedPersonLookup,
     resources: prepareResources(project.keyResources!),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
+    newDiscussionLink: paths.projectDiscussionNewPath(project.id),
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
   };
@@ -316,6 +318,22 @@ function prepareContributor(
     title: contributor.person.title || "",
     profileLink: paths.profilePath(contributor.person.id),
   };
+}
+
+function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): ProjectPage.Discussion[] {
+  return discussions.map((discussion) => {
+    assertPresent(discussion.title);
+
+    return {
+      id: discussion.id,
+      date: Time.parse(discussion.insertedAt)!,
+      title: discussion.title,
+      author: People.parsePersonForTurboUi(paths, discussion.author)!,
+      link: paths.projectDiscussionPath(discussion.id),
+      content: JSON.parse(discussion.message || "{}"),
+      commentCount: discussion.commentsCount || 0,
+    };
+  });
 }
 
 function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {

@@ -40,4 +40,27 @@ defmodule Operately.Updates.Comment do
     |> cast(attrs, __schema__(:fields))
     |> validate_required([:content, :author_id])
   end
+
+  import Ecto.Query, only: [from: 2]
+
+  @doc """
+  Loads the comment counts for a list of resources that have comments.
+  """
+  def load_comments_count(parents) when is_list(parents) do
+    parent_ids = Enum.map(parents, &(&1.id))
+
+    counts =
+      from(c in Operately.Updates.Comment,
+        where: c.entity_id in ^parent_ids,
+        group_by: c.entity_id,
+        select: {c.entity_id, count(c.id)}
+      )
+      |> Repo.all()
+      |> Enum.into(%{})
+
+    Enum.map(parents, fn m ->
+      count = Map.get(counts, m.id, 0)
+      Map.put(m, :comments_count, count)
+    end)
+  end
 end
