@@ -124,6 +124,7 @@ export function createAppRoutes() {
 
         pageRoute("goals/new", pages.GoalAddPage),
         pageRoute("goals/:id", pages.GoalPage),
+        pageRoute("goals/:id/md", pages.GoalAsMarkdownPage),
         pageRoute("goals/:goalId/complete", pages.GoalClosingPage),
         pageRoute("goals/:goalId/reopen", pages.GoalReopenPage),
         pageRoute("goals/:goalId/progress-updates/new", pages.GoalCheckInNewPage),

@@ -7,7 +7,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
   alias Operately.Notifications.UnreadNotificationsLoader
 
   inputs do
-    field? :id, :id, null: true
+    field :id, :id
 
     field? :include_champion, :boolean, null: true
     field? :include_closed_by, :boolean, null: true
@@ -23,10 +23,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     field? :include_unread_notifications, :boolean, null: true
     field? :include_retrospective, :boolean, null: true
     field? :include_checklist, :boolean
+    field? :include_markdown, :boolean, default: false
   end
 
   outputs do
-    field? :goal, :goal, null: true
+    field? :goal, :goal
+    field? :markdown, :string
   end
 
   def call(conn, %{id: _id} = inputs) do
@@ -34,12 +36,20 @@ defmodule OperatelyWeb.Api.Queries.GetGoal do
     |> run(:me, fn -> find_me(conn) end)
     |> run(:goal, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.goal.request_info.access_level, :can_view) end)
-    |> run(:serialized, fn ctx -> {:ok, %{goal: Serializer.serialize(ctx.goal, level: :full)}} end)
+    |> run(:serialized, fn ctx -> serialize(ctx, inputs.include_markdown) end)
     |> respond()
   end
 
-  def call(_conn, _) do
-    {:error, :bad_request, "id is required"}
+  def serialize(ctx, include_md) do
+    json = Serializer.serialize(ctx.goal, level: :full)
+
+    if include_md do
+      markdown = Operately.MD.Goal.render(ctx.goal)
+
+      {:ok, %{goal: json, markdown: markdown}}
+    else
+      {:ok, %{goal: json}}
+    end
   end
 
   defp respond(result) do

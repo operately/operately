@@ -29,24 +29,24 @@ defmodule Operately.AI.Tools.GetGoalDetails do
         case OperatelyWeb.Api.Helpers.decode_id(Map.get(args, "id")) do
           {:ok, id} ->
             me = Map.get(context, :person)
+            conn = %{assigns: %{current_person: me}}
 
-            {:ok, goal} =
-              Operately.Goals.Goal.get(me,
-                id: id,
-                opts: [
-                  preload: [
-                    :champion,
-                    :closed_by,
-                    :last_update,
-                    :projects,
-                    :reviewer,
-                    :group,
-                    :targets
-                  ]
-                ]
-              )
+            args = %{
+              id: id,
+              include_champion: true,
+              include_closed_by: true,
+              include_last_check_in: true,
+              include_permissions: true,
+              include_projects: true,
+              include_reviewer: true,
+              include_space: true,
+              include_privacy: true,
+              include_retrospective: true,
+              include_markdown: true
+            }
 
-            {:ok, Operately.MD.Goal.render(goal)}
+            {:ok, data} = OperatelyWeb.Api.Queries.GetGoal.call(conn, args)
+            {:ok, data.markdown}
 
           {:error, _} ->
             {:error, "Invalid goal ID format."}
