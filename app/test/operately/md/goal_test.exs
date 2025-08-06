@@ -17,7 +17,8 @@ defmodule Operately.MD.GoalTest do
         parent_goal: [],
         projects: [],
         champion: [],
-        reviewer: []
+        reviewer: [],
+        discussions: [:author]
       )
 
     rendered = Operately.MD.Goal.render(goal)
@@ -29,5 +30,16 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "Created:"
     assert rendered =~ "Last Updated:"
     assert rendered =~ "Parent Goal: None (Top Level Goal)"
+  end
+
+  test "it renders discussions in the markdown", ctx do
+    ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: Operately.Support.RichText.rich_text("This is a discussion about the goal."))
+
+    rendered = Operately.MD.Goal.render(ctx.goal)
+
+    assert rendered =~ "## Discussions"
+    assert rendered =~ "Discussion Title"
+    assert rendered =~ "This is a discussion about the goal."
+    assert rendered =~ ctx.creator.full_name
   end
 end
