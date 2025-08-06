@@ -3,6 +3,7 @@ import * as React from "react";
 
 import { AddBlobsEditorCommand } from "../Blob/AddBlobsEditorCommand";
 import { ToolbarButton } from "./ToolbarButton";
+import { useUploadFile } from "../EditorContext";
 
 //
 // To activate the file chooser, we need to add a hiden input element to the DOM, with the type=file.
@@ -10,6 +11,7 @@ import { ToolbarButton } from "./ToolbarButton";
 //
 export function AttachmentButton({ editor, iconSize }): JSX.Element {
   let ref = React.useRef<HTMLInputElement | null>(null);
+  const uploadFile = useUploadFile();
 
   const handleClick = React.useCallback(() => {
     if (ref.current) ref.current.click();
@@ -24,9 +26,10 @@ export function AttachmentButton({ editor, iconSize }): JSX.Element {
         files: e.target.files,
         pos: editor.state.selection.from,
         view: editor.view,
+        uploadFile: uploadFile,
       });
     },
-    [editor],
+    [editor, uploadFile],
   );
 
   //

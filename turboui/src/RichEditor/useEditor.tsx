@@ -110,7 +110,7 @@ export function useEditor(props: UseEditorProps): EditorState {
         },
         dropcursor: false,
       }),
-      Blob,
+      Blob.configure({ uploadFile: props.uploadFile }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: props.placeholder }),
       mentionPeople,

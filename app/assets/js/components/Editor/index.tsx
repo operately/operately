@@ -12,6 +12,7 @@ import FakeTextSelection from "@/features/richtexteditor/extensions/FakeTextSele
 import { Toolbar } from "@/features/richtexteditor/components/Toolbar";
 
 import Blob, { isUploadInProgress } from "./Blob";
+import * as Blobs from "@/models/blobs";
 
 import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
@@ -93,6 +94,10 @@ function useEditor(props: UseEditorProps): EditorState {
     return MentionPeople.configure(props.peopleSearch || defaultPeopleSearch);
   }, []);
 
+  const uploadFile = React.useCallback((file: File, onProgress: (progress: number) => void) => {
+    return Blobs.uploadFile(file, onProgress);
+  }, []);
+
   const editor = TipTap.useEditor({
     editable: props.editable,
     content: props.content,
@@ -116,7 +121,7 @@ function useEditor(props: UseEditorProps): EditorState {
         },
         dropcursor: false,
       }),
-      Blob,
+      Blob.configure({ uploadFile }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: props.placeholder }),
       mentionPeople,

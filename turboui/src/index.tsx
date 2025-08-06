@@ -37,6 +37,9 @@ export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./T
 export { Tooltip } from "./Tooltip";
 export { RichContent };
 
-export { DropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";
-export { PasteFilePlugin } from "./RichEditor/Blob/PasteFilePlugin";
+export { createDropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";
+export { createPasteFilePlugin } from "./RichEditor/Blob/PasteFilePlugin";
 export { PasteHtmlImagesPlugin } from "./RichEditor/Blob/PasteHtmlImagesPlugin";
+
+import BlobExtension, { isUploadInProgress } from "./RichEditor/Blob";
+export { BlobExtension, isUploadInProgress };
