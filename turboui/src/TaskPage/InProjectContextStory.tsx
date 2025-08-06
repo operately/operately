@@ -85,6 +85,8 @@ export function InProjectContextStory() {
     isMoveModalOpen,
     newCheckInLink: "#",
     checkIns: [],
+    newDiscussionLink: "#",
+    discussions: [],
     mentionedPersonLookup: mockMentionedPersonLookup,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
