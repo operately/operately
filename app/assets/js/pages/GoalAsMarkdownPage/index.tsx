@@ -30,7 +30,7 @@ async function loader({ params }): Promise<LoaderResult> {
   return { markdown: data.markdown! };
 }
 
-export function Page() {
+function Page() {
   const { markdown } = Pages.useLoadedData<LoaderResult>();
 
   return (
