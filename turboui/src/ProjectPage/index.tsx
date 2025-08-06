@@ -184,7 +184,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       )}
       <Tabs tabs={tabs} />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 overflow-scroll">
         {tabs.active === "overview" && <Overview {...state} />}
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden pt-1">
@@ -204,7 +204,7 @@ export function ProjectPage(props: ProjectPage.Props) {
         )}
         {tabs.active === "check-ins" && <CheckIns {...state} />}
         {tabs.active === "discussions" && <Discussions {...state} />}
-        {tabs.active === "activity" && <div className="flex-1 overflow-auto p-4">Activity content will go here</div>}
+        {tabs.active === "activity" && <Activity {...state} />}
       </div>
 
       <MoveModal {...state} />
@@ -213,3 +213,12 @@ export function ProjectPage(props: ProjectPage.Props) {
 }
 
 export { StatusBanner };
+
+function Activity(props: ProjectPage.State) {
+  return (
+    <div className="p-4 max-w-5xl mx-auto my-6">
+      <div className="font-bold text-lg mb-4">Activity</div>
+      {props.activityFeed}
+    </div>
+  );
+}
