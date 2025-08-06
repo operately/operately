@@ -2130,10 +2130,12 @@ export interface GetProjectInput {
   includeRetrospective?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includeMarkdown?: boolean;
 }
 
 export interface GetProjectResult {
-  project?: Project | null;
+  project?: Project;
+  markdown?: string;
 }
 
 export interface GetProjectCheckInInput {

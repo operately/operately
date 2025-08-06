@@ -48,6 +48,7 @@ import ProfilePage from "./ProfilePage";
 import ProjectAddPage from "./ProjectAddPage";
 import ProjectAddResourcePage from "./ProjectAddResourcePage";
 import ProjectArchivationPage from "./ProjectArchivationPage";
+import ProjectAsMarkdownPage from "./ProjectAsMarkdownPage";
 import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
 import ProjectCheckInNewPage from "./ProjectCheckInNewPage";
 import ProjectCheckInPage from "./ProjectCheckInPage";
@@ -151,6 +152,7 @@ export default {
   ProjectAddPage,
   ProjectAddResourcePage,
   ProjectArchivationPage,
+  ProjectAsMarkdownPage,
   ProjectCheckInEditPage,
   ProjectCheckInNewPage,
   ProjectCheckInPage,

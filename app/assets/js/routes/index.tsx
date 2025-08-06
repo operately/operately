@@ -158,6 +158,7 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/discussions/new", pages.ProjectDiscussionNewPage),
         pageRoute("projects/:id", pages.ProjectPage),
         pageRoute("projects/:id/v2", pages.ProjectV2Page),
+        pageRoute("projects/:id/md", pages.ProjectAsMarkdownPage),
 
         pageRoute("project-check-ins/:id", pages.ProjectCheckInPage),
         pageRoute("project-check-ins/:id/edit", pages.ProjectCheckInEditPage),
