@@ -1,6 +1,6 @@
 defmodule Operately.MD.Goal do
   def render(goal) do
-    goal = Operately.Repo.preload(goal, updates: [:author])
+    goal = Operately.Repo.preload(goal, updates: [:author], targets: [], group: [], parent_goal: [], projects: [], champion: [], reviewer: [])
 
     """
     # #{goal.name}
@@ -46,6 +46,7 @@ defmodule Operately.MD.Goal do
         info <> "Parent Goal: None (Top Level Goal)"
       end
     end)
+    |> then(fn info -> info <> "\n\n" end)
   end
 
   defp render_description(goal) do
@@ -53,10 +54,14 @@ defmodule Operately.MD.Goal do
       """
       ## Description
 
-      #{goal.description}
+      #{Operately.MD.RichText.render(goal.description)}
       """
     else
-      ""
+      """
+      ## Description
+
+      _No description provided._
+      """
     end
   end
 
