@@ -7,7 +7,7 @@ interface Props {
   selectedDate: DateField.ContextualDate | null;
   setSelectedDate: React.Dispatch<React.SetStateAction<DateField.ContextualDate>>;
   visibleYears: number[];
-  useStartOfPeriod?: boolean;
+  useStartOfPeriod: boolean;
   minDateLimit?: Date;
   maxDateLimit?: Date;
 }
@@ -16,7 +16,7 @@ export function MonthSelector({
   selectedDate,
   setSelectedDate,
   visibleYears,
-  useStartOfPeriod = false,
+  useStartOfPeriod,
   minDateLimit,
   maxDateLimit,
 }: Props) {

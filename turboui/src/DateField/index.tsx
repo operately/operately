@@ -267,7 +267,7 @@ interface DatePickerContentProps {
   onClearDate?: () => void;
   yearOptions: number[];
   testId: string;
-  useStartOfPeriod?: boolean;
+  useStartOfPeriod: boolean;
   minDateLimit?: Date;
   maxDateLimit?: Date;
 }
