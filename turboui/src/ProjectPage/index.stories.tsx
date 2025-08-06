@@ -133,6 +133,42 @@ const mockCheckIns: ProjectPage.CheckIn[] = [
   },
 ];
 
+const mockDiscussions: ProjectPage.Discussion[] = [
+  {
+    id: "discussion-1",
+    title: "Design Mockups",
+    author: people[4]!,
+    date: new Date(2025, 3, 17), // Apr 17th, 2025
+    link: "/projects/1/discussions/1",
+    content: asRichText(
+      "Design mockups for the new authentication module. The team is working on the UI wireframes and backend architecture is being finalized.",
+    ),
+    commentCount: 5,
+  },
+  {
+    id: "discussion-2",
+    title: "Authentication Module",
+    author: people[3]!,
+    date: new Date(2025, 3, 10), // Apr 10th, 2025
+    link: "/projects/1/discussions/2",
+    content: asRichText(
+      "Authentication module is ready for review. The team is working on the UI wireframes and backend architecture is being finalized.",
+    ),
+    commentCount: 2,
+  },
+  {
+    id: "discussion-3",
+    title: "Database Schema",
+    author: people[2]!,
+    date: new Date(2025, 3, 3), // Apr 3rd, 2025
+    link: "/projects/1/discussions/3",
+    content: asRichText(
+      "Database schema finalized and development environment is set up. All team members have access to the repositories and development tools. Ready to start implementation phase next week.",
+    ),
+    commentCount: 8,
+  },
+];
+
 // Mock resources data
 const mockResources: ResourceManager.Resource[] = [
   {
@@ -277,7 +313,6 @@ export const Default: Story = {
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
-        checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
@@ -295,6 +330,9 @@ export const Default: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        discussions={mockDiscussions}
       />
     );
   },
@@ -345,7 +383,6 @@ export const ReadOnly: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
         parentGoal={{
           id: "2",
@@ -367,6 +404,9 @@ export const ReadOnly: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        discussions={[]}
       />
     );
   },
@@ -459,7 +499,6 @@ export const EmptyTasks: Story = {
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
-        checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
         parentGoal={null}
         setParentGoal={() => {}}
@@ -477,6 +516,9 @@ export const EmptyTasks: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        discussions={[]}
       />
     );
   },
@@ -560,7 +602,6 @@ export const EmptyProject: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        checkIns={[]}
         mentionedPersonLookup={async () => null}
         parentGoal={null}
         setParentGoal={() => {}}
@@ -578,6 +619,9 @@ export const EmptyProject: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={[]}
+        newDiscussionLink="#"
+        discussions={[]}
       />
     );
   },
@@ -621,7 +665,6 @@ export const EmptyProjectReadOnly: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        checkIns={[]}
         mentionedPersonLookup={async () => null}
         parentGoal={null}
         setParentGoal={() => {}}
@@ -639,6 +682,9 @@ export const EmptyProjectReadOnly: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={[]}
+        newDiscussionLink="#"
+        discussions={[]}
       />
     );
   },
@@ -765,7 +811,6 @@ export const PausedProject: Story = {
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
-        checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
@@ -783,6 +828,9 @@ export const PausedProject: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        discussions={[]}
       />
     );
   },
@@ -841,7 +889,6 @@ export const ClosedProject: Story = {
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        checkIns={mockCheckIns}
         mentionedPersonLookup={async () => null}
         parentGoal={parentGoal}
         setParentGoal={() => {}}
@@ -859,6 +906,9 @@ export const ClosedProject: Story = {
         championSearch={searchPeopleFn}
         reviewerSearch={searchPeopleFn}
         newCheckInLink="#"
+        checkIns={mockCheckIns}
+        newDiscussionLink="#"
+        discussions={[]}
       />
     );
   },

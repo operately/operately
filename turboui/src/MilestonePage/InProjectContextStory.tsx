@@ -123,9 +123,11 @@ export function InProjectContextStory() {
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
     searchSpace: spaceSearchFn,
-    newCheckInLink: "#",
     mentionedPersonLookup: async () => null,
+    newCheckInLink: "#",
     checkIns: [],
+    newDiscussionLink: "#",
+    discussions: [],
   };
 
   const tabs = useTabs("tasks", [
@@ -293,9 +295,11 @@ export function EmptyMilestoneInProjectContextStory() {
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
-    newCheckInLink: "#",
     mentionedPersonLookup: async () => null,
+    newCheckInLink: "#",
     checkIns: [],
+    newDiscussionLink: "#",
+    discussions: [],
   };
 
   const tabs = useTabs("tasks", [
