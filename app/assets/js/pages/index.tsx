@@ -27,6 +27,7 @@ import FeedPage from "./FeedPage";
 import ForgotPasswordPage from "./ForgotPasswordPage";
 import GoalActivityPage from "./GoalActivityPage";
 import GoalAddPage from "./GoalAddPage";
+import GoalAsMarkdownPage from "./GoalAsMarkdownPage";
 import GoalCheckInNewPage from "./GoalCheckInNewPage";
 import GoalCheckInPage from "./GoalCheckInPage";
 import GoalClosingPage from "./GoalClosingPage";
@@ -48,6 +49,7 @@ import ProfilePage from "./ProfilePage";
 import ProjectAddPage from "./ProjectAddPage";
 import ProjectAddResourcePage from "./ProjectAddResourcePage";
 import ProjectArchivationPage from "./ProjectArchivationPage";
+import ProjectAsMarkdownPage from "./ProjectAsMarkdownPage";
 import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
 import ProjectCheckInNewPage from "./ProjectCheckInNewPage";
 import ProjectCheckInPage from "./ProjectCheckInPage";
@@ -130,6 +132,7 @@ export default {
   ForgotPasswordPage,
   GoalActivityPage,
   GoalAddPage,
+  GoalAsMarkdownPage,
   GoalCheckInNewPage,
   GoalCheckInPage,
   GoalClosingPage,
@@ -151,6 +154,7 @@ export default {
   ProjectAddPage,
   ProjectAddResourcePage,
   ProjectArchivationPage,
+  ProjectAsMarkdownPage,
   ProjectCheckInEditPage,
   ProjectCheckInNewPage,
   ProjectCheckInPage,
