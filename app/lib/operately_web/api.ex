@@ -43,6 +43,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_name, OperatelyWeb.Api.Goals.UpdateName)
     mutation(:update_description, OperatelyWeb.Api.Goals.UpdateDescription)
     mutation(:update_due_date, OperatelyWeb.Api.Goals.UpdateDueDate)
+    mutation(:update_start_date, OperatelyWeb.Api.Goals.UpdateStartDate)
     mutation(:update_parent_goal, OperatelyWeb.Api.Goals.UpdateParentGoal)
     mutation(:update_space, OperatelyWeb.Api.Goals.UpdateSpace)
 

@@ -151,6 +151,38 @@ defmodule OperatelyWeb.Api.Goals do
     end
   end
 
+  defmodule UpdateStartDate do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :goal_id, :id, null: false
+      field :start_date, :contextual_date, null: true
+    end
+
+    outputs do
+      field :success, :boolean, null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_goal(inputs.goal_id)
+      |> Steps.check_permissions(:can_edit)
+      |> Steps.update_goal_start_date(inputs.start_date)
+      |> Steps.save_activity(:goal_start_date_updating, fn changes ->
+        %{
+          company_id: changes.goal.company_id,
+          space_id: changes.goal.group_id,
+          goal_id: changes.goal.id,
+          old_start_date: Operately.ContextualDates.Timeframe.start_date(changes.goal.timeframe),
+          new_start_date: Operately.ContextualDates.Timeframe.start_date(changes.updated_goal.timeframe)
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule UpdateParentGoal do
     use TurboConnect.Mutation
 
@@ -560,38 +592,47 @@ defmodule OperatelyWeb.Api.Goals do
     def update_goal_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
         cond do
-          new_due_date == nil ->
+          new_due_date == nil && goal.timeframe == nil ->
             Operately.Goals.Goal.changeset(goal, %{timeframe: nil})
 
           goal.timeframe == nil ->
-            contextual_start_date = %{
-              date_type: :day,
-              value: Calendar.strftime(goal.inserted_at, "%b %d, %Y"),
-              date: goal.inserted_at
-            }
-
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
-                contextual_start_date: contextual_start_date,
+                contextual_start_date: nil,
                 contextual_end_date: new_due_date
               }
             })
 
           true ->
-            contextual_start_date = if goal.timeframe.contextual_start_date do
-              Map.from_struct(goal.timeframe.contextual_start_date)
-            else
-              %{
-                date_type: :day,
-                value: Calendar.strftime(goal.timeframe.start_date, "%b %d, %Y"),
-                date: goal.timeframe.start_date
-              }
-            end
-
             Operately.Goals.Goal.changeset(goal, %{
               timeframe: %{
-                contextual_start_date: contextual_start_date,
+                contextual_start_date: goal.timeframe.contextual_start_date,
                 contextual_end_date: new_due_date
+              }
+            })
+        end
+      end)
+    end
+
+    def update_goal_start_date(multi, new_start_date) do
+      Ecto.Multi.update(multi, :updated_goal, fn %{goal: goal} ->
+        cond do
+          new_start_date == nil && goal.timeframe == nil ->
+            Operately.Goals.Goal.changeset(goal, %{timeframe: nil})
+
+          goal.timeframe == nil ->
+            Operately.Goals.Goal.changeset(goal, %{
+              timeframe: %{
+                contextual_start_date: new_start_date,
+                contextual_end_date: nil
+              }
+            })
+
+          true ->
+            Operately.Goals.Goal.changeset(goal, %{
+              timeframe: %{
+                contextual_start_date: new_start_date,
+                contextual_end_date: goal.timeframe.contextual_end_date
               }
             })
         end

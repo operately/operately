@@ -298,7 +298,49 @@ defmodule OperatelyWeb.Api.GoalsTest do
       assert res.success == true
 
       ctx = Factory.reload(ctx, :goal)
-      assert ctx.goal.timeframe == nil
+      assert ctx.goal.timeframe.contextual_end_date == nil
+    end
+  end
+
+  describe "update start date" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:goals, :update_start_date], %{})
+    end
+
+    test "it requires a goal_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:goals, :update_start_date], %{start_date: %{date: "2023-01-01", date_type: "day"}})
+      assert res.message == "Missing required fields: goal_id"
+    end
+
+    test "it updates the start date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2025-01-01",
+        date_type: "day",
+        value: "Jan 1, 2025"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_start_date], %{
+        goal_id: Paths.goal_id(ctx.goal),
+        start_date: contextual_date
+      })
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert Timeframe.start_date(ctx.goal.timeframe) == ~D[2025-01-01]
+    end
+
+    test "it can update the start date to nil", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_start_date], %{goal_id: Paths.goal_id(ctx.goal), start_date: nil})
+      assert res.success == true
+
+      ctx = Factory.reload(ctx, :goal)
+      assert ctx.goal.timeframe.contextual_start_date == nil
     end
   end
 
