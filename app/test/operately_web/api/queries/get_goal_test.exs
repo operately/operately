@@ -29,10 +29,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     end
 
     test "company members have no access", ctx do
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        company_access_level: Binding.no_access(),
-      })
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.no_access()
+        })
+
       goal_id = Paths.goal_id(goal)
 
       assert {404, %{message: msg} = _res} = query(ctx.conn, :get_goal, %{id: goal_id})
@@ -40,10 +42,12 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     end
 
     test "company members have access", ctx do
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        company_access_level: Binding.view_access(),
-      })
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.view_access()
+        })
+
       goal_id = Paths.goal_id(goal)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: goal_id})
@@ -53,11 +57,13 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     test "space members have no access", ctx do
       add_person_to_space(ctx)
 
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      })
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
+
       goal_id = Paths.goal_id(goal)
 
       assert {404, %{message: msg} = _res} = query(ctx.conn, :get_goal, %{id: goal_id})
@@ -67,11 +73,13 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     test "space members have access", ctx do
       add_person_to_space(ctx)
 
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        company_access_level: Binding.no_access(),
-        space_access_level: Binding.view_access(),
-      })
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.view_access()
+        })
+
       goal_id = Paths.goal_id(goal)
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: goal_id})
@@ -80,12 +88,15 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
     test "champions have access", ctx do
       champion = person_fixture_with_account(%{company_id: ctx.company.id})
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        champion_id: champion.id,
-        company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      })
+
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          champion_id: champion.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
+
       goal_id = Paths.goal_id(goal)
 
       account = Repo.preload(champion, :account).account
@@ -98,12 +109,15 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
     test "reviewers have access", ctx do
       reviewer = person_fixture_with_account(%{company_id: ctx.company.id})
-      goal = goal_fixture(ctx.creator, %{
-        space_id: ctx.space.id,
-        reviewer_id: reviewer.id,
-        company_access_level: Binding.no_access(),
-        space_access_level: Binding.no_access(),
-      })
+
+      goal =
+        goal_fixture(ctx.creator, %{
+          space_id: ctx.space.id,
+          reviewer_id: reviewer.id,
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access()
+        })
+
       goal_id = Paths.goal_id(goal)
 
       account = Repo.preload(reviewer, :account).account
@@ -119,7 +133,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
     setup :register_and_log_in_account
 
     test "when id is not provided", ctx do
-      assert query(ctx.conn, :get_goal, %{}) == {400, %{error: "Bad request", message: "id is required"}}
+      assert query(ctx.conn, :get_goal, %{}) == {400, %{error: "Bad request", message: "Missing required fields: id"}}
     end
 
     test "when goal does not exist", ctx do
@@ -136,10 +150,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
       assert res.goal.notifications == []
 
-      assert {200, res} = query(ctx.conn, :get_goal, %{
-        id: Paths.goal_id(goal),
-        include_unread_notifications: true,
-      })
+      assert {200, res} =
+               query(ctx.conn, :get_goal, %{
+                 id: Paths.goal_id(goal),
+                 include_unread_notifications: true
+               })
 
       assert length(res.goal.notifications) == 1
       assert Serializer.serialize(n) == hd(res.goal.notifications)
@@ -175,14 +190,16 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
       assert res.goal.closed_by == nil
 
       retrospective = RichText.rich_text("Writing a retrospective")
-      {:ok, goal} = Operately.Operations.GoalClosing.run(ctx.person, goal, %{
-        success: "success",
-        success_status: "achieved",
-        content: retrospective,
-        send_notifications_to_everyone: false,
-        subscriber_ids: [],
-        subscription_parent_type: :comment_thread
-      })
+
+      {:ok, goal} =
+        Operately.Operations.GoalClosing.run(ctx.person, goal, %{
+          success: "success",
+          success_status: "achieved",
+          content: retrospective,
+          send_notifications_to_everyone: false,
+          subscriber_ids: [],
+          subscription_parent_type: :comment_thread
+        })
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal), include_closed_by: true})
       assert res.goal.closed_by == Serializer.serialize(ctx.person, level: :essential)
@@ -284,13 +301,15 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
     test "include_access_levels", ctx do
       space = group_fixture(ctx.person)
-      goal = goal_fixture(ctx.person, %{
-        company_id: ctx.company.id,
-        space_id: space.id,
-        anonymous_access_level: Binding.view_access(),
-        company_access_level: Binding.edit_access(),
-        space_access_level: Binding.full_access(),
-      })
+
+      goal =
+        goal_fixture(ctx.person, %{
+          company_id: ctx.company.id,
+          space_id: space.id,
+          anonymous_access_level: Binding.view_access(),
+          company_access_level: Binding.edit_access(),
+          space_access_level: Binding.full_access()
+        })
 
       # not requested
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
@@ -305,18 +324,42 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
     test "include_privacy", ctx do
       space = group_fixture(ctx.person)
-      public_goal = goal_fixture(ctx.person, %{
-        anonymous_access_level: Binding.view_access(), company_access_level: Binding.edit_access(), space_access_level: Binding.full_access(), company_id: ctx.company.id, space_id: space.id
-      })
-      internal_goal = goal_fixture(ctx.person, %{
-        anonymous_access_level: Binding.no_access(), company_access_level: Binding.edit_access(), space_access_level: Binding.full_access(), company_id: ctx.company.id, space_id: space.id
-      })
-      confidential_goal = goal_fixture(ctx.person, %{
-        anonymous_access_level: Binding.no_access(), company_access_level: Binding.no_access(), space_access_level: Binding.full_access(), company_id: ctx.company.id, space_id: space.id
-      })
-      secret_goal = goal_fixture(ctx.person, %{
-        anonymous_access_level: Binding.no_access(), company_access_level: Binding.no_access(), space_access_level: Binding.no_access(), company_id: ctx.company.id, space_id: space.id
-      })
+
+      public_goal =
+        goal_fixture(ctx.person, %{
+          anonymous_access_level: Binding.view_access(),
+          company_access_level: Binding.edit_access(),
+          space_access_level: Binding.full_access(),
+          company_id: ctx.company.id,
+          space_id: space.id
+        })
+
+      internal_goal =
+        goal_fixture(ctx.person, %{
+          anonymous_access_level: Binding.no_access(),
+          company_access_level: Binding.edit_access(),
+          space_access_level: Binding.full_access(),
+          company_id: ctx.company.id,
+          space_id: space.id
+        })
+
+      confidential_goal =
+        goal_fixture(ctx.person, %{
+          anonymous_access_level: Binding.no_access(),
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.full_access(),
+          company_id: ctx.company.id,
+          space_id: space.id
+        })
+
+      secret_goal =
+        goal_fixture(ctx.person, %{
+          anonymous_access_level: Binding.no_access(),
+          company_access_level: Binding.no_access(),
+          space_access_level: Binding.no_access(),
+          company_id: ctx.company.id,
+          space_id: space.id
+        })
 
       # not requested
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(public_goal)})
@@ -373,9 +416,11 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
   #
 
   defp add_person_to_space(ctx) do
-    Operately.Groups.add_members(ctx.person, ctx.space.id, [%{
-      id: ctx.person.id,
-      access_level: Binding.edit_access(),
-    }])
+    Operately.Groups.add_members(ctx.person, ctx.space.id, [
+      %{
+        id: ctx.person.id,
+        access_level: Binding.edit_access()
+      }
+    ])
   end
 end
