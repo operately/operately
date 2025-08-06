@@ -1,55 +1,58 @@
 import { Plugin, PluginKey } from "prosemirror-state";
 import { AddBlobsEditorCommand } from "./AddBlobsEditorCommand";
+import { UploadFileFn } from "../useEditor";
 
-export const DropFilePlugin = new Plugin({
-  key: new PluginKey("dropFilePlugin"),
+export const createDropFilePlugin = (uploadFile: UploadFileFn) =>
+  new Plugin({
+    key: new PluginKey("dropFilePlugin"),
 
-  props: {
-    handleDOMEvents: {
-      dragover: (view, _event) => {
-        if (!view.editable) return false;
+    props: {
+      handleDOMEvents: {
+        dragover: (view, _event) => {
+          if (!view.editable) return false;
 
-        view.dom.classList.add("dragover");
-        return true;
-      },
+          view.dom.classList.add("dragover");
+          return true;
+        },
 
-      dragleave: (view, event) => {
-        if (!view.editable) return false;
+        dragleave: (view, event) => {
+          if (!view.editable) return false;
 
-        if (event.target === view.dom) {
+          if (event.target === view.dom) {
+            view.dom.classList.remove("dragover");
+          }
+          return true;
+        },
+
+        dragend: (view, _event) => {
+          if (!view.editable) return false;
+
           view.dom.classList.remove("dragover");
-        }
-        return true;
-      },
+          return true;
+        },
 
-      dragend: (view, _event) => {
-        if (!view.editable) return false;
+        drop: (view, event) => {
+          if (!view.editable) return false;
 
-        view.dom.classList.remove("dragover");
-        return true;
-      },
+          view.dom.classList.remove("dragover");
 
-      drop: (view, event) => {
-        if (!view.editable) return false;
+          const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
+          if (!coordinates) return false;
 
-        view.dom.classList.remove("dragover");
+          const files = event.dataTransfer?.files;
+          if (!files) return false;
 
-        const coordinates = view.posAtCoords({ left: event.clientX, top: event.clientY });
-        if (!coordinates) return false;
+          event.preventDefault();
 
-        const files = event.dataTransfer?.files;
-        if (!files) return false;
+          AddBlobsEditorCommand({
+            files: files,
+            pos: coordinates.pos,
+            view: view,
+            uploadFile: uploadFile,
+          });
 
-        event.preventDefault();
-
-        AddBlobsEditorCommand({
-          files: files,
-          pos: coordinates.pos,
-          view: view,
-        });
-
-        return true;
+          return true;
+        },
       },
     },
-  },
-});
+  });

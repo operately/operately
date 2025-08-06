@@ -2,8 +2,9 @@ import { Node } from "@tiptap/core";
 import { ReactNodeViewRenderer } from "@tiptap/react";
 
 import { BlobView } from "./BlobView";
-import { DropFilePlugin } from "./DropFilePlugin";
-import { PasteFilePlugin } from "./PasteFilePlugin";
+import { createDropFilePlugin } from "./DropFilePlugin";
+import { createPasteFilePlugin } from "./PasteFilePlugin";
+import { UploadFileFn } from "../useEditor";
 import { PasteHtmlImagesPlugin } from "./PasteHtmlImagesPlugin";
 
 export function isUploadInProgress(doc: any) {
@@ -21,7 +22,11 @@ export function isUploadInProgress(doc: any) {
   return result;
 }
 
-const BlobExtension = Node.create({
+interface BlobOptions {
+  uploadFile?: UploadFileFn;
+}
+
+const BlobExtension = Node.create<BlobOptions>({
   name: "blob",
   inline: true,
   group: "inline",
@@ -68,7 +73,14 @@ const BlobExtension = Node.create({
   },
 
   addProseMirrorPlugins() {
-    return [PasteFilePlugin, PasteHtmlImagesPlugin, DropFilePlugin];
+    const uploadFile = this.options.uploadFile;
+
+    if (!uploadFile) {
+      console.warn("BlobExtension: uploadFile function not provided. File upload functionality will be disabled.");
+      return [PasteHtmlImagesPlugin];
+    }
+
+    return [createPasteFilePlugin(uploadFile), PasteHtmlImagesPlugin, createDropFilePlugin(uploadFile)];
   },
 });
 
