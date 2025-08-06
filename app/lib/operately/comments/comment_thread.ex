@@ -27,6 +27,7 @@ defmodule Operately.Comments.CommentThread do
     field :space, :any, virtual: true
     field :notifications, :any, virtual: true
     field :can_comment, :boolean, virtual: true
+    field :comments_count, :any, virtual: true
 
     timestamps()
   end

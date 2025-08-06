@@ -1483,10 +1483,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :comment_thread do
-    field? :id, :string, null: true
-    field? :inserted_at, :date, null: true
-    field? :title, :string, null: true
-    field? :message, :string, null: true
+    field :id, :string, null: false
+    field :inserted_at, :date, null: false
+    field :title, :string, null: true
+    field :message, :string, null: true
     field? :reactions, list_of(:reaction), null: true
     field? :comments, list_of(:comment), null: true
     field? :comments_count, :integer, null: true
@@ -1497,6 +1497,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :project, :project
     field? :space, :space
     field? :can_comment, :boolean
+    field? :comments_count, :integer, null: true
   end
 
   object :comment do

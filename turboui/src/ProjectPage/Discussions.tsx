@@ -1,11 +1,11 @@
 import React from "react";
 
-import { GoalPage } from ".";
+import { ProjectPage } from ".";
 import { PrimaryButton } from "../Button";
 import { InfoCallout } from "../Callouts";
 import { DiscussionCard } from "../DiscussionCard";
 
-export function Discussions(props: GoalPage.State) {
+export function Discussions(props: ProjectPage.State) {
   if (props.discussions.length === 0 && !props.canEdit) return null;
 
   const showNewDiscussionButton = props.canEdit && props.state !== "closed";
@@ -33,7 +33,7 @@ export function Discussions(props: GoalPage.State) {
   );
 }
 
-function DiscussionsList({ props }: { props: GoalPage.Props }) {
+function DiscussionsList({ props }: { props: ProjectPage.Props }) {
   return (
     <div>
       {props.discussions.map((discussion) => (
