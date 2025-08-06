@@ -1990,7 +1990,7 @@ export interface GetFlatWorkMapResult {
 }
 
 export interface GetGoalInput {
-  id?: Id | null;
+  id: Id;
   includeChampion?: boolean | null;
   includeClosedBy?: boolean | null;
   includeLastCheckIn?: boolean | null;
@@ -2005,10 +2005,12 @@ export interface GetGoalInput {
   includeUnreadNotifications?: boolean | null;
   includeRetrospective?: boolean | null;
   includeChecklist?: boolean;
+  includeMarkdown?: boolean;
 }
 
 export interface GetGoalResult {
-  goal?: Goal | null;
+  goal?: Goal;
+  markdown?: string;
 }
 
 export interface GetGoalProgressUpdateInput {
