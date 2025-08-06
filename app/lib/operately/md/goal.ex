@@ -1,4 +1,4 @@
-defimpl Operately.MDRender, for: Operately.Goals.Goal do
+defmodule Operately.MD.Goal do
   def render(goal) do
     """
     # #{goal.name}

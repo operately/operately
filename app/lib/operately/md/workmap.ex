@@ -1,4 +1,4 @@
-defimpl Operately.MDRender, for: Operately.Workmaps.Workmap do
+defmodule Operately.MD.Workmap do
   def render(work_map) do
     legend = """
     # Work Map Legend

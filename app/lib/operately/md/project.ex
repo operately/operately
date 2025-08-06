@@ -1,4 +1,4 @@
-defimpl Operately.MDRender, for: Operately.Projects.Project do
+defmodule Operately.MD.Project do
   def render(resource) do
     resource.name
   end

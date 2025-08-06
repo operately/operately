@@ -10,9 +10,7 @@ defmodule Operately.AI.Tools.WorkMap do
         person = Map.get(context, :person)
 
         {:ok, workmap} = GetWorkMapQuery.execute(person, %{company_id: person.company_id})
-        api_serialized = OperatelyWeb.Api.Serializer.serialize(workmap, level: :essential)
-
-        {:ok, Operately.MDRender.render(api_serialized)}
+        {:ok, Operately.MD.Workmap.render(workmap)}
       end
     })
   end

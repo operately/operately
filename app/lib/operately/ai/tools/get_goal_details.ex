@@ -46,7 +46,7 @@ defmodule Operately.AI.Tools.GetGoalDetails do
                 ]
               )
 
-            {:ok, Operately.MD.render(goal)}
+            {:ok, Operately.MD.Goal.render(goal)}
 
           {:error, _} ->
             {:error, "Invalid goal ID format."}
