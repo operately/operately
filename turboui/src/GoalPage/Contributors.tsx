@@ -1,12 +1,12 @@
 import React from "react";
-import { IconInfoCircle } from "../icons";
 import { GoalPage } from ".";
 import { Avatar } from "../Avatar";
+import { IconInfoCircle } from "../icons";
 import { BlackLink, Link } from "../Link";
 import { Tooltip } from "../Tooltip";
 import { SectionHeader } from "./SectionHeader";
 
-export function Contributors(props: GoalPage.Props) {
+export function Contributors(props: GoalPage.State) {
   if (props.contributors.length === 0) {
     return null;
   }

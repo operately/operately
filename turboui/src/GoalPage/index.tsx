@@ -6,6 +6,7 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 import { PageNew } from "../Page";
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
+import { Message } from "../Conversations";
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { PrivacyField } from "../PrivacyField";
@@ -80,9 +81,11 @@ export namespace GoalPage {
     commentCount: number;
   }
 
+  export type GetConversationMessagesFn = (params: { convoRequestId: string }) => Promise<Message[]>;
   export interface Ai {
     enabled: boolean;
     startNewReview: (params: { convoId: string }) => void;
+    getConversationMessages: GetConversationMessagesFn;
   }
 
   export interface Props {
@@ -175,12 +178,12 @@ export namespace GoalPage {
 
     onReviewGoal?: () => void;
 
-    ai: AiState;
+    aiState: AiState;
   }
 }
 
 function useGoalPageState(props: GoalPage.Props): GoalPage.State {
-  const ai = useAiState(props);
+  const aiState = useAiState(props);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
   const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModealOpen || false);
@@ -195,7 +198,7 @@ function useGoalPageState(props: GoalPage.Props): GoalPage.State {
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
-    ai,
+    aiState,
   };
 }
 

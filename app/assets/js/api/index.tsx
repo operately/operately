@@ -861,6 +861,12 @@ export interface AgentDef {
   provider: string;
 }
 
+export interface AgentMessage {
+  id: string;
+  content: string;
+  timestamp: string;
+}
+
 export interface AgentRun {
   id: string;
   status: string;
@@ -1852,6 +1858,14 @@ export interface AiGetAgentRunInput {
 
 export interface AiGetAgentRunResult {
   run: AgentRun;
+}
+
+export interface AiGetConversationMessagesInput {
+  convoId: string;
+}
+
+export interface AiGetConversationMessagesResult {
+  messages: AgentMessage[];
 }
 
 export interface AiListAgentRunsInput {
@@ -4532,6 +4546,10 @@ class ApiNamespaceAi {
     return this.client.get("/ai/get_agent_run", input);
   }
 
+  async getConversationMessages(input: AiGetConversationMessagesInput): Promise<AiGetConversationMessagesResult> {
+    return this.client.get("/ai/get_conversation_messages", input);
+  }
+
   async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
     return this.client.get("/ai/list_agent_runs", input);
   }
@@ -7093,6 +7111,11 @@ export default {
     listAgentRuns: (input: AiListAgentRunsInput) => defaultApiClient.apiNamespaceAi.listAgentRuns(input),
     useListAgentRuns: (input: AiListAgentRunsInput) =>
       useQuery<AiListAgentRunsResult>(() => defaultApiClient.apiNamespaceAi.listAgentRuns(input)),
+
+    getConversationMessages: (input: AiGetConversationMessagesInput) =>
+      defaultApiClient.apiNamespaceAi.getConversationMessages(input),
+    useGetConversationMessages: (input: AiGetConversationMessagesInput) =>
+      useQuery<AiGetConversationMessagesResult>(() => defaultApiClient.apiNamespaceAi.getConversationMessages(input)),
 
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
     useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
