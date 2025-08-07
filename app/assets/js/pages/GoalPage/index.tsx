@@ -3,7 +3,6 @@ import * as Goals from "@/models/goals";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
-import * as Companies from "@/models/companies";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
@@ -25,13 +24,13 @@ import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
+import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useChecklists } from "./useChecklists";
-import { parseSpaceForTurboUI } from "@/models/spaces";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v26-GoalPage.goal-${id}`;
+  return `v27-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -41,7 +40,6 @@ type LoaderResult = {
     checkIns: GoalProgressUpdate[];
     checklist: Goals.Check[];
     discussions: GoalDiscussion[];
-    company: Companies.Company;
   };
 
   cacheVersion: number;
@@ -69,7 +67,6 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         workMap: getWorkMap({ parentGoalId: params.id, includeAssignees: true }).then((d) => d.workMap!),
         checkIns: Api.goals.getCheckIns({ goalId: params.id }).then((d) => d.checkIns!),
         discussions: Api.goals.getDiscussions({ goalId: params.id }).then((d) => d.discussions!),
-        company: Companies.getCompany({ id: params.companyId! }).then((d) => d.company!),
       }),
   });
 }
@@ -77,7 +74,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { goal, workMap, checkIns, discussions, company } = PageCache.useData(loader).data;
+  const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -148,7 +145,7 @@ function Page() {
 
   const parentGoalSearch = useParentGoalSearch(goal);
   const spaceSearch = useSpaceSearch();
-  const checklists = useChecklists({ company: company, goalId: goal.id!, initialChecklist: goal.checklist! });
+  const checklists = useChecklists({ goalId: goal.id!, initialChecklist: goal.checklist! });
 
   const deleteGoal = async () => {
     try {
@@ -280,7 +277,6 @@ function Page() {
         });
     },
 
-    checklistsEnabled: checklists.enabled,
     checklistItems: checklists.items,
     addChecklistItem: checklists.add,
     deleteChecklistItem: checklists.delete,
