@@ -5,7 +5,7 @@ import { SecondaryButton } from "../Button";
 import { GoalTargetList } from "../GoalTargetList";
 import { SectionHeader } from "./SectionHeader";
 
-export function Targets(props: GoalPage.Props) {
+export function Targets(props: GoalPage.State) {
   const [addActive, setAddActive] = React.useState(false);
 
   return (

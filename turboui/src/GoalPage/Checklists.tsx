@@ -6,7 +6,7 @@ import { Checklist } from "../Checklist";
 const noOpAsync = async () => ({ success: false, id: "" });
 const noOpAsyncBoolean = async () => false;
 
-export function Checklists(props: GoalPage.Props) {
+export function Checklists(props: GoalPage.State) {
   return (
     <Checklist
       items={props.checklistItems}

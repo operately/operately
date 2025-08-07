@@ -119,6 +119,9 @@ function Component(props: Partial<GoalPage.Props>) {
     <GoalPage
       {...defaults}
       {...props}
+      ai={{
+        enabled: true,
+      }}
       checklistItems={checklistItems}
       goalName={goalName}
       setGoalName={setGoalName}

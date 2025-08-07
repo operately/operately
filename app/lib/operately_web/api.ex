@@ -33,6 +33,8 @@ defmodule OperatelyWeb.Api do
     mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
     mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
     mutation(:edit_agent_provider, OperatelyWeb.Api.Ai.EditAgentProvider)
+    mutation(:start_new_goal_review, OperatelyWeb.Api.Ai.StartNewGoalReview)
+    query(:get_conversation_messages, OperatelyWeb.Api.Ai.GetConversationMessages)
   end
 
   namespace(:goals) do
