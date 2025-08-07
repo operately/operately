@@ -4,7 +4,7 @@ import { SecondaryButton } from "../Button";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { SectionHeader } from "./SectionHeader";
 
-export function RelatedWork(props: GoalPage.Props) {
+export function RelatedWork(props: GoalPage.State) {
   if (props.relatedWorkItems.length === 0 && !props.canEdit) return null;
 
   return (
@@ -29,7 +29,7 @@ export function RelatedWork(props: GoalPage.Props) {
   );
 }
 
-function RelatedWorkContent(props: GoalPage.Props) {
+function RelatedWorkContent(props: GoalPage.State) {
   return (
     <div className="mt-4">
       <MiniWorkMap items={props.relatedWorkItems} />
