@@ -21,6 +21,7 @@ import RichContent from "./RichContent";
 
 export { InfoCallout } from "./Callouts";
 export { Checklist } from "./Checklist";
+export { Conversations } from "./Conversations";
 export { DateField } from "./DateField";
 export { FormattedTime } from "./FormattedTime";
 export { GoalAddPage } from "./GoalAddForm";
