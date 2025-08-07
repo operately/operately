@@ -1,13 +1,14 @@
 import React from "react";
+import type { Checklist } from "../Checklist";
 import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
-import type { Checklist } from "../Checklist";
 
 import { PageNew } from "../Page";
 
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
+import { MoveModal } from "../Modal/MoveModal";
 import { PrivacyField } from "../PrivacyField";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
@@ -17,7 +18,6 @@ import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
-import { MoveModal } from "../Modal/MoveModal";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 
@@ -128,8 +128,6 @@ export namespace GoalPage {
     accessLevels: PrivacyField.AccessLevels;
     setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
 
-    checklistsEnabled?: boolean;
-
     neglectedGoal: boolean;
 
     mentionedPersonLookup: MentionedPersonLookupFn;
@@ -144,13 +142,13 @@ export namespace GoalPage {
     updateTarget: GoalTargetList.UpdateTargetFn;
     updateTargetValue: GoalTargetList.UpdateTargetValueFn;
     updateTargetIndex: GoalTargetList.UpdateTargetIndexFn;
-    
+
     addChecklistItem?: Checklist.AddChecklistItemFn;
     deleteChecklistItem?: Checklist.DeleteChecklistItemFn;
     updateChecklistItem?: Checklist.UpdateChecklistItemFn;
     toggleChecklistItem?: Checklist.ToggleChecklistItemFn;
     updateChecklistItemIndex?: Checklist.UpdateChecklistItemIndexFn;
-    
+
     deleteGoal: () => Promise<void>;
 
     activityFeed: React.ReactNode;

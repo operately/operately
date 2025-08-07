@@ -16,7 +16,6 @@ defmodule Operately.Support.Features.GoalChecksSteps do
       parent_goal: :parent_goal
     )
     |> Factory.log_in_person(:champion)
-    |> Factory.enable_feature("checklists")
   end
 
   #
