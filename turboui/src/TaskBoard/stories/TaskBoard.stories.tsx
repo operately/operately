@@ -139,7 +139,7 @@ export const Default: Story = {
       setMilestones(prev => [...prev, newMilestone]);
     };
 
-    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<Types.Milestone>) => {
+    const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
       console.log(`Updating milestone ${milestoneId}:`, updates);
       
       // Update the milestone in the milestones array

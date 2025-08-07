@@ -131,6 +131,17 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone_name, :string
   end
 
+  object :activity_content_project_milestone_updating do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :milestone, :milestone
+    field :old_milestone_name, :string
+    field :new_milestone_name, :string
+    field :old_timeframe, :timeframe, null: true
+    field :new_timeframe, :timeframe, null: true
+  end
+
   object :activity_content_goal_reviewer_updating do
     field :company, :company
     field :space, :space

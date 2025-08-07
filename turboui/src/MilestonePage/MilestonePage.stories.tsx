@@ -148,7 +148,7 @@ export const Default: Story = {
     };
 
     // Handler for milestone updates (including status)
-    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<Types.Milestone>) => {
+    const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
       console.log("Milestone updated:", { milestoneId, updates });
       
       // Update the milestone with the provided updates

@@ -415,14 +415,14 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it requires a project_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :create_milestone], %{name: "Release v1.0", date: %{date: "2026-01-01", date_type: "day", value: "Jan 1, 2026"}})
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_milestone], %{name: "Release v1.0", due_date: %{date: "2026-01-01", date_type: "day", value: "Jan 1, 2026"}})
       assert res.message == "Missing required fields: project_id"
     end
 
     test "it requires a name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :create_milestone], %{project_id: Paths.project_id(ctx.project), date: %{date: "2026-01-01", date_type: "day", value: "Jan 1, 2026"}})
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_milestone], %{project_id: Paths.project_id(ctx.project), due_date: %{date: "2026-01-01", date_type: "day", value: "Jan 1, 2026"}})
       assert res.message == "Missing required fields: name"
     end
 
@@ -432,7 +432,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
         project_id: Paths.project_id(ctx.project),
         name: "Release v1.0",
-        date: nil
+        due_date: nil
       })
       assert res.milestone.title == "Release v1.0"
 
@@ -454,7 +454,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
         project_id: Paths.project_id(ctx.project),
         name: "Release v1.0",
-        date: contextual_date
+        due_date: contextual_date
       })
 
       assert res.milestone.title == "Release v1.0"
@@ -464,6 +464,106 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert milestone.title == "Release v1.0"
       assert milestone.project_id == ctx.project.id
       assert Timeframe.end_date(milestone.timeframe) == ~D[2026-01-01]
+    end
+  end
+
+  describe "update milestone" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_milestone], %{})
+    end
+
+    test "it requires a milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_milestone], %{name: "Updated Release", project_id: Paths.project_id(ctx.project), due_date: nil})
+      assert res.message == "Missing required fields: milestone_id"
+    end
+
+    test "it updates a milestone's name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # First create a milestone
+      {:ok, milestone} = Operately.Projects.create_milestone(%{
+        title: "Release v1.0",
+        project_id: ctx.project.id
+      })
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(milestone),
+        name: "Updated Release",
+        due_date: nil,
+      })
+
+      assert res.milestone.title == "Updated Release"
+
+      updated_milestone = Repo.reload(milestone)
+      assert updated_milestone.title == "Updated Release"
+    end
+
+    test "it updates a milestone's date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # First create a milestone with no date
+      {:ok, milestone} = Operately.Projects.create_milestone(%{
+        title: "Release v1.0",
+        project_id: ctx.project.id
+      })
+
+      contextual_date = %{
+        date: "2026-01-01",
+        date_type: "day",
+        value: "Jan 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(milestone),
+        name: "Release v1.0",
+        due_date: contextual_date
+      })
+
+      assert res.milestone.timeframe.contextual_end_date == contextual_date
+
+      updated_milestone = Repo.reload(milestone)
+      assert Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-01-01]
+    end
+
+    test "it updates both name and date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      {:ok, milestone} = Operately.Projects.create_milestone(%{
+        title: "Release v1.0",
+        project_id: ctx.project.id,
+        timeframe: %{
+          contextual_start_date: nil,
+          contextual_end_date: %{
+            date: "2025-12-31",
+            date_type: "day",
+            value: "Dec 31, 2025"
+          }
+        }
+      })
+
+      new_contextual_date = %{
+        date: "2026-03-15",
+        date_type: "day",
+        value: "Mar 15, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(milestone),
+        name: "Release v2.0",
+        due_date: new_contextual_date
+      })
+
+      assert res.milestone.title == "Release v2.0"
+      assert res.milestone.timeframe.contextual_end_date == new_contextual_date
+
+      updated_milestone = Repo.reload(milestone)
+      assert updated_milestone.title == "Release v2.0"
+      assert Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-03-15]
     end
   end
 
