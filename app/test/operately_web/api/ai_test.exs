@@ -170,4 +170,20 @@ defmodule OperatelyWeb.Api.AiTest do
       assert res.agent.agent_def.provider == "claude"
     end
   end
+
+  describe "start_new_goal_review" do
+    setup ctx do
+      Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
+    end
+
+    test "requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:ai, :start_new_goal_review], %{goal_id: Ecto.UUID.generate()})
+    end
+
+    test "it requires a valid conversation ID", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, _} = mutation(ctx.conn, [:ai, :start_new_goal_review], %{goal_id: Ecto.UUID.generate()})
+    end
+  end
 end

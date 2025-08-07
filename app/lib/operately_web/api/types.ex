@@ -1314,6 +1314,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :logs, :string
   end
 
+  object :agent_message do
+    field :id, :string
+    field :content, :string
+    field :timestamp, :date
+  end
+
   object :person_permissions do
     field :can_edit_profile, :boolean, null: true
   end
