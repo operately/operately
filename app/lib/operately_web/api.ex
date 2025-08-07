@@ -71,6 +71,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_champion, OperatelyWeb.Api.Projects.UpdateChampion)
     mutation(:update_reviewer, OperatelyWeb.Api.Projects.UpdateReviewer)
     mutation(:update_parent_goal, OperatelyWeb.Api.Projects.UpdateParentGoal)
+    mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
   end
 
   namespace(:spaces) do

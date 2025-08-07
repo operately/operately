@@ -268,21 +268,13 @@ function TimelineSection(props: ProjectPage.State) {
   const upcomingMilestones = validMilestones.filter((m) => m.status !== "done");
   const completedMilestones = validMilestones.filter((m) => m.status === "done");
 
-  // Sort by due date
-  const sortByDueDate = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
-    if (!a.dueDate && !b.dueDate) return 0;
-    if (!a.dueDate) return 1;
-    if (!b.dueDate) return -1;
-    return a.dueDate.date?.getTime() - b.dueDate.date?.getTime();
-  };
-
   const sortedUpcoming = upcomingMilestones.sort(sortByDueDate);
   const sortedCompleted = completedMilestones.sort(sortByDueDate);
 
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim()) return;
 
-    const newMilestone: Omit<TaskBoardTypes.Milestone, "id"> = {
+    const newMilestone: ProjectPage.NewMilestonePayload = {
       name: newMilestoneName,
       dueDate: newMilestoneDueDate || undefined,
       status: "pending",
@@ -291,6 +283,7 @@ function TimelineSection(props: ProjectPage.State) {
     props.onMilestoneCreate?.(newMilestone);
     setNewMilestoneName("");
     setNewMilestoneDueDate(null);
+
     if (!addMore) {
       setShowAddForm(false);
     }
@@ -305,12 +298,6 @@ function TimelineSection(props: ProjectPage.State) {
       setShowAddForm(false);
     }
   };
-
-  const addButton = (
-    <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
-      Add milestone
-    </SecondaryButton>
-  );
 
   // Calculate completion stats
   const totalMilestones = validMilestones.length;
@@ -330,7 +317,11 @@ function TimelineSection(props: ProjectPage.State) {
             </span>
           </div>
         )}
-        {props.canEdit && addButton}
+        {props.canEdit && (
+          <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
+            Add milestone
+          </SecondaryButton>
+        )}
       </div>
 
       <div className="space-y-6">
@@ -514,3 +505,10 @@ function AddMilestoneForm({
     </div>
   );
 }
+
+const sortByDueDate = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
+  if (!a.dueDate && !b.dueDate) return 0;
+  if (!a.dueDate) return 1;
+  if (!b.dueDate) return -1;
+  return a.dueDate.date?.getTime() - b.dueDate.date?.getTime();
+};
