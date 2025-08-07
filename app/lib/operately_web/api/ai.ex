@@ -282,7 +282,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:start_new_review, fn _repo, %{me: me} ->
-        Operately.AI.start_new_goal_review(me, inputs.goal_id, inputs.convo_id)
+        Operately.AI.GoalReview.create(me, inputs.goal_id, inputs.convo_id)
       end)
       |> Steps.respond(fn _ -> %{success: true} end)
     end
