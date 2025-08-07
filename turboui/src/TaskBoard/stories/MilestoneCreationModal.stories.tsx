@@ -27,7 +27,7 @@ export const Default: Story = {
     const [isOpen, setIsOpen] = useState(false);
     const [createdMilestones, setCreatedMilestones] = useState<Types.Milestone[]>([]);
 
-    const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
+    const handleCreateMilestone = (newMilestoneData: Types.NewMilestonePayload) => {
       // Generate a fake UUID for the new milestone
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
@@ -83,7 +83,7 @@ export const OpenByDefault: Story = {
   render: () => {
     const [isOpen, setIsOpen] = useState(true);
 
-    const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
+    const handleCreateMilestone = (newMilestoneData: Types.NewMilestonePayload) => {
       console.log("Milestone created:", newMilestoneData);
       // Close modal after creation in this example
       setIsOpen(false);

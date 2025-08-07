@@ -407,6 +407,66 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "create milestone" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :create_milestone], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_milestone], %{name: "Release v1.0", date: %{date: "2026-01-01", date_type: "day", value: "Jan 1, 2026"}})
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it requires a name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_milestone], %{project_id: Paths.project_id(ctx.project), date: %{date: "2026-01-01", date_type: "day", value: "Jan 1, 2026"}})
+      assert res.message == "Missing required fields: name"
+    end
+
+    test "it creates a milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Release v1.0",
+        date: nil
+      })
+      assert res.milestone.title == "Release v1.0"
+
+      milestone = Operately.Projects.get_milestone_by_name(ctx.project, "Release v1.0")
+
+      assert milestone.title == "Release v1.0"
+      assert milestone.project_id == ctx.project.id
+    end
+
+    test "it creates a milestone with a date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-01-01",
+        date_type: "day",
+        value: "Jan 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
+        project_id: Paths.project_id(ctx.project),
+        name: "Release v1.0",
+        date: contextual_date
+      })
+
+      assert res.milestone.title == "Release v1.0"
+
+      milestone = Operately.Projects.get_milestone_by_name(ctx.project, "Release v1.0")
+
+      assert milestone.title == "Release v1.0"
+      assert milestone.project_id == ctx.project.id
+      assert Timeframe.end_date(milestone.timeframe) == ~D[2026-01-01]
+    end
+  end
+
   #
   # Helpers
   #

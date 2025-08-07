@@ -36,6 +36,8 @@ export interface Milestone {
   link?: string;
 }
 
+export interface NewMilestonePayload extends Omit<Milestone, "id"> {}
+
 /**
  * Task interface
  */
@@ -103,7 +105,7 @@ export interface TaskBoardCallbacks {
   /**
    * Callback for when a milestone is created
    */
-  onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
+  onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
 }
 
 /**
@@ -140,7 +142,7 @@ export interface TaskBoardProps {
   viewMode?: ViewMode;
   onStatusChange?: (taskId: string, newStatus: Status) => void;
   onTaskCreate?: (task: Omit<Task, "id">) => void;
-  onMilestoneCreate?: (milestone: Omit<Milestone, "id">) => void;
+  onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;

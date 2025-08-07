@@ -202,7 +202,7 @@ export function TaskBoard({
   };
 
   // Handle creating a new milestone
-  const handleCreateMilestone = (newMilestoneData: Omit<Types.Milestone, "id">) => {
+  const handleCreateMilestone = (newMilestoneData: Types.NewMilestonePayload) => {
     if (onMilestoneCreate) {
       // Log to confirm milestone creation event is being triggered
       console.log("TaskBoard: Creating new milestone", newMilestoneData);

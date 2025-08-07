@@ -64,6 +64,8 @@ export namespace ProjectPage {
   export type Milestone = TaskBoardTypes.Milestone;
   export type Resource = ResourceManager.Resource;
 
+  export type NewMilestonePayload = TaskBoardTypes.NewMilestonePayload;
+
   export interface Props {
     closeLink: string;
     reopenLink: string;
@@ -114,7 +116,7 @@ export namespace ProjectPage {
     milestones: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
     onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
-    onMilestoneCreate?: (milestone: Omit<TaskBoardTypes.Milestone, "id">) => void;
+    onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => void;
     searchPeople?: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;

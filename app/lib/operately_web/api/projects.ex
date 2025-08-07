@@ -190,6 +190,50 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule CreateMilestone do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :name, :string, null: false
+      field :date, :contextual_date, null: true
+    end
+
+    outputs do
+      field :milestone, :milestone
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Ecto.Multi.run(:milestone, fn _repo, %{project: project} ->
+        Operately.Projects.create_milestone(%{
+          title: inputs.name,
+          project_id: project.id,
+          timeframe: %{
+            contextual_start_date: nil,
+            contextual_end_date: inputs.date
+          }
+        })
+      end)
+      |> Steps.save_activity(:project_milestone_creation, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.milestone.id,
+          milestone_name: changes.milestone.title
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.milestone)}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 

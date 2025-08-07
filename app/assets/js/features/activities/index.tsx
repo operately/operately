@@ -71,6 +71,7 @@ export const DISPLAYED_IN_FEED = [
   "project_reviewer_updating",
   "project_due_date_updating",
   "project_start_date_updating",
+  "project_milestone_creation",
   "goal_target_updating",
   "goal_target_deleting",
   "goal_target_adding",
@@ -235,6 +236,7 @@ import GoalSpaceUpdating from "./GoalSpaceUpdating";
 import GoalTargetAdding from "./GoalTargetAdding";
 import GoalTargetDeleting from "./GoalTargetDeleting";
 import GoalTargetUpdating from "./GoalTargetUpdating";
+import ProjectMilestoneCreation from "./ProjectMilestoneCreation";
 import GoalCheckAdding from './GoalCheckAdding';
 import GoalCheckRemoving from './GoalCheckRemoving';
 import GoalCheckToggled from './GoalCheckToggled';
@@ -318,6 +320,7 @@ function handler(activity: Activity) {
     .with("project_due_date_updating", () => ProjectDueDateUpdating)
     .with("project_reviewer_updating", () => ProjectReviewerUpdating)
     .with("project_start_date_updating", () => ProjectStartDateUpdating)
+    .with("project_milestone_creation", () => ProjectMilestoneCreation)
     .with("goal_check_adding", () => GoalCheckAdding)
     .with("goal_check_removing", () => GoalCheckRemoving)
     .with("goal_check_toggled", () => GoalCheckToggled)
