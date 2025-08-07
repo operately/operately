@@ -7,7 +7,7 @@ import { IconCalendar } from "../../icons";
 interface MilestoneCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateMilestone: (milestone: Omit<Types.Milestone, "id">) => void;
+  onCreateMilestone: (milestone: Types.NewMilestonePayload) => void;
 }
 
 export function MilestoneCreationModal({
@@ -50,7 +50,7 @@ export function MilestoneCreationModal({
     if (!name.trim()) return;
     
     // Create new milestone object
-    const newMilestone: Omit<Types.Milestone, "id"> = {
+    const newMilestone: Types.NewMilestonePayload = {
       name: name.trim(),
       hasDescription: false,
       hasComments: false,

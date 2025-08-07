@@ -550,6 +550,14 @@ export interface ActivityContentProjectMilestoneCommented {
   comment?: Comment | null;
 }
 
+export interface ActivityContentProjectMilestoneCreation {
+  company: Company;
+  space: Space;
+  project: Project;
+  milestone: Milestone;
+  milestoneName: string;
+}
+
 export interface ActivityContentProjectMoved {
   project?: Project | null;
   oldSpace?: Space | null;
@@ -3504,6 +3512,16 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectsCreateMilestoneInput {
+  projectId: Id;
+  name: string;
+  date: ContextualDate | null;
+}
+
+export interface ProjectsCreateMilestoneResult {
+  milestone: Milestone;
+}
+
 export interface ProjectsUpdateChampionInput {
   projectId: Id;
   championId: Id | null;
@@ -4397,6 +4415,10 @@ class ApiNamespaceProjects {
 
   async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
     return this.client.get("/projects/parent_goal_search", input);
+  }
+
+  async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
+    return this.client.post("/projects/create_milestone", input);
   }
 
   async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
@@ -6921,6 +6943,13 @@ export default {
     useUpdateParentGoal: () =>
       useMutation<ProjectsUpdateParentGoalInput, ProjectsUpdateParentGoalResult>(
         defaultApiClient.apiNamespaceProjects.updateParentGoal,
+      ),
+
+    createMilestone: (input: ProjectsCreateMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjects.createMilestone(input),
+    useCreateMilestone: () =>
+      useMutation<ProjectsCreateMilestoneInput, ProjectsCreateMilestoneResult>(
+        defaultApiClient.apiNamespaceProjects.createMilestone,
       ),
 
     updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),

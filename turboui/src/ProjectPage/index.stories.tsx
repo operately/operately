@@ -224,7 +224,7 @@ export const Default: Story = {
       setTasks([...tasks, newTask]);
     };
 
-    const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
+    const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
@@ -437,7 +437,7 @@ export const EmptyTasks: Story = {
       setTasks([...tasks, newTask]);
     };
 
-    const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
+    const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
@@ -532,7 +532,7 @@ export const EmptyProject: Story = {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
     const [space, setSpace] = useState(defaultSpace);
 
-    const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
+    const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
@@ -726,7 +726,7 @@ export const PausedProject: Story = {
       setTasks([...tasks, newTask]);
     };
 
-    const handleMilestoneCreate = (newMilestoneData: Omit<TaskBoardTypes.Milestone, "id">) => {
+    const handleMilestoneCreate = (newMilestoneData: ProjectPage.NewMilestonePayload) => {
       const milestoneId = `milestone-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);

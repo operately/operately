@@ -123,6 +123,14 @@ defmodule OperatelyWeb.Api.Types do
     field :new_start_date, :date, null: true
   end
 
+  object :activity_content_project_milestone_creation do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :milestone, :milestone
+    field :milestone_name, :string
+  end
+
   object :activity_content_goal_reviewer_updating do
     field :company, :company
     field :space, :space

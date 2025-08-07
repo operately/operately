@@ -72,7 +72,6 @@ function Page() {
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
-  assertPresent(project.milestones);
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
@@ -116,6 +115,8 @@ function Page() {
     update: (v) => Api.projects.updateStartDate({ projectId: project.id, startDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
+
+  const { milestones, createMilestone } = useMilestones(paths, project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -191,7 +192,8 @@ function Page() {
 
     // TaskBoard props - simplified for fast implementation
     tasks: [],
-    milestones: parseMilestonesForTurboUi(paths, project.milestones),
+    milestones,
+    onMilestoneCreate: createMilestone,
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
@@ -345,4 +347,37 @@ function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[
       type: r.resourceType as any,
     };
   });
+}
+
+function useMilestones(paths: Paths, project: Projects.Project) {
+  assertPresent(project.milestones);
+  const [milestones, setMilestones] = React.useState<ProjectPage.Milestone[]>(
+    parseMilestonesForTurboUi(paths, project.milestones),
+  );
+
+  const createMilestone = async (milestone: ProjectPage.NewMilestonePayload) => {
+    return Api.projects
+      .createMilestone({
+        projectId: project.id,
+        name: milestone.name,
+        date: serializeContextualDate(milestone.dueDate),
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        assertPresent(project.milestones);
+
+        const tmpMilestones = [...project.milestones, data.milestone];
+        setMilestones(parseMilestonesForTurboUi(paths, tmpMilestones));
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to create milestone", e);
+        showErrorToast("Error", "Failed to create milestone");
+
+        return { success: false };
+      });
+  };
+
+  return { milestones, createMilestone };
 }
