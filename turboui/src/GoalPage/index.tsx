@@ -6,6 +6,7 @@ import type { MiniWorkMap } from "../MiniWorkMap";
 import { PageNew } from "../Page";
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
+import { Message } from "../Conversations";
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { PrivacyField } from "../PrivacyField";
@@ -80,9 +81,11 @@ export namespace GoalPage {
     commentCount: number;
   }
 
+  export type GetConversationMessagesFn = (params: { convoRequestId: string }) => Promise<Message[]>;
   export interface Ai {
     enabled: boolean;
     startNewReview: (params: { convoId: string }) => void;
+    getConversationMessages: GetConversationMessagesFn;
   }
 
   export interface Props {

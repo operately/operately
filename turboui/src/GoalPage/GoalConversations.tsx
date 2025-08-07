@@ -61,6 +61,23 @@ export function useAiState(props: GoalPage.Props): AiState {
     setActiveConversationId("");
   };
 
+  React.useEffect(() => {
+    if (!props.ai.enabled || !isOpen || activeConversationId == "") {
+      return;
+    }
+
+    const interval = setInterval(async () => {
+      try {
+        const messages = await props.ai.getConversationMessages({ convoRequestId: activeConversationId });
+        setConversations((prev) => prev.map((c) => (c.id === activeConversationId ? { ...c, messages } : c)));
+      } catch (e) {
+        console.error("Error fetching conversation messages:", e);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [props.ai.enabled, isOpen, activeConversationId]);
+
   return {
     enabled: props.ai.enabled,
     isOpen,
