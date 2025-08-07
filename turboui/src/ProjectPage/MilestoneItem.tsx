@@ -1,8 +1,7 @@
 import React, { useState } from "react";
 import { PrimaryButton as Button, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
-import { FormattedTime } from "../FormattedTime";
-import { IconCalendar, IconFlag, IconFlagFilled } from "../icons";
+import { IconFlag, IconFlagFilled } from "../icons";
 import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import classNames from "../utils/classnames";
@@ -116,7 +115,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
             )}
           </div>
         </div>
-        {milestone.dueDate?.date && (
+        {milestone.dueDate && (
           <div
             className={classNames(
               "text-sm mt-1 flex items-center gap-1",
@@ -125,8 +124,12 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
                 : "text-content-dimmed",
             )}
           >
-            <IconCalendar size={14} />
-            <FormattedTime time={milestone.dueDate.date} format="short-date" />
+            <DateField
+              date={milestone.dueDate}
+              readonly
+              // This is needed to force the DateField to re-render when the due date changes
+              key={`${milestone.id}-${milestone.dueDate?.value}`}
+            />
           </div>
         )}
       </div>
