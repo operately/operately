@@ -5,6 +5,7 @@ import { match } from "ts-pattern";
 import { GoalPage } from ".";
 import { ActionList } from "../ActionList";
 import { Avatar } from "../Avatar";
+import { WarningCallout } from "../Callouts";
 import { DateField } from "../DateField";
 import { GoalField } from "../GoalField";
 import { LastCheckIn } from "../LastCheckIn";
@@ -13,18 +14,18 @@ import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
-import { WarningCallout } from "../Callouts";
-import { durationHumanized, isOverdue } from "../utils/time";
 import { Tooltip } from "../Tooltip";
+import { durationHumanized, isOverdue } from "../utils/time";
 
 import {
   IconCircleArrowRight,
   IconCircleCheck,
+  IconInfoCircle,
+  IconMessages,
   IconRotateDot,
   IconTrash,
   IconUserCheck,
   IconUserStar,
-  IconInfoCircle,
 } from "../icons";
 
 export function Sidebar(props: GoalPage.State) {
@@ -213,7 +214,7 @@ function LastCheckInSection(props: GoalPage.State) {
   );
 }
 
-function Retrospective(props: GoalPage.Props) {
+function Retrospective(props: GoalPage.State) {
   if (props.state !== "closed") return null;
   if (!props.retrospective) return null;
 
@@ -293,6 +294,13 @@ function Privacy(props: GoalPage.State) {
 
 function Actions(props: GoalPage.State) {
   const actions = [
+    {
+      type: "action" as const,
+      label: "Review this goal",
+      onClick: () => props.aiState.startNewReview(),
+      icon: IconMessages,
+      hidden: false,
+    },
     {
       type: "link" as const,
       label: "Close Goal",

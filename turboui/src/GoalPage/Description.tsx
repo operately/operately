@@ -6,7 +6,7 @@ import { isContentEmpty } from "../RichContent/isContentEmpty";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { SectionHeader } from "./SectionHeader";
 
-export function Description(props: GoalPage.Props) {
+export function Description(props: GoalPage.State) {
   const state = useDescriptionState(props);
 
   if (state.mode == "zero" && !props.canEdit) return null;
@@ -101,7 +101,7 @@ interface State {
   cancel: () => void;
 }
 
-function useDescriptionState(props: GoalPage.Props): State {
+function useDescriptionState(props: GoalPage.State): State {
   const initialMode = isContentEmpty(props.description) ? "zero" : "view";
 
   const [description, setDescription] = React.useState<string | null>(props.description || null);
