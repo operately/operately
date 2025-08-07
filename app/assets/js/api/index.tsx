@@ -2695,7 +2695,7 @@ export interface AiRunAgentResult {
 }
 
 export interface AiStartNewGoalReviewInput {
-  convoId: Id;
+  convoId: string;
   goalId: Id;
 }
 
