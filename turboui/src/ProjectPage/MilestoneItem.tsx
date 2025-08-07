@@ -10,7 +10,7 @@ import classNames from "../utils/classnames";
 interface MilestoneItemProps {
   milestone: TaskBoardTypes.Milestone;
   canEdit: boolean;
-  onUpdate?: (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => void;
+  onUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
   isLast?: boolean;
 }
 
@@ -22,7 +22,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
   const handleSave = () => {
     onUpdate?.(milestone.id, {
       name: editName,
-      dueDate: editDueDate || undefined,
+      dueDate: editDueDate,
     });
     setIsEditing(false);
   };

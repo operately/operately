@@ -196,7 +196,7 @@ defmodule OperatelyWeb.Api.Projects do
     inputs do
       field :project_id, :id, null: false
       field :name, :string, null: false
-      field :date, :contextual_date, null: true
+      field :due_date, :contextual_date, null: true
     end
 
     outputs do
@@ -214,7 +214,7 @@ defmodule OperatelyWeb.Api.Projects do
           project_id: project.id,
           timeframe: %{
             contextual_start_date: nil,
-            contextual_end_date: inputs.date
+            contextual_end_date: inputs.due_date
           }
         })
       end)
@@ -230,6 +230,56 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.milestone)}
+      end)
+    end
+  end
+
+  defmodule UpdateMilestone do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :milestone_id, :id, null: false
+      field :name, :string, null: false
+      field :due_date, :contextual_date, null: true
+    end
+
+    outputs do
+      field :milestone, :milestone
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Ecto.Multi.run(:updated_milestone, fn _repo, %{milestone: milestone} ->
+        tf = milestone.timeframe || %{}
+
+        Operately.Projects.update_milestone(milestone,  %{
+          title: inputs.name,
+          timeframe: %{
+            contextual_start_date: tf[:contextual_start_date],
+            contextual_end_date: inputs.due_date
+          }
+        })
+      end)
+      |> Steps.save_activity(:project_milestone_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.milestone.id,
+          old_milestone_name: changes.milestone.title,
+          new_milestone_name: changes.updated_milestone.title,
+          old_timeframe: changes.milestone.timeframe,
+          new_timeframe: changes.updated_milestone.timeframe
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)}
       end)
     end
   end
@@ -250,6 +300,15 @@ defmodule OperatelyWeb.Api.Projects do
         case Operately.Projects.Project.get(me, id: project_id, opts: [preload: [:access_context]]) do
           {:ok, project} -> {:ok, project}
           {:error, _} -> {:error, {:not_found, "Project not found"}}
+        end
+      end)
+    end
+
+    def find_milestone(multi, milestone_id) do
+      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
+        case Operately.Projects.Milestone.get(me, id: milestone_id) do
+          {:ok, milestone} -> {:ok, milestone}
+          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
         end
       end)
     end

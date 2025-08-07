@@ -239,7 +239,7 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+    const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
       console.log("Milestone updated:", milestoneId, updates);
 
       // Update the milestone in the milestones array
@@ -541,7 +541,7 @@ export const EmptyProject: Story = {
       setMilestones((prev) => [...prev, newMilestone]);
     };
 
-    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+    const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
       console.log("Milestone updated:", milestoneId, updates);
 
       // Update the milestone in the milestones array
@@ -739,7 +739,7 @@ export const PausedProject: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+    const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
       console.log("Milestone updated:", milestoneId, updates);
       const updatedMilestones = milestones.map((milestone) =>
         milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
