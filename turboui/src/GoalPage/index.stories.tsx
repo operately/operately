@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { GoalPage } from ".";
+import { Conversations, useConversations } from "../Conversations";
 import { DateField } from "../DateField";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { PrivacyField } from "../PrivacyField";
@@ -52,6 +53,64 @@ function Component(props: Partial<GoalPage.Props>) {
       space: "view",
     },
   );
+
+  // Conversations integration
+  const {
+    conversations,
+    activeConversationId,
+    isOpen: isConversationsOpen,
+    openConversations,
+    closeConversations,
+    createConversation,
+    selectConversation,
+    sendMessage,
+  } = useConversations({
+    onSendToAI: async (message, _conversationHistory) => {
+      // Simulate AI response with goal context
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const goalContext = `Goal: "${goalName}" | Status: ${props.status || "on_track"} | Progress: In development`;
+
+      if (message.toLowerCase().includes("goal") || message.toLowerCase().includes("progress")) {
+        return `Based on your goal "${goalName}", I can see you're working on launching an AI platform. ${goalContext}. How can I help you review this goal or provide insights on your progress?`;
+      }
+
+      if (message.toLowerCase().includes("checklist") || message.toLowerCase().includes("tasks")) {
+        const completedItems = checklistItems.filter((item) => item.completed).length;
+        const totalItems = checklistItems.length;
+        return `Your goal has ${totalItems} checklist items with ${completedItems} completed (${Math.round(
+          (completedItems / totalItems) * 100,
+        )}% progress). Would you like me to analyze the remaining tasks or suggest optimizations?`;
+      }
+
+      if (message.toLowerCase().includes("targets") || message.toLowerCase().includes("metrics")) {
+        return `I can help you analyze your goal targets and metrics. Based on the current setup, would you like me to review your KPIs, suggest improvements, or help track progress toward your objectives?`;
+      }
+
+      return `I'm here to help you review and optimize your goal "${goalName}". I can assist with progress analysis, milestone planning, risk assessment, and strategic recommendations. What specific aspect would you like to discuss?`;
+    },
+
+    onSaveConversation: async (conversation) => {
+      // Simulate saving to localStorage with goal context
+      const saved = JSON.parse(localStorage.getItem("goal-conversations") || "[]");
+      const updated = saved.filter((c: any) => c.id !== conversation.id);
+      updated.unshift({ ...conversation, goalId: "goal-123", goalName });
+      localStorage.setItem("goal-conversations", JSON.stringify(updated.slice(0, 10)));
+    },
+
+    onLoadConversations: async () => {
+      const saved = localStorage.getItem("goal-conversations");
+      return saved ? JSON.parse(saved).filter((c: any) => c.goalId === "goal-123") : [];
+    },
+  });
+
+  const handleReviewGoal = () => {
+    openConversations();
+    // If no active conversation, create a new one with goal context
+    if (!activeConversationId && conversations.length === 0) {
+      // The hook will handle creating a new conversation when the first message is sent
+    }
+  };
 
   React.useEffect(() => {
     setChecklistItems(props.checklistItems || []);
@@ -116,51 +175,62 @@ function Component(props: Partial<GoalPage.Props>) {
   };
 
   return (
-    <GoalPage
-      {...defaults}
-      {...props}
-      checklistItems={checklistItems}
-      goalName={goalName}
-      setGoalName={setGoalName}
-      space={space}
-      setSpace={setSpace}
-      spaceSearch={spaceSearchFn}
-      accessLevels={accessLevels}
-      setAccessLevels={setAccessLevels}
-      workmapLink="#"
-      closeLink="#"
-      reopenLink="#"
-      newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
-      newDiscussionLink="#"
-      addSubgoalLink="#"
-      addSubprojectLink="#"
-      parentGoal={parentGoal}
-      setParentGoal={setParentGoal}
-      parentGoalSearch={parentGoalSearchFn}
-      champion={champion}
-      setChampion={setChampion}
-      reviewer={reviewer}
-      setReviewer={setReviewer}
-      dueDate={dueDate}
-      setDueDate={setDueDate}
-      startDate={startDate}
-      setStartDate={setStartDate}
-      canEdit={props.canEdit ?? true}
-      mentionedPersonLookup={async (_id: string) => null}
-      peopleSearch={searchPeopleFn}
-      championSearch={searchPeopleFn}
-      reviewerSearch={searchPeopleFn}
-      activityFeed={<div></div>}
-      updateDescription={async (_description: string | null) => true}
-      addTarget={addTarget}
-      deleteTarget={deleteTarget}
-      updateTarget={async (_inputs) => true}
-      updateTargetValue={async (_id, _value) => true}
-      updateTargetIndex={async (_id, _index) => true}
-      {...checklistHandlers}
-      deleteGoal={deleteGoal}
-      onReviewGoal={() => alert("Review goal action clicked! In a real app, this would open the conversations panel.")}
-    />
+    <>
+      <GoalPage
+        {...defaults}
+        {...props}
+        checklistItems={checklistItems}
+        goalName={goalName}
+        setGoalName={setGoalName}
+        space={space}
+        setSpace={setSpace}
+        spaceSearch={spaceSearchFn}
+        accessLevels={accessLevels}
+        setAccessLevels={setAccessLevels}
+        workmapLink="#"
+        closeLink="#"
+        reopenLink="#"
+        newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
+        newDiscussionLink="#"
+        addSubgoalLink="#"
+        addSubprojectLink="#"
+        parentGoal={parentGoal}
+        setParentGoal={setParentGoal}
+        parentGoalSearch={parentGoalSearchFn}
+        champion={champion}
+        setChampion={setChampion}
+        reviewer={reviewer}
+        setReviewer={setReviewer}
+        dueDate={dueDate}
+        setDueDate={setDueDate}
+        canEdit={props.canEdit ?? true}
+        mentionedPersonLookup={async (_id: string) => null}
+        peopleSearch={searchPeopleFn}
+        championSearch={searchPeopleFn}
+        reviewerSearch={searchPeopleFn}
+        activityFeed={<div></div>}
+        updateDescription={async (_description: string | null) => true}
+        addTarget={addTarget}
+        deleteTarget={deleteTarget}
+        updateTarget={async (_inputs) => true}
+        updateTargetValue={async (_id, _value) => true}
+        updateTargetIndex={async (_id, _index) => true}
+        {...checklistHandlers}
+        deleteGoal={deleteGoal}
+        onReviewGoal={handleReviewGoal}
+      />
+
+      {/* Conversations Panel */}
+      <Conversations
+        isOpen={isConversationsOpen}
+        onClose={closeConversations}
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        onSelectConversation={selectConversation}
+        onCreateConversation={createConversation}
+        onSendMessage={sendMessage}
+      />
+    </>
   );
 }
 
@@ -488,6 +558,21 @@ const description: any = {
       ],
     },
   ],
+};
+
+export const WithAIAssistant: Story = {
+  args: {
+    description: description,
+    champion: genPerson(),
+    reviewer: genPerson(),
+    checkIns: mockCheckIns,
+    targets: mockTargets,
+    checklistItems: mockChecklistItems,
+    discussions: mockDiscussions,
+    contributors: contributors,
+    relatedWorkItems: mockRelatedWorkItems,
+    canEdit: true,
+  },
 };
 
 export const Default: Story = {
