@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { GoalPage } from ".";
+import { DateField } from "../DateField";
 import { MiniWorkMap } from "../MiniWorkMap";
 import { PrivacyField } from "../PrivacyField";
 import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
-import { storyPath } from "../utils/storybook/storypath";
-import { startOfCurrentYear } from "../utils/time";
-import { DateField } from "../DateField";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
+import { storyPath } from "../utils/storybook/storypath";
+import { startOfCurrentYear } from "../utils/time";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -74,7 +74,9 @@ function Component(props: Partial<GoalPage.Props>) {
       return true;
     },
     updateChecklistItem: async (inputs: { itemId: string; name: string }) => {
-      setChecklistItems((prev) => prev.map((item) => (item.id === inputs.itemId ? { ...item, name: inputs.name } : item)));
+      setChecklistItems((prev) =>
+        prev.map((item) => (item.id === inputs.itemId ? { ...item, name: inputs.name } : item)),
+      );
       return true;
     },
     toggleChecklistItem: async (id: string, completed: boolean) => {
@@ -85,13 +87,13 @@ function Component(props: Partial<GoalPage.Props>) {
       setChecklistItems((prev) => {
         const oldIndex = prev.findIndex((item) => item.id === id);
         if (oldIndex === -1) return prev;
-        
+
         const newItems = [...prev];
         const [removed] = newItems.splice(oldIndex, 1);
         if (removed) {
           newItems.splice(index, 0, removed);
         }
-        
+
         return newItems.map((item, idx) => ({ ...item, index: idx }));
       });
       return true;
@@ -104,7 +106,6 @@ function Component(props: Partial<GoalPage.Props>) {
     state: "active" as const,
     spaceName: "Product",
     targets: [],
-    checklistsEnabled: true, // Enable by default in stories
     relatedWorkItems: [],
     checkIns: [],
     discussions: [],
@@ -435,8 +436,8 @@ const contributors: GoalPage.Contributor[] = genPeople(10).map((p, i) => {
     i < contributions.length
       ? contributions[i]
       : contributions.length > 0
-        ? contributions[contributions.length - 1]
-        : [];
+      ? contributions[contributions.length - 1]
+      : [];
 
   return {
     person,
@@ -541,22 +542,6 @@ export const OnlyChecklists: Story = {
     checkIns: mockCheckIns,
     targets: [], // Empty targets array
     checklistItems: mockChecklistItems,
-    discussions: mockDiscussions,
-    contributors: contributors,
-    relatedWorkItems: mockRelatedWorkItems,
-    canEdit: true,
-  },
-};
-
-export const ChecklistsDisabled: Story = {
-  args: {
-    description: description,
-    champion: genPerson(),
-    reviewer: genPerson(),
-    checkIns: mockCheckIns,
-    targets: mockTargets,
-    checklistItems: mockChecklistItems, // Items present but feature disabled
-    checklistsEnabled: false, // Feature disabled
     discussions: mockDiscussions,
     contributors: contributors,
     relatedWorkItems: mockRelatedWorkItems,

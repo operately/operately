@@ -7,11 +7,6 @@ const noOpAsync = async () => ({ success: false, id: "" });
 const noOpAsyncBoolean = async () => false;
 
 export function Checklists(props: GoalPage.Props) {
-  // Don't render if checklists feature is not enabled or items are not provided
-  if (!props.checklistsEnabled || !props.checklistItems) {
-    return null;
-  }
-
   return (
     <Checklist
       items={props.checklistItems}

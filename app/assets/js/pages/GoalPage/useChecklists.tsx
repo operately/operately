@@ -1,4 +1,3 @@
-import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import * as React from "react";
 
@@ -6,8 +5,6 @@ import Api from "@/api";
 import { Checklist, showErrorToast } from "turboui";
 
 interface Checklists {
-  enabled: boolean;
-
   items: Checklist.ChecklistItem[];
   add: Checklist.AddChecklistItemFn;
   delete: Checklist.DeleteChecklistItemFn;
@@ -17,7 +14,6 @@ interface Checklists {
 }
 
 interface UseChecklistsParams {
-  company: Companies.Company;
   goalId: string;
   initialChecklist: Goals.Check[];
 }
@@ -31,7 +27,6 @@ export function useChecklists(params: UseChecklistsParams): Checklists {
   }, [params.initialChecklist]);
 
   return {
-    enabled: Companies.hasFeature(params.company, "checklists"),
     items: items,
     add: useAddHandler({ goalId: params.goalId, items, setItems }),
     delete: useDeleteHandler({ goalId: params.goalId, items, setItems }),
