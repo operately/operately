@@ -37,6 +37,10 @@ export interface Milestone {
 }
 
 export interface NewMilestonePayload extends Omit<Milestone, "id"> {}
+export interface UpdateMilestonePayload {
+  name: string;
+  dueDate: DateField.ContextualDate | null;
+}
 
 /**
  * Task interface

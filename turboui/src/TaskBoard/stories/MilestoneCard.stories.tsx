@@ -109,7 +109,7 @@ const meta: Meta<typeof MilestoneCard> = {
         };
 
         // Handle milestone updates (including due date changes)
-        const handleMilestoneUpdate = (milestoneId: string, updates: Partial<Types.Milestone>) => {
+        const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
           console.log(`Updating milestone ${milestoneId}:`, updates);
           
           setMilestone(prev => ({ ...prev, ...updates }));

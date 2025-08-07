@@ -393,7 +393,7 @@ function EmptyState({ canEdit, setShowAddForm, display }: EmptyStateProps) {
 interface MilestoneListProps {
   milestones: TaskBoardTypes.Milestone[];
   canEdit: boolean;
-  onMilestoneUpdate?: (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
 }
 
 function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneListProps) {

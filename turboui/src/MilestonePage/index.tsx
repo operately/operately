@@ -55,7 +55,7 @@ interface MilestonePageProps {
   onCommentCreate?: (comment: string) => void;
   onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
-  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   onMilestoneNameChange?: (name: string) => Promise<boolean>;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
 
@@ -375,7 +375,7 @@ export function MilestonePage({
 interface MilestoneSidebarProps {
   milestone: Types.Milestone;
   onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
-  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   createdBy?: Types.Person;
   createdAt?: Date;
   isSubscribed?: boolean;
@@ -451,7 +451,7 @@ function SidebarStatus({
   canEdit,
 }: {
   milestone: Types.Milestone;
-  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   canEdit: boolean;
 }) {
   // Assume milestone has a status field (you may need to add this to Types.Milestone)

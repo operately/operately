@@ -558,6 +558,17 @@ export interface ActivityContentProjectMilestoneCreation {
   milestoneName: string;
 }
 
+export interface ActivityContentProjectMilestoneUpdating {
+  company: Company;
+  space: Space;
+  project: Project;
+  milestone: Milestone;
+  oldMilestoneName: string;
+  newMilestoneName: string;
+  oldTimeframe: Timeframe | null;
+  newTimeframe: Timeframe | null;
+}
+
 export interface ActivityContentProjectMoved {
   project?: Project | null;
   oldSpace?: Space | null;
@@ -3538,7 +3549,7 @@ export interface ProjectDiscussionsEditResult {
 export interface ProjectsCreateMilestoneInput {
   projectId: Id;
   name: string;
-  date: ContextualDate | null;
+  dueDate: ContextualDate | null;
 }
 
 export interface ProjectsCreateMilestoneResult {
@@ -3561,6 +3572,17 @@ export interface ProjectsUpdateDueDateInput {
 
 export interface ProjectsUpdateDueDateResult {
   success: boolean | null;
+}
+
+export interface ProjectsUpdateMilestoneInput {
+  projectId: Id;
+  milestoneId: Id;
+  name: string;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectsUpdateMilestoneResult {
+  milestone: Milestone;
 }
 
 export interface ProjectsUpdateParentGoalInput {
@@ -4450,6 +4472,10 @@ class ApiNamespaceProjects {
 
   async updateDueDate(input: ProjectsUpdateDueDateInput): Promise<ProjectsUpdateDueDateResult> {
     return this.client.post("/projects/update_due_date", input);
+  }
+
+  async updateMilestone(input: ProjectsUpdateMilestoneInput): Promise<ProjectsUpdateMilestoneResult> {
+    return this.client.post("/projects/update_milestone", input);
   }
 
   async updateParentGoal(input: ProjectsUpdateParentGoalInput): Promise<ProjectsUpdateParentGoalResult> {
@@ -7000,6 +7026,13 @@ export default {
     useUpdateReviewer: () =>
       useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>(
         defaultApiClient.apiNamespaceProjects.updateReviewer,
+      ),
+
+    updateMilestone: (input: ProjectsUpdateMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjects.updateMilestone(input),
+    useUpdateMilestone: () =>
+      useMutation<ProjectsUpdateMilestoneInput, ProjectsUpdateMilestoneResult>(
+        defaultApiClient.apiNamespaceProjects.updateMilestone,
       ),
 
     updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),

@@ -72,7 +72,7 @@ export function InProjectContextStory() {
     setTasks(reorderedTasks);
   };
 
-  const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+  const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
     console.log("Milestone updated:", milestoneId, updates);
 
     // Update the milestone in the milestones array
@@ -245,7 +245,7 @@ export function EmptyMilestoneInProjectContextStory() {
     setTasks(reorderedTasks);
   };
 
-  const handleMilestoneUpdate = (milestoneId: string, updates: Partial<TaskBoardTypes.Milestone>) => {
+  const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
     console.log("Milestone updated:", milestoneId, updates);
 
     // Update the milestone in the milestones array

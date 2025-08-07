@@ -42,7 +42,7 @@ export interface MilestoneCardProps {
   /**
    * Called when the milestone is updated
    */
-  onMilestoneUpdate?: (milestoneId: string, updates: Partial<Types.Milestone>) => void;
+  onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
 
   /**
    * Function to search for people for assignment
@@ -100,7 +100,7 @@ export function MilestoneCard({
   // Handle milestone due date change
   const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
     if (onMilestoneUpdate) {
-      onMilestoneUpdate(milestone.id, { dueDate: newDueDate || undefined });
+      onMilestoneUpdate(milestone.id, { name: milestone.name, dueDate: newDueDate || null });
     }
   };
 

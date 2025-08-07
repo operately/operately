@@ -116,7 +116,7 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
-  const { milestones, createMilestone } = useMilestones(paths, project);
+  const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -194,6 +194,7 @@ function Page() {
     tasks: [],
     milestones,
     onMilestoneCreate: createMilestone,
+    onMilestoneUpdate: updateMilestone,
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
@@ -360,7 +361,7 @@ function useMilestones(paths: Paths, project: Projects.Project) {
       .createMilestone({
         projectId: project.id,
         name: milestone.name,
-        date: serializeContextualDate(milestone.dueDate),
+        dueDate: serializeContextualDate(milestone.dueDate),
       })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
@@ -379,5 +380,36 @@ function useMilestones(paths: Paths, project: Projects.Project) {
       });
   };
 
-  return { milestones, createMilestone };
+  const updateMilestone = async (milestoneId: string, updates: ProjectPage.UpdateMilestonePayload) => {
+    return Api.projects
+      .updateMilestone({
+        projectId: project.id,
+        milestoneId: milestoneId,
+        name: updates.name,
+        dueDate: serializeContextualDate(updates.dueDate),
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        assertPresent(project.milestones);
+
+        const updatedMilestones = project.milestones.map((m) => {
+          if (m.id === milestoneId) {
+            return data.milestone || m;
+          }
+          return m;
+        });
+
+        setMilestones(parseMilestonesForTurboUi(paths, updatedMilestones));
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to update milestone", e);
+        showErrorToast("Error", "Failed to update milestone");
+
+        return { success: false };
+      });
+  };
+
+  return { milestones, createMilestone, updateMilestone };
 }
