@@ -282,9 +282,44 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:start_new_review, fn _repo, %{me: me} ->
-        Operately.AI.GoalReview.create(me, inputs.goal_id, inputs.convo_id)
+        Operately.Ai.GoalReview.create(me, inputs.goal_id, inputs.convo_id)
       end)
       |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
+  defmodule GetConversationMessages do
+    use TurboConnect.Query
+
+    inputs do
+      field :convo_id, :string
+    end
+
+    outputs do
+      field :messages, list_of(:agent_message)
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Ecto.Multi.run(:get_messages, fn _repo, _ ->
+        import Ecto.Query, only: [from: 2]
+
+        convo =
+          from(c in Operately.People.AgentConvo,
+            where: c.request_id == ^inputs.convo_id,
+            preload: [:messages]
+          )
+          |> Operately.Repo.one()
+
+        if is_nil(convo) do
+          {:error, :not_found}
+        else
+          {:ok, OperatelyWeb.Api.Serializer.serialize(convo.messages, level: :full)}
+        end
+      end)
+      |> Steps.respond(fn res -> %{messages: res.get_messages} end)
     end
   end
 

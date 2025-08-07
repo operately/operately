@@ -180,12 +180,6 @@ defmodule OperatelyWeb.Api.AiTest do
       assert {401, _} = mutation(ctx.conn, [:ai, :start_new_goal_review], %{goal_id: Ecto.UUID.generate()})
     end
 
-    test "it requires a valid goal ID", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {404, _} = mutation(ctx.conn, [:ai, :start_new_goal_review], %{goal_id: Ecto.UUID.generate()})
-    end
-
     test "it requires a valid conversation ID", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 

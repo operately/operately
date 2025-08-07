@@ -33,7 +33,7 @@ export function Discussions(props: GoalPage.State) {
   );
 }
 
-function DiscussionsList({ props }: { props: GoalPage.Props }) {
+function DiscussionsList({ props }: { props: GoalPage.State }) {
   return (
     <div>
       {props.discussions.map((discussion) => (

@@ -7,6 +7,7 @@ defmodule Operately.People.AgentConvo do
 
     belongs_to :goal, Operately.Goals.Goal, type: :binary_id
     belongs_to :author, Operately.People.Person, type: :binary_id
+    has_many :messages, Operately.People.AgentMessage, foreign_key: :convo_id, on_replace: :delete
 
     timestamps()
   end
@@ -19,7 +20,8 @@ defmodule Operately.People.AgentConvo do
     agent_convo
     |> cast(attrs, [
       :request_id,
-      :author_id
+      :author_id,
+      :goal_id
     ])
     |> validate_required([:author_id])
     |> assoc_constraint(:author)

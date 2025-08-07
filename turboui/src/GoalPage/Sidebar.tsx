@@ -214,7 +214,7 @@ function LastCheckInSection(props: GoalPage.State) {
   );
 }
 
-function Retrospective(props: GoalPage.Props) {
+function Retrospective(props: GoalPage.State) {
   if (props.state !== "closed") return null;
   if (!props.retrospective) return null;
 
@@ -297,7 +297,7 @@ function Actions(props: GoalPage.State) {
     {
       type: "action" as const,
       label: "Review this goal",
-      onClick: props.ai.startNewReview,
+      onClick: () => props.aiState.startNewReview(),
       icon: IconMessages,
       hidden: false,
     },

@@ -5,8 +5,10 @@ defmodule Operately.People.AgentMessage do
   schema "agent_messages" do
     belongs_to :convo, Operately.People.AgentConvo
 
+    field :source, Ecto.Enum, values: [:user, :ai], default: :user
     field :status, Ecto.Enum, values: [:pending, :done], default: :pending
     field :message, :string
+    field :prompt, :string
 
     timestamps()
   end
@@ -17,7 +19,7 @@ defmodule Operately.People.AgentMessage do
 
   def changeset(agent_message, attrs) do
     agent_message
-    |> cast(attrs, [:status, :message, :convo_id])
-    |> validate_required([:status, :message, :convo_id])
+    |> cast(attrs, [:status, :convo_id, :source, :message, :prompt])
+    |> validate_required([:status, :convo_id, :source])
   end
 end
