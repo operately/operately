@@ -155,6 +155,8 @@ export namespace GoalPage {
 
     deleteModalOpen?: boolean;
     moveModealOpen?: boolean;
+
+    onReviewGoal?: () => void;
   }
 
   export interface State extends Props {

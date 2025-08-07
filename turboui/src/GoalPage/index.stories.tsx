@@ -159,6 +159,7 @@ function Component(props: Partial<GoalPage.Props>) {
       updateTargetIndex={async (_id, _index) => true}
       {...checklistHandlers}
       deleteGoal={deleteGoal}
+      onReviewGoal={() => alert("Review goal action clicked! In a real app, this would open the conversations panel.")}
     />
   );
 }
