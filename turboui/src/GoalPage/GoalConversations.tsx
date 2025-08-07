@@ -4,19 +4,19 @@ import { GoalPage } from ".";
 import Conversations, { Conversation } from "../Conversations";
 
 export function GoalConversations(props: GoalPage.State) {
-  if (!props.ai.enabled) {
+  if (!props.aiState.enabled) {
     return null; // AI is not enabled, do not render conversations
   }
 
   return (
     <Conversations
-      isOpen={props.ai.isOpen}
-      onClose={() => props.ai.close()}
+      isOpen={props.aiState.isOpen}
+      onClose={() => props.aiState.close()}
       onSendMessage={async (message, conversationId) => {
         console.log("Sending message:", message, "to conversation:", conversationId);
       }}
-      conversations={props.ai.conversations}
-      activeConversationId={props.ai.activeConversationId}
+      conversations={props.aiState.conversations}
+      activeConversationId={props.aiState.activeConversationId}
       onSelectConversation={undefined}
       onCreateConversation={undefined}
       initialWidth={500}
@@ -60,6 +60,23 @@ export function useAiState(props: GoalPage.Props): AiState {
     setIsOpen(false);
     setActiveConversationId("");
   };
+
+  React.useEffect(() => {
+    if (!props.ai.enabled || !isOpen || activeConversationId == "") {
+      return;
+    }
+
+    const interval = setInterval(async () => {
+      try {
+        const messages = await props.ai.getConversationMessages({ convoRequestId: activeConversationId });
+        setConversations((prev) => prev.map((c) => (c.id === activeConversationId ? { ...c, messages } : c)));
+      } catch (e) {
+        console.error("Error fetching conversation messages:", e);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [props.ai.enabled, isOpen, activeConversationId]);
 
   return {
     enabled: props.ai.enabled,
