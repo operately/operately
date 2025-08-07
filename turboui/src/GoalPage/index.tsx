@@ -4,7 +4,6 @@ import type { GoalTargetList } from "../GoalTargetList";
 import type { MiniWorkMap } from "../MiniWorkMap";
 
 import { PageNew } from "../Page";
-
 import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
@@ -18,6 +17,7 @@ import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
+import { AiState, GoalConversations, useAiState } from "./GoalConversations";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 
@@ -78,6 +78,11 @@ export namespace GoalPage {
     link: string;
     content: string;
     commentCount: number;
+  }
+
+  export interface Ai {
+    enabled: boolean;
+    startNewReview: (params: { convoId: string }) => void;
   }
 
   export interface Props {
@@ -156,7 +161,7 @@ export namespace GoalPage {
     deleteModalOpen?: boolean;
     moveModealOpen?: boolean;
 
-    onReviewGoal?: () => void;
+    ai: Ai;
   }
 
   export interface State extends Props {
@@ -167,10 +172,16 @@ export namespace GoalPage {
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
     closeMoveModal: () => void;
+
+    onReviewGoal?: () => void;
+
+    ai: AiState;
   }
 }
 
 function useGoalPageState(props: GoalPage.Props): GoalPage.State {
+  const ai = useAiState(props);
+
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
   const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModealOpen || false);
 
@@ -184,6 +195,7 @@ function useGoalPageState(props: GoalPage.Props): GoalPage.State {
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
+    ai,
   };
 }
 
@@ -198,19 +210,23 @@ export function GoalPage(props: GoalPage.Props) {
   ]);
 
   return (
-    <PageNew title={[state.goalName]} size="fullwidth" testId="goal-page">
-      <PageHeader {...state} />
-      <Tabs tabs={tabs} />
+    <>
+      <PageNew title={[state.goalName]} size="fullwidth" testId="goal-page">
+        <PageHeader {...state} />
+        <Tabs tabs={tabs} />
 
-      <div className="flex-1 overflow-scroll">
-        {tabs.active === "overview" && <Overview {...state} />}
-        {tabs.active === "check-ins" && <CheckIns {...state} />}
-        {tabs.active === "discussions" && <Discussions {...state} />}
-        {tabs.active === "activity" && <Activity {...state} />}
-      </div>
+        <div className="flex-1 overflow-scroll">
+          {tabs.active === "overview" && <Overview {...state} />}
+          {tabs.active === "check-ins" && <CheckIns {...state} />}
+          {tabs.active === "discussions" && <Discussions {...state} />}
+          {tabs.active === "activity" && <Activity {...state} />}
+        </div>
 
-      <DeleteModal {...state} />
-      <MoveModal {...state} />
-    </PageNew>
+        <DeleteModal {...state} />
+        <MoveModal {...state} />
+      </PageNew>
+
+      <GoalConversations {...state} />
+    </>
   );
 }

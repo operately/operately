@@ -214,8 +214,7 @@ export function Conversations({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-surface-outline bg-surface-base">
         <div className="flex items-center gap-2">
-          <IconMessages size={20} className="text-content-accent" />
-          <h2 className="font-semibold text-content-accent">AI Assistant</h2>
+          <h2 className="font-semibold text-content-accent">Goal Review</h2>
         </div>
         <div className="flex items-center gap-1">
           {/* Conversations List Toggle */}
@@ -355,7 +354,7 @@ export function Conversations({
               <IconArrowRight size={16} />
             </button>
           </div>
-          <div className="text-xs text-content-dimmed mt-2">Press Enter to send, Shift+Enter for new line</div>
+          <div className="text-[10px] text-content-dimmed mt-1">Press Enter to send, Shift+Enter for new line</div>
         </div>
       )}
     </div>

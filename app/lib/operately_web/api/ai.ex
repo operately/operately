@@ -265,6 +265,29 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule StartNewGoalReview do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :convo_id, :string
+      field :goal_id, :id
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Ecto.Multi.run(:start_new_review, fn _repo, %{me: me} ->
+        Operately.AI.start_new_goal_review(me, inputs.goal_id, inputs.convo_id)
+      end)
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule RunAgent do
     use TurboConnect.Mutation
     alias OperatelyWeb.Api.Serializer

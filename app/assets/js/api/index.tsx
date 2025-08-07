@@ -2694,6 +2694,15 @@ export interface AiRunAgentResult {
   run: AgentRun;
 }
 
+export interface AiStartNewGoalReviewInput {
+  convoId: Id;
+  goalId: Id;
+}
+
+export interface AiStartNewGoalReviewResult {
+  success: boolean;
+}
+
 export interface ArchiveGoalInput {
   goalId?: string | null;
 }
@@ -4573,6 +4582,10 @@ class ApiNamespaceAi {
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
     return this.client.post("/ai/run_agent", input);
+  }
+
+  async startNewGoalReview(input: AiStartNewGoalReviewInput): Promise<AiStartNewGoalReviewResult> {
+    return this.client.post("/ai/start_new_goal_review", input);
   }
 }
 
@@ -7103,6 +7116,12 @@ export default {
     useEditAgentPlanningInstructions: () =>
       useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>(
         defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
+      ),
+
+    startNewGoalReview: (input: AiStartNewGoalReviewInput) => defaultApiClient.apiNamespaceAi.startNewGoalReview(input),
+    useStartNewGoalReview: () =>
+      useMutation<AiStartNewGoalReviewInput, AiStartNewGoalReviewResult>(
+        defaultApiClient.apiNamespaceAi.startNewGoalReview,
       ),
 
     editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),

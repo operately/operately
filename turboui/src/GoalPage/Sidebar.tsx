@@ -297,10 +297,9 @@ function Actions(props: GoalPage.State) {
     {
       type: "action" as const,
       label: "Review this goal",
-      onClick: props.onReviewGoal,
+      onClick: props.ai.startNewReview,
       icon: IconMessages,
-      hidden: !props.onReviewGoal,
-      testId: "review-goal",
+      hidden: false,
     },
     {
       type: "link" as const,

@@ -53,4 +53,11 @@ defmodule Operately.AI do
     {:ok, chain} = LLMChain.run(chain, mode: :while_needs_response)
     ChainResult.to_string!(chain)
   end
+
+  def start_new_goal_review(person, goal_id, convo_id) do
+    IO.inspect("Running for #{inspect(person)}")
+    IO.inspect("Starting new goal review for #{goal_id} with convo_id #{convo_id}")
+
+    {:ok, nil}
+  end
 end
