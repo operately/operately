@@ -1862,6 +1862,14 @@ export interface AiGetAgentRunResult {
   run: AgentRun;
 }
 
+export interface AiGetConversationMessagesInput {
+  convoId: string;
+}
+
+export interface AiGetConversationMessagesResult {
+  messages: AgentMessage[];
+}
+
 export interface AiListAgentRunsInput {
   agentId: Id;
 }
@@ -2700,6 +2708,15 @@ export interface AiRunAgentInput {
 
 export interface AiRunAgentResult {
   run: AgentRun;
+}
+
+export interface AiStartNewGoalReviewInput {
+  convoId: string;
+  goalId: Id;
+}
+
+export interface AiStartNewGoalReviewResult {
+  success: boolean;
 }
 
 export interface ArchiveGoalInput {
@@ -4545,6 +4562,10 @@ class ApiNamespaceAi {
     return this.client.get("/ai/get_agent_run", input);
   }
 
+  async getConversationMessages(input: AiGetConversationMessagesInput): Promise<AiGetConversationMessagesResult> {
+    return this.client.get("/ai/get_conversation_messages", input);
+  }
+
   async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
     return this.client.get("/ai/list_agent_runs", input);
   }
@@ -4595,6 +4616,10 @@ class ApiNamespaceAi {
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
     return this.client.post("/ai/run_agent", input);
+  }
+
+  async startNewGoalReview(input: AiStartNewGoalReviewInput): Promise<AiStartNewGoalReviewResult> {
+    return this.client.post("/ai/start_new_goal_review", input);
   }
 }
 
@@ -7110,6 +7135,11 @@ export default {
     useListAgentRuns: (input: AiListAgentRunsInput) =>
       useQuery<AiListAgentRunsResult>(() => defaultApiClient.apiNamespaceAi.listAgentRuns(input)),
 
+    getConversationMessages: (input: AiGetConversationMessagesInput) =>
+      defaultApiClient.apiNamespaceAi.getConversationMessages(input),
+    useGetConversationMessages: (input: AiGetConversationMessagesInput) =>
+      useQuery<AiGetConversationMessagesResult>(() => defaultApiClient.apiNamespaceAi.getConversationMessages(input)),
+
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
     useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
 
@@ -7132,6 +7162,12 @@ export default {
     useEditAgentPlanningInstructions: () =>
       useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>(
         defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
+      ),
+
+    startNewGoalReview: (input: AiStartNewGoalReviewInput) => defaultApiClient.apiNamespaceAi.startNewGoalReview(input),
+    useStartNewGoalReview: () =>
+      useMutation<AiStartNewGoalReviewInput, AiStartNewGoalReviewResult>(
+        defaultApiClient.apiNamespaceAi.startNewGoalReview,
       ),
 
     editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
