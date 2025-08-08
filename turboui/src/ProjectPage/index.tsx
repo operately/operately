@@ -137,6 +137,7 @@ export namespace ProjectPage {
     onResourceRemove: (id: string) => void;
 
     moveModalOpen?: boolean;
+    notifications?: any;
   }
 
   export interface State extends Props {
