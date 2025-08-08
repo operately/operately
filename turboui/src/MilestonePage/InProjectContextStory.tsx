@@ -14,7 +14,6 @@ import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 
 const people = genPeople(5);
 
-
 // Get a specific milestone from mock data
 const targetMilestone: TaskBoardTypes.Milestone = { ...Object.values(mockMilestones)[0]!, status: "pending" }; // Q2 Feature Release
 
@@ -35,7 +34,7 @@ const defaultSpace = {
   id: "1",
   name: "Product",
   link: "#",
-}
+};
 
 /**
  * Full Project Context - Shows MilestonePage within a ProjectPage-like structure
@@ -132,6 +131,9 @@ export function InProjectContextStory() {
     onResourceAdd: (resource: any) => {
       console.log("Resource added:", resource);
     },
+    onResourceEdit: (resource: any) => {
+      console.log("Resource edited:", resource);
+    },
   };
 
   const tabs = useTabs("tasks", [
@@ -215,10 +217,10 @@ export function EmptyMilestoneInProjectContextStory() {
   const [tasks, setTasks] = useState<TaskBoardTypes.Task[]>([]); // Empty tasks array
   const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(
     // Ensure all milestones have the correct status types
-    Object.values(mockMilestones).map(m => ({
+    Object.values(mockMilestones).map((m) => ({
       ...m,
-      status: m.status === "done" ? "done" : "pending"
-    })) as TaskBoardTypes.Milestone[]
+      status: m.status === "done" ? "done" : "pending",
+    })) as TaskBoardTypes.Milestone[],
   );
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
@@ -307,6 +309,9 @@ export function EmptyMilestoneInProjectContextStory() {
     resources: [],
     onResourceAdd: (resource: any) => {
       console.log("Resource added:", resource);
+    },
+    onResourceEdit: (resource: any) => {
+      console.log("Resource edited:", resource);
     },
   };
 

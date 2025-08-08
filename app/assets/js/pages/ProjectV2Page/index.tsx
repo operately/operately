@@ -117,7 +117,7 @@ function Page() {
   });
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
-  const { resources, createResource } = useResources(project);
+  const { resources, createResource, updateResource } = useResources(project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -205,6 +205,7 @@ function Page() {
 
     resources,
     onResourceAdd: createResource,
+    onResourceEdit: updateResource,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
   };
@@ -422,11 +423,11 @@ function useResources(project: Projects.Project) {
 
   const createResource = async (resource: ProjectPage.NewResourcePayload) => {
     return Api.addKeyResource({
-        projectId: project.id,
-        title: resource.name,
-        link: resource.url,
-        resourceType: resource.type,
-      })
+      projectId: project.id,
+      title: resource.name,
+      link: resource.url,
+      resourceType: resource.type,
+    })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         assertPresent(project.keyResources);
@@ -444,6 +445,34 @@ function useResources(project: Projects.Project) {
       });
   };
 
-  return { resources, createResource };
-}
+  const updateResource = async (resourceId: string, updates: ProjectPage.UpdateResourcePayload) => {
+    return Api.editKeyResource({
+      id: resourceId,
+      title: updates.name,
+      link: updates.url,
+    })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        assertPresent(project.keyResources);
 
+        const updatedResources = project.keyResources.map((r) => {
+          if (r.id === resourceId) {
+            return data.keyResource || r;
+          }
+          return r;
+        });
+
+        setResources(prepareResources(updatedResources));
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to update resource", e);
+        showErrorToast("Error", "Failed to update resource");
+
+        return { success: false };
+      });
+  };
+
+  return { resources, createResource, updateResource };
+}
