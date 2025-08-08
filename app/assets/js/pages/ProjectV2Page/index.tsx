@@ -183,13 +183,7 @@ function Page() {
     closedAt: Time.parse(project.closedAt),
 
     canEdit: project.permissions?.canEditName || false,
-    accessLevels: {
-      company: "no_access" as const,
-      space: "no_access" as const,
-    },
-    setAccessLevels: (_levels) => {
-      // Simplified for now
-    },
+    manageTeamLink: paths.projectContributorsPath(project.id),
 
     // TaskBoard props - simplified for fast implementation
     tasks: [],

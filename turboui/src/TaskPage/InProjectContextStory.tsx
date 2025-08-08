@@ -61,8 +61,6 @@ export function InProjectContextStory() {
     state: "active" as const,
     closedAt: null,
     canEdit: true,
-    accessLevels: { company: "edit" as const, space: "view" as const },
-    setAccessLevels: () => {},
     updateProjectName: async () => true,
     updateDescription: async () => true,
     activityFeed: <div>Activity feed content</div>,
@@ -90,6 +88,7 @@ export function InProjectContextStory() {
     mentionedPersonLookup: mockMentionedPersonLookup,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
+    manageTeamLink: "#",
 
     resources: [],
     onResourceAdd: () => {},

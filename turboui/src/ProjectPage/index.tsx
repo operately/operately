@@ -5,7 +5,6 @@ import { PageNew } from "../Page";
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
-import { PrivacyField } from "../PrivacyField";
 import { ResourceManager } from "../ResourceManager";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { BadgeStatus } from "../StatusBadge/types";
@@ -106,8 +105,7 @@ export namespace ProjectPage {
     retrospectiveLink?: string;
 
     canEdit: boolean;
-    accessLevels: PrivacyField.AccessLevels;
-    setAccessLevels: (levels: PrivacyField.AccessLevels) => void;
+    manageTeamLink: string;
 
     updateProjectName: (name: string) => Promise<boolean>;
     updateDescription: (description: string | null) => Promise<boolean>;
@@ -127,7 +125,6 @@ export namespace ProjectPage {
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
     contributors: Person[];
-    manageTeamLink?: string;
     checkIns: CheckIn[];
     discussions: Discussion[];
     mentionedPersonLookup: MentionedPersonLookupFn;

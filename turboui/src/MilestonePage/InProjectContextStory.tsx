@@ -97,8 +97,6 @@ export function InProjectContextStory() {
     state: "active" as const,
     closedAt: null,
     canEdit: true,
-    accessLevels: { company: "edit" as const, space: "view" as const },
-    setAccessLevels: () => {},
     updateProjectName: async () => true,
     updateDescription: async () => true,
     activityFeed: <div>Activity feed content</div>,
@@ -137,6 +135,7 @@ export function InProjectContextStory() {
     onResourceRemove: (id: string) => {
       console.log("Resource removed:", id);
     },
+    manageTeamLink: "#",
   };
 
   const tabs = useTabs("tasks", [
@@ -280,8 +279,6 @@ export function EmptyMilestoneInProjectContextStory() {
     state: "active" as const,
     closedAt: null,
     canEdit: true,
-    accessLevels: { company: "edit" as const, space: "view" as const },
-    setAccessLevels: () => {},
     updateProjectName: async () => true,
     updateDescription: async () => true,
     activityFeed: <div>Activity feed content</div>,
@@ -319,6 +316,7 @@ export function EmptyMilestoneInProjectContextStory() {
     onResourceRemove: (id: string) => {
       console.log("Resource removed:", id);
     },
+    manageTeamLink: "#",
   };
 
   const tabs = useTabs("tasks", [
