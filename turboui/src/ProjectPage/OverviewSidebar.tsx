@@ -228,11 +228,11 @@ function Actions(props: ProjectPage.State) {
       hidden: !props.canEdit,
     },
     {
-      type: "action" as const,
+      type: "link" as const,
       label: "Pause project",
-      onClick: () => console.log("Pause project"),
+      link: props.pauseLink,
       icon: IconPlayerPause,
-      hidden: !props.canEdit || props.state === "closed",
+      hidden: !props.canEdit || props.state === "closed" || props.state === "paused",
     },
     {
       type: "link" as const,
@@ -243,10 +243,10 @@ function Actions(props: ProjectPage.State) {
     },
     {
       type: "link" as const,
-      label: "Re-open project",
+      label: "Resume project",
       link: props.reopenLink,
       icon: IconRotateDot,
-      hidden: !props.canEdit || props.state !== "closed",
+      hidden: !props.canEdit || props.state !== "paused",
     },
     {
       type: "action" as const,

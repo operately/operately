@@ -135,8 +135,9 @@ function Page() {
   });
 
   const props: ProjectPage.Props = {
-    closeLink: paths.projectClosePath(project.id!),
-    reopenLink: paths.resumeProjectPath(project.id!),
+    closeLink: paths.projectClosePath(project.id),
+    reopenLink: paths.resumeProjectPath(project.id),
+    pauseLink: paths.pauseProjectPath(project.id),
 
     projectName: projectName as string,
     updateProjectName: (name: string) => {

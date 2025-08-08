@@ -85,6 +85,7 @@ export function InProjectContextStory() {
   const mockProjectState = {
     closeLink: "#",
     reopenLink: "#",
+    pauseLink: "#",
     projectName: "Mobile App Redesign",
     description:
       "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
@@ -267,6 +268,7 @@ export function EmptyMilestoneInProjectContextStory() {
   const mockProjectState = {
     closeLink: "#",
     reopenLink: "#",
+    pauseLink: "#",
     projectName: "Mobile App Redesign",
     description:
       "<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>",
