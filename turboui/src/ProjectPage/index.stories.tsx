@@ -260,14 +260,14 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
       const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newResource = { id: resourceId, ...resource };
       console.log("Resource added:", newResource);
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
         resource.id === id ? { ...resource, ...updates } : resource,
@@ -446,14 +446,14 @@ export const EmptyTasks: Story = {
       setMilestones((prev) => [...prev, newMilestone]);
     };
 
-    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
       const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newResource = { id: resourceId, ...resource };
       console.log("Resource added:", newResource);
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
         resource.id === id ? { ...resource, ...updates } : resource,
@@ -551,14 +551,14 @@ export const EmptyProject: Story = {
       setMilestones(updatedMilestones);
     };
 
-    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
       const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newResource = { id: resourceId, ...resource };
       console.log("Resource added:", newResource);
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
         resource.id === id ? { ...resource, ...updates } : resource,
@@ -758,14 +758,14 @@ export const PausedProject: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
       const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newResource = { id: resourceId, ...resource };
       console.log("Resource added:", newResource);
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
         resource.id === id ? { ...resource, ...updates } : resource,
