@@ -36,8 +36,8 @@ export const Default: Story = {
       <ResourceLink
         resource={resource}
         canEdit={true}
-        onEdit={(id, updates) => {
-          console.log("Edit resource:", id, updates);
+        onEdit={(updates) => {
+          console.log("Edit resource:", updates);
           setResource((prev) => ({ ...prev, ...updates }));
         }}
         onRemove={(id) => console.log("Remove:", id)}
@@ -89,7 +89,7 @@ export const MultipleResources: Story = {
           type: "github",
         }}
         canEdit={true}
-        onEdit={(id, resource) => console.log("Edit:", id, resource)}
+        onEdit={(resource) => console.log("Edit:", resource)}
         onRemove={(id) => console.log("Remove:", id)}
       />
       <ResourceLink
@@ -100,7 +100,7 @@ export const MultipleResources: Story = {
           type: "slack",
         }}
         canEdit={true}
-        onEdit={(id, resource) => console.log("Edit:", id, resource)}
+        onEdit={(resource) => console.log("Edit:", resource)}
         onRemove={(id) => console.log("Remove:", id)}
       />
       <ResourceLink
@@ -111,7 +111,7 @@ export const MultipleResources: Story = {
           type: "google_sheet",
         }}
         canEdit={true}
-        onEdit={(id, resource) => console.log("Edit:", id, resource)}
+        onEdit={(resource) => console.log("Edit:", resource)}
         onRemove={(id) => console.log("Remove:", id)}
       />
     </div>
