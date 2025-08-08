@@ -285,6 +285,7 @@ export const Default: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="Mobile App Redesign"
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
@@ -353,6 +354,7 @@ export const ReadOnly: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="Mobile App Redesign"
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
@@ -467,6 +469,7 @@ export const EmptyTasks: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="Mobile App Redesign"
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
@@ -570,6 +573,7 @@ export const EmptyProject: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="New Project"
         description={undefined}
         space={space}
@@ -631,6 +635,7 @@ export const EmptyProjectReadOnly: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="Mobile App Redesign"
         description=""
         space={space}
@@ -773,6 +778,7 @@ export const PausedProject: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="AI Chatbot Prototype"
         description="<p>This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.</p>"
         space={space}
@@ -848,6 +854,7 @@ export const ClosedProject: Story = {
       <ProjectPage
         closeLink="#"
         reopenLink="#"
+        pauseLink="#"
         projectName="Work Map GA"
         description="<p>We're going towards turning the work maps on for everyone and removing legacy UI.</p><p>Milestones (will add after bug is fixed):</p><ul><li>No bugs / papercuts in current work maps</li><li>My work</li><li>Profile pages that show work maps in new layout</li><li>New home section</li></ul>"
         space={space}
