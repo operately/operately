@@ -298,8 +298,6 @@ export const Default: Story = {
         state="active"
         closedAt={null}
         canEdit={true}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -368,8 +366,6 @@ export const ReadOnly: Story = {
         state="active"
         closedAt={null}
         canEdit={false}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -484,8 +480,6 @@ export const EmptyTasks: Story = {
         state="active"
         closedAt={null}
         canEdit={true}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -587,8 +581,6 @@ export const EmptyProject: Story = {
         state="active"
         closedAt={null}
         canEdit={true}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -650,8 +642,6 @@ export const EmptyProjectReadOnly: Story = {
         state="active"
         closedAt={null}
         canEdit={false}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -796,8 +786,6 @@ export const PausedProject: Story = {
         state="paused"
         closedAt={null}
         canEdit={true}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
@@ -874,8 +862,6 @@ export const ClosedProject: Story = {
         closedAt={closedAt}
         retrospectiveLink="/projects/work-map-ga/retrospective"
         canEdit={false}
-        accessLevels={{ company: "edit", space: "view" }}
-        setAccessLevels={() => {}}
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
