@@ -135,7 +135,7 @@ export namespace ProjectPage {
     // Resource management
     resources: ResourceManager.Resource[];
     onResourceAdd: (resource: NewResourcePayload) => void;
-    onResourceEdit?: (id: string, resource: ResourceManager.Resource) => void;
+    onResourceEdit: (id: string, resource: ResourceManager.Resource) => void;
     onResourceRemove?: (id: string) => void;
 
     moveModalOpen?: boolean;
