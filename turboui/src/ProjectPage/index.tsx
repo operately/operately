@@ -71,6 +71,7 @@ export namespace ProjectPage {
   export interface Props {
     closeLink: string;
     reopenLink: string;
+    pauseLink: string;
 
     projectName: string;
     description?: string;

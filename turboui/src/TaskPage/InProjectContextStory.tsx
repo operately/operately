@@ -89,6 +89,7 @@ export function InProjectContextStory() {
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
     manageTeamLink: "#",
+    pauseLink: "#",
 
     resources: [],
     onResourceAdd: () => {},
