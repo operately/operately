@@ -20,7 +20,7 @@ export namespace ResourceManager {
     resources: Resource[];
     onResourceAdd: (resource: NewResourcePayload) => void;
     onResourceEdit: (resource: Resource) => void;
-    onResourceRemove?: (id: string) => void;
+    onResourceRemove: (id: string) => void;
     canEdit?: boolean;
   }
 }

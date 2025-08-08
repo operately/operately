@@ -134,6 +134,9 @@ export function InProjectContextStory() {
     onResourceEdit: (resource: any) => {
       console.log("Resource edited:", resource);
     },
+    onResourceRemove: (id: string) => {
+      console.log("Resource removed:", id);
+    },
   };
 
   const tabs = useTabs("tasks", [
@@ -312,6 +315,9 @@ export function EmptyMilestoneInProjectContextStory() {
     },
     onResourceEdit: (resource: any) => {
       console.log("Resource edited:", resource);
+    },
+    onResourceRemove: (id: string) => {
+      console.log("Resource removed:", id);
     },
   };
 
