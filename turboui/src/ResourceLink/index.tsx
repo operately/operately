@@ -10,7 +10,7 @@ import Modal from "../Modal";
 export interface ResourceLinkProps {
   resource: ResourceManager.Resource;
   onEdit: (resource: ResourceManager.Resource) => void;
-  onRemove?: (id: string) => void;
+  onRemove: (id: string) => void;
   canEdit?: boolean;
 }
 

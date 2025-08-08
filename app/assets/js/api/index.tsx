@@ -3669,11 +3669,11 @@ export interface RemoveGroupMemberInput {
 export interface RemoveGroupMemberResult {}
 
 export interface RemoveKeyResourceInput {
-  id?: string | null;
+  id: string;
 }
 
 export interface RemoveKeyResourceResult {
-  keyResource?: ProjectKeyResource | null;
+  keyResource: ProjectKeyResource;
 }
 
 export interface RemoveProjectContributorInput {
