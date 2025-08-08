@@ -133,7 +133,7 @@ export namespace ProjectPage {
     mentionedPersonLookup: MentionedPersonLookupFn;
 
     // Resource management
-    resources?: ResourceManager.Resource[];
+    resources: ResourceManager.Resource[];
     onResourceAdd: (resource: NewResourcePayload) => void;
     onResourceEdit?: (id: string, resource: ResourceManager.Resource) => void;
     onResourceRemove?: (id: string) => void;
