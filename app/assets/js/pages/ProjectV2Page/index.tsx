@@ -19,6 +19,7 @@ import { parseContextualDate, serializeContextualDate } from "../../models/conte
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
+import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -36,6 +37,9 @@ type LoaderResult = {
 };
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId });
+  await redirectIfFeatureNotEnabled(params, { feature: "project_v2", path: paths.projectPath(params.id) });
+
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,

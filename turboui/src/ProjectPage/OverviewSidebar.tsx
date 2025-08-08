@@ -18,7 +18,7 @@ import { PersonField } from "../PersonField";
 import { Tooltip } from "../Tooltip";
 import { ProjectPage } from ".";
 
-export function OverviewSidebar(props: any) {
+export function OverviewSidebar(props: ProjectPage.State) {
   return (
     <div className="sm:col-span-4 sm:pl-8">
       <div className="space-y-6">
@@ -33,9 +33,11 @@ export function OverviewSidebar(props: any) {
         <Contributors {...props} />
       </div>
 
-      <div className="pt-6 mt-6 border-t border-surface-outline">
-        <NotificationSection {...props} />
-      </div>
+      {props.notifications && (
+        <div className="pt-6 mt-6 border-t border-surface-outline">
+          <NotificationSection {...props} />
+        </div>
+      )}
 
       <div className="pt-6 mt-6 border-t border-surface-outline">
         <Actions {...props} />
@@ -198,7 +200,7 @@ function Contributors(props: ProjectPage.State) {
   );
 }
 
-function NotificationSection(_props: any) {
+function NotificationSection(_props: ProjectPage.State) {
   const [isSubscribed, setIsSubscribed] = useState(true);
 
   const handleToggle = (subscribed: boolean) => {

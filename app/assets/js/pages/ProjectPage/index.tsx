@@ -20,6 +20,8 @@ import { StatusOverview } from "./StatusOverview";
 import { TimelineSection } from "./TimelineSection";
 
 import Api from "@/api";
+import { Paths } from "@/routes/paths";
+import { redirectIfFeatureEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 export default { name: "ProjectPage", loader, Page } as PageModule;
 
@@ -29,6 +31,9 @@ interface LoaderResult {
 }
 
 async function loader({ params }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId });
+  await redirectIfFeatureEnabled(params, { feature: "project_v2", path: paths.projectV2Path(params.id) });
+
   const [discussions, project] = await Promise.all([
     Api.project_discussions.list({ projectId: params.id }).then((data) => data.discussions!),
     Projects.getProject({
