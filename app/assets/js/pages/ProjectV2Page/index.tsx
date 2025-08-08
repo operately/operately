@@ -117,7 +117,7 @@ function Page() {
   });
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
-  const { resources, createResource, updateResource } = useResources(project);
+  const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -206,6 +206,7 @@ function Page() {
     resources,
     onResourceAdd: createResource,
     onResourceEdit: updateResource,
+    onResourceRemove: removeResource,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
   };
@@ -474,5 +475,24 @@ function useResources(project: Projects.Project) {
       });
   };
 
-  return { resources, createResource, updateResource };
+  const removeResource = async (id: string) => {
+    return Api.removeKeyResource({ id })
+      .then(() => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        assertPresent(project.keyResources);
+
+        const updatedResources = project.keyResources.filter((r) => r.id !== id);
+        setResources(prepareResources(updatedResources));
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to remove resource", e);
+        showErrorToast("Error", "Failed to remove resource");
+
+        return { success: false };
+      });
+  };
+
+  return { resources, createResource, updateResource, removeResource };
 }
