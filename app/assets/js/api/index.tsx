@@ -1324,11 +1324,11 @@ export interface ProjectHealth {
 }
 
 export interface ProjectKeyResource {
-  id?: string | null;
-  projectId?: string | null;
-  title?: string | null;
-  link?: string | null;
-  resourceType?: string | null;
+  id: string;
+  projectId: string;
+  title: string;
+  link: string;
+  resourceType?: string;
 }
 
 export interface ProjectPermissions {
@@ -2598,14 +2598,14 @@ export interface AddFirstCompanyResult {
 }
 
 export interface AddKeyResourceInput {
-  projectId?: string | null;
-  title?: string | null;
-  link?: string | null;
-  resourceType?: string | null;
+  projectId: Id;
+  title: string;
+  link: string;
+  resourceType?: string;
 }
 
 export interface AddKeyResourceResult {
-  keyResource?: ProjectKeyResource | null;
+  keyResource: ProjectKeyResource;
 }
 
 export interface AddProjectContributorInput {
@@ -3096,13 +3096,13 @@ export interface EditGoalProgressUpdateResult {
 }
 
 export interface EditKeyResourceInput {
-  id?: string | null;
-  title?: string | null;
-  link?: string | null;
+  id: string;
+  title: string;
+  link: string;
 }
 
 export interface EditKeyResourceResult {
-  keyResource?: ProjectKeyResource | null;
+  keyResource: ProjectKeyResource;
 }
 
 export interface EditParentFolderInResourceHubInput {

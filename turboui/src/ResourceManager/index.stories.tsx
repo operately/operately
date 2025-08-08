@@ -46,14 +46,14 @@ export const Default: Story = {
   render: () => {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
 
-    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
       const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newResource = { id: resourceId, ...resource };
       console.log("Resource added:", newResource);
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
         resource.id === id ? { ...resource, ...updates } : resource
@@ -101,14 +101,14 @@ export const Empty: Story = {
   render: () => {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
 
-    const handleResourceAdd = (resource: Omit<ResourceManager.Resource, "id">) => {
+    const handleResourceAdd = (resource: ResourceManager.NewResourcePayload) => {
       const resourceId = `resource-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newResource = { id: resourceId, ...resource };
       console.log("Resource added:", newResource);
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: Partial<ResourceManager.Resource>) => {
+    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
       console.log("Resource edited:", id, updates);
       const updatedResources = resources.map((resource) =>
         resource.id === id ? { ...resource, ...updates } : resource
