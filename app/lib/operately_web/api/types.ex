@@ -282,11 +282,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :project_key_resource do
-    field? :id, :string, null: true
-    field? :project_id, :string, null: true
-    field? :title, :string, null: true
-    field? :link, :string, null: true
-    field? :resource_type, :string, null: true
+    field :id, :string
+    field :project_id, :string
+    field :title, :string
+    field :link, :string
+    field? :resource_type, :string
   end
 
   object :activity_content_project_moved do

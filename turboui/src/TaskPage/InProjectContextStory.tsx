@@ -90,6 +90,11 @@ export function InProjectContextStory() {
     mentionedPersonLookup: mockMentionedPersonLookup,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
+
+    resources: [],
+    onResourceAdd: () => {},
+    onResourceEdit: () => {},
+    onResourceRemove: () => {},
   };
 
   // Show TaskPage within the Tasks tab - simulates navigating to a specific task

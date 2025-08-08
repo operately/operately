@@ -117,6 +117,7 @@ function Page() {
   });
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
+  const { resources, createResource } = useResources(project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -199,9 +200,11 @@ function Page() {
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
     mentionedPersonLookup,
-    resources: prepareResources(project.keyResources!),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
+
+    resources,
+    onResourceAdd: createResource,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
   };
@@ -342,10 +345,10 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
 function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {
   return resources.map((r) => {
     return {
-      id: r.id!,
-      name: r.title!,
-      url: r.link!,
-      type: r.resourceType as any,
+      id: r.id,
+      name: r.title,
+      url: r.link,
+      type: r.resourceType,
     };
   });
 }
@@ -413,3 +416,34 @@ function useMilestones(paths: Paths, project: Projects.Project) {
 
   return { milestones, createMilestone, updateMilestone };
 }
+
+function useResources(project: Projects.Project) {
+  const [resources, setResources] = React.useState<ProjectPage.Resource[]>(prepareResources(project.keyResources!));
+
+  const createResource = async (resource: ProjectPage.NewResourcePayload) => {
+    return Api.addKeyResource({
+        projectId: project.id,
+        title: resource.name,
+        link: resource.url,
+        resourceType: resource.type,
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        assertPresent(project.keyResources);
+
+        const tmpResources = [...project.keyResources, data.keyResource];
+        setResources(prepareResources(tmpResources));
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to create resource", e);
+        showErrorToast("Error", "Failed to create resource");
+
+        return { success: false };
+      });
+  };
+
+  return { resources, createResource };
+}
+

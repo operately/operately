@@ -128,6 +128,10 @@ export function InProjectContextStory() {
     checkIns: [],
     newDiscussionLink: "#",
     discussions: [],
+    resources: [],
+    onResourceAdd: (resource: any) => {
+      console.log("Resource added:", resource);
+    },
   };
 
   const tabs = useTabs("tasks", [
@@ -300,6 +304,10 @@ export function EmptyMilestoneInProjectContextStory() {
     checkIns: [],
     newDiscussionLink: "#",
     discussions: [],
+    resources: [],
+    onResourceAdd: (resource: any) => {
+      console.log("Resource added:", resource);
+    },
   };
 
   const tabs = useTabs("tasks", [

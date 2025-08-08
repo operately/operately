@@ -6,14 +6,14 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResource do
   alias Operately.Operations.ProjectKeyResourceAdding
 
   inputs do
-    field? :project_id, :string, null: true
-    field? :title, :string, null: true
-    field? :link, :string, null: true
-    field? :resource_type, :string, null: true
+    field :project_id, :id, null: false
+    field :title, :string, null: false
+    field :link, :string, null: false
+    field? :resource_type, :string
   end
 
   outputs do
-    field? :key_resource, :project_key_resource, null: true
+    field :key_resource, :project_key_resource, null: false
   end
 
   def call(conn, inputs) do
@@ -39,9 +39,7 @@ defmodule OperatelyWeb.Api.Mutations.AddKeyResource do
   end
 
   defp parse_attrs(inputs) do
-    {:ok, id} = decode_id(inputs.project_id)
-    attrs = %{inputs | project_id: id}
-
+    attrs = Map.put_new(inputs, :resource_type, "link")
     {:ok, attrs}
   end
 

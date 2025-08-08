@@ -5,6 +5,8 @@ import { SectionHeader } from "../TaskPage/SectionHeader";
 import { ResourceLink } from "../ResourceLink";
 
 export namespace ResourceManager {
+  export interface NewResourcePayload extends Omit<Resource, "id"> {}
+
   export interface Resource {
     id: string;
     name: string;
@@ -14,8 +16,8 @@ export namespace ResourceManager {
 
   export interface Props {
     resources?: Resource[];
-    onResourceAdd?: (resource: Omit<Resource, "id">) => void;
-    onResourceEdit?: (id: string, resource: Partial<Resource>) => void;
+    onResourceAdd?: (resource: NewResourcePayload) => void;
+    onResourceEdit?: (id: string, resource: Resource) => void;
     onResourceRemove?: (id: string) => void;
     canEdit?: boolean;
   }
@@ -75,7 +77,7 @@ function AddResourceModal({
   onAdd,
 }: {
   onClose: () => void;
-  onAdd?: (resource: Omit<ResourceManager.Resource, "id">) => void;
+  onAdd?: (resource: ResourceManager.NewResourcePayload) => void;
 }) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");

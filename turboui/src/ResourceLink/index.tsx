@@ -7,7 +7,7 @@ import { ConfirmDialog } from "../ConfirmDialog";
 
 export interface ResourceLinkProps {
   resource: ResourceManager.Resource;
-  onEdit?: (id: string, resource: Partial<ResourceManager.Resource>) => void;
+  onEdit?: (id: string, resource: ResourceManager.Resource) => void;
   onRemove?: (id: string) => void;
   canEdit?: boolean;
 }
@@ -190,7 +190,7 @@ function EditResourceModal({
   onCancel,
 }: {
   resource: ResourceManager.Resource;
-  onSave: (resource: Partial<ResourceManager.Resource>) => void;
+  onSave: (resource: ResourceManager.Resource) => void;
   onCancel: () => void;
 }) {
   const [url, setUrl] = useState(resource.url);
@@ -200,6 +200,7 @@ function EditResourceModal({
     e.preventDefault();
     if (url.trim()) {
       onSave({
+        id: resource.id,
         url: url.trim(),
         name: name.trim(),
       });

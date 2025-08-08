@@ -66,6 +66,8 @@ export namespace ProjectPage {
 
   export type NewMilestonePayload = TaskBoardTypes.NewMilestonePayload;
   export type UpdateMilestonePayload = TaskBoardTypes.UpdateMilestonePayload;
+  export type NewResourcePayload = ResourceManager.NewResourcePayload;
+  export type UpdateResourcePayload = ResourceManager.Resource;
 
   export interface Props {
     closeLink: string;
@@ -117,8 +119,8 @@ export namespace ProjectPage {
     milestones: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
     onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
-    onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
+    onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     searchPeople?: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
     filters?: TaskBoardTypes.FilterCondition[];
@@ -131,9 +133,9 @@ export namespace ProjectPage {
     mentionedPersonLookup: MentionedPersonLookupFn;
 
     // Resource management
-    resources?: ResourceManager.Resource[];
-    onResourceAdd?: (resource: Omit<ResourceManager.Resource, "id">) => void;
-    onResourceEdit?: (id: string, resource: Partial<ResourceManager.Resource>) => void;
+    resources: ResourceManager.Resource[];
+    onResourceAdd: (resource: NewResourcePayload) => void;
+    onResourceEdit?: (id: string, resource: ResourceManager.Resource) => void;
     onResourceRemove?: (id: string) => void;
 
     moveModalOpen?: boolean;
