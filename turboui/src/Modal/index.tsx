@@ -38,6 +38,11 @@ export interface ModalProps {
    * Additional class names to apply to the content container
    */
   contentClassName?: string;
+
+  /**
+   * Padding to apply to the content container
+   */
+  contentPadding?: string;
 }
 
 export function Modal({
@@ -48,6 +53,7 @@ export function Modal({
   size = "medium",
   closeOnBackdropClick = true,
   contentClassName = "",
+  contentPadding = "p-6",
 }: ModalProps) {
   const [mounted, setMounted] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
@@ -120,7 +126,7 @@ export function Modal({
           </div>
         )}
 
-        <div className="p-6">{children}</div>
+        <div className={contentPadding}>{children}</div>
       </div>
     </div>
   );

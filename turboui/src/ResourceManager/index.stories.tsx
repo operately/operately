@@ -53,10 +53,10 @@ export const Default: Story = {
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", id, updates);
+    const handleResourceEdit = (updates: ResourceManager.Resource) => {
+      console.log("Resource edited:", updates);
       const updatedResources = resources.map((resource) =>
-        resource.id === id ? { ...resource, ...updates } : resource
+        resource.id === updates.id ? { ...resource, ...updates } : resource
       );
       setResources(updatedResources);
     };
@@ -108,10 +108,10 @@ export const Empty: Story = {
       setResources([...resources, newResource]);
     };
 
-    const handleResourceEdit = (id: string, updates: ResourceManager.Resource) => {
-      console.log("Resource edited:", id, updates);
+    const handleResourceEdit = (updates: ResourceManager.Resource) => {
+      console.log("Resource edited:", updates);
       const updatedResources = resources.map((resource) =>
-        resource.id === id ? { ...resource, ...updates } : resource
+        resource.id === updates.id ? { ...resource, ...updates } : resource
       );
       setResources(updatedResources);
     };

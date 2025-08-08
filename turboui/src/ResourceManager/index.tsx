@@ -3,6 +3,8 @@ import { SecondaryButton, PrimaryButton } from "../Button";
 import { IconLink } from "../icons";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { ResourceLink } from "../ResourceLink";
+import { Textfield } from "../forms/Textfield";
+import Modal from "../Modal";
 
 export namespace ResourceManager {
   export interface NewResourcePayload extends Omit<Resource, "id"> {}
@@ -15,9 +17,9 @@ export namespace ResourceManager {
   }
 
   export interface Props {
-    resources?: Resource[];
-    onResourceAdd?: (resource: NewResourcePayload) => void;
-    onResourceEdit?: (id: string, resource: Resource) => void;
+    resources: Resource[];
+    onResourceAdd: (resource: NewResourcePayload) => void;
+    onResourceEdit: (resource: Resource) => void;
     onResourceRemove?: (id: string) => void;
     canEdit?: boolean;
   }
@@ -67,96 +69,83 @@ export function ResourceManager({
         </div>
       ) : null}
 
-      {isAddModalOpen && <AddResourceModal onClose={() => setIsAddModalOpen(false)} onAdd={onResourceAdd} />}
+      <AddResourceModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={onResourceAdd} />
     </div>
   );
 }
 
 function AddResourceModal({
+  isOpen,
   onClose,
   onAdd,
 }: {
+  isOpen: boolean;
   onClose: () => void;
   onAdd?: (resource: ResourceManager.NewResourcePayload) => void;
 }) {
   const [name, setName] = useState("");
   const [url, setUrl] = useState("");
+  const [error, setError] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim()) {
-      onAdd?.({
-        name: name.trim(),
-        url: url.trim(),
-      });
-      onClose();
-    }
-  };
+    const tmpErrors: string[] = [];
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      onClose();
+    if (!url.trim()) {
+      tmpErrors.push("url");
     }
+    if (!name.trim()) {
+      tmpErrors.push("name");
+    }
+
+    if (tmpErrors.length > 0) {
+      setError(tmpErrors);
+      return;
+    }
+
+    onAdd?.({
+      name: name.trim(),
+      url: url.trim(),
+    });
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onKeyDown={handleKeyDown}>
-      <div className="bg-surface-base border border-surface-outline rounded-xl shadow-xl max-w-lg w-full">
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <IconLink size={20} className="text-content-base" />
-              <h2 className="text-xl font-bold">Add link to a resource</h2>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-content-dimmed hover:text-content-base p-1 hover:bg-surface-highlight rounded transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                <path d="M3.72 3.72a.75.75 0 0 1 1.06 0L8 6.94l3.22-3.22a.75.75 0 1 1 1.06 1.06L9.06 8l3.22 3.22a.75.75 0 1 1-1.06 1.06L8 9.06l-3.22 3.22a.75.75 0 0 1-1.06-1.06L6.94 8 3.72 4.78a.75.75 0 0 1 0-1.06Z" />
-              </svg>
-            </button>
-          </div>
+    <Modal isOpen={isOpen} onClose={onClose} contentPadding="">
+      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <IconLink size={20} className="text-content-base" />
+          <h2 className="text-xl font-bold">Add link to a resource</h2>
+        </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium mb-2 text-content-base">URL</label>
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="https://..."
-                className="w-full px-3 py-2.5 bg-surface-base border border-surface-outline rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
-                required
-                autoFocus
-              />
-            </div>
+        <div className="space-y-4">
+          <Textfield
+            type="url"
+            label="URL"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://..."
+            autoFocus
+            error={error.includes("url") ? "URL is required" : undefined}
+          />
+          <Textfield
+            label="Title"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Resource title"
+            type="text"
+            inputClassName="px-3 py-2.5 bg-surface-base focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
+            error={error.includes("name") ? "Title is required" : undefined}
+          />
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium mb-2 text-content-base">
-                Title <span className="text-content-subtle font-normal">(optional)</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="Resource title"
-                className="w-full px-3 py-2.5 bg-surface-base border border-surface-outline rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-end">
-            <SecondaryButton type="button" onClick={onClose}>
-              Cancel
-            </SecondaryButton>
-            <PrimaryButton type="submit" disabled={!url.trim()}>
-              Save
-            </PrimaryButton>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex gap-3 justify-end">
+          <SecondaryButton type="button" onClick={onClose}>
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton type="submit">Save</PrimaryButton>
+        </div>
+      </form>
+    </Modal>
   );
 }
