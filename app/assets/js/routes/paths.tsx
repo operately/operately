@@ -148,6 +148,10 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId]);
   }
 
+  projectV2Path(projectId: string) {
+    return this.createCompanyPath(["projects", projectId, "v2"]);
+  }
+
   projectCheckInNewPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "check-ins", "new"]);
   }
