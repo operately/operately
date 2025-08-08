@@ -445,18 +445,18 @@ function useResources(project: Projects.Project) {
       });
   };
 
-  const updateResource = async (resourceId: string, updates: ProjectPage.UpdateResourcePayload) => {
+  const updateResource = async (resource: ProjectPage.UpdateResourcePayload) => {
     return Api.editKeyResource({
-      id: resourceId,
-      title: updates.name,
-      link: updates.url,
+      id: resource.id,
+      title: resource.name,
+      link: resource.url,
     })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         assertPresent(project.keyResources);
 
         const updatedResources = project.keyResources.map((r) => {
-          if (r.id === resourceId) {
+          if (r.id === resource.id) {
             return data.keyResource || r;
           }
           return r;

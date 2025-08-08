@@ -8,10 +8,11 @@ interface TextfieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement
   className?: string;
   textRight?: boolean;
   testId?: string;
+  inputClassName?: string;
 }
 
 export const Textfield = React.forwardRef<HTMLInputElement, TextfieldProps>((props, ref) => {
-  const { label, error, className, addonRight, ...rest } = props;
+  const { label, error, className, addonRight, inputClassName, ...rest } = props;
   const testId = props.testId || "textfield";
 
   const cn = classNames(
@@ -20,7 +21,7 @@ export const Textfield = React.forwardRef<HTMLInputElement, TextfieldProps>((pro
     "w-full border border-stroke-base rounded-lg",
   );
 
-  const inputCN = classNames("flex-1 py-1.5 bg-transparent", {
+  const inputCN = classNames("flex-1 py-1.5 bg-transparent", inputClassName, {
     "text-right": props.textRight,
     "px-3": !addonRight,
     "pl-3 pr-0.5": addonRight,

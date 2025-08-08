@@ -4,10 +4,12 @@ import { ResourceManager } from "../ResourceManager";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { showInfoToast } from "../Toasts";
 import { ConfirmDialog } from "../ConfirmDialog";
+import { Textfield } from "../forms/Textfield";
+import Modal from "../Modal";
 
 export interface ResourceLinkProps {
   resource: ResourceManager.Resource;
-  onEdit?: (id: string, resource: ResourceManager.Resource) => void;
+  onEdit: (resource: ResourceManager.Resource) => void;
   onRemove?: (id: string) => void;
   canEdit?: boolean;
 }
@@ -16,7 +18,7 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
   const [showMenu, setShowMenu] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [menuPosition, setMenuPosition] = useState<'right' | 'left'>('right');
+  const [menuPosition, setMenuPosition] = useState<"right" | "left">("right");
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -57,13 +59,13 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
       const containerRect = containerRef.current.getBoundingClientRect();
       const menuWidth = 140; // min-w-[140px] from the menu
       const spaceOnLeft = containerRect.left;
-      
+
       // If there's not enough space on the left, align menu with left edge of component
       // Otherwise, align with right edge (normal behavior)
       if (spaceOnLeft < menuWidth) {
-        setMenuPosition('left'); // left edge of menu aligns with left edge of component
+        setMenuPosition("left"); // left edge of menu aligns with left edge of component
       } else {
-        setMenuPosition('right'); // right edge of menu aligns with right edge of component
+        setMenuPosition("right"); // right edge of menu aligns with right edge of component
       }
     }
     setShowMenu(!showMenu);
@@ -123,7 +125,7 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
               <div
                 ref={menuRef}
                 className={`absolute top-full mt-1 bg-surface-base border border-stroke-base rounded-lg shadow-lg py-1 z-10 min-w-[140px] ${
-                  menuPosition === 'left' ? 'left-0' : 'right-0'
+                  menuPosition === "left" ? "left-0" : "right-0"
                 }`}
               >
                 <button
@@ -156,17 +158,15 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
         )}
       </div>
 
-      {/* Edit Modal */}
-      {showEditModal && (
-        <EditResourceModal
-          resource={resource}
-          onSave={(updatedResource) => {
-            onEdit?.(resource.id, updatedResource);
-            setShowEditModal(false);
-          }}
-          onCancel={() => setShowEditModal(false)}
-        />
-      )}
+      <EditResourceModal
+        isOpen={showEditModal}
+        resource={resource}
+        onSave={(updatedResource) => {
+          onEdit?.(updatedResource);
+          setShowEditModal(false);
+        }}
+        onCancel={() => setShowEditModal(false)}
+      />
 
       {/* Delete Confirmation Dialog */}
       <ConfirmDialog
@@ -174,7 +174,9 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
         onConfirm={confirmRemove}
         onCancel={() => setShowDeleteConfirm(false)}
         title="Delete resource"
-        message={`Are you sure you want to delete "${resource.name.trim() || resource.url}"? This action cannot be undone.`}
+        message={`Are you sure you want to delete "${
+          resource.name.trim() || resource.url
+        }"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         variant="danger"
@@ -185,75 +187,79 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
 }
 
 function EditResourceModal({
+  isOpen,
   resource,
   onSave,
   onCancel,
 }: {
+  isOpen: boolean;
   resource: ResourceManager.Resource;
   onSave: (resource: ResourceManager.Resource) => void;
   onCancel: () => void;
 }) {
   const [url, setUrl] = useState(resource.url);
   const [name, setName] = useState(resource.name);
+  const [error, setError] = useState<string[]>([]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (url.trim()) {
-      onSave({
-        id: resource.id,
-        url: url.trim(),
-        name: name.trim(),
-      });
+    const tmpErrors: string[] = [];
+
+    if (!url.trim()) {
+      tmpErrors.push("url");
     }
+    if (!name.trim()) {
+      tmpErrors.push("name");
+    }
+
+    if (tmpErrors.length > 0) {
+      setError(tmpErrors);
+      return;
+    }
+
+    onSave({
+      id: resource.id,
+      url: url.trim(),
+      name: name.trim(),
+    });
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-surface-base border border-stroke-base rounded-xl shadow-xl max-w-lg w-full">
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="flex items-center gap-3">
-            <IconLink size={20} className="text-content-base" />
-            <h2 className="text-xl font-semibold text-content-base">Edit resource</h2>
-          </div>
+    <Modal isOpen={isOpen} onClose={onCancel} contentPadding="">
+      <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <div className="flex items-center gap-3">
+          <IconLink size={20} className="text-content-base" />
+          <h2 className="text-xl font-semibold text-content-base">Edit resource</h2>
+        </div>
 
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-content-base mb-2">URL</label>
-              <input
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                className="w-full px-3 py-2.5 bg-surface-base border border-stroke-base rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
-                required
-                autoFocus
-              />
-            </div>
+        <div className="space-y-4">
+          <Textfield
+            label="URL"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder={resource.url}
+            type="url"
+            inputClassName="px-3 py-2.5 bg-surface-base focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
+            error={error.includes("url") ? "URL is required" : undefined}
+          />
+          <Textfield
+            label="Title"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={resource.name}
+            type="text"
+            inputClassName="px-3 py-2.5 bg-surface-base focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
+            error={error.includes("name") ? "Title is required" : undefined}
+          />
+        </div>
 
-            <div>
-              <label className="block text-sm font-medium text-content-base mb-2">
-                Title <span className="text-content-subtle font-normal">(optional)</span>
-              </label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder={resource.name}
-                className="w-full px-3 py-2.5 bg-surface-base border border-stroke-base rounded-lg focus:outline-none focus:ring-2 focus:ring-accent-base focus:border-accent-base transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3 justify-end">
-            <SecondaryButton type="button" onClick={onCancel}>
-              Cancel
-            </SecondaryButton>
-            <PrimaryButton type="submit" disabled={!url.trim()}>
-              Save
-            </PrimaryButton>
-          </div>
-        </form>
-      </div>
-    </div>
+        <div className="flex gap-3 justify-end">
+          <SecondaryButton type="button" onClick={onCancel}>
+            Cancel
+          </SecondaryButton>
+          <PrimaryButton type="submit">Save</PrimaryButton>
+        </div>
+      </form>
+    </Modal>
   );
 }
-
