@@ -24,7 +24,7 @@ defmodule Operately.Projects do
   def get_project!(id) do
     query = from p in Project, where: p.id == ^id
 
-    Repo.one(query, with_deleted: true)
+    Repo.one!(query, with_deleted: true)
   end
 
   def get_project_with_access_level(project_id, person_id) do
@@ -43,6 +43,11 @@ defmodule Operately.Projects do
   def get_check_in_with_access_level(check_in_id, person_id) do
     from(c in CheckIn, as: :resource, where: c.id == ^check_in_id)
     |> Fetch.get_resource_with_access_level(person_id)
+  end
+
+  def list_check_ins(project_id) do
+    from(c in CheckIn, where: c.project_id == ^project_id)
+    |> Repo.all()
   end
 
   def update_check_in(%CheckIn{} = check_in, attrs) do
@@ -92,6 +97,14 @@ defmodule Operately.Projects do
 
   def delete_project(%Project{} = project) do
     Repo.delete(project)
+  end
+
+  def delete_project_discussions(project_id) do
+    from(t in Operately.Comments.CommentThread,
+      where: t.parent_type == :project,
+      where: t.parent_id == ^project_id
+    )
+    |> Repo.delete_all()
   end
 
   def get_milestones(ids) do
@@ -399,6 +412,8 @@ defmodule Operately.Projects do
 
 
   alias Operately.Projects.Retrospective
+
+  def get_retrospective!(id), do: Repo.get!(Retrospective, id)
 
   def create_retrospective(attrs) do
     %Retrospective{}

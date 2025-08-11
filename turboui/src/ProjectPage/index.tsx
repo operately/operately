@@ -14,6 +14,7 @@ import { Tabs, useTabs } from "../Tabs";
 import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { CheckIns } from "./CheckIns";
+import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
@@ -114,6 +115,9 @@ export namespace ProjectPage {
 
     activityFeed: React.ReactNode;
 
+    canDelete: boolean;
+    onProjectDelete: () => void;
+
     // TaskBoard props
     tasksEnabled?: boolean;
     tasks: TaskBoardTypes.Task[];
@@ -146,11 +150,16 @@ export namespace ProjectPage {
     isMoveModalOpen: boolean;
     openMoveModal: () => void;
     closeMoveModal: () => void;
+
+    isDeleteModalOpen: boolean;
+    openDeleteModal: () => void;
+    closeDeleteModal: () => void;
   }
 }
 
 function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
   const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModalOpen || false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
 
   return {
     ...props,
@@ -158,6 +167,10 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
+
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
 }
 
@@ -215,6 +228,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       </div>
 
       <MoveModal {...state} />
+      <DeleteModal {...state} />
     </PageNew>
   );
 }

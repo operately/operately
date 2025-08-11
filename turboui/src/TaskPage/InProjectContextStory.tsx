@@ -44,6 +44,7 @@ export function InProjectContextStory() {
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [space, setSpace] = useState({ id: "1", name: "Product", link: "#" });
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   // Mock project state for header
   const mockProjectState = {
@@ -96,6 +97,12 @@ export function InProjectContextStory() {
     onResourceAdd: () => {},
     onResourceEdit: () => {},
     onResourceRemove: () => {},
+
+    canDelete: true,
+    onProjectDelete: () => {},
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
 
   // Show TaskPage within the Tasks tab - simulates navigating to a specific task

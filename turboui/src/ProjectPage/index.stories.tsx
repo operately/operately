@@ -334,6 +334,8 @@ export const Default: Story = {
         checkIns={mockCheckIns}
         newDiscussionLink="#"
         discussions={mockDiscussions}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -409,6 +411,8 @@ export const ReadOnly: Story = {
         checkIns={mockCheckIns}
         newDiscussionLink="#"
         discussions={[]}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -522,6 +526,8 @@ export const EmptyTasks: Story = {
         checkIns={mockCheckIns}
         newDiscussionLink="#"
         discussions={[]}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -626,6 +632,8 @@ export const EmptyProject: Story = {
         checkIns={[]}
         newDiscussionLink="#"
         discussions={[]}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -690,6 +698,8 @@ export const EmptyProjectReadOnly: Story = {
         checkIns={[]}
         newDiscussionLink="#"
         discussions={[]}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -837,6 +847,8 @@ export const PausedProject: Story = {
         checkIns={mockCheckIns}
         newDiscussionLink="#"
         discussions={[]}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -916,6 +928,8 @@ export const ClosedProject: Story = {
         checkIns={mockCheckIns}
         newDiscussionLink="#"
         discussions={[]}
+        onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
