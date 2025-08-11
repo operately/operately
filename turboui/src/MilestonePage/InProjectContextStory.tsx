@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-import { MilestonePage } from "./index";
-import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
-import { mockTasks, mockMilestones } from "../TaskBoard/tests/mockData";
-import * as TaskBoardTypes from "../TaskBoard/types";
-import { PageNew } from "../Page";
-import { Tabs, useTabs } from "../Tabs";
-import { PageHeader } from "../ProjectPage/PageHeader";
-import { IconClipboardText, IconLogs, IconMessage, IconMessages, IconListCheck } from "../icons";
-import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 import { createContextualDate } from "../DateField/mockData";
+import { PageNew } from "../Page";
+import { PageHeader } from "../ProjectPage/PageHeader";
+import { Tabs, useTabs } from "../Tabs";
+import { mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
+import * as TaskBoardTypes from "../TaskBoard/types";
+import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
+import { MilestonePage } from "./index";
+import { createMockTimelineItems, mockDescription, mockPeople, mockSearchPeople } from "./mockData";
 
 const people = genPeople(5);
 
@@ -83,6 +83,7 @@ export function InProjectContextStory() {
 
   // Mock project state for header
   const mockProjectState = {
+    workmapLink: "#",
     closeLink: "#",
     reopenLink: "#",
     pauseLink: "#",
@@ -266,6 +267,7 @@ export function EmptyMilestoneInProjectContextStory() {
 
   // Mock project state for header
   const mockProjectState = {
+    workmapLink: "#",
     closeLink: "#",
     reopenLink: "#",
     pauseLink: "#",
