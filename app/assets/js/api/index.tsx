@@ -3556,6 +3556,14 @@ export interface ProjectsCreateMilestoneResult {
   milestone: Milestone;
 }
 
+export interface ProjectsDeleteInput {
+  projectId: Id;
+}
+
+export interface ProjectsDeleteResult {
+  project: Project;
+}
+
 export interface ProjectsUpdateChampionInput {
   projectId: Id;
   championId: Id | null;
@@ -4464,6 +4472,10 @@ class ApiNamespaceProjects {
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
     return this.client.post("/projects/create_milestone", input);
+  }
+
+  async delete(input: ProjectsDeleteInput): Promise<ProjectsDeleteResult> {
+    return this.client.post("/projects/delete", input);
   }
 
   async updateChampion(input: ProjectsUpdateChampionInput): Promise<ProjectsUpdateChampionResult> {
@@ -7040,6 +7052,10 @@ export default {
       useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
         defaultApiClient.apiNamespaceProjects.updateChampion,
       ),
+
+    delete: (input: ProjectsDeleteInput) => defaultApiClient.apiNamespaceProjects.delete(input),
+    useDelete: () =>
+      useMutation<ProjectsDeleteInput, ProjectsDeleteResult>(defaultApiClient.apiNamespaceProjects.delete),
   },
 
   goals: {
