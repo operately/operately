@@ -140,6 +140,7 @@ export function InProjectContextStory() {
     },
     manageTeamLink: "#",
 
+    canDelete: true,
     onProjectDelete: () => {},
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
@@ -329,6 +330,7 @@ export function EmptyMilestoneInProjectContextStory() {
     },
     manageTeamLink: "#",
 
+    canDelete: true,
     onProjectDelete: () => {},
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),

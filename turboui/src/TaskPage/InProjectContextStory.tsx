@@ -98,6 +98,7 @@ export function InProjectContextStory() {
     onResourceEdit: () => {},
     onResourceRemove: () => {},
 
+    canDelete: true,
     onProjectDelete: () => {},
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),

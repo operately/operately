@@ -335,6 +335,7 @@ export const Default: Story = {
         newDiscussionLink="#"
         discussions={mockDiscussions}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -411,6 +412,7 @@ export const ReadOnly: Story = {
         newDiscussionLink="#"
         discussions={[]}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -525,6 +527,7 @@ export const EmptyTasks: Story = {
         newDiscussionLink="#"
         discussions={[]}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -630,6 +633,7 @@ export const EmptyProject: Story = {
         newDiscussionLink="#"
         discussions={[]}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -695,6 +699,7 @@ export const EmptyProjectReadOnly: Story = {
         newDiscussionLink="#"
         discussions={[]}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -843,6 +848,7 @@ export const PausedProject: Story = {
         newDiscussionLink="#"
         discussions={[]}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
@@ -923,6 +929,7 @@ export const ClosedProject: Story = {
         newDiscussionLink="#"
         discussions={[]}
         onProjectDelete={() => {}}
+        canDelete={true}
       />
     );
   },
