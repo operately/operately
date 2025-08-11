@@ -92,14 +92,18 @@ defmodule Operately.Goals.GoalTest do
     end
 
     test "fails if targets are not loaded", ctx do
+      goal = Operately.Repo.preload(ctx.goal, [:checks])
+
       assert_raise RuntimeError, "Targets not loaded. Preload the targets before calling", fn ->
-        Goal.progress_percentage(ctx.goal)
+        Goal.progress_percentage(goal)
       end
     end
 
     test "fails if checks are not loaded", ctx do
+      goal = Operately.Repo.preload(ctx.goal, [:targets])
+
       assert_raise RuntimeError, "Checks not loaded. Preload the checks before calling", fn ->
-        Goal.progress_percentage(ctx.goal)
+        Goal.progress_percentage(goal)
       end
     end
 

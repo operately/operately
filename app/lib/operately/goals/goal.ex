@@ -135,8 +135,14 @@ defmodule Operately.Goals.Goal do
     assert_targets_loaded(goal)
     assert_checks_loaded(goal)
 
-    target_progresses = Enum.map(goal.targets, &Target.target_progress_percentage/1)
-    progresses = target_progresses ++ [checklist_progress(goal)]
+    targets = Enum.map(goal.targets, &Target.target_progress_percentage/1)
+    checklist = checklist_progress(goal)
+
+    progresses =
+      case goal.checks do
+        [] -> targets
+        _ -> targets ++ [checklist]
+      end
 
     average(progresses, length(progresses))
   end

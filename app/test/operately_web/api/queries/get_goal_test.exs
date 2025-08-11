@@ -162,7 +162,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoalTest do
 
     test "with no includes", ctx do
       goal = goal_fixture(ctx.person, company_id: ctx.company.id, space_id: ctx.company.company_space_id)
-      goal = Operately.Repo.preload(goal, [:parent_goal, :targets])
+      goal = Operately.Repo.preload(goal, [:parent_goal, :targets, :checks])
 
       assert {200, res} = query(ctx.conn, :get_goal, %{id: Paths.goal_id(goal)})
       assert res.goal == Serializer.serialize(goal, level: :full)
