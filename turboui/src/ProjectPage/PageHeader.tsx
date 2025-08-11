@@ -6,9 +6,10 @@ import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
 
 export function PageHeader(props: ProjectPage.State) {
+  console.log("PageHeader props", props.workmapLink);
   const navigation = [
     { to: props.space.link, label: props.space.name },
-    { to: "#", label: "Projects" },
+    { to: props.workmapLink, label: "Projects" },
   ];
 
   return (

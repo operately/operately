@@ -142,6 +142,7 @@ function Page() {
   });
 
   const props: ProjectPage.Props = {
+    workmapLink: paths.spaceWorkMapPath(project.space.id, "projects" as const),
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),

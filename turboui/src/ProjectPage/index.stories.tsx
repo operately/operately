@@ -283,6 +283,7 @@ export const Default: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
@@ -353,6 +354,7 @@ export const ReadOnly: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
@@ -469,6 +471,7 @@ export const EmptyTasks: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
@@ -574,6 +577,7 @@ export const EmptyProject: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
@@ -637,6 +641,7 @@ export const EmptyProjectReadOnly: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
@@ -781,6 +786,7 @@ export const PausedProject: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
@@ -858,6 +864,7 @@ export const ClosedProject: Story = {
 
     return (
       <ProjectPage
+        workmapLink="#"
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
