@@ -1,6 +1,6 @@
 defmodule Operately.MD.Goal do
   def render(goal) do
-    goal = Operately.Repo.preload(goal, updates: [:author], targets: [], group: [], parent_goal: [], projects: [], champion: [], reviewer: [])
+    goal = Operately.Repo.preload(goal, updates: [:author], targets: [], checks: [], group: [], parent_goal: [], projects: [], champion: [], reviewer: [])
     discussions = Operately.Goals.Discussion.list(goal.id)
 
     """

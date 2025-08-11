@@ -13,6 +13,7 @@ defmodule Operately.MD.GoalTest do
       Operately.Repo.preload(ctx.goal,
         updates: [:author],
         targets: [],
+        checks: [],
         group: [],
         parent_goal: [],
         projects: [],
