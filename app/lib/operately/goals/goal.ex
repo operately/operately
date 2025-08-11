@@ -132,22 +132,19 @@ defmodule Operately.Goals.Goal do
 
   @impl WorkMapItem
   def progress_percentage(goal = %__MODULE__{}) do
-    target_progresses =
-      goal.targets
-      |> case do
-        %Ecto.Association.NotLoaded{} ->
-          raise "Targets not loaded. Preload the targets before calling progress_percentage/1."
+    assert_targets_loaded(goal)
+    assert_checks_loaded(goal)
 
-        loaded_targets ->
-          loaded_targets
+    targets = Enum.map(goal.targets, &Target.target_progress_percentage/1)
+    checklist = checklist_progress(goal)
+
+    progresses =
+      case goal.checks do
+        [] -> targets
+        _ -> targets ++ [checklist]
       end
-      |> Enum.map(&Target.target_progress_percentage/1)
 
-    if Enum.empty?(target_progresses) do
-      0
-    else
-      Enum.sum(target_progresses) / length(target_progresses)
-    end
+    average(progresses, length(progresses))
   end
 
   #
@@ -251,5 +248,37 @@ defmodule Operately.Goals.Goal do
 
     {:ok, %{rows: rows}} = Operately.Repo.query(sql, [Ecto.UUID.dump!(goal.id)])
     Enum.map(rows, fn [id] -> Ecto.UUID.load!(id) end)
+  end
+
+  defp assert_targets_loaded(goal) do
+    case goal.targets do
+      %Ecto.Association.NotLoaded{} -> raise "Targets not loaded. Preload the targets before calling"
+      _ -> :ok
+    end
+  end
+
+  defp assert_checks_loaded(goal) do
+    case goal.checks do
+      %Ecto.Association.NotLoaded{} -> raise "Checks not loaded. Preload the checks before calling"
+      _ -> :ok
+    end
+  end
+
+  defp average(list, count) do
+    if count == 0 do
+      0
+    else
+      Enum.sum(list) / count
+    end
+  end
+
+  defp checklist_progress(goal) do
+    if length(goal.checks) == 0 do
+      # if no checks, consider it 100% complete
+      0
+    else
+      completed_checks = Enum.count(goal.checks, & &1.completed)
+      completed_checks * 100 / length(goal.checks)
+    end
   end
 end
