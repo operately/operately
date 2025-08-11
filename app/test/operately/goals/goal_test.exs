@@ -154,4 +154,82 @@ defmodule Operately.Goals.GoalTest do
       assert Goal.progress_percentage(goal) == 75.0
     end
   end
+
+  describe ".next_step" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space, targets: [])
+    end
+
+    test "fails if targets are not loaded", ctx do
+      goal = Operately.Repo.preload(ctx.goal, [:checks])
+
+      assert_raise RuntimeError, "Targets not loaded. Preload the targets before calling", fn ->
+        Goal.next_step(goal)
+      end
+    end
+
+    test "fails if checks are not loaded", ctx do
+      goal = Operately.Repo.preload(ctx.goal, [:targets])
+
+      assert_raise RuntimeError, "Checks not loaded. Preload the checks before calling", fn ->
+        Goal.next_step(goal)
+      end
+    end
+
+    test "returns empty string if all targets and checks are done", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_target(:target1, :goal, name: "Target 1", from: 0, to: 100, value: 100)
+        |> Factory.add_goal_check(:check1, :goal, name: "Check 1", completed: true)
+
+      goal = Operately.Repo.preload(ctx.goal, [:targets, :checks])
+      assert Goal.next_step(goal) == ""
+    end
+
+    test "returns first pending target name if there are pending targets", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_target(:target1, :goal, name: "Target 1", from: 0, to: 100, value: 0, index: 1)
+        |> Factory.add_goal_target(:target2, :goal, name: "Target 2", from: 0, to: 100, value: 100, index: 2)
+        |> Factory.add_goal_check(:check1, :goal, name: "Check 1", completed: true)
+
+      goal = Operately.Repo.preload(ctx.goal, [:targets, :checks])
+      assert Goal.next_step(goal) == "Target 1"
+    end
+
+    test "returns first pending check name if all targets are done and there are pending checks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_target(:target1, :goal, name: "Target 1", from: 0, to: 100, value: 100)
+        |> Factory.add_goal_check(:check1, :goal, name: "Check 1", completed: false, index: 1)
+        |> Factory.add_goal_check(:check2, :goal, name: "Check 2", completed: true, index: 2)
+
+      goal = Operately.Repo.preload(ctx.goal, [:targets, :checks])
+      assert Goal.next_step(goal) == "Check 1"
+    end
+
+    test "returns the first pending target name if both targets and checks are pending", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_target(:target1, :goal, name: "Target 1", from: 0, to: 100, value: 0, index: 1)
+        |> Factory.add_goal_check(:check1, :goal, name: "Check 1", completed: false, index: 1)
+
+      goal = Operately.Repo.preload(ctx.goal, [:targets, :checks])
+      assert Goal.next_step(goal) == "Target 1"
+    end
+
+    test "returns the first pending target by index if multiple targets are pending", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal_target(:target1, :goal, name: "Target 1", from: 0, to: 100, value: 0, index: 2)
+        |> Factory.add_goal_target(:target2, :goal, name: "Target 2", from: 0, to: 100, value: 0, index: 1)
+        |> Factory.add_goal_check(:check1, :goal, name: "Check 1", completed: true)
+
+      goal = Operately.Repo.preload(ctx.goal, [:targets, :checks])
+      assert Goal.next_step(goal) == "Target 2"
+    end
+  end
 end

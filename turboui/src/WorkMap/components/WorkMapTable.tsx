@@ -136,7 +136,7 @@ function NextStepHeaderCell({ hide }: { hide?: boolean }) {
   const tooltipContent = (
     <div className="text-xs">
       <p className="mb-2">Shows what needs to happen next for this work to progress.</p>
-      <p>For goals: The first target that hasn't been completed yet</p>
+      <p>For goals: The first target or checklist item that hasn't been completed yet</p>
       <p className="mb-2">For projects: The upcoming milestone (by due date)</p>
       <p>Empty when all targets/milestones are complete or none are defined.</p>
     </div>
