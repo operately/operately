@@ -75,6 +75,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_parent_goal, OperatelyWeb.Api.Projects.UpdateParentGoal)
     mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
     mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
+    mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
   end
 
   namespace(:spaces) do

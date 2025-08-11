@@ -21,6 +21,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
+import { useNavigate } from "react-router-dom";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -72,6 +73,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 function Page() {
   const paths = usePaths();
   const { project, checkIns, discussions, company } = PageCache.useData(loader).data;
+  const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -79,6 +81,8 @@ function Page() {
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
+
+  const workmapLink = paths.spaceWorkMapPath(project.space.id, "projects" as const);
 
   const [projectName, setProjectName] = usePageField({
     value: (data) => data.project.name!,
@@ -141,8 +145,25 @@ function Page() {
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
+  const deleteProject = async () => {
+    return Api.projects
+      .delete({ projectId: project.id })
+      .then(() => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        navigate(workmapLink);
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to delete project", e);
+        showErrorToast("Error", "Failed to delete project");
+
+        return { success: false };
+      });
+  };
+
   const props: ProjectPage.Props = {
-    workmapLink: paths.spaceWorkMapPath(project.space.id, "projects" as const),
+    workmapLink,
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
@@ -194,6 +215,9 @@ function Page() {
     canEdit: project.permissions?.canEditName || false,
     manageTeamLink: paths.projectContributorsPath(project.id),
 
+    onProjectDelete: deleteProject,
+
+    // TaskBoard props - simplified for fast implementation
     tasks: [],
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
