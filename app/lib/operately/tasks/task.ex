@@ -33,7 +33,9 @@ defmodule Operately.Tasks.Task do
     field :priority, :string
     field :size, :string
     field :description, :map
-    field :due_date, :naive_datetime
+
+    field :deprecated_due_date, :naive_datetime
+    embeds_one :due_date, Operately.ContextualDates.ContextualDate
 
     field :status, :string, default: "todo"
     field :closed_at, :naive_datetime
@@ -49,7 +51,8 @@ defmodule Operately.Tasks.Task do
 
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :due_date, :description, :size, :priority, :creator_id, :status, :closed_at, :reopened_at, :milestone_id])
+    |> cast(attrs, [:name, :deprecated_due_date, :description, :size, :priority, :creator_id, :status, :closed_at, :reopened_at, :milestone_id])
+    |> cast_embed(:due_date)
     |> validate_required([:name, :description, :creator_id, :milestone_id])
   end
 
