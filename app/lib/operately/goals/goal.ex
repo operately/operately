@@ -112,21 +112,26 @@ defmodule Operately.Goals.Goal do
 
   @impl WorkMapItem
   def next_step(goal = %__MODULE__{}) do
-    case goal.targets do
-      [] ->
-        ""
+    assert_targets_loaded(goal)
+    assert_checks_loaded(goal)
 
-      %Ecto.Association.NotLoaded{} ->
-        raise "Targets not loaded. Preload the targets before calling next_step/1."
+    pending_target =
+      goal.targets
+      |> Enum.filter(&Target.done?/1)
+      |> Enum.sort_by(fn target -> target.index end)
+      |> List.first()
 
-      targets ->
-        target =
-          targets
-          |> Enum.filter(&Target.done?/1)
-          |> Enum.sort_by(fn target -> target.index end)
-          |> List.first()
+    pending_check =
+      goal.checks
+      |> Enum.filter(&(!&1.completed))
+      |> Enum.sort_by(fn check -> check.index end)
+      |> List.first()
 
-        if target, do: target.name, else: ""
+    case {pending_target, pending_check} do
+      {nil, nil} -> ""
+      {nil, check} -> check.name
+      {target, nil} -> target.name
+      {target, _check} -> target.name
     end
   end
 
