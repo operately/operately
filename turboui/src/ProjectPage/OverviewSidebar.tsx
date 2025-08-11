@@ -253,9 +253,9 @@ function Actions(props: ProjectPage.State) {
     {
       type: "action" as const,
       label: "Delete",
-      onClick: () => console.log("Delete project"),
+      onClick: props.openDeleteModal,
       icon: IconTrash,
-      hidden: !props.canEdit,
+      hidden: !props.canDelete,
       danger: true,
     },
   ];
