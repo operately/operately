@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     |> Factory.add_space(:engineering)
     |> Factory.add_project(:project, :engineering)
     |> Factory.add_space_member(:new_champion, :engineering)
+    |> Factory.add_project_milestone(:milestone, :project)
+    |> Factory.add_project_task(:task, :milestone)
   end
 
   describe "update due date" do
@@ -686,6 +688,53 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert_raise Ecto.NoResultsError, fn ->
         Operately.Projects.get_contributor!(ctx.contrib.id)
       end
+    end
+  end
+
+  describe "update task status" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_task_status], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_status], %{status: "done"})
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_status], %{task_id: Paths.task_id(ctx.task)})
+      assert res.message == "Missing required fields: status"
+    end
+
+    test "it updates the task status", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_task_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "done"
+      })
+      assert res.task.status == "done"
+
+      task = Repo.reload(ctx.task)
+      assert task.status == "done"
+    end
+
+    test "it creates an activity when task status is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.project.id, "task_status_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "done"
+      })
+
+      after_count = count_activities(ctx.project.id, "task_status_updating")
+      assert after_count == before_count + 1
     end
   end
 
