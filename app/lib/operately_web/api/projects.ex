@@ -284,6 +284,35 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule DeleteProject do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :project_id, :id, null: false
+    end
+
+    outputs do
+      field :project, :project, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_delete)
+      |> Steps.delete_discussions(inputs.project_id)
+      |> Steps.collect_check_ins(inputs.project_id)
+      |> Steps.delete_comments()
+      |> Steps.delete_reactions()
+      |> Steps.delete_project()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{project: OperatelyWeb.Api.Serializer.serialize(changes.deleted_project)}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -478,6 +507,49 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
+    def delete_discussions(multi, project_id) do
+      Ecto.Multi.run(multi, :discussions, fn _, _ ->
+        {_count, discussions} = Operately.Projects.delete_project_discussions(project_id)
+        {:ok, discussions}
+      end)
+    end
+
+    def collect_check_ins(multi, project_id) do
+      Ecto.Multi.run(multi, :check_ins, fn _, _ ->
+        check_ins = Operately.Projects.list_check_ins(project_id) |> Enum.map(& &1.id)
+        {:ok, check_ins}
+      end)
+    end
+
+    def delete_comments(multi) do
+      Ecto.Multi.run(multi, :comments, fn _, changes ->
+        %{discussions: discussion_ids, check_ins: check_in_ids} = changes
+        discussion_ids = discussion_ids || []
+        check_in_ids = check_in_ids || []
+
+        {_count, comments} = Operately.Updates.delete_comments(discussion_ids ++ check_in_ids)
+        {:ok, comments}
+      end)
+    end
+
+    def delete_reactions(multi) do
+      Ecto.Multi.run(multi, :reactions, fn _, changes ->
+        %{discussions: discussion_ids, check_ins: check_in_ids, comments: comment_ids} = changes
+        discussion_ids = discussion_ids || []
+        check_in_ids = check_in_ids || []
+        comment_ids = comment_ids || []
+
+        {_count, reactions} = Operately.Updates.delete_reactions(discussion_ids ++ check_in_ids ++ comment_ids)
+        {:ok, reactions}
+      end)
+    end
+
+    def delete_project(multi) do
+      Ecto.Multi.run(multi, :deleted_project, fn _, changes ->
+        Operately.Projects.delete_project(changes.project)
+      end)
+    end
+
     def save_activity(multi, activity_type, callback) do
       Ecto.Multi.merge(multi, fn changes ->
         Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ -> callback.(changes) end)
@@ -510,7 +582,7 @@ defmodule OperatelyWeb.Api.Projects do
           {:error, :not_found}
 
         {:error, _failed_operation, :forbidden, _changes} ->
-          {:error, :not_found}
+          {:error, :forbidden}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")

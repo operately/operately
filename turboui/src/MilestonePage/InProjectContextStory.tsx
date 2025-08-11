@@ -45,6 +45,7 @@ export function InProjectContextStory() {
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [space, setSpace] = useState(defaultSpace);
 
   const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
@@ -138,6 +139,11 @@ export function InProjectContextStory() {
       console.log("Resource removed:", id);
     },
     manageTeamLink: "#",
+
+    onProjectDelete: () => {},
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
 
   const tabs = useTabs("tasks", [
@@ -229,6 +235,7 @@ export function EmptyMilestoneInProjectContextStory() {
   const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isMoveModalOpen, setIsMoveModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [space, setSpace] = useState(defaultSpace);
 
   const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
@@ -321,6 +328,11 @@ export function EmptyMilestoneInProjectContextStory() {
       console.log("Resource removed:", id);
     },
     manageTeamLink: "#",
+
+    onProjectDelete: () => {},
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
 
   const tabs = useTabs("tasks", [
