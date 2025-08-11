@@ -1,8 +1,8 @@
 import React from "react";
 import { IconChevronLeft, IconChevronRight } from "../../icons";
-import { DateField } from "../index";
 import classNames from "../../utils/classnames";
 import * as time from "../../utils/time";
+import { DateField } from "../index";
 
 interface Props {
   selectedDate: DateField.ContextualDate | null;
@@ -91,7 +91,7 @@ export function InlineCalendar({ selectedDate, setSelectedDate, minDateLimit, ma
   };
 
   return (
-    <div className="bg-white border border-gray-300 rounded-lg p-3">
+    <div className="bg-white border border-stroke-base rounded-lg p-3">
       <div className="flex items-center justify-between mb-2">
         <button onClick={prevMonth} className="p-1 hover:bg-gray-100 rounded" data-testid="date-field-prev-month">
           <IconChevronLeft size={16} stroke={1.5} />

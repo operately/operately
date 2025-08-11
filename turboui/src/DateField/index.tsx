@@ -1,16 +1,16 @@
-import React, { useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
+import React, { useState } from "react";
+import { match } from "ts-pattern";
 import { IconCalendarEvent, IconX } from "../icons";
-import { InlineCalendar } from "./components/InlineCalendar";
+import { createTestId, TestableElement } from "../TestableElement";
+import classNames from "../utils/classnames";
+import { isOverdue } from "../utils/time";
+import ActionButtons from "./components/ActionButtons";
 import DateTypeSelector from "./components/DateTypeSelector";
+import { InlineCalendar } from "./components/InlineCalendar";
 import { MonthSelector } from "./components/MonthSelector";
 import { QuarterSelector } from "./components/QuarterSelector";
 import { YearSelector } from "./components/YearSelector";
-import ActionButtons from "./components/ActionButtons";
-import classNames from "../utils/classnames";
-import { isOverdue } from "../utils/time";
-import { createTestId, TestableElement } from "../TestableElement";
-import { match } from "ts-pattern";
 import { getDateWithoutCurrentYear } from "./utils";
 
 const DATE_TYPES = [
@@ -200,9 +200,9 @@ function DatePickerTrigger({
   const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
 
   const fieldSize = match(size)
-    .with("std", () => `border ${error ? 'border-red-500' : 'border-surface-outline'} rounded-lg w-full px-2 py-1.5`)
-    .with("small", () => `border ${error ? 'border-red-500' : 'border-surface-outline'} rounded-lg w-full px-1.5 py-1`)
-    .with("lg", () => `border ${error ? 'border-red-500' : 'border-surface-outline'} rounded-lg w-full px-2.5 py-2`)
+    .with("std", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-2 py-1.5`)
+    .with("small", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-1.5 py-1`)
+    .with("lg", () => `border ${error ? "border-red-500" : "border-surface-outline"} rounded-lg w-full px-2.5 py-2`)
     .exhaustive();
 
   const elementSize = match(size)
@@ -222,7 +222,7 @@ function DatePickerTrigger({
 
   const triggerClassName = classNames(
     "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
-    variant === "inline" ? `rounded-lg px-1.5 py-1 -mx-1.5 -my-1 ${error ? 'border border-red-500' : ''}` : fieldSize,
+    variant === "inline" ? `rounded-lg px-1.5 py-1 -mx-1.5 -my-1 ${error ? "border border-red-500" : ""}` : fieldSize,
     !readonly ? "hover:bg-surface-dimmed" : "",
   );
 
@@ -289,7 +289,7 @@ function DatePickerContent(props: DatePickerContentProps) {
   } = props;
 
   return (
-    <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg shadow-lg">
+    <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg shadow-lg dark:border dark:border-surface-outline">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <IconCalendarEvent size={19} />
