@@ -967,6 +967,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_comment_on_retrospective, :boolean, null: true
     field? :can_comment_on_milestone, :boolean, null: true
     field? :can_comment, :boolean
+    field? :can_delete, :boolean
   end
 
   object :space_permissions do

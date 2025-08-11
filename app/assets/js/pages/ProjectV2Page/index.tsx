@@ -215,6 +215,7 @@ function Page() {
     canEdit: project.permissions?.canEditName || false,
     manageTeamLink: paths.projectContributorsPath(project.id),
 
+    canDelete: project.permissions?.canDelete || false,
     onProjectDelete: deleteProject,
 
     // TaskBoard props - simplified for fast implementation

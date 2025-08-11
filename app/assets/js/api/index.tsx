@@ -1353,6 +1353,7 @@ export interface ProjectPermissions {
   canCommentOnRetrospective?: boolean | null;
   canCommentOnMilestone?: boolean | null;
   canComment?: boolean;
+  canDelete?: boolean;
 }
 
 export interface ProjectRetrospective {

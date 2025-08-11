@@ -115,6 +115,7 @@ export namespace ProjectPage {
 
     activityFeed: React.ReactNode;
 
+    canDelete: boolean;
     onProjectDelete: () => void;
 
     // TaskBoard props

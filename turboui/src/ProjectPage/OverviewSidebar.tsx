@@ -255,7 +255,7 @@ function Actions(props: ProjectPage.State) {
       label: "Delete",
       onClick: props.openDeleteModal,
       icon: IconTrash,
-      hidden: !props.canEdit,
+      hidden: !props.canDelete,
       danger: true,
     },
   ];
