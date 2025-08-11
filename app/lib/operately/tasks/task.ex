@@ -1,5 +1,6 @@
 defmodule Operately.Tasks.Task do
   use Operately.Schema
+  use Operately.Repo.Getter
 
   @type t :: %__MODULE__{
           id: Ecto.UUID.t() | nil,
@@ -43,6 +44,7 @@ defmodule Operately.Tasks.Task do
 
     timestamps()
     requester_access_level()
+    request_info()
   end
 
   def changeset(attrs) do

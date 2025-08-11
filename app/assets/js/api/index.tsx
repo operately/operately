@@ -836,6 +836,15 @@ export interface ActivityContentTaskStatusChange {
   status?: string | null;
 }
 
+export interface ActivityContentTaskStatusUpdating {
+  company: Company;
+  space: Space;
+  project: Project;
+  task: Task;
+  oldStatus: string;
+  newStatus: string;
+}
+
 export interface ActivityContentTaskUpdate {
   companyId?: string | null;
   taskId?: string | null;
@@ -1800,6 +1809,7 @@ export type ActivityContent =
   | ActivityContentTaskReopening
   | ActivityContentTaskSizeChange
   | ActivityContentTaskStatusChange
+  | ActivityContentTaskStatusUpdating
   | ActivityContentTaskUpdate;
 
 export type ActivityDataUnion =
@@ -3621,6 +3631,15 @@ export interface ProjectsUpdateStartDateResult {
   success: boolean | null;
 }
 
+export interface ProjectsUpdateTaskStatusInput {
+  taskId: Id;
+  status: string;
+}
+
+export interface ProjectsUpdateTaskStatusResult {
+  task: Task;
+}
+
 export interface PublishDiscussionInput {
   id?: Id | null;
 }
@@ -4501,6 +4520,10 @@ class ApiNamespaceProjects {
 
   async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
     return this.client.post("/projects/update_start_date", input);
+  }
+
+  async updateTaskStatus(input: ProjectsUpdateTaskStatusInput): Promise<ProjectsUpdateTaskStatusResult> {
+    return this.client.post("/projects/update_task_status", input);
   }
 }
 
@@ -7052,6 +7075,13 @@ export default {
     useUpdateChampion: () =>
       useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
         defaultApiClient.apiNamespaceProjects.updateChampion,
+      ),
+
+    updateTaskStatus: (input: ProjectsUpdateTaskStatusInput) =>
+      defaultApiClient.apiNamespaceProjects.updateTaskStatus(input),
+    useUpdateTaskStatus: () =>
+      useMutation<ProjectsUpdateTaskStatusInput, ProjectsUpdateTaskStatusResult>(
+        defaultApiClient.apiNamespaceProjects.updateTaskStatus,
       ),
 
     delete: (input: ProjectsDeleteInput) => defaultApiClient.apiNamespaceProjects.delete(input),
