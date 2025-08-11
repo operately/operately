@@ -69,6 +69,7 @@ export namespace ProjectPage {
   export type UpdateResourcePayload = ResourceManager.Resource;
 
   export interface Props {
+    workmapLink: string;
     closeLink: string;
     reopenLink: string;
     pauseLink: string;

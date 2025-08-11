@@ -1,26 +1,26 @@
 import React, { useState } from "react";
-import { TaskPage } from "./index";
-import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
-import * as TaskBoardTypes from "../TaskBoard/types";
-import { PageNew } from "../Page";
-import { Tabs, useTabs } from "../Tabs";
-import { PageHeader } from "../ProjectPage/PageHeader";
-import { IconClipboardText, IconLogs, IconMessages, IconListCheck } from "../icons";
-import {
-  mockTaskPeople,
-  mockMilestones,
-  timelinePeople,
-  searchTaskPeople,
-  searchMilestones,
-  searchRichEditorPeople,
-  mockMentionedPersonLookup,
-  asRichText,
-  createActiveTaskTimeline,
-} from "./mockData";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
+import { PageNew } from "../Page";
+import { PageHeader } from "../ProjectPage/PageHeader";
+import { Tabs, useTabs } from "../Tabs";
+import * as TaskBoardTypes from "../TaskBoard/types";
+import { IconClipboardText, IconListCheck, IconLogs, IconMessages } from "../icons";
+import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
+import { TaskPage } from "./index";
+import {
+  asRichText,
+  createActiveTaskTimeline,
+  mockMentionedPersonLookup,
+  mockMilestones,
+  mockTaskPeople,
+  searchMilestones,
+  searchRichEditorPeople,
+  searchTaskPeople,
+  timelinePeople,
+} from "./mockData";
 
 const people = genPeople(5);
 
@@ -47,6 +47,7 @@ export function InProjectContextStory() {
 
   // Mock project state for header
   const mockProjectState = {
+    workmapLink: "#",
     closeLink: "#",
     reopenLink: "#",
     projectName: "Mobile App Redesign",
