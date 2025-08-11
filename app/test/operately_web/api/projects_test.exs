@@ -228,7 +228,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.edit_project_company_members_access(:project, :view_access)
         |> Factory.log_in_person(:user)
 
-      assert {404, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
+      assert {403, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
         goal_id: Ecto.UUID.generate()
       })
@@ -274,7 +274,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:creator)
 
       # Count activities before
-      before_count = count_activities(ctx.project.id, :project_goal_connection)
+      before_count = count_activities(ctx.project.id, "project_goal_connection")
 
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
@@ -282,7 +282,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       })
 
       # Count activities after
-      after_count = count_activities(ctx.project.id, :project_goal_connection)
+      after_count = count_activities(ctx.project.id, "project_goal_connection")
 
       assert after_count == before_count + 1
     end
@@ -567,13 +567,145 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "delete project" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :delete], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :delete], %{})
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it returns not found for non-existent project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :delete], %{
+        project_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns forbidden for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:projects, :delete], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+    end
+
+    test "it returns forbidden for space members without permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:space_member)
+
+      assert {403, _} = mutation(ctx.conn, [:projects, :delete], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+    end
+
+    test "it deletes the project when user has permission", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert res.project.id == Paths.project_id(ctx.project)
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_project!(ctx.project.id)
+      end
+    end
+
+    test "it allows reviewer to delete the project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_reviewer(:reviewer, :project, :as_person)
+        |> Factory.log_in_person(:reviewer)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert res.project.id == Paths.project_id(ctx.project)
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_project!(ctx.project.id)
+      end
+    end
+
+    test "it deletes projects with resources", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:contrib, :project)
+        |> Factory.add_project_milestone(:milestone, :project)
+        |> Factory.add_project_retrospective(:retrospective, :project, :creator)
+        |> Factory.add_project_check_in(:check_in, :project, :creator)
+        |> Factory.add_project_discussion(:discussion, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert count_activities(project_id: ctx.project.id) > 0
+      assert Operately.Projects.get_check_in!(ctx.check_in.id)
+      assert Operately.Projects.get_milestone!(ctx.milestone.id)
+      assert Operately.Projects.get_retrospective!(ctx.retrospective.id)
+      assert Operately.Comments.get_thread!(ctx.discussion.id)
+      assert Operately.Projects.get_contributor!(ctx.contrib.id)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :delete], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert res.project.id == Paths.project_id(ctx.project)
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_project!(ctx.project.id)
+      end
+
+      # activities are deleted
+      assert count_activities(project_id: ctx.project.id) == 0
+
+      # resources are deleted
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_check_in!(ctx.check_in.id)
+      end
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_milestone!(ctx.milestone.id)
+      end
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_retrospective!(ctx.retrospective.id)
+      end
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Comments.get_thread!(ctx.discussion.id)
+      end
+      assert_raise Ecto.NoResultsError, fn ->
+        Operately.Projects.get_contributor!(ctx.contrib.id)
+      end
+    end
+  end
+
   #
   # Helpers
   #
 
+  import Ecto.Query, only: [from: 2]
+
   defp count_activities(project_id, action) do
-    Operately.Activities.Activity
-    |> Operately.Repo.all(where: [action: action, resource_id: project_id])
-    |> length()
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["project_id"] == ^project_id
+    )
+    |> Repo.aggregate(:count)
+  end
+
+  defp count_activities(project_id: project_id) do
+    from(a in Operately.Activities.Activity,
+      where: a.content["project_id"] == ^project_id
+    )
+    |> Repo.aggregate(:count)
   end
 end
