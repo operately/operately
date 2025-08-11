@@ -1,18 +1,19 @@
-import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { ProjectPage } from "./index";
-import * as TaskBoardTypes from "../TaskBoard/types";
-import { Editor as RichEditor, useEditor } from "../RichEditor";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { PrimaryButton as Button, GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
-import { PrimaryButton as Button, GhostButton, SecondaryButton } from "../Button";
+import { PieChart } from "../PieChart";
+import { ResourceManager } from "../ResourceManager";
 import RichContent, { countCharacters, shortenContent } from "../RichContent";
 import { isContentEmpty } from "../RichContent/isContentEmpty";
-import classNames from "../utils/classnames";
+import { Editor as RichEditor, useEditor } from "../RichEditor";
+import { SwitchToggle } from "../SwitchToggle";
+import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
-import { PieChart } from "../PieChart";
+import { IconFlag } from "../icons";
+import classNames from "../utils/classnames";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
-import { ResourceManager } from "../ResourceManager";
-import { IconFlag } from "../icons";
+import { ProjectPage } from "./index";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -482,24 +483,22 @@ function AddMilestoneForm({
           placeholder="Milestone name"
           value={newMilestoneName}
           onChange={(e) => setNewMilestoneName(e.target.value)}
-          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base"
+          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-transparent"
           autoFocus
           onKeyDown={handleInputKeyDown}
         />
         <DateField date={newMilestoneDueDate} onDateSelect={setNewMilestoneDueDate} placeholder="Set target date" />
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 justify-between">
+          <SwitchToggle value={addMore} setValue={setAddMore} label="Create more" />
+          <div className="flex-1"></div>
           <div className="flex gap-2">
-            <Button size="sm" onClick={handleAddMilestone} disabled={!newMilestoneName.trim()}>
-              Add milestone
-            </Button>
             <SecondaryButton size="sm" onClick={() => setShowAddForm(false)}>
               Cancel
             </SecondaryButton>
+            <PrimaryButton size="sm" onClick={handleAddMilestone} disabled={!newMilestoneName.trim()}>
+              Add milestone
+            </PrimaryButton>
           </div>
-          <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={addMore} onChange={(e) => setAddMore(e.target.checked)} />
-            Add more
-          </label>
         </div>
       </div>
     </div>
