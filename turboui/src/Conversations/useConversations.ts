@@ -11,7 +11,7 @@ export interface UseConversationsReturn {
   closeConversations: () => void;
   createConversation: () => void;
   selectConversation: (id: string) => void;
-  sendMessage: (content: string, conversationId?: string) => Promise<void>;
+  sendMessage: (content: string, conversationId?: string, contextAttachment?: import('./index').ContextAttachment) => Promise<void>;
 
   // State
   isLoading: boolean;
@@ -22,7 +22,7 @@ export interface UseConversationsOptions {
   /**
    * Function to send messages to AI service
    */
-  onSendToAI?: (message: string, conversationHistory?: Message[]) => Promise<string>;
+  onSendToAI?: (message: string, conversationHistory?: Message[]) => Promise<string | { content: string; actions?: import('./index').MessageAction[] }>;
 
   /**
    * Function to save conversations (e.g., to localStorage or server)
@@ -76,7 +76,7 @@ export function useConversations(options: UseConversationsOptions = {}): UseConv
   }, []);
 
   const sendMessage = useCallback(
-    async (content: string, conversationId?: string) => {
+    async (content: string, conversationId?: string, _contextAttachment?: import('./index').ContextAttachment) => {
       setIsLoading(true);
       setError(undefined);
 
@@ -126,12 +126,16 @@ export function useConversations(options: UseConversationsOptions = {}): UseConv
 
         // Get AI response if handler is provided
         if (onSendToAI) {
-          const aiResponseContent = await onSendToAI(content, conversationHistory);
+          const aiResponse = await onSendToAI(content, conversationHistory);
+          const aiResponseContent = typeof aiResponse === 'string' ? aiResponse : aiResponse.content;
+          const aiResponseActions = typeof aiResponse === 'object' ? aiResponse.actions : undefined;
+          
           const aiMessage: Message = {
             id: `msg-${Date.now()}`,
             content: aiResponseContent,
             timestamp: new Date(),
             sender: "ai",
+            actions: aiResponseActions,
           };
 
           setConversations((prev) =>

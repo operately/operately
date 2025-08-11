@@ -8,6 +8,28 @@ export interface Message {
   content: string;
   timestamp: Date;
   sender: "user" | "ai";
+  actions?: MessageAction[];
+}
+
+export interface MessageAction {
+  id: string;
+  label: string;
+  variant?: "primary" | "secondary";
+  onClick: () => void;
+}
+
+export interface ContextAttachment {
+  id: string;
+  type: "goal" | "project" | "milestone" | "task";
+  title: string;
+  url?: string;
+}
+
+export interface ContextAction {
+  id: string;
+  label: string;
+  prompt: string;
+  variant?: "primary" | "secondary";
 }
 
 export interface Conversation {
@@ -16,6 +38,7 @@ export interface Conversation {
   messages: Message[];
   createdAt: Date;
   updatedAt: Date;
+  context?: ContextAttachment;
 }
 
 export interface ConversationsProps {
@@ -55,6 +78,16 @@ export interface ConversationsProps {
   onCreateConversation?: () => void;
 
   /**
+   * Context-aware actions available for current page
+   */
+  contextActions?: ContextAction[];
+
+  /**
+   * Current context attachment (goal, project, etc.)
+   */
+  contextAttachment?: ContextAttachment;
+
+  /**
    * Initial width of the panel in pixels
    */
   initialWidth?: number;
@@ -78,6 +111,8 @@ export function Conversations({
   activeConversationId,
   onSelectConversation,
   onCreateConversation,
+  contextActions = [],
+  contextAttachment,
   initialWidth = 384, // 96 * 4 (w-96 equivalent)
   minWidth = 320, // Minimum usable width
   maxWidth = 600, // Maximum width
@@ -170,6 +205,16 @@ export function Conversations({
     }
   };
 
+  const handleContextAction = async (action: ContextAction) => {
+    if (!onSendMessage) return;
+
+    try {
+      await onSendMessage(action.prompt, activeConversationId);
+    } catch (error) {
+      console.error("Failed to execute context action:", error);
+    }
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -214,7 +259,9 @@ export function Conversations({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-surface-outline bg-surface-base">
         <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-content-accent">Goal Review</h2>
+          <h2 className="font-semibold text-content-accent">
+            {activeConversation?.context?.title || contextAttachment?.title || "AI Assistant"}
+          </h2>
         </div>
         <div className="flex items-center gap-1">
           {/* Conversations List Toggle */}
@@ -292,35 +339,99 @@ export function Conversations({
         </div>
       )}
 
+      {/* Context Attachment */}
+      {(activeConversation?.context || contextAttachment) && (
+        <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
+          <div className="flex items-center gap-2 text-sm">
+            <div className="w-2 h-2 bg-accent-base rounded-full" />
+            <span className="text-content-dimmed">Context:</span>
+            <span className="text-content-base font-medium">
+              {(activeConversation?.context || contextAttachment)?.title}
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* Context Actions */}
+      {contextActions.length > 0 && !activeConversation && (
+        <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
+          <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Suggested Actions</div>
+          <div className="flex flex-wrap gap-2">
+            {contextActions.map((action) => (
+              <button
+                key={action.id}
+                onClick={() => handleContextAction(action)}
+                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                  action.variant === "primary"
+                    ? "bg-accent-base text-white hover:bg-accent-hover"
+                    : "bg-surface-highlight text-content-base hover:bg-surface-outline border border-surface-outline"
+                }`}
+              >
+                {action.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {!activeConversation ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-content-dimmed">
             <IconMessages size={48} className="mb-4 opacity-50" />
-            <h3 className="font-medium mb-2">Welcome to AI Assistant</h3>
-            <p className="text-sm mb-4">Start a conversation to review your project and get AI assistance.</p>
-            <button
-              onClick={onCreateConversation}
-              className="px-4 py-2 bg-accent-base text-white rounded hover:bg-accent-hover transition-colors"
-            >
-              Start New Conversation
-            </button>
+            <h3 className="font-medium mb-2">Welcome to Alfred</h3>
+            <p className="text-sm mb-4">
+              {contextAttachment
+                ? `I have access to "${contextAttachment.title}" and can help you with context-aware actions above.`
+                : "Start a conversation to get AI assistance with your work."}
+            </p>
+            {contextActions.length === 0 && (
+              <button
+                onClick={onCreateConversation}
+                className="px-4 py-2 bg-accent-base text-white rounded hover:bg-accent-hover transition-colors"
+              >
+                Start New Conversation
+              </button>
+            )}
           </div>
         ) : (
           <>
             {activeConversation.messages.map((message) => (
               <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
-                <div
-                  className={`max-w-[80%] rounded-lg px-3 py-2 ${
-                    message.sender === "user" ? "bg-accent-base text-white" : "bg-surface-highlight text-content-base"
-                  }`}
-                >
-                  <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                <div className={`max-w-[80%] ${
+                  message.sender === "user" ? "" : "space-y-2"
+                }`}>
                   <div
-                    className={`text-xs mt-1 ${message.sender === "user" ? "text-white/70" : "text-content-dimmed"}`}
+                    className={`rounded-lg px-3 py-2 ${
+                      message.sender === "user" ? "bg-accent-base text-white" : "bg-surface-highlight text-content-base"
+                    }`}
                   >
-                    {formatTime(message.timestamp)}
+                    <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                    <div
+                      className={`text-xs mt-1 ${message.sender === "user" ? "text-white/70" : "text-content-dimmed"}`}
+                    >
+                      {formatTime(message.timestamp)}
+                    </div>
                   </div>
+                  
+                  {/* Message Actions */}
+                  {message.actions && message.actions.length > 0 && (
+                    <div className="flex flex-wrap gap-2 ml-3">
+                      {message.actions.map((action) => (
+                        <button
+                          key={action.id}
+                          onClick={action.onClick}
+                          className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                            action.variant === "primary"
+                              ? "bg-accent-base text-white hover:bg-accent-hover"
+                              : "bg-surface-outline text-content-base hover:bg-surface-highlight border border-surface-outline"
+                          }`}
+                        >
+                          {action.label}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
