@@ -580,6 +580,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_task_reopening,
       :activity_content_task_size_change,
       :activity_content_task_status_change,
+      :activity_content_task_status_updating,
       :activity_content_task_update
     ]
   )
@@ -746,6 +747,15 @@ defmodule OperatelyWeb.Api.Types do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
     field? :task_id, :string, null: true
+  end
+
+  object :activity_content_task_status_updating do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :task, :task
+    field :old_status, :string
+    field :new_status, :string
   end
 
   object :update do

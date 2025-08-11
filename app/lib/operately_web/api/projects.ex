@@ -284,6 +284,42 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateTaskStatus do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :status, :string, null: false
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_task_status(inputs.status)
+      |> Steps.save_activity(:task_status_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          task_id: changes.task.id,
+          old_status: changes.task.status,
+          new_status: changes.updated_task.status
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+      end)
+    end
+  end
+
   defmodule DeleteProject do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -342,9 +378,27 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
+    def find_task(multi, task_id) do
+      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
+          {:ok, task} -> {:ok, task}
+          {:error, _} -> {:error, {:not_found, "Project not found"}}
+        end
+      end)
+      |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
+        {:ok, task.project}
+      end)
+    end
+
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project} ->
         Operately.Projects.Permissions.check(project.request_info.access_level, permission)
+      end)
+    end
+
+    def check_task_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
       end)
     end
 
@@ -547,6 +601,12 @@ defmodule OperatelyWeb.Api.Projects do
     def delete_project(multi) do
       Ecto.Multi.run(multi, :deleted_project, fn _, changes ->
         Operately.Projects.delete_project(changes.project)
+      end)
+    end
+
+    def update_task_status(multi, new_status) do
+      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+        Operately.Tasks.Task.changeset(task, %{status: new_status})
       end)
     end
 

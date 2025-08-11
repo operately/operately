@@ -58,6 +58,7 @@ defmodule Operately.Support.Factory do
   defdelegate pause_project(ctx, project_name), to: Factory.Projects
   defdelegate close_project_milestone(ctx, milestone_name, creator_name \\ :creator), to: Factory.Projects
   defdelegate add_project_discussion(ctx, testid, project_name, opts \\ []), to: Factory.Projects
+  defdelegate add_project_task(ctx, testid, milestone_name, opts \\ []), to: Factory.Projects
 
   # messages
   defdelegate add_messages_board(ctx, testid, space_name, opts \\ []), to: Factory.Messages
