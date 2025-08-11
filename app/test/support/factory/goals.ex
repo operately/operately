@@ -14,6 +14,7 @@ defmodule Operately.Support.Factory.Goals do
     goal =
       Operately.GoalsFixtures.goal_fixture(ctx.creator, %{
         name: name,
+        targets: opts[:targets],
         parent_goal_id: parent_goal && ctx[parent_goal].id,
         space_id: ctx[space_name].id,
         champion_id: ctx[champion].id,

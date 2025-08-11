@@ -120,6 +120,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
     Map.put(item, :contributor, contributor)
   end
+
   defp maybe_add_contributor(item, _), do: item
 
   #
@@ -148,12 +149,12 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [p], c in assoc(p, :champion), as: :champion)
     |> join(:left, [p], gr in assoc(p, :group), as: :group)
     |> join(:left, [p], lci in assoc(p, :last_check_in), as: :last_check_in)
-    |> preload([company: company, champion: c, group: gr, last_check_in: lci], [
+    |> preload([company: company, champion: c, group: gr, last_check_in: lci],
       company: company,
       champion: c,
       group: gr,
       last_check_in: lci
-    ])
+    )
     |> preload_project_milestones()
     |> maybe_preload_project_reviewer(need_reviewer)
     |> maybe_preload_project_contributors(include_assignees?(args) || needs_contributor?(args))
@@ -163,17 +164,19 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp maybe_preload_project_reviewer(query, true) do
     query
     |> join(:left, [p], r in assoc(p, :reviewer), as: :reviewer)
-    |> preload([reviewer: r], [reviewer: r])
+    |> preload([reviewer: r], reviewer: r)
   end
+
   defp maybe_preload_project_reviewer(query, false), do: query
 
   defp maybe_preload_project_contributors(query, true), do: preload(query, [], :contributing_people)
   defp maybe_preload_project_contributors(query, false), do: query
 
   defp preload_project_milestones(query) do
-    subquery = from(m in Operately.Projects.Milestone,
-      select: %{id: m.id, title: m.title, status: m.status, timeframe: m.timeframe}
-    )
+    subquery =
+      from(m in Operately.Projects.Milestone,
+        select: %{id: m.id, title: m.title, status: m.status, timeframe: m.timeframe}
+      )
 
     preload(query, [], milestones: ^subquery)
   end
@@ -189,6 +192,7 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     |> join(:left, [goal: g], gr in assoc(g, :group), as: :group)
     |> preload([company: company, champion: c, group: gr], [
       :targets,
+      :checks,
       company: company,
       champion: c,
       group: gr
@@ -200,8 +204,9 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   defp maybe_preload_goal_reviewer(query, true) do
     query
     |> join(:left, [goal: g], r in assoc(g, :reviewer), as: :reviewer)
-    |> preload([reviewer: r], [reviewer: r])
+    |> preload([reviewer: r], reviewer: r)
   end
+
   defp maybe_preload_goal_reviewer(query, false), do: query
 
   #
@@ -209,11 +214,12 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   #
 
   defp preload_access_levels(query) do
-    subquery = from(c in Operately.Access.Context,
-      join: b in assoc(c, :bindings),
-      join: g in assoc(b, :group),
-      preload: [bindings: {b, group: g}]
-    )
+    subquery =
+      from(c in Operately.Access.Context,
+        join: b in assoc(c, :bindings),
+        join: g in assoc(b, :group),
+        preload: [bindings: {b, group: g}]
+      )
 
     preload(query, [], access_context: ^subquery)
   end
