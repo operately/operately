@@ -7,8 +7,8 @@ import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
-import { ProjectPage } from "./index";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
+import { ProjectPage } from "./index";
 
 // Helper function to create rich text content for check-ins
 function asRichText(content: string): any {
@@ -302,6 +302,7 @@ export const Default: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={handleTaskStatusChange}
@@ -371,6 +372,7 @@ export const ReadOnly: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -486,6 +488,7 @@ export const EmptyTasks: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -588,6 +591,7 @@ export const EmptyProject: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={[]}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -650,6 +654,7 @@ export const EmptyProjectReadOnly: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -795,6 +800,7 @@ export const PausedProject: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={handleTaskStatusChange}
@@ -872,6 +878,7 @@ export const ClosedProject: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
+        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}

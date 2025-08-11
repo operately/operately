@@ -33,6 +33,7 @@ type LoaderResult = {
     project: Projects.Project;
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
+    company: Companies.Company;
   };
   cacheVersion: number;
 };
