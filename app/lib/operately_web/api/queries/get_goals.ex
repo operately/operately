@@ -35,7 +35,7 @@ defmodule OperatelyWeb.Api.Queries.GetGoals do
   defp load(person, inputs) do
     include_filters = extract_include_filters(inputs)
 
-    (from p in Goal, as: :goal, preload: [:parent_goal, :targets])
+    from(p in Goal, as: :goal, preload: [:parent_goal, :targets, :checks])
     |> Goal.scope_space(inputs[:space_id])
     |> Goal.scope_company(person.company_id)
     |> include_requested(include_filters)

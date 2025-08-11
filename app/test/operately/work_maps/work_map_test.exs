@@ -16,8 +16,7 @@ defmodule Operately.WorkMaps.WorkMapTest do
       Factory.setup(%{})
       |> Factory.add_space(:space)
       |> Factory.add_goal(:root_goal, :space)
-      |> Factory.preload(:root_goal, :last_update)
-      |> Factory.preload(:root_goal, :targets)
+      |> Factory.preload(:root_goal, [:last_update, :checks, :targets])
     end
 
     test "returns single root item unchanged", %{root_goal: root_goal} = ctx do
@@ -35,10 +34,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
-      |> Factory.preload(:parent_goal, :last_update)
-      |> Factory.preload(:child_goal, :last_update)
-      |> Factory.preload(:parent_goal, :targets)
-      |> Factory.preload(:child_goal, :targets)
+      |> Factory.preload(:parent_goal, [:last_update, :targets, :checks])
+      |> Factory.preload(:child_goal, [:last_update, :targets, :checks])
     end
 
     test "builds simple parent-child hierarchy", %{parent_goal: parent_goal, child_goal: child_goal} = ctx do
@@ -62,10 +59,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
-      |> Factory.preload(:parent_goal, :targets)
-      |> Factory.preload(:child_goal, :targets)
-      |> Factory.preload(:parent_goal, :last_update)
-      |> Factory.preload(:child_goal, :last_update)
+      |> Factory.preload(:parent_goal, [:targets, :last_update, :checks])
+      |> Factory.preload(:child_goal, [:targets, :last_update, :checks])
       |> Factory.add_project(:goal_project, :space, goal: :parent_goal)
       |> Factory.add_project(:root_project, :space)
       |> Factory.preload(:goal_project, :milestones)
@@ -110,12 +105,9 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_goal(:level1, :space)
       |> Factory.add_goal(:level2, :space, parent_goal: :level1)
       |> Factory.add_goal(:level3, :space, parent_goal: :level2)
-      |> Factory.preload(:level1, :last_update)
-      |> Factory.preload(:level2, :last_update)
-      |> Factory.preload(:level3, :last_update)
-      |> Factory.preload(:level1, :targets)
-      |> Factory.preload(:level2, :targets)
-      |> Factory.preload(:level3, :targets)
+      |> Factory.preload(:level1, [:last_update, :targets, :checks])
+      |> Factory.preload(:level2, [:last_update, :targets, :checks])
+      |> Factory.preload(:level3, [:last_update, :targets, :checks])
       |> Factory.add_project(:level3_project, :space, goal: :level3)
       |> Factory.preload(:level3_project, :milestones)
       |> Factory.preload(:level3_project, :last_check_in)
@@ -151,10 +143,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:parent_goal, :space)
       |> Factory.add_goal(:child_goal, :space, parent_goal: :parent_goal)
-      |> Factory.preload(:parent_goal, :last_update)
-      |> Factory.preload(:child_goal, :last_update)
-      |> Factory.preload(:parent_goal, :targets)
-      |> Factory.preload(:child_goal, :targets)
+      |> Factory.preload(:parent_goal, [:last_update, :targets, :checks])
+      |> Factory.preload(:child_goal, [:last_update, :targets, :checks])
     end
 
     test "handles orphaned items (parent not in list)", %{child_goal: child_goal, parent_goal: parent_goal} do
@@ -176,10 +166,8 @@ defmodule Operately.WorkMaps.WorkMapTest do
       |> Factory.add_space(:space)
       |> Factory.add_goal(:goal1, :space)
       |> Factory.add_goal(:goal2, :space)
-      |> Factory.preload(:goal1, :last_update)
-      |> Factory.preload(:goal2, :last_update)
-      |> Factory.preload(:goal1, :targets)
-      |> Factory.preload(:goal2, :targets)
+      |> Factory.preload(:goal1, [:last_update, :targets, :checks])
+      |> Factory.preload(:goal2, [:last_update, :targets, :checks])
       |> Factory.add_project(:project1, :space)
       |> Factory.add_project(:project2, :space)
       |> Factory.preload(:project1, :milestones)
