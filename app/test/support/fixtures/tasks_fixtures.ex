@@ -12,7 +12,11 @@ defmodule Operately.TasksFixtures do
       attrs
       |> Enum.into(%{
         description: %{},
-        due_date: ~N[2024-02-11 13:27:00],
+        due_date: %{
+          date: ~D[2024-02-11],
+          date_type: :day,
+          value: "2024-02-11"
+        },
         name: "some name",
         priority: "some priority",
         size: "some size"
