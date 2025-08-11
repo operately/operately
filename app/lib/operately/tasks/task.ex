@@ -8,7 +8,7 @@ defmodule Operately.Tasks.Task do
           priority: String.t() | nil,
           size: String.t() | nil,
           description: map() | nil,
-          due_date: NaiveDateTime.t() | nil,
+          due_date: %Operately.ContextualDates.ContextualDate{} | nil,
           status: String.t(),
           closed_at: NaiveDateTime.t() | nil,
           reopened_at: NaiveDateTime.t() | nil,

@@ -382,7 +382,7 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
         case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
           {:ok, task} -> {:ok, task}
-          {:error, _} -> {:error, {:not_found, "Project not found"}}
+          {:error, _} -> {:error, {:not_found, "Task not found"}}
         end
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
