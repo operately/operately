@@ -12,8 +12,7 @@ interface TextfieldProps extends Omit<React.InputHTMLAttributes<HTMLInputElement
 }
 
 export const Textfield = React.forwardRef<HTMLInputElement, TextfieldProps>((props, ref) => {
-  const { label, error, className, addonRight, inputClassName, ...rest } = props;
-  const testId = props.testId || "textfield";
+  const { label, error, className, addonRight, inputClassName, testId, ...rest } = props;
 
   const cn = classNames(
     "flex items-center gap-1",
@@ -33,7 +32,7 @@ export const Textfield = React.forwardRef<HTMLInputElement, TextfieldProps>((pro
     <div className={className}>
       {label && <label className="font-bold text-sm mb-1 block text-left">{label}</label>}
       <div className={cn}>
-        <input ref={ref} className={inputCN} data-test-id={testId} {...rest} />
+        <input ref={ref} className={inputCN} data-test-id={testId || "textfield"} {...rest} />
         {addonRight && <span className={addonCN}>{addonRight}</span>}
       </div>
       {error && <div className="text-red-500 text-xs mt-1 mb-1">{error}</div>}
