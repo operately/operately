@@ -57,7 +57,6 @@ export function useGoalTargetListState(props: GoalTargetList.Props): State {
         updateButtonVisible: !!props.showUpdateButton,
       };
 
-      props.onAddActiveChange?.(false);
       append(target);
 
       props

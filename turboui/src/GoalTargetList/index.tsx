@@ -17,6 +17,7 @@ import { UpdateButton } from "./UpdateButton";
 
 import { Textarea } from "../forms/Textarea";
 import { Textfield } from "../forms/Textfield";
+import { SwitchToggle } from "../SwitchToggle";
 import { createTestId } from "../TestableElement";
 
 export namespace GoalTargetList {
@@ -132,6 +133,8 @@ function TargetCard({ state, target }: { state: State; target: TargetState }) {
 }
 
 function TargetAdd({ state }: { state: State }) {
+  const [createMore, setCreateMore] = React.useState(false);
+
   const {
     register,
     handleSubmit,
@@ -154,7 +157,11 @@ function TargetAdd({ state }: { state: State }) {
       unit: data.unit,
     });
 
-    reset();
+    if (createMore) {
+      reset();
+    } else {
+      state.cancelAdd();
+    }
   };
 
   return (
@@ -197,7 +204,9 @@ function TargetAdd({ state }: { state: State }) {
             placeholder="e.g. users"
           />
         </div>
-        <div className="flex items-center gap-2 justify-end mt-4">
+        <div className="flex items-center gap-2 mt-4">
+          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" />
+          <div className="flex-1"></div>
           <SecondaryButton size="xs" onClick={() => state.cancelAdd()} type="button" testId="cancel">
             Cancel
           </SecondaryButton>
