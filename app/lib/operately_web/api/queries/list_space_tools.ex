@@ -47,7 +47,8 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
 
   defp load_projects(space_id, me) do
     projects =
-      from(p in Project, as: :project,
+      from(p in Project,
+        as: :project,
         preload: [last_check_in: :author, milestones: :project]
       )
       |> Project.scope_space(space_id)
@@ -60,7 +61,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
 
   defp load_goals(space_id, me) do
     goals =
-      from(g in Goal, as: :goals, preload: [:parent_goal, :targets, :last_update])
+      from(g in Goal, as: :goals, preload: [:parent_goal, :targets, :last_update, :checks])
       |> Goal.scope_space(space_id)
       |> Filters.filter_by_view_access(me.id)
       |> Repo.all()
@@ -69,18 +70,15 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
   end
 
   defp load_messages_boards(space_id, me) do
-    subquery = from(m in Message,
-      where: m.state != :draft,
-      preload: :author,
-      order_by: [desc: m.published_at]
-    )
+    subquery =
+      from(m in Message,
+        where: m.state != :draft,
+        preload: :author,
+        order_by: [desc: m.published_at]
+      )
 
     boards =
-      from(b in MessagesBoard,
-        join: s in assoc(b, :space), as: :space,
-        preload: [messages: ^subquery],
-        where: b.space_id == ^space_id
-      )
+      from(b in MessagesBoard, join: s in assoc(b, :space), as: :space, preload: [messages: ^subquery], where: b.space_id == ^space_id)
       |> Filters.filter_by_view_access(me.id, named_binding: :space)
       |> Repo.all()
       |> MessagesBoard.load_messages_comments_count()
