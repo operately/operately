@@ -5,19 +5,19 @@ import { PageNew } from "../Page";
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { DateField } from "../DateField";
+import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
 import { MentionedPersonLookupFn } from "../RichEditor";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
 import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
+import { CheckIns } from "./CheckIns";
+import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 import { StatusBanner } from "./StatusBanner";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
-import { MoveModal } from "../Modal/MoveModal";
-import { CheckIns } from "./CheckIns";
-import { Discussions } from "./Discussions";
 
 export namespace ProjectPage {
   export interface Space {
@@ -114,6 +114,7 @@ export namespace ProjectPage {
     activityFeed: React.ReactNode;
 
     // TaskBoard props
+    tasksEnabled?: boolean;
     tasks: TaskBoardTypes.Task[];
     milestones: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
@@ -169,6 +170,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       label: "Tasks",
       icon: <IconListCheck size={14} />,
       count: state.tasks.filter((task) => !task._isHelperTask).length,
+      hidden: !state.tasksEnabled,
     },
     { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
     { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },

@@ -23,6 +23,7 @@ interface Tab {
   label: string;
   icon: React.ReactNode;
   count?: number;
+  hidden?: boolean;
 }
 
 export interface TabsState {
@@ -37,7 +38,7 @@ export function useTabs(defaultTab: string, tabs: Tab[]): TabsState {
 
   return {
     active,
-    tabs: tabs,
+    tabs: tabs.filter((tab) => !tab.hidden),
   };
 }
 

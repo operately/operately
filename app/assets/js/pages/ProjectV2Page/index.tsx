@@ -2,8 +2,9 @@ import Api from "@/api";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
 
-import * as People from "@/models/people";
+import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
+import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
 import * as Time from "@/utils/time";
 
@@ -14,17 +15,17 @@ import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
-import { Paths, usePaths } from "@/routes/paths";
-import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
-import { parseSpaceForTurboUI } from "@/models/spaces";
 import { parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
+import { parseSpaceForTurboUI } from "@/models/spaces";
+import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v3-ProjectV2Page.project-${id}`;
+  return `v4-ProjectV2Page.project-${id}`;
 }
 
 type LoaderResult = {
@@ -62,13 +63,14 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         }).then((d) => d.project!),
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
+        company: Api.getCompany({ id: params.companyId! }).then((d) => d.company!),
       }),
   });
 }
 
 function Page() {
   const paths = usePaths();
-  const { project, checkIns, discussions } = PageCache.useData(loader).data;
+  const { project, checkIns, discussions, company } = PageCache.useData(loader).data;
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
@@ -190,8 +192,8 @@ function Page() {
     canEdit: project.permissions?.canEditName || false,
     manageTeamLink: paths.projectContributorsPath(project.id),
 
-    // TaskBoard props - simplified for fast implementation
     tasks: [],
+    tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
