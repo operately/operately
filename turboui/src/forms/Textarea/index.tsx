@@ -9,8 +9,7 @@ interface TextareaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaEl
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((props, ref) => {
-  const { label, error, className, ...rest } = props;
-  const testId = props.testId || "textarea";
+  const { label, error, className, testId, ...rest } = props;
 
   const cn = classNames(
     "flex items-center gap-1",
@@ -24,9 +23,9 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>((pr
       {label && <label className="font-bold text-sm mb-1 block">{label}</label>}
       <div className={cn}>
         <TextareaAutosize
-          data-test-id={testId}
+          data-test-id={testId || "textarea"}
           ref={ref}
-          className="w-full border-0 p-0 focus:ring-0"
+          className="w-full border-0 p-0 focus:ring-0 bg-transparent"
           style={{ resize: "none" }}
           {...rest}
         />

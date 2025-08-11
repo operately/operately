@@ -342,7 +342,7 @@ function Actions(props: GoalPage.State) {
   }
 
   return (
-    <div className="border-t pt-4">
+    <div className="border-t pt-4 border-stroke-base">
       <ActionList actions={actions} />
     </div>
   );
