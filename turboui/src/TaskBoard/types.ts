@@ -69,11 +69,6 @@ export interface TaskWithIndex extends Task {
 }
 
 /**
- * View mode options
- */
-export type ViewMode = "table" | "kanban" | "timeline";
-
-/**
  * Milestone stats for tracking completion
  */
 export interface MilestoneStats {
@@ -143,7 +138,6 @@ export interface FilterCondition {
 export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
-  viewMode?: ViewMode;
   onStatusChange?: (taskId: string, newStatus: Status) => void;
   onTaskCreate?: (task: Omit<Task, "id">) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;

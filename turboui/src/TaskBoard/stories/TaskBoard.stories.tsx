@@ -16,7 +16,6 @@ const meta: Meta<typeof TaskBoard> = {
   },
   argTypes: {
     tasks: { control: "object" },
-    viewMode: { control: "select", options: ["table", "kanban", "timeline"] },
   },
   decorators: [
     (Story) => (
@@ -39,7 +38,7 @@ const standaloneTestMilestone: Types.Milestone = {
   dueDate: undefined, // Using undefined instead of null to match the type definition
   hasDescription: false,
   hasComments: false,
-  status: "pending"
+  status: "pending",
 };
 
 /**
@@ -55,12 +54,9 @@ const mockPeople: Types.Person[] = [
 
 // Mock search function for people
 const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
-
 
 export const Default: Story = {
   tags: ["autodocs"],
@@ -69,7 +65,7 @@ export const Default: Story = {
     const [tasks, setTasks] = useState([...mockTasks]);
     const [milestones, setMilestones] = useState<Types.Milestone[]>([
       ...Object.values(mockMilestones),
-      standaloneTestMilestone
+      standaloneTestMilestone,
     ]);
     const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
 
@@ -96,11 +92,9 @@ export const Default: Story = {
 
     const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
       console.log(`Task ${taskId} updated:`, updates);
-      
+
       // Update the task with the provided updates
-      const updatedTasks = tasks.map((task) => 
-        task.id === taskId ? { ...task, ...updates } : task
-      );
+      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
       setTasks(updatedTasks);
     };
 
@@ -136,34 +130,32 @@ export const Default: Story = {
       console.log("=== Created new milestone ===\n", JSON.stringify(newMilestone, null, 2));
 
       // Add the new milestone to the milestones array
-      setMilestones(prev => [...prev, newMilestone]);
+      setMilestones((prev) => [...prev, newMilestone]);
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
       console.log(`Updating milestone ${milestoneId}:`, updates);
-      
+
       // Update the milestone in the milestones array
-      const updatedMilestones = milestones.map(milestone => 
-        milestone.id === milestoneId 
-          ? { ...milestone, ...updates }
-          : milestone
+      const updatedMilestones = milestones.map((milestone) =>
+        milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
       );
       setMilestones(updatedMilestones);
-      
+
       // Update all tasks that have this milestone
-      const updatedTasks = tasks.map(task => {
+      const updatedTasks = tasks.map((task) => {
         if (task.milestone?.id === milestoneId) {
           return {
             ...task,
             milestone: {
               ...task.milestone,
-              ...updates
-            }
+              ...updates,
+            },
           };
         }
         return task;
       });
-      
+
       setTasks(updatedTasks);
     };
 
@@ -171,7 +163,6 @@ export const Default: Story = {
       <TaskBoard
         tasks={tasks}
         milestones={milestones}
-        viewMode="table"
         onStatusChange={handleStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
