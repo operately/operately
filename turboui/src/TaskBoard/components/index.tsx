@@ -14,7 +14,6 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 export function TaskBoard({
   tasks: externalTasks,
   milestones: externalMilestones = [],
-  viewMode = "table",
   onStatusChange,
   onTaskCreate,
   onMilestoneCreate,
@@ -24,7 +23,6 @@ export function TaskBoard({
   filters = [],
   onFiltersChange,
 }: Types.TaskBoardProps) {
-  const [currentViewMode, setCurrentViewMode] = useState<Types.ViewMode>(viewMode);
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
@@ -119,7 +117,7 @@ export function TaskBoard({
     let milestonesToProcess: Types.Milestone[];
     if (!allMilestones || allMilestones.length === 0) {
       const milestoneMap = new Map<string, Types.Milestone>();
-      originalTasks.forEach(task => {
+      originalTasks.forEach((task) => {
         if (task.milestone && !milestoneMap.has(task.milestone.id)) {
           milestoneMap.set(task.milestone.id, task.milestone);
         }
@@ -129,39 +127,41 @@ export function TaskBoard({
       milestonesToProcess = allMilestones;
     }
 
-    return milestonesToProcess.map(milestone => {
-      const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
-      let hasTasks = false;
+    return milestonesToProcess
+      .map((milestone) => {
+        const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
+        let hasTasks = false;
 
-      // Calculate statistics from ALL original tasks for this milestone
-      originalTasks.forEach((task) => {
-        if (task.milestone?.id === milestone.id && !task._isHelperTask) {
-          hasTasks = true;
-          stats.total++;
+        // Calculate statistics from ALL original tasks for this milestone
+        originalTasks.forEach((task) => {
+          if (task.milestone?.id === milestone.id && !task._isHelperTask) {
+            hasTasks = true;
+            stats.total++;
 
-          switch (task.status) {
-            case "pending":
-              stats.pending++;
-              break;
-            case "in_progress":
-              stats.inProgress++;
-              break;
-            case "done":
-              stats.done++;
-              break;
-            case "canceled":
-              stats.canceled++;
-              break;
+            switch (task.status) {
+              case "pending":
+                stats.pending++;
+                break;
+              case "in_progress":
+                stats.inProgress++;
+                break;
+              case "done":
+                stats.done++;
+                break;
+              case "canceled":
+                stats.canceled++;
+                break;
+            }
           }
-        }
-      });
+        });
 
-      return {
-        milestone,
-        stats,
-        hasTasks,
-      };
-    }).sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
+        return {
+          milestone,
+          stats,
+          hasTasks,
+        };
+      })
+      .sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
   };
 
   // Handle status change
@@ -214,7 +214,10 @@ export function TaskBoard({
 
   // Group tasks by milestone and get milestone stats (memoized for performance)
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
-  const milestones = useMemo(() => getMilestones(externalMilestones, internalTasks), [externalMilestones, internalTasks]);
+  const milestones = useMemo(
+    () => getMilestones(externalMilestones, internalTasks),
+    [externalMilestones, internalTasks],
+  );
 
   // Check if there are any tasks without milestones in the original task list (memoized)
   const hasTasksWithoutMilestone = useMemo(
@@ -244,7 +247,7 @@ export function TaskBoard({
       setInternalTasks(updatedTasks);
 
       console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
-      
+
       return true; // Successfully handled the reorder
     },
     [internalTasks, milestones, setInternalTasks],
@@ -299,110 +302,70 @@ export function TaskBoard({
           {/* Filter badges */}
           {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
         </div>
-        <div className="flex mt-2 sm:mt-0">
-          <div className="flex space-x-2">
-            <button
-              onClick={() => setCurrentViewMode("table")}
-              className={`px-3 py-1 text-xs rounded-md ${
-                currentViewMode === "table"
-                  ? "bg-primary-base text-white"
-                  : "bg-surface-accent text-content-base hover:bg-surface-accent-hover"
-              }`}
-            >
-              List
-            </button>
-            <button
-              onClick={() => setCurrentViewMode("kanban")}
-              className={`px-3 py-1 text-xs rounded-md ${
-                currentViewMode === "kanban"
-                  ? "bg-primary-base text-white"
-                  : "bg-surface-accent text-content-base hover:bg-surface-accent-hover"
-              }`}
-            >
-              Kanban
-            </button>
-          </div>
-        </div>
       </header>
 
       <div className="flex-1 overflow-auto">
-        {currentViewMode === "table" && (
-          <DragAndDropProvider onDrop={handleTaskReorder}>
-            <div className="overflow-x-auto bg-surface-base">
-              <ul className="w-full">
-                {/* If no tasks at all */}
-                {filteredTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
+        <DragAndDropProvider onDrop={handleTaskReorder}>
+          <div className="overflow-x-auto bg-surface-base">
+            <ul className="w-full">
+              {/* If no tasks at all */}
+              {filteredTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
-                {/* Milestones */}
-                {milestones.map((milestoneData) => (
-                  <MilestoneCard
-                    key={milestoneData.milestone.id}
-                    milestone={milestoneData.milestone}
-                    tasks={groupedTasks[milestoneData.milestone.id] || []}
-                    hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
-                    showHiddenTasksToggle={!hasAnyFilters}
-                    stats={milestoneData.stats}
-                    onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
-                    onTaskUpdate={onTaskUpdate}
-                    onMilestoneUpdate={onMilestoneUpdate}
-                    searchPeople={searchPeople}
-                    availableMilestones={milestones.map((m) => m.milestone)}
-                    availablePeople={internalTasks
-                      .flatMap((task) => task.assignees || [])
-                      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
-                  />
-                ))}
+              {/* Milestones */}
+              {milestones.map((milestoneData) => (
+                <MilestoneCard
+                  key={milestoneData.milestone.id}
+                  milestone={milestoneData.milestone}
+                  tasks={groupedTasks[milestoneData.milestone.id] || []}
+                  hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
+                  showHiddenTasksToggle={!hasAnyFilters}
+                  stats={milestoneData.stats}
+                  onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
+                  onTaskUpdate={onTaskUpdate}
+                  onMilestoneUpdate={onMilestoneUpdate}
+                  searchPeople={searchPeople}
+                  availableMilestones={milestones.map((m) => m.milestone)}
+                  availablePeople={internalTasks
+                    .flatMap((task) => task.assignees || [])
+                    .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
+                />
+              ))}
 
-                {/* Tasks with no milestone */}
-                {hasTasksWithoutMilestone && (
-                  <li>
-                    {/* No milestone header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
-                      <div className="flex items-center gap-2">
-                        {/* No progress pie chart for tasks without milestone */}
-                        <span className="text-sm font-semibold text-content-base">No milestone</span>
-                        {/* No indicators for 'No milestone' header */}
-                      </div>
-                      <button
-                        className="text-content-subtle hover:text-content-base"
-                        onClick={() => {
-                          setActiveTaskMilestoneId("no-milestone");
-                          setIsTaskModalOpen(true);
-                        }}
-                      >
-                        <IconPlus size={16} />
-                      </button>
+              {/* Tasks with no milestone */}
+              {hasTasksWithoutMilestone && (
+                <li>
+                  {/* No milestone header */}
+                  <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+                    <div className="flex items-center gap-2">
+                      {/* No progress pie chart for tasks without milestone */}
+                      <span className="text-sm font-semibold text-content-base">No milestone</span>
+                      {/* No indicators for 'No milestone' header */}
                     </div>
+                    <button
+                      className="text-content-subtle hover:text-content-base"
+                      onClick={() => {
+                        setActiveTaskMilestoneId("no-milestone");
+                        setIsTaskModalOpen(true);
+                      }}
+                    >
+                      <IconPlus size={16} />
+                    </button>
+                  </div>
 
-                    {/* Tasks with no milestone */}
-                    <TaskList
-                      tasks={groupedTasks["no_milestone"] || []}
-                      hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
-                      showHiddenTasksToggle={!hasAnyFilters}
-                      milestoneId="no-milestone"
-                      onTaskUpdate={onTaskUpdate}
-                      searchPeople={searchPeople}
-                    />
-                  </li>
-                )}
-              </ul>
-            </div>
-          </DragAndDropProvider>
-        )}
-        {currentViewMode === "kanban" && (
-          <div className="flex h-full text-center text-content-subtle">
-            <div className="m-auto p-6 border border-dashed border-surface-outline rounded-lg">
-              Kanban view will be implemented here
-            </div>
+                  {/* Tasks with no milestone */}
+                  <TaskList
+                    tasks={groupedTasks["no_milestone"] || []}
+                    hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
+                    showHiddenTasksToggle={!hasAnyFilters}
+                    milestoneId="no-milestone"
+                    onTaskUpdate={onTaskUpdate}
+                    searchPeople={searchPeople}
+                  />
+                </li>
+              )}
+            </ul>
           </div>
-        )}
-        {currentViewMode === "timeline" && (
-          <div className="flex h-full text-center text-content-subtle">
-            <div className="m-auto p-6 border border-dashed border-surface-outline rounded-lg">
-              Timeline view will be implemented here
-            </div>
-          </div>
-        )}
+        </DragAndDropProvider>
       </div>
     </div>
   );
