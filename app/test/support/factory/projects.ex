@@ -302,6 +302,19 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, res.thread)
   end
 
+  def add_project_task(ctx, testid, milestone_name, opts \\ []) do
+    milestone = Map.fetch!(ctx, milestone_name)
+    attrs = Enum.into(opts, %{
+      creator_id: ctx.creator.id,
+      milestone_id: milestone.id,
+      title: Keyword.get(opts, :title, "Task #{testid}")
+    })
+
+    task = Operately.TasksFixtures.task_fixture(attrs)
+
+    Map.put(ctx, testid, task)
+  end
+
   #
   # Helpers
   #
