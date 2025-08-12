@@ -11,6 +11,7 @@ defmodule Operately.MD.Goal do
     #{render_people(goal)}
     #{render_timeframe(goal)}
     #{render_targets(goal.targets)}
+    #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
     #{render_check_ins(goal.updates)}
     #{render_discussions(discussions)}
