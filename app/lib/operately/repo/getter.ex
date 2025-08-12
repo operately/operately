@@ -144,6 +144,14 @@ defmodule Operately.Repo.Getter do
       def get(requester, args) do
         Operately.Repo.Getter.get(__MODULE__, requester, args)
       end
+
+      def get!(requester, args) do
+        case Operately.Repo.Getter.get(__MODULE__, requester, args) do
+          {:ok, resource} -> resource
+          {:error, :not_found} -> raise Ecto.NoResultsError, queryable: __MODULE__
+          {:error, reason} -> raise "Failed to get #{__MODULE__}: #{inspect(reason)}"
+        end
+      end
     end
   end
 
