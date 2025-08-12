@@ -27,6 +27,8 @@ defmodule Operately.MD.Goal.Discussions do
     #{Operately.MD.RichText.render(discussion.message)}
 
     #{render_reactions(discussion.reactions)}
+
+    #{render_comments(discussion.comments)}
     """
   end
 
@@ -40,6 +42,28 @@ defmodule Operately.MD.Goal.Discussions do
 
   defp render_date(discussion) do
     "Published on: #{discussion.inserted_at |> Operately.Time.as_date() |> Date.to_iso8601()}"
+  end
+
+  defp render_comments(comments) do
+    if Enum.empty?(comments) do
+      "_No comments yet._"
+    else
+      """
+      ## Comments
+
+      #{Enum.map_join(comments, "\n\n", &render_comment/1)}
+      """
+    end
+  end
+
+  defp render_comment(comment) do
+    """
+    ### Comment by #{comment.author.full_name} on #{Operately.Time.as_date(comment.inserted_at) |> Date.to_iso8601()}
+
+    #{Operately.MD.RichText.render(comment.content["message"])}
+
+    #{render_reactions(comment.reactions)}
+    """
   end
 
   defp render_reactions(reactions) do
@@ -58,7 +82,7 @@ defmodule Operately.MD.Goal.Discussions do
       Operately.Activities.Activity.get(:system,
         id: discussion.id,
         opts: [
-          preload: [comment_thread: [:author, reactions: :person]]
+          preload: [comment_thread: [:author, reactions: :person, comments: [:author, reactions: :person]]]
         ]
       )
 
