@@ -6,6 +6,7 @@ import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
+import * as Tasks from "@/models/tasks";
 import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
@@ -26,7 +27,7 @@ import { useNavigate } from "react-router-dom";
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
-  return `v4-ProjectV2Page.project-${id}`;
+  return `v5-ProjectV2Page.project-${id}`;
 }
 
 type LoaderResult = {
@@ -35,6 +36,7 @@ type LoaderResult = {
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
     company: Companies.Company;
+    backendTasks: Tasks.Task[];
   };
   cacheVersion: number;
 };
@@ -66,13 +68,14 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
         company: Api.getCompany({ id: params.companyId! }).then((d) => d.company!),
+        backendTasks: Api.projects.getTasks({ projectId: params.id }).then((d) => d.tasks!),
       }),
   });
 }
 
 function Page() {
   const paths = usePaths();
-  const { project, checkIns, discussions, company } = PageCache.useData(loader).data;
+  const { project, checkIns, discussions, company, backendTasks } = PageCache.useData(loader).data;
   const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -129,6 +132,7 @@ function Page() {
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
+  const { tasks } = useTasks(paths, backendTasks);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -218,8 +222,7 @@ function Page() {
     canDelete: project.permissions?.canDelete || false,
     onProjectDelete: deleteProject,
 
-    // TaskBoard props - simplified for fast implementation
-    tasks: [],
+    tasks,
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
@@ -523,4 +526,10 @@ function useResources(project: Projects.Project) {
   };
 
   return { resources, createResource, updateResource, removeResource };
+}
+
+function useTasks(paths: Paths, backendTasks: Tasks.Task[]) {
+  const [tasks, _setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
+
+  return { tasks };
 }

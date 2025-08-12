@@ -49,11 +49,11 @@ export interface Task {
   id: string;
   title: string;
   status: Status;
-  description?: string;
+  description: string | null;
   assignees?: Person[];
-  milestone?: Milestone;
+  milestone: Milestone | null;
   points?: number;
-  dueDate?: DateField.ContextualDate;
+  dueDate: DateField.ContextualDate | null;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
