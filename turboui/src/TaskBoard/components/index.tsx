@@ -193,23 +193,15 @@ export function TaskBoard({
   // Handle creating a new task
   const handleCreateTask = (newTaskData: Types.NewTaskPayload) => {
     if (onTaskCreate) {
-      // Log to confirm task creation event is being triggered
-      console.log("TaskBoard: Creating new task", newTaskData);
       onTaskCreate(newTaskData);
-    } else {
-      console.warn("TaskBoard: onTaskCreate handler is not provided");
-    }
+    } 
   };
 
   // Handle creating a new milestone
   const handleCreateMilestone = (newMilestoneData: Types.NewMilestonePayload) => {
     if (onMilestoneCreate) {
-      // Log to confirm milestone creation event is being triggered
-      console.log("TaskBoard: Creating new milestone", newMilestoneData);
       onMilestoneCreate(newMilestoneData);
-    } else {
-      console.warn("TaskBoard: onMilestoneCreate handler is not provided");
-    }
+    } 
   };
 
   // Group tasks by milestone and get milestone stats (memoized for performance)
