@@ -128,7 +128,7 @@ export namespace ProjectPage {
     onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
-    searchPeople?: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
+    searchPeople: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 

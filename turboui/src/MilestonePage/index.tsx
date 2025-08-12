@@ -57,7 +57,7 @@ interface MilestonePageProps {
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   onMilestoneNameChange?: (name: string) => Promise<boolean>;
-  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
+  searchPeople: (params: { query: string }) => Promise<Types.Person[]>;
 
   // Filtering
   filters?: Types.FilterCondition[];
@@ -364,6 +364,7 @@ export function MilestonePage({
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}
+        searchPeople={searchPeople}
         currentMilestoneId={milestone.id}
         milestones={milestones || [milestone]}
       />

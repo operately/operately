@@ -254,6 +254,7 @@ export function TaskBoard({
         onCreateTask={handleCreateTask}
         milestones={milestones.map((m) => m.milestone)}
         currentMilestoneId={activeTaskMilestoneId}
+        searchPeople={searchPeople}
         people={internalTasks
           .flatMap((task) => task.assignees || [])
           .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
