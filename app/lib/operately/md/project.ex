@@ -88,9 +88,9 @@ defmodule Operately.MD.Project do
   end
 
   defp render_milestone_due(milestone) do
-    case milestone.timeframe do
+    case Operately.ContextualDates.Timeframe.end_date(milestone.timeframe) do
       nil -> "Not Set"
-      tf -> Operately.ContextualDates.Timeframe.end_date(tf) |> render_date()
+      date -> render_date(date)
     end
   end
 

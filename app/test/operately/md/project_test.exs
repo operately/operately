@@ -17,4 +17,13 @@ defmodule Operately.MD.ProjectTest do
     assert rendered =~ ctx.discussion.title
     assert rendered =~ ctx.creator.full_name
   end
+
+  test "it renders milestones in the markdown", ctx do
+    ctx = Factory.add_project_milestone(ctx, :milestone, :project)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    assert rendered =~ "## Milestones"
+    assert rendered =~ ctx.milestone.title
+  end
 end
