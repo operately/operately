@@ -13,6 +13,98 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     |> Factory.add_project_task(:task, :milestone)
   end
 
+  describe "get tasks" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :get_tasks], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:projects, :get_tasks], %{})
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it returns not found for non-existent project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_tasks], %{
+        project_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns not found for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_tasks], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+    end
+
+    test "it returns tasks for project creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_tasks], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.tasks) == 1
+      assert hd(res.tasks).id == Paths.task_id(ctx.task)
+      assert hd(res.tasks).name == ctx.task.name
+    end
+
+    test "it returns tasks for space members with view access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:space_member)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_tasks], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.tasks) == 1
+      assert hd(res.tasks).id == Paths.task_id(ctx.task)
+    end
+
+    test "it returns empty list when project has no tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:empty_project, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_tasks], %{
+        project_id: Paths.project_id(ctx.empty_project)
+      })
+
+      assert res.tasks == []
+    end
+
+    test "it returns multiple tasks when project has multiple tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.add_project_task(:task3, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_tasks], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.tasks) == 3
+      task_ids = Enum.map(res.tasks, & &1.id)
+      assert Paths.task_id(ctx.task) in task_ids
+      assert Paths.task_id(ctx.task2) in task_ids
+      assert Paths.task_id(ctx.task3) in task_ids
+    end
+  end
+
   describe "update due date" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_due_date], %{})

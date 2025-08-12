@@ -19,15 +19,17 @@ export interface ParsedMilestone extends Pick<Milestone, "id" | "title" | "descr
 }
 
 export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
-  return milestones.map((m) => {
-    return {
-      id: m.id!,
-      name: m.title,
-      status: m.status,
-      dueDate: parseContextualDate(m.timeframe?.contextualEndDate),
-      link: paths.projectMilestonePath(m.id!),
-    };
-  });
+  return milestones.map((m) => parseMilestoneForTurboUi(paths, m));
+}
+
+export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
+  return {
+    id: milestone.id,
+    name: milestone.title,
+    status: milestone.status,
+    dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
+    link: paths.projectMilestonePath(milestone.id),
+  };
 }
 
 export function filterPending(milestones: Milestone[]) {

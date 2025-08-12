@@ -95,7 +95,7 @@ export const reorderTasksAcrossMilestones = (
   // Handle the milestone assignment for the dragged task
   if (targetMilestoneId === "no-milestone") {
     // Remove milestone assignment if dropped in no-milestone zone
-    draggedTask.milestone = undefined;
+    draggedTask.milestone = null;
   } else if (targetMilestoneId !== originalMilestoneId && milestones) {
     // Find the milestone object to assign
     const targetMilestone = milestones.find(m => m.id === targetMilestoneId);
@@ -153,6 +153,8 @@ export const reorderTasksAcrossMilestones = (
           id: `task-helper-${originalMilestoneId}-${Date.now()}`,
           title: `Helper task for ${originalMilestone.name}`,
           status: "pending",
+          description: null,
+          dueDate: null,
           milestone: originalMilestone,
           _isHelperTask: true,
         };

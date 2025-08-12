@@ -31,6 +31,30 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule GetTasks do
+    use TurboConnect.Query
+
+    inputs do
+      field :project_id, :id, null: false
+    end
+
+    outputs do
+      field :tasks, list_of(:task), null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_tasks()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{tasks: Serializer.serialize(changes.tasks, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateDueDate do
     use TurboConnect.Mutation
 
@@ -389,6 +413,7 @@ defmodule OperatelyWeb.Api.Projects do
 
   defmodule SharedMultiSteps do
     require Logger
+    import Ecto.Query, only: [from: 2]
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -425,6 +450,20 @@ defmodule OperatelyWeb.Api.Projects do
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
         {:ok, task.project}
+      end)
+    end
+
+    def get_tasks(multi) do
+      Ecto.Multi.run(multi, :tasks, fn _repo, %{project: project} ->
+        tasks =
+          from(t in Operately.Tasks.Task,
+            join: m in assoc(t, :milestone),
+            where: m.project_id == ^project.id,
+            preload: [milestone: m]
+          )
+          |> Repo.all()
+
+        {:ok, tasks}
       end)
     end
 
