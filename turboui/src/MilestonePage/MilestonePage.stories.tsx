@@ -45,6 +45,8 @@ const createSampleTasks = (): Types.Task[] => [
     assignees: [mockPeople[0]!],
     hasComments: true,
     commentCount: 2,
+    description: null,
+    dueDate: null
   },
   {
     id: "task-2",
@@ -53,12 +55,16 @@ const createSampleTasks = (): Types.Task[] => [
     milestone: sampleMilestone,
     assignees: [mockPeople[1]!],
     hasDescription: true,
+    description: null,
+    dueDate: null
   },
   {
     id: "task-3",
     title: "Fix navigation bug in sidebar",
     status: "pending",
     milestone: sampleMilestone,
+    description: null,
+    dueDate: null
   },
   {
     id: "task-4",
@@ -67,6 +73,7 @@ const createSampleTasks = (): Types.Task[] => [
     milestone: sampleMilestone,
     assignees: [mockPeople[2]!],
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 5)), "day"),
+    description: null,
   },
   {
     id: "task-5",
@@ -74,6 +81,8 @@ const createSampleTasks = (): Types.Task[] => [
     status: "done",
     milestone: sampleMilestone,
     hasDescription: true,
+    description: null,
+    dueDate: null
   },
   {
     id: "task-6",
@@ -83,6 +92,7 @@ const createSampleTasks = (): Types.Task[] => [
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 2)), "day"),
     hasComments: true,
     commentCount: 1,
+    description: null,
   },
 ];
 

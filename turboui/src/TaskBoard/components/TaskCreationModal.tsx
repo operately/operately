@@ -88,12 +88,10 @@ export function TaskCreationModal({
     const newTask: Omit<Types.Task, "id"> = {
       title: title.trim(),
       status: "pending",
+      description: null,
+      milestone: milestone || null,
+      dueDate: dueDate || null,
     };
-
-    // Add optional fields if they exist
-    if (dueDate) {
-      newTask.dueDate = dueDate;
-    }
 
     if (assignee) {
       newTask.assignees = [assignee];

@@ -76,6 +76,8 @@ export const Default: Story = {
         title: "This task demonstrates a minimal milestone",
         status: "pending" as Types.Status,
         milestone: standaloneTestMilestone,
+        description: null,
+        dueDate: null,
       };
 
       // Update tasks array with our new task
