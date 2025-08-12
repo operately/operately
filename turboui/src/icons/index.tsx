@@ -80,6 +80,7 @@ import IconH2 from "@tabler/icons-react/dist/esm/icons/IconH2.mjs";
 import IconHash from "@tabler/icons-react/dist/esm/icons/IconHash.mjs";
 import IconHeart from "@tabler/icons-react/dist/esm/icons/IconHeart.mjs";
 import IconHexagons from "@tabler/icons-react/dist/esm/icons/IconHexagons.mjs";
+import IconHistory from "@tabler/icons-react/dist/esm/icons/IconHistory.mjs";
 import IconHome from "@tabler/icons-react/dist/esm/icons/IconHome.mjs";
 import IconHome2 from "@tabler/icons-react/dist/esm/icons/IconHome2.mjs";
 import IconId from "@tabler/icons-react/dist/esm/icons/IconId.mjs";
@@ -233,6 +234,7 @@ export {
   IconHash,
   IconHeart,
   IconHexagons,
+  IconHistory,
   IconHome,
   IconHome2,
   IconId,

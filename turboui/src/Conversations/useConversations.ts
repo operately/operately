@@ -11,6 +11,7 @@ export interface UseConversationsReturn {
   closeConversations: () => void;
   createConversation: () => void;
   selectConversation: (id: string) => void;
+  updateConversationTitle: (id: string, newTitle: string) => void;
   sendMessage: (content: string, conversationId?: string, contextAttachment?: import('./index').ContextAttachment) => Promise<void>;
 
   // State
@@ -75,6 +76,12 @@ export function useConversations(options: UseConversationsOptions = {}): UseConv
     setActiveConversationId(id);
   }, []);
 
+  const updateConversationTitle = useCallback((id: string, newTitle: string) => {
+    setConversations((prev) =>
+      prev.map((conv) => (conv.id === id ? { ...conv, title: newTitle, updatedAt: new Date() } : conv))
+    );
+  }, []);
+
   const sendMessage = useCallback(
     async (content: string, conversationId?: string, _contextAttachment?: import('./index').ContextAttachment) => {
       setIsLoading(true);
@@ -96,7 +103,7 @@ export function useConversations(options: UseConversationsOptions = {}): UseConv
         if (!targetConversationId) {
           const newConversation: Conversation = {
             id: `conv-${timestamp.getTime()}`,
-            title: content.slice(0, 50) + (content.length > 50 ? "..." : ""),
+            title: "New Chat",
             messages: [userMessage],
             createdAt: timestamp,
             updatedAt: timestamp,
@@ -178,6 +185,7 @@ export function useConversations(options: UseConversationsOptions = {}): UseConv
     closeConversations,
     createConversation,
     selectConversation,
+    updateConversationTitle,
     sendMessage,
   };
 }
