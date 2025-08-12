@@ -14,7 +14,7 @@ defmodule Operately.MD.Goal do
     #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
     #{render_check_ins(goal.updates)}
-    #{render_discussions(discussions)}
+    #{Operately.MD.Goal.Discussions.render(discussions)}
     #{render_retrospective(goal.retrospective)}
     """
     |> compact_empty_lines()
@@ -184,31 +184,5 @@ defmodule Operately.MD.Goal do
 
   defp compact_empty_lines(text) do
     text |> String.replace(~r/\n{3,}/, "\n\n")
-  end
-
-  defp render_discussions(discussions) when is_list(discussions) do
-    if Enum.empty?(discussions) do
-      """
-      ## Discussions
-
-      _No discussions yet._
-      """
-    else
-      """
-      ## Discussions
-
-      #{Enum.map_join(discussions, "\n\n", &render_discussion/1)}
-      """
-    end
-  end
-
-  defp render_discussion(discussion) do
-    """
-    ### #{discussion.title}
-
-    #{render_person("Author", discussion.author)}
-
-    #{Operately.MD.RichText.render(discussion.content)}
-    """
   end
 end
