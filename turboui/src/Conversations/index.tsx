@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { IconArrowRight, IconMessage, IconMessages, IconPlus, IconX } from "../icons";
+import { IconArrowRight, IconHistory, IconPlus, IconX, IconPaperclip, IconRobotFace } from "../icons";
+import { TextField } from "../TextField";
 
 export interface Message {
   id: string;
@@ -78,6 +79,11 @@ export interface ConversationsProps {
   onCreateConversation?: () => void;
 
   /**
+   * Called when a conversation title is updated
+   */
+  onUpdateConversationTitle?: (conversationId: string, newTitle: string) => void;
+
+  /**
    * Context-aware actions available for current page
    */
   contextActions?: ContextAction[];
@@ -111,9 +117,10 @@ export function Conversations({
   activeConversationId,
   onSelectConversation,
   onCreateConversation,
+  onUpdateConversationTitle,
   contextActions = [],
   contextAttachment,
-  initialWidth = 384, // 96 * 4 (w-96 equivalent)
+  initialWidth = 448, // (w-md equivalent)
   minWidth = 320, // Minimum usable width
   maxWidth = 600, // Maximum width
 }: ConversationsProps) {
@@ -209,7 +216,7 @@ export function Conversations({
     if (!onSendMessage) return;
 
     try {
-      await onSendMessage(action.prompt, activeConversationId);
+      await onSendMessage(`Run action '${action.label}'`, activeConversationId);
     } catch (error) {
       console.error("Failed to execute context action:", error);
     }
@@ -222,12 +229,59 @@ export function Conversations({
     }
   };
 
-  const formatTime = (date: Date) => {
+  const groupConversationsByTime = (conversations: Conversation[]) => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay()); // Start of this week (Sunday)
+
+    const groups = {
+      Today: [] as Conversation[],
+      "This Week": [] as Conversation[],
+      Earlier: [] as Conversation[],
+    };
+
+    conversations.forEach((conv) => {
+      const convDate = new Date(conv.updatedAt);
+
+      if (convDate >= today) {
+        groups["Today"].push(conv);
+      } else if (convDate >= weekStart) {
+        groups["This Week"].push(conv);
+      } else {
+        groups["Earlier"].push(conv);
+      }
+    });
+
+    // Filter out empty groups
+    return Object.entries(groups).filter(([_, convs]) => convs.length > 0);
+  };
+
+  const formatTime = (date: Date | string | number | null | undefined) => {
+    // Handle invalid or missing dates gracefully
+    if (!date) {
+      return "No date";
+    }
+
+    let dateObj: Date;
+
+    // Convert to Date object if it's not already
+    if (date instanceof Date) {
+      dateObj = date;
+    } else {
+      dateObj = new Date(date);
+    }
+
+    // Check if the date is valid
+    if (isNaN(dateObj.getTime())) {
+      return "Invalid date";
+    }
+
     return new Intl.DateTimeFormat("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
-    }).format(date);
+    }).format(dateObj);
   };
 
   if (!mounted || !isOpen) {
@@ -258,10 +312,21 @@ export function Conversations({
 
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-surface-outline bg-surface-base">
-        <div className="flex items-center gap-2">
-          <h2 className="font-semibold text-content-accent">
-            {activeConversation?.context?.title || contextAttachment?.title || "AI Assistant"}
-          </h2>
+        <div className="flex items-center gap-2 flex-1 min-w-0 text-sm">
+          {activeConversation ? (
+            <TextField
+              text={activeConversation.title || "New Chat"}
+              onChange={(newTitle) => {
+                if (onUpdateConversationTitle) {
+                  onUpdateConversationTitle(activeConversation.id, newTitle);
+                }
+              }}
+              variant="inline"
+              placeholder="New Chat"
+            />
+          ) : (
+            <h2 className=" text-content-accent">New Chat</h2>
+          )}
         </div>
         <div className="flex items-center gap-1">
           {/* Conversations List Toggle */}
@@ -270,7 +335,7 @@ export function Conversations({
             className="p-2 text-content-subtle hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
             title="View conversations"
           >
-            <IconMessage size={16} />
+            <IconHistory size={16} />
           </button>
 
           {/* New Conversation */}
@@ -309,29 +374,34 @@ export function Conversations({
           <div className="flex-1 overflow-y-auto">
             {conversations.length === 0 ? (
               <div className="p-4 text-center text-content-dimmed">
-                <IconMessage size={32} className="mx-auto mb-2 opacity-50" />
+                <IconHistory size={32} className="mx-auto mb-2 opacity-50" />
                 <p>No conversations yet</p>
                 <p className="text-sm">Start a new conversation to begin</p>
               </div>
             ) : (
-              <div className="p-2 space-y-1">
-                {conversations.map((conversation) => (
-                  <button
-                    key={conversation.id}
-                    onClick={() => {
-                      onSelectConversation?.(conversation.id);
-                      setShowConversationsList(false);
-                    }}
-                    className={`w-full text-left p-3 rounded hover:bg-surface-highlight transition-colors ${
-                      activeConversationId === conversation.id
-                        ? "bg-surface-highlight border border-surface-outline"
-                        : ""
-                    }`}
-                  >
-                    <div className="font-medium text-content-base truncate">{conversation.title}</div>
-                    <div className="text-sm text-content-dimmed mt-1">{conversation.messages.length} messages</div>
-                    <div className="text-xs text-content-dimmed">{formatTime(conversation.updatedAt)}</div>
-                  </button>
+              <div className="py-2">
+                {groupConversationsByTime(conversations).map(([groupName, groupConversations]) => (
+                  <div key={groupName} className="mb-4">
+                    <div className="px-4 py-1 text-xs font-medium text-content-dimmed uppercase tracking-wide">
+                      {groupName}
+                    </div>
+                    <div className="space-y-0.5">
+                      {groupConversations.map((conversation) => (
+                        <button
+                          key={conversation.id}
+                          onClick={() => {
+                            onSelectConversation?.(conversation.id);
+                            setShowConversationsList(false);
+                          }}
+                          className={`w-full text-left px-4 py-2 hover:bg-surface-highlight transition-colors ${
+                            activeConversationId === conversation.id ? "bg-surface-highlight" : ""
+                          }`}
+                        >
+                          <div className="text-sm text-content-base truncate">{conversation.title}</div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </div>
             )}
@@ -342,12 +412,14 @@ export function Conversations({
       {/* Context Attachment */}
       {(activeConversation?.context || contextAttachment) && (
         <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
-          <div className="flex items-center gap-2 text-sm">
-            <div className="w-2 h-2 bg-accent-base rounded-full" />
-            <span className="text-content-dimmed">Context:</span>
-            <span className="text-content-base font-medium">
-              {(activeConversation?.context || contextAttachment)?.title}
-            </span>
+          <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Context</div>
+          <div className="flex items-center gap-2">
+            <IconPaperclip size={14} className="text-content-base flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <div className="text-sm text-content-base truncate">
+                {(activeConversation?.context || contextAttachment)?.title}
+              </div>
+            </div>
           </div>
         </div>
       )}
@@ -355,17 +427,13 @@ export function Conversations({
       {/* Context Actions */}
       {contextActions.length > 0 && !activeConversation && (
         <div className="px-4 py-3 border-b border-surface-outline bg-surface-base">
-          <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Suggested Actions</div>
-          <div className="flex flex-wrap gap-2">
+          <div className="text-xs text-content-dimmed mb-2 uppercase tracking-wide font-medium">Available Actions</div>
+          <div className="flex flex-col gap-2">
             {contextActions.map((action) => (
               <button
                 key={action.id}
                 onClick={() => handleContextAction(action)}
-                className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
-                  action.variant === "primary"
-                    ? "bg-accent-base text-white hover:bg-accent-hover"
-                    : "bg-surface-highlight text-content-base hover:bg-surface-outline border border-surface-outline"
-                }`}
+                className="px-3 py-2 rounded text-sm font-medium transition-colors bg-surface-highlight text-content-base hover:text-white-1 hover:bg-brand-1 border border-surface-outline text-left"
               >
                 {action.label}
               </button>
@@ -374,36 +442,71 @@ export function Conversations({
         </div>
       )}
 
+      {/* Alfred Welcome */}
+      {!activeConversation && (
+        <div className="px-4 py-4 border-b border-surface-outline bg-surface-base">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-accent-base rounded-full flex items-center justify-center flex-shrink-0">
+              <IconRobotFace size={20} className="text-white" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-content-dimmed">
+                {contextAttachment ? (
+                  <>
+                    Ready to help with <em>{contextAttachment.title}</em>. Select an action to get started.
+                  </>
+                ) : (
+                  "How can I assist you today?"
+                )}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {!activeConversation ? (
           <div className="flex flex-col items-center justify-center h-full text-center text-content-dimmed">
-            <IconMessages size={48} className="mb-4 opacity-50" />
-            <h3 className="font-medium mb-2">Welcome to Alfred</h3>
-            <p className="text-sm mb-4">
-              {contextAttachment
-                ? `I have access to "${contextAttachment.title}" and can help you with context-aware actions above.`
-                : "Start a conversation to get AI assistance with your work."}
-            </p>
             {contextActions.length === 0 && (
-              <button
-                onClick={onCreateConversation}
-                className="px-4 py-2 bg-accent-base text-white rounded hover:bg-accent-hover transition-colors"
-              >
-                Start New Conversation
-              </button>
+              <>
+                <div className="w-16 h-16 bg-accent-base rounded-full flex items-center justify-center mb-4">
+                  <IconRobotFace size={32} className="text-white" />
+                </div>
+                <h3 className="font-medium mb-2">Welcome to Alfred</h3>
+                <p className="text-sm mb-4">Start a conversation to get AI assistance with your work.</p>
+                <button
+                  onClick={onCreateConversation}
+                  className="px-4 py-2 bg-accent-base text-white rounded hover:bg-accent-hover transition-colors"
+                >
+                  Start New Conversation
+                </button>
+              </>
             )}
           </div>
         ) : (
           <>
             {activeConversation.messages.map((message) => (
-              <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[80%] ${
-                  message.sender === "user" ? "" : "space-y-2"
-                }`}>
+              <div key={message.id} className={`flex gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
+                {/* Avatar */}
+                <div className="flex-shrink-0">
+                  {message.sender === "ai" ? (
+                    <div className="w-8 h-8 bg-accent-base rounded-full flex items-center justify-center">
+                      <IconRobotFace size={16} className="text-white" />
+                    </div>
+                  ) : (
+                    <div className="w-8 h-8 bg-surface-outline rounded-full flex items-center justify-center">
+                      <span className="text-xs font-medium text-content-base">You</span>
+                    </div>
+                  )}
+                </div>
+
+                <div className={`max-w-[75%] space-y-2`}>
                   <div
                     className={`rounded-lg px-3 py-2 ${
-                      message.sender === "user" ? "bg-accent-base text-white" : "bg-surface-highlight text-content-base"
+                      message.sender === "user"
+                        ? "bg-callout-info-content text-callout-info-bg shadow-sm"
+                        : "bg-surface-highlight text-content-base"
                     }`}
                   >
                     <div className="text-sm whitespace-pre-wrap">{message.content}</div>
@@ -413,19 +516,15 @@ export function Conversations({
                       {formatTime(message.timestamp)}
                     </div>
                   </div>
-                  
+
                   {/* Message Actions */}
                   {message.actions && message.actions.length > 0 && (
-                    <div className="flex flex-wrap gap-2 ml-3">
+                    <div className="flex flex-wrap gap-2">
                       {message.actions.map((action) => (
                         <button
                           key={action.id}
                           onClick={action.onClick}
-                          className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                            action.variant === "primary"
-                              ? "bg-accent-base text-white hover:bg-accent-hover"
-                              : "bg-surface-outline text-content-base hover:bg-surface-highlight border border-surface-outline"
-                          }`}
+                          className="px-3 py-2 rounded text-sm font-medium transition-colors bg-surface-highlight text-content-base hover:text-white-1 hover:bg-brand-1 border border-surface-outline text-left"
                         >
                           {action.label}
                         </button>

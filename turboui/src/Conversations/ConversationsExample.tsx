@@ -1,5 +1,12 @@
 import React from "react";
-import { Conversations, useConversations, type ContextAction, type ContextAttachment, type MessageAction } from "./index";
+import {
+  Conversations,
+  useConversations,
+  type ContextAction,
+  type ContextAttachment,
+  type MessageAction,
+} from "./index";
+import { IconRobotFace } from "../icons";
 
 // Mock context data for a goal page
 const mockGoalContext: ContextAttachment = {
@@ -14,26 +21,23 @@ const mockContextActions: ContextAction[] = [
   {
     id: "evaluate-definition",
     label: "Evaluate goal definition",
-    prompt: "Please evaluate the definition and clarity of this goal. Is it well-structured, measurable, and achievable?",
-    variant: "primary",
+    prompt:
+      "Please evaluate the definition and clarity of this goal. Is it well-structured, measurable, and achievable?",
   },
   {
     id: "summarize-status",
     label: "Summarize current status",
     prompt: "Please provide a summary of the current status and progress toward this goal.",
-    variant: "secondary",
   },
   {
     id: "on-track-analysis",
     label: "Are we on track?",
     prompt: "Based on current progress and timeline, are we on track to achieve this goal? What are the risks?",
-    variant: "secondary",
   },
   {
     id: "identify-blockers",
     label: "Identify blockers",
     prompt: "What are the main blockers or challenges that could prevent us from achieving this goal?",
-    variant: "secondary",
   },
 ];
 
@@ -52,8 +56,70 @@ export function ConversationsExample() {
     closeConversations,
     createConversation,
     selectConversation,
+    updateConversationTitle,
     sendMessage,
   } = useConversations({
+    // Start with some example conversations for prototyping
+    initialConversations: [
+      {
+        id: "conv-1",
+        title: "Q4 Revenue Goal Analysis",
+        messages: [
+          {
+            id: "msg-1",
+            content: "Run action 'Evaluate goal definition'",
+            timestamp: new Date(Date.now() - 300000),
+            sender: "user",
+          },
+          {
+            id: "msg-2", 
+            content: `**Goal Definition Analysis for "${mockGoalContext.title}"**\n\nStrengths:\n• Clear monetary target ($500K)\n• Specific timeframe (Q4)\n• Measurable outcome\n\nAreas for improvement:\n• Could benefit from more specific success metrics\n• Missing breakdown of how to achieve this target\n• No mention of responsible team members\n\nRecommendation: Consider adding 2-3 key milestones and assigning ownership to make this goal more actionable.`,
+            timestamp: new Date(Date.now() - 280000),
+            sender: "ai",
+          },
+        ],
+        createdAt: new Date(Date.now() - 400000),
+        updatedAt: new Date(Date.now() - 280000),
+        context: mockGoalContext,
+      },
+      {
+        id: "conv-2",
+        title: "Weekly Status Check",
+        messages: [
+          {
+            id: "msg-3",
+            content: "Run action 'Summarize current status'",
+            timestamp: new Date(Date.now() - 180000),
+            sender: "user",
+          },
+          {
+            id: "msg-4",
+            content: `**Current Status Summary for "${mockGoalContext.title}"**\n\n📊 Progress: $187K achieved (37.4% of target)\n📅 Time remaining: 45 days in Q4\n⚠️  Risk level: Moderate`,
+            timestamp: new Date(Date.now() - 160000),
+            sender: "ai",
+          },
+        ],
+        createdAt: new Date(Date.now() - 200000),
+        updatedAt: new Date(Date.now() - 160000),
+        context: mockGoalContext,
+      },
+      {
+        id: "conv-3", 
+        title: "Blocker Review",
+        messages: [
+          {
+            id: "msg-5",
+            content: "Run action 'Identify blockers'",
+            timestamp: new Date(Date.now() - 600000), // 10 minutes ago (earlier this week)
+            sender: "user",
+          },
+        ],
+        createdAt: new Date(Date.now() - 600000),
+        updatedAt: new Date(Date.now() - 600000),
+        context: mockGoalContext,
+      },
+    ],
+    
     // Example AI integration with context-aware responses
     onSendToAI: async (message, _conversationHistory) => {
       // This would be replaced with actual AI service call
@@ -62,65 +128,67 @@ export function ConversationsExample() {
       let response = "";
       let actions: MessageAction[] = [];
 
-      // Context-aware responses based on predefined actions
-      if (message.includes("evaluate the definition and clarity")) {
+      // Context-aware responses based on action commands
+      if (message.includes("Run action 'Evaluate goal definition'")) {
         response = `**Goal Definition Analysis for "${mockGoalContext.title}"**\n\nStrengths:\n• Clear monetary target ($500K)\n• Specific timeframe (Q4)\n• Measurable outcome\n\nAreas for improvement:\n• Could benefit from more specific success metrics\n• Missing breakdown of how to achieve this target\n• No mention of responsible team members\n\nRecommendation: Consider adding 2-3 key milestones and assigning ownership to make this goal more actionable.`;
         actions = [
           {
             id: "post-to-goal",
-            label: "Post this analysis to goal page",
+            label: "Post this analysis for discussion",
             variant: "primary",
-            onClick: () => alert("This would post the analysis to the goal page"),
+            onClick: () => alert("This would post the analysis to the goal message board"),
           },
           {
             id: "schedule-review",
-            label: "Schedule monthly review",
+            label: "Do something else",
             variant: "secondary",
-            onClick: () => alert("This would schedule a recurring review"),
+            onClick: () => alert("This demonstrates having more than one follow-up action"),
           },
         ];
-      } else if (message.includes("summary of the current status")) {
+      } else if (message.includes("Run action 'Summarize current status'")) {
         response = `**Current Status Summary for "${mockGoalContext.title}"**\n\n📊 Progress: $187K achieved (37.4% of target)\n📅 Time remaining: 45 days in Q4\n⚠️  Risk level: Moderate\n\nKey metrics:\n• Monthly run rate: $62K (need $104K avg for remaining months)\n• Pipeline: $245K in qualified opportunities\n• Team capacity: 85% utilized\n\nNext actions needed: Focus on converting pipeline opportunities and consider resource reallocation.`;
         actions = [
           {
             id: "update-goal",
-            label: "Update goal with this status",
+            label: "Submit a goal check-in with this status",
             variant: "primary",
             onClick: () => alert("This would update the goal status"),
           },
         ];
-      } else if (message.includes("are we on track to achieve")) {
+      } else if (message.includes("Run action 'Are we on track?'")) {
         response = `**On-Track Analysis for "${mockGoalContext.title}"**\n\n🔴 **Currently behind target**\n\nCurrent trajectory: $420K projected (84% of goal)\nGap to close: $80K\n\nMain risks:\n• Q4 seasonality affecting close rates\n• Two key team members on vacation in December\n• Economic headwinds impacting deal sizes\n\nMitigation strategies:\n• Accelerate Q3 pipeline conversion\n• Consider temporary resource augmentation\n• Focus on higher-value opportunities`;
         actions = [
           {
             id: "create-action-plan",
-            label: "Create mitigation action plan",
+            label: "Post this analysis for discussion",
             variant: "primary",
-            onClick: () => alert("This would create an action plan"),
+            onClick: () => alert("This would post the analysis to the goal message board"),
           },
           {
             id: "alert-stakeholders",
-            label: "Alert key stakeholders",
+            label: "Alert champion",
             variant: "secondary",
-            onClick: () => alert("This would send alerts to stakeholders"),
+            onClick: () => alert("This would send a DM to the champion"),
           },
         ];
-      } else if (message.includes("main blockers or challenges")) {
+      } else if (message.includes("Run action 'Identify blockers'")) {
         response = `**Blocker Analysis for "${mockGoalContext.title}"**\n\n🚫 **Top 3 Blockers:**\n\n1. **Lead qualification bottleneck**\n   - Marketing leads have 23% lower conversion rate\n   - Sales team spending too much time on unqualified prospects\n\n2. **Pricing pressure**\n   - Average deal size down 15% from Q3\n   - Competitors offering aggressive discounts\n\n3. **Resource constraints**\n   - Implementation team at capacity\n   - Causing longer sales cycles\n\nImmediate actions: Improve lead scoring, review pricing strategy, consider implementation partnerships.`;
         actions = [
           {
             id: "assign-blockers",
-            label: "Assign blocker owners",
+            label: "Post this analysis for discussion",
             variant: "primary",
-            onClick: () => alert("This would assign owners to each blocker"),
+            onClick: () => alert("This would post the analysis to the goal message board"),
           },
         ];
       } else {
         // Generic responses for other messages
         if (message.toLowerCase().includes("project structure")) {
-          response = "Your project appears to be well-organized with a clear component structure. I can see you're using TurboUI with components like Modal, Avatar, Button, and many others. Would you like me to analyze any specific aspect of the architecture?";
+          response =
+            "Your project appears to be well-organized with a clear component structure. I can see you're using TurboUI with components like Modal, Avatar, Button, and many others. Would you like me to analyze any specific aspect of the architecture?";
         } else if (message.toLowerCase().includes("component")) {
-          response = "I can help you with component development! Based on your TurboUI library, I notice you follow consistent patterns with TypeScript interfaces, proper prop definitions, and Tailwind CSS styling. What specific component would you like to work on?";
+          response =
+            "I can help you with component development! Based on your TurboUI library, I notice you follow consistent patterns with TypeScript interfaces, proper prop definitions, and Tailwind CSS styling. What specific component would you like to work on?";
         } else {
           response = `I understand you're asking about: "${message}". As Alfred, your AI COO, I can help with goal analysis, project review, strategic decisions, and more. How can I assist you today?`;
         }
@@ -129,19 +197,8 @@ export function ConversationsExample() {
       // Return response with actions if any
       return { content: response, actions };
     },
-
-    // Example persistence (localStorage)
-    onSaveConversation: async (conversation) => {
-      const saved = JSON.parse(localStorage.getItem("turboui-conversations") || "[]");
-      const updated = saved.filter((c: any) => c.id !== conversation.id);
-      updated.unshift(conversation);
-      localStorage.setItem("turboui-conversations", JSON.stringify(updated.slice(0, 10))); // Keep last 10
-    },
-
-    onLoadConversations: async () => {
-      const saved = localStorage.getItem("turboui-conversations");
-      return saved ? JSON.parse(saved) : [];
-    },
+    
+    // No persistence for prototypes - just use in-memory state
   });
 
   return (
@@ -154,13 +211,14 @@ export function ConversationsExample() {
         <div className="space-y-4">
           <div className="bg-surface-highlight p-6 rounded-lg border border-surface-outline">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-accent-base rounded-full flex items-center justify-center text-white font-bold text-sm">
-                A
+              <div className="w-10 h-10 bg-accent-base rounded-full flex items-center justify-center">
+                <IconRobotFace size={20} className="text-white" />
               </div>
               <div className="flex-1">
                 <h2 className="font-semibold mb-1">Alfred - Your AI COO</h2>
                 <p className="text-sm text-content-dimmed mb-3">
-                  I have access to your current goal "Q4 Revenue Target: $500K" and can help you with context-aware analysis and recommendations.
+                  I have access to your current goal "Q4 Revenue Target: $500K" and can help you with context-aware
+                  analysis and recommendations.
                 </p>
                 <button
                   onClick={openConversations}
@@ -204,6 +262,7 @@ export function ConversationsExample() {
         onSelectConversation={selectConversation}
         onCreateConversation={createConversation}
         onSendMessage={(message, conversationId) => sendMessage(message, conversationId, mockGoalContext)}
+        onUpdateConversationTitle={updateConversationTitle}
         contextActions={mockContextActions}
         contextAttachment={mockGoalContext}
       />
