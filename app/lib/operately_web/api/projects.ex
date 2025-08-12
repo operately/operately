@@ -699,14 +699,18 @@ defmodule OperatelyWeb.Api.Projects do
         {:ok, milestone.project}
       end)
       |> Ecto.Multi.run(:task, fn _repo, %{milestone: milestone, me: me} ->
-        Operately.Tasks.Task.changeset(%{
-          name: inputs.name,
-          description: %{},
-          milestone_id: milestone.id,
-          creator_id: me.id,
-          due_date: inputs.due_date
-        })
-        |> Repo.insert()
+        {:ok, task} =
+          Operately.Tasks.Task.changeset(%{
+            name: inputs.name,
+            description: %{},
+            milestone_id: milestone.id,
+            creator_id: me.id,
+            due_date: inputs.due_date
+          })
+          |> Repo.insert()
+
+        task = Map.put(task, :milestone, milestone)
+        {:ok, task}
       end)
       |> Ecto.Multi.run(:assignee, fn _repo, %{task: task} ->
         case inputs.assignee_id do
