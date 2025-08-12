@@ -156,6 +156,7 @@ export function MilestoneCard({
 
       {/* Task Creation Modal */}
       <TaskCreationModal
+        searchPeople={searchPeople}
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
         onCreateTask={handleCreateTask}

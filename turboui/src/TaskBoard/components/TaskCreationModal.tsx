@@ -15,7 +15,7 @@ interface TaskCreationModalProps {
   milestones?: Types.Milestone[];
   currentMilestoneId?: string;
   people?: Types.Person[];
-  searchPeople: (params: { query: string }) => Promise<Types.Person[]>;
+  searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   searchMilestones?: (params: { query: string }) => Promise<Types.Milestone[]>;
 }
 
