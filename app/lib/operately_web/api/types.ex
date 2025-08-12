@@ -758,6 +758,15 @@ defmodule OperatelyWeb.Api.Types do
     field :new_status, :string
   end
 
+  object :activity_content_task_adding do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :milestone, :milestone
+    field :task, :task
+    field :task_name, :string
+  end
+
   object :update do
     field? :id, :string, null: true
     field? :title, :string, null: true
@@ -1128,13 +1137,6 @@ defmodule OperatelyWeb.Api.Types do
     field? :company, :company, null: true
     field? :token, :string, null: true
     field? :expires_at, :datetime, null: true
-  end
-
-  object :activity_content_task_adding do
-    field? :name, :string, null: true
-    field? :task_id, :string, null: true
-    field? :company_id, :string, null: true
-    field? :space_id, :string, null: true
   end
 
   object :activity_event_data_milestone_create do
