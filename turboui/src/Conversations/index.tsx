@@ -332,8 +332,8 @@ export function Conversations({
           {/* Conversations List Toggle */}
           <button
             onClick={() => setShowConversationsList(!showConversationsList)}
-            className="p-2 text-content-subtle hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
-            title="View conversations"
+            className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
+            title="View past conversations"
           >
             <IconHistory size={16} />
           </button>
@@ -341,7 +341,7 @@ export function Conversations({
           {/* New Conversation */}
           <button
             onClick={onCreateConversation}
-            className="p-2 text-content-subtle hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
+            className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
             title="New conversation"
           >
             <IconPlus size={16} />
@@ -350,7 +350,7 @@ export function Conversations({
           {/* Close */}
           <button
             onClick={onClose}
-            className="p-2 text-content-subtle hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
+            className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
             title="Close"
           >
             <IconX size={16} />
