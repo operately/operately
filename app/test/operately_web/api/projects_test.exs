@@ -569,6 +569,125 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "create task" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :create_task], %{})
+    end
+
+    test "it requires a milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{name: "New Task", assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: milestone_id"
+    end
+
+    test "it requires a name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: name"
+    end
+
+    test "it creates a task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Implement feature X",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.task.name == "Implement feature X"
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert task.name == "Implement feature X"
+      assert task.milestone_id == ctx.milestone.id
+      assert task.creator_id == ctx.creator.id
+    end
+
+    test "it creates a task with assignee", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with assignee",
+        assignee_id: Paths.person_id(ctx.creator),
+        due_date: nil
+      })
+      assert res.task.name == "Task with assignee"
+
+      # Verify assignee was created
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id, opts: [preload: [:assigned_people]])
+      assert length(task.assigned_people) == 1
+      assert hd(task.assigned_people).id == ctx.creator.id
+    end
+
+    test "it creates a task with due date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      due_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with due date",
+        assignee_id: nil,
+        due_date: due_date
+      })
+      assert res.task.name == "Task with due date"
+      assert res.task.due_date == due_date
+    end
+
+    test "it creates an activity", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.project.id, "task_adding")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :create_task], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Activity test task",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      after_count = count_activities(ctx.project.id, "task_adding")
+      assert after_count == before_count + 1
+    end
+
+    test "it returns forbidden for non-project members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:projects, :create_task], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Forbidden task",
+        assignee_id: nil,
+        due_date: nil
+      })
+    end
+
+    test "it returns not found for non-existent milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :create_task], %{
+        milestone_id: Ecto.UUID.generate(),
+        name: "Task for missing milestone",
+        assignee_id: nil,
+        due_date: nil
+      })
+    end
+  end
+
   describe "delete project" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :delete], %{})

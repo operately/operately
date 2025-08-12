@@ -17,7 +17,7 @@ defmodule Operately.Operations.TaskAdding do
 
   def find_and_lock_milestone(multi, milestone_id) do
     Multi.run(multi, :milestone, fn repo, _ ->
-      query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
+      query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, preload: :project, lock: "FOR UPDATE")
 
       case repo.one(query) do
         nil -> {:error, :not_found}
@@ -63,6 +63,8 @@ defmodule Operately.Operations.TaskAdding do
     Activities.insert_sync(multi, creator.id, :task_adding, fn changes ->
       %{
         company_id: creator.company_id,
+        space_id: changes.milestone.project.group_id,
+        project_id: changes.milestone.project_id,
         name: changes.task.name,
         task_id: changes.task.id,
         milestone_id: changes.task.milestone_id,
