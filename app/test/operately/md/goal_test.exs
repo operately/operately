@@ -66,4 +66,20 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "This is a discussion about the goal."
     assert rendered =~ "#{ctx.creator.full_name}: 👍"
   end
+
+  test "it renders discussion comments", ctx do
+    message = Operately.Support.RichText.rich_text("This is a discussion about the goal.")
+    ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: message)
+    ctx = Factory.add_comment(ctx, :comment, :discussion)
+    ctx = Factory.add_reactions(ctx, :reaction, :comment, emoji: "👍")
+
+    rendered = Operately.MD.Goal.render(ctx.goal)
+
+    assert rendered =~ "## Discussions"
+    assert rendered =~ "Discussion Title"
+    assert rendered =~ "This is a discussion about the goal."
+    assert rendered =~ "## Comments"
+    assert rendered =~ "### Comment by #{ctx.creator.full_name} on #{Operately.Time.as_date(ctx.comment.inserted_at) |> Date.to_iso8601()}"
+    assert rendered =~ "#{ctx.creator.full_name}: 👍"
+  end
 end
