@@ -6,6 +6,7 @@ import {
   type ContextAttachment,
   type MessageAction,
 } from "./index";
+import { FloatingActionButton } from "../FloatingActionButton";
 import { IconRobotFace } from "../icons";
 
 // Mock context data for a goal page
@@ -220,12 +221,9 @@ export function ConversationsExample() {
                   I have access to your current goal "Q4 Revenue Target: $500K" and can help you with context-aware
                   analysis and recommendations.
                 </p>
-                <button
-                  onClick={openConversations}
-                  className="px-4 py-2 bg-accent-base text-white rounded hover:bg-accent-hover transition-colors"
-                >
-                  Open Alfred
-                </button>
+                <p className="text-xs text-content-dimmed">
+                  💡 Use the "Ask Alfred" button in the bottom-right corner for AI assistance
+                </p>
               </div>
             </div>
           </div>
@@ -252,6 +250,16 @@ export function ConversationsExample() {
           )}
         </div>
       </div>
+
+      {/* Floating Action Button for AI Assistant */}
+      <FloatingActionButton
+        icon={<IconRobotFace size={20} />}
+        text="Ask Alfred"
+        onClick={openConversations}
+        label="Ask Alfred about this goal"
+        variant="primary"
+        position="bottom-right"
+      />
 
       {/* Conversations overlay */}
       <Conversations

@@ -23,6 +23,7 @@ export { InfoCallout } from "./Callouts";
 export { Checklist } from "./Checklist";
 export { Conversations } from "./Conversations";
 export { DateField } from "./DateField";
+export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
