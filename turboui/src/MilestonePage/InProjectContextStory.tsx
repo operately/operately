@@ -54,9 +54,9 @@ export function InProjectContextStory() {
     setTasks(updatedTasks);
   };
 
-  const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
+  const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
     const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const newTask = { id: taskId, ...newTaskData };
+    const newTask = { id: taskId, status: "pending" as const, description: "", ...newTaskData };
     console.log("Task created:", newTask);
     setTasks([...tasks, newTask]);
   };
@@ -245,9 +245,9 @@ export function EmptyMilestoneInProjectContextStory() {
     setTasks(updatedTasks);
   };
 
-  const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
+  const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
     const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const newTask = { id: taskId, ...newTaskData };
+    const newTask = { id: taskId, status: "pending" as const, description: "", ...newTaskData };
     console.log("Task created:", newTask);
     setTasks([...tasks, newTask]);
   };

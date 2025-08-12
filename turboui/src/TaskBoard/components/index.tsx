@@ -191,7 +191,7 @@ export function TaskBoard({
   }, [handleStatusChange]);
 
   // Handle creating a new task
-  const handleCreateTask = (newTaskData: Omit<Types.Task, "id">) => {
+  const handleCreateTask = (newTaskData: Types.NewTaskPayload) => {
     if (onTaskCreate) {
       // Log to confirm task creation event is being triggered
       console.log("TaskBoard: Creating new task", newTaskData);

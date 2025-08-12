@@ -11,7 +11,7 @@ import * as Types from "../types";
 interface TaskCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onCreateTask: (task: Omit<Types.Task, "id">) => void;
+  onCreateTask: (task: Types.NewTaskPayload) => void;
   milestones?: Types.Milestone[];
   currentMilestoneId?: string;
   people?: Types.Person[];
@@ -35,6 +35,8 @@ export function TaskCreationModal({
   const [assignee, setAssignee] = useState<Types.Person | null>(null);
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
   const [createMore, setCreateMore] = useState(false);
+
+  const disabled = !title.trim() || !milestone;
 
   // Default search functions if not provided
   const defaultSearchPeople = async ({ query }: { query: string }) => {
@@ -81,30 +83,18 @@ export function TaskCreationModal({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Don't submit if title is empty
-    if (!title.trim()) return;
+    // Don't submit if title or milestone is empty
+    if (disabled) return;
 
-    // Create new task object
-    const newTask: Omit<Types.Task, "id"> = {
+    const newTask: Types.NewTaskPayload = {
       title: title.trim(),
-      status: "pending",
-      description: null,
-      milestone: milestone || null,
+      milestone: milestone,
       dueDate: dueDate || null,
+      assignee: assignee?.id || null,
     };
 
-    if (assignee) {
-      newTask.assignees = [assignee];
-    }
-
-    if (milestone) {
-      newTask.milestone = milestone;
-    }
-
-    // Submit the task
     onCreateTask(newTask);
 
-    // Handle form after submission
     if (createMore) {
       resetForm();
     } else {
@@ -178,7 +168,7 @@ export function TaskCreationModal({
             <SecondaryButton onClick={onClose} type="button">
               Cancel
             </SecondaryButton>
-            <PrimaryButton type="submit" disabled={!title.trim()}>
+            <PrimaryButton type="submit" disabled={disabled}>
               Create task
             </PrimaryButton>
           </div>

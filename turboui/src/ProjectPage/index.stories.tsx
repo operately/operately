@@ -217,9 +217,9 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
+    const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, ...newTaskData };
+      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -436,9 +436,9 @@ export const EmptyTasks: Story = {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([]);
     const [space, setSpace] = useState(defaultSpace);
 
-    const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
+    const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, ...newTaskData };
+      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -734,9 +734,9 @@ export const PausedProject: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleTaskCreate = (newTaskData: Omit<TaskBoardTypes.Task, "id">) => {
+    const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, ...newTaskData };
+      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };

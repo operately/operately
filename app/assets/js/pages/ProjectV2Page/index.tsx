@@ -132,7 +132,7 @@ function Page() {
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
-  const { tasks } = useTasks(paths, backendTasks);
+  const { tasks, createTask } = useTasks(paths, backendTasks, project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -223,6 +223,7 @@ function Page() {
     onProjectDelete: deleteProject,
 
     tasks,
+    onTaskCreate: createTask,
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
@@ -528,8 +529,33 @@ function useResources(project: Projects.Project) {
   return { resources, createResource, updateResource, removeResource };
 }
 
-function useTasks(paths: Paths, backendTasks: Tasks.Task[]) {
-  const [tasks, _setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
+function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Project) {
+  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
 
-  return { tasks };
+  const createTask = async (task: ProjectPage.NewTaskPayload) => {
+    return Api.projects
+      .createTask({
+        name: task.title,
+        assigneeId: task.assignee,
+        dueDate: serializeContextualDate(task.dueDate),
+        milestoneId: task.milestone.id,
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        const tmpTasks = [...backendTasks, data.task];
+        console.log(tmpTasks);
+        setTasks(Tasks.parseTasksForTurboUi(paths, tmpTasks));
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to create task", e);
+        showErrorToast("Error", "Failed to create task");
+
+        return { success: false };
+      });
+  };
+
+  return { tasks, createTask };
 }
