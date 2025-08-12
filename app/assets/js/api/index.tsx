@@ -775,6 +775,12 @@ export interface ActivityContentSpaceMembersAdded {
 }
 
 export interface ActivityContentTaskAdding {
+  company: Company;
+  space: Space;
+  project: Project;
+  milestone: Milestone;
+  task: Task;
+  taskName: string;
   name?: string | null;
   taskId?: string | null;
   companyId?: string | null;
@@ -3567,6 +3573,17 @@ export interface ProjectsCreateMilestoneResult {
   milestone: Milestone;
 }
 
+export interface ProjectsCreateTaskInput {
+  milestoneId: Id;
+  name: string;
+  assigneeId: Id | null;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectsCreateTaskResult {
+  task: Task;
+}
+
 export interface ProjectsDeleteInput {
   projectId: Id;
 }
@@ -4492,6 +4509,10 @@ class ApiNamespaceProjects {
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
     return this.client.post("/projects/create_milestone", input);
+  }
+
+  async createTask(input: ProjectsCreateTaskInput): Promise<ProjectsCreateTaskResult> {
+    return this.client.post("/projects/create_task", input);
   }
 
   async delete(input: ProjectsDeleteInput): Promise<ProjectsDeleteResult> {
@@ -7057,6 +7078,10 @@ export default {
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
         defaultApiClient.apiNamespaceProjects.updateStartDate,
       ),
+
+    createTask: (input: ProjectsCreateTaskInput) => defaultApiClient.apiNamespaceProjects.createTask(input),
+    useCreateTask: () =>
+      useMutation<ProjectsCreateTaskInput, ProjectsCreateTaskResult>(defaultApiClient.apiNamespaceProjects.createTask),
 
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>

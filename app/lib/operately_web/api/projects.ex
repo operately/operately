@@ -320,6 +320,44 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule CreateTask do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :milestone_id, :id, null: false
+      field :name, :string, null: false
+      field :assignee_id, :id, null: true
+      field :due_date, :contextual_date, null: true
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.check_milestone_permissions(:can_edit_timeline)
+      |> Steps.create_task(inputs)
+      |> Steps.save_activity(:task_adding, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.milestone.id,
+          task_id: changes.task.id,
+          name: changes.task.name
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.task, level: :full)}
+      end)
+    end
+  end
+
   defmodule DeleteProject do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -371,7 +409,7 @@ defmodule OperatelyWeb.Api.Projects do
 
     def find_milestone(multi, milestone_id) do
       Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
-        case Operately.Projects.Milestone.get(me, id: milestone_id) do
+        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
           {:ok, milestone} -> {:ok, milestone}
           {:error, _} -> {:error, {:not_found, "Milestone not found"}}
         end
@@ -393,6 +431,12 @@ defmodule OperatelyWeb.Api.Projects do
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project} ->
         Operately.Projects.Permissions.check(project.request_info.access_level, permission)
+      end)
+    end
+
+    def check_milestone_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
+        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
       end)
     end
 
@@ -607,6 +651,31 @@ defmodule OperatelyWeb.Api.Projects do
     def update_task_status(multi, new_status) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{status: new_status})
+      end)
+    end
+
+    def create_task(multi, inputs) do
+      multi
+      |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
+        {:ok, milestone.project}
+      end)
+      |> Ecto.Multi.run(:task, fn _repo, %{milestone: milestone, me: me} ->
+        Operately.Tasks.Task.changeset(%{
+          name: inputs.name,
+          description: %{},
+          milestone_id: milestone.id,
+          creator_id: me.id,
+          due_date: inputs.due_date
+        })
+        |> Repo.insert()
+      end)
+      |> Ecto.Multi.run(:assignee, fn _repo, %{task: task} ->
+        case inputs.assignee_id do
+          nil -> {:ok, nil}
+          assignee_id ->
+            Operately.Tasks.Assignee.changeset(%{ task_id: task.id, person_id: assignee_id })
+            |> Repo.insert()
+        end
       end)
     end
 
