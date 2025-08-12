@@ -12,6 +12,7 @@ import { MonthSelector } from "./components/MonthSelector";
 import { QuarterSelector } from "./components/QuarterSelector";
 import { YearSelector } from "./components/YearSelector";
 import { getDateWithoutCurrentYear } from "./utils";
+import { usePopoverPositioning } from "./hooks/usePopoverPositioning";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -87,6 +88,8 @@ export function DateField({
   const [previousSelectedDate, setPreviousSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
   const [dateType, setDateType] = useState<DateField.DateType>(date?.dateType || "day");
 
+  const { useSidePositioning, triggerRef } = usePopoverPositioning({ open });
+
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -134,7 +137,7 @@ export function DateField({
   return (
     <Popover.Root open={open} onOpenChange={handleOpenChange}>
       <Popover.Trigger asChild disabled={readonly}>
-        <div>
+        <div ref={triggerRef}>
           <DatePickerTrigger
             selectedDate={selectedDate}
             label={placeholder}
@@ -151,7 +154,16 @@ export function DateField({
       </Popover.Trigger>
 
       <Popover.Portal>
-        <Popover.Content className="z-50 animate-fadeIn" sideOffset={5} align="start">
+        <Popover.Content
+          className="z-50 animate-fadeIn max-h-[80vh] overflow-y-auto"
+          sideOffset={5}
+          align={useSidePositioning ? "center" : "start"}
+          collisionPadding={50}
+          avoidCollisions={true}
+          side={useSidePositioning ? "right" : "bottom"}
+          sticky="always"
+          collisionBoundary={typeof document !== "undefined" ? [document.body] : undefined}
+        >
           <DatePickerContent
             dateType={dateType}
             setDateType={setDateType}
