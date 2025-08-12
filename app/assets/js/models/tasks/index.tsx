@@ -24,21 +24,23 @@ export {
  * @returns Array of TurboUI Task objects
  */
 export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[]) {
-  return tasks.map((task) => {
-    return {
-      id: task.id,
-      title: task.name,
-      status: parseTaskStatus(task.status),
-      description: task.description || null,
-      assignees: task.assignees || [],
-      milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
-      dueDate: parseContextualDate(task.dueDate),
-      hasDescription: !!task.description,
-      hasComments: false,
-      commentCount: 0,
-      comments: undefined,
-    };
-  });
+  return tasks.map((task) => parseTaskForTurboUi(paths, task));
+}
+
+export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
+  return {
+    id: task.id,
+    title: task.name,
+    status: parseTaskStatus(task.status),
+    description: task.description || null,
+    assignees: task.assignees || [],
+    milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
+    dueDate: parseContextualDate(task.dueDate),
+    hasDescription: !!task.description,
+    hasComments: false,
+    commentCount: 0,
+    comments: undefined,
+  };
 }
 
 function parseTaskStatus(status: string | null | undefined): Status {

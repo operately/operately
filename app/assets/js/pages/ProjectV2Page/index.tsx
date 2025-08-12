@@ -16,7 +16,7 @@ import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
-import { parseMilestonesForTurboUi } from "@/models/milestones";
+import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
@@ -377,14 +377,16 @@ function prepareDiscussions(paths: Paths, discussions: Projects.Discussion[]): P
 }
 
 function prepareResources(resources: Projects.Resource[]): ProjectPage.Resource[] {
-  return resources.map((r) => {
-    return {
-      id: r.id,
-      name: r.title,
-      url: r.link,
-      type: r.resourceType,
-    };
-  });
+  return resources.map((r) => prepareResource(r));
+}
+
+function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
+  return {
+    id: resource.id,
+    name: resource.title,
+    url: resource.link,
+    type: resource.resourceType,
+  };
 }
 
 function useMilestones(paths: Paths, project: Projects.Project) {
@@ -402,10 +404,7 @@ function useMilestones(paths: Paths, project: Projects.Project) {
       })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
-        assertPresent(project.milestones);
-
-        const tmpMilestones = [...project.milestones, data.milestone];
-        setMilestones(parseMilestonesForTurboUi(paths, tmpMilestones));
+        setMilestones((prev) => [...prev, parseMilestoneForTurboUi(paths, data.milestone)]);
 
         return { success: true };
       })
@@ -427,16 +426,14 @@ function useMilestones(paths: Paths, project: Projects.Project) {
       })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
-        assertPresent(project.milestones);
-
-        const updatedMilestones = project.milestones.map((m) => {
-          if (m.id === milestoneId) {
-            return data.milestone || m;
-          }
-          return m;
-        });
-
-        setMilestones(parseMilestonesForTurboUi(paths, updatedMilestones));
+        setMilestones((prev) =>
+          prev.map((m) => {
+            if (m.id === milestoneId) {
+              return parseMilestoneForTurboUi(paths, data.milestone);
+            }
+            return m;
+          }),
+        );
 
         return { success: true };
       })
@@ -463,10 +460,7 @@ function useResources(project: Projects.Project) {
     })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
-        assertPresent(project.keyResources);
-
-        const tmpResources = [...project.keyResources, data.keyResource];
-        setResources(prepareResources(tmpResources));
+        setResources((prev) => [...prev, prepareResource(data.keyResource)]);
 
         return { success: true };
       })
@@ -486,16 +480,14 @@ function useResources(project: Projects.Project) {
     })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
-        assertPresent(project.keyResources);
-
-        const updatedResources = project.keyResources.map((r) => {
-          if (r.id === resource.id) {
-            return data.keyResource || r;
-          }
-          return r;
-        });
-
-        setResources(prepareResources(updatedResources));
+        setResources((prev) =>
+          prev.map((r) => {
+            if (r.id === resource.id) {
+              return prepareResource(data.keyResource);
+            }
+            return r;
+          }),
+        );
 
         return { success: true };
       })
@@ -542,10 +534,7 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
       })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
-
-        const tmpTasks = [...backendTasks, data.task];
-        console.log(tmpTasks);
-        setTasks(Tasks.parseTasksForTurboUi(paths, tmpTasks));
+        setTasks((prev) => [...prev, Tasks.parseTaskForTurboUi(paths, data.task)]);
 
         return { success: true };
       })
