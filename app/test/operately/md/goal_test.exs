@@ -42,4 +42,15 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "This is a discussion about the goal."
     assert rendered =~ ctx.creator.full_name
   end
+
+  test "it renders the checklist in the markdown", ctx do
+    ctx = Factory.add_goal_check(ctx, :check1, :goal, name: "Checklist Item 1", completed: false)
+    ctx = Factory.add_goal_check(ctx, :check2, :goal, name: "Checklist Item 2", completed: true)
+
+    rendered = Operately.MD.Goal.render(ctx.goal)
+
+    assert rendered =~ "## Checklist"
+    assert rendered =~ "- [ ] Checklist Item 1"
+    assert rendered =~ "- [x] Checklist Item 2"
+  end
 end
