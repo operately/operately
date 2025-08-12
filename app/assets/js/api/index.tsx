@@ -781,10 +781,6 @@ export interface ActivityContentTaskAdding {
   milestone: Milestone;
   task: Task;
   taskName: string;
-  name?: string | null;
-  taskId?: string | null;
-  companyId?: string | null;
-  spaceId?: string | null;
 }
 
 export interface ActivityContentTaskAssigneeAssignment {
@@ -1608,11 +1604,11 @@ export interface Target {
 }
 
 export interface Task {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   insertedAt?: string | null;
   updatedAt?: string | null;
-  dueDate?: string | null;
+  dueDate?: ContextualDate | null;
   size?: string | null;
   priority?: string | null;
   status?: string | null;
@@ -2493,6 +2489,14 @@ export interface ProjectDiscussionsListInput {
 
 export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
+}
+
+export interface ProjectsGetTasksInput {
+  projectId: Id;
+}
+
+export interface ProjectsGetTasksResult {
+  tasks: Task[] | null;
 }
 
 export interface ProjectsParentGoalSearchInput {
@@ -4502,6 +4506,10 @@ class ApiNamespaceSpaces {
 
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
+
+  async getTasks(input: ProjectsGetTasksInput): Promise<ProjectsGetTasksResult> {
+    return this.client.get("/projects/get_tasks", input);
+  }
 
   async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
     return this.client.get("/projects/parent_goal_search", input);
@@ -7047,6 +7055,10 @@ export default {
   },
 
   projects: {
+    getTasks: (input: ProjectsGetTasksInput) => defaultApiClient.apiNamespaceProjects.getTasks(input),
+    useGetTasks: (input: ProjectsGetTasksInput) =>
+      useQuery<ProjectsGetTasksResult>(() => defaultApiClient.apiNamespaceProjects.getTasks(input)),
+
     parentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
       defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
     useParentGoalSearch: (input: ProjectsParentGoalSearchInput) =>

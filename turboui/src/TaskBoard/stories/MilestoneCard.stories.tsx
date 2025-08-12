@@ -191,6 +191,7 @@ const sampleTasks: Types.Task[] = [
     id: "task-1",
     title: "Implement login functionality",
     status: "pending" as Types.Status,
+    description: "Implement user authentication and login flow",
     milestone: sampleMilestone,
     dueDate: createContextualDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), "day"),
     hasDescription: true,
@@ -199,6 +200,7 @@ const sampleTasks: Types.Task[] = [
     id: "task-2",
     title: "Design user profile page",
     status: "in_progress" as Types.Status,
+    description: "Create wireframes and design mockups for user profile",
     assignees: [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
     ],
@@ -210,6 +212,7 @@ const sampleTasks: Types.Task[] = [
     id: "task-3",
     title: "Fix navigation bug in sidebar",
     status: "done" as Types.Status,
+    description: "Resolve sidebar navigation issues and improve UX",
     assignees: [
       { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
     ],
@@ -222,7 +225,9 @@ const sampleTasks: Types.Task[] = [
     id: "task-4",
     title: "Task without due date or assignee - hover to set",
     status: "pending" as Types.Status,
+    description: null,
     milestone: sampleMilestone,
+    dueDate: null,
     hasComments: false,
   },
 ];

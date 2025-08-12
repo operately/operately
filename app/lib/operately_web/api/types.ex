@@ -1028,11 +1028,11 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :task do
-    field? :id, :string, null: true
-    field? :name, :string, null: true
+    field :id, :string
+    field :name, :string
     field? :inserted_at, :date, null: true
     field? :updated_at, :date, null: true
-    field? :due_date, :date, null: true
+    field? :due_date, :contextual_date, null: true
     field? :size, :string, null: true
     field? :priority, :string, null: true
     field? :status, :string, null: true
