@@ -5,6 +5,7 @@ import { PrimaryButton } from "../../Button";
 import { createContextualDate } from "../../DateField/mockData";
 
 import * as Types from "../types";
+import { searchPeopleFn } from "../../utils/storybook/genPeople";
 
 const sampleMilestones: Types.Milestone[] = [
   { id: "milestone-1", name: "Sprint 1", dueDate: createContextualDate("2025-06-20", "day"), status: "pending" },
@@ -75,6 +76,7 @@ export const Default: Story = {
         )}
 
         <TaskCreationModal
+          searchPeople={searchPeopleFn}
           isOpen={isOpen}
           onClose={() => setIsOpen(false)}
           milestones={sampleMilestones}

@@ -149,6 +149,11 @@ function Page() {
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
+  const assigneeSearch = People.usePersonFieldSearch({
+    scope: { type: "project", id: project.id },
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
+
   const deleteProject = async () => {
     return Api.projects
       .delete({ projectId: project.id })
@@ -223,6 +228,7 @@ function Page() {
     onProjectDelete: deleteProject,
 
     tasks,
+    searchPeople: assigneeSearch,
     onTaskCreate: createTask,
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
