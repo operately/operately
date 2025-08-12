@@ -50,7 +50,7 @@ interface MilestonePageProps {
 
   // Optional callbacks
   onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
-  onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
+  onTaskCreate?: (task: Types.NewTaskPayload) => void;
   onTaskReorder?: (tasks: Types.Task[]) => void;
   onCommentCreate?: (comment: string) => void;
   onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -183,7 +183,7 @@ export function MilestonePage({
   const hiddenTasks = baseFilteredTasks.filter((task) => task.status === "done" || task.status === "canceled");
 
   // Handle task creation
-  const handleCreateTask = (newTask: Omit<Types.Task, "id">) => {
+  const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
       // Add the milestone to the task
       onTaskCreate({

@@ -9,54 +9,15 @@ import TaskCreationModal from "./TaskCreationModal";
 import { TaskList } from "./TaskList";
 
 export interface MilestoneCardProps {
-  /**
-   * The milestone to display
-   */
   milestone: Types.Milestone;
-
-  /**
-   * The tasks associated with this milestone
-   */
   tasks: Types.Task[];
-
-  /**
-   * The hidden tasks (completed/canceled) for this milestone
-   */
   hiddenTasks?: Types.Task[];
-
-  /**
-   * Whether to show the hidden tasks toggle (ghost row)
-   */
   showHiddenTasksToggle?: boolean;
-
-  /**
-   * Called when a new task is created for this milestone
-   */
-  onTaskCreate?: (task: Omit<Types.Task, "id">) => void;
-
-  /**
-   * Called when a task is updated
-   */
+  onTaskCreate?: (task: Types.NewTaskPayload) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
-
-  /**
-   * Called when the milestone is updated
-   */
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
-
-  /**
-   * Function to search for people for assignment
-   */
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
-
-  /**
-   * Available milestones for task reassignment
-   */
   availableMilestones?: Types.Milestone[];
-
-  /**
-   * Available people for task assignment
-   */
   availablePeople?: Types.Person[];
 
   /**
@@ -84,12 +45,9 @@ export function MilestoneCard({
 }: MilestoneCardProps) {
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(tasks);
-
-  // State for task creation modal
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
-  // Handle task creation
-  const handleCreateTask = (newTask: Omit<Types.Task, "id">) => {
+  const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
       onTaskCreate(newTask);
     }
@@ -97,7 +55,6 @@ export function MilestoneCard({
     // (the modal handles this internally)
   };
 
-  // Handle milestone due date change
   const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
     if (onMilestoneUpdate) {
       onMilestoneUpdate(milestone.id, { name: milestone.name, dueDate: newDueDate || null });

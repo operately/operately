@@ -68,6 +68,7 @@ export namespace ProjectPage {
   export type UpdateMilestonePayload = TaskBoardTypes.UpdateMilestonePayload;
   export type NewResourcePayload = ResourceManager.NewResourcePayload;
   export type UpdateResourcePayload = ResourceManager.Resource;
+  export type NewTaskPayload = TaskBoardTypes.NewTaskPayload;
 
   export interface Props {
     workmapLink: string;
@@ -123,7 +124,7 @@ export namespace ProjectPage {
     tasks: TaskBoardTypes.Task[];
     milestones: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
-    onTaskCreate?: (task: Omit<TaskBoardTypes.Task, "id">) => void;
+    onTaskCreate: (task: NewTaskPayload) => void;
     onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;

@@ -42,6 +42,13 @@ export interface UpdateMilestonePayload {
   dueDate: DateField.ContextualDate | null;
 }
 
+export interface NewTaskPayload {
+  title: string;
+  milestone: Milestone;
+  dueDate: DateField.ContextualDate | null;
+  assignee: string | null;
+}
+
 /**
  * Task interface
  */
@@ -99,7 +106,7 @@ export interface TaskBoardCallbacks {
   /**
    * Callback for when a task is created
    */
-  onTaskCreate?: (task: Omit<Task, "id">) => void;
+  onTaskCreate?: (task: NewTaskPayload) => void;
 
   /**
    * Callback for when a milestone is created
@@ -139,7 +146,7 @@ export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
   onStatusChange?: (taskId: string, newStatus: Status) => void;
-  onTaskCreate?: (task: Omit<Task, "id">) => void;
+  onTaskCreate?: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;

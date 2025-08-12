@@ -82,7 +82,7 @@ const meta: Meta<typeof MilestoneCard> = {
         };
         
         // Handle task creation
-        const handleTaskCreate = (newTask: Omit<Types.Task, "id">) => {
+        const handleTaskCreate = (newTask: Types.NewTaskPayload) => {
           // Skip if milestone is not loaded
           if (!milestone) return;
           
@@ -91,6 +91,8 @@ const meta: Meta<typeof MilestoneCard> = {
           // Create a new task with an ID
           const taskWithId: Types.Task = {
             id: `task-${Date.now()}`, // Generate a unique ID
+            status: "pending" as const,
+            description: "",
             ...newTask
           };
           

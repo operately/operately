@@ -109,13 +109,15 @@ export const Default: Story = {
     const [isSubscribed, setIsSubscribed] = useState(false);
 
     // Handler for creating a new task
-    const handleTaskCreate = (newTaskData: Omit<Types.Task, "id">) => {
+    const handleTaskCreate = (newTaskData: Types.NewTaskPayload) => {
       // Generate a fake ID
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
       // Create the new task with the generated ID
       const newTask: Types.Task = {
         id: taskId,
+        status: "pending",
+        description: "",
         ...newTaskData,
       };
 
