@@ -1,6 +1,19 @@
 import React from "react";
 import classNames from "../utils/classnames";
 
+// Hoist static objects outside component to avoid re-creation on every render
+const POSITION_CLASSES = {
+  "bottom-right": "bottom-6 right-6",
+  "bottom-left": "bottom-6 left-6", 
+  "top-right": "top-6 right-6",
+  "top-left": "top-6 left-6",
+} as const;
+
+const VARIANT_CLASSES = {
+  primary: "bg-accent-base hover:bg-accent-hover text-white shadow-xl border-2 border-white/20 hover:shadow-2xl hover:border-white/30",
+  secondary: "bg-surface-base hover:bg-surface-highlight text-content-base border-2 border-surface-outline shadow-xl hover:shadow-2xl",
+} as const;
+
 export interface FloatingActionButtonProps {
   /**
    * Icon component to display in the button
@@ -71,13 +84,6 @@ export function FloatingActionButton({
   showTooltip = true,
   zIndex = 50,
 }: FloatingActionButtonProps) {
-  const positionClasses = {
-    "bottom-right": "bottom-6 right-6",
-    "bottom-left": "bottom-6 left-6", 
-    "top-right": "top-6 right-6",
-    "top-left": "top-6 left-6",
-  };
-
   const sizeClasses = text ? {
     normal: "h-14 px-6",
     large: "h-16 px-8",
@@ -86,35 +92,30 @@ export function FloatingActionButton({
     large: "w-16 h-16",
   };
 
-  const variantClasses = {
-    primary: "bg-accent-base hover:bg-accent-hover text-white shadow-xl border-2 border-white/20 hover:shadow-2xl hover:border-white/30",
-    secondary: "bg-surface-base hover:bg-surface-highlight text-content-base border-2 border-surface-outline shadow-xl hover:shadow-2xl",
-  };
-
   const buttonClasses = classNames(
     "fixed flex items-center justify-center transition-all duration-200 ease-in-out",
     "focus:outline-none focus:ring-4 focus:ring-accent-base/50 focus:ring-offset-2 focus:ring-offset-white",
     "disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-md",
     "backdrop-blur-sm", // Add backdrop blur for better contrast
-    text ? "rounded-full" : "rounded-full",
+    "rounded-full",
     text ? "gap-3" : "",
-    positionClasses[position],
+    POSITION_CLASSES[position],
     sizeClasses[size],
-    variantClasses[variant],
+    VARIANT_CLASSES[variant],
     className
   );
 
   const iconSize = size === "large" ? 24 : 20;
 
   return (
-    <div className="fixed" style={{ zIndex }}>
-      <button
-        onClick={onClick}
-        disabled={disabled}
-        className={buttonClasses}
-        aria-label={label}
-        title={showTooltip ? label : undefined}
-      >
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={buttonClasses}
+      aria-label={label}
+      title={showTooltip ? label : undefined}
+      style={{ zIndex }}
+    >
         <div style={{ width: iconSize, height: iconSize }}>
           {icon}
         </div>
@@ -123,8 +124,7 @@ export function FloatingActionButton({
             {text}
           </span>
         )}
-      </button>
-    </div>
+    </button>
   );
 }
 
