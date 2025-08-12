@@ -459,7 +459,7 @@ defmodule OperatelyWeb.Api.Projects do
           from(t in Operately.Tasks.Task,
             join: m in assoc(t, :milestone),
             where: m.project_id == ^project.id,
-            preload: [milestone: m]
+            preload: [:assigned_people, milestone: m]
           )
           |> Repo.all()
 
@@ -698,27 +698,30 @@ defmodule OperatelyWeb.Api.Projects do
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
         {:ok, milestone.project}
       end)
-      |> Ecto.Multi.run(:task, fn _repo, %{milestone: milestone, me: me} ->
-        {:ok, task} =
-          Operately.Tasks.Task.changeset(%{
-            name: inputs.name,
-            description: %{},
-            milestone_id: milestone.id,
-            creator_id: me.id,
-            due_date: inputs.due_date
-          })
-          |> Repo.insert()
-
-        task = Map.put(task, :milestone, milestone)
-        {:ok, task}
+      |> Ecto.Multi.run(:created_task, fn _repo, %{milestone: milestone, me: me} ->
+        Operately.Tasks.Task.changeset(%{
+          name: inputs.name,
+          description: %{},
+          milestone_id: milestone.id,
+          creator_id: me.id,
+          due_date: inputs.due_date
+        })
+        |> Repo.insert()
       end)
-      |> Ecto.Multi.run(:assignee, fn _repo, %{task: task} ->
+      |> Ecto.Multi.run(:assignee, fn _repo, %{created_task: created_task} ->
         case inputs.assignee_id do
           nil -> {:ok, nil}
           assignee_id ->
-            Operately.Tasks.Assignee.changeset(%{ task_id: task.id, person_id: assignee_id })
+            Operately.Tasks.Assignee.changeset(%{ task_id: created_task.id, person_id: assignee_id })
             |> Repo.insert()
         end
+      end)
+      |> Ecto.Multi.run(:task, fn _repo, %{created_task: created_task, milestone: milestone} ->
+        task =
+          Repo.preload(created_task, :assigned_people)
+          |> Map.put(:milestone, milestone)
+
+        {:ok, task}
       end)
     end
 
