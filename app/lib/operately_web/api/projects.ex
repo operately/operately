@@ -423,6 +423,43 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateTaskMilestone do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :milestone_id, :id, null: false
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
+      |> Steps.update_task_milestone(inputs.milestone_id)
+      |> Steps.save_activity(:task_milestone_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          task_id: changes.task.id,
+          old_milestone_id: changes.task.milestone_id,
+          new_milestone_id: inputs.milestone_id
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+      end)
+    end
+  end
+
   defmodule CreateTask do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -802,6 +839,26 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
+    def validate_milestone_belongs_to_project(multi, milestone_id) do
+      Ecto.Multi.run(multi, :validate_milestone, fn _repo, %{project: project} ->
+        milestone = Operately.Projects.get_milestone!(milestone_id)
+        if milestone.project_id == project.id do
+          {:ok, milestone}
+        else
+          {:error, "Milestone must belong to the same project as the task"}
+        end
+      end)
+    end
+
+    def update_task_milestone(multi, new_milestone_id) do
+      Ecto.Multi.run(multi, :updated_task, fn _repo, changes ->
+        {:ok, task} = Operately.Tasks.update_task(changes.task, %{milestone_id: new_milestone_id})
+        task = Map.put(task, :milestone, changes.validate_milestone)
+
+        {:ok, task}
+      end)
+    end
+
     def create_task(multi, inputs) do
       multi
       |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
@@ -867,6 +924,9 @@ defmodule OperatelyWeb.Api.Projects do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, :validate_milestone, message, _changes} ->
+          {:error, :bad_request, message}
 
         {:error, _failed_operation, reason, _changes} ->
           Logger.error("Transaction failed: #{inspect(reason)}")
