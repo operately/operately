@@ -11,7 +11,7 @@ import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
-import { ProjectPage, showErrorToast } from "turboui";
+import { DateField, ProjectPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
@@ -132,7 +132,7 @@ function Page() {
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
-  const { tasks, createTask } = useTasks(paths, backendTasks, project);
+  const { tasks, createTask, updateTaskDueDate } = useTasks(paths, backendTasks, project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -230,6 +230,7 @@ function Page() {
     tasks,
     searchPeople: assigneeSearch,
     onTaskCreate: createTask,
+    onTaskDueDateChange: updateTaskDueDate,
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
@@ -552,5 +553,32 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
       });
   };
 
-  return { tasks, createTask };
+  const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
+    return Api.projects
+      .updateTaskDueDate({
+        taskId,
+        dueDate: serializeContextualDate(dueDate),
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        setTasks((prev) =>
+          prev.map((t) => {
+            if (t.id === taskId) {
+              return Tasks.parseTaskForTurboUi(paths, data.task);
+            }
+            return t;
+          }),
+        );
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to update task due date", e);
+        showErrorToast("Error", "Failed to update task due date");
+
+        return { success: false };
+      });
+  };
+
+  return { tasks, createTask, updateTaskDueDate };
 }

@@ -17,6 +17,7 @@ export function TaskBoard({
   onStatusChange,
   onTaskCreate,
   onMilestoneCreate,
+  onTaskDueDateChange,
   onTaskUpdate,
   onMilestoneUpdate,
   searchPeople,
@@ -279,15 +280,6 @@ export function TaskBoard({
           >
             + New task
           </PrimaryButton>
-          {/* not yet sure but 'New milestone' button is probably not needed here */}
-          {/* <SecondaryButton
-            size="xs"
-            onClick={() => {
-              setIsMilestoneModalOpen(true);
-            }}
-          >
-            + New milestone
-          </SecondaryButton> */}
 
           {/* Filter widget */}
           {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
@@ -314,6 +306,7 @@ export function TaskBoard({
                   showHiddenTasksToggle={!hasAnyFilters}
                   stats={milestoneData.stats}
                   onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
+                  onTaskDueDateChange={onTaskDueDateChange}
                   onTaskUpdate={onTaskUpdate}
                   onMilestoneUpdate={onMilestoneUpdate}
                   searchPeople={searchPeople}
@@ -351,6 +344,7 @@ export function TaskBoard({
                     hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
                     showHiddenTasksToggle={!hasAnyFilters}
                     milestoneId="no-milestone"
+                    onTaskDueDateChange={onTaskDueDateChange}
                     onTaskUpdate={onTaskUpdate}
                     searchPeople={searchPeople}
                   />

@@ -3,6 +3,7 @@ import { useDraggingAnimation, useDropZone } from "../../utils/DragAndDrop";
 import { TaskItem } from "./TaskItem";
 import { IconChevronDown, IconChevronRight } from "../../icons";
 import * as Types from "../types";
+import { DateField } from "../../DateField";
 
 // Using TaskWithIndex from our shared types
 import { TaskWithIndex } from "../types";
@@ -13,6 +14,7 @@ export interface TaskListProps {
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   milestoneId: string;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   // The onTaskReorder callback is handled by the DragAndDropProvider in the parent component
@@ -28,6 +30,7 @@ export function TaskList({
   hiddenTasks = [],
   showHiddenTasksToggle = false,
   milestoneId,
+  onTaskDueDateChange,
   onTaskUpdate,
   searchPeople,
 }: TaskListProps) {
@@ -77,6 +80,7 @@ export function TaskList({
           milestoneId={milestoneId}
           itemStyle={itemStyle}
           onTaskUpdate={onTaskUpdate}
+          onTaskDueDateChange={onTaskDueDateChange}
           searchPeople={searchPeople}
         />
       ))}
@@ -122,6 +126,7 @@ export function TaskList({
               milestoneId={milestoneId}
               itemStyle={itemStyle}
               onTaskUpdate={onTaskUpdate}
+              onTaskDueDateChange={onTaskDueDateChange}
               searchPeople={searchPeople}
             />
           </li>
