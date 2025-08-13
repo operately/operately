@@ -211,12 +211,6 @@ export const Default: Story = {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
-    const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
-      console.log("Task status change:", taskId, newStatus);
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
-      setTasks(updatedTasks);
-    };
-
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
@@ -231,12 +225,6 @@ export const Default: Story = {
 
       // Add the new milestone to the milestones array
       setMilestones((prev) => [...prev, newMilestone]);
-    };
-
-    const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
-      console.log("Task updated:", taskId, updates);
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-      setTasks(updatedTasks);
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
@@ -306,10 +294,17 @@ export const Default: Story = {
         tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
-        onTaskStatusChange={handleTaskStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskUpdate={handleTaskUpdate}
+        onTaskAssigneeChange={(taskId, assignee) => {
+          console.log('Task assignee updated:', taskId, assignee);
+        }}
+        onTaskDueDateChange={(taskId, dueDate) => {
+          console.log('Task due date updated:', taskId, dueDate);
+        }}
+        onTaskStatusChange={(taskId, status) => {
+          console.log('Task status updated:', taskId, status);
+        }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
         filters={filters}
@@ -382,7 +377,8 @@ export const ReadOnly: Story = {
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
-        onTaskUpdate={() => {}}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
         filters={[]}
@@ -501,7 +497,8 @@ export const EmptyTasks: Story = {
         onTaskStatusChange={() => {}}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskUpdate={() => {}}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
         filters={filters}
@@ -607,7 +604,8 @@ export const EmptyProject: Story = {
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskUpdate={() => {}}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
         filters={[]}
@@ -673,7 +671,8 @@ export const EmptyProjectReadOnly: Story = {
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
-        onTaskUpdate={() => {}}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
         filters={[]}
@@ -728,12 +727,6 @@ export const PausedProject: Story = {
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
-    const handleTaskStatusChange = (taskId: string, newStatus: TaskBoardTypes.Status) => {
-      console.log("Task status change:", taskId, newStatus);
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
-      setTasks(updatedTasks);
-    };
-
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
       const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
@@ -746,12 +739,6 @@ export const PausedProject: Story = {
       const newMilestone = { id: milestoneId, ...newMilestoneData };
       console.log("Milestone created:", newMilestone);
       setMilestones((prev) => [...prev, newMilestone]);
-    };
-
-    const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
-      console.log("Task updated:", taskId, updates);
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-      setTasks(updatedTasks);
     };
 
     const handleMilestoneUpdate = (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => {
@@ -819,10 +806,17 @@ export const PausedProject: Story = {
         tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
-        onTaskStatusChange={handleTaskStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskUpdate={handleTaskUpdate}
+        onTaskAssigneeChange={(taskId, assignee) => {
+          console.log('Task assignee updated:', taskId, assignee);
+        }}
+        onTaskDueDateChange={(taskId, dueDate) => {
+          console.log('Task due date updated:', taskId, dueDate);
+        }}
+        onTaskStatusChange={(taskId, status) => {
+          console.log('Task status updated:', taskId, status);
+        }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
         filters={filters}
@@ -903,7 +897,8 @@ export const ClosedProject: Story = {
         onTaskStatusChange={() => {}}
         onTaskCreate={() => {}}
         onMilestoneCreate={() => {}}
-        onTaskUpdate={() => {}}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
         filters={[]}

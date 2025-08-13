@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState, useEffect } from "react";
 import { TaskList } from "../components/TaskList";
 import * as Types from "../types";
+import { DateField } from "../../DateField";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasksInList } from "../utils/taskReorderingUtils";
 
@@ -18,80 +19,91 @@ const meta: Meta<typeof TaskList> = {
   decorators: [
     (_, context) => {
       // Create a wrapper component with state for the story
-      const TaskListWithReordering = ({ initialTasks, hiddenTasks, showHiddenTasksToggle, onTaskUpdate, searchPeople }: { 
+      const TaskListWithReordering = ({
+        initialTasks,
+        hiddenTasks,
+        showHiddenTasksToggle,
+        searchPeople,
+      }: {
         initialTasks: Types.Task[];
         hiddenTasks?: Types.Task[];
         showHiddenTasksToggle?: boolean;
-        onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+        onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
+        onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+        onTaskStatusChange?: (taskId: string, status: string) => void;
         searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
       }) => {
         const [tasks, setTasks] = useState<Types.Task[]>([]);
-        
+
         // Store the tasks from props when component mounts
         useEffect(() => {
           setTasks([...initialTasks]);
         }, [initialTasks]);
-        
+
         // Listen for status change events
         useEffect(() => {
           const handleStatusChange = (event: CustomEvent) => {
             const { taskId, newStatus } = event.detail;
             console.log(`Status changed for task ${taskId} to ${newStatus}`);
-            
+
             // Update task status in our state
-            const updatedTasks = tasks.map(task => {
+            const updatedTasks = tasks.map((task) => {
               if (task.id === taskId) {
                 return { ...task, status: newStatus };
               }
               return task;
             });
-            
+
             setTasks(updatedTasks);
           };
-          
+
           // Add event listener
           document.addEventListener("statusChange", handleStatusChange as EventListener);
-          
+
           // Clean up
           return () => {
             document.removeEventListener("statusChange", handleStatusChange as EventListener);
           };
         }, [tasks]);
-        
+
         const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
           console.log(`Dragged item ${draggedId} was dropped into zone ${dropZoneId} at index ${indexInDropZone}`);
-          
+
           // Use the provided index directly for reordering
           const updatedTasks = reorderTasksInList(tasks, draggedId, indexInDropZone);
           setTasks(updatedTasks);
-          
+
           return true;
         };
-        
+
         return (
           <DragAndDropProvider onDrop={handleDrop}>
-            <TaskList 
-              tasks={tasks} 
+            <TaskList
+              tasks={tasks}
               hiddenTasks={hiddenTasks}
               showHiddenTasksToggle={showHiddenTasksToggle}
-              milestoneId="milestone-1" 
-              onTaskUpdate={onTaskUpdate}
+              milestoneId="milestone-1"
+              onTaskAssigneeChange={() => {}}
+              onTaskDueDateChange={() => {}}
+              onTaskStatusChange={() => {}}
               searchPeople={searchPeople}
             />
           </DragAndDropProvider>
         );
       };
-      
+
       // Access args from context
       const { args } = context;
-      
+
       return (
         <div className="m-4 w-[500px]">
-          <TaskListWithReordering 
-            initialTasks={args.tasks || []} 
+          <TaskListWithReordering
+            initialTasks={args.tasks || []}
             hiddenTasks={args.hiddenTasks}
             showHiddenTasksToggle={args.showHiddenTasksToggle}
-            onTaskUpdate={args.onTaskUpdate}
+            onTaskAssigneeChange={args.onTaskAssigneeChange || (() => {})}
+            onTaskDueDateChange={args.onTaskDueDateChange || (() => {})}
+            onTaskStatusChange={args.onTaskStatusChange || (() => {})}
             searchPeople={args.searchPeople}
           />
         </div>
@@ -109,15 +121,12 @@ const milestoneId = "milestone-1";
 // Event handler for status changes
 const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
   const event = new CustomEvent("statusChange", {
-    detail: { taskId, newStatus }
+    detail: { taskId, newStatus },
   });
   document.dispatchEvent(event);
 };
 
-// Event handler for task updates
-const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
-  console.log(`Task ${taskId} updated:`, updates);
-};
+
 
 // Mock people data for assignee selection
 const mockPeople: Types.Person[] = [
@@ -129,10 +138,8 @@ const mockPeople: Types.Person[] = [
 
 // Mock search function for people
 const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Person[]> => {
-  await new Promise(resolve => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter(person => 
-    person.fullName.toLowerCase().includes(query.toLowerCase())
-  );
+  await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
+  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
 /**
@@ -154,9 +161,7 @@ export const MultipleTasksList: Story = {
         title: "Design dashboard layout",
         status: "in_progress" as Types.Status,
         dueDate: new Date(new Date().setDate(new Date().getDate() + 5)), // Due in 5 days
-        assignees: [
-          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-        ],
+        assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
       },
       {
         id: "task-3",
@@ -173,7 +178,9 @@ export const MultipleTasksList: Story = {
       },
     ],
     milestoneId,
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
+    onTaskStatusChange: () => {},
     searchPeople: mockSearchPeople,
   },
   render: (args) => {
@@ -189,12 +196,16 @@ export const MultipleTasksList: Story = {
       };
     }, []);
 
-    return <TaskList 
-      tasks={args.tasks} 
-      milestoneId={args.milestoneId} 
-      onTaskUpdate={args.onTaskUpdate}
-      searchPeople={args.searchPeople}
-    />;
+    return (
+      <TaskList
+        tasks={args.tasks}
+        milestoneId={args.milestoneId}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
+        onTaskStatusChange={() => {}}
+        searchPeople={args.searchPeople}
+      />
+    );
   },
 };
 
@@ -215,7 +226,9 @@ export const SingleTaskList: Story = {
       },
     ],
     milestoneId,
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
+    onTaskStatusChange: () => {},
     searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
@@ -228,7 +241,9 @@ export const EmptyTaskList: Story = {
   args: {
     tasks: [],
     milestoneId,
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
+    onTaskStatusChange: () => {},
     searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
@@ -258,13 +273,13 @@ export const MixedStatusTaskList: Story = {
         hasDescription: true,
         hasComments: true,
         commentCount: 5,
-        assignees: [
-          { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-        ],
+        assignees: [{ id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }],
       },
     ],
     milestoneId,
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
+    onTaskStatusChange: () => {},
     searchPeople: mockSearchPeople,
   },
   render: MultipleTasksList.render,
@@ -281,19 +296,15 @@ export const TaskListWithHiddenCompletedTasks: Story = {
         id: "task-visible-1",
         title: "Review user feedback",
         status: "pending" as Types.Status,
-        assignees: [
-          { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
-        ],
+        assignees: [{ id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" }],
         dueDate: new Date(new Date().setDate(new Date().getDate() + 1)), // Due tomorrow
         hasDescription: true,
       },
       {
-        id: "task-visible-2", 
+        id: "task-visible-2",
         title: "Update documentation",
         status: "in_progress" as Types.Status,
-        assignees: [
-          { id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" },
-        ],
+        assignees: [{ id: "user-3", fullName: "Charlie Brown", avatarUrl: "https://i.pravatar.cc/150?u=charlie" }],
         hasComments: true,
         commentCount: 2,
       },
@@ -303,9 +314,7 @@ export const TaskListWithHiddenCompletedTasks: Story = {
         id: "task-hidden-1",
         title: "Set up project repository",
         status: "done" as Types.Status,
-        assignees: [
-          { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
-        ],
+        assignees: [{ id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" }],
         dueDate: new Date(new Date().setDate(new Date().getDate() - 3)), // 3 days ago
         hasDescription: true,
         hasComments: true,
@@ -315,9 +324,7 @@ export const TaskListWithHiddenCompletedTasks: Story = {
         id: "task-hidden-2",
         title: "Configure CI/CD pipeline",
         status: "done" as Types.Status,
-        assignees: [
-          { id: "user-4", fullName: "Diana Prince", avatarUrl: null },
-        ],
+        assignees: [{ id: "user-4", fullName: "Diana Prince", avatarUrl: null }],
         dueDate: new Date(new Date().setDate(new Date().getDate() - 5)), // 5 days ago
       },
       {
@@ -330,7 +337,9 @@ export const TaskListWithHiddenCompletedTasks: Story = {
     ],
     showHiddenTasksToggle: true, // Enable hidden tasks toggle functionality
     milestoneId,
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
+    onTaskStatusChange: () => {},
     searchPeople: mockSearchPeople,
   },
   render: (args) => {
@@ -346,13 +355,17 @@ export const TaskListWithHiddenCompletedTasks: Story = {
       };
     }, []);
 
-    return <TaskList 
-      tasks={args.tasks} 
-      hiddenTasks={args.hiddenTasks}
-      showHiddenTasksToggle={args.showHiddenTasksToggle}
-      milestoneId={args.milestoneId} 
-      onTaskUpdate={args.onTaskUpdate}
-      searchPeople={args.searchPeople}
-    />;
+    return (
+      <TaskList
+        tasks={args.tasks}
+        hiddenTasks={args.hiddenTasks}
+        showHiddenTasksToggle={args.showHiddenTasksToggle}
+        milestoneId={args.milestoneId}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
+        onTaskStatusChange={() => {}}
+        searchPeople={args.searchPeople}
+      />
+    );
   },
 };

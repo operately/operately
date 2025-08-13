@@ -150,15 +150,6 @@ export const Default: Story = {
       }
     };
 
-    // Handler for task updates
-    const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
-      console.log(`Task ${taskId} updated:`, updates);
-
-      // Update the task with the provided updates
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-      setTasks(updatedTasks);
-    };
-
     // Handler for milestone updates (including status)
     const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
       console.log("Milestone updated:", { milestoneId, updates });
@@ -184,7 +175,9 @@ export const Default: Story = {
         onStatusChange={handleStatusChange}
         onCommentCreate={(comment) => console.log("Comment created:", comment)}
         onDueDateChange={handleDueDateChange}
-        onTaskUpdate={handleTaskUpdate}
+        onTaskAssigneeChange={() => {}}
+        onTaskDueDateChange={() => {}}
+        onTaskStatusChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneNameChange={handleMilestoneNameChange}
         searchPeople={mockSearchPeople}
@@ -267,7 +260,9 @@ export const EmptyMilestone: Story = {
         milestones={[milestone]}
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
         onDueDateChange={handleDueDateChange}
-        onTaskUpdate={(taskId, updates) => console.log("Task updated:", taskId, updates)}
+        onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee updated:", taskId, assignee)}
+        onTaskDueDateChange={(taskId, dueDate) => console.log("Task due date updated:", taskId, dueDate)}
+        onTaskStatusChange={(taskId, status) => console.log("Task status updated:", taskId, status)}
         onMilestoneUpdate={(milestoneId, updates) => {
           console.log("Milestone updated:", { milestoneId, updates });
           if (updates.name) {

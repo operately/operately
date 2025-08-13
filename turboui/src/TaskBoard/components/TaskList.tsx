@@ -14,9 +14,9 @@ export interface TaskListProps {
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   milestoneId: string;
-  onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
-  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+  onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
+  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskStatusChange: (taskId: string, status: string) => void;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   // The onTaskReorder callback is handled by the DragAndDropProvider in the parent component
 }
@@ -33,7 +33,7 @@ export function TaskList({
   milestoneId,
   onTaskAssigneeChange,
   onTaskDueDateChange,
-  onTaskUpdate,
+  onTaskStatusChange,
   searchPeople,
 }: TaskListProps) {
   // State to track if hidden tasks are expanded
@@ -81,9 +81,9 @@ export function TaskList({
           task={{ ...task, index } as TaskWithIndex}
           milestoneId={milestoneId}
           itemStyle={itemStyle}
-          onTaskUpdate={onTaskUpdate}
           onTaskAssigneeChange={onTaskAssigneeChange}
           onTaskDueDateChange={onTaskDueDateChange}
+          onTaskStatusChange={onTaskStatusChange}
           searchPeople={searchPeople}
         />
       ))}
@@ -128,9 +128,9 @@ export function TaskList({
               task={{ ...task, index: tasks.length + index } as TaskWithIndex}
               milestoneId={milestoneId}
               itemStyle={itemStyle}
-              onTaskUpdate={onTaskUpdate}
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
+              onTaskStatusChange={onTaskStatusChange}
               searchPeople={searchPeople}
             />
           </li>

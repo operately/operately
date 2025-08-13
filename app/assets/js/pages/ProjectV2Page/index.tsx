@@ -132,7 +132,7 @@ function Page() {
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
-  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee } = useTasks(paths, backendTasks, project);
+  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus } = useTasks(paths, backendTasks, project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -232,6 +232,7 @@ function Page() {
     onTaskCreate: createTask,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskAssigneeChange: updateTaskAssignee,
+    onTaskStatusChange: updateTaskStatus,
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
@@ -556,10 +557,7 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
 
   const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
     return Api.projects
-      .updateTaskDueDate({
-        taskId,
-        dueDate: serializeContextualDate(dueDate),
-      })
+      .updateTaskDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
@@ -583,10 +581,7 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
 
   const updateTaskAssignee = async (taskId: string, assignee: ProjectPage.Person | null) => {
     return Api.projects
-      .updateTaskAssignee({
-        taskId,
-        assigneeId: assignee?.id || null,
-      })
+      .updateTaskAssignee({ taskId, assigneeId: assignee?.id || null })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
@@ -608,5 +603,29 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
       });
   };
 
-  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee };
+  const updateTaskStatus = async (taskId: string, status: string) => {
+    return Api.projects
+      .updateTaskStatus({ taskId, status })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        setTasks((prev) =>
+          prev.map((t) => {
+            if (t.id === taskId) {
+              return Tasks.parseTaskForTurboUi(paths, data.task);
+            }
+            return t;
+          }),
+        );
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to update task status", e);
+        showErrorToast("Error", "Failed to update task status");
+
+        return { success: false };
+      });
+  };
+
+  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus };
 }
