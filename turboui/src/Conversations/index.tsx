@@ -1,112 +1,114 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { IconArrowRight, IconHistory, IconPlus, IconX, IconPaperclip, IconRobotFace } from "../icons";
+import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
 import { TextField } from "../TextField";
 
-export interface Message {
-  id: string;
-  content: string;
-  timestamp: Date;
-  sender: "user" | "ai";
-  actions?: MessageAction[];
-}
+export namespace Conversations {
+  export interface Message {
+    id: string;
+    content: string;
+    timestamp: Date;
+    sender: "user" | "ai";
+    actions?: MessageAction[];
+  }
 
-export interface MessageAction {
-  id: string;
-  label: string;
-  variant?: "primary" | "secondary";
-  onClick: () => void;
-}
+  export interface MessageAction {
+    id: string;
+    label: string;
+    variant?: "primary" | "secondary";
+    onClick: () => void;
+  }
 
-export interface ContextAttachment {
-  id: string;
-  type: "goal" | "project" | "milestone" | "task";
-  title: string;
-  url?: string;
-}
+  export interface ContextAttachment {
+    id: string;
+    type: "goal" | "project" | "milestone" | "task";
+    title: string;
+    url?: string;
+  }
 
-export interface ContextAction {
-  id: string;
-  label: string;
-  prompt: string;
-  variant?: "primary" | "secondary";
-}
+  export interface ContextAction {
+    id: string;
+    label: string;
+    prompt: string;
+    variant?: "primary" | "secondary";
+  }
 
-export interface Conversation {
-  id: string;
-  title: string;
-  messages: Message[];
-  createdAt: Date;
-  updatedAt: Date;
-  context?: ContextAttachment;
-}
+  export interface Conversation {
+    id: string;
+    title: string;
+    messages: Message[];
+    createdAt: Date;
+    updatedAt: Date;
+    context?: ContextAttachment;
+  }
 
-export interface ConversationsProps {
-  /**
-   * Whether the conversations panel is open
-   */
-  isOpen: boolean;
+  export interface Props {
+    /**
+     * Whether the conversations panel is open
+     */
+    isOpen: boolean;
 
-  /**
-   * Called when the panel should close
-   */
-  onClose: () => void;
+    /**
+     * Called when the panel should close
+     */
+    onClose: () => void;
 
-  /**
-   * Called when a new message is sent
-   */
-  onSendMessage?: (message: string, conversationId?: string) => Promise<void>;
+    /**
+     * Called when a new message is sent
+     */
+    onSendMessage?: (message: string, conversationId?: string) => Promise<void>;
 
-  /**
-   * List of previous conversations
-   */
-  conversations?: Conversation[];
+    /**
+     * List of previous conversations
+     */
+    conversations?: Conversation[];
 
-  /**
-   * Currently active conversation ID
-   */
-  activeConversationId?: string;
+    /**
+     * Currently active conversation ID
+     */
+    activeConversationId?: string;
 
-  /**
-   * Called when a conversation is selected
-   */
-  onSelectConversation?: (conversationId: string) => void;
+    /**
+     * Called when a conversation is selected
+     */
+    onSelectConversation?: (conversationId: string) => void;
 
-  /**
-   * Called when a new conversation is created
-   */
-  onCreateConversation?: () => void;
+    /**
+     * Called when a new conversation is created
+     */
+    onCreateConversation?: () => void;
 
-  /**
-   * Called when a conversation title is updated
-   */
-  onUpdateConversationTitle?: (conversationId: string, newTitle: string) => void;
+    /**
+     * Called when a conversation title is updated
+     */
+    onUpdateConversationTitle?: (conversationId: string, newTitle: string) => void;
 
-  /**
-   * Context-aware actions available for current page
-   */
-  contextActions?: ContextAction[];
+    /**
+     * Context-aware actions available for current page
+     */
+    contextActions?: ContextAction[];
 
-  /**
-   * Current context attachment (goal, project, etc.)
-   */
-  contextAttachment?: ContextAttachment;
+    /**
+     * Current context attachment (goal, project, etc.)
+     */
+    contextAttachment?: ContextAttachment;
 
-  /**
-   * Initial width of the panel in pixels
-   */
-  initialWidth?: number;
+    /**
+     * Initial width of the panel in pixels
+     */
+    initialWidth?: number;
 
-  /**
-   * Minimum width of the panel in pixels
-   */
-  minWidth?: number;
+    /**
+     * Minimum width of the panel in pixels
+     */
+    minWidth?: number;
 
-  /**
-   * Maximum width of the panel in pixels
-   */
-  maxWidth?: number;
+    /**
+     * Maximum width of the panel in pixels
+     */
+    maxWidth?: number;
+  }
 }
 
 export function Conversations({
@@ -123,7 +125,7 @@ export function Conversations({
   initialWidth = 448, // (w-md equivalent)
   minWidth = 320, // Minimum usable width
   maxWidth = 600, // Maximum width
-}: ConversationsProps) {
+}: Conversations.Props) {
   const [mounted, setMounted] = useState(false);
   const [inputMessage, setInputMessage] = useState("");
   const [showConversationsList, setShowConversationsList] = useState(false);
@@ -212,7 +214,7 @@ export function Conversations({
     }
   };
 
-  const handleContextAction = async (action: ContextAction) => {
+  const handleContextAction = async (action: Conversations.ContextAction) => {
     if (!onSendMessage) return;
 
     try {
@@ -229,16 +231,16 @@ export function Conversations({
     }
   };
 
-  const groupConversationsByTime = (conversations: Conversation[]) => {
+  const groupConversationsByTime = (conversations: Conversations.Conversation[]) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const weekStart = new Date(today);
     weekStart.setDate(today.getDate() - today.getDay()); // Start of this week (Sunday)
 
     const groups = {
-      Today: [] as Conversation[],
-      "This Week": [] as Conversation[],
-      Earlier: [] as Conversation[],
+      Today: [] as Conversations.Conversation[],
+      "This Week": [] as Conversations.Conversation[],
+      Earlier: [] as Conversations.Conversation[],
     };
 
     conversations.forEach((conv) => {

@@ -1,16 +1,10 @@
 import React from "react";
-import {
-  Conversations,
-  useConversations,
-  type ContextAction,
-  type ContextAttachment,
-  type MessageAction,
-} from "./index";
 import { FloatingActionButton } from "../FloatingActionButton";
 import { IconRobotFace } from "../icons";
+import { Conversations, useConversations } from "./index";
 
 // Mock context data for a goal page
-const mockGoalContext: ContextAttachment = {
+const mockGoalContext: Conversations.ContextAttachment = {
   id: "goal-q4-revenue",
   type: "goal",
   title: "Q4 Revenue Target: $500K",
@@ -18,7 +12,7 @@ const mockGoalContext: ContextAttachment = {
 };
 
 // Context-aware actions for goal page
-const mockContextActions: ContextAction[] = [
+const mockContextActions: Conversations.ContextAction[] = [
   {
     id: "evaluate-definition",
     label: "Evaluate goal definition",
@@ -73,7 +67,7 @@ export function ConversationsExample() {
             sender: "user",
           },
           {
-            id: "msg-2", 
+            id: "msg-2",
             content: `**Goal Definition Analysis for "${mockGoalContext.title}"**\n\nStrengths:\n• Clear monetary target ($500K)\n• Specific timeframe (Q4)\n• Measurable outcome\n\nAreas for improvement:\n• Could benefit from more specific success metrics\n• Missing breakdown of how to achieve this target\n• No mention of responsible team members\n\nRecommendation: Consider adding 2-3 key milestones and assigning ownership to make this goal more actionable.`,
             timestamp: new Date(Date.now() - 280000),
             sender: "ai",
@@ -105,7 +99,7 @@ export function ConversationsExample() {
         context: mockGoalContext,
       },
       {
-        id: "conv-3", 
+        id: "conv-3",
         title: "Blocker Review",
         messages: [
           {
@@ -120,14 +114,14 @@ export function ConversationsExample() {
         context: mockGoalContext,
       },
     ],
-    
+
     // Example AI integration with context-aware responses
     onSendToAI: async (message, _conversationHistory) => {
       // This would be replaced with actual AI service call
       await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API delay
 
       let response = "";
-      let actions: MessageAction[] = [];
+      let actions: Conversations.MessageAction[] = [];
 
       // Context-aware responses based on action commands
       if (message.includes("Run action 'Evaluate goal definition'")) {
@@ -198,7 +192,7 @@ export function ConversationsExample() {
       // Return response with actions if any
       return { content: response, actions };
     },
-    
+
     // No persistence for prototypes - just use in-memory state
   });
 
