@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Conversations, IconRobotFace, useConversations } from "turboui";
-import { FloatingActionButton } from "turboui/src";
+import { Conversations, FloatingActionButton, IconRobotFace, useConversations } from "turboui";
 
 const actions: Conversations.ContextAction[] = [
   {
@@ -30,7 +29,7 @@ const context: Conversations.ContextAttachment = {
   id: "goal-q4-revenue",
   type: "goal",
   title: "Q4 Revenue Target: $500K",
-  url: "/goals/q4-revenue",
+  url: "/goals",
 };
 
 export function AiSidebar() {
