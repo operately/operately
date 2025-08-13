@@ -3684,6 +3684,15 @@ export interface ProjectsUpdateTaskDueDateResult {
   task: Task;
 }
 
+export interface ProjectsUpdateTaskMilestoneInput {
+  taskId: Id;
+  milestoneId: Id;
+}
+
+export interface ProjectsUpdateTaskMilestoneResult {
+  task: Task;
+}
+
 export interface ProjectsUpdateTaskStatusInput {
   taskId: Id;
   status: string;
@@ -4589,6 +4598,10 @@ class ApiNamespaceProjects {
 
   async updateTaskDueDate(input: ProjectsUpdateTaskDueDateInput): Promise<ProjectsUpdateTaskDueDateResult> {
     return this.client.post("/projects/update_task_due_date", input);
+  }
+
+  async updateTaskMilestone(input: ProjectsUpdateTaskMilestoneInput): Promise<ProjectsUpdateTaskMilestoneResult> {
+    return this.client.post("/projects/update_task_milestone", input);
   }
 
   async updateTaskStatus(input: ProjectsUpdateTaskStatusInput): Promise<ProjectsUpdateTaskStatusResult> {
@@ -7147,6 +7160,13 @@ export default {
     useUpdateStartDate: () =>
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
         defaultApiClient.apiNamespaceProjects.updateStartDate,
+      ),
+
+    updateTaskMilestone: (input: ProjectsUpdateTaskMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjects.updateTaskMilestone(input),
+    useUpdateTaskMilestone: () =>
+      useMutation<ProjectsUpdateTaskMilestoneInput, ProjectsUpdateTaskMilestoneResult>(
+        defaultApiClient.apiNamespaceProjects.updateTaskMilestone,
       ),
 
     createTask: (input: ProjectsCreateTaskInput) => defaultApiClient.apiNamespaceProjects.createTask(input),

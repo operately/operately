@@ -20,6 +20,7 @@ export function TaskBoard({
   onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskStatusChange,
+  onTaskMilestoneChange,
   onMilestoneUpdate,
   searchPeople,
   filters = [],
@@ -76,96 +77,6 @@ export function TaskBoard({
     };
   }, [internalTasks, filters, hasAnyFilters]);
 
-  // Group tasks by milestone, filtering out helper tasks
-  const groupTasksByMilestone = (tasks: Types.Task[]) => {
-    const grouped: Record<string, Types.Task[]> = {};
-
-    // Group with no milestone
-    grouped["no_milestone"] = [];
-
-    // First create all milestone groups
-    tasks.forEach((task) => {
-      if (task.milestone) {
-        const milestoneId = task.milestone.id;
-        if (!grouped[milestoneId]) {
-          grouped[milestoneId] = [];
-        }
-      }
-    });
-
-    // Then add tasks to appropriate groups, filtering out helper tasks
-    tasks.forEach((task) => {
-      // Skip helper tasks used for empty milestones
-      if (task._isHelperTask) {
-        return;
-      }
-
-      if (task.milestone) {
-        const milestoneId = task.milestone.id;
-        grouped[milestoneId]?.push(task);
-      } else {
-        grouped["no_milestone"]?.push(task);
-      }
-    });
-
-    return grouped;
-  };
-
-  // Get milestone stats from tasks for each milestone
-  const getMilestones = (allMilestones: Types.Milestone[] | undefined, originalTasks: Types.Task[]) => {
-    type MilestoneStats = Types.MilestoneStats;
-
-    // If no milestones provided, derive them from tasks (backward compatibility)
-    let milestonesToProcess: Types.Milestone[];
-    if (!allMilestones || allMilestones.length === 0) {
-      const milestoneMap = new Map<string, Types.Milestone>();
-      originalTasks.forEach((task) => {
-        if (task.milestone && !milestoneMap.has(task.milestone.id)) {
-          milestoneMap.set(task.milestone.id, task.milestone);
-        }
-      });
-      milestonesToProcess = Array.from(milestoneMap.values());
-    } else {
-      milestonesToProcess = allMilestones;
-    }
-
-    return milestonesToProcess
-      .map((milestone) => {
-        const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
-        let hasTasks = false;
-
-        // Calculate statistics from ALL original tasks for this milestone
-        originalTasks.forEach((task) => {
-          if (task.milestone?.id === milestone.id && !task._isHelperTask) {
-            hasTasks = true;
-            stats.total++;
-
-            switch (task.status) {
-              case "pending":
-                stats.pending++;
-                break;
-              case "in_progress":
-                stats.inProgress++;
-                break;
-              case "done":
-                stats.done++;
-                break;
-              case "canceled":
-                stats.canceled++;
-                break;
-            }
-          }
-        });
-
-        return {
-          milestone,
-          stats,
-          hasTasks,
-        };
-      })
-      .sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
-  };
-
   // Handle status change
   const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
     // Update local state
@@ -192,24 +103,15 @@ export function TaskBoard({
     };
   }, [handleStatusChange]);
 
-  // Handle creating a new task
-  const handleCreateTask = (newTaskData: Types.NewTaskPayload) => {
-    if (onTaskCreate) {
-      onTaskCreate(newTaskData);
-    } 
-  };
-
-  // Handle creating a new milestone
   const handleCreateMilestone = (newMilestoneData: Types.NewMilestonePayload) => {
     if (onMilestoneCreate) {
       onMilestoneCreate(newMilestoneData);
-    } 
+    }
   };
 
-  // Group tasks by milestone and get milestone stats (memoized for performance)
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
   const milestones = useMemo(
-    () => getMilestones(externalMilestones, internalTasks),
+    () => getMilestonesWithStats(externalMilestones, internalTasks),
     [externalMilestones, internalTasks],
   );
 
@@ -219,26 +121,29 @@ export function TaskBoard({
     [internalTasks],
   );
 
-  // Handle task reordering via drag and drop
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
       console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
 
-      // Get all milestone objects for the utility function
-      const allMilestones = milestones.map((m) => m.milestone);
+      if (onTaskMilestoneChange) {
+        onTaskMilestoneChange(draggedId, dropZoneId);
+      } else {
+        // Get all milestone objects for the utility function
+        const allMilestones = milestones.map((m) => m.milestone);
 
-      // Use the utility function to handle reordering
-      const updatedTasks = reorderTasks(
-        internalTasks,
-        dropZoneId,
-        draggedId,
-        indexInDropZone,
-        { addHelperTasks: true },
-        allMilestones,
-      );
+        // Use the utility function to handle reordering
+        const updatedTasks = reorderTasks(
+          internalTasks,
+          dropZoneId,
+          draggedId,
+          indexInDropZone,
+          { addHelperTasks: true },
+          allMilestones,
+        );
 
-      // Update state with the reordered tasks
-      setInternalTasks(updatedTasks);
+        // Update state with the reordered tasks
+        setInternalTasks(updatedTasks);
+      }
 
       console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
 
@@ -253,7 +158,7 @@ export function TaskBoard({
       <TaskCreationModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
-        onCreateTask={handleCreateTask}
+        onCreateTask={onTaskCreate}
         milestones={milestones.map((m) => m.milestone)}
         currentMilestoneId={activeTaskMilestoneId}
         searchPeople={searchPeople}
@@ -361,4 +266,91 @@ export function TaskBoard({
   );
 }
 
-export default TaskBoard;
+const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, originalTasks: Types.Task[]) => {
+  type MilestoneStats = Types.MilestoneStats;
+
+  // If no milestones provided, derive them from tasks (backward compatibility)
+  let milestonesToProcess: Types.Milestone[];
+
+  if (!allMilestones || allMilestones.length === 0) {
+    const milestoneMap = new Map<string, Types.Milestone>();
+    originalTasks.forEach((task) => {
+      if (task.milestone && !milestoneMap.has(task.milestone.id)) {
+        milestoneMap.set(task.milestone.id, task.milestone);
+      }
+    });
+    milestonesToProcess = Array.from(milestoneMap.values());
+  } else {
+    milestonesToProcess = allMilestones;
+  }
+
+  return milestonesToProcess
+    .map((milestone) => {
+      const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
+      let hasTasks = false;
+
+      // Calculate statistics from ALL original tasks for this milestone
+      originalTasks.forEach((task) => {
+        if (task.milestone?.id === milestone.id && !task._isHelperTask) {
+          hasTasks = true;
+          stats.total++;
+
+          switch (task.status) {
+            case "pending":
+              stats.pending++;
+              break;
+            case "in_progress":
+              stats.inProgress++;
+              break;
+            case "done":
+              stats.done++;
+              break;
+            case "canceled":
+              stats.canceled++;
+              break;
+          }
+        }
+      });
+
+      return {
+        milestone,
+        stats,
+        hasTasks,
+      };
+    })
+    .sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
+};
+
+const groupTasksByMilestone = (tasks: Types.Task[]) => {
+  const grouped: Record<string, Types.Task[]> = {};
+
+  // Group with no milestone
+  grouped["no_milestone"] = [];
+
+  // First create all milestone groups
+  tasks.forEach((task) => {
+    if (task.milestone) {
+      const milestoneId = task.milestone.id;
+      if (!grouped[milestoneId]) {
+        grouped[milestoneId] = [];
+      }
+    }
+  });
+
+  // Then add tasks to appropriate groups, filtering out helper tasks
+  tasks.forEach((task) => {
+    // Skip helper tasks used for empty milestones
+    if (task._isHelperTask) {
+      return;
+    }
+
+    if (task.milestone) {
+      const milestoneId = task.milestone.id;
+      grouped[milestoneId]?.push(task);
+    } else {
+      grouped["no_milestone"]?.push(task);
+    }
+  });
+
+  return grouped;
+};

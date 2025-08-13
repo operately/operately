@@ -127,6 +127,7 @@ export namespace ProjectPage {
     onTaskAssigneeChange: (taskId: string, assignee: TaskBoardTypes.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: string) => void;
+    onTaskMilestoneChange?: (taskId: string, milestoneId: string) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     searchPeople: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
@@ -219,6 +220,7 @@ export function ProjectPage(props: ProjectPage.Props) {
               onTaskAssigneeChange={state.onTaskAssigneeChange}
               onTaskDueDateChange={state.onTaskDueDateChange}
               onTaskStatusChange={state.onTaskStatusChange}
+              onTaskMilestoneChange={state.onTaskMilestoneChange}
               onMilestoneUpdate={state.onMilestoneUpdate}
               searchPeople={state.searchPeople}
               filters={state.filters}
