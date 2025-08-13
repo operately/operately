@@ -1068,6 +1068,113 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "update task assignee" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_assignee], %{assignee_id: Paths.person_id(ctx.creator)})
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it updates the task assignee", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _res} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+
+      task = Repo.reload(ctx.task) |> Repo.preload(:assigned_people)
+
+      assert length(task.assigned_people) == 1
+      assert hd(task.assigned_people).id == ctx.creator.id
+    end
+
+    test "it can remove the assignee by setting assignee_id to nil", ctx do
+      # First assign someone to the task
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+
+      # Then remove the assignee
+      assert {200, _res} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: nil
+      })
+
+      # Check that the task has no assignees
+      task = Repo.reload(ctx.task) |> Repo.preload(:assigned_people)
+      assert task.assigned_people == []
+    end
+
+    test "it creates an activity when task assignee is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.project.id, "task_assignee_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+
+      after_count = count_activities(ctx.project.id, "task_assignee_updating")
+      assert after_count == before_count + 1
+    end
+
+    test "it requires edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.member)
+      })
+    end
+
+    test "it returns not found for non-existent task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Ecto.UUID.generate(),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+    end
+
+    test "it replaces existing assignee with new one", ctx do
+      ctx =
+        ctx
+        |> Factory.add_company_member(:other_member)
+        |> Factory.log_in_person(:creator)
+
+      # First assign the creator
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.creator)
+      })
+
+      # Then assign the other member (should replace the creator)
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.other_member)
+      })
+
+      # Check that only the other member is assigned
+      task = Repo.reload(ctx.task) |> Repo.preload(:assigned_people)
+      assert length(task.assigned_people) == 1
+      assert hd(task.assigned_people).id == ctx.other_member.id
+    end
+  end
+
   #
   # Helpers
   #
