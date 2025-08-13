@@ -14,6 +14,9 @@ defmodule Operately.Tasks do
   end
 
   def create_task(attrs \\ %{}), do: Task.changeset(attrs) |> Repo.insert()
+
+  def update_task(task, attrs \\ %{}), do: Task.changeset(task, attrs) |> Repo.update()
+
   def create_assignee(attrs \\ %{}), do: Assignee.changeset(attrs) |> Repo.insert()
 
   def list_tasks(params \\ %{}) do

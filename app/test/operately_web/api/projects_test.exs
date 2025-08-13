@@ -1175,8 +1175,91 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "update task milestone" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_milestone], %{milestone_id: Paths.milestone_id(ctx.milestone)})
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it updates the task milestone", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2)
+      })
+
+      assert res.task.milestone.id == Paths.milestone_id(ctx.milestone2)
+
+      task = Repo.reload(ctx.task)
+      assert task.milestone_id == ctx.milestone2.id
+    end
+
+    test "it creates an activity when task milestone is updated", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      before_count = count_activities(ctx.project.id, "task_milestone_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2)
+      })
+
+      after_count = count_activities(ctx.project.id, "task_milestone_updating")
+      assert after_count == before_count + 1
+    end
+
+    test "it requires edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2)
+      })
+    end
+
+    test "it returns not found for non-existent task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
+        task_id: Ecto.UUID.generate(),
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+    end
+
+    test "it validates milestone belongs to same project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:other_project, :engineering)
+        |> Factory.add_project_milestone(:other_milestone, :other_project)
+        |> Factory.log_in_person(:creator)
+
+      assert {400, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.other_milestone)
+      })
+    end
+  end
+
   #
-  # Helpers
+  # Utility functions
   #
 
   import Ecto.Query, only: [from: 2]
