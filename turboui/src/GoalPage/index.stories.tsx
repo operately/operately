@@ -119,23 +119,6 @@ function Component(props: Partial<GoalPage.Props>) {
     <GoalPage
       {...defaults}
       {...props}
-      ai={{
-        enabled: true,
-        startNewReview: () => {
-          console.log("Starting new review...");
-        },
-        getConversationMessages: async ({ convoRequestId }) => {
-          console.log("Fetching messages for conversation:", convoRequestId);
-          return [
-            {
-              id: "msg-1",
-              content: "This is a simulated AI response for the Storybook demo.",
-              timestamp: new Date(),
-              sender: "ai",
-            },
-          ];
-        },
-      }}
       checklistItems={checklistItems}
       goalName={goalName}
       setGoalName={setGoalName}

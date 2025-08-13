@@ -18,7 +18,6 @@ import { Activity } from "./Activity";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
-import { AiState, GoalConversations, useAiState } from "./GoalConversations";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 
@@ -163,8 +162,6 @@ export namespace GoalPage {
 
     deleteModalOpen?: boolean;
     moveModealOpen?: boolean;
-
-    ai: Ai;
   }
 
   export interface State extends Props {
@@ -177,14 +174,10 @@ export namespace GoalPage {
     closeMoveModal: () => void;
 
     onReviewGoal?: () => void;
-
-    aiState: AiState;
   }
 }
 
 function useGoalPageState(props: GoalPage.Props): GoalPage.State {
-  const aiState = useAiState(props);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(props.deleteModalOpen || false);
   const [isMoveModalOpen, setIsMoveModalOpen] = React.useState(props.moveModealOpen || false);
 
@@ -198,7 +191,6 @@ function useGoalPageState(props: GoalPage.Props): GoalPage.State {
     isMoveModalOpen,
     openMoveModal: () => setIsMoveModalOpen(true),
     closeMoveModal: () => setIsMoveModalOpen(false),
-    aiState,
   };
 }
 
@@ -228,8 +220,6 @@ export function GoalPage(props: GoalPage.Props) {
         <DeleteModal {...state} />
         <MoveModal {...state} />
       </PageNew>
-
-      <GoalConversations {...state} />
     </>
   );
 }
