@@ -4,7 +4,7 @@ defmodule Operately.People.AgentConvo do
 
   schema "agent_convos" do
     field :request_id, :string
-    # field :title, :string
+    field :title, :string
 
     belongs_to :goal, Operately.Goals.Goal, type: :binary_id
     belongs_to :author, Operately.People.Person, type: :binary_id
@@ -22,7 +22,8 @@ defmodule Operately.People.AgentConvo do
     |> cast(attrs, [
       :request_id,
       :author_id,
-      :goal_id
+      :goal_id,
+      :title
     ])
     |> validate_required([:author_id])
     |> assoc_constraint(:author)

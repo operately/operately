@@ -23,6 +23,7 @@ defmodule Operately.Ai.GoalReview do
     Multi.new()
     |> Multi.insert(:convo, fn _ ->
       Operately.People.AgentConvo.changeset(%{
+        title: "Goal Review",
         request_id: convo_id,
         author_id: person.id,
         goal_id: goal_id
