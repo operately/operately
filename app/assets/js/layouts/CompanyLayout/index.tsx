@@ -1,7 +1,19 @@
 import * as Api from "@/api";
 import * as React from "react";
 
-import { IconMenu2, IconHome2, IconBuildingEstate, IconBriefcase, IconCoffee, IconBell, IconUser, IconCircleKey, IconSwitch, IconDoorExit, IconUserCircle } from "turboui";
+import {
+  IconBell,
+  IconBriefcase,
+  IconBuildingEstate,
+  IconCircleKey,
+  IconCoffee,
+  IconDoorExit,
+  IconHome2,
+  IconMenu2,
+  IconSwitch,
+  IconUser,
+  IconUserCircle,
+} from "turboui";
 
 import { logOut } from "@/routes/auth";
 import { useLoaderData } from "react-router-dom";
@@ -18,6 +30,7 @@ import { User } from "./User";
 
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
@@ -208,7 +221,9 @@ export default function CompanyLayout() {
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
+
       <DevBar />
+      <AiSidebar />
     </div>
   );
 }

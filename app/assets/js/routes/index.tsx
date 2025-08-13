@@ -14,6 +14,7 @@ import { TimezoneProvider } from "@/contexts/TimezoneContext";
 import { saasAdminRoutes } from "@/ee/routes";
 import CompanyLayout from "@/layouts/CompanyLayout";
 import NonCompanyLayout from "@/layouts/NonCompanyLayout";
+import { AiSidebarContextProvider } from "../features/AiSidebar/context";
 
 function NonCompanyRoutes() {
   return (
@@ -28,7 +29,9 @@ function CompanyRoutes() {
     <CurrentCompanyProvider>
       <ThemeProvider>
         <TimezoneProvider>
-          <CompanyLayout />
+          <AiSidebarContextProvider>
+            <CompanyLayout />
+          </AiSidebarContextProvider>
         </TimezoneProvider>
       </ThemeProvider>
     </CurrentCompanyProvider>

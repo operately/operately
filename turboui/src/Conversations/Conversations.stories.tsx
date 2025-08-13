@@ -2,14 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 
 import { ConversationsExample } from "./ConversationsExample";
-import {
-  Conversations,
-  type Conversation,
-  type Message,
-  type ContextAction,
-  type ContextAttachment,
-  type MessageAction,
-} from "./index";
+import { Conversations } from "./index";
 
 const meta: Meta<typeof Conversations> = {
   title: "Components/Conversations",
@@ -24,7 +17,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Mock context data
-const mockGoalContext: ContextAttachment = {
+const mockGoalContext: Conversations.ContextAttachment = {
   id: "goal-q4-revenue",
   type: "goal",
   title: "Q4 Revenue Target: $500K",
@@ -32,7 +25,7 @@ const mockGoalContext: ContextAttachment = {
 };
 
 // Context actions
-const mockGoalActions: ContextAction[] = [
+const mockGoalActions: Conversations.ContextAction[] = [
   {
     id: "evaluate-definition",
     label: "Evaluate goal definition",
@@ -54,14 +47,14 @@ const mockGoalActions: ContextAction[] = [
 // Template component for stories
 function ConversationsStory(args: any) {
   const [isOpen, setIsOpen] = useState(args.isOpen);
-  const [conversations, setConversations] = useState<Conversation[]>(args.conversations || []);
+  const [conversations, setConversations] = useState<Conversations.Conversation[]>(args.conversations || []);
   const [activeConversationId, setActiveConversationId] = useState<string | undefined>(args.activeConversationId);
 
   const handleSendMessage = async (message: string, conversationId?: string) => {
     // Simulate AI response delay
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    const newMessage: Message = {
+    const newMessage: Conversations.Message = {
       id: `msg-${Date.now()}`,
       content: message,
       timestamp: new Date(),
@@ -69,7 +62,7 @@ function ConversationsStory(args: any) {
     };
 
     let aiResponseContent = `I understand you said: "${message}". This is a simulated AI response for the Storybook demo.`;
-    let aiResponseActions: MessageAction[] = [];
+    let aiResponseActions: Conversations.MessageAction[] = [];
 
     // Add context-aware responses for demo
     if (message.includes("evaluate") || message.includes("definition")) {
@@ -88,7 +81,7 @@ function ConversationsStory(args: any) {
       ];
     }
 
-    const aiResponse: Message = {
+    const aiResponse: Conversations.Message = {
       id: `msg-${Date.now() + 1}`,
       content: aiResponseContent,
       timestamp: new Date(Date.now() + 1000),
@@ -110,7 +103,7 @@ function ConversationsStory(args: any) {
         );
       } else {
         // Create new conversation
-        const newConv: Conversation = {
+        const newConv: Conversations.Conversation = {
           id: `conv-${Date.now()}`,
           title: "New Chat",
           messages: [newMessage, aiResponse],
