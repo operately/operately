@@ -132,7 +132,7 @@ function Page() {
 
   const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
-  const { tasks, createTask, updateTaskDueDate } = useTasks(paths, backendTasks, project);
+  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee } = useTasks(paths, backendTasks, project);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -231,6 +231,7 @@ function Page() {
     searchPeople: assigneeSearch,
     onTaskCreate: createTask,
     onTaskDueDateChange: updateTaskDueDate,
+    onTaskAssigneeChange: updateTaskAssignee,
     tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
@@ -580,5 +581,32 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
       });
   };
 
-  return { tasks, createTask, updateTaskDueDate };
+  const updateTaskAssignee = async (taskId: string, assignee: ProjectPage.Person | null) => {
+    return Api.projects
+      .updateTaskAssignee({
+        taskId,
+        assigneeId: assignee?.id || null,
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+        setTasks((prev) =>
+          prev.map((t) => {
+            if (t.id === taskId) {
+              return Tasks.parseTaskForTurboUi(paths, data.task);
+            }
+            return t;
+          }),
+        );
+
+        return { success: true };
+      })
+      .catch((e) => {
+        console.error("Failed to update task assignee", e);
+        showErrorToast("Error", "Failed to update task assignee");
+
+        return { success: false };
+      });
+  };
+
+  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee };
 }

@@ -17,6 +17,7 @@ export function TaskBoard({
   onStatusChange,
   onTaskCreate,
   onMilestoneCreate,
+  onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskUpdate,
   onMilestoneUpdate,
@@ -306,6 +307,7 @@ export function TaskBoard({
                   showHiddenTasksToggle={!hasAnyFilters}
                   stats={milestoneData.stats}
                   onTaskCreate={onTaskCreate ? (newTask) => onTaskCreate(newTask) : undefined}
+                  onTaskAssigneeChange={onTaskAssigneeChange}
                   onTaskDueDateChange={onTaskDueDateChange}
                   onTaskUpdate={onTaskUpdate}
                   onMilestoneUpdate={onMilestoneUpdate}
@@ -344,6 +346,7 @@ export function TaskBoard({
                     hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
                     showHiddenTasksToggle={!hasAnyFilters}
                     milestoneId="no-milestone"
+                    onTaskAssigneeChange={onTaskAssigneeChange}
                     onTaskDueDateChange={onTaskDueDateChange}
                     onTaskUpdate={onTaskUpdate}
                     searchPeople={searchPeople}
