@@ -1,5 +1,4 @@
 import * as Api from "@/api";
-import * as Companies from "@/models/companies";
 import * as React from "react";
 
 import {
@@ -31,10 +30,10 @@ import { User } from "./User";
 
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
-import { AiSidebar } from "./AiSidebar";
 
 function Navigation({ company }: { company: Api.Company }) {
   const size = useWindowSizeBreakpoints();
@@ -222,9 +221,9 @@ export default function CompanyLayout() {
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
-      <DevBar />
 
-      {Companies.hasFeature(company, "ai") && <AiSidebar />}
+      <DevBar />
+      <AiSidebar />
     </div>
   );
 }
