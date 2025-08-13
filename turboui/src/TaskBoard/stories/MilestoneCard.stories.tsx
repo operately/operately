@@ -100,16 +100,6 @@ const meta: Meta<typeof MilestoneCard> = {
           setTasks([...tasks, taskWithId]);
         };
 
-        // Handle task updates (for assignees, due dates, etc.)
-        const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
-          console.log(`Updating task ${taskId}:`, updates);
-          
-          const updatedTasks = tasks.map(task => 
-            task.id === taskId ? { ...task, ...updates } : task
-          );
-          setTasks(updatedTasks);
-        };
-
         // Handle milestone updates (including due date changes)
         const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
           console.log(`Updating milestone ${milestoneId}:`, updates);
@@ -147,7 +137,15 @@ const meta: Meta<typeof MilestoneCard> = {
               hiddenTasks={context.args.hiddenTasks || []}
               showHiddenTasksToggle={context.args.showHiddenTasksToggle ?? true}
               onTaskCreate={handleTaskCreate}
-              onTaskUpdate={handleTaskUpdate}
+              onTaskAssigneeChange={(taskId, assignee) => {
+                console.log('Task assignee updated:', taskId, assignee);
+              }}
+              onTaskDueDateChange={(taskId, dueDate) => {
+                console.log('Task due date updated:', taskId, dueDate);
+              }}
+              onTaskStatusChange={(taskId, status) => {
+                console.log('Task status updated:', taskId, status);
+              }}
               onMilestoneUpdate={handleMilestoneUpdate}
               searchPeople={searchPeople}
               availableMilestones={[milestone]}

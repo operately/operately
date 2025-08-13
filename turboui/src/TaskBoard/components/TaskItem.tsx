@@ -14,15 +14,16 @@ interface TaskItemProps {
   task: TaskWithIndex;
   milestoneId: string;
   itemStyle: (id: string) => React.CSSProperties;
-  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskAssigneeChange?: (taskId: string, assignee: Person | null) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<TaskWithIndex>) => void;
+  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
+  onTaskStatusChange: (taskId: string, status: string) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 }
 
-export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, onTaskAssigneeChange, onTaskUpdate, searchPeople }: TaskItemProps) {
+export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, onTaskAssigneeChange, onTaskStatusChange, searchPeople }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
+  const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status);
 
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
@@ -45,22 +46,13 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
     }
   }, [task.id, onTaskDueDateChange]);
 
-  // Handle status change
-  const handleStatusChange = useCallback(
-    (newStatus: string) => {
-      // Notify parent component if callback is provided
-      if (onTaskUpdate && task.id) {
-        onTaskUpdate(task.id, { status: newStatus as any });
-      }
+  const handleStatusChange = useCallback((newStatus: TaskWithIndex["status"]) => {
+    setCurrentStatus(newStatus);
 
-      // Also dispatch event for backward compatibility
-      const changeEvent = new CustomEvent("statusChange", {
-        detail: { taskId: task.id, newStatus },
-      });
-      document.dispatchEvent(changeEvent);
-    },
-    [task.id, onTaskUpdate],
-  );
+    if (onTaskStatusChange && task.id) {
+      onTaskStatusChange(task.id, newStatus);
+    }
+  }, [task.id, onTaskStatusChange]);
 
   return (
     <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
@@ -71,7 +63,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
           <div className="flex items-center gap-2 h-6">
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
-              <StatusSelector status={task.status} onChange={handleStatusChange} size="md" readonly={!onTaskUpdate} />
+              <StatusSelector status={currentStatus} onChange={handleStatusChange} size="md" readonly={!onTaskStatusChange} />
             </div>
             {/* Task title with inline meta indicators */}
             <BlackLink

@@ -92,14 +92,6 @@ export const Default: Story = {
       setTasks(updatedTasks);
     };
 
-    const handleTaskUpdate = (taskId: string, updates: Partial<Types.Task>) => {
-      console.log(`Task ${taskId} updated:`, updates);
-
-      // Update the task with the provided updates
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-      setTasks(updatedTasks);
-    };
-
     const handleTaskCreate = (newTaskData) => {
       // Generate a fake UUID for the new task
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -168,7 +160,15 @@ export const Default: Story = {
         onStatusChange={handleStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
-        onTaskUpdate={handleTaskUpdate}
+        onTaskAssigneeChange={(taskId, assignee) => {
+          console.log('Task assignee updated:', taskId, assignee);
+        }}
+        onTaskDueDateChange={(taskId, dueDate) => {
+          console.log('Task due date updated:', taskId, dueDate);
+        }}
+        onTaskStatusChange={(taskId, status) => {
+          console.log('Task status updated:', taskId, status);
+        }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
         filters={filters}

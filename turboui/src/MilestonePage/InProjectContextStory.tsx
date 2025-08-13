@@ -61,12 +61,6 @@ export function InProjectContextStory() {
     setTasks([...tasks, newTask]);
   };
 
-  const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
-    console.log("Task updated:", taskId, updates);
-    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-    setTasks(updatedTasks);
-  };
-
   const handleTaskReorder = (reorderedTasks: TaskBoardTypes.Task[]) => {
     console.log("Tasks reordered:", reorderedTasks);
     setTasks(reorderedTasks);
@@ -108,7 +102,8 @@ export function InProjectContextStory() {
     onTaskStatusChange: handleTaskStatusChange,
     onTaskCreate: handleTaskCreate,
     onMilestoneCreate: () => {},
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
     onMilestoneUpdate: handleMilestoneUpdate,
     searchPeople: mockSearchPeople,
     filters: filters,
@@ -176,7 +171,9 @@ export function InProjectContextStory() {
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
               onTaskReorder={handleTaskReorder}
-              onTaskUpdate={handleTaskUpdate}
+              onTaskAssigneeChange={() => {}}
+              onTaskDueDateChange={() => {}}
+              onTaskStatusChange={() => {}}
               onMilestoneUpdate={handleMilestoneUpdate}
               onMilestoneNameChange={async (newName) => {
                 console.log("Milestone name changed:", newName);
@@ -252,12 +249,6 @@ export function EmptyMilestoneInProjectContextStory() {
     setTasks([...tasks, newTask]);
   };
 
-  const handleTaskUpdate = (taskId: string, updates: Partial<TaskBoardTypes.Task>) => {
-    console.log("Task updated:", taskId, updates);
-    const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-    setTasks(updatedTasks);
-  };
-
   const handleTaskReorder = (reorderedTasks: TaskBoardTypes.Task[]) => {
     console.log("Tasks reordered:", reorderedTasks);
     setTasks(reorderedTasks);
@@ -299,7 +290,8 @@ export function EmptyMilestoneInProjectContextStory() {
     onTaskStatusChange: handleTaskStatusChange,
     onTaskCreate: handleTaskCreate,
     onMilestoneCreate: () => {},
-    onTaskUpdate: handleTaskUpdate,
+    onTaskAssigneeChange: () => {},
+    onTaskDueDateChange: () => {},
     onMilestoneUpdate: handleMilestoneUpdate,
     searchPeople: mockSearchPeople,
     filters: filters,
@@ -366,7 +358,9 @@ export function EmptyMilestoneInProjectContextStory() {
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
               onTaskReorder={handleTaskReorder}
-              onTaskUpdate={handleTaskUpdate}
+              onTaskAssigneeChange={() => {}}
+              onTaskDueDateChange={() => {}}
+              onTaskStatusChange={() => {}}
               onMilestoneUpdate={handleMilestoneUpdate}
               onMilestoneNameChange={async (newName) => {
                 console.log("Milestone name changed:", newName);
