@@ -29,7 +29,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIns do
   defp load(person, id, inputs) do
     requested = extract_include_filters(inputs)
 
-    query = from p in CheckIn, where: p.project_id == ^id, preload: [:acknowledged_by]
+    query = from p in CheckIn, where: p.project_id == ^id, preload: [:acknowledged_by], order_by: [desc: p.inserted_at]
 
     query
     |> include_requested(requested)
