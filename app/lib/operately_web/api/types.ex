@@ -1338,6 +1338,14 @@ defmodule OperatelyWeb.Api.Types do
     field? :logs, :string
   end
 
+  object :agent_conversation do
+    field :id, :id
+    field :title, :string
+    field :messages, list_of(:agent_message)
+    field :created_at, :datetime
+    field :updated_at, :datetime
+  end
+
   object :agent_message do
     field :id, :string
     field :content, :string

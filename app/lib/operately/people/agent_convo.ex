@@ -26,4 +26,14 @@ defmodule Operately.People.AgentConvo do
     |> validate_required([:author_id])
     |> assoc_constraint(:author)
   end
+
+  def list(person) do
+    import Ecto.Query, only: [from: 2]
+
+    from(c in __MODULE__,
+      where: c.author_id == ^person.id,
+      preload: [:messages]
+    )
+    |> Operately.Repo.all()
+  end
 end
