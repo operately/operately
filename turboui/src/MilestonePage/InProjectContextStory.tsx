@@ -25,6 +25,7 @@ const emptyMilestone: TaskBoardTypes.Milestone = {
   hasDescription: false,
   hasComments: false,
   status: "pending",
+  link: "#",
 };
 
 // Filter tasks for this milestone
@@ -56,7 +57,7 @@ export function InProjectContextStory() {
 
   const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
     const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const newTask = { id: taskId, status: "pending" as const, description: "", ...newTaskData };
+    const newTask = { id: taskId, status: "pending" as const, description: "", link: "#", ...newTaskData };
     console.log("Task created:", newTask);
     setTasks([...tasks, newTask]);
   };
@@ -244,7 +245,7 @@ export function EmptyMilestoneInProjectContextStory() {
 
   const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
     const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    const newTask = { id: taskId, status: "pending" as const, description: "", ...newTaskData };
+    const newTask = { id: taskId, status: "pending" as const, description: "", link: "#", ...newTaskData };
     console.log("Task created:", newTask);
     setTasks([...tasks, newTask]);
   };

@@ -35,6 +35,7 @@ type Story = StoryObj<typeof meta>;
 const standaloneTestMilestone: Types.Milestone = {
   id: "milestone-minimal",
   name: "Minimal Milestone",
+  link: "#",
   dueDate: undefined, // Using undefined instead of null to match the type definition
   hasDescription: false,
   hasComments: false,
@@ -75,6 +76,7 @@ export const Default: Story = {
         id: "task-minimal-milestone",
         title: "This task demonstrates a minimal milestone",
         status: "pending" as Types.Status,
+        link: "#",
         milestone: standaloneTestMilestone,
         description: null,
         dueDate: null,

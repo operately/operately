@@ -155,6 +155,7 @@ export const reorderTasksAcrossMilestones = (
           status: "pending",
           description: null,
           dueDate: null,
+          link: "#",
           milestone: originalMilestone,
           _isHelperTask: true,
         };
