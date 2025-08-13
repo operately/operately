@@ -949,6 +949,125 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "update task due date" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :update_task_due_date], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_due_date], %{due_date: contextual_date})
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it updates the task due date", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_task_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: contextual_date
+      })
+      assert res.task.due_date == contextual_date
+
+      task = Repo.reload(ctx.task)
+      assert task.due_date.date == ~D[2026-06-01]
+      assert task.due_date.date_type == :day
+    end
+
+    test "it can set the due date to nil", ctx do
+      # First set a due date
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: contextual_date
+      })
+
+      # Then remove the due date
+      assert {200, res} = mutation(ctx.conn, [:projects, :update_task_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: nil
+      })
+      assert res.task.due_date == nil
+
+      task = Repo.reload(ctx.task)
+      assert task.due_date == nil
+    end
+
+    test "it creates an activity when task due date is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      before_count = count_activities(ctx.project.id, "task_due_date_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:projects, :update_task_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: contextual_date
+      })
+
+      after_count = count_activities(ctx.project.id, "task_due_date_updating")
+      assert after_count == before_count + 1
+    end
+
+    test "it requires edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {403, _} = mutation(ctx.conn, [:projects, :update_task_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: contextual_date
+      })
+    end
+
+    test "it returns not found for non-existent task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {404, _} = mutation(ctx.conn, [:projects, :update_task_due_date], %{
+        task_id: Ecto.UUID.generate(),
+        due_date: contextual_date
+      })
+    end
+  end
+
   #
   # Helpers
   #
