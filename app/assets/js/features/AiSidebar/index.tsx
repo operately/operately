@@ -79,7 +79,7 @@ function AiSidebarElements() {
         onSendMessage={state.sendMessage}
         onUpdateConversationTitle={state.updateConversationTitle}
         contextActions={actions}
-        contextAttachment={conversationContext}
+        contextAttachment={conversationContext!}
       />
     </>
   );
