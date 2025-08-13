@@ -213,7 +213,7 @@ export const Default: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
+      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", link: "#", ...newTaskData };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -434,7 +434,7 @@ export const EmptyTasks: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
+      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", link: "#", ...newTaskData };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -729,7 +729,7 @@ export const PausedProject: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", ...newTaskData };
+      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", link: "#", ...newTaskData };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };

@@ -33,6 +33,7 @@ const sampleMilestone: Types.Milestone = {
   hasComments: true,
   commentCount: 3,
   status: "pending", // Add initial status
+  link: "#",
 };
 
 // Create a set of tasks for the milestone
@@ -41,6 +42,7 @@ const createSampleTasks = (): Types.Task[] => [
     id: "task-1",
     title: "Implement user authentication",
     status: "done",
+    link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[0]!],
     hasComments: true,
@@ -52,6 +54,7 @@ const createSampleTasks = (): Types.Task[] => [
     id: "task-2",
     title: "Design user profile page",
     status: "in_progress",
+    link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[1]!],
     hasDescription: true,
@@ -62,6 +65,7 @@ const createSampleTasks = (): Types.Task[] => [
     id: "task-3",
     title: "Fix navigation bug in sidebar",
     status: "pending",
+    link: "#",
     milestone: sampleMilestone,
     description: null,
     dueDate: null
@@ -70,6 +74,7 @@ const createSampleTasks = (): Types.Task[] => [
     id: "task-4",
     title: "Add support for dark mode",
     status: "pending",
+    link: "#",
     milestone: sampleMilestone,
     assignees: [mockPeople[2]!],
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 5)), "day"),
@@ -79,6 +84,7 @@ const createSampleTasks = (): Types.Task[] => [
     id: "task-5",
     title: "Write documentation",
     status: "done",
+    link: "#",
     milestone: sampleMilestone,
     hasDescription: true,
     description: null,
@@ -88,6 +94,7 @@ const createSampleTasks = (): Types.Task[] => [
     id: "task-6",
     title: "Create presentation for stakeholders",
     status: "in_progress",
+    link: "#",
     milestone: sampleMilestone,
     dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 2)), "day"),
     hasComments: true,
@@ -118,6 +125,7 @@ export const Default: Story = {
         id: taskId,
         status: "pending",
         description: "",
+        link: "#",
         ...newTaskData,
       };
 
@@ -223,6 +231,7 @@ export const EmptyMilestone: Story = {
       hasDescription: true,
       hasComments: false,
       status: "pending", // Add initial status
+      link: "#",
     });
     const [isSubscribed, setIsSubscribed] = useState(true);
 

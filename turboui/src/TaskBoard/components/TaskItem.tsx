@@ -67,7 +67,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
             </div>
             {/* Task title with inline meta indicators */}
             <BlackLink
-              to={`/tasks/${task.id}`}
+              to={task.link}
               className="text-sm hover:text-link-hover transition-colors truncate h-6 flex items-center relative top-[-1px]"
               underline="hover"
             >

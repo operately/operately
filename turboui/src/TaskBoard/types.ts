@@ -57,6 +57,7 @@ export interface Task {
   title: string;
   status: Status;
   description: string | null;
+  link: string;
   assignees?: Person[];
   milestone: Milestone | null;
   points?: number;
