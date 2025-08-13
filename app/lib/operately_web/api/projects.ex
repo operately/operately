@@ -429,7 +429,7 @@ defmodule OperatelyWeb.Api.Projects do
 
     inputs do
       field :task_id, :id, null: false
-      field :milestone_id, :id, null: false
+      field :milestone_id, :id, null: true
     end
 
     outputs do
@@ -841,11 +841,16 @@ defmodule OperatelyWeb.Api.Projects do
 
     def validate_milestone_belongs_to_project(multi, milestone_id) do
       Ecto.Multi.run(multi, :validate_milestone, fn _repo, %{project: project} ->
-        milestone = Operately.Projects.get_milestone!(milestone_id)
-        if milestone.project_id == project.id do
-          {:ok, milestone}
-        else
-          {:error, "Milestone must belong to the same project as the task"}
+        case milestone_id do
+          nil ->
+            {:ok, nil}
+          _ ->
+            milestone = Operately.Projects.get_milestone!(milestone_id)
+            if milestone.project_id == project.id do
+              {:ok, milestone}
+            else
+              {:error, "Milestone must belong to the same project as the task"}
+            end
         end
       end)
     end
@@ -869,6 +874,7 @@ defmodule OperatelyWeb.Api.Projects do
           name: inputs.name,
           description: %{},
           milestone_id: milestone.id,
+          project_id: milestone.project_id,
           creator_id: me.id,
           due_date: inputs.due_date
         })

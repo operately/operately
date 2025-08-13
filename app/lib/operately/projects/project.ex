@@ -21,6 +21,7 @@ defmodule Operately.Projects.Project do
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
     has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
     has_many :check_ins, CheckIn, foreign_key: :project_id
+    has_many :tasks, Operately.Tasks.Task, foreign_key: :project_id
 
     has_one :champion_contributor, Contributor, foreign_key: :project_id, where: [role: "champion"]
     has_one :reviewer_contributor, Contributor, foreign_key: :project_id, where: [role: "reviewer"]
