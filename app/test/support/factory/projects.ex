@@ -307,6 +307,7 @@ defmodule Operately.Support.Factory.Projects do
     attrs = Enum.into(opts, %{
       creator_id: ctx.creator.id,
       milestone_id: milestone.id,
+      project_id: milestone.project_id,
       title: Keyword.get(opts, :title, "Task #{testid}")
     })
 
