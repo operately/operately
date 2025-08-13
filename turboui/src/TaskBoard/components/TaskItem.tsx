@@ -14,12 +14,12 @@ interface TaskItemProps {
   task: TaskWithIndex;
   milestoneId: string;
   itemStyle: (id: string) => React.CSSProperties;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<TaskWithIndex>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 }
 
-export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeople }: TaskItemProps) {
-  // Local state for the assignee and due date
+export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, onTaskUpdate, searchPeople }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
 
@@ -43,20 +43,13 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
     [task.id, onTaskUpdate],
   );
 
-  // Handle due date change locally and notify parent
-  const handleDueDateChange = useCallback(
-    (newDueDate: DateField.ContextualDate | null) => {
-      setCurrentDueDate(newDueDate);
+  const handleDueDateChange = useCallback((newDueDate: DateField.ContextualDate | null) => {
+    setCurrentDueDate(newDueDate);
 
-      // Notify parent component if callback is provided
-      if (onTaskUpdate && task.id) {
-        onTaskUpdate(task.id, {
-          dueDate: newDueDate || undefined,
-        });
-      }
-    },
-    [task.id, onTaskUpdate],
-  );
+    if (onTaskDueDateChange && task.id) {
+      onTaskDueDateChange(task.id, newDueDate);
+    }
+  }, [task.id, onTaskDueDateChange]);
 
   // Handle status change
   const handleStatusChange = useCallback(
@@ -117,7 +110,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
           {/* Due date */}
           <div className="flex items-center group/due-date">
             {/* Show DateField when there's a date OR on hover when no date */}
-            {currentDueDate || !onTaskUpdate ? (
+            {currentDueDate || !onTaskDueDateChange ? (
               <DateField
                 date={currentDueDate}
                 onDateSelect={handleDueDateChange}
@@ -125,7 +118,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskUpdate, searchPeo
                 hideCalendarIcon={true}
                 showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
                 placeholder="Set due date"
-                readonly={!onTaskUpdate}
+                readonly={!onTaskDueDateChange}
                 size="small"
               />
             ) : (

@@ -14,6 +14,7 @@ export interface MilestoneCardProps {
   hiddenTasks?: Types.Task[];
   showHiddenTasksToggle?: boolean;
   onTaskCreate?: (task: Types.NewTaskPayload) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
@@ -36,6 +37,7 @@ export function MilestoneCard({
   hiddenTasks = [],
   showHiddenTasksToggle = false,
   onTaskCreate,
+  onTaskDueDateChange,
   onTaskUpdate,
   onMilestoneUpdate,
   searchPeople,
@@ -146,6 +148,7 @@ export function MilestoneCard({
             hiddenTasks={hiddenTasks}
             showHiddenTasksToggle={showHiddenTasksToggle}
             milestoneId={milestone.id}
+            onTaskDueDateChange={onTaskDueDateChange}
             onTaskUpdate={onTaskUpdate}
             searchPeople={searchPeople}
           />

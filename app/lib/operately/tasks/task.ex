@@ -36,7 +36,7 @@ defmodule Operately.Tasks.Task do
     field :description, :map
 
     field :deprecated_due_date, :naive_datetime
-    embeds_one :due_date, Operately.ContextualDates.ContextualDate
+    embeds_one :due_date, Operately.ContextualDates.ContextualDate, on_replace: :update
 
     field :status, :string, default: "todo"
     field :closed_at, :naive_datetime

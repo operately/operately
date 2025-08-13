@@ -125,6 +125,7 @@ export namespace ProjectPage {
     milestones: Milestone[];
     onTaskStatusChange?: (taskId: string, newStatus: TaskBoardTypes.Status) => void;
     onTaskCreate: (task: NewTaskPayload) => void;
+    onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskUpdate?: (taskId: string, updates: Partial<TaskBoardTypes.Task>) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
@@ -215,6 +216,7 @@ export function ProjectPage(props: ProjectPage.Props) {
               onStatusChange={state.onTaskStatusChange}
               onTaskCreate={state.onTaskCreate}
               onMilestoneCreate={state.onMilestoneCreate}
+              onTaskDueDateChange={state.onTaskDueDateChange}
               onTaskUpdate={state.onTaskUpdate}
               onMilestoneUpdate={state.onMilestoneUpdate}
               searchPeople={state.searchPeople}
