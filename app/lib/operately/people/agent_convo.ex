@@ -4,6 +4,7 @@ defmodule Operately.People.AgentConvo do
 
   schema "agent_convos" do
     field :request_id, :string
+    # field :title, :string
 
     belongs_to :goal, Operately.Goals.Goal, type: :binary_id
     belongs_to :author, Operately.People.Person, type: :binary_id
