@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Conversations, FloatingActionButton, IconRobotFace, useConversations } from "turboui";
+import { useAiSidebarContext } from "./context";
 
 const actions: Conversations.ContextAction[] = [
   {
@@ -25,14 +26,36 @@ const actions: Conversations.ContextAction[] = [
   },
 ];
 
-const context: Conversations.ContextAttachment = {
-  id: "goal-q4-revenue",
-  type: "goal",
-  title: "Q4 Revenue Target: $500K",
-  url: "/goals",
-};
+interface AiSidebarProps {
+  conversationContext: Conversations.ContextAttachment | null;
+}
+
+export function useAiSidebar(props: AiSidebarProps) {
+  const ctx = useAiSidebarContext();
+
+  React.useEffect(() => {
+    ctx.setConversationContext(props.conversationContext);
+
+    return () => {
+      ctx.setConversationContext(null);
+    };
+  }, []);
+}
 
 export function AiSidebar() {
+  const ctx = useAiSidebarContext();
+
+  if (ctx.enabled && ctx.conversationContext) {
+    return <AiSidebarElements />;
+  } else {
+    return null;
+  }
+}
+
+function AiSidebarElements() {
+  const ctx = useAiSidebarContext();
+  const conversationContext = ctx.conversationContext;
+
   const state = useConversations({});
 
   return (
@@ -56,7 +79,7 @@ export function AiSidebar() {
         onSendMessage={state.sendMessage}
         onUpdateConversationTitle={state.updateConversationTitle}
         contextActions={actions}
-        contextAttachment={context}
+        contextAttachment={conversationContext}
       />
     </>
   );
