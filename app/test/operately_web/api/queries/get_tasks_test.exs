@@ -147,7 +147,7 @@ defmodule OperatelyWeb.Api.Queries.GetTasksTest do
     })
     milestone = milestone_fixture(%{ project_id: project.id })
     tasks = Enum.map(1..3, fn _ ->
-      task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id})
+      task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: project.id})
     end)
 
     {Paths.milestone_id(milestone), tasks}

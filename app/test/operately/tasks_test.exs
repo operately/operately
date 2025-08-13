@@ -29,6 +29,7 @@ defmodule Operately.TasksTest do
       space_id: space.id,
       creator_id: person.id,
       milestone_id: milestone.id,
+      project_id: project.id,
       status: "todo",
     })
 

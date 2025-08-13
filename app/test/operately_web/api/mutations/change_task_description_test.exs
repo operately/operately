@@ -216,6 +216,7 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescriptionTest do
     task_fixture(%{
       creator_id: ctx[:creator_id] || ctx.person.id,
       milestone_id: milestone.id,
+      project_id: project.id,
     })
   end
 

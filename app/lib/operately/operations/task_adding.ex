@@ -33,6 +33,7 @@ defmodule Operately.Operations.TaskAdding do
         description: Jason.decode!(attrs.description),
         milestone_id: changes.milestone.id,
         creator_id: creator.id,
+        project_id: changes.milestone.project_id,
       })
     end)
   end

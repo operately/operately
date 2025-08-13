@@ -22,7 +22,7 @@ defmodule Operately.Operations.TaskUpdateTest do
     group = group_fixture(person)
     project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
     milestone = milestone_fixture(%{project_id: project.id, title: "Some milestone"})
-    task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, name: @prev_name})
+    task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, project_id: project.id, name: @prev_name})
     assignee_fixture(%{task_id: task.id, person_id: person.id})
 
     {:ok, company: company, person: person, task: task}

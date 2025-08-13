@@ -20,7 +20,7 @@ defmodule Operately.Operations.TaskDescriptionChangeTest do
     project = project_fixture(%{company_id: company.id, creator_id: person.id, group_id: group.id})
     milestone = milestone_fixture(%{project_id: project.id, title: "Some milestone"})
 
-    task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, name: "name"})
+    task = task_fixture(%{creator_id: person.id, milestone_id: milestone.id, project_id: project.id, name: "name"})
       |> Repo.preload(:group)
 
     {:ok, person: person, task: task, group: group}
