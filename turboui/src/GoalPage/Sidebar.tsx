@@ -21,7 +21,6 @@ import {
   IconCircleArrowRight,
   IconCircleCheck,
   IconInfoCircle,
-  IconMessages,
   IconRotateDot,
   IconTrash,
   IconUserCheck,
@@ -294,13 +293,6 @@ function Privacy(props: GoalPage.State) {
 
 function Actions(props: GoalPage.State) {
   const actions = [
-    {
-      type: "action" as const,
-      label: "Review this goal",
-      onClick: () => props.aiState.startNewReview(),
-      icon: IconMessages,
-      hidden: false,
-    },
     {
       type: "link" as const,
       label: "Close Goal",
