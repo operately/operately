@@ -1,7 +1,20 @@
 import * as Api from "@/api";
+import * as Companies from "@/models/companies";
 import * as React from "react";
 
-import { IconMenu2, IconHome2, IconBuildingEstate, IconBriefcase, IconCoffee, IconBell, IconUser, IconCircleKey, IconSwitch, IconDoorExit, IconUserCircle } from "turboui";
+import {
+  IconBell,
+  IconBriefcase,
+  IconBuildingEstate,
+  IconCircleKey,
+  IconCoffee,
+  IconDoorExit,
+  IconHome2,
+  IconMenu2,
+  IconSwitch,
+  IconUser,
+  IconUserCircle,
+} from "turboui";
 
 import { logOut } from "@/routes/auth";
 import { useLoaderData } from "react-router-dom";
@@ -21,6 +34,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
+import { AiSidebar } from "./AiSidebar";
 
 function Navigation({ company }: { company: Api.Company }) {
   const size = useWindowSizeBreakpoints();
@@ -209,6 +223,8 @@ export default function CompanyLayout() {
         <Outlet />
       </div>
       <DevBar />
+
+      {Companies.hasFeature(company, "ai") && <AiSidebar />}
     </div>
   );
 }

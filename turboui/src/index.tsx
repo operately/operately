@@ -21,7 +21,7 @@ import RichContent from "./RichContent";
 
 export { InfoCallout } from "./Callouts";
 export { Checklist } from "./Checklist";
-export { Conversations } from "./Conversations";
+export { Conversations, useConversations } from "./Conversations";
 export { DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
