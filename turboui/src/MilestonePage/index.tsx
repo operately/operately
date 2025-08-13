@@ -54,7 +54,10 @@ interface MilestonePageProps {
   onTaskReorder?: (tasks: Types.Task[]) => void;
   onCommentCreate?: (comment: string) => void;
   onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
+
+  onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
+  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskStatusChange?: (taskId: string, status: string) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
   onMilestoneNameChange?: (name: string) => Promise<boolean>;
   searchPeople: (params: { query: string }) => Promise<Types.Person[]>;
@@ -94,7 +97,9 @@ export function MilestonePage({
   onTaskCreate,
   onTaskReorder,
   onDueDateChange,
-  onTaskUpdate,
+  onTaskAssigneeChange,
+  onTaskDueDateChange,
+  onTaskStatusChange,
   onMilestoneUpdate,
   onMilestoneNameChange,
   searchPeople,
@@ -297,7 +302,9 @@ export function MilestonePage({
                           hiddenTasks={hiddenTasks}
                           showHiddenTasksToggle={hiddenTasks.length > 0}
                           milestoneId={milestone.id}
-                          onTaskUpdate={onTaskUpdate}
+                          onTaskAssigneeChange={onTaskAssigneeChange || (() => {})}
+                          onTaskDueDateChange={onTaskDueDateChange || (() => {})}
+                          onTaskStatusChange={onTaskStatusChange || (() => {})}
                           searchPeople={searchPeople}
                         />
                       </DragAndDropProvider>

@@ -146,11 +146,11 @@ export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
   onStatusChange?: (taskId: string, newStatus: Status) => void;
-  onTaskCreate?: (task: NewTaskPayload) => void;
+  onTaskCreate: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
-  onTaskAssigneeChange?: (taskId: string, assignee: Person | null) => void;
-  onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-  onTaskUpdate?: (taskId: string, updates: Partial<Task>) => void;
+  onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
+  onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskStatusChange: (taskId: string, status: string) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 
