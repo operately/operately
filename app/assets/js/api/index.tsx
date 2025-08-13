@@ -881,6 +881,14 @@ export interface AddMemberInput {
   accessLevel?: number | null;
 }
 
+export interface AgentConversation {
+  id: Id;
+  title: string;
+  messages: AgentMessage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AgentDef {
   definition: string;
   sandboxMode: boolean;
@@ -1898,6 +1906,12 @@ export interface AiGetConversationMessagesInput {
 
 export interface AiGetConversationMessagesResult {
   messages: AgentMessage[];
+}
+
+export interface AiGetConversationsInput {}
+
+export interface AiGetConversationsResult {
+  conversations: AgentConversation[];
 }
 
 export interface AiListAgentRunsInput {
@@ -4689,6 +4703,10 @@ class ApiNamespaceAi {
     return this.client.get("/ai/get_conversation_messages", input);
   }
 
+  async getConversations(input: AiGetConversationsInput): Promise<AiGetConversationsResult> {
+    return this.client.get("/ai/get_conversations", input);
+  }
+
   async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
     return this.client.get("/ai/list_agent_runs", input);
   }
@@ -7279,6 +7297,10 @@ export default {
   },
 
   ai: {
+    getConversations: (input: AiGetConversationsInput) => defaultApiClient.apiNamespaceAi.getConversations(input),
+    useGetConversations: (input: AiGetConversationsInput) =>
+      useQuery<AiGetConversationsResult>(() => defaultApiClient.apiNamespaceAi.getConversations(input)),
+
     listAgents: (input: AiListAgentsInput) => defaultApiClient.apiNamespaceAi.listAgents(input),
     useListAgents: (input: AiListAgentsInput) =>
       useQuery<AiListAgentsResult>(() => defaultApiClient.apiNamespaceAi.listAgents(input)),

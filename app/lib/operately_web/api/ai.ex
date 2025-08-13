@@ -323,6 +323,28 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule GetConversations do
+    use TurboConnect.Query
+    alias OperatelyWeb.Api.Serializer
+
+    inputs do
+    end
+
+    outputs do
+      field :conversations, list_of(:agent_conversation)
+    end
+
+    def call(conn, _inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Ecto.Multi.run(:convos, fn _repo, %{me: me} ->
+        {:ok, Operately.People.AgentConvo.list(me)}
+      end)
+      |> Steps.respond(fn res -> %{conversations: Serializer.serialize(res.convos, level: :full)} end)
+    end
+  end
+
   defmodule RunAgent do
     use TurboConnect.Mutation
     alias OperatelyWeb.Api.Serializer
