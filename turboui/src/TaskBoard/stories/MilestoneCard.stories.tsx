@@ -93,6 +93,7 @@ const meta: Meta<typeof MilestoneCard> = {
             id: `task-${Date.now()}`, // Generate a unique ID
             status: "pending" as const,
             description: "",
+            link: "#",
             ...newTask
           };
           
@@ -179,6 +180,7 @@ const sampleMilestone: Types.Milestone = {
   id: "milestone-1",
   name: "Q2 Release",
   dueDate: createContextualDate(new Date(new Date().setDate(new Date().getDate() + 10)), "day"),
+  link: "#",
   hasDescription: true,
   hasComments: true,
   commentCount: 3,
@@ -193,6 +195,7 @@ const sampleTasks: Types.Task[] = [
     status: "pending" as Types.Status,
     description: "Implement user authentication and login flow",
     milestone: sampleMilestone,
+    link: "#",
     dueDate: createContextualDate(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), "day"),
     hasDescription: true,
   },
@@ -205,6 +208,7 @@ const sampleTasks: Types.Task[] = [
       { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
     ],
     milestone: sampleMilestone,
+    link: "#",
     dueDate: createContextualDate(new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), "day"), // 2 days ago (overdue)
     hasDescription: true,
   },
@@ -216,6 +220,7 @@ const sampleTasks: Types.Task[] = [
     assignees: [
       { id: "user-2", fullName: "Bob Smith", avatarUrl: "https://i.pravatar.cc/150?u=bob" },
     ],
+    link: "#",
     hasComments: true,
     commentCount: 2,
     milestone: sampleMilestone,
@@ -226,6 +231,7 @@ const sampleTasks: Types.Task[] = [
     title: "Task without due date or assignee - hover to set",
     status: "pending" as Types.Status,
     description: null,
+    link: "#",
     milestone: sampleMilestone,
     dueDate: null,
     hasComments: false,

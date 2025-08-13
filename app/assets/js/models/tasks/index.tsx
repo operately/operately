@@ -33,6 +33,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
     title: task.name,
     status: parseTaskStatus(task.status),
     description: task.description || null,
+    link: paths.taskPath(task.id),
     assignees: task.assignees || [],
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
