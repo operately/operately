@@ -380,6 +380,49 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule UpdateTaskAssignee do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :assignee_id, :id, null: true
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_task_assignee(inputs.assignee_id)
+      |> Steps.save_activity(:task_assignee_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          task_id: changes.task.id,
+          old_assignee_id: get_old_assignee_id(changes.task),
+          new_assignee_id: inputs.assignee_id
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+      end)
+    end
+
+    defp get_old_assignee_id(task) do
+      case task.assigned_people do
+        [assignee | _] -> assignee.id
+        _ -> nil
+      end
+    end
+  end
+
   defmodule CreateTask do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -732,6 +775,30 @@ defmodule OperatelyWeb.Api.Projects do
     def update_task_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{due_date: new_due_date})
+      end)
+    end
+
+    def update_task_assignee(multi, new_assignee_id) do
+      multi
+      |> Ecto.Multi.run(:clear_existing_assignees, fn _repo, %{task: task} ->
+        # Remove existing assignees
+        Operately.Tasks.list_task_assignees(task)
+        |> Enum.each(&Operately.Repo.delete!/1)
+
+        {:ok, :cleared}
+      end)
+      |> Ecto.Multi.run(:updated_task, fn _repo, %{task: task} ->
+        if new_assignee_id do
+          {:ok, _} = Operately.Tasks.Assignee.changeset(%{
+            task_id: task.id,
+            person_id: new_assignee_id
+          }) |> Operately.Repo.insert()
+        end
+
+        # Return the updated task with preloaded assignees
+        updated_task = Operately.Repo.preload(task, :assigned_people)
+
+        {:ok, updated_task}
       end)
     end
 

@@ -15,11 +15,12 @@ interface TaskItemProps {
   milestoneId: string;
   itemStyle: (id: string) => React.CSSProperties;
   onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+  onTaskAssigneeChange?: (taskId: string, assignee: Person | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<TaskWithIndex>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 }
 
-export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, onTaskUpdate, searchPeople }: TaskItemProps) {
+export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, onTaskAssigneeChange, onTaskUpdate, searchPeople }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
 
@@ -28,20 +29,13 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
 
   const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
 
-  // Handle assignee change locally and notify parent
-  const handleAssigneeChange = useCallback(
-    (newAssignee: Person | null) => {
-      setCurrentAssignee(newAssignee);
+  const handleAssigneeChange = useCallback((newAssignee: Person | null) => {
+    setCurrentAssignee(newAssignee);
 
-      // Notify parent component if callback is provided
-      if (onTaskUpdate && task.id) {
-        onTaskUpdate(task.id, {
-          assignees: newAssignee ? [newAssignee] : [],
-        });
-      }
-    },
-    [task.id, onTaskUpdate],
-  );
+    if (onTaskAssigneeChange && task.id) {
+      onTaskAssigneeChange(task.id, newAssignee);
+    }
+  }, [task.id, onTaskAssigneeChange]);
 
   const handleDueDateChange = useCallback((newDueDate: DateField.ContextualDate | null) => {
     setCurrentDueDate(newDueDate);

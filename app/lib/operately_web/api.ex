@@ -79,6 +79,7 @@ defmodule OperatelyWeb.Api do
     mutation(:create_task, OperatelyWeb.Api.Projects.CreateTask)
     mutation(:update_task_status, OperatelyWeb.Api.Projects.UpdateTaskStatus)
     mutation(:update_task_due_date, OperatelyWeb.Api.Projects.UpdateTaskDueDate)
+    mutation(:update_task_assignee, OperatelyWeb.Api.Projects.UpdateTaskAssignee)
     mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
   end
 

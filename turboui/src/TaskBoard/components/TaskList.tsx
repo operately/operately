@@ -14,6 +14,7 @@ export interface TaskListProps {
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
   milestoneId: string;
+  onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskUpdate?: (taskId: string, updates: Partial<Types.Task>) => void;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
@@ -30,6 +31,7 @@ export function TaskList({
   hiddenTasks = [],
   showHiddenTasksToggle = false,
   milestoneId,
+  onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskUpdate,
   searchPeople,
@@ -80,6 +82,7 @@ export function TaskList({
           milestoneId={milestoneId}
           itemStyle={itemStyle}
           onTaskUpdate={onTaskUpdate}
+          onTaskAssigneeChange={onTaskAssigneeChange}
           onTaskDueDateChange={onTaskDueDateChange}
           searchPeople={searchPeople}
         />
@@ -126,6 +129,7 @@ export function TaskList({
               milestoneId={milestoneId}
               itemStyle={itemStyle}
               onTaskUpdate={onTaskUpdate}
+              onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
               searchPeople={searchPeople}
             />
