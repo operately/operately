@@ -21,14 +21,17 @@ defmodule Operately.People.AgentMessage do
 
   def changeset(agent_message, attrs) do
     agent_message
-    |> cast(attrs, [:status, :convo_id, :source, :message, :prompt])
-    |> validate_required([:status, :convo_id, :source])
+    |> cast(attrs, [:status, :convo_id, :source, :message, :prompt, :index])
+    |> validate_required([:status, :convo_id, :source, :index])
   end
 
   def create(convo, message) do
+    biggest_index = find_last_index(convo.id)
+
     Multi.new()
     |> Multi.insert(:message, fn _ ->
       Operately.People.AgentMessage.changeset(%{
+        index: biggest_index + 1,
         convo_id: convo.id,
         status: :done,
         source: :user,
@@ -38,6 +41,7 @@ defmodule Operately.People.AgentMessage do
     end)
     |> Multi.insert(:ai_resp, fn _ ->
       Operately.People.AgentMessage.changeset(%{
+        index: biggest_index + 2,
         convo_id: convo.id,
         status: :pending,
         source: :ai,
@@ -54,5 +58,15 @@ defmodule Operately.People.AgentMessage do
       OperatelyWeb.Api.Subscriptions.NewAgentMessage.broadcast(convo.id)
       res
     end)
+  end
+
+  defp find_last_index(convo_id) do
+    import Ecto.Query, only: [from: 2]
+
+    Operately.Repo.one(
+      from m in Operately.People.AgentMessage,
+        where: m.convo_id == ^convo_id,
+        select: max(m.index)
+    ) || 0
   end
 end

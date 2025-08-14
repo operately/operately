@@ -89,7 +89,7 @@ function AiSidebarElements() {
     setActiveConversationId,
   });
 
-  const sendMessage = useSendMessage({ activeConversationId });
+  const sendMessage = useSendMessage({ activeConversationId, setConversations });
 
   return (
     <>

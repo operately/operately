@@ -46,6 +46,7 @@ defmodule Operately.People.AgentConvo do
     end)
     |> Multi.insert(:my_msg, fn %{convo: convo} ->
       Operately.People.AgentMessage.changeset(%{
+        index: 0,
         convo_id: convo.id,
         status: :done,
         source: :user,
@@ -55,6 +56,7 @@ defmodule Operately.People.AgentConvo do
     end)
     |> Multi.insert(:ai_resp, fn %{convo: convo} ->
       Operately.People.AgentMessage.changeset(%{
+        index: 1,
         convo_id: convo.id,
         status: :pending,
         source: :ai,
