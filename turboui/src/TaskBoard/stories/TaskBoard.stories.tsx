@@ -86,14 +86,6 @@ export const Default: Story = {
       setTasks((prev) => [...prev, taskWithStandaloneMilestone]);
     }, []);
 
-    const handleStatusChange = (taskId, newStatus) => {
-      console.log(`Task ${taskId} status changed to ${newStatus}`);
-
-      // Update the task status locally
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
-      setTasks(updatedTasks);
-    };
-
     const handleTaskCreate = (newTaskData) => {
       // Generate a fake UUID for the new task
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -159,7 +151,6 @@ export const Default: Story = {
       <TaskBoard
         tasks={tasks}
         milestones={milestones}
-        onStatusChange={handleStatusChange}
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
