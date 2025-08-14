@@ -1,6 +1,7 @@
 defmodule Operately.People.AgentMessage do
   use Operately.Schema
   import Ecto.Changeset
+  alias Ecto.Multi
 
   schema "agent_messages" do
     belongs_to :convo, Operately.People.AgentConvo
@@ -9,6 +10,7 @@ defmodule Operately.People.AgentMessage do
     field :status, Ecto.Enum, values: [:pending, :done], default: :pending
     field :message, :string
     field :prompt, :string
+    field :index, :integer
 
     timestamps()
   end
@@ -21,5 +23,36 @@ defmodule Operately.People.AgentMessage do
     agent_message
     |> cast(attrs, [:status, :convo_id, :source, :message, :prompt])
     |> validate_required([:status, :convo_id, :source])
+  end
+
+  def create(convo, message) do
+    Multi.new()
+    |> Multi.insert(:message, fn _ ->
+      Operately.People.AgentMessage.changeset(%{
+        convo_id: convo.id,
+        status: :done,
+        source: :user,
+        prompt: "",
+        message: message
+      })
+    end)
+    |> Multi.insert(:ai_resp, fn _ ->
+      Operately.People.AgentMessage.changeset(%{
+        convo_id: convo.id,
+        status: :pending,
+        source: :ai,
+        prompt: message,
+        message: "Running..."
+      })
+    end)
+    |> Multi.run(:schedule_response, fn _repo, %{ai_resp: ai_resp} ->
+      Operately.Ai.AgentConvoWorker.new(%{message_id: ai_resp.id}) |> Oban.insert()
+    end)
+    |> Operately.Repo.transaction()
+    |> Operately.Repo.extract_result(:message)
+    |> then(fn res ->
+      OperatelyWeb.Api.Subscriptions.NewAgentMessage.broadcast(convo.id)
+      res
+    end)
   end
 end

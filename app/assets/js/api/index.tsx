@@ -2779,6 +2779,16 @@ export interface AiRunAgentResult {
   run: AgentRun;
 }
 
+export interface AiSendMessageInput {
+  conversationId: Id;
+  message: string;
+}
+
+export interface AiSendMessageResult {
+  success: boolean;
+  message: AgentMessage;
+}
+
 export interface ArchiveGoalInput {
   goalId?: string | null;
 }
@@ -4783,6 +4793,10 @@ class ApiNamespaceAi {
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
     return this.client.post("/ai/run_agent", input);
+  }
+
+  async sendMessage(input: AiSendMessageInput): Promise<AiSendMessageResult> {
+    return this.client.post("/ai/send_message", input);
   }
 }
 
@@ -7383,6 +7397,10 @@ export default {
       useMutation<AiCreateConversationInput, AiCreateConversationResult>(
         defaultApiClient.apiNamespaceAi.createConversation,
       ),
+
+    sendMessage: (input: AiSendMessageInput) => defaultApiClient.apiNamespaceAi.sendMessage(input),
+    useSendMessage: () =>
+      useMutation<AiSendMessageInput, AiSendMessageResult>(defaultApiClient.apiNamespaceAi.sendMessage),
 
     editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
     useEditAgentVerbosity: () =>
