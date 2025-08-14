@@ -15,8 +15,8 @@ import * as Types from "../types";
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckCustom {...props} className="text-success" />;
-const ColoredIconCheck = (props: any) => <IconCheck {...props} className="text-success" />;
+const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckCustom {...props} className="text-callout-success-content" />;
+const ColoredIconCheck = (props: any) => <IconCheck {...props} className="text-callout-success-content" />;
 const ColoredIconCircleX = (props: any) => <IconCircleXCustom {...props} className="text-content-dimmed" />;
 
 // Map task status to labels and icons
@@ -31,8 +31,8 @@ const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?:
   done: {
     label: "Done",
     icon: ColoredIconCircleCheckFilled,
-    color: "text-success",
-    buttonColor: "text-success",
+    color: "text-callout-success-content",
+    buttonColor: "text-callout-success-content",
   },
   canceled: {
     label: "Canceled",
