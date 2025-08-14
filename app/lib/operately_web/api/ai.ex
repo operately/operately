@@ -270,6 +270,7 @@ defmodule OperatelyWeb.Api.Ai do
 
     inputs do
       field :title, :string
+      field :prompt, :string
       field :context_type, :create_conversation_context_type
       field :context_id, :id
     end
@@ -284,7 +285,7 @@ defmodule OperatelyWeb.Api.Ai do
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:convo, fn _repo, %{me: me} ->
-        Operately.People.AgentConvo.create(me, inputs.title, inputs.context_type, inputs.context_id)
+        Operately.People.AgentConvo.create(me, inputs.title, inputs.prompt, inputs.context_type, inputs.context_id)
       end)
       |> Steps.respond(fn %{convo: convo} ->
         convo = Operately.Repo.preload(convo, [:messages, :author])
