@@ -903,6 +903,7 @@ export interface AgentMessage {
   id: string;
   content: string;
   timestamp: string;
+  sender: AgentMessageSender;
 }
 
 export interface AgentRun {
@@ -1847,6 +1848,8 @@ export type UpdateContent =
   | UpdateContentReview
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
+
+export type AgentMessageSender = "user" | "ai";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 

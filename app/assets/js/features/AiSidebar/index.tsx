@@ -62,7 +62,10 @@ function AiSidebarElements() {
 
   const [isOpen, setIsOpen] = React.useState(false);
   const openSidebar = () => setIsOpen(true);
-  const closeSidebar = () => setIsOpen(false);
+  const closeSidebar = () => {
+    setIsOpen(false);
+    setActiveConversationId(undefined);
+  };
 
   const [activeConversationId, setActiveConversationId] = React.useState<string | undefined>(undefined);
   const [conversations, setConversations] = React.useState<Conversations.Conversation[]>([]);
@@ -154,6 +157,6 @@ function prepareMessage(message: AgentMessage): Conversations.Message {
     id: message.id,
     content: message.content,
     timestamp: Time.parseISO(message.timestamp),
-    sender: "ai",
+    sender: message.sender,
   };
 }
