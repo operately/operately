@@ -7,6 +7,7 @@ import * as Types from "../types";
 import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import TaskCreationModal from "./TaskCreationModal";
 import { TaskList } from "./TaskList";
+import { compareIds, includesId } from "../../utils/ids";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -47,8 +48,10 @@ export function MilestoneCard({
   availableMilestones = [],
   availablePeople = [],
 }: MilestoneCardProps) {
+  const sortedTasks = React.useMemo(() => sortTasks(tasks, milestone), [tasks, milestone.tasksOrderingState]);
+
   // Generate default stats if not provided
-  const milestoneStats = stats || calculateMilestoneStats(tasks);
+  const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
 
   const handleCreateTask = (newTask: Types.NewTaskPayload) => {
@@ -144,9 +147,9 @@ export function MilestoneCard({
         </div>
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
-        {(tasks && tasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
+        {(sortedTasks && sortedTasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
           <TaskList
-            tasks={tasks}
+            tasks={sortedTasks}
             hiddenTasks={hiddenTasks}
             showHiddenTasksToggle={showHiddenTasksToggle}
             milestoneId={milestone.id}
@@ -171,6 +174,33 @@ export function MilestoneCard({
       />
     </>
   );
+}
+
+function sortTasks(tasks: Types.Task[], milestone: Types.Milestone) {
+  if (!milestone.tasksOrderingState || milestone.tasksOrderingState.length === 0) {
+    return tasks;
+  }
+
+  const orderingState = milestone.tasksOrderingState;
+  const tasksInOrder: Types.Task[] = [];
+  const tasksNotInOrder: Types.Task[] = [];
+
+  // First, add tasks in the order specified by tasksOrderingState
+  orderingState.forEach((taskId) => {
+    const task = tasks.find((t) => compareIds(t.id, taskId));
+    if (task) {
+      tasksInOrder.push(task);
+    }
+  });
+
+  // Then, add any tasks that aren't in the ordering state at the end
+  tasks.forEach((task) => {
+    if (!includesId(orderingState, task.id)) {
+      tasksNotInOrder.push(task);
+    }
+  });
+
+  return [...tasksInOrder, ...tasksNotInOrder];
 }
 
 /**

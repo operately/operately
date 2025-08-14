@@ -29,6 +29,7 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     status: milestone.status,
     dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
     link: paths.projectMilestonePath(milestone.id),
+    tasksOrderingState: milestone.tasksOrderingState ?? [],
   };
 }
 
