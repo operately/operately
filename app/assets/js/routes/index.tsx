@@ -119,6 +119,7 @@ export function createAppRoutes() {
         pageRoute("links/:id/edit", pages.ResourceHubEditLinkPage),
 
         pageRoute("tasks/:id", pages.TaskPage),
+        pageRoute("tasks/:id/v2", pages.TaskV2Page),
 
         pageRoute("discussions/:id", pages.DiscussionPage),
         pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
