@@ -10,6 +10,7 @@ enum ApiSignal {
   ReloadComments = "api:reload_comments",
   UnreadNotificationCount = "api:unread_notifications_count",
   ProfileUpdated = "api:profile_updated",
+  NewAgentMessage = "api:new_agent_message",
 }
 
 export enum LocalSignal {
@@ -43,4 +44,8 @@ export function useReviewRefreshSignal(callback: () => void) {
 
 export function useNotificationRefreshSignal(callback: () => void) {
   return Local.useSubscription(LocalSignal.RefreshNotificationCount, callback);
+}
+
+export function useNewAgentMessageSignal(callback: () => void, payload: { convoId: string }) {
+  return Api.useSubscription(ApiSignal.NewAgentMessage, callback, payload);
 }

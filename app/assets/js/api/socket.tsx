@@ -39,5 +39,5 @@ export function useSubscription(channelName: string, callback: () => void, paylo
       channel.off("event", callback);
       channel.leave();
     };
-  }, [channelName, callback]);
+  }, [channelName, callback, payload]);
 }
