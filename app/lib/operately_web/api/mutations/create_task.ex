@@ -7,10 +7,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateTask do
   alias Operately.Repo
 
   inputs do
-    field? :name, :string, null: true
-    field? :assignee_ids, list_of(:string), null: true
+    field :name, :string, null: false
+    field :milestone_id, :id, null: false
+    field? :assignee_ids, list_of(:id), null: true
     field? :description, :string, null: true
-    field? :milestone_id, :string, null: true
   end
 
   outputs do
@@ -19,19 +19,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateTask do
 
   def call(conn, inputs) do
     author = me(conn)
-    {:ok, milestone_id} = decode_id(inputs.milestone_id)
-    {:ok, assignee_ids} = decode_id(inputs.assignee_ids)
 
-    inputs = Map.merge(inputs, %{
-      milestone_id: milestone_id,
-      assignee_ids: assignee_ids,
-    })
-
-    if has_permissions?(author, milestone_id) do
+    if has_permissions?(author, inputs.milestone_id) do
       {:ok, task} = Operately.Operations.TaskAdding.run(author, inputs)
       {:ok, %{task: Serializer.serialize(task, level: :essential)}}
     else
-      query(milestone_id)
+      query(inputs.milestone_id)
       |> forbidden_or_not_found(author.id, join_parent: :project)
     end
   end

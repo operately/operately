@@ -3021,10 +3021,10 @@ export interface CreateSpaceResult {
 }
 
 export interface CreateTaskInput {
-  name?: string | null;
-  assigneeIds?: string[] | null;
+  name: string;
+  milestoneId: Id;
+  assigneeIds?: Id[] | null;
   description?: string | null;
-  milestoneId?: string | null;
 }
 
 export interface CreateTaskResult {
@@ -3592,7 +3592,7 @@ export interface ProjectsCreateMilestoneResult {
 }
 
 export interface ProjectsCreateTaskInput {
-  milestoneId: Id;
+  milestoneId: Id | null;
   name: string;
   assigneeId: Id | null;
   dueDate: ContextualDate | null;
@@ -3686,7 +3686,7 @@ export interface ProjectsUpdateTaskDueDateResult {
 
 export interface ProjectsUpdateTaskMilestoneInput {
   taskId: Id;
-  milestoneId: Id;
+  milestoneId: Id | null;
 }
 
 export interface ProjectsUpdateTaskMilestoneResult {

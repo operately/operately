@@ -14,6 +14,7 @@ defmodule Operately.Tasks.Task do
           reopened_at: NaiveDateTime.t() | nil,
           creator_id: Ecto.UUID.t() | nil,
           milestone_id: Ecto.UUID.t() | nil,
+          project_id: Ecto.UUID.t() | nil,
           inserted_at: NaiveDateTime.t() | nil,
           updated_at: NaiveDateTime.t() | nil
         }
@@ -21,10 +22,10 @@ defmodule Operately.Tasks.Task do
   schema "tasks" do
     belongs_to :creator, Operately.People.Person
     belongs_to :milestone, Operately.Projects.Milestone
+    belongs_to :project, Operately.Projects.Project
 
-    has_one :group, through: [:milestone, :project, :group]
+    has_one :group, through: [:project, :group]
     has_one :company, through: [:creator, :company]
-    has_one :project, through: [:milestone, :project]
     has_one :access_context, through: [:project, :access_context]
 
     has_many :assignees, Operately.Tasks.Assignee
@@ -53,9 +54,9 @@ defmodule Operately.Tasks.Task do
 
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :deprecated_due_date, :description, :size, :priority, :creator_id, :status, :closed_at, :reopened_at, :milestone_id])
+    |> cast(attrs, [:name, :deprecated_due_date, :description, :size, :priority, :creator_id, :status, :closed_at, :reopened_at, :milestone_id, :project_id])
     |> cast_embed(:due_date)
-    |> validate_required([:name, :description, :creator_id, :milestone_id])
+    |> validate_required([:name, :description, :creator_id, :project_id])
   end
 
   #
