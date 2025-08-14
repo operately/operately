@@ -581,7 +581,7 @@ defmodule Operately.AccessActivityContextAssignerTest do
   describe "assigns access_context to task activities" do
     setup ctx do
       milestone = milestone_fixture(%{project_id: ctx.project.id})
-      task = task_fixture(%{space_id: ctx.group.id, creator_id: ctx.author.id, milestone_id: milestone.id})
+      task = task_fixture(%{space_id: ctx.group.id, creator_id: ctx.author.id, milestone_id: milestone.id, project_id: ctx.project.id})
 
       Map.merge(ctx, %{milestone: milestone, task: task})
     end

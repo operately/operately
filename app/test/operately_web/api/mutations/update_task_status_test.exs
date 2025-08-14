@@ -102,6 +102,6 @@ defmodule OperatelyWeb.Api.Mutations.UpdateTaskStatusTest do
   end
 
   def create_task(ctx, milestone) do
-    task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, name: "Example task"})
+    task_fixture(%{creator_id: ctx.creator.id, milestone_id: milestone.id, project_id: milestone.project_id, name: "Example task"})
   end
 end
