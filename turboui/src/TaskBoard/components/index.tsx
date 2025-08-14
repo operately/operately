@@ -14,7 +14,6 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 export function TaskBoard({
   tasks: externalTasks,
   milestones: externalMilestones = [],
-  onStatusChange,
   onTaskCreate,
   onMilestoneCreate,
   onTaskAssigneeChange,
@@ -36,10 +35,7 @@ export function TaskBoard({
     setInternalTasks(externalTasks);
   }, [externalTasks]);
 
-  // Check if any filters are applied
-  const hasAnyFilters = useMemo(() => {
-    return filters.length > 0;
-  }, [filters]);
+  const hasAnyFilters = useMemo(() => filters.length > 0, [filters]);
 
   // Apply filters to tasks and track hidden tasks
   const { filteredTasks, hiddenTasksByMilestone } = useMemo(() => {
@@ -76,38 +72,6 @@ export function TaskBoard({
       hiddenTasksByMilestone: hiddenByMilestone,
     };
   }, [internalTasks, filters, hasAnyFilters]);
-
-  // Handle status change
-  const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
-    // Update local state
-    const updatedTasks = internalTasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
-    setInternalTasks(updatedTasks);
-
-    // Notify parent component if callback is provided
-    if (onStatusChange) {
-      onStatusChange(taskId, newStatus);
-    }
-  };
-
-  // Set up event listener for status changes from TaskItems
-  useEffect(() => {
-    const handleStatusChangeEvent = (e: Event) => {
-      const { taskId, newStatus } = (e as CustomEvent).detail;
-      handleStatusChange(taskId, newStatus);
-    };
-
-    document.addEventListener("statusChange", handleStatusChangeEvent);
-
-    return () => {
-      document.removeEventListener("statusChange", handleStatusChangeEvent);
-    };
-  }, [handleStatusChange]);
-
-  const handleCreateMilestone = (newMilestoneData: Types.NewMilestonePayload) => {
-    if (onMilestoneCreate) {
-      onMilestoneCreate(newMilestoneData);
-    }
-  };
 
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
   const milestones = useMemo(
@@ -154,7 +118,6 @@ export function TaskBoard({
 
   return (
     <div className="flex flex-col flex-1 bg-surface-base rounded-lg overflow-hidden">
-      {/* Task Creation Modal */}
       <TaskCreationModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
@@ -167,33 +130,19 @@ export function TaskBoard({
           .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
       />
 
-      {/* Milestone Creation Modal */}
       <MilestoneCreationModal
         isOpen={isMilestoneModalOpen}
         onClose={() => setIsMilestoneModalOpen(false)}
-        onCreateMilestone={handleCreateMilestone}
+        onCreateMilestone={(attrs) => onMilestoneCreate?.(attrs)}
       />
 
-      {/* Sticky action bar */}
-      <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline bg-surface-base">
-        <div className="flex flex-row items-center gap-4">
-          <PrimaryButton
-            size="xs"
-            onClick={() => {
-              setActiveTaskMilestoneId(null as unknown as string | undefined);
-              setIsTaskModalOpen(true);
-            }}
-          >
-            + New task
-          </PrimaryButton>
-
-          {/* Filter widget */}
-          {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
-
-          {/* Filter badges */}
-          {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
-        </div>
-      </header>
+      <StickyActionBar
+        setActiveTaskMilestoneId={setActiveTaskMilestoneId}
+        setIsTaskModalOpen={setIsTaskModalOpen}
+        onFiltersChange={onFiltersChange}
+        filters={filters}
+        internalTasks={internalTasks}
+      />
 
       <div className="flex-1 overflow-auto">
         <DragAndDropProvider onDrop={handleTaskReorder}>
@@ -264,6 +213,38 @@ export function TaskBoard({
       </div>
     </div>
   );
+}
+ 
+interface ActionBarProps {
+  setActiveTaskMilestoneId: (id: string | undefined) => void;
+  setIsTaskModalOpen: (open: boolean) => void;
+  onFiltersChange?: (filters: Types.FilterCondition[]) => void;
+  filters: Types.FilterCondition[];
+  internalTasks: Types.Task[];
+}
+
+function StickyActionBar({setActiveTaskMilestoneId, setIsTaskModalOpen, onFiltersChange, filters, internalTasks}: ActionBarProps) {
+  return (
+    <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline bg-surface-base">
+        <div className="flex flex-row items-center gap-4">
+          <PrimaryButton
+            size="xs"
+            onClick={() => {
+              setActiveTaskMilestoneId(null as unknown as string | undefined);
+              setIsTaskModalOpen(true);
+            }}
+          >
+            + New task
+          </PrimaryButton>
+
+          {/* Filter widget */}
+          {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
+
+          {/* Filter badges */}
+          {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
+        </div>
+      </header>
+  )
 }
 
 const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, originalTasks: Types.Task[]) => {

@@ -214,7 +214,6 @@ export function ProjectPage(props: ProjectPage.Props) {
             <TaskBoard
               tasks={state.tasks}
               milestones={state.milestones}
-              onStatusChange={state.onTaskStatusChange}
               onTaskCreate={state.onTaskCreate}
               onMilestoneCreate={state.onMilestoneCreate}
               onTaskAssigneeChange={state.onTaskAssigneeChange}
