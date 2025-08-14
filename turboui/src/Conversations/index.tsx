@@ -77,7 +77,7 @@ export namespace Conversations {
     /**
      * Called when a new conversation is created
      */
-    onCreateConversation?: () => void;
+    onCreateConversation?: (action: ContextAction | null) => void;
 
     /**
      * Called when a conversation title is updated
@@ -215,13 +215,8 @@ export function Conversations({
   };
 
   const handleContextAction = async (action: Conversations.ContextAction) => {
-    if (!onSendMessage) return;
-
-    try {
-      await onSendMessage(`Run action '${action.label}'`, activeConversationId);
-    } catch (error) {
-      console.error("Failed to execute context action:", error);
-    }
+    if (!onCreateConversation) return;
+    onCreateConversation(action);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -342,7 +337,7 @@ export function Conversations({
 
           {/* New Conversation */}
           <button
-            onClick={onCreateConversation}
+            onClick={() => onCreateConversation?.(null)}
             className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
             title="New conversation"
           >
@@ -478,7 +473,7 @@ export function Conversations({
                 <h3 className="font-medium mb-2">Welcome to Alfred</h3>
                 <p className="text-sm mb-4">Start a conversation to get AI assistance with your work.</p>
                 <button
-                  onClick={onCreateConversation}
+                  onClick={() => onCreateConversation?.(null)}
                   className="px-4 py-2 bg-accent-base text-white rounded hover:bg-accent-hover transition-colors"
                 >
                   Start New Conversation

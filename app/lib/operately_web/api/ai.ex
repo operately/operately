@@ -265,26 +265,35 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
-  defmodule StartNewGoalReview do
+  defmodule CreateConversation do
     use TurboConnect.Mutation
 
     inputs do
-      field :convo_id, :string
-      field :goal_id, :id
+      field :title, :string
+      field :context_type, :create_conversation_context_type
+      field :context_id, :id
     end
 
     outputs do
       field :success, :boolean
+      field :conversation, :agent_conversation
     end
 
     def call(conn, inputs) do
       conn
       |> Steps.start()
       |> Steps.verify_feature_enabled()
-      |> Ecto.Multi.run(:start_new_review, fn _repo, %{me: me} ->
-        Operately.Ai.GoalReview.create(me, inputs.goal_id, inputs.convo_id)
+      |> Ecto.Multi.run(:convo, fn _repo, %{me: me} ->
+        Operately.People.AgentConvo.create(me, inputs.title, inputs.context_type, inputs.context_id)
       end)
-      |> Steps.respond(fn _ -> %{success: true} end)
+      |> Steps.respond(fn %{convo: convo} ->
+        convo = Operately.Repo.preload(convo, [:messages, :author])
+
+        %{
+          success: true,
+          conversation: OperatelyWeb.Api.Serializer.serialize(convo, level: :full)
+        }
+      end)
     end
   end
 
