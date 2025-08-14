@@ -89,6 +89,8 @@ function AiSidebarElements() {
     setActiveConversationId,
   });
 
+  const sendMessage = useSendMessage({ activeConversationId, setConversations });
+
   return (
     <>
       <FloatingActionButton
@@ -107,8 +109,7 @@ function AiSidebarElements() {
         activeConversationId={activeConversationId}
         onSelectConversation={setActiveConversationId}
         onCreateConversation={createConvo}
-        onSendMessage={async (...args) => console.log("Send message", args)}
-        onUpdateConversationTitle={async (...args) => console.log("Update conversation title", args)}
+        onSendMessage={sendMessage}
         contextActions={actions}
         contextAttachment={conversationContext!}
         maxWidth={1000}
@@ -144,6 +145,46 @@ function useCreateConvo({
         setActiveConversationId(newConvo.id);
       });
   }, []);
+}
+
+function useSendMessage({
+  setConversations,
+  activeConversationId,
+}: {
+  setConversations: React.Dispatch<React.SetStateAction<Conversations.Conversation[]>>;
+  activeConversationId: string | undefined;
+}) {
+  return React.useCallback(
+    async (message: string) => {
+      if (!activeConversationId) return;
+
+      try {
+        const resp = await Api.ai.sendMessage({
+          conversationId: activeConversationId,
+          message: message,
+        });
+
+        const newMessage = prepareMessage(resp.message);
+
+        setConversations((prev) => {
+          const updated = prev.map((c) => {
+            if (c.id === activeConversationId) {
+              return {
+                ...c,
+                messages: [...c.messages, newMessage],
+              };
+            }
+            return c;
+          });
+
+          return updated;
+        });
+      } catch (error) {
+        console.error("Failed to send message:", error);
+      }
+    },
+    [activeConversationId],
+  );
 }
 
 function prepareConvos(convos: AgentConversation[]): Conversations.Conversation[] {
