@@ -1041,6 +1041,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :description, :string, null: true
     field? :assignees, list_of(:person), null: true
     field? :creator, :person, null: true
+    field? :space, :space, null: true
   end
 
   object :activity_content_discussion_editing do
@@ -1452,9 +1453,9 @@ defmodule OperatelyWeb.Api.Types do
   enum(:milestone_status, values: Operately.Projects.Milestone.valid_status())
 
   object :milestone do
-    field :id, :string
+    field :id, :string, null: false
     field? :project, :project, null: true
-    field :title, :string
+    field :title, :string, null: false
     field :status, :milestone_status
     field :inserted_at, :date
     field :timeframe, :timeframe, null: true

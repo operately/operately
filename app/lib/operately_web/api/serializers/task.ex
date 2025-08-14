@@ -19,7 +19,9 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Tasks.Task do
       updated_at: OperatelyWeb.Api.Serializer.serialize(task.updated_at),
       assignees: OperatelyWeb.Api.Serializer.serialize(task.assigned_people),
       milestone: OperatelyWeb.Api.Serializer.serialize(task.milestone),
-      project: OperatelyWeb.Api.Serializer.serialize(task.project)
+      project: OperatelyWeb.Api.Serializer.serialize(task.project),
+      creator: OperatelyWeb.Api.Serializer.serialize(task.creator),
+      space: OperatelyWeb.Api.Serializer.serialize(task.group),
     }
   end
 end

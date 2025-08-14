@@ -8,10 +8,12 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   alias Operately.Tasks.Task
 
   inputs do
-    field? :id, :string, null: true
-    field? :include_assignees, :boolean, null: true
-    field? :include_milestone, :boolean, null: true
-    field? :include_project, :boolean, null: true
+    field :id, :id, null: false
+    field? :include_assignees, :boolean, null: false
+    field? :include_milestone, :boolean, null: false
+    field? :include_project, :boolean, null: false
+    field? :include_creator, :boolean, null: false
+    field? :include_space, :boolean, null: false
   end
 
   outputs do
@@ -19,8 +21,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs[:id])
-    task = load(me(conn), id, inputs)
+    task = load(me(conn), inputs)
 
     if task do
       {:ok, %{task: Serializer.serialize(task, level: :full)}}
@@ -29,13 +30,13 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     end
   end
 
-  defp load(person, id, inputs) do
+  defp load(person, inputs) do
     include_filters = extract_include_filters(inputs)
 
     from(t in Task,
       join: m in assoc(t, :milestone),
       join: p in assoc(m, :project), as: :project,
-      where: t.id == ^id
+      where: t.id == ^inputs.id
     )
     |> Task.scope_company(person.company_id)
     |> filter_by_view_access(person.id, named_binding: :project)
@@ -49,6 +50,8 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
         :include_assignees -> from t in q, preload: [:assigned_people]
         :include_milestone -> from [_, m, p] in q, preload: [milestone: {m, [project: p]}]
         :include_project -> from [project: p] in q, preload: [project: p]
+        :include_creator -> from t in q, preload: [:creator]
+        :include_space -> from t in q, preload: :group
         e -> raise "Unknown include filter: #{e}"
       end
     end)

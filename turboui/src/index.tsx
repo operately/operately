@@ -32,6 +32,7 @@ export { Modal } from "./Modal";
 export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
+export { TaskPage } from "./TaskPage";
 export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";
 export { TextField } from "./TextField";
