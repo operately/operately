@@ -37,6 +37,7 @@ defmodule OperatelyWeb.Api do
     query(:get_conversation_messages, OperatelyWeb.Api.Ai.GetConversationMessages)
     query(:get_conversations, OperatelyWeb.Api.Ai.GetConversations)
     mutation(:create_conversation, OperatelyWeb.Api.Ai.CreateConversation)
+    mutation(:send_message, OperatelyWeb.Api.Ai.SendMessage)
   end
 
   namespace(:goals) do
