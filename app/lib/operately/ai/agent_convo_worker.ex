@@ -17,6 +17,8 @@ defmodule Operately.Ai.AgentConvoWorker do
   @impl Oban.Worker
   def perform(job) do
     message_id = job.args["message_id"]
+    IO.inspect(message_id, label: "AgentConvoWorker message_id")
+
     message = Operately.Repo.get!(Operately.People.AgentMessage, message_id)
     convo = Operately.Repo.get!(Operately.People.AgentConvo, message.convo_id)
     goal = Operately.Repo.get!(Operately.Goals.Goal, convo.goal_id)
@@ -25,9 +27,11 @@ defmodule Operately.Ai.AgentConvoWorker do
     {:ok, chain} = create_chain(message.prompt, goal_details)
     response = ChainResult.to_string!(chain)
 
-    {:ok, _message} = update_message(message, response)
+    {:ok, message} = update_message(message, response)
 
-    OperatelyWeb.ApiSocket.broadcast!("api:agent_convo_new_message:#{convo.id}")
+    OperatelyWeb.Api.Subscriptions.NewAgentMessage.broadcast(convo.id)
+
+    {:ok, message}
   end
 
   def create_chain(prompt, goal_details) do
