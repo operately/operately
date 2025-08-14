@@ -1,6 +1,7 @@
 import Api from "@/api";
 import { PageModule } from "@/routes/types";
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 
 import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
@@ -22,7 +23,6 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
-import { useNavigate } from "react-router-dom";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -130,9 +130,14 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
-  const { milestones, createMilestone, updateMilestone } = useMilestones(paths, project);
+  const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
-  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } = useTasks(paths, backendTasks, project);
+  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } = useTasks(
+    paths,
+    backendTasks,
+    project,
+    setMilestones,
+  );
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -454,9 +459,8 @@ function useMilestones(paths: Paths, project: Projects.Project) {
         return { success: false };
       });
   };
-  console.log(project.milestones);
 
-  return { milestones, createMilestone, updateMilestone };
+  return { milestones, setMilestones, createMilestone, updateMilestone };
 }
 
 function useResources(project: Projects.Project) {
@@ -532,7 +536,12 @@ function useResources(project: Projects.Project) {
   return { resources, createResource, updateResource, removeResource };
 }
 
-function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Project) {
+function useTasks(
+  paths: Paths,
+  backendTasks: Tasks.Task[],
+  project: Projects.Project,
+  setMilestones: React.Dispatch<React.SetStateAction<ProjectPage.Milestone[]>>,
+) {
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
 
   const createTask = async (task: ProjectPage.NewTaskPayload) => {
@@ -631,27 +640,30 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
   };
 
   const updateTaskMilestone = async (taskId: string, milestoneId: string, index: number) => {
-    return Api.projects
-      .updateTaskMilestone({ taskId, milestoneId, index })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setTasks((prev) =>
-          prev.map((t) => {
-            if (t.id === taskId) {
-              return Tasks.parseTaskForTurboUi(paths, data.task);
-            }
-            return t;
-          }),
-        );
+    try {
+      const data = await Api.projects.updateTaskMilestone({ taskId, milestoneId, index });
 
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update task milestone", e);
-        showErrorToast("Error", "Failed to update task milestone");
+      PageCache.invalidate(pageCacheKey(project.id));
 
-        return { success: false };
-      });
+      const milestonesResponse = await Api.projects.getMilestones({ projectId: project.id });
+
+      setTasks((prev) =>
+        prev.map((t) => {
+          if (t.id === taskId) {
+            return Tasks.parseTaskForTurboUi(paths, data.task);
+          }
+          return t;
+        }),
+      );
+      setMilestones(parseMilestonesForTurboUi(paths, milestonesResponse.milestones || []));
+
+      return { success: true };
+    } catch (e) {
+      console.error("Failed to update task milestone", e);
+      showErrorToast("Error", "Failed to update task milestone");
+
+      return { success: false };
+    }
   };
 
   return { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone };

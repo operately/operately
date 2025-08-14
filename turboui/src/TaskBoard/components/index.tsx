@@ -87,8 +87,6 @@ export function TaskBoard({
 
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-      console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
-
       if (onTaskMilestoneChange) {
         onTaskMilestoneChange(draggedId, dropZoneId, indexInDropZone);
       } else {
@@ -108,8 +106,6 @@ export function TaskBoard({
         // Update state with the reordered tasks
         setInternalTasks(updatedTasks);
       }
-
-      console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
 
       return true; // Successfully handled the reorder
     },

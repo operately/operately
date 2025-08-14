@@ -105,6 +105,127 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "get milestones" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :get_milestones], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:projects, :get_milestones], %{})
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it returns not found for non-existent project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns not found for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+    end
+
+    test "it returns milestones for project creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.milestones) == 1
+      assert hd(res.milestones).id == Paths.milestone_id(ctx.milestone)
+      assert hd(res.milestones).title == ctx.milestone.title
+    end
+
+    test "it returns milestones for space members with view access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:space_member)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.milestones) == 1
+      assert hd(res.milestones).id == Paths.milestone_id(ctx.milestone)
+    end
+
+    test "it returns empty list when project has no milestones", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:empty_project, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.empty_project)
+      })
+
+      assert res.milestones == []
+    end
+
+    test "it returns multiple milestones when project has multiple milestones", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.add_project_milestone(:milestone3, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.milestones) == 3
+      milestone_ids = Enum.map(res.milestones, & &1.id)
+      assert Paths.milestone_id(ctx.milestone) in milestone_ids
+      assert Paths.milestone_id(ctx.milestone2) in milestone_ids
+      assert Paths.milestone_id(ctx.milestone3) in milestone_ids
+    end
+
+    test "it returns milestones in chronological order", ctx do
+      # Add milestones with different timestamps
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.add_project_milestone(:milestone3, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.milestones) == 3
+      # Verify they are ordered by creation time (first milestone should be first)
+      assert hd(res.milestones).id == Paths.milestone_id(ctx.milestone)
+    end
+
+    test "it includes tasks_ordering_state in milestone data", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_milestones], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.milestones) == 1
+      milestone = hd(res.milestones)
+      assert Map.has_key?(milestone, :tasks_ordering_state)
+    end
+  end
+
   describe "update due date" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_due_date], %{})

@@ -1205,6 +1205,7 @@ export interface Milestone {
   description?: string | null;
   comments?: MilestoneComment[] | null;
   tasksKanbanState?: string | null;
+  tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
 }
 
@@ -2503,6 +2504,14 @@ export interface ProjectDiscussionsListInput {
 
 export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
+}
+
+export interface ProjectsGetMilestonesInput {
+  projectId: Id;
+}
+
+export interface ProjectsGetMilestonesResult {
+  milestones: Milestone[] | null;
 }
 
 export interface ProjectsGetTasksInput {
@@ -4549,6 +4558,10 @@ class ApiNamespaceSpaces {
 
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
+
+  async getMilestones(input: ProjectsGetMilestonesInput): Promise<ProjectsGetMilestonesResult> {
+    return this.client.get("/projects/get_milestones", input);
+  }
 
   async getTasks(input: ProjectsGetTasksInput): Promise<ProjectsGetTasksResult> {
     return this.client.get("/projects/get_tasks", input);
@@ -7122,6 +7135,10 @@ export default {
       defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
     useParentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
       useQuery<ProjectsParentGoalSearchResult>(() => defaultApiClient.apiNamespaceProjects.parentGoalSearch(input)),
+
+    getMilestones: (input: ProjectsGetMilestonesInput) => defaultApiClient.apiNamespaceProjects.getMilestones(input),
+    useGetMilestones: (input: ProjectsGetMilestonesInput) =>
+      useQuery<ProjectsGetMilestonesResult>(() => defaultApiClient.apiNamespaceProjects.getMilestones(input)),
 
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.updateParentGoal(input),

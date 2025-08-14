@@ -55,6 +55,30 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule GetMilestones do
+    use TurboConnect.Query
+
+    inputs do
+      field :project_id, :id, null: false
+    end
+
+    outputs do
+      field :milestones, list_of(:milestone), null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_milestones()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{milestones: Serializer.serialize(changes.milestones)}
+      end)
+    end
+  end
+
   defmodule UpdateDueDate do
     use TurboConnect.Mutation
 
@@ -582,6 +606,19 @@ defmodule OperatelyWeb.Api.Projects do
           |> Repo.all()
 
         {:ok, tasks}
+      end)
+    end
+
+    def get_milestones(multi) do
+      Ecto.Multi.run(multi, :milestones, fn _repo, %{project: project} ->
+        milestones =
+          from(m in Operately.Projects.Milestone,
+            where: m.project_id == ^project.id,
+            order_by: [asc: m.inserted_at]
+          )
+          |> Repo.all()
+
+        {:ok, milestones}
       end)
     end
 
