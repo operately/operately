@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { TaskPage } from ".";
 import { InProjectContextStory } from "./InProjectContextStory";
-import { PageNew } from "../Page";
 import { DateField } from "../DateField";
 import {
   mockTaskPeople,
@@ -163,11 +162,7 @@ function Component(props: Partial<TaskPage.Props>) {
     },
   };
 
-  return (
-    <PageNew title={[defaults.name]} size="fullwidth">
-      <TaskPage {...defaults} />
-    </PageNew>
-  );
+  return <TaskPage {...defaults} />;
 }
 
 /**

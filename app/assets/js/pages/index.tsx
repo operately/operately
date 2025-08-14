@@ -102,6 +102,7 @@ import SpaceEditPage from "./SpaceEditPage";
 import SpacePage from "./SpacePage";
 import SpaceWorkMapPage from "./SpaceWorkMapPage";
 import TaskPage from "./TaskPage";
+import TaskV2Page from "./TaskV2Page";
 
 //
 // We are explocily exporting the pages here to avoid false positives
@@ -207,4 +208,5 @@ export default {
   SpacePage,
   SpaceWorkMapPage,
   TaskPage,
+  TaskV2Page,
 };
