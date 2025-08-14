@@ -1,9 +1,9 @@
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import Api from "@/api";
+import Api, { AgentConversation, AgentMessage } from "@/api";
 
-import { Conversations, FloatingActionButton, IconRobotFace, useConversations } from "turboui";
+import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
 import { useAiSidebarContext } from "./context";
 
 const actions: Conversations.ContextAction[] = [
@@ -60,48 +60,62 @@ function AiSidebarElements() {
   const ctx = useAiSidebarContext();
   const conversationContext = ctx.conversationContext;
 
-  const state = useConversations({
-    onLoadConversations: async () => {
-      const data = await Api.ai.getConversations({});
+  const [isOpen, setIsOpen] = React.useState(false);
+  const openSidebar = () => setIsOpen(true);
+  const closeSidebar = () => setIsOpen(false);
 
-      return data.conversations.map((c) => ({
-        id: c.id,
-        title: c.title,
-        createdAt: Time.parseISO(c.createdAt),
-        updatedAt: Time.parseISO(c.updatedAt),
-        messages: c.messages.map((m) => ({
-          id: m.id,
-          content: m.content,
-          timestamp: Time.parseISO(m.timestamp),
-          sender: "ai",
-        })),
-      }));
-    },
-  });
+  const [activeConversationId, setActiveConversationId] = React.useState<string | undefined>(undefined);
+  const [conversations, setConversations] = React.useState<Conversations.Conversation[]>([]);
+
+  React.useEffect(() => {
+    Api.ai.getConversations({}).then((data) => {
+      const convos = prepareConvos(data.conversations);
+      setConversations(convos);
+    });
+  }, []);
 
   return (
     <>
       <FloatingActionButton
         icon={<IconRobotFace size={20} />}
         text="Ask Alfred"
-        onClick={state.openConversations}
+        onClick={openSidebar}
         label="Ask Alfred about this goal"
         variant="primary"
         position="bottom-right"
       />
 
       <Conversations
-        isOpen={state.isOpen}
-        onClose={state.closeConversations}
-        conversations={state.conversations}
-        activeConversationId={state.activeConversationId}
-        onSelectConversation={state.selectConversation}
-        onCreateConversation={state.createConversation}
-        onSendMessage={state.sendMessage}
-        onUpdateConversationTitle={state.updateConversationTitle}
+        isOpen={isOpen}
+        onClose={closeSidebar}
+        conversations={conversations}
+        activeConversationId={activeConversationId}
+        onSelectConversation={setActiveConversationId}
+        onCreateConversation={(...args) => console.log("Create new conversation", args)}
+        onSendMessage={async (...args) => console.log("Send message", args)}
+        onUpdateConversationTitle={async (...args) => console.log("Update conversation title", args)}
         contextActions={actions}
         contextAttachment={conversationContext!}
       />
     </>
   );
+}
+
+function prepareConvos(convos: AgentConversation[]): Conversations.Conversation[] {
+  return convos.map((c) => ({
+    id: c.id,
+    title: c.title,
+    createdAt: Time.parseISO(c.createdAt),
+    updatedAt: Time.parseISO(c.updatedAt),
+    messages: c.messages.map((m) => prepareMessage(m)),
+  }));
+}
+
+function prepareMessage(message: AgentMessage): Conversations.Message {
+  return {
+    id: message.id,
+    content: message.content,
+    timestamp: Time.parseISO(message.timestamp),
+    sender: "ai",
+  };
 }
