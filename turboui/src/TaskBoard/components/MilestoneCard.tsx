@@ -85,7 +85,7 @@ export function MilestoneCard({
               ]}
             />
             <BlackLink
-              to={`/milestones/${milestone.id}`}
+              to={milestone.link || ""}
               className="text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
               underline="hover"
             >
