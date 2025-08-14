@@ -146,7 +146,6 @@ export interface FilterCondition {
 export interface TaskBoardProps {
   tasks: Task[];
   milestones?: Milestone[];
-  onStatusChange?: (taskId: string, newStatus: Status) => void;
   onTaskCreate: (task: NewTaskPayload) => void;
   onMilestoneCreate?: (milestone: NewMilestonePayload) => void;
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
