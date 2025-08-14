@@ -49,13 +49,14 @@ function Component(props: Partial<TaskPage.Props>) {
     ...restProps,
 
     // Navigation
-    spaceLink: "/spaces/product",
+    spaceLink: "#",
     spaceName: "Product",
-    projectLink: props.projectLink ?? "/projects/mobile-app",
+    projectLink: "#",
     projectName: props.projectName ?? "Mobile App V2",
     // Clear legacy milestone props when milestone is null to prevent fallback
-    milestoneLink: milestone ? (props.milestoneLink ?? "/milestones/beta-release") : undefined,
-    milestoneName: milestone ? (props.milestoneName ?? "Beta Release") : undefined,
+    milestoneLink: "#",
+    milestoneName: milestone ? (props.milestoneName ?? "Beta Release") : "",
+    workmapLink: "#",
 
     // Core data - use local state
     name: name,
