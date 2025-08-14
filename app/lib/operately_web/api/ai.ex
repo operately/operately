@@ -298,6 +298,36 @@ defmodule OperatelyWeb.Api.Ai do
     end
   end
 
+  defmodule SendMessage do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :conversation_id, :id
+      field :message, :string
+    end
+
+    outputs do
+      field :success, :boolean
+      field :message, :agent_message
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start()
+      |> Steps.verify_feature_enabled()
+      |> Steps.get_conversation(inputs.conversation_id)
+      |> Ecto.Multi.run(:message, fn _repo, %{conversation: convo} ->
+        Operately.People.AgentMessage.create(convo, inputs.message)
+      end)
+      |> Steps.respond(fn %{message: message} ->
+        %{
+          success: true,
+          message: OperatelyWeb.Api.Serializer.serialize(message, level: :full)
+        }
+      end)
+    end
+  end
+
   defmodule GetConversationMessages do
     use TurboConnect.Query
 
@@ -443,6 +473,20 @@ defmodule OperatelyWeb.Api.Ai do
         |> case do
           nil -> {:error, :not_found}
           agent -> {:ok, agent}
+        end
+      end)
+    end
+
+    def get_conversation(multi, id) do
+      Ecto.Multi.run(multi, :conversation, fn _repo, %{me: me} ->
+        Operately.Repo.one(
+          from(c in Operately.People.AgentConvo,
+            where: c.id == ^id and c.author_id == ^me.id
+          )
+        )
+        |> case do
+          nil -> {:error, :not_found}
+          convo -> {:ok, convo}
         end
       end)
     end
