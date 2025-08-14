@@ -44,7 +44,7 @@ defmodule Operately.People.AgentConvo do
         goal_id: context_id
       })
     end)
-    |> Multi.insert(:message1, fn %{convo: convo} ->
+    |> Multi.insert(:my_msg, fn %{convo: convo} ->
       Operately.People.AgentMessage.changeset(%{
         convo_id: convo.id,
         status: :done,
@@ -53,7 +53,7 @@ defmodule Operately.People.AgentConvo do
         message: "Run action: '#{title}'"
       })
     end)
-    |> Multi.insert(:message2, fn %{convo: convo} ->
+    |> Multi.insert(:ai_resp, fn %{convo: convo} ->
       Operately.People.AgentMessage.changeset(%{
         convo_id: convo.id,
         status: :pending,
@@ -62,9 +62,9 @@ defmodule Operately.People.AgentConvo do
         message: "Running..."
       })
     end)
-    # |> Multi.run(:schedule_response, fn _repo, %{message2: message2} ->
-    #   Operately.Ai.GoalReview.Worker.new(%{message_id: message2.id}) |> Oban.insert()
-    # end)
+    |> Multi.run(:schedule_response, fn _repo, %{ai_resp: ai_resp} ->
+      Operately.Ai.AgentConvoWorker.new(%{message_id: ai_resp.id}) |> Oban.insert()
+    end)
     |> Operately.Repo.transaction()
     |> Operately.Repo.extract_result(:convo)
   end
