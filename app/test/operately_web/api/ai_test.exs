@@ -171,19 +171,25 @@ defmodule OperatelyWeb.Api.AiTest do
     end
   end
 
-  describe "start_new_goal_review" do
+  describe "create_conversation" do
     setup ctx do
       Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
     end
 
     test "requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:ai, :start_new_goal_review], %{goal_id: Ecto.UUID.generate()})
+      assert {401, _} = mutation(ctx.conn, [:ai, :create_conversation], %{})
     end
 
-    test "it requires a valid conversation ID", ctx do
+    test "it requires a valid context type", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, _} = mutation(ctx.conn, [:ai, :start_new_goal_review], %{goal_id: Ecto.UUID.generate()})
+      assert {400, _} = mutation(ctx.conn, [:ai, :create_conversation], %{context_id: Ecto.UUID.generate()})
+    end
+
+    test "it requires a valid context id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, _} = mutation(ctx.conn, [:ai, :create_conversation], %{context_type: "goal"})
     end
   end
 end
