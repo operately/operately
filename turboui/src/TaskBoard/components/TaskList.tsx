@@ -117,7 +117,7 @@ export function TaskList({
       {/* Hidden tasks that are expanded with animation */}
       {hiddenTasksExpanded &&
         hiddenTasks.map((task, index) => (
-          <li
+          <div
             key={`hidden-${task.id}`}
             className="animate-fadeIn"
             style={{
@@ -133,7 +133,7 @@ export function TaskList({
               onTaskStatusChange={onTaskStatusChange}
               searchPeople={searchPeople}
             />
-          </li>
+          </div>
         ))}
     </ul>
   );
