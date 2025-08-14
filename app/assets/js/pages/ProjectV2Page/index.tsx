@@ -540,7 +540,8 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
         name: task.title,
         assigneeId: task.assignee,
         dueDate: serializeContextualDate(task.dueDate),
-        milestoneId: task.milestone.id,
+        milestoneId: task.milestone?.id || null,
+        projectId: project.id,
       })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
