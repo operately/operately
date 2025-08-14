@@ -130,12 +130,13 @@ export function InProjectContextStory() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <TaskPage
               // Navigation
-              spaceLink="/spaces/product"
+              spaceLink="#"
               spaceName="Product"
-              projectLink="/projects/mobile-app"
+              projectLink="#"
               projectName="Mobile App V2"
-              milestoneLink={taskMilestone ? "/milestones/beta-release" : undefined}
-              milestoneName={taskMilestone ? "Beta Release" : undefined}
+              milestoneLink="#"
+              milestoneName={taskMilestone ? "Beta Release" : ""}
+              workmapLink="#"
               // Core task data
               name={taskName}
               onNameChange={async (newName: string) => {

@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { TaskPage } from ".";
 import { InProjectContextStory } from "./InProjectContextStory";
-import { PageNew } from "../Page";
 import { DateField } from "../DateField";
 import {
   mockTaskPeople,
@@ -50,13 +49,14 @@ function Component(props: Partial<TaskPage.Props>) {
     ...restProps,
 
     // Navigation
-    spaceLink: "/spaces/product",
+    spaceLink: "#",
     spaceName: "Product",
-    projectLink: props.projectLink ?? "/projects/mobile-app",
+    projectLink: "#",
     projectName: props.projectName ?? "Mobile App V2",
     // Clear legacy milestone props when milestone is null to prevent fallback
-    milestoneLink: milestone ? (props.milestoneLink ?? "/milestones/beta-release") : undefined,
-    milestoneName: milestone ? (props.milestoneName ?? "Beta Release") : undefined,
+    milestoneLink: "#",
+    milestoneName: milestone ? (props.milestoneName ?? "Beta Release") : "",
+    workmapLink: "#",
 
     // Core data - use local state
     name: name,
@@ -163,11 +163,7 @@ function Component(props: Partial<TaskPage.Props>) {
     },
   };
 
-  return (
-    <PageNew title={[defaults.name]} size="fullwidth">
-      <TaskPage {...defaults} />
-    </PageNew>
-  );
+  return <TaskPage {...defaults} />;
 }
 
 /**

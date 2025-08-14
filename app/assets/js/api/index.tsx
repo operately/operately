@@ -1627,6 +1627,7 @@ export interface Task {
   description?: string | null;
   assignees?: Person[] | null;
   creator?: Person | null;
+  space?: Space | null;
 }
 
 export interface Timeframe {
@@ -2388,10 +2389,12 @@ export interface GetSpacesResult {
 }
 
 export interface GetTaskInput {
-  id?: string | null;
-  includeAssignees?: boolean | null;
-  includeMilestone?: boolean | null;
-  includeProject?: boolean | null;
+  id: Id;
+  includeAssignees?: boolean;
+  includeMilestone?: boolean;
+  includeProject?: boolean;
+  includeCreator?: boolean;
+  includeSpace?: boolean;
 }
 
 export interface GetTaskResult {

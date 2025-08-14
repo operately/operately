@@ -3,6 +3,10 @@ import { Status } from "../TaskBoard/types";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
+import { PageNew } from "../Page";
+import { useTabs } from "../Tabs";
+import { Tabs } from "../Tabs";
+import { IconClipboardText, IconMessage, IconLogs, IconListCheck, IconMessages } from "../icons";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { DateField } from "../DateField";
 
@@ -29,10 +33,11 @@ export namespace TaskPage {
     // Navigation/Hierarchy
     spaceLink: string;
     spaceName: string;
-    projectLink?: string;
-    projectName?: string;
-    milestoneLink?: string;
-    milestoneName?: string;
+    projectLink: string;
+    projectName: string;
+    milestoneLink: string;
+    milestoneName: string;
+    workmapLink: string;
 
     // Milestone selection
     milestone?: Milestone | null;
@@ -107,9 +112,19 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.State {
 export function TaskPage(props: TaskPage.Props) {
   const state = useTaskPageState(props);
 
+  const tabs = useTabs("tasks", [
+    { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
+    { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} /> },
+    { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
+    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
+    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
+  ]);
+
   return (
-    <div className="px-4 py-4">
+    <PageNew title={[state.name]} size="fullwidth" testId="task-page">
       <PageHeader {...state} />
+      <Tabs tabs={tabs} />
+
       <div className="flex-1 overflow-scroll">
         <div className="px-4 py-6">
           <div className="sm:grid sm:grid-cols-12">
@@ -118,6 +133,6 @@ export function TaskPage(props: TaskPage.Props) {
           </div>
         </div>
       </div>
-    </div>
+    </PageNew>
   );
 }
