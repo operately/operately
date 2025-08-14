@@ -4,6 +4,7 @@ import * as React from "react";
 import Api, { AgentConversation, AgentMessage } from "@/api";
 
 import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
+import { useNewAgentMessageSignal } from "../../signals";
 import { useAiSidebarContext } from "./context";
 
 const actions: Conversations.ContextAction[] = [
@@ -70,12 +71,18 @@ function AiSidebarElements() {
   const [activeConversationId, setActiveConversationId] = React.useState<string | undefined>(undefined);
   const [conversations, setConversations] = React.useState<Conversations.Conversation[]>([]);
 
-  React.useEffect(() => {
+  const refreshConversations = React.useCallback(() => {
     Api.ai.getConversations({}).then((data) => {
       const convos = prepareConvos(data.conversations);
       setConversations(convos);
     });
   }, []);
+
+  React.useEffect(() => {
+    refreshConversations();
+  }, []);
+
+  useNewAgentMessageSignal(refreshConversations, { convoId: activeConversationId! });
 
   const createConvo = useCreateConvo({
     setConversations,
@@ -104,6 +111,7 @@ function AiSidebarElements() {
         onUpdateConversationTitle={async (...args) => console.log("Update conversation title", args)}
         contextActions={actions}
         contextAttachment={conversationContext!}
+        maxWidth={1000}
       />
     </>
   );
