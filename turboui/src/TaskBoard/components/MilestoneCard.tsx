@@ -160,7 +160,6 @@ export function MilestoneCard({
         )}
       </li>
 
-      {/* Task Creation Modal */}
       <TaskCreationModal
         searchPeople={searchPeople}
         isOpen={isTaskModalOpen}

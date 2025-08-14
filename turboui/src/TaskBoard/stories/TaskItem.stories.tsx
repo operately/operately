@@ -43,11 +43,6 @@ const sharedProps = {
   itemStyle: () => ({ position: "relative" }),
 };
 
-// Event handler for status changes
-const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
-  console.log(`Status changed for task ${taskId} to ${newStatus}`);
-};
-
 // Mock people data for assignee selection
 const mockPeople: Types.Person[] = [
   { id: "user-1", fullName: "Alice Johnson", avatarUrl: "https://i.pravatar.cc/150?u=alice" },
@@ -86,26 +81,6 @@ export const BasicTask: Story = {
       setTask(args.task);
     }, [args.task]);
     
-    // Set up status change listener
-    React.useEffect(() => {
-      const handleStatusChangeEvent = (event: CustomEvent) => {
-        const { taskId, newStatus } = event.detail;
-        if (taskId === task.id) {
-          console.log(`TaskItem: Status changed for task ${taskId} to ${newStatus}`);
-          
-          // Update the task state
-          setTask({...task, status: newStatus});
-          
-          // Also call the handler for debugging
-          handleStatusChange(taskId, newStatus);
-        }
-      };
-      document.addEventListener("statusChange" as any, handleStatusChangeEvent as any);
-      return () => {
-        document.removeEventListener("statusChange" as any, handleStatusChangeEvent as any);
-      };
-    }, [task]);
-
     // Make sure all required props are passed
     return <TaskItem 
       task={task} // Use the state-managed task instead of args.task

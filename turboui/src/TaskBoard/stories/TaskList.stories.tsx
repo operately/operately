@@ -40,32 +40,6 @@ const meta: Meta<typeof TaskList> = {
           setTasks([...initialTasks]);
         }, [initialTasks]);
 
-        // Listen for status change events
-        useEffect(() => {
-          const handleStatusChange = (event: CustomEvent) => {
-            const { taskId, newStatus } = event.detail;
-            console.log(`Status changed for task ${taskId} to ${newStatus}`);
-
-            // Update task status in our state
-            const updatedTasks = tasks.map((task) => {
-              if (task.id === taskId) {
-                return { ...task, status: newStatus };
-              }
-              return task;
-            });
-
-            setTasks(updatedTasks);
-          };
-
-          // Add event listener
-          document.addEventListener("statusChange", handleStatusChange as EventListener);
-
-          // Clean up
-          return () => {
-            document.removeEventListener("statusChange", handleStatusChange as EventListener);
-          };
-        }, [tasks]);
-
         const handleDrop = (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
           console.log(`Dragged item ${draggedId} was dropped into zone ${dropZoneId} at index ${indexInDropZone}`);
 
@@ -117,16 +91,6 @@ type Story = StoryObj<typeof meta>;
 
 // Common milestone ID for all stories
 const milestoneId = "milestone-1";
-
-// Event handler for status changes
-const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
-  const event = new CustomEvent("statusChange", {
-    detail: { taskId, newStatus },
-  });
-  document.dispatchEvent(event);
-};
-
-
 
 // Mock people data for assignee selection
 const mockPeople: Types.Person[] = [
@@ -184,18 +148,6 @@ export const MultipleTasksList: Story = {
     searchPeople: mockSearchPeople,
   },
   render: (args) => {
-    // Set up status change listener
-    React.useEffect(() => {
-      const handleStatusChangeEvent = (event: CustomEvent) => {
-        const { taskId, newStatus } = event.detail;
-        handleStatusChange(taskId, newStatus);
-      };
-      document.addEventListener("statusChange" as any, handleStatusChangeEvent as any);
-      return () => {
-        document.removeEventListener("statusChange" as any, handleStatusChangeEvent as any);
-      };
-    }, []);
-
     return (
       <TaskList
         tasks={args.tasks}
@@ -343,18 +295,6 @@ export const TaskListWithHiddenCompletedTasks: Story = {
     searchPeople: mockSearchPeople,
   },
   render: (args) => {
-    // Set up status change listener
-    React.useEffect(() => {
-      const handleStatusChangeEvent = (event: CustomEvent) => {
-        const { taskId, newStatus } = event.detail;
-        handleStatusChange(taskId, newStatus);
-      };
-      document.addEventListener("statusChange" as any, handleStatusChangeEvent as any);
-      return () => {
-        document.removeEventListener("statusChange" as any, handleStatusChangeEvent as any);
-      };
-    }, []);
-
     return (
       <TaskList
         tasks={args.tasks}
