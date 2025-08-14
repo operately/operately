@@ -24,6 +24,7 @@ defmodule Operately.Projects.Milestone do
 
     field :description, :map
     field :tasks_kanban_state, :map, default: Operately.Tasks.KanbanState.initialize()
+    field :tasks_ordering_state, {:array, :string}, default: Operately.Tasks.OrderingState.initialize()
 
     has_many :comments, Operately.Comments.MilestoneComment
 
@@ -42,7 +43,7 @@ defmodule Operately.Projects.Milestone do
 
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :project_id, :deadline_at, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state])
+    |> cast(attrs, [:title, :project_id, :deadline_at, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state, :tasks_ordering_state])
     |> cast_embed(:timeframe)
     |> validate_required([:title, :tasks_kanban_state, :project_id])
   end

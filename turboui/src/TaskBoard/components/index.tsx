@@ -87,10 +87,8 @@ export function TaskBoard({
 
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
-      console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
-
       if (onTaskMilestoneChange) {
-        onTaskMilestoneChange(draggedId, dropZoneId);
+        onTaskMilestoneChange(draggedId, dropZoneId, indexInDropZone);
       } else {
         // Get all milestone objects for the utility function
         const allMilestones = milestones.map((m) => m.milestone);
@@ -108,8 +106,6 @@ export function TaskBoard({
         // Update state with the reordered tasks
         setInternalTasks(updatedTasks);
       }
-
-      console.log(`Reordered: Task ${draggedId} moved to ${dropZoneId} at position ${indexInDropZone}`);
 
       return true; // Successfully handled the reorder
     },
