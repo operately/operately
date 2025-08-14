@@ -3,7 +3,6 @@ defmodule Operately.People.AgentConvo do
   import Ecto.Changeset
 
   schema "agent_convos" do
-    field :request_id, :string
     field :title, :string
 
     belongs_to :goal, Operately.Goals.Goal, type: :binary_id
@@ -19,12 +18,7 @@ defmodule Operately.People.AgentConvo do
 
   def changeset(agent_convo, attrs) do
     agent_convo
-    |> cast(attrs, [
-      :request_id,
-      :author_id,
-      :goal_id,
-      :title
-    ])
+    |> cast(attrs, [:author_id, :title])
     |> validate_required([:author_id])
     |> assoc_constraint(:author)
   end
@@ -37,5 +31,15 @@ defmodule Operately.People.AgentConvo do
       preload: [:messages]
     )
     |> Operately.Repo.all()
+  end
+
+  def create(person, title, _context_type, context_id) do
+    %__MODULE__{}
+    |> changeset(%{
+      title: title,
+      author_id: person.id,
+      goal_id: context_id
+    })
+    |> Operately.Repo.insert()
   end
 end
