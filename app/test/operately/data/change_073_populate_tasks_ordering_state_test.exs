@@ -27,7 +27,8 @@ defmodule Operately.Data.Change073PopulateTasksOrderingStateTest do
     Change073PopulateTasksOrderingState.run()
 
     updated_milestone = Repo.get!(Milestone, ctx.milestone.id)
-    assert updated_milestone.tasks_ordering_state == [task1.id, task2.id, task3.id]
+    expected_task_ids = [OperatelyWeb.Paths.task_id(task1), OperatelyWeb.Paths.task_id(task2), OperatelyWeb.Paths.task_id(task3)]
+    assert updated_milestone.tasks_ordering_state == expected_task_ids
   end
 
   test "handles milestones without tasks", ctx do
@@ -51,7 +52,7 @@ defmodule Operately.Data.Change073PopulateTasksOrderingStateTest do
     task = create_test_task(ctx.creator, ctx.milestone, "Test Task")
 
     # Manually set a different ordering state
-    custom_ordering = ["fake-id-1", "fake-id-2", task.id]
+    custom_ordering = ["t-1", "t-2", OperatelyWeb.Paths.task_id(task)]
     Repo.update_all(
       from(m in Milestone, where: m.id == ^ctx.milestone.id),
       set: [tasks_ordering_state: custom_ordering]
@@ -91,8 +92,11 @@ defmodule Operately.Data.Change073PopulateTasksOrderingStateTest do
     updated_milestone2 = Repo.get!(Milestone, ctx.milestone2.id)
     updated_milestone3 = Repo.get!(Milestone, ctx.milestone3.id)
 
-    assert updated_milestone1.tasks_ordering_state == [task1_1.id, task1_2.id, task1_3.id]
-    assert updated_milestone2.tasks_ordering_state == [task2_1.id]
+    expected_m1_ids = [OperatelyWeb.Paths.task_id(task1_1), OperatelyWeb.Paths.task_id(task1_2), OperatelyWeb.Paths.task_id(task1_3)]
+    expected_m2_ids = [OperatelyWeb.Paths.task_id(task2_1)]
+
+    assert updated_milestone1.tasks_ordering_state == expected_m1_ids
+    assert updated_milestone2.tasks_ordering_state == expected_m2_ids
     assert updated_milestone3.tasks_ordering_state == []
   end
 
@@ -122,7 +126,7 @@ defmodule Operately.Data.Change073PopulateTasksOrderingStateTest do
 
     Enum.each(milestones_and_tasks, fn {milestone, tasks} ->
       updated_milestone = Repo.get!(Milestone, milestone.id)
-      expected_task_ids = Enum.map(tasks, & &1.id)
+      expected_task_ids = Enum.map(tasks, &OperatelyWeb.Paths.task_id/1)
       assert updated_milestone.tasks_ordering_state == expected_task_ids
     end)
   end

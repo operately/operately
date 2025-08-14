@@ -903,27 +903,27 @@ defmodule OperatelyWeb.Api.Projects do
     defp update_milestone_ordering_states(multi, new_milestone_id, index) do
       Ecto.Multi.run(multi, :update_milestone_ordering, fn repo, changes ->
         old_milestone_id = changes.task.milestone_id
-        task_id = changes.task.id
+        task = changes.task
 
         cond do
           # Case 1: Milestone didn't change, just reorder within the same milestone
           old_milestone_id == new_milestone_id and old_milestone_id != nil ->
-            update_single_milestone_ordering(repo, changes.old_milestone, task_id, index)
+            update_single_milestone_ordering(repo, changes.old_milestone, task, index)
 
           # Case 2: Task moving from one milestone to another
           old_milestone_id != nil and new_milestone_id != nil ->
-            with {:ok, _} <- remove_from_old_milestone_ordering(repo, changes.old_milestone, task_id),
-                 {:ok, _} <- add_to_new_milestone_ordering(repo, changes.new_milestone, task_id, index) do
+            with {:ok, _} <- remove_from_old_milestone_ordering(repo, changes.old_milestone, task),
+                 {:ok, _} <- add_to_new_milestone_ordering(repo, changes.new_milestone, task, index) do
               {:ok, :updated}
             end
 
           # Case 3: Task gaining a milestone (was nil)
           old_milestone_id == nil and new_milestone_id != nil ->
-            add_to_new_milestone_ordering(repo, changes.new_milestone, task_id, index)
+            add_to_new_milestone_ordering(repo, changes.new_milestone, task, index)
 
           # Case 4: Task losing a milestone (now nil)
           old_milestone_id != nil and new_milestone_id == nil ->
-            remove_from_old_milestone_ordering(repo, changes.old_milestone, task_id)
+            remove_from_old_milestone_ordering(repo, changes.old_milestone, task)
 
           # Case 5: No milestone change and both are nil
           true ->
@@ -932,26 +932,26 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    defp update_single_milestone_ordering(repo, milestone, task_id, index) do
+    defp update_single_milestone_ordering(repo, milestone, task, index) do
       ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
-      updated_ordering = Operately.Tasks.OrderingState.move_task(ordering_state, task_id, index)
+      updated_ordering = Operately.Tasks.OrderingState.move_task(ordering_state, task, index)
 
       changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
       repo.update(changeset)
     end
 
-    defp remove_from_old_milestone_ordering(repo, old_milestone, task_id) do
+    defp remove_from_old_milestone_ordering(repo, old_milestone, task) do
       ordering_state = Operately.Tasks.OrderingState.load(old_milestone.tasks_ordering_state)
-      updated_ordering = Operately.Tasks.OrderingState.remove_task(ordering_state, task_id)
+      updated_ordering = Operately.Tasks.OrderingState.remove_task(ordering_state, task)
 
       changeset = Operately.Projects.Milestone.changeset(old_milestone, %{tasks_ordering_state: updated_ordering})
       repo.update(changeset)
     end
 
-    defp add_to_new_milestone_ordering(repo, new_milestone, task_id, index) do
+    defp add_to_new_milestone_ordering(repo, new_milestone, task, index) do
       ordering_state = Operately.Tasks.OrderingState.load(new_milestone.tasks_ordering_state)
       task_index = if index != nil, do: index, else: length(ordering_state)
-      updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, task_id, task_index)
+      updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, task, task_index)
 
       changeset = Operately.Projects.Milestone.changeset(new_milestone, %{tasks_ordering_state: updated_ordering})
       repo.update(changeset)
@@ -998,7 +998,7 @@ defmodule OperatelyWeb.Api.Projects do
           milestone ->
             ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
             # Add the new task to the end of the ordering
-            updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, changes.new_task.id)
+            updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, changes.new_task)
 
             changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
             repo.update(changeset)

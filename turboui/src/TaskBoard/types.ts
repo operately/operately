@@ -34,6 +34,7 @@ export interface Milestone {
   commentCount?: number;
   status: "pending" | "done";
   link?: string;
+  orderingState?: string[];
 }
 
 export interface NewMilestonePayload extends Omit<Milestone, "id"> {}

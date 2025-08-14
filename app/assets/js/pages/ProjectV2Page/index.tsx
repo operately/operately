@@ -454,6 +454,7 @@ function useMilestones(paths: Paths, project: Projects.Project) {
         return { success: false };
       });
   };
+  console.log(project.milestones);
 
   return { milestones, createMilestone, updateMilestone };
 }
