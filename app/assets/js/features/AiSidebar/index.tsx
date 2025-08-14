@@ -74,22 +74,10 @@ function AiSidebarElements() {
     });
   }, []);
 
-  const createConvo = React.useCallback((action: Conversations.ContextAction | null) => {
-    if (!action) return;
-    if (!conversationContext) return;
-
-    Api.ai
-      .createConversation({
-        title: action.label,
-        contextType: conversationContext.type!,
-        contextId: conversationContext.id!,
-      })
-      .then((data) => {
-        const newConvo = prepareConvo(data.conversation);
-        setConversations((prev) => [newConvo, ...prev]);
-        setActiveConversationId(newConvo.id);
-      });
-  }, []);
+  const createConvo = useCreateConvo({
+    setConversations,
+    setActiveConversationId,
+  });
 
   return (
     <>
@@ -116,6 +104,35 @@ function AiSidebarElements() {
       />
     </>
   );
+}
+
+function useCreateConvo({
+  setConversations,
+  setActiveConversationId,
+}: {
+  setConversations: React.Dispatch<React.SetStateAction<Conversations.Conversation[]>>;
+  setActiveConversationId: React.Dispatch<React.SetStateAction<string | undefined>>;
+}) {
+  const ctx = useAiSidebarContext();
+  const conversationContext = ctx.conversationContext;
+
+  return React.useCallback((action: Conversations.ContextAction | null) => {
+    if (!action) return;
+    if (!conversationContext) return;
+
+    Api.ai
+      .createConversation({
+        title: action.label,
+        prompt: action.prompt,
+        contextType: conversationContext.type!,
+        contextId: conversationContext.id!,
+      })
+      .then((data) => {
+        const newConvo = prepareConvo(data.conversation);
+        setConversations((prev) => [newConvo, ...prev]);
+        setActiveConversationId(newConvo.id);
+      });
+  }, []);
 }
 
 function prepareConvos(convos: AgentConversation[]): Conversations.Conversation[] {

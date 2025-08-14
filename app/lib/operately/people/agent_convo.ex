@@ -1,6 +1,7 @@
 defmodule Operately.People.AgentConvo do
   use Operately.Schema
   import Ecto.Changeset
+  alias Ecto.Multi
 
   schema "agent_convos" do
     field :title, :string
@@ -33,13 +34,38 @@ defmodule Operately.People.AgentConvo do
     |> Operately.Repo.all()
   end
 
-  def create(person, title, _context_type, context_id) do
-    %__MODULE__{}
-    |> changeset(%{
-      title: title,
-      author_id: person.id,
-      goal_id: context_id
-    })
-    |> Operately.Repo.insert()
+  def create(person, title, prompt, _context_type, context_id) do
+    Multi.new()
+    |> Multi.insert(:convo, fn _ ->
+      %__MODULE__{}
+      |> changeset(%{
+        title: title,
+        author_id: person.id,
+        goal_id: context_id
+      })
+    end)
+    |> Multi.insert(:message1, fn %{convo: convo} ->
+      Operately.People.AgentMessage.changeset(%{
+        convo_id: convo.id,
+        status: :done,
+        source: :user,
+        prompt: prompt,
+        message: "Run action: '#{title}'"
+      })
+    end)
+    |> Multi.insert(:message2, fn %{convo: convo} ->
+      Operately.People.AgentMessage.changeset(%{
+        convo_id: convo.id,
+        status: :pending,
+        source: :ai,
+        prompt: prompt,
+        message: "Running..."
+      })
+    end)
+    # |> Multi.run(:schedule_response, fn _repo, %{message2: message2} ->
+    #   Operately.Ai.GoalReview.Worker.new(%{message_id: message2.id}) |> Oban.insert()
+    # end)
+    |> Operately.Repo.transaction()
+    |> Operately.Repo.extract_result(:convo)
   end
 end

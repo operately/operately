@@ -2695,6 +2695,7 @@ export interface AiAddAgentResult {
 
 export interface AiCreateConversationInput {
   title: string;
+  prompt: string;
   contextType: CreateConversationContextType;
   contextId: Id;
 }
