@@ -72,7 +72,7 @@ export namespace Conversations {
     /**
      * Called when a conversation is selected
      */
-    onSelectConversation?: (conversationId: string) => void;
+    onSelectConversation?: (conversationId: string | undefined) => void;
 
     /**
      * Called when a new conversation is created
@@ -337,7 +337,7 @@ export function Conversations({
 
           {/* New Conversation */}
           <button
-            onClick={() => onCreateConversation?.(null)}
+            onClick={() => onSelectConversation?.(undefined)}
             className="p-2 text-content-dimmed hover:text-content-base hover:bg-surface-highlight rounded transition-colors"
             title="New conversation"
           >
