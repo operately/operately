@@ -1347,11 +1347,13 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   enum(:create_conversation_context_type, values: [:goal, :project])
+  enum(:agent_message_sender, values: [:user, :ai])
 
   object :agent_message do
     field :id, :string
     field :content, :string
     field :timestamp, :date
+    field :sender, :agent_message_sender
   end
 
   object :person_permissions do
