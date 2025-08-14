@@ -666,17 +666,24 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       assert {401, _} = mutation(ctx.conn, [:projects, :create_task], %{})
     end
 
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{name: "New Task", milestone_id: nil, assignee_id: nil, due_date: nil})
+      assert res.message == "Missing required fields: project_id"
+    end
+
     test "it requires a milestone_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{name: "New Task", assignee_id: nil, due_date: nil})
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{project_id: Paths.project_id(ctx.project), name: "New Task", assignee_id: nil, due_date: nil})
       assert res.message == "Missing required fields: milestone_id"
     end
 
     test "it requires a name", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{project_id: Paths.project_id(ctx.project), milestone_id: Paths.milestone_id(ctx.milestone), assignee_id: nil, due_date: nil})
       assert res.message == "Missing required fields: name"
     end
 
@@ -684,6 +691,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Implement feature X",
         assignee_id: nil,
@@ -704,6 +712,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with assignee",
         assignee_id: Paths.person_id(ctx.creator),
@@ -728,6 +737,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       }
 
       assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task with due date",
         assignee_id: nil,
@@ -743,6 +753,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       before_count = count_activities(ctx.project.id, "task_adding")
 
       assert {200, _} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Activity test task",
         assignee_id: nil,
@@ -761,6 +772,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         |> Factory.log_in_person(:member)
 
       assert {403, _} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Forbidden task",
         assignee_id: nil,
@@ -768,15 +780,55 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       })
     end
 
-    test "it returns not found for non-existent milestone", ctx do
+    test "it returns not found for non-existent project", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {404, _} = mutation(ctx.conn, [:projects, :create_task], %{
-        milestone_id: Ecto.UUID.generate(),
+        project_id: Ecto.UUID.generate(),
+        milestone_id: Paths.milestone_id(ctx.milestone),
         name: "Task for missing milestone",
         assignee_id: nil,
         due_date: nil
       })
+    end
+
+    test "it creates task without milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: nil,
+        name: "Task without milestone",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.task.name == "Task without milestone"
+
+      {:ok, id} = OperatelyWeb.Api.Helpers.decode_id(res.task.id)
+      task = Operately.Tasks.Task.get!(:system, id: id)
+
+      assert task.name == "Task without milestone"
+      assert task.project_id == ctx.project.id
+      assert task.milestone_id == nil
+      assert task.creator_id == ctx.creator.id
+    end
+
+    test "it doesn't create task if milestone doesn't belong to project", ctx do
+      ctx =
+        ctx
+        |> Factory.log_in_person(:creator)
+        |> Factory.add_project(:project2, :engineering)
+
+      assert {400, res} = mutation(ctx.conn, [:projects, :create_task], %{
+        project_id: Paths.project_id(ctx.project2),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task without milestone",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      assert res.message == "Milestone must belong to the same project as the task"
     end
   end
 

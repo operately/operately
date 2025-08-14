@@ -465,7 +465,8 @@ defmodule OperatelyWeb.Api.Projects do
     use OperatelyWeb.Api.Helpers
 
     inputs do
-      field :milestone_id, :id, null: false
+      field :project_id, :id, null: false
+      field :milestone_id, :id, null: true
       field :name, :string, null: false
       field :assignee_id, :id, null: true
       field :due_date, :contextual_date, null: true
@@ -478,15 +479,16 @@ defmodule OperatelyWeb.Api.Projects do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_milestone(inputs.milestone_id)
-      |> Steps.check_milestone_permissions(:can_edit_timeline)
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
       |> Steps.create_task(inputs)
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
-          milestone_id: changes.milestone.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           name: changes.task.name
         }
@@ -573,9 +575,8 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :tasks, fn _repo, %{project: project} ->
         tasks =
           from(t in Operately.Tasks.Task,
-            join: m in assoc(t, :milestone),
-            where: m.project_id == ^project.id,
-            preload: [:assigned_people, milestone: m]
+            where: t.project_id == ^project.id,
+            preload: [:assigned_people, :milestone]
           )
           |> Repo.all()
 
@@ -866,32 +867,27 @@ defmodule OperatelyWeb.Api.Projects do
 
     def create_task(multi, inputs) do
       multi
-      |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
-        {:ok, milestone.project}
-      end)
-      |> Ecto.Multi.run(:created_task, fn _repo, %{milestone: milestone, me: me} ->
+      |> Ecto.Multi.run(:new_task, fn _repo, %{me: me} ->
         Operately.Tasks.Task.changeset(%{
           name: inputs.name,
           description: %{},
-          milestone_id: milestone.id,
-          project_id: milestone.project_id,
+          milestone_id: inputs.milestone_id,
+          project_id: inputs.project_id,
           creator_id: me.id,
           due_date: inputs.due_date
         })
         |> Repo.insert()
       end)
-      |> Ecto.Multi.run(:assignee, fn _repo, %{created_task: created_task} ->
+      |> Ecto.Multi.run(:assignee, fn _repo, %{new_task: new_task} ->
         case inputs.assignee_id do
           nil -> {:ok, nil}
           assignee_id ->
-            Operately.Tasks.Assignee.changeset(%{ task_id: created_task.id, person_id: assignee_id })
+            Operately.Tasks.Assignee.changeset(%{ task_id: new_task.id, person_id: assignee_id })
             |> Repo.insert()
         end
       end)
-      |> Ecto.Multi.run(:task, fn _repo, %{created_task: created_task, milestone: milestone} ->
-        task =
-          Repo.preload(created_task, :assigned_people)
-          |> Map.put(:milestone, milestone)
+      |> Ecto.Multi.run(:task, fn _repo, %{new_task: new_task, validate_milestone: milestone} ->
+        task = Repo.preload(new_task, :assigned_people) |> Map.put(:milestone, milestone)
 
         {:ok, task}
       end)

@@ -44,7 +44,7 @@ export interface UpdateMilestonePayload {
 
 export interface NewTaskPayload {
   title: string;
-  milestone: Milestone;
+  milestone: Milestone | null;
   dueDate: DateField.ContextualDate | null;
   assignee: string | null;
 }
