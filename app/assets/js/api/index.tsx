@@ -1850,6 +1850,8 @@ export type UpdateContent =
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
+export type CreateConversationContextType = "goal" | "project";
+
 export type GoalPrivacyValues = "public" | "internal" | "confidential" | "secret";
 
 export type GoalStatus =
@@ -2691,6 +2693,17 @@ export interface AiAddAgentResult {
   success: boolean;
 }
 
+export interface AiCreateConversationInput {
+  title: string;
+  contextType: CreateConversationContextType;
+  contextId: Id;
+}
+
+export interface AiCreateConversationResult {
+  success: boolean;
+  conversation: AgentConversation;
+}
+
 export interface AiEditAgentDailyRunInput {
   id: Id;
   enabled: boolean;
@@ -2760,15 +2773,6 @@ export interface AiRunAgentInput {
 
 export interface AiRunAgentResult {
   run: AgentRun;
-}
-
-export interface AiStartNewGoalReviewInput {
-  convoId: string;
-  goalId: Id;
-}
-
-export interface AiStartNewGoalReviewResult {
-  success: boolean;
 }
 
 export interface ArchiveGoalInput {
@@ -4737,6 +4741,10 @@ class ApiNamespaceAi {
     return this.client.post("/ai/add_agent", input);
   }
 
+  async createConversation(input: AiCreateConversationInput): Promise<AiCreateConversationResult> {
+    return this.client.post("/ai/create_conversation", input);
+  }
+
   async editAgentDailyRun(input: AiEditAgentDailyRunInput): Promise<AiEditAgentDailyRunResult> {
     return this.client.post("/ai/edit_agent_daily_run", input);
   }
@@ -4771,10 +4779,6 @@ class ApiNamespaceAi {
 
   async runAgent(input: AiRunAgentInput): Promise<AiRunAgentResult> {
     return this.client.post("/ai/run_agent", input);
-  }
-
-  async startNewGoalReview(input: AiStartNewGoalReviewInput): Promise<AiStartNewGoalReviewResult> {
-    return this.client.post("/ai/start_new_goal_review", input);
   }
 }
 
@@ -7370,10 +7374,10 @@ export default {
         defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
       ),
 
-    startNewGoalReview: (input: AiStartNewGoalReviewInput) => defaultApiClient.apiNamespaceAi.startNewGoalReview(input),
-    useStartNewGoalReview: () =>
-      useMutation<AiStartNewGoalReviewInput, AiStartNewGoalReviewResult>(
-        defaultApiClient.apiNamespaceAi.startNewGoalReview,
+    createConversation: (input: AiCreateConversationInput) => defaultApiClient.apiNamespaceAi.createConversation(input),
+    useCreateConversation: () =>
+      useMutation<AiCreateConversationInput, AiCreateConversationResult>(
+        defaultApiClient.apiNamespaceAi.createConversation,
       ),
 
     editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),

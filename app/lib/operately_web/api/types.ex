@@ -1346,6 +1346,8 @@ defmodule OperatelyWeb.Api.Types do
     field :updated_at, :datetime
   end
 
+  enum(:create_conversation_context_type, values: [:goal, :project])
+
   object :agent_message do
     field :id, :string
     field :content, :string
