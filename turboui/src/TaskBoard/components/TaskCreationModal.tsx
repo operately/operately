@@ -36,7 +36,7 @@ export function TaskCreationModal({
   const [milestone, setMilestone] = useState<Types.Milestone | null>(null);
   const [createMore, setCreateMore] = useState(false);
 
-  const disabled = !title.trim() || !milestone;
+  const disabled = !title.trim();
 
   // Default search functions if not provided
   const defaultSearchPeople = async ({ query }: { query: string }) => {

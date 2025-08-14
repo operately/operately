@@ -3592,6 +3592,7 @@ export interface ProjectsCreateMilestoneResult {
 }
 
 export interface ProjectsCreateTaskInput {
+  projectId: Id;
   milestoneId: Id | null;
   name: string;
   assigneeId: Id | null;
