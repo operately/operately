@@ -430,6 +430,7 @@ defmodule OperatelyWeb.Api.Projects do
     inputs do
       field :task_id, :id, null: false
       field :milestone_id, :id, null: true
+      field :index, :integer, null: false
     end
 
     outputs do
@@ -442,7 +443,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
-      |> Steps.update_task_milestone(inputs.milestone_id)
+      |> Steps.update_task_milestone_with_ordering(inputs.milestone_id, inputs.index)
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -856,13 +857,104 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def update_task_milestone(multi, new_milestone_id) do
-      Ecto.Multi.run(multi, :updated_task, fn _repo, changes ->
-        {:ok, task} = Operately.Tasks.update_task(changes.task, %{milestone_id: new_milestone_id})
-        task = Map.put(task, :milestone, changes.validate_milestone)
+    def update_task_milestone_with_ordering(multi, new_milestone_id, index) do
+      multi
+      |> load_milestones_for_ordering(new_milestone_id)
+      |> update_task_milestone(new_milestone_id)
+      |> update_milestone_ordering_states(new_milestone_id, index)
+    end
 
-        {:ok, task}
+    defp load_milestones_for_ordering(multi, new_milestone_id) do
+      multi
+      |> Ecto.Multi.run(:old_milestone, fn repo, changes ->
+        load_milestone_with_lock(repo, changes.task.milestone_id)
       end)
+      |> Ecto.Multi.run(:new_milestone, fn repo, _changes ->
+        load_milestone_with_lock(repo, new_milestone_id)
+      end)
+    end
+
+    defp load_milestone_with_lock(_repo, nil), do: {:ok, nil}
+    defp load_milestone_with_lock(repo, milestone_id) do
+      query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
+      case repo.one(query) do
+        nil -> {:ok, nil}
+        milestone -> {:ok, milestone}
+      end
+    end
+
+    defp update_task_milestone(multi, new_milestone_id) do
+      Ecto.Multi.run(multi, :updated_task, fn _repo, changes ->
+        old_milestone_id = changes.task.milestone_id
+
+        # Only update task if milestone actually changed
+        if old_milestone_id == new_milestone_id do
+          task = Map.put(changes.task, :milestone, changes.validate_milestone)
+          {:ok, task}
+        else
+          {:ok, task} = Operately.Tasks.update_task(changes.task, %{milestone_id: new_milestone_id})
+          task = Map.put(task, :milestone, changes.validate_milestone)
+
+          {:ok, task}
+        end
+      end)
+    end
+
+    defp update_milestone_ordering_states(multi, new_milestone_id, index) do
+      Ecto.Multi.run(multi, :update_milestone_ordering, fn repo, changes ->
+        old_milestone_id = changes.task.milestone_id
+        task_id = changes.task.id
+
+        cond do
+          # Case 1: Milestone didn't change, just reorder within the same milestone
+          old_milestone_id == new_milestone_id and old_milestone_id != nil ->
+            update_single_milestone_ordering(repo, changes.old_milestone, task_id, index)
+
+          # Case 2: Task moving from one milestone to another
+          old_milestone_id != nil and new_milestone_id != nil ->
+            with {:ok, _} <- remove_from_old_milestone_ordering(repo, changes.old_milestone, task_id),
+                 {:ok, _} <- add_to_new_milestone_ordering(repo, changes.new_milestone, task_id, index) do
+              {:ok, :updated}
+            end
+
+          # Case 3: Task gaining a milestone (was nil)
+          old_milestone_id == nil and new_milestone_id != nil ->
+            add_to_new_milestone_ordering(repo, changes.new_milestone, task_id, index)
+
+          # Case 4: Task losing a milestone (now nil)
+          old_milestone_id != nil and new_milestone_id == nil ->
+            remove_from_old_milestone_ordering(repo, changes.old_milestone, task_id)
+
+          # Case 5: No milestone change and both are nil
+          true ->
+            {:ok, :no_change}
+        end
+      end)
+    end
+
+    defp update_single_milestone_ordering(repo, milestone, task_id, index) do
+      ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
+      updated_ordering = Operately.Tasks.OrderingState.move_task(ordering_state, task_id, index)
+
+      changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
+      repo.update(changeset)
+    end
+
+    defp remove_from_old_milestone_ordering(repo, old_milestone, task_id) do
+      ordering_state = Operately.Tasks.OrderingState.load(old_milestone.tasks_ordering_state)
+      updated_ordering = Operately.Tasks.OrderingState.remove_task(ordering_state, task_id)
+
+      changeset = Operately.Projects.Milestone.changeset(old_milestone, %{tasks_ordering_state: updated_ordering})
+      repo.update(changeset)
+    end
+
+    defp add_to_new_milestone_ordering(repo, new_milestone, task_id, index) do
+      ordering_state = Operately.Tasks.OrderingState.load(new_milestone.tasks_ordering_state)
+      task_index = if index != nil, do: index, else: length(ordering_state)
+      updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, task_id, task_index)
+
+      changeset = Operately.Projects.Milestone.changeset(new_milestone, %{tasks_ordering_state: updated_ordering})
+      repo.update(changeset)
     end
 
     def create_task(multi, inputs) do
@@ -890,6 +982,27 @@ defmodule OperatelyWeb.Api.Projects do
         task = Repo.preload(new_task, :assigned_people) |> Map.put(:milestone, milestone)
 
         {:ok, task}
+      end)
+      |> add_task_to_milestone_ordering(inputs.milestone_id)
+    end
+
+    defp add_task_to_milestone_ordering(multi, nil), do: multi
+    defp add_task_to_milestone_ordering(multi, milestone_id) do
+      Ecto.Multi.run(multi, :update_milestone_ordering_for_new_task, fn repo, changes ->
+        # Load the milestone with a lock to update its ordering state
+        query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
+
+        case repo.one(query) do
+          nil -> {:ok, nil}
+
+          milestone ->
+            ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
+            # Add the new task to the end of the ordering
+            updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, changes.new_task.id)
+
+            changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
+            repo.update(changeset)
+        end
       end)
     end
 

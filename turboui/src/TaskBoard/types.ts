@@ -151,7 +151,7 @@ export interface TaskBoardProps {
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
-  onTaskMilestoneChange?: (taskId: string, milestoneId: string | null) => void;
+  onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 

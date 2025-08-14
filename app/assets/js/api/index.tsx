@@ -3688,6 +3688,7 @@ export interface ProjectsUpdateTaskDueDateResult {
 export interface ProjectsUpdateTaskMilestoneInput {
   taskId: Id;
   milestoneId: Id | null;
+  index: number;
 }
 
 export interface ProjectsUpdateTaskMilestoneResult {

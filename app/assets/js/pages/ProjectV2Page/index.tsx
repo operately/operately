@@ -629,9 +629,9 @@ function useTasks(paths: Paths, backendTasks: Tasks.Task[], project: Projects.Pr
       });
   };
 
-  const updateTaskMilestone = async (taskId: string, milestoneId: string) => {
+  const updateTaskMilestone = async (taskId: string, milestoneId: string, index: number) => {
     return Api.projects
-      .updateTaskMilestone({ taskId, milestoneId })
+      .updateTaskMilestone({ taskId, milestoneId, index })
       .then((data) => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>

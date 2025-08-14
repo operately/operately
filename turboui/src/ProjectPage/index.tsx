@@ -127,7 +127,7 @@ export namespace ProjectPage {
     onTaskAssigneeChange: (taskId: string, assignee: TaskBoardTypes.Person | null) => void;
     onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange: (taskId: string, status: string) => void;
-    onTaskMilestoneChange?: (taskId: string, milestoneId: string) => void;
+    onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
     searchPeople: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;

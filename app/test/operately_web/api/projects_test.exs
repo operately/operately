@@ -1235,7 +1235,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_milestone], %{milestone_id: Paths.milestone_id(ctx.milestone)})
+      assert {400, res} = mutation(ctx.conn, [:projects, :update_task_milestone], %{milestone_id: Paths.milestone_id(ctx.milestone), index: 0})
       assert res.message == "Missing required fields: task_id"
     end
 
@@ -1247,7 +1247,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {200, res} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
         task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.milestone2)
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        index: 0
       })
 
       assert res.task.milestone.id == Paths.milestone_id(ctx.milestone2)
@@ -1266,7 +1267,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {200, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
         task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.milestone2)
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        index: 0
       })
 
       after_count = count_activities(ctx.project.id, "task_milestone_updating")
@@ -1283,7 +1285,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {403, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
         task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.milestone2)
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        index: 0
       })
     end
 
@@ -1292,7 +1295,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {404, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
         task_id: Ecto.UUID.generate(),
-        milestone_id: Paths.milestone_id(ctx.milestone)
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        index: 0
       })
     end
 
@@ -1305,7 +1309,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {400, _} = mutation(ctx.conn, [:projects, :update_task_milestone], %{
         task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.other_milestone)
+        milestone_id: Paths.milestone_id(ctx.other_milestone),
+        index: 0
       })
     end
   end

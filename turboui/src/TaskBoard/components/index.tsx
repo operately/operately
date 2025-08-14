@@ -90,7 +90,7 @@ export function TaskBoard({
       console.log(`Handling reorder: ${draggedId} to ${dropZoneId} at index ${indexInDropZone}`);
 
       if (onTaskMilestoneChange) {
-        onTaskMilestoneChange(draggedId, dropZoneId);
+        onTaskMilestoneChange(draggedId, dropZoneId, indexInDropZone);
       } else {
         // Get all milestone objects for the utility function
         const allMilestones = milestones.map((m) => m.milestone);
