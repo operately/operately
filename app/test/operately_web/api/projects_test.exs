@@ -226,6 +226,211 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "get contributors" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :get_contributors], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:projects, :get_contributors], %{})
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it returns not found for non-existent project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns not found for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {404, _} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+    end
+
+    test "it returns contributors for project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.contributors) > 0
+      contributor_ids = Enum.map(res.contributors, & &1.id)
+      assert Paths.person_id(ctx.creator) in contributor_ids
+    end
+
+    test "it returns all contributors including champion and reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.preload(:reviewer, :person)
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.preload(:champion, :person)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      assert length(res.contributors) >= 3
+      contributor_ids = Enum.map(res.contributors, & &1.id)
+
+      assert Paths.person_id(ctx.creator) in contributor_ids
+      assert Paths.person_id(ctx.reviewer.person) in contributor_ids
+    end
+
+    test "it filters contributors by name with query parameter", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:special_contributor, :project, name: "Special Person", role: :contributor)
+        |> Factory.preload(:special_contributor, :person)
+        |> Factory.add_project_contributor(:another_contributor, :project, name: "Another Regular Person", role: :contributor)
+        |> Factory.preload(:another_contributor, :person)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project),
+        query: "Special"
+      })
+
+      assert length(res1.contributors) == 1
+      assert hd(res1.contributors).id == Paths.person_id(ctx.special_contributor.person)
+      assert hd(res1.contributors).full_name == "Special Person"
+
+      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project),
+        query: "Person"
+      })
+
+      assert length(res2.contributors) == 2
+      contributor_names = Enum.map(res2.contributors, & &1.full_name)
+      assert "Special Person" in contributor_names
+      assert "Another Regular Person" in contributor_names
+
+      # Test case insensitivity
+      assert {200, res3} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project),
+        query: "special"
+      })
+
+      assert length(res3.contributors) == 1
+      assert hd(res3.contributors).id == Paths.person_id(ctx.special_contributor.person)
+    end
+
+    test "it returns empty list when query doesn't match any contributors", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project),
+        query: "NonExistentNameOrEmail"
+      })
+
+      assert res.contributors == []
+    end
+
+    test "it excludes contributors with IDs in ignored_ids", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:test_contributor, :project, name: "Test Person", role: :contributor)
+        |> Factory.preload(:test_contributor, :person)
+        |> Factory.log_in_person(:creator)
+
+      # Get all contributors first
+      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      test_contributor_id = Paths.person_id(ctx.test_contributor.person)
+
+      contributor_ids = Enum.map(res1.contributors, & &1.id)
+      assert test_contributor_id in contributor_ids
+
+      # Now exclude it using ignored_ids
+      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project),
+        ignored_ids: [test_contributor_id]
+      })
+
+      filtered_ids = Enum.map(res2.contributors, & &1.id)
+      refute test_contributor_id in filtered_ids
+
+      assert length(res2.contributors) == length(res1.contributors) - 1
+    end
+
+    test "it does not include contributors from other projects", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:other_project, :engineering)
+        |> Factory.add_project_contributor(:other_project_contributor, :other_project, name: "Other Project Person", role: :contributor)
+        |> Factory.preload(:other_project_contributor, :person)
+        |> Factory.log_in_person(:creator)
+
+      # Get contributors for the first project
+      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      contributor_ids = Enum.map(res.contributors, & &1.id)
+
+      other_contributor_id = Paths.person_id(ctx.other_project_contributor.person)
+      refute other_contributor_id in contributor_ids
+
+      # Also verify we can get the other project's contributors separately
+      assert {200, other_res} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.other_project)
+      })
+
+      other_project_contributor_ids = Enum.map(other_res.contributors, & &1.id)
+      assert other_contributor_id in other_project_contributor_ids
+    end
+
+    test "it returns all contributors when query is empty", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Get all contributors first without query
+      assert {200, res1} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      all_contributors_count = length(res1.contributors)
+      assert all_contributors_count > 0
+
+      # Test with empty query
+      assert {200, res2} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project),
+        query: ""
+      })
+
+      assert length(res2.contributors) == all_contributors_count
+    end
+
+    test "it includes champion in contributors", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.preload(:champion, :person)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :get_contributors], %{
+        project_id: Paths.project_id(ctx.project)
+      })
+
+      contributor_ids = Enum.map(res.contributors, & &1.id)
+      assert Paths.person_id(ctx.champion.person) in contributor_ids
+    end
+  end
+
   describe "update due date" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_due_date], %{})

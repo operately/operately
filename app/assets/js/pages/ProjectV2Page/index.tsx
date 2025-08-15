@@ -23,6 +23,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
+import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 
@@ -154,8 +155,8 @@ function Page() {
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
-  const assigneeSearch = People.usePersonFieldSearch({
-    scope: { type: "project", id: project.id },
+  const assigneeSearch = usePersonFieldContributorsSearch({
+    projectId: project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
