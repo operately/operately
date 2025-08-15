@@ -2,7 +2,6 @@ import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { PrimaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
-import { applyFilters } from "../utils/taskFilterUtils";
 import * as Types from "../types";
 import { IconPlus } from "../../icons";
 import TaskCreationModal from "./TaskCreationModal";
@@ -10,7 +9,7 @@ import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
 import { MilestoneCard } from "./MilestoneCard";
 import { TaskFilter, FilterBadges } from "./TaskFilter";
-import { includesId } from "../../utils/ids";
+import { useFilteredTasks } from "../hooks";
 
 export function TaskBoard({
   tasks: externalTasks,
@@ -36,46 +35,12 @@ export function TaskBoard({
     setInternalTasks(externalTasks);
   }, [externalTasks]);
 
-  const hasAnyFilters = useMemo(() => filters.length > 0, [filters]);
-
   // Apply filters to tasks and track hidden tasks
-  const { filteredTasks, hiddenTasksByMilestone, hiddenTasks } = useMemo(() => {
-    const closedMilestoneIds = externalMilestones.filter(m => m.status === "done").map(m => m.id); 
-
-    let tasksToFilter = internalTasks.filter((task) => !includesId(closedMilestoneIds, task.milestone?.id));
-    let hiddenTasks: Types.Task[] = [];
-
-    // If no filters are applied, hide completed/canceled tasks by default
-    if (!hasAnyFilters) {
-      hiddenTasks = tasksToFilter.filter((task) => task.status === "done" || task.status === "canceled");
-      tasksToFilter = tasksToFilter.filter((task) => task.status !== "done" && task.status !== "canceled");
-    }
-
-    const filtered = applyFilters(tasksToFilter, filters);
-
-    // Group hidden tasks by milestone
-    const hiddenByMilestone: Record<string, Types.Task[]> = {
-      no_milestone: [],
-    };
-
-    hiddenTasks.forEach((task) => {
-      if (task.milestone) {
-        const milestoneId = task.milestone.id;
-        if (!hiddenByMilestone[milestoneId]) {
-          hiddenByMilestone[milestoneId] = [];
-        }
-        hiddenByMilestone[milestoneId]!.push(task);
-      } else {
-        hiddenByMilestone["no_milestone"]!.push(task);
-      }
-    });
-
-    return {
-      filteredTasks: filtered,
-      hiddenTasksByMilestone: hiddenByMilestone,
-      hiddenTasks,
-    };
-  }, [internalTasks, filters, hasAnyFilters]);
+  const { filteredTasks, hiddenTasksByMilestone, hiddenTasks, showHiddenTasksToggle } = useFilteredTasks(
+    internalTasks,
+    externalMilestones,
+    filters,
+  );
 
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
   const milestones = useMemo(
@@ -159,7 +124,7 @@ export function TaskBoard({
                   milestone={milestoneData.milestone}
                   tasks={groupedTasks[milestoneData.milestone.id] || []}
                   hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
-                  showHiddenTasksToggle={!hasAnyFilters}
+                  showHiddenTasksToggle={showHiddenTasksToggle}
                   stats={milestoneData.stats}
                   onTaskCreate={onTaskCreate}
                   onTaskAssigneeChange={onTaskAssigneeChange}
@@ -199,7 +164,7 @@ export function TaskBoard({
                   <TaskList
                     tasks={groupedTasks["no_milestone"] || []}
                     hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
-                    showHiddenTasksToggle={!hasAnyFilters}
+                    showHiddenTasksToggle={showHiddenTasksToggle}
                     milestoneId="no-milestone"
                     onTaskAssigneeChange={onTaskAssigneeChange}
                     onTaskDueDateChange={onTaskDueDateChange}
@@ -215,7 +180,7 @@ export function TaskBoard({
     </div>
   );
 }
- 
+
 interface ActionBarProps {
   setActiveTaskMilestoneId: (id: string | undefined) => void;
   setIsTaskModalOpen: (open: boolean) => void;
@@ -224,28 +189,34 @@ interface ActionBarProps {
   internalTasks: Types.Task[];
 }
 
-function StickyActionBar({setActiveTaskMilestoneId, setIsTaskModalOpen, onFiltersChange, filters, internalTasks}: ActionBarProps) {
+function StickyActionBar({
+  setActiveTaskMilestoneId,
+  setIsTaskModalOpen,
+  onFiltersChange,
+  filters,
+  internalTasks,
+}: ActionBarProps) {
   return (
     <header className="sticky top-0 z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline bg-surface-base">
-        <div className="flex flex-row items-center gap-4">
-          <PrimaryButton
-            size="xs"
-            onClick={() => {
-              setActiveTaskMilestoneId(null as unknown as string | undefined);
-              setIsTaskModalOpen(true);
-            }}
-          >
-            + New task
-          </PrimaryButton>
+      <div className="flex flex-row items-center gap-4">
+        <PrimaryButton
+          size="xs"
+          onClick={() => {
+            setActiveTaskMilestoneId(null as unknown as string | undefined);
+            setIsTaskModalOpen(true);
+          }}
+        >
+          + New task
+        </PrimaryButton>
 
-          {/* Filter widget */}
-          {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
+        {/* Filter widget */}
+        {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
 
-          {/* Filter badges */}
-          {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
-        </div>
-      </header>
-  )
+        {/* Filter badges */}
+        {onFiltersChange && <FilterBadges filters={filters} onFiltersChange={onFiltersChange} />}
+      </div>
+    </header>
+  );
 }
 
 const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, originalTasks: Types.Task[]) => {
