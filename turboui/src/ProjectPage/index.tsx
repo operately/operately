@@ -4,6 +4,7 @@ import { PageNew } from "../Page";
 
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
+import { useCountOpenTasks } from "../TaskBoard/hooks";
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
@@ -180,6 +181,7 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
 export function ProjectPage(props: ProjectPage.Props) {
   const state = useProjectPageState(props);
+  const openTasksCount = useCountOpenTasks(props.milestones, props.tasks);
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
@@ -187,7 +189,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       id: "tasks",
       label: "Tasks",
       icon: <IconListCheck size={14} />,
-      count: state.tasks.filter((task) => !task._isHelperTask).length,
+      count: openTasksCount,
       hidden: !state.tasksEnabled,
     },
     { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
