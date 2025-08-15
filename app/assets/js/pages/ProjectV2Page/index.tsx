@@ -371,7 +371,7 @@ function prepareContributor(
     id: contributor.person.id,
     fullName: contributor.person.fullName,
     avatarUrl: contributor.person.avatarUrl || "",
-    title: contributor.person.title || "",
+    title: contributor.responsibility || "",
     profileLink: paths.profilePath(contributor.person.id),
   };
 }
