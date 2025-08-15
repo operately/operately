@@ -72,6 +72,7 @@ defmodule OperatelyWeb.Api do
     query(:parent_goal_search, OperatelyWeb.Api.Projects.ParentGoalSearch)
     query(:get_tasks, OperatelyWeb.Api.Projects.GetTasks)
     query(:get_milestones, OperatelyWeb.Api.Projects.GetMilestones)
+    query(:get_contributors, OperatelyWeb.Api.Projects.GetContributors)
 
     mutation(:update_due_date, OperatelyWeb.Api.Projects.UpdateDueDate)
     mutation(:update_start_date, OperatelyWeb.Api.Projects.UpdateStartDate)

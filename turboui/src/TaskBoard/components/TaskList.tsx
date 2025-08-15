@@ -11,14 +11,13 @@ import { TaskWithIndex } from "../types";
 export interface TaskListProps {
   tasks: Types.Task[];
   hiddenTasks?: Types.Task[];
-  /** Whether to show the hidden tasks toggle (ghost row) */
-  showHiddenTasksToggle?: boolean;
   milestoneId: string;
   onTaskAssigneeChange: (taskId: string, assignee: Types.Person | null) => void;
   onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
-  // The onTaskReorder callback is handled by the DragAndDropProvider in the parent component
+  /** Whether to show the hidden tasks toggle (ghost row) */
+  showHiddenTasksToggle?: boolean;
 }
 
 /**
@@ -36,7 +35,6 @@ export function TaskList({
   onTaskStatusChange,
   searchPeople,
 }: TaskListProps) {
-  // State to track if hidden tasks are expanded
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
 
   // Add drag and drop index to each task (including expanded hidden tasks if needed)

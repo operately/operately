@@ -6,6 +6,32 @@ defmodule OperatelyWeb.Api.Projects do
   alias Operately.Repo
   alias OperatelyWeb.Api.Serializer
 
+  defmodule GetContributors do
+    use TurboConnect.Query
+
+    inputs do
+      field :project_id, :id, null: false
+      field? :query, :string, null: true
+      field? :ignored_ids, list_of(:id), null: true
+    end
+
+    outputs do
+      field :contributors, list_of(:person), null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_contributors(inputs)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{contributors: Serializer.serialize(changes.contributors, level: :essential)}
+      end)
+    end
+  end
+
   defmodule ParentGoalSearch do
     use TurboConnect.Query
 
@@ -1046,6 +1072,30 @@ defmodule OperatelyWeb.Api.Projects do
     def save_activity(multi, activity_type, callback) do
       Ecto.Multi.merge(multi, fn changes ->
         Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ -> callback.(changes) end)
+      end)
+    end
+
+    def get_contributors(multi, inputs) do
+      Ecto.Multi.run(multi, :contributors, fn _repo, %{project: project} ->
+        base_query = from(p in Operately.People.Person,
+          join: c in Operately.Projects.Contributor, on: c.person_id == p.id and c.project_id == ^project.id
+        )
+
+        query = case inputs[:query] do
+          nil -> base_query
+          "" -> base_query
+          search_str -> from(p in base_query,
+            where: ilike(p.full_name, ^"%#{search_str}%") or ilike(p.title, ^"%#{search_str}%")
+          )
+        end
+
+        query = case inputs[:ignored_ids] do
+          nil -> query
+          [] -> query
+          ignored_ids -> from(p in query, where: p.id not in ^ignored_ids)
+        end
+
+        {:ok, Repo.all(query)}
       end)
     end
 
