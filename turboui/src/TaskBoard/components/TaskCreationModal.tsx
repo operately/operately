@@ -124,6 +124,7 @@ export function TaskCreationModal({
               onDateSelect={setDueDate}
               placeholder="Set due date"
               testId="due-date"
+              calendarOnly
             />
           </div>
 

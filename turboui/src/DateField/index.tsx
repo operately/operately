@@ -38,6 +38,7 @@ export namespace DateField {
     useStartOfPeriod?: boolean;
     size?: "std" | "small" | "lg";
     error?: boolean;
+    calendarOnly?: boolean;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -82,11 +83,14 @@ export function DateField({
   minDateLimit,
   maxDateLimit,
   error = false,
+  calendarOnly = false,
 }: DateField.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
   const [previousSelectedDate, setPreviousSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
-  const [dateType, setDateType] = useState<DateField.DateType>(date?.dateType || "day");
+
+  // If calendarOnly is true, we only show the calendar and only "day" is accepted
+  const [dateType, setDateType] = useState<DateField.DateType>(calendarOnly ? "day" : (date?.dateType || "day"));
 
   const { useSidePositioning, triggerRef } = usePopoverPositioning({ open });
 
@@ -177,6 +181,7 @@ export function DateField({
             useStartOfPeriod={useStartOfPeriod}
             minDateLimit={minDateLimit}
             maxDateLimit={maxDateLimit}
+            calendarOnly={calendarOnly}
           />
         </Popover.Content>
       </Popover.Portal>
@@ -282,6 +287,7 @@ interface DatePickerContentProps {
   useStartOfPeriod: boolean;
   minDateLimit?: Date;
   maxDateLimit?: Date;
+  calendarOnly: boolean;
 }
 
 function DatePickerContent(props: DatePickerContentProps) {
@@ -298,6 +304,7 @@ function DatePickerContent(props: DatePickerContentProps) {
     minDateLimit,
     maxDateLimit,
     useStartOfPeriod,
+    calendarOnly,
   } = props;
 
   return (
@@ -310,7 +317,9 @@ function DatePickerContent(props: DatePickerContentProps) {
         {selectedDate && <ClearButton onClear={onClearDate} testId={testId} />}
       </div>
 
-      <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />
+      {!calendarOnly && (
+        <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />
+      )}
 
       {dateType === "day" && (
         <div className="mb-3">

@@ -106,6 +106,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
                 placeholder="Set due date"
                 readonly={!onTaskDueDateChange}
                 size="small"
+                calendarOnly
               />
             ) : (
               /* Empty state that appears on hover */
@@ -119,6 +120,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
                   placeholder="Set due date"
                   readonly={false}
                   size="small"
+                  calendarOnly
                 />
               </div>
             )}
