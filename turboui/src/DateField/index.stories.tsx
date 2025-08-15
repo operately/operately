@@ -420,6 +420,29 @@ export const AllStates: Story = {
           </div>
 
           <div className="border-t border-stroke-base pt-12">
+            <h2 className="text-lg font-bold mb-8">Calendar Only Mode</h2>
+            <div className="grid grid-cols-3 gap-8">
+              <div>
+                <h3 className="text-sm font-bold mb-2">Calendar Only - Inline</h3>
+                <p className="text-xs text-gray-500 mb-2">Shows only the calendar, no date type selector</p>
+                <Component date={createContextualDate(today, "day")} variant="inline" calendarOnly={true} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Calendar Only - Form Field</h3>
+                <p className="text-xs text-gray-500 mb-2">Form field variant with calendar only</p>
+                <Component date={createContextualDate(today, "day")} variant="form-field" calendarOnly={true} />
+              </div>
+
+              <div>
+                <h3 className="text-sm font-bold mb-2">Calendar Only - Empty</h3>
+                <p className="text-xs text-gray-500 mb-2">Calendar only mode with no initial date</p>
+                <Component date={null} placeholder="Select date..." variant="inline" calendarOnly={true} />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-stroke-base pt-12">
             <h2 className="text-lg font-bold mb-8">Error States</h2>
             <div className="grid grid-cols-3 gap-8">
               <div>
