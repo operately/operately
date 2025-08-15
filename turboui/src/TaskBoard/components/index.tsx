@@ -10,6 +10,7 @@ import MilestoneCreationModal from "./MilestoneCreationModal";
 import { TaskList } from "./TaskList";
 import { MilestoneCard } from "./MilestoneCard";
 import { TaskFilter, FilterBadges } from "./TaskFilter";
+import { includesId } from "../../utils/ids";
 
 export function TaskBoard({
   tasks: externalTasks,
@@ -38,14 +39,16 @@ export function TaskBoard({
   const hasAnyFilters = useMemo(() => filters.length > 0, [filters]);
 
   // Apply filters to tasks and track hidden tasks
-  const { filteredTasks, hiddenTasksByMilestone } = useMemo(() => {
-    let tasksToFilter = internalTasks;
+  const { filteredTasks, hiddenTasksByMilestone, hiddenTasks } = useMemo(() => {
+    const closedMilestoneIds = externalMilestones.filter(m => m.status === "done").map(m => m.id); 
+
+    let tasksToFilter = internalTasks.filter((task) => !includesId(closedMilestoneIds, task.milestone?.id));
     let hiddenTasks: Types.Task[] = [];
 
     // If no filters are applied, hide completed/canceled tasks by default
     if (!hasAnyFilters) {
-      hiddenTasks = internalTasks.filter((task) => task.status === "done" || task.status === "canceled");
-      tasksToFilter = internalTasks.filter((task) => task.status !== "done" && task.status !== "canceled");
+      hiddenTasks = tasksToFilter.filter((task) => task.status === "done" || task.status === "canceled");
+      tasksToFilter = tasksToFilter.filter((task) => task.status !== "done" && task.status !== "canceled");
     }
 
     const filtered = applyFilters(tasksToFilter, filters);
@@ -70,6 +73,7 @@ export function TaskBoard({
     return {
       filteredTasks: filtered,
       hiddenTasksByMilestone: hiddenByMilestone,
+      hiddenTasks,
     };
   }, [internalTasks, filters, hasAnyFilters]);
 
@@ -78,6 +82,7 @@ export function TaskBoard({
     () => getMilestonesWithStats(externalMilestones, internalTasks),
     [externalMilestones, internalTasks],
   );
+  const showNoTasksMsg = milestones.length === 0 && hiddenTasks.length === 0 && filteredTasks.length === 0;
 
   // Check if there are any tasks without milestones in the original task list (memoized)
   const hasTasksWithoutMilestone = useMemo(
@@ -145,7 +150,7 @@ export function TaskBoard({
           <div className="overflow-x-auto bg-surface-base">
             <ul className="w-full">
               {/* If no tasks at all */}
-              {filteredTasks.length === 0 && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
+              {showNoTasksMsg && <li className="py-4 text-center text-content-subtle">No tasks found</li>}
 
               {/* Milestones */}
               {milestones.map((milestoneData) => (
@@ -262,6 +267,7 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
   }
 
   return milestonesToProcess
+    .filter((milestone) => milestone.status !== "done")
     .map((milestone) => {
       const stats: MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
       let hasTasks = false;
