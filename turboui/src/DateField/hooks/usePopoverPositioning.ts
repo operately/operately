@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 
 interface UsePopoverPositioningOptions {
   open: boolean;
@@ -9,7 +9,7 @@ export function usePopoverPositioning({ open }: UsePopoverPositioningOptions) {
   const triggerRef = useRef<HTMLDivElement>(null);
 
   // Check if viewport is too small for popover positioning
-  useEffect(() => {
+  useLayoutEffect(() => {
     const checkViewportSize = () => {
       if (typeof window !== "undefined") {
         const viewportWidth = window.innerWidth;
