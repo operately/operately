@@ -63,6 +63,7 @@ export namespace ProjectPage {
 
   export type Milestone = TaskBoardTypes.Milestone;
   export type Resource = ResourceManager.Resource;
+  export type Task = TaskBoardTypes.Task;
 
   export type NewMilestonePayload = TaskBoardTypes.NewMilestonePayload;
   export type UpdateMilestonePayload = TaskBoardTypes.UpdateMilestonePayload;
