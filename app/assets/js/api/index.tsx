@@ -2514,6 +2514,16 @@ export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
 }
 
+export interface ProjectsGetContributorsInput {
+  projectId: Id;
+  query?: string | null;
+  ignoredIds?: Id[] | null;
+}
+
+export interface ProjectsGetContributorsResult {
+  contributors: Person[] | null;
+}
+
 export interface ProjectsGetMilestonesInput {
   projectId: Id;
 }
@@ -4579,6 +4589,10 @@ class ApiNamespaceSpaces {
 
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
+
+  async getContributors(input: ProjectsGetContributorsInput): Promise<ProjectsGetContributorsResult> {
+    return this.client.get("/projects/get_contributors", input);
+  }
 
   async getMilestones(input: ProjectsGetMilestonesInput): Promise<ProjectsGetMilestonesResult> {
     return this.client.get("/projects/get_milestones", input);
@@ -7152,6 +7166,11 @@ export default {
   },
 
   projects: {
+    getContributors: (input: ProjectsGetContributorsInput) =>
+      defaultApiClient.apiNamespaceProjects.getContributors(input),
+    useGetContributors: (input: ProjectsGetContributorsInput) =>
+      useQuery<ProjectsGetContributorsResult>(() => defaultApiClient.apiNamespaceProjects.getContributors(input)),
+
     getTasks: (input: ProjectsGetTasksInput) => defaultApiClient.apiNamespaceProjects.getTasks(input),
     useGetTasks: (input: ProjectsGetTasksInput) =>
       useQuery<ProjectsGetTasksResult>(() => defaultApiClient.apiNamespaceProjects.getTasks(input)),
