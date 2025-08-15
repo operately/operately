@@ -571,12 +571,12 @@ function useTasks(
   const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
     return Api.projects
       .updateTaskDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
-      .then((data) => {
+      .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
           prev.map((t) => {
             if (t.id === taskId) {
-              return Tasks.parseTaskForTurboUi(paths, data.task);
+              return { ...t, dueDate };
             }
             return t;
           }),
@@ -595,12 +595,12 @@ function useTasks(
   const updateTaskAssignee = async (taskId: string, assignee: ProjectPage.Person | null) => {
     return Api.projects
       .updateTaskAssignee({ taskId, assigneeId: assignee?.id || null })
-      .then((data) => {
+      .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
           prev.map((t) => {
             if (t.id === taskId) {
-              return Tasks.parseTaskForTurboUi(paths, data.task);
+              return { ...t, assignee };
             }
             return t;
           }),
@@ -619,12 +619,12 @@ function useTasks(
   const updateTaskStatus = async (taskId: string, status: string) => {
     return Api.projects
       .updateTaskStatus({ taskId, status })
-      .then((data) => {
+      .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
           prev.map((t) => {
             if (t.id === taskId) {
-              return Tasks.parseTaskForTurboUi(paths, data.task);
+              return { ...t, status: status as ProjectPage.Task["status"] };
             }
             return t;
           }),
@@ -651,7 +651,7 @@ function useTasks(
       setTasks((prev) =>
         prev.map((t) => {
           if (t.id === taskId) {
-            return Tasks.parseTaskForTurboUi(paths, data.task);
+            return { ...t, milestone: parseMilestoneForTurboUi(paths, data.task.milestone!) };
           }
           return t;
         }),
