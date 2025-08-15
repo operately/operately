@@ -1,7 +1,8 @@
-import Api, { ProjectContributor } from "@/api";
+import Api, { ProjectContributor, useUpdateProjectContributor, getProjectContributor } from "@/api";
 import { Person } from "../people";
 
 export type { ProjectContributor };
+export { useUpdateProjectContributor as useUpdateContributor, getProjectContributor as getContributor };
 
 export function splitByRole(contributors: ProjectContributor[]) {
   const champion = contributors.find((c) => c.role === "champion")!;
