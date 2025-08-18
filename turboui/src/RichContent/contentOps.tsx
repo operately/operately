@@ -96,7 +96,11 @@ export function areRichTextObjectsEqual(obj1: any, obj2: any) {
     return obj1.every((item, index) => areRichTextObjectsEqual(item, obj2[index]));
   }
 
-  // Compare objects
+  // Handle null or undefined values
+  if (obj1 === null || obj2 === null || obj1 === undefined || obj2 === undefined) {
+    return obj1 === obj2;
+  }
+
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
 
