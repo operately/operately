@@ -86,6 +86,7 @@ defmodule OperatelyWeb.Api.Projects do
 
     inputs do
       field :project_id, :id, null: false
+      field? :query, :string, null: false
     end
 
     outputs do
@@ -97,7 +98,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_view)
-      |> Steps.get_milestones()
+      |> Steps.get_milestones(inputs[:query])
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{milestones: Serializer.serialize(changes.milestones)}
@@ -480,7 +481,7 @@ defmodule OperatelyWeb.Api.Projects do
     inputs do
       field :task_id, :id, null: false
       field :milestone_id, :id, null: true
-      field :index, :integer, null: false
+      field? :index, :integer, null: false
     end
 
     outputs do
@@ -493,7 +494,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
-      |> Steps.update_task_milestone_with_ordering(inputs.milestone_id, inputs.index)
+      |> Steps.update_task_milestone_with_ordering(inputs.milestone_id, inputs[:index])
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -635,16 +636,20 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
-    def get_milestones(multi) do
+    def get_milestones(multi, query) do
       Ecto.Multi.run(multi, :milestones, fn _repo, %{project: project} ->
-        milestones =
-          from(m in Operately.Projects.Milestone,
-            where: m.project_id == ^project.id,
-            order_by: [asc: m.inserted_at]
-          )
-          |> Repo.all()
+        base_query = from(m in Operately.Projects.Milestone,
+          where: m.project_id == ^project.id,
+          order_by: [asc: m.inserted_at]
+        )
 
-        {:ok, milestones}
+        query = case query do
+          nil -> base_query
+          "" -> base_query
+          search_str -> from(m in base_query, where: ilike(m.title, ^"%#{search_str}%"))
+        end
+
+        {:ok, Repo.all(query)}
       end)
     end
 
@@ -997,7 +1002,9 @@ defmodule OperatelyWeb.Api.Projects do
 
     defp update_single_milestone_ordering(repo, milestone, task, index) do
       ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
-      updated_ordering = Operately.Tasks.OrderingState.move_task(ordering_state, task, index)
+      task_index = if index != nil, do: index, else: length(ordering_state)
+
+      updated_ordering = Operately.Tasks.OrderingState.move_task(ordering_state, task, task_index)
 
       changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
       repo.update(changeset)
@@ -1014,6 +1021,7 @@ defmodule OperatelyWeb.Api.Projects do
     defp add_to_new_milestone_ordering(repo, new_milestone, task, index) do
       ordering_state = Operately.Tasks.OrderingState.load(new_milestone.tasks_ordering_state)
       task_index = if index != nil, do: index, else: length(ordering_state)
+
       updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, task, task_index)
 
       changeset = Operately.Projects.Milestone.changeset(new_milestone, %{tasks_ordering_state: updated_ordering})
