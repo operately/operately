@@ -56,8 +56,8 @@ export namespace TaskPage {
     dueDate?: DateField.ContextualDate;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
 
-    assignees?: Person[];
-    onAssigneesChange: (newAssignees: Person[]) => void;
+    assignee: Person | null;
+    onAssigneeChange: (newAssignee: Person | null) => void;
 
     // Metadata (read-only)
     createdAt: Date;
