@@ -26,6 +26,7 @@ import { parseContextualDate, serializeContextualDate } from "../../models/conte
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
+export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
   return `v5-ProjectV2Page.project-${id}`;

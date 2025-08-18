@@ -13,6 +13,7 @@ import { DateField } from "../DateField";
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
 import { Sidebar } from "./Sidebar";
+import { DeleteModal } from "./DeleteModal";
 
 export namespace TaskPage {
   export interface Person {
@@ -96,13 +97,21 @@ export namespace TaskPage {
   }
 
   export interface State extends Props {
-    // Add any additional state management here if needed
+    isDeleteModalOpen: boolean;
+    openDeleteModal: () => void;
+    closeDeleteModal: () => void;
   }
 }
 
 function useTaskPageState(props: TaskPage.Props): TaskPage.State {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
+  
   return {
     ...props,
+
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
 }
 
@@ -130,6 +139,8 @@ export function TaskPage(props: TaskPage.Props) {
           </div>
         </div>
       </div>
+
+      <DeleteModal {...state} />
     </PageNew>
   );
 }

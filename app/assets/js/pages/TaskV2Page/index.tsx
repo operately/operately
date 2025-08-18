@@ -14,6 +14,7 @@ import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
+import { projectPageCacheKey } from "../ProjectV2Page";
 
 type LoaderResult = {
   data: {
@@ -108,7 +109,13 @@ function Page() {
 
   const handleDelete = async () => {
     await Api.project_tasks.delete({ taskId: task.id });
-    navigate(paths.projectPath(task.project!.id));
+
+    if (task.project) {
+      PageCache.invalidate(projectPageCacheKey(task.project.id));
+      navigate(paths.projectPath(task.project.id));
+    } else {
+      navigate(paths.homePath());
+    }
   };
 
   const assigneeSearch = usePersonFieldContributorsSearch({
