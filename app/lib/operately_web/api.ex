@@ -70,7 +70,6 @@ defmodule OperatelyWeb.Api do
 
   namespace(:projects) do
     query(:parent_goal_search, OperatelyWeb.Api.Projects.ParentGoalSearch)
-    query(:get_tasks, OperatelyWeb.Api.Projects.GetTasks)
     query(:get_milestones, OperatelyWeb.Api.Projects.GetMilestones)
     query(:get_contributors, OperatelyWeb.Api.Projects.GetContributors)
 
@@ -81,16 +80,17 @@ defmodule OperatelyWeb.Api do
     mutation(:update_parent_goal, OperatelyWeb.Api.Projects.UpdateParentGoal)
     mutation(:create_milestone, OperatelyWeb.Api.Projects.CreateMilestone)
     mutation(:update_milestone, OperatelyWeb.Api.Projects.UpdateMilestone)
-    mutation(:create_task, OperatelyWeb.Api.Projects.CreateTask)
-    mutation(:update_task_status, OperatelyWeb.Api.Projects.UpdateTaskStatus)
-    mutation(:update_task_due_date, OperatelyWeb.Api.Projects.UpdateTaskDueDate)
-    mutation(:update_task_assignee, OperatelyWeb.Api.Projects.UpdateTaskAssignee)
-    mutation(:update_task_milestone, OperatelyWeb.Api.Projects.UpdateTaskMilestone)
     mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
   end
 
-  namespace(:spaces) do
-    query(:search, OperatelyWeb.Api.Spaces.Search)
+  namespace(:project_tasks) do
+    query(:list, OperatelyWeb.Api.ProjectTasks.List)
+
+    mutation(:create, OperatelyWeb.Api.ProjectTasks.Create)
+    mutation(:update_status, OperatelyWeb.Api.ProjectTasks.UpdateStatus)
+    mutation(:update_due_date, OperatelyWeb.Api.ProjectTasks.UpdateDueDate)
+    mutation(:update_assignee, OperatelyWeb.Api.ProjectTasks.UpdateAssignee)
+    mutation(:update_milestone, OperatelyWeb.Api.ProjectTasks.UpdateMilestone)
   end
 
   namespace(:project_discussions) do
@@ -100,6 +100,10 @@ defmodule OperatelyWeb.Api do
     query(:list, ProjectDiscussions.List)
     mutation(:create, ProjectDiscussions.Create)
     mutation(:edit, ProjectDiscussions.Edit)
+  end
+
+  namespace(:spaces) do
+    query(:search, OperatelyWeb.Api.Spaces.Search)
   end
 
   query(:get_account, Q.GetAccount)
