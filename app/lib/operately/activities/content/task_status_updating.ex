@@ -8,6 +8,7 @@ defmodule Operately.Activities.Content.TaskStatusUpdating do
     belongs_to :task, Operately.Tasks.Task
     field :old_status, :string
     field :new_status, :string
+    field :name, :string
   end
 
   def changeset(attrs) do

@@ -54,7 +54,8 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           project_id: changes.project.id,
           task_id: changes.task.id,
           old_status: changes.task.status,
-          new_status: changes.updated_task.status
+          new_status: changes.updated_task.status,
+          name: changes.task.name
         }
       end)
       |> Steps.commit()

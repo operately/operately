@@ -24,6 +24,7 @@ import { PrimaryButton, SecondaryButton } from "../../Button";
 // Status configuration matching StatusSelector
 const taskStatusConfig: Record<Types.Status, { label: string; icon: React.ReactNode; color?: string }> = {
   pending: { label: "Not started", icon: <IconCircleDashed size={14} />, color: "text-content-dimmed" },
+  todo: { label: "Not started", icon: <IconCircleDashed size={14} />, color: "text-content-dimmed" },
   in_progress: { label: "In progress", icon: <IconCircleDot size={14} />, color: "text-brand-1" },
   done: { label: "Done", icon: <IconCircleCheckCustom size={14} />, color: "text-success" },
   canceled: { label: "Canceled", icon: <IconCircleXCustom size={14} />, color: "text-content-dimmed" },

@@ -15,13 +15,19 @@ import * as Types from "../types";
 
 // Create colored icon components for each status
 const ColoredIconCircleDot = (props: any) => <IconCircleDot {...props} className="text-brand-1" />;
-const ColoredIconCircleCheckFilled = (props: any) => <IconCircleCheckCustom {...props} className="text-callout-success-content" />;
+const ColoredIconCircleCheckFilled = (props: any) => (
+  <IconCircleCheckCustom {...props} className="text-callout-success-content" />
+);
 const ColoredIconCheck = (props: any) => <IconCheck {...props} className="text-callout-success-content" />;
 const ColoredIconCircleX = (props: any) => <IconCircleXCustom {...props} className="text-content-dimmed" />;
 
 // Map task status to labels and icons
-const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?: string; buttonColor?: string }> = {
+const taskStatusConfig: Record<
+  Types.Status,
+  { label: string; icon: any; color?: string; buttonColor?: string; legacy?: boolean }
+> = {
   pending: { label: "Not started", icon: IconCircleDashed, buttonColor: "text-content-dimmed" },
+  todo: { label: "Not started", icon: IconCircleDashed, buttonColor: "text-content-dimmed", legacy: true },
   in_progress: {
     label: "In progress",
     icon: ColoredIconCircleDot,
@@ -42,14 +48,6 @@ const taskStatusConfig: Record<Types.Status, { label: string; icon: any; color?:
   },
 };
 
-interface StatusSelectorProps {
-  status: Types.Status;
-  onChange: (newStatus: Types.Status) => void;
-  size?: "sm" | "md" | "lg" | "xl" | "2xl";
-  readonly?: boolean;
-  showFullBadge?: boolean;
-}
-
 // Helper function to create a button-styled status selector
 function StatusButton({
   status,
@@ -57,13 +55,14 @@ function StatusButton({
   readonly = false,
 }: {
   status: Types.Status;
-  size?: StatusSelectorProps["size"];
+  size?: StatusSelector.Size;
   readonly?: boolean;
 }) {
   const config = taskStatusConfig[status];
 
   // Button size configuration
   const buttonSizeConfig = {
+    xs: { textSize: "text-xs", padding: "px-1.5 py-0.5", iconSize: 10 },
     sm: { textSize: "text-xs", padding: "px-2 py-1", iconSize: 12 },
     md: { textSize: "text-sm", padding: "px-2.5 py-1.5", iconSize: 14 },
     lg: { textSize: "text-sm", padding: "px-3 py-1.5", iconSize: 16 },
@@ -83,12 +82,12 @@ function StatusButton({
         ? "border-green-200 bg-green-50 cursor-default"
         : "border-green-200 bg-green-50 hover:bg-green-100 cursor-pointer"
       : status === "canceled"
-        ? readonly
-          ? "border-red-200 bg-red-50 cursor-default"
-          : "border-red-200 bg-red-50 hover:bg-red-100 cursor-pointer"
-        : readonly
-          ? "border-surface-outline bg-surface-base cursor-default"
-          : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
+      ? readonly
+        ? "border-red-200 bg-red-50 cursor-default"
+        : "border-red-200 bg-red-50 hover:bg-red-100 cursor-pointer"
+      : readonly
+      ? "border-surface-outline bg-surface-base cursor-default"
+      : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",
     config.buttonColor,
   );
 
@@ -109,14 +108,29 @@ function StatusButton({
   );
 }
 
+export namespace StatusSelector {
+  export type Status = Types.Status;
+
+  export type Size = "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
+
+  export type Props = {
+    status: Status;
+    onChange: (newStatus: Status) => void;
+    size?: Size;
+    readonly?: boolean;
+    showFullBadge?: boolean;
+  };
+}
+
 export function StatusSelector({
   status,
   onChange,
   size = "md",
   readonly = false,
   showFullBadge = false,
-}: StatusSelectorProps) {
+}: StatusSelector.Props) {
   const sizeConfig = {
+    xs: { iconSize: 12, containerSize: "w-3 h-3" },
     sm: { iconSize: 14, containerSize: "w-3.5 h-3.5" },
     md: { iconSize: 16, containerSize: "w-4 h-4" },
     lg: { iconSize: 20, containerSize: "w-5 h-5" },
@@ -240,28 +254,30 @@ export function StatusSelector({
             </div>
 
             <div className="overflow-y-auto pt-0.5 pb-0.5" style={{ maxHeight: 210 }}>
-              {filteredStatusOptions.map(([statusOption, config], index) => {
-                const isCurrentStatus = statusOption === status;
-                const isSelected = index === selectedIndex;
-                return (
-                  <div
-                    key={statusOption}
-                    ref={(el) => (itemRefs.current[index] = el)}
-                    className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
-                      "bg-surface-dimmed": isSelected,
-                      "hover:bg-surface-dimmed": !isSelected,
-                    })}
-                    onClick={() => handleItemClick(statusOption as Types.Status)}
-                    onMouseEnter={() => setSelectedIndex(index)}
-                  >
-                    <div className="flex items-center gap-1.5 truncate">
-                      {React.createElement(config.icon, { size: 18 })}
-                      <div className="text-sm truncate">{config.label}</div>
+              {filteredStatusOptions
+                .filter(([_, config]) => !config.legacy)
+                .map(([statusOption, config], index) => {
+                  const isCurrentStatus = statusOption === status;
+                  const isSelected = index === selectedIndex;
+                  return (
+                    <div
+                      key={statusOption}
+                      ref={(el) => (itemRefs.current[index] = el)}
+                      className={classNames("flex items-center gap-2 px-1.5 py-1 rounded cursor-pointer", {
+                        "bg-surface-dimmed": isSelected,
+                        "hover:bg-surface-dimmed": !isSelected,
+                      })}
+                      onClick={() => handleItemClick(statusOption as Types.Status)}
+                      onMouseEnter={() => setSelectedIndex(index)}
+                    >
+                      <div className="flex items-center gap-1.5 truncate">
+                        {React.createElement(config.icon, { size: 18 })}
+                        <div className="text-sm truncate">{config.label}</div>
+                      </div>
+                      {isCurrentStatus && <IconCircleCheckCustom size={14} className="text-primary-500 ml-2" />}
                     </div>
-                    {isCurrentStatus && <IconCircleCheckCustom size={14} className="text-primary-500 ml-2" />}
-                  </div>
-                );
-              })}
+                  );
+                })}
             </div>
           </div>
         </Popover.Content>

@@ -33,6 +33,7 @@ export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
 export { TaskPage } from "./TaskPage";
+export { StatusSelector } from "./TaskBoard/components/StatusSelector";
 export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";
 export { TextField } from "./TextField";

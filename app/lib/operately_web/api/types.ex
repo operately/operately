@@ -750,12 +750,16 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_status_updating do
+    field :company_id, :string
     field :company, :company
+    field :space_id, :string
     field :space, :space
+    field :project_id, :string
     field :project, :project
-    field :task, :task
+    field :task_id, :string
     field :old_status, :string
     field :new_status, :string
+    field :name, :string
   end
 
   object :activity_content_task_adding do
