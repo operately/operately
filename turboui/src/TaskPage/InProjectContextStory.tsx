@@ -39,7 +39,7 @@ export function InProjectContextStory() {
   const [taskDueDate, setTaskDueDate] = useState<DateField.ContextualDate | undefined>(
     createContextualDate(new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), "day"),
   );
-  const [taskAssignees, setTaskAssignees] = useState<TaskPage.Person[]>([mockTaskPeople[1]!]);
+  const [taskAssignee, setTaskAssignee] = useState<TaskPage.Person | null>(mockTaskPeople[1]!);
   const [taskMilestone, setTaskMilestone] = useState<TaskPage.Milestone | null>(mockMilestones[1]!); // Beta Release
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [space, setSpace] = useState({ id: "1", name: "Product", link: "#" });
@@ -160,10 +160,9 @@ export function InProjectContextStory() {
                 console.log("Updating due date:", newDate);
                 setTaskDueDate(newDate ?? undefined);
               }}
-              assignees={taskAssignees}
-              onAssigneesChange={(newAssignees) => {
-                console.log("Updating assignees:", newAssignees);
-                setTaskAssignees(newAssignees);
+              assignee={taskAssignee}
+              onAssigneeChange={(newAssignee) => {
+                setTaskAssignee(newAssignee);
               }}
               // Milestone
               milestone={taskMilestone}

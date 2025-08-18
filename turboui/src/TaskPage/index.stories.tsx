@@ -38,7 +38,7 @@ function Component(props: Partial<TaskPage.Props>) {
   const [description, setDescription] = React.useState(props.description || null);
   const [status, setStatus] = React.useState(props.status || "pending");
   const [dueDate, setDueDate] = React.useState<DateField.ContextualDate | undefined>(props.dueDate);
-  const [assignees, setAssignees] = React.useState<TaskPage.Person[]>(props.assignees || []);
+  const [assignee, setAssignee] = React.useState(props.assignee || null);
   const [milestone, setMilestone] = React.useState<TaskPage.Milestone | null>(props.milestone || null);
   const [isSubscribed, setIsSubscribed] = React.useState(props.isSubscribed ?? true);
 
@@ -55,7 +55,7 @@ function Component(props: Partial<TaskPage.Props>) {
     projectName: props.projectName ?? "Mobile App V2",
     // Clear legacy milestone props when milestone is null to prevent fallback
     milestoneLink: "#",
-    milestoneName: milestone ? (props.milestoneName ?? "Beta Release") : "",
+    milestoneName: milestone ? props.milestoneName ?? "Beta Release" : "",
     workmapLink: "#",
 
     // Core data - use local state
@@ -85,10 +85,9 @@ function Component(props: Partial<TaskPage.Props>) {
       setDueDate(newDate ?? undefined);
     },
 
-    assignees: assignees,
-    onAssigneesChange: (newAssignees) => {
-      console.log("Updating assignees:", newAssignees);
-      setAssignees(newAssignees);
+    assignee,
+    onAssigneeChange: (newAssignee) => {
+      setAssignee(newAssignee);
     },
 
     // Milestone - use local state only
