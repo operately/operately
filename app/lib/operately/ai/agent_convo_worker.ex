@@ -22,6 +22,19 @@ defmodule Operately.Ai.AgentConvoWorker do
   def create_chain(convo) do
     provider = LangChain.ChatModels.ChatAnthropic.new!()
 
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect("AAAAA")
+    IO.inspect(convo.messages)
+
     LLMChain.new!(%{llm: provider, custom_context: %{}})
     |> inject_messages(convo.messages)
   end

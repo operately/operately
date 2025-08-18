@@ -1,7 +1,11 @@
 defmodule Operately.People.AgentConvo do
   use Operately.Schema
   import Ecto.Changeset
+
   alias Ecto.Multi
+  alias Operately.People.AgentMessage
+
+  import Ecto.Query, only: [from: 2]
 
   @system_prompt """
   You are Alfred, the AI COO running within Operately — a web-based startup operating system combining goal tracking, project management, and async team communication.
@@ -71,6 +75,10 @@ defmodule Operately.People.AgentConvo do
     timestamps()
   end
 
+  def user_facing_messages_query do
+    from(m in AgentMessage, where: m.source != :system, order_by: [asc: m.index])
+  end
+
   def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
   end
@@ -82,12 +90,23 @@ defmodule Operately.People.AgentConvo do
     |> assoc_constraint(:author)
   end
 
-  def list(person) do
-    import Ecto.Query, only: [from: 2]
+  def get(person, id: id) do
+    from(
+      c in __MODULE__,
+      where: c.id == ^id and c.author_id == ^person.id,
+      preload: [messages: ^user_facing_messages_query()]
+    )
+    |> Operately.Repo.one()
+    |> case do
+      nil -> {:error, :not_found}
+      convo -> {:ok, convo}
+    end
+  end
 
+  def list(person) do
     from(c in __MODULE__,
       where: c.author_id == ^person.id,
-      preload: [:messages]
+      preload: [messages: ^user_facing_messages_query()]
     )
     |> Operately.Repo.all()
   end
@@ -114,7 +133,8 @@ defmodule Operately.People.AgentConvo do
         convo_id: convo.id,
         status: :done,
         source: :system,
-        prompt: @system_prompt
+        prompt: @system_prompt,
+        message: "system prompt"
       })
     end)
     |> Multi.insert(:initial_action, fn %{convo: convo} ->
@@ -123,18 +143,12 @@ defmodule Operately.People.AgentConvo do
         convo_id: convo.id,
         status: :done,
         source: :user,
-        prompt:
-          prompt <>
-            """
-            ** Input goal: **
-
-            #{goal_details}
-            """,
-        message: "Run action: '#{title}'"
+        message: "Run action: '#{title}'",
+        prompt: prompt <> "** Input goal: **\n\n#{goal_details}"
       })
     end)
     |> Multi.run(:schedule_response, fn _repo, %{convo: convo} ->
-      Operately.Ai.AgentConvoWorker.new(%{message_id: convo.id}) |> Oban.insert()
+      Operately.Ai.AgentConvoWorker.new(%{convo_id: convo.id}) |> Oban.insert()
     end)
     |> Operately.Repo.transaction()
     |> Operately.Repo.extract_result(:convo)

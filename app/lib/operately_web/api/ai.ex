@@ -288,7 +288,11 @@ defmodule OperatelyWeb.Api.Ai do
         Operately.People.AgentConvo.create(me, inputs.title, inputs.prompt, inputs.context_type, inputs.context_id)
       end)
       |> Steps.respond(fn %{convo: convo} ->
-        convo = Operately.Repo.preload(convo, [:messages, :author])
+        convo =
+          Operately.Repo.preload(convo, [
+            :author,
+            messages: Operately.People.AgentConvo.user_facing_messages_query()
+          ])
 
         %{
           success: true,
@@ -343,23 +347,14 @@ defmodule OperatelyWeb.Api.Ai do
       conn
       |> Steps.start()
       |> Steps.verify_feature_enabled()
-      |> Ecto.Multi.run(:get_messages, fn _repo, _ ->
-        import Ecto.Query, only: [from: 2]
-
-        convo =
-          from(c in Operately.People.AgentConvo,
-            where: c.request_id == ^inputs.convo_id,
-            preload: [:messages]
-          )
-          |> Operately.Repo.one()
-
-        if is_nil(convo) do
-          {:error, :not_found}
-        else
-          {:ok, OperatelyWeb.Api.Serializer.serialize(convo.messages, level: :full)}
-        end
+      |> Ecto.Multi.run(:messages, fn _repo, %{me: me} ->
+        Operately.People.AgentConvo.get(me, id: inputs.convo_id)
       end)
-      |> Steps.respond(fn res -> %{messages: res.get_messages} end)
+      |> Steps.respond(fn res ->
+        %{
+          messages: OperatelyWeb.Api.Serializer.serialize(res.messages, level: :full)
+        }
+      end)
     end
   end
 
