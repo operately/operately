@@ -3,6 +3,7 @@ import { parseContextualDate } from "../contextualDates";
 import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
 import { Status } from "turboui/src/TaskBoard/types";
+import { parseContent, richContentToString } from "turboui/RichContent";
 
 export type { Task } from "@/api";
 
@@ -28,6 +29,8 @@ export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[]) {
 }
 
 export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
+  const description = parseContent(task.description || "{}");
+
   return {
     id: task.id,
     title: task.name,
@@ -37,7 +40,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
     assignees: task.assignees || [],
     milestone: task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null,
     dueDate: parseContextualDate(task.dueDate),
-    hasDescription: !!task.description,
+    hasDescription: richContentToString(description).trim().length > 0,
     hasComments: false,
     commentCount: 0,
     comments: undefined,
