@@ -126,7 +126,7 @@ function Actions(props: TaskPage.State) {
     },
     {
       label: "Delete",
-      onClick: () => props.onDelete(),
+      onClick: props.openDeleteModal,
       icon: IconTrash,
       show: props.canEdit,
       danger: true,
