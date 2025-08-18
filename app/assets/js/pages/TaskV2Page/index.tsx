@@ -1,4 +1,5 @@
-import * as React from "react";
+import React from "react";
+import Api from "@/api";
 
 import * as Tasks from "../../models/tasks";
 import * as People from "../../models/people";
@@ -11,6 +12,7 @@ import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
+import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 
 type LoaderResult = {
   data: {
@@ -69,10 +71,9 @@ function Page() {
     onError: () => showErrorToast("Error", "Failed to update task description."),
   });
 
-  // Task status field
   const [status, setStatus] = usePageField({
-    value: (data) => Tasks.parseTaskForTurboUi(paths, data.task).status || "pending", // Placeholder for parseTaskStatus
-    update: () => Promise.resolve(true), // Placeholder for updateTaskStatus
+    value: (data: { task: Tasks.Task }) => Tasks.parseTaskForTurboUi(paths, data.task).status,
+    update: (v) => Api.projects.updateTaskStatus({ taskId: task.id!, status: v }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
   });
 
@@ -83,12 +84,9 @@ function Page() {
     onError: () => showErrorToast("Error", "Failed to update due date."),
   });
 
-  // Assignees field - simplified placeholder
-  const [assignees, setAssignees] = usePageField({
-    value: (data) => data.task.assignees?.map((assignee) => People.parsePersonForTurboUi(paths, assignee)) ?? [],
-    update: () => {
-      return Promise.resolve(true); // Placeholder for updateTaskAssignees
-    },
+  const [assignee, setAssignee] = usePageField({
+    value: (data: { task: Tasks.Task }) => People.parsePersonForTurboUi(paths, data.task.assignees?.[0] || null),
+    update: (v) => Api.projects.updateTaskAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
   });
 
@@ -112,6 +110,11 @@ function Page() {
     return Promise.resolve([]) as Promise<TaskPage.Milestone[]>;
   };
 
+  const assigneeSearch = usePersonFieldContributorsSearch({
+    projectId: task.project.id,
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
+
   // Space and project info
   const spaceName = task.space.name;
   const spaceLink = paths.spacePath(task.space.id);
@@ -131,6 +134,7 @@ function Page() {
     milestoneName,
     workmapLink,
 
+    searchPeople: assigneeSearch,
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
     // onMilestoneChange: setMilestone,
@@ -151,8 +155,8 @@ function Page() {
     dueDate: dueDate || undefined,
     onDueDateChange: setDueDate,
 
-    assignees: assignees as TaskPage.Person[],
-    onAssigneesChange: setAssignees,
+    assignee,
+    onAssigneeChange: setAssignee,
 
     onDelete: () => Promise.resolve(),
 
@@ -187,7 +191,7 @@ function Page() {
 
 interface usePageFieldProps<T> {
   value: (LoaderResult) => T;
-  update: (newValue: T) => Promise<{ success?: boolean | null } | boolean | null | undefined>;
+  update: (newValue: T) => Promise<any>;
   onError?: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
 }

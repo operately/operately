@@ -41,17 +41,11 @@ function DueDate(props: TaskPage.State) {
 }
 
 function Assignees(props: TaskPage.State) {
-  const currentAssignee = props.assignees?.[0] || null;
-
-  const handleAssigneeChange = (person: TaskPage.Person | null) => {
-    props.onAssigneesChange(person ? [person] : []);
-  };
-
   return (
     <SidebarSection title="Assignee">
       <PersonField
-        person={currentAssignee}
-        setPerson={handleAssigneeChange}
+        person={props.assignee}
+        setPerson={props.onAssigneeChange}
         readonly={!props.canEdit}
         searchPeople={props.searchPeople || (async () => [])}
         emptyStateMessage="Assign task"
