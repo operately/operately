@@ -8,7 +8,7 @@ defmodule Operately.Ai.AgentConvoWorker do
   @impl Oban.Worker
   def perform(job) do
     with(
-      convo <- Operately.Repo.get!(Operately.People.AgentConvo, job.args["convo_id"], preload: [:messages]),
+      convo <- find_convo(job.args["convo_id"]),
       chain <- create_chain(convo),
       {:ok, chain} <- run_chain(chain),
       {:ok, message} <- save_response(convo, chain)
@@ -19,21 +19,13 @@ defmodule Operately.Ai.AgentConvoWorker do
     end
   end
 
+  def find_convo(id) do
+    import Ecto.Query, only: [from: 2]
+    Operately.Repo.one(from c in Operately.People.AgentConvo, where: c.id == ^id, preload: [:messages])
+  end
+
   def create_chain(convo) do
     provider = LangChain.ChatModels.ChatAnthropic.new!()
-
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect("AAAAA")
-    IO.inspect(convo.messages)
 
     LLMChain.new!(%{llm: provider, custom_context: %{}})
     |> inject_messages(convo.messages)
@@ -41,8 +33,10 @@ defmodule Operately.Ai.AgentConvoWorker do
 
   def save_response(convo, chain) do
     Operately.People.AgentMessage.changeset(%{
+      convo_id: convo.id,
       index: convo.messages |> Enum.count(),
       status: :done,
+      source: :ai,
       message: ChainResult.to_string!(chain)
     })
     |> Operately.Repo.insert()
@@ -64,7 +58,7 @@ defmodule Operately.Ai.AgentConvoWorker do
   end
 
   def db_message_to_llm_chain_message(db_message) do
-    case db_message.sender do
+    case db_message.source do
       :system -> Message.new_system!(db_message.prompt)
       :user -> Message.new_user!(db_message.prompt)
       :ai -> Message.new_assistant!(db_message.message)
