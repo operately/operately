@@ -56,31 +56,13 @@ function Assignees(props: TaskPage.State) {
 }
 
 function Milestone(props: TaskPage.State) {
-  // Convert legacy milestone data to new format for backward compatibility
-  const currentMilestone =
-    props.milestone ||
-    (props.milestoneLink && props.milestoneName
-      ? {
-          id: "legacy-milestone",
-          title: props.milestoneName,
-          projectLink: props.milestoneLink,
-        }
-      : null);
-
-  const handleMilestoneChange = (milestone: TaskPage.Milestone | null) => {
-    if (props.onMilestoneChange) {
-      props.onMilestoneChange(milestone);
-    }
-  };
-
   return (
     <SidebarSection title="Milestone">
       <MilestoneField
-        milestone={currentMilestone}
-        setMilestone={handleMilestoneChange}
+        milestone={props.milestone}
+        setMilestone={props.onMilestoneChange}
         readonly={!props.canEdit}
         searchMilestones={props.searchMilestones || (async () => [])}
-        onCreateNew={props.onCreateMilestone}
         emptyStateMessage="Select milestone"
         emptyStateReadOnlyMessage="No milestone"
       />
