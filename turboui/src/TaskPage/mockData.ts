@@ -40,45 +40,45 @@ export const mockTaskPeople: TaskPage.Person[] = timelinePeople.map(p => ({
 export const mockMilestones: TaskPage.Milestone[] = [
   {
     id: "milestone-2",
-    title: "MVP Launch",
+    name: "MVP Launch",
     dueDate: createContextualDate("2024-01-30", "day"), // January 30, 2024 (earliest)
-    status: "complete",
-    projectLink: "/projects/mobile-app/milestones/mvp",
+    status: "done",
+    link: "/projects/mobile-app/milestones/mvp",
   },
   {
     id: "milestone-1",
-    title: "Beta Release",
+    name: "Beta Release",
     dueDate: createContextualDate("2024-02-15", "day"), // February 15, 2024
     status: "pending",
-    projectLink: "/projects/mobile-app/milestones/beta",
+    link: "/projects/mobile-app/milestones/beta",
   },
   {
     id: "milestone-3",
-    title: "User Testing Phase",
+    name: "User Testing Phase",
     dueDate: createContextualDate("2024-03-10", "day"), // March 10, 2024
     status: "pending",
-    projectLink: "/projects/mobile-app/milestones/testing",
+    link: "/projects/mobile-app/milestones/testing",
   },
   {
     id: "milestone-4",
-    title: "Performance Optimization",
+    name: "Performance Optimization",
     dueDate: createContextualDate("2024-04-05", "day"), // April 5, 2024
     status: "pending",
-    projectLink: "/projects/mobile-app/milestones/performance",
+    link: "/projects/mobile-app/milestones/performance",
   },
   {
     id: "milestone-5",
-    title: "Code Review Process",
-    // No due date
+    name: "Code Review Process",
+    dueDate: null,
     status: "pending",
-    projectLink: "/projects/mobile-app/milestones/code-review",
+    link: "/projects/mobile-app/milestones/code-review",
   },
   {
     id: "milestone-6",
-    title: "Documentation Update",
-    // No due date
+    name: "Documentation Update",
+    dueDate: null,
     status: "pending",
-    projectLink: "/projects/mobile-app/milestones/docs",
+    link: "/projects/mobile-app/milestones/docs",
   },
 ];
 
@@ -100,7 +100,7 @@ export const searchTaskPeople = async ({ query }: { query: string }): Promise<Ta
 export const searchMilestones = async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
 
-  const filtered = mockMilestones.filter((milestone) => milestone.title.toLowerCase().includes(query.toLowerCase()));
+  const filtered = mockMilestones.filter((milestone) => milestone.name.toLowerCase().includes(query.toLowerCase()));
 
   // Sort by due date (earliest first), then by title for those without due dates
   return filtered.sort((a, b) => {
@@ -109,7 +109,7 @@ export const searchMilestones = async ({ query }: { query: string }): Promise<Ta
     }
     if (a.dueDate?.date && !b.dueDate?.date) return -1; // Items with due dates come first
     if (!a.dueDate?.date && b.dueDate?.date) return 1;
-    return a.title.localeCompare(b.title); // Alphabetical for no due dates
+    return a.name.localeCompare(b.name); // Alphabetical for no due dates
   });
 };
 
