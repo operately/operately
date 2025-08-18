@@ -5,6 +5,7 @@ import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, projectLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { StatusSelector } from "turboui";
 
 const TaskStatusUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -28,11 +29,9 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const project = content(activity).project!;
-    const task = content(activity).task!;
-    const newStatus = content(activity).newStatus;
+    const { project, newStatus, name } = content(activity);
     const statusText = newStatus === "done" ? "completed" : `marked as ${newStatus}`;
-    const message = `${statusText} task "${task.name}"`;
+    const message = `${statusText} task "${name}"`;
 
     if (page === "project") {
       return feedTitle(activity, message);
@@ -42,10 +41,15 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    const oldStatus = content(activity).oldStatus;
-    const newStatus = content(activity).newStatus;
+    const { oldStatus, newStatus } = content(activity);
 
-    return <>Previously, the task was {oldStatus}. Now it's {newStatus}.</>;
+    return (
+      <>
+        Previously, the task was{" "}
+        <StatusSelector status={oldStatus as StatusSelector.Status} size="xs" onChange={() => {}} readonly showFullBadge />. Now it's{" "}
+        <StatusSelector status={newStatus as StatusSelector.Status} size="xs" onChange={() => {}} readonly showFullBadge />.
+      </>
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -61,10 +65,10 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    const task = content(props.activity).task!;
-    const newStatus = content(props.activity).newStatus;
+    const { newStatus, name } = content(props.activity);
     const statusText = newStatus === "done" ? "completed" : `marked as ${newStatus}`;
-    return `Task "${task.name}" was ${statusText}`;
+
+    return `Task "${name}" was ${statusText}`;
   },
 
   NotificationLocation(props: { activity: Activity }) {

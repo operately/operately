@@ -11,7 +11,12 @@ import { DateField } from "../DateField";
  * Task status types
  * Using 'done' for backward compatibility with existing code
  */
-export type Status = "pending" | "in_progress" | "done" | "canceled";
+export type Status =
+  | "pending"
+  | "todo" // legacy
+  | "in_progress"
+  | "done"
+  | "canceled";
 
 /**
  * Person interface for task assignees

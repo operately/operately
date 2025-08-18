@@ -846,12 +846,16 @@ export interface ActivityContentTaskStatusChange {
 }
 
 export interface ActivityContentTaskStatusUpdating {
+  companyId: string;
   company: Company;
+  spaceId: string;
   space: Space;
+  projectId: string;
   project: Project;
-  task: Task;
+  taskId: string;
   oldStatus: string;
   newStatus: string;
+  name: string;
 }
 
 export interface ActivityContentTaskUpdate {
