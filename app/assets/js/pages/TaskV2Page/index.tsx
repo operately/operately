@@ -1,6 +1,7 @@
 import React from "react";
 import Api from "@/api";
 
+import { useNavigate } from "react-router-dom";
 import * as Tasks from "../../models/tasks";
 import * as People from "../../models/people";
 import { parseContextualDate } from "@/models/contextualDates";
@@ -47,6 +48,7 @@ export default { name: "TaskV2Page", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();
+  const navigate = useNavigate();
   const { task } = PageCache.useData(loader).data;
 
   assertPresent(task.project, "Task must have a project");
@@ -104,6 +106,11 @@ function Page() {
     navigator.clipboard.writeText(window.location.href);
   };
 
+  const handleDelete = async () => {
+    await Api.project_tasks.delete({ taskId: task.id });
+    navigate(paths.projectPath(task.project!.id));
+  };
+
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
@@ -155,7 +162,7 @@ function Page() {
     assignee,
     onAssigneeChange: setAssignee,
 
-    onDelete: () => Promise.resolve(),
+    onDelete: handleDelete,
 
     // Metadata
     createdAt: new Date(task.insertedAt || Date.now()),
