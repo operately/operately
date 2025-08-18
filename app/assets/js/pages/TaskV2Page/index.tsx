@@ -108,13 +108,17 @@ function Page() {
   };
 
   const handleDelete = async () => {
-    await Api.project_tasks.delete({ taskId: task.id });
+    try {
+      await Api.project_tasks.delete({ taskId: task.id });
 
-    if (task.project) {
-      PageCache.invalidate(projectPageCacheKey(task.project.id));
-      navigate(paths.projectPath(task.project.id));
-    } else {
-      navigate(paths.homePath());
+      if (task.project) {
+        PageCache.invalidate(projectPageCacheKey(task.project.id));
+        navigate(paths.projectPath(task.project.id));
+      } else {
+        navigate(paths.homePath());
+      }
+    } catch (error) {
+      showErrorToast("Error", "Failed to delete task.");
     }
   };
 

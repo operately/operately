@@ -27,9 +27,7 @@ const TaskDeleting: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
-    const project = content(props.activity).project!;
-    const taskName = content(props.activity).taskName;
-    console.log(content(props.activity))
+    const { taskName, project }  = content(props.activity);
 
     if (props.page === "project") {
       return feedTitle(props.activity, `deleted task "${taskName}"`);
@@ -55,13 +53,14 @@ const TaskDeleting: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    const taskName = content(props.activity).taskName;
+    const { taskName } = content(props.activity);
     return <>Task "{taskName}" was deleted</>;
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    const project = content(props.activity).project!;
-    return <>Project: {project.name}</>;
+    const { project } = content(props.activity);
+
+    return <>Project: {project?.name}</>;
   },
 };
 
