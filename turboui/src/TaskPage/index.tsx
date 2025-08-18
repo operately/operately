@@ -23,10 +23,10 @@ export namespace TaskPage {
 
   export interface Milestone {
     id: string;
-    title: string;
-    dueDate?: DateField.ContextualDate;
-    status?: "pending" | "complete" | "overdue";
-    projectLink?: string;
+    name: string;
+    dueDate: DateField.ContextualDate | null;
+    status: "pending" | "done";
+    link?: string;
   }
 
   export interface Props {
@@ -40,8 +40,9 @@ export namespace TaskPage {
     workmapLink: string;
 
     // Milestone selection
-    milestone?: Milestone | null;
-    onMilestoneChange?: (milestone: Milestone | null) => void;
+    milestone: Milestone | null;
+    onMilestoneChange: (milestone: Milestone | null) => void;
+    searchMilestones: (params: { query: string }) => Promise<Milestone[]>;
 
     // Core task data
     name: string;
@@ -75,10 +76,6 @@ export namespace TaskPage {
 
     // Search functionality for assignees
     searchPeople?: (params: { query: string }) => Promise<Person[]>;
-
-    // Search functionality for milestones
-    searchMilestones?: (params: { query: string }) => Promise<Milestone[]>;
-    onCreateMilestone?: (title?: string) => void;
 
     // Search functionality for rich editor mentions
     peopleSearch?: SearchFn;

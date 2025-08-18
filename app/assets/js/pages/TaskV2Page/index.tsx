@@ -4,7 +4,7 @@ import Api from "@/api";
 import * as Tasks from "../../models/tasks";
 import * as People from "../../models/people";
 import { parseContextualDate } from "@/models/contextualDates";
-import { parseMilestoneForTurboUi } from "@/models/milestones";
+import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 
 import { usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
@@ -90,10 +90,9 @@ function Page() {
     onError: () => showErrorToast("Error", "Failed to update assignees."),
   });
 
-  // Milestone field - simplified placeholder
-  const [milestone, _setMilestone] = usePageField({
+  const [milestone, setMilestone] = usePageField({
     value: (data) => (data.task.milestone ? parseMilestoneForTurboUi(paths, data.task.milestone) : null),
-    update: () => Promise.resolve(true), // Placeholder for updateTaskMilestone
+    update: (v) => Api.projects.updateTaskMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
   });
 
@@ -105,15 +104,11 @@ function Page() {
     navigator.clipboard.writeText(window.location.href);
   };
 
-  const searchMilestones = async ({}: { query: string }) => {
-    // Placeholder for milestone search
-    return Promise.resolve([]) as Promise<TaskPage.Milestone[]>;
-  };
-
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
+  const searchMilestones = useMilestonesSearch(task.project.id);
 
   // Space and project info
   const spaceName = task.space.name;
@@ -135,9 +130,11 @@ function Page() {
     workmapLink,
 
     searchPeople: assigneeSearch,
+
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
-    // onMilestoneChange: setMilestone,
+    onMilestoneChange: setMilestone,
+    searchMilestones,
 
     // Core task data
     name: name as string,
@@ -173,8 +170,6 @@ function Page() {
     // Actions
     onCopyUrl: handleCopyUrl,
 
-    // Search functionality
-    searchMilestones,
     // Placeholder for person lookup functionality
     peopleSearch: () => Promise.resolve([]),
     mentionedPersonLookup: () => Promise.resolve(null),
@@ -245,4 +240,14 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
   };
 
   return [state, updateState];
+}
+
+function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
+  const paths = usePaths();
+
+  return async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
+    const data = await Api.projects.getMilestones({ projectId: projectId, query: query.trim() });
+
+    return parseMilestonesForTurboUi(paths, data.milestones || []);
+  };
 }

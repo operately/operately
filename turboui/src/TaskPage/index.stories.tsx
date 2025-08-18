@@ -130,20 +130,6 @@ function Component(props: Partial<TaskPage.Props>) {
     // Search
     searchPeople: searchTaskPeople,
     searchMilestones: searchMilestones,
-    onCreateMilestone: (title?: string) => {
-      console.log("Creating new milestone with title:", title);
-      // In a real app, this would open a modal or navigate to milestone creation
-      // For Storybook demo purposes, we'll create a simple milestone to show the interaction
-      if (title) {
-        const newMilestone: TaskPage.Milestone = {
-          id: `milestone-${Date.now()}`,
-          title: title,
-          status: "pending",
-          projectLink: "/projects/demo",
-        };
-        setMilestone(newMilestone);
-      }
-    },
     peopleSearch: searchRichEditorPeople,
     mentionedPersonLookup: mockMentionedPersonLookup,
 
