@@ -767,6 +767,13 @@ defmodule OperatelyWeb.Api.Types do
     field :task_name, :string
   end
 
+  object :activity_content_task_deleting do
+    field :company, :company
+    field :space, :space
+    field :project, :project
+    field :task_name, :string
+  end
+
   object :update do
     field? :id, :string, null: true
     field? :title, :string, null: true

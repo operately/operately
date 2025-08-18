@@ -796,6 +796,13 @@ export interface ActivityContentTaskClosing {
   taskId?: string | null;
 }
 
+export interface ActivityContentTaskDeleting {
+  company: Company;
+  space: Space;
+  project: Project;
+  taskName: string;
+}
+
 export interface ActivityContentTaskDescriptionChange {
   companyId?: string | null;
   spaceId?: string | null;
