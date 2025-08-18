@@ -2526,6 +2526,7 @@ export interface ProjectsGetContributorsResult {
 
 export interface ProjectsGetMilestonesInput {
   projectId: Id;
+  query?: string;
 }
 
 export interface ProjectsGetMilestonesResult {
@@ -3728,7 +3729,7 @@ export interface ProjectsUpdateTaskDueDateResult {
 export interface ProjectsUpdateTaskMilestoneInput {
   taskId: Id;
   milestoneId: Id | null;
-  index: number;
+  index?: number;
 }
 
 export interface ProjectsUpdateTaskMilestoneResult {

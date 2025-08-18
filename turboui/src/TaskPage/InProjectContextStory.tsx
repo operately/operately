@@ -187,18 +187,6 @@ export function InProjectContextStory() {
               // Search functionality
               searchPeople={searchTaskPeople}
               searchMilestones={searchMilestones}
-              onCreateMilestone={(title?: string) => {
-                console.log("Creating new milestone with title:", title);
-                if (title) {
-                  const newMilestone: TaskPage.Milestone = {
-                    id: `milestone-${Date.now()}`,
-                    title: title,
-                    status: "pending",
-                    projectLink: "/projects/demo",
-                  };
-                  setTaskMilestone(newMilestone);
-                }
-              }}
               peopleSearch={searchRichEditorPeople}
               mentionedPersonLookup={mockMentionedPersonLookup}
               // Permissions
