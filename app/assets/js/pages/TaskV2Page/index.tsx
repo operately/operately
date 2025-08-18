@@ -73,7 +73,7 @@ function Page() {
 
   const [status, setStatus] = usePageField({
     value: (data: { task: Tasks.Task }) => Tasks.parseTaskForTurboUi(paths, data.task).status,
-    update: (v) => Api.projects.updateTaskStatus({ taskId: task.id!, status: v }),
+    update: (v) => Api.project_tasks.updateStatus({ taskId: task.id!, status: v }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
   });
 
@@ -86,13 +86,13 @@ function Page() {
 
   const [assignee, setAssignee] = usePageField({
     value: (data: { task: Tasks.Task }) => People.parsePersonForTurboUi(paths, data.task.assignees?.[0] || null),
-    update: (v) => Api.projects.updateTaskAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
+    update: (v) => Api.project_tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
   });
 
   const [milestone, setMilestone] = usePageField({
     value: (data) => (data.task.milestone ? parseMilestoneForTurboUi(paths, data.task.milestone) : null),
-    update: (v) => Api.projects.updateTaskMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
+    update: (v) => Api.project_tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
   });
 
