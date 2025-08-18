@@ -26,6 +26,7 @@ import { parseContextualDate, serializeContextualDate } from "../../models/conte
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
+export { pageCacheKey as projectPageCacheKey };
 
 function pageCacheKey(id: string): string {
   return `v5-ProjectV2Page.project-${id}`;
@@ -69,7 +70,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
         company: Api.getCompany({ id: params.companyId! }).then((d) => d.company!),
-        backendTasks: Api.projects.getTasks({ projectId: params.id }).then((d) => d.tasks!),
+        backendTasks: Api.project_tasks.list({ projectId: params.id }).then((d) => d.tasks!),
       }),
   });
 }
@@ -546,8 +547,8 @@ function useTasks(
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
 
   const createTask = async (task: ProjectPage.NewTaskPayload) => {
-    return Api.projects
-      .createTask({
+    return Api.project_tasks
+      .create({
         name: task.title,
         assigneeId: task.assignee,
         dueDate: serializeContextualDate(task.dueDate),
@@ -569,8 +570,8 @@ function useTasks(
   };
 
   const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
-    return Api.projects
-      .updateTaskDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
+    return Api.project_tasks
+      .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
@@ -593,8 +594,8 @@ function useTasks(
   };
 
   const updateTaskAssignee = async (taskId: string, assignee: ProjectPage.Person | null) => {
-    return Api.projects
-      .updateTaskAssignee({ taskId, assigneeId: assignee?.id || null })
+    return Api.project_tasks
+      .updateAssignee({ taskId, assigneeId: assignee?.id || null })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
@@ -617,8 +618,8 @@ function useTasks(
   };
 
   const updateTaskStatus = async (taskId: string, status: string) => {
-    return Api.projects
-      .updateTaskStatus({ taskId, status })
+    return Api.project_tasks
+      .updateStatus({ taskId, status })
       .then(() => {
         PageCache.invalidate(pageCacheKey(project.id));
         setTasks((prev) =>
@@ -642,7 +643,7 @@ function useTasks(
 
   const updateTaskMilestone = async (taskId: string, milestoneId: string, index: number) => {
     try {
-      const data = await Api.projects.updateTaskMilestone({ taskId, milestoneId, index });
+      const data = await Api.project_tasks.updateMilestone({ taskId, milestoneId, index });
 
       PageCache.invalidate(pageCacheKey(project.id));
 

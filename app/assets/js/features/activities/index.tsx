@@ -125,6 +125,7 @@ export const DISPLAYED_IN_FEED = [
   "project_retrospective_commented",
   "project_discussion_submitted",
   "task_status_updating",
+  "task_deleting",
   "resource_hub_document_created",
   "resource_hub_document_edited",
   "resource_hub_document_commented",
@@ -193,6 +194,7 @@ import ProjectContributorsAddition from "@/features/activities/ProjectContributo
 import ProjectCreated from "@/features/activities/ProjectCreated";
 import ProjectDiscussionSubmitted from "@/features/activities/ProjectDiscussionSubmitted";
 import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
+import TaskDeleting from "@/features/activities/TaskDeleting";
 import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
 import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
 import ProjectKeyResourceAdded from "@/features/activities/ProjectKeyResourceAdded";
@@ -321,6 +323,7 @@ function handler(activity: Activity) {
     .with("goal_target_updating", () => GoalTargetUpdating)
     .with("project_discussion_submitted", () => ProjectDiscussionSubmitted)
     .with("task_status_updating", () => TaskStatusUpdating)
+    .with("task_deleting", () => TaskDeleting)
     .with("project_champion_updating", () => ProjectChampionUpdating)
     .with("project_due_date_updating", () => ProjectDueDateUpdating)
     .with("project_reviewer_updating", () => ProjectReviewerUpdating)

@@ -1,6 +1,7 @@
 import React from "react";
 import Api from "@/api";
 
+import { useNavigate } from "react-router-dom";
 import * as Tasks from "../../models/tasks";
 import * as People from "../../models/people";
 import { parseContextualDate } from "@/models/contextualDates";
@@ -13,6 +14,7 @@ import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
+import { projectPageCacheKey } from "../ProjectV2Page";
 
 type LoaderResult = {
   data: {
@@ -47,6 +49,7 @@ export default { name: "TaskV2Page", loader, Page } as PageModule;
 
 function Page() {
   const paths = usePaths();
+  const navigate = useNavigate();
   const { task } = PageCache.useData(loader).data;
 
   assertPresent(task.project, "Task must have a project");
@@ -73,7 +76,7 @@ function Page() {
 
   const [status, setStatus] = usePageField({
     value: (data: { task: Tasks.Task }) => Tasks.parseTaskForTurboUi(paths, data.task).status,
-    update: (v) => Api.projects.updateTaskStatus({ taskId: task.id!, status: v }),
+    update: (v) => Api.project_tasks.updateStatus({ taskId: task.id!, status: v }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
   });
 
@@ -86,13 +89,13 @@ function Page() {
 
   const [assignee, setAssignee] = usePageField({
     value: (data: { task: Tasks.Task }) => People.parsePersonForTurboUi(paths, data.task.assignees?.[0] || null),
-    update: (v) => Api.projects.updateTaskAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
+    update: (v) => Api.project_tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
   });
 
   const [milestone, setMilestone] = usePageField({
     value: (data) => (data.task.milestone ? parseMilestoneForTurboUi(paths, data.task.milestone) : null),
-    update: (v) => Api.projects.updateTaskMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
+    update: (v) => Api.project_tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
   });
 
@@ -102,6 +105,17 @@ function Page() {
   // Handlers for task actions
   const handleCopyUrl = () => {
     navigator.clipboard.writeText(window.location.href);
+  };
+
+  const handleDelete = async () => {
+    await Api.project_tasks.delete({ taskId: task.id });
+
+    if (task.project) {
+      PageCache.invalidate(projectPageCacheKey(task.project.id));
+      navigate(paths.projectPath(task.project.id));
+    } else {
+      navigate(paths.homePath());
+    }
   };
 
   const assigneeSearch = usePersonFieldContributorsSearch({
@@ -155,7 +169,7 @@ function Page() {
     assignee,
     onAssigneeChange: setAssignee,
 
-    onDelete: () => Promise.resolve(),
+    onDelete: handleDelete,
 
     // Metadata
     createdAt: new Date(task.insertedAt || Date.now()),
