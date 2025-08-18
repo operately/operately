@@ -221,6 +221,40 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
   end
 
+  defmodule Delete do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.delete_task()
+      |> Steps.save_activity(:task_deleting, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          task_id: changes.task.id,
+          name: changes.task.name,
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn _changes ->
+        %{success: true}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
     import Ecto.Query, only: [from: 2]
@@ -312,6 +346,15 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         updated_task = Operately.Repo.preload(task, :assigned_people)
 
         {:ok, updated_task}
+      end)
+    end
+
+    def delete_task(multi) do
+      Ecto.Multi.run(multi, :delete_task, fn repo, %{task: task} ->
+        case repo.delete(task) do
+          {:ok, deleted_task} -> {:ok, deleted_task}
+          {:error, changeset} -> {:error, changeset}
+        end
       end)
     end
 

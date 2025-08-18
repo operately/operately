@@ -2514,6 +2514,14 @@ export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
 }
 
+export interface ProjectTasksListInput {
+  projectId: Id;
+}
+
+export interface ProjectTasksListResult {
+  tasks: Task[] | null;
+}
+
 export interface ProjectsGetContributorsInput {
   projectId: Id;
   query?: string | null;
@@ -2531,14 +2539,6 @@ export interface ProjectsGetMilestonesInput {
 
 export interface ProjectsGetMilestonesResult {
   milestones: Milestone[] | null;
-}
-
-export interface ProjectsGetTasksInput {
-  projectId: Id;
-}
-
-export interface ProjectsGetTasksResult {
-  tasks: Task[] | null;
 }
 
 export interface ProjectsParentGoalSearchInput {
@@ -3622,6 +3622,63 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectTasksCreateInput {
+  projectId: Id;
+  milestoneId: Id | null;
+  name: string;
+  assigneeId: Id | null;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectTasksCreateResult {
+  task: Task;
+}
+
+export interface ProjectTasksDeleteInput {
+  taskId: Id;
+}
+
+export interface ProjectTasksDeleteResult {
+  success: boolean;
+}
+
+export interface ProjectTasksUpdateAssigneeInput {
+  taskId: Id;
+  assigneeId: Id | null;
+}
+
+export interface ProjectTasksUpdateAssigneeResult {
+  task: Task;
+}
+
+export interface ProjectTasksUpdateDueDateInput {
+  taskId: Id;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectTasksUpdateDueDateResult {
+  task: Task;
+}
+
+export interface ProjectTasksUpdateMilestoneInput {
+  taskId: Id;
+  milestoneId: Id | null;
+  index?: number;
+}
+
+export interface ProjectTasksUpdateMilestoneResult {
+  task: Task;
+}
+
+export interface ProjectTasksUpdateStatusInput {
+  taskId: Id;
+  status: string;
+}
+
+export interface ProjectTasksUpdateStatusResult {
+  task: Task;
+}
+
 export interface ProjectsCreateMilestoneInput {
   projectId: Id;
   name: string;
@@ -3630,18 +3687,6 @@ export interface ProjectsCreateMilestoneInput {
 
 export interface ProjectsCreateMilestoneResult {
   milestone: Milestone;
-}
-
-export interface ProjectsCreateTaskInput {
-  projectId: Id;
-  milestoneId: Id | null;
-  name: string;
-  assigneeId: Id | null;
-  dueDate: ContextualDate | null;
-}
-
-export interface ProjectsCreateTaskResult {
-  task: Task;
 }
 
 export interface ProjectsDeleteInput {
@@ -3706,43 +3751,6 @@ export interface ProjectsUpdateStartDateInput {
 
 export interface ProjectsUpdateStartDateResult {
   success: boolean | null;
-}
-
-export interface ProjectsUpdateTaskAssigneeInput {
-  taskId: Id;
-  assigneeId: Id | null;
-}
-
-export interface ProjectsUpdateTaskAssigneeResult {
-  task: Task;
-}
-
-export interface ProjectsUpdateTaskDueDateInput {
-  taskId: Id;
-  dueDate: ContextualDate | null;
-}
-
-export interface ProjectsUpdateTaskDueDateResult {
-  task: Task;
-}
-
-export interface ProjectsUpdateTaskMilestoneInput {
-  taskId: Id;
-  milestoneId: Id | null;
-  index?: number;
-}
-
-export interface ProjectsUpdateTaskMilestoneResult {
-  task: Task;
-}
-
-export interface ProjectsUpdateTaskStatusInput {
-  taskId: Id;
-  status: string;
-}
-
-export interface ProjectsUpdateTaskStatusResult {
-  task: Task;
 }
 
 export interface PublishDiscussionInput {
@@ -4560,6 +4568,14 @@ class ApiNamespaceRoot {
   }
 }
 
+class ApiNamespaceSpaces {
+  constructor(private client: ApiClient) {}
+
+  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
+    return this.client.get("/spaces/search", input);
+  }
+}
+
 class ApiNamespaceProjectDiscussions {
   constructor(private client: ApiClient) {}
 
@@ -4580,11 +4596,35 @@ class ApiNamespaceProjectDiscussions {
   }
 }
 
-class ApiNamespaceSpaces {
+class ApiNamespaceProjectTasks {
   constructor(private client: ApiClient) {}
 
-  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
-    return this.client.get("/spaces/search", input);
+  async list(input: ProjectTasksListInput): Promise<ProjectTasksListResult> {
+    return this.client.get("/project_tasks/list", input);
+  }
+
+  async create(input: ProjectTasksCreateInput): Promise<ProjectTasksCreateResult> {
+    return this.client.post("/project_tasks/create", input);
+  }
+
+  async delete(input: ProjectTasksDeleteInput): Promise<ProjectTasksDeleteResult> {
+    return this.client.post("/project_tasks/delete", input);
+  }
+
+  async updateAssignee(input: ProjectTasksUpdateAssigneeInput): Promise<ProjectTasksUpdateAssigneeResult> {
+    return this.client.post("/project_tasks/update_assignee", input);
+  }
+
+  async updateDueDate(input: ProjectTasksUpdateDueDateInput): Promise<ProjectTasksUpdateDueDateResult> {
+    return this.client.post("/project_tasks/update_due_date", input);
+  }
+
+  async updateMilestone(input: ProjectTasksUpdateMilestoneInput): Promise<ProjectTasksUpdateMilestoneResult> {
+    return this.client.post("/project_tasks/update_milestone", input);
+  }
+
+  async updateStatus(input: ProjectTasksUpdateStatusInput): Promise<ProjectTasksUpdateStatusResult> {
+    return this.client.post("/project_tasks/update_status", input);
   }
 }
 
@@ -4599,20 +4639,12 @@ class ApiNamespaceProjects {
     return this.client.get("/projects/get_milestones", input);
   }
 
-  async getTasks(input: ProjectsGetTasksInput): Promise<ProjectsGetTasksResult> {
-    return this.client.get("/projects/get_tasks", input);
-  }
-
   async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
     return this.client.get("/projects/parent_goal_search", input);
   }
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
     return this.client.post("/projects/create_milestone", input);
-  }
-
-  async createTask(input: ProjectsCreateTaskInput): Promise<ProjectsCreateTaskResult> {
-    return this.client.post("/projects/create_task", input);
   }
 
   async delete(input: ProjectsDeleteInput): Promise<ProjectsDeleteResult> {
@@ -4641,22 +4673,6 @@ class ApiNamespaceProjects {
 
   async updateStartDate(input: ProjectsUpdateStartDateInput): Promise<ProjectsUpdateStartDateResult> {
     return this.client.post("/projects/update_start_date", input);
-  }
-
-  async updateTaskAssignee(input: ProjectsUpdateTaskAssigneeInput): Promise<ProjectsUpdateTaskAssigneeResult> {
-    return this.client.post("/projects/update_task_assignee", input);
-  }
-
-  async updateTaskDueDate(input: ProjectsUpdateTaskDueDateInput): Promise<ProjectsUpdateTaskDueDateResult> {
-    return this.client.post("/projects/update_task_due_date", input);
-  }
-
-  async updateTaskMilestone(input: ProjectsUpdateTaskMilestoneInput): Promise<ProjectsUpdateTaskMilestoneResult> {
-    return this.client.post("/projects/update_task_milestone", input);
-  }
-
-  async updateTaskStatus(input: ProjectsUpdateTaskStatusInput): Promise<ProjectsUpdateTaskStatusResult> {
-    return this.client.post("/projects/update_task_status", input);
   }
 }
 
@@ -4836,16 +4852,18 @@ export class ApiClient {
   private basePath: string;
   private headers: any;
   public apiNamespaceRoot: ApiNamespaceRoot;
-  public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
+  public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
+  public apiNamespaceProjectTasks: ApiNamespaceProjectTasks;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceAi: ApiNamespaceAi;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
-    this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
+    this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
+    this.apiNamespaceProjectTasks = new ApiNamespaceProjectTasks(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
@@ -7138,6 +7156,12 @@ export default {
   updateTaskStatus,
   useUpdateTaskStatus,
 
+  spaces: {
+    search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
+    useSearch: (input: SpacesSearchInput) =>
+      useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+  },
+
   project_discussions: {
     list: (input: ProjectDiscussionsListInput) => defaultApiClient.apiNamespaceProjectDiscussions.list(input),
     useList: (input: ProjectDiscussionsListInput) =>
@@ -7160,10 +7184,46 @@ export default {
       ),
   },
 
-  spaces: {
-    search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
-    useSearch: (input: SpacesSearchInput) =>
-      useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+  project_tasks: {
+    list: (input: ProjectTasksListInput) => defaultApiClient.apiNamespaceProjectTasks.list(input),
+    useList: (input: ProjectTasksListInput) =>
+      useQuery<ProjectTasksListResult>(() => defaultApiClient.apiNamespaceProjectTasks.list(input)),
+
+    updateDueDate: (input: ProjectTasksUpdateDueDateInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateDueDate(input),
+    useUpdateDueDate: () =>
+      useMutation<ProjectTasksUpdateDueDateInput, ProjectTasksUpdateDueDateResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateDueDate,
+      ),
+
+    updateMilestone: (input: ProjectTasksUpdateMilestoneInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateMilestone(input),
+    useUpdateMilestone: () =>
+      useMutation<ProjectTasksUpdateMilestoneInput, ProjectTasksUpdateMilestoneResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateMilestone,
+      ),
+
+    create: (input: ProjectTasksCreateInput) => defaultApiClient.apiNamespaceProjectTasks.create(input),
+    useCreate: () =>
+      useMutation<ProjectTasksCreateInput, ProjectTasksCreateResult>(defaultApiClient.apiNamespaceProjectTasks.create),
+
+    updateAssignee: (input: ProjectTasksUpdateAssigneeInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateAssignee(input),
+    useUpdateAssignee: () =>
+      useMutation<ProjectTasksUpdateAssigneeInput, ProjectTasksUpdateAssigneeResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateAssignee,
+      ),
+
+    updateStatus: (input: ProjectTasksUpdateStatusInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateStatus(input),
+    useUpdateStatus: () =>
+      useMutation<ProjectTasksUpdateStatusInput, ProjectTasksUpdateStatusResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateStatus,
+      ),
+
+    delete: (input: ProjectTasksDeleteInput) => defaultApiClient.apiNamespaceProjectTasks.delete(input),
+    useDelete: () =>
+      useMutation<ProjectTasksDeleteInput, ProjectTasksDeleteResult>(defaultApiClient.apiNamespaceProjectTasks.delete),
   },
 
   projects: {
@@ -7171,10 +7231,6 @@ export default {
       defaultApiClient.apiNamespaceProjects.getContributors(input),
     useGetContributors: (input: ProjectsGetContributorsInput) =>
       useQuery<ProjectsGetContributorsResult>(() => defaultApiClient.apiNamespaceProjects.getContributors(input)),
-
-    getTasks: (input: ProjectsGetTasksInput) => defaultApiClient.apiNamespaceProjects.getTasks(input),
-    useGetTasks: (input: ProjectsGetTasksInput) =>
-      useQuery<ProjectsGetTasksResult>(() => defaultApiClient.apiNamespaceProjects.getTasks(input)),
 
     parentGoalSearch: (input: ProjectsParentGoalSearchInput) =>
       defaultApiClient.apiNamespaceProjects.parentGoalSearch(input),
@@ -7199,24 +7255,10 @@ export default {
         defaultApiClient.apiNamespaceProjects.createMilestone,
       ),
 
-    updateTaskDueDate: (input: ProjectsUpdateTaskDueDateInput) =>
-      defaultApiClient.apiNamespaceProjects.updateTaskDueDate(input),
-    useUpdateTaskDueDate: () =>
-      useMutation<ProjectsUpdateTaskDueDateInput, ProjectsUpdateTaskDueDateResult>(
-        defaultApiClient.apiNamespaceProjects.updateTaskDueDate,
-      ),
-
     updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
     useUpdateDueDate: () =>
       useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>(
         defaultApiClient.apiNamespaceProjects.updateDueDate,
-      ),
-
-    updateTaskAssignee: (input: ProjectsUpdateTaskAssigneeInput) =>
-      defaultApiClient.apiNamespaceProjects.updateTaskAssignee(input),
-    useUpdateTaskAssignee: () =>
-      useMutation<ProjectsUpdateTaskAssigneeInput, ProjectsUpdateTaskAssigneeResult>(
-        defaultApiClient.apiNamespaceProjects.updateTaskAssignee,
       ),
 
     updateStartDate: (input: ProjectsUpdateStartDateInput) =>
@@ -7225,17 +7267,6 @@ export default {
       useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
         defaultApiClient.apiNamespaceProjects.updateStartDate,
       ),
-
-    updateTaskMilestone: (input: ProjectsUpdateTaskMilestoneInput) =>
-      defaultApiClient.apiNamespaceProjects.updateTaskMilestone(input),
-    useUpdateTaskMilestone: () =>
-      useMutation<ProjectsUpdateTaskMilestoneInput, ProjectsUpdateTaskMilestoneResult>(
-        defaultApiClient.apiNamespaceProjects.updateTaskMilestone,
-      ),
-
-    createTask: (input: ProjectsCreateTaskInput) => defaultApiClient.apiNamespaceProjects.createTask(input),
-    useCreateTask: () =>
-      useMutation<ProjectsCreateTaskInput, ProjectsCreateTaskResult>(defaultApiClient.apiNamespaceProjects.createTask),
 
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>
@@ -7254,13 +7285,6 @@ export default {
     useUpdateChampion: () =>
       useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
         defaultApiClient.apiNamespaceProjects.updateChampion,
-      ),
-
-    updateTaskStatus: (input: ProjectsUpdateTaskStatusInput) =>
-      defaultApiClient.apiNamespaceProjects.updateTaskStatus(input),
-    useUpdateTaskStatus: () =>
-      useMutation<ProjectsUpdateTaskStatusInput, ProjectsUpdateTaskStatusResult>(
-        defaultApiClient.apiNamespaceProjects.updateTaskStatus,
       ),
 
     delete: (input: ProjectsDeleteInput) => defaultApiClient.apiNamespaceProjects.delete(input),

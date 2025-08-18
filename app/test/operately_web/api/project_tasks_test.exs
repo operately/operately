@@ -591,6 +591,70 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
+  describe "delete task" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :delete], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :delete], %{})
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it deletes a task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Verify task exists
+      task_id = Paths.task_id(ctx.task)
+      {:ok, decoded_id} = OperatelyWeb.Api.Helpers.decode_id(task_id)
+      assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) != nil
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :delete], %{
+        task_id: task_id
+      })
+
+      assert res.success == true
+
+      # Verify task no longer exists
+      assert Operately.Repo.get(Operately.Tasks.Task, decoded_id) == nil
+    end
+
+    test "it returns not found for non-existent task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:project_tasks, :delete], %{
+        task_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns forbidden for non-project members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_tasks, :delete], %{
+        task_id: Paths.task_id(ctx.task)
+      })
+    end
+
+    test "it creates an activity when task is deleted", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.project.id, "task_deleting")
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :delete], %{
+        task_id: Paths.task_id(ctx.task)
+      })
+
+      after_count = count_activities(ctx.project.id, "task_deleting")
+      assert after_count == before_count + 1
+    end
+  end
+
   #
   # Helpers
   #
