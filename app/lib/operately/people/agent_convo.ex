@@ -60,7 +60,7 @@ defmodule Operately.People.AgentConvo do
   def create(person, action_name, context_type, context_id) do
     case Operately.Ai.Prompts.find_action(context_type, action_name) do
       {:ok, action} -> create_goal_convo(person, action, context_id)
-      _ -> {:error, "Invalid context_type #{inspect(context_type)}"}
+      _ -> {:error, "Ai prompt action not found #{inspect(action_name)} for context #{inspect(context_type)}"}
     end
   end
 
@@ -92,7 +92,7 @@ defmodule Operately.People.AgentConvo do
         convo_id: convo.id,
         status: :done,
         source: :user,
-        message: "Run action: '#{action.name}'",
+        message: "Run action: '#{action.label}'",
         prompt: action.prompt <> "** Input goal: **\n\n#{goal_details}"
       })
     end)

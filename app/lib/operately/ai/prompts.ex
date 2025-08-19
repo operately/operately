@@ -20,6 +20,10 @@ defmodule Operately.Ai.Prompts do
     get_cached_prompts().actions
   end
 
+  def find_action(context_type, action_id) when is_atom(context_type) do
+    find_action(Atom.to_string(context_type), action_id)
+  end
+
   def find_action(context_type, action_id) do
     get_cached_prompts().actions
     |> Enum.find(fn action -> action.id == action_id and action.context == context_type end)
@@ -47,12 +51,11 @@ defmodule Operately.Ai.Prompts do
 
   defp load do
     file_path()
-    |> File.read!()
-    |> YamlElixir.read_from_string!()
+    |> YamlElixir.read_all_from_file!()
     |> parse_prompts()
   end
 
-  defp parse_prompts(content) when is_map(content) do
+  defp parse_prompts([content]) do
     %Operately.Ai.Prompts{
       system_prompt: content["system"],
       actions: parse_actions(content["actions"])
