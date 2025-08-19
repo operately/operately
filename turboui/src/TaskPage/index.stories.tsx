@@ -109,11 +109,6 @@ function Component(props: Partial<TaskPage.Props>) {
     createdBy: mockTaskPeople[0]!,
 
     // Actions
-    onCopyUrl: () => {
-      console.log("Copying URL to clipboard");
-      navigator.clipboard?.writeText(window.location.href);
-    },
-
     onDelete: async () => {
       console.log("Deleting task");
       return Promise.resolve();
