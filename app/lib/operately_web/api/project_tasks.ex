@@ -126,6 +126,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           space_id: changes.project.group_id,
           project_id: changes.project.id,
           task_id: changes.task.id,
+          task_name: changes.task.name,
           old_due_date: changes.task.due_date,
           new_due_date: changes.updated_task.due_date
         }

@@ -751,6 +751,14 @@ defmodule OperatelyWeb.Api.Types do
     field :project_name, :string, null: false
   end
 
+  object :activity_content_task_due_date_updating do
+    field :project, :project, null: false
+    field :task, :task, null: true
+    field :task_name, :string, null: true
+    field :old_due_date, :contextual_date, null: false
+    field :new_due_date, :contextual_date, null: false
+  end
+
   object :activity_content_task_status_updating do
     field :company_id, :string
     field :company, :company
