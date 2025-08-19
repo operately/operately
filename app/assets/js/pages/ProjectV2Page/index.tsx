@@ -19,11 +19,12 @@ import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
+import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
-import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -81,6 +82,15 @@ function Page() {
   const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
+
+  useAiSidebar({
+    conversationContext: {
+      id: project.id!,
+      type: "project",
+      title: project.name,
+      url: paths.projectPath(project.id!),
+    },
+  });
 
   assertPresent(project.space);
   assertPresent(project.state);
