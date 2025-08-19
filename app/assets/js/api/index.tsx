@@ -521,8 +521,11 @@ export interface ActivityContentProjectDueDateUpdating {
 }
 
 export interface ActivityContentProjectGoalConnection {
-  project?: Project | null;
-  goal?: Goal | null;
+  project: Project;
+  goal: Goal | null;
+  goalName: string | null;
+  previousGoal: Goal | null;
+  previousGoalName: string | null;
 }
 
 export interface ActivityContentProjectGoalDisconnection {
@@ -3747,6 +3750,7 @@ export interface ProjectsUpdateMilestoneResult {
 export interface ProjectsUpdateParentGoalInput {
   projectId: Id;
   goalId: Id | null;
+  goalName: string | null;
 }
 
 export interface ProjectsUpdateParentGoalResult {

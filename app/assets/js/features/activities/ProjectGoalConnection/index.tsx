@@ -4,7 +4,6 @@ import type { ActivityContentProjectGoalConnection } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { feedTitle, goalLink, projectLink } from "../feedItemLinks";
 
 const ProjectGoalConnection: ActivityHandler = {
@@ -29,15 +28,52 @@ const ProjectGoalConnection: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const project = projectLink(content(activity).project!);
-    const goal = goalLink(content(activity).goal!);
+    const { project: p, goal: g, goalName, previousGoal, previousGoalName } = content(activity);
 
+    const project = projectLink(p);
+
+    if (g) {
+      const goal = goalLink(g);
+
+      if (page === "project") {
+        return feedTitle(activity, "connected the project to the", goal, "goal");
+      } else if (page === "goal") {
+        return feedTitle(activity, "connected the", project, "project to the goal");
+      } else {
+        return feedTitle(activity, "connected the", project, "project to the", goal, "goal");
+      }
+    }
+
+    if (goalName) {
+      if (page === "project") {
+        return feedTitle(activity, "connected the project to the", goalName, "goal");
+      } else {
+        return feedTitle(activity, "connected the", project, "project to the", goalName, "goal");
+      }
+    }
+
+    // Handle cases where a project was disconnected from a goal
+    if (previousGoal) {
+      const prevGoal = goalLink(previousGoal);
+
+      if (page === "project") {
+        return feedTitle(activity, "disconnected the project from the", prevGoal, "goal");
+      } else {
+        return feedTitle(activity, "disconnected the", project, "project from the", prevGoal, "goal");
+      }
+    } else if (previousGoalName) {
+      if (page === "project") {
+        return feedTitle(activity, "disconnected the project from the", previousGoalName, "goal");
+      } else {
+        return feedTitle(activity, "disconnected the", project, "project from the", previousGoalName, "goal");
+      }
+    }
+
+    // Fallback if no previous goal information is available
     if (page === "project") {
-      return feedTitle(activity, "connected the project to the", goal, "goal");
-    } else if (page === "goal") {
-      return feedTitle(activity, "connected the", project, "project to the goal");
+      return feedTitle(activity, "disconnected the project from its parent goal");
     } else {
-      return feedTitle(activity, "connected the", project, "project to the", goal, "goal");
+      return feedTitle(activity, "disconnected the", project, "project from its parent goal");
     }
   },
 
