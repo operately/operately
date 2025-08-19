@@ -25,19 +25,20 @@ defmodule Operately.Ai.AgentConvoWorker do
   end
 
   def create_chain(convo) do
-    provider = LangChain.ChatModels.ChatAnthropic.new!()
-
-    LLMChain.new!(%{llm: provider, custom_context: %{}})
+    LLMChain.new!(%{llm: provider(), custom_context: %{}})
     |> inject_messages(convo.messages)
   end
 
   def save_response(convo, chain) do
+    resp = ChainResult.to_string!(chain)
+
     Operately.People.AgentMessage.changeset(%{
       convo_id: convo.id,
       index: convo.messages |> Enum.count(),
       status: :done,
       source: :ai,
-      message: ChainResult.to_string!(chain)
+      prompt: resp,
+      message: resp
     })
     |> Operately.Repo.insert()
   end
@@ -61,7 +62,14 @@ defmodule Operately.Ai.AgentConvoWorker do
     case db_message.source do
       :system -> Message.new_system!(db_message.prompt)
       :user -> Message.new_user!(db_message.prompt)
-      :ai -> Message.new_assistant!(db_message.message)
+      :ai -> Message.new_assistant!(db_message.prompt)
+    end
+  end
+
+  defp provider do
+    case Application.get_env(:operately, :app_env) do
+      :prod -> LangChain.ChatModels.ChatOpenAI.new!()
+      :dev -> LangChain.ChatModels.ChatAnthropic.new!()
     end
   end
 end
