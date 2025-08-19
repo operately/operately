@@ -10,13 +10,15 @@ defmodule Operately.Application do
     children = [
       OperatelyWeb.Telemetry,
       Operately.Repo,
-      {Phoenix.PubSub, [
-        name: Operately.PubSub,
-        adapter: Operately.PubSub.PostgresPubSub
-      ]},
-      {Finch, name: Operately.Finch},
       OperatelyWeb.Endpoint,
-      {Oban, Application.fetch_env!(:operately, Oban)}
+      Operately.Ai.Prompts,
+      {Oban, Application.fetch_env!(:operately, Oban)},
+      {Finch, name: Operately.Finch},
+      {Phoenix.PubSub,
+       [
+         name: Operately.PubSub,
+         adapter: Operately.PubSub.PostgresPubSub
+       ]}
     ]
 
     :ok = Oban.Telemetry.attach_default_logger()
