@@ -30,8 +30,6 @@ export namespace Conversations {
   export interface ContextAction {
     id: string;
     label: string;
-    prompt: string;
-    variant?: "primary" | "secondary";
   }
 
   export interface Conversation {
