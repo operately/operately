@@ -51,7 +51,7 @@ function useTabPath(tabId: string) {
 
 export function Tabs({ tabs }: { tabs: TabsState }) {
   return (
-    <div className="border-stroke-dimmed border-b shadow-b-xs pl-4 mt-2 overflow-x-auto">
+    <div className="border-stroke-base border-b shadow-b-xs pl-4 mt-2 overflow-x-auto">
       <nav className="flex gap-4 px-2 sm:px-0 whitespace-nowrap">
         {tabs.tabs.map((tab) => (
           <TabItem key={tab.id} tab={tab} activeTab={tabs.active} />
