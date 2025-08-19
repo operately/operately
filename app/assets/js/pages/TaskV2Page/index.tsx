@@ -56,22 +56,11 @@ function Page() {
   assertPresent(task.space, "Task must have a space");
   assertPresent(task.milestone, "Task must have a milestone");
 
-  // Task name field
   const [name, setName] = usePageField({
     value: (data) => data.task.name!,
     update: () => Promise.resolve(true), // Placeholder for updateTaskName
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
-  });
-
-  // Task description field
-  const [description, _setDescription] = usePageField({
-    value: (data) => data.task.description && JSON.parse(data.task.description),
-    update: () => {
-      PageCache.invalidate(pageCacheKey(task.id!));
-      return Promise.resolve(true); // Placeholder for updateTaskDescription
-    },
-    onError: () => showErrorToast("Error", "Failed to update task description."),
   });
 
   const [status, setStatus] = usePageField({
@@ -98,6 +87,8 @@ function Page() {
     update: (v) => Api.project_tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
   });
+
+  const { description, handleDescriptionChange } = useDescription(task);
 
   // Subscription status - placeholder
   const [isSubscribed, setIsSubscribed] = React.useState(true);
@@ -162,7 +153,7 @@ function Page() {
     },
 
     description,
-    onDescriptionChange: () => Promise.resolve(true),
+    onDescriptionChange: handleDescriptionChange,
 
     status,
     onStatusChange: setStatus,
@@ -268,4 +259,19 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
 
     return parseMilestonesForTurboUi(paths, data.milestones || []);
   };
+}
+
+function useDescription(task: Tasks.Task) {
+  const [description, setDescription] = usePageField({
+    value: (data: { task: Tasks.Task }) => data.task.description && JSON.parse(data.task.description),
+    update: (v) => Api.project_tasks.updateDescription({ taskId: task.id!, description: JSON.stringify(v) }),
+    onError: () => showErrorToast("Error", "Failed to update task description."),
+  });
+
+  const handleDescriptionChange = (newDescription: any) => {
+    setDescription(newDescription);
+    return Promise.resolve(true);
+  };
+
+  return { description, handleDescriptionChange };
 }
