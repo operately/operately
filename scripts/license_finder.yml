@@ -387,3 +387,9 @@
     :why: Its Apache 2.0 https://github.com/jeremyjh/dialyxir?tab=Apache-2.0-1-ov-file#readme
     :versions: []
     :when: 2025-05-25 12:13:59.159469000 Z
+- - :approve
+  - yaml_elixir
+  - :who: Igor Sarcevic
+    :why: It is MIT based on the source
+    :versions: []
+    :when: 2025-08-19 10:34:16.650597000 Z
