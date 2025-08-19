@@ -223,13 +223,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("project_goal_connection", content) do
-    %{
-      project: Serializer.serialize(content["project"], level: :essential),
-      goal: serialize_goal(content["goal"])
-    }
-  end
-
   def serialize_content("project_goal_disconnection", content) do
     %{
       project: Serializer.serialize(content["project"], level: :essential),
