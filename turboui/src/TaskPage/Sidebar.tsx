@@ -115,7 +115,7 @@ function Actions(props: TaskPage.State) {
   const actions = [
     {
       label: "Copy URL",
-      onClick: props.onCopyUrl,
+      onClick: () => navigator.clipboard.writeText(window.location.href),
       icon: IconLink,
       show: true,
     },
