@@ -58,20 +58,8 @@ export function Page(props: Page.Props) {
 export function PageNew(props: Page.Props) {
   useHtmlTitle(props.title);
 
-  const containerClass = classNames("absolute inset-0 sm:p-4 mt-11");
-
-  const innerClass = classNames(
-    "absolute",
-    "inset-3",
-    "bg-surface-base",
-
-    // apply border shadow and rounded corners on larger screens
-    "sm:border sm:border-surface-outline",
-    "sm:rounded-lg",
-    "sm:shadow-xl",
-
-    "flex flex-col",
-  );
+  const containerClass = classNames("absolute inset-0 mt-10 lg:mt-11");
+  const innerClass = classNames("absolute inset-0", "bg-surface-base", "flex flex-col");
 
   return (
     <div className={containerClass} data-test-id={props.testId}>
