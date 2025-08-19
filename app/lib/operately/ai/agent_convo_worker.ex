@@ -67,9 +67,13 @@ defmodule Operately.Ai.AgentConvoWorker do
   end
 
   defp provider do
-    case Application.get_env(:operately, :app_env) do
-      :prod -> LangChain.ChatModels.ChatOpenAI.new!()
-      :dev -> LangChain.ChatModels.ChatAnthropic.new!()
+    case Application.get_env(:operately, :ai_provider) do
+      "openai" ->
+        model = Application.get_env(:operately, :openai_model)
+        LangChain.ChatModels.ChatOpenAI.new!(%{model: model})
+
+      "claude" ->
+        LangChain.ChatModels.ChatAnthropic.new!()
     end
   end
 end
