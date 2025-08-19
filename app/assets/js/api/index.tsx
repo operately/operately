@@ -3662,6 +3662,15 @@ export interface ProjectTasksUpdateAssigneeResult {
   task: Task;
 }
 
+export interface ProjectTasksUpdateDescriptionInput {
+  taskId: Id;
+  description: Json;
+}
+
+export interface ProjectTasksUpdateDescriptionResult {
+  task: Task;
+}
+
 export interface ProjectTasksUpdateDueDateInput {
   taskId: Id;
   dueDate: ContextualDate | null;
@@ -4624,6 +4633,10 @@ class ApiNamespaceProjectTasks {
 
   async updateAssignee(input: ProjectTasksUpdateAssigneeInput): Promise<ProjectTasksUpdateAssigneeResult> {
     return this.client.post("/project_tasks/update_assignee", input);
+  }
+
+  async updateDescription(input: ProjectTasksUpdateDescriptionInput): Promise<ProjectTasksUpdateDescriptionResult> {
+    return this.client.post("/project_tasks/update_description", input);
   }
 
   async updateDueDate(input: ProjectTasksUpdateDueDateInput): Promise<ProjectTasksUpdateDueDateResult> {
@@ -7217,6 +7230,13 @@ export default {
     create: (input: ProjectTasksCreateInput) => defaultApiClient.apiNamespaceProjectTasks.create(input),
     useCreate: () =>
       useMutation<ProjectTasksCreateInput, ProjectTasksCreateResult>(defaultApiClient.apiNamespaceProjectTasks.create),
+
+    updateDescription: (input: ProjectTasksUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateDescription(input),
+    useUpdateDescription: () =>
+      useMutation<ProjectTasksUpdateDescriptionInput, ProjectTasksUpdateDescriptionResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateDescription,
+      ),
 
     updateAssignee: (input: ProjectTasksUpdateAssigneeInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateAssignee(input),
