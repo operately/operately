@@ -2,6 +2,8 @@ defmodule Operately.People.AgentConvo do
   use Operately.Schema
   import Ecto.Changeset
 
+  alias Operately.People.AgentMessage
+
   import Ecto.Query, only: [from: 2]
 
   schema "agent_convos" do
@@ -11,7 +13,7 @@ defmodule Operately.People.AgentConvo do
     belongs_to :project, Operately.Projects.Project, type: :binary_id
 
     belongs_to :author, Operately.People.Person, type: :binary_id
-    has_many :messages, Operately.People.AgentMessage, foreign_key: :convo_id, on_replace: :delete
+    has_many :messages, AgentMessage, foreign_key: :convo_id, on_replace: :delete
 
     timestamps()
   end
