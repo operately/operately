@@ -4,7 +4,11 @@ defmodule Operately.Activities.Content.TaskDescriptionChange do
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
     belongs_to :space, Operately.Groups.Group
+    belongs_to :project, Operately.Projects.Project
     belongs_to :task, Operately.Tasks.Task
+
+    field :task_name, :string
+    field :project_name, :string
   end
 
   def changeset(attrs) do

@@ -1,4 +1,5 @@
 defmodule OperatelyWeb.Api.ProjectTasksTest do
+  alias Operately.Support.RichText
   use OperatelyWeb.TurboCase
 
   setup ctx do
@@ -591,6 +592,89 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
+  describe "update task description" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+        description: RichText.rich_text("New task description", :as_string)
+      })
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a description", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task)
+      })
+      assert res.message == "Missing required fields: description"
+    end
+
+    test "it updates a task description", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      description = RichText.rich_text("Updated task description", :as_string)
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: description
+      })
+
+      # Check response
+      assert res.task.description == description
+
+      # Check database
+      description_map = Jason.decode!(description)
+      updated_task = Operately.Repo.reload(ctx.task)
+
+      assert updated_task.description == description_map
+    end
+
+    test "it creates an activity when description is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities("task_description_change")
+      description = RichText.rich_text("Another description update", :as_string)
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: description
+      })
+
+      after_count = count_activities("task_description_change")
+      assert after_count == before_count + 1
+    end
+
+    test "it returns not found for non-existent task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      description = RichText.rich_text("Description for non-existent task", :as_string)
+
+      assert {404, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+        task_id: Ecto.UUID.generate(),
+        description: description
+      })
+    end
+
+    test "it returns forbidden for non-project members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      description = RichText.rich_text("Forbidden description update", :as_string)
+
+      assert {403, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{
+        task_id: Paths.task_id(ctx.task),
+        description: description
+      })
+    end
+  end
+
   describe "delete task" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_tasks, :delete], %{})
@@ -665,6 +749,11 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     from(a in Operately.Activities.Activity,
       where: a.action == ^action and a.content["project_id"] == ^project_id
     )
+    |> Repo.aggregate(:count)
+  end
+
+  defp count_activities(action) do
+    from(a in Operately.Activities.Activity, where: a.action == ^action)
     |> Repo.aggregate(:count)
   end
 end
