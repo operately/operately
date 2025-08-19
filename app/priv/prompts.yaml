@@ -109,3 +109,40 @@ actions:
       demand immediate attention. For each blocker, briefly suggest a concrete
       action or owner to address it. No fluff—focus on what will actually move
       the needle.
+
+  - id: "evaluate-project-definition"
+    label: "Evaluate project definition"
+    context: "project"
+    prompt: |
+      Given the following project details, critically evaluate its clarity,
+      scope, and alignment with Operately's best practices. Identify any
+      weaknesses or ambiguities, suggest concrete improvements, and assess
+      whether the project is actionable and achievable. Respond concisely and
+      directly, as a sharp COO would.
+
+  - id: "summarize-project-status"
+    label: "Summarize current status"
+    context: "project"
+    prompt: |
+      Provide a concise, no-nonsense summary of the current status and progress
+      toward this project. Highlight key achievements, missed milestones, and any
+      red flags. Avoid fluff—focus on what matters for business outcomes.
+
+  - id: "on-track-project-analysis"
+    label: "Are we on track?"
+    context: "project"
+    prompt: |
+      Analyze the current progress and timeline with brutal honesty: Are we
+      truly on track to deliver this project? Identify any risks, delays, or
+      warning signs—don’t sugarcoat. If off track, state what must change
+      immediately to course-correct. Keep it sharp and actionable.
+
+  - id: "identify-project-blockers"
+    label: "Identify blockers"
+    context: "project"
+    prompt: |
+      Identify and list the most critical blockers or challenges threatening
+      this project’s success. Be specific, direct, and prioritize the issues that
+      demand immediate attention. For each blocker, briefly suggest a concrete
+      action or owner to address it. No fluff—focus on what will actually move
+      the needle.

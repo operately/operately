@@ -2,15 +2,14 @@ defmodule Operately.People.AgentConvo do
   use Operately.Schema
   import Ecto.Changeset
 
-  alias Ecto.Multi
-  alias Operately.People.AgentMessage
-
   import Ecto.Query, only: [from: 2]
 
   schema "agent_convos" do
     field :title, :string
 
     belongs_to :goal, Operately.Goals.Goal, type: :binary_id
+    belongs_to :project, Operately.Projects.Project, type: :binary_id
+
     belongs_to :author, Operately.People.Person, type: :binary_id
     has_many :messages, Operately.People.AgentMessage, foreign_key: :convo_id, on_replace: :delete
 
@@ -58,48 +57,6 @@ defmodule Operately.People.AgentConvo do
   end
 
   def create(person, action_name, context_type, context_id) do
-    case Operately.Ai.Prompts.find_action(context_type, action_name) do
-      {:ok, action} -> create_goal_convo(person, action, context_id)
-      _ -> {:error, "Ai prompt action not found #{inspect(action_name)} for context #{inspect(context_type)}"}
-    end
-  end
-
-  defp create_goal_convo(person, action, goal_id) do
-    goal = Operately.Repo.get!(Operately.Goals.Goal, goal_id)
-    goal_details = Operately.MD.Goal.render(goal)
-
-    Multi.new()
-    |> Multi.insert(:convo, fn _ ->
-      changeset(%{
-        title: action.label,
-        author_id: person.id,
-        goal_id: goal_id
-      })
-    end)
-    |> Multi.insert(:system_message, fn %{convo: convo} ->
-      Operately.People.AgentMessage.changeset(%{
-        index: 0,
-        convo_id: convo.id,
-        status: :done,
-        source: :system,
-        prompt: Operately.Ai.Prompts.system_prompt(),
-        message: "system prompt"
-      })
-    end)
-    |> Multi.insert(:initial_action, fn %{convo: convo} ->
-      Operately.People.AgentMessage.changeset(%{
-        index: 1,
-        convo_id: convo.id,
-        status: :done,
-        source: :user,
-        message: "Run action: '#{action.label}'",
-        prompt: action.prompt <> "** Input goal: **\n\n#{goal_details}"
-      })
-    end)
-    |> Multi.run(:schedule_response, fn _repo, %{convo: convo} ->
-      Operately.Ai.AgentConvoWorker.new(%{convo_id: convo.id}) |> Oban.insert()
-    end)
-    |> Operately.Repo.transaction()
-    |> Operately.Repo.extract_result(:convo)
+    __MODULE__.Create.run(person, action_name, context_type, context_id)
   end
 end
