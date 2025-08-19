@@ -151,11 +151,18 @@ defmodule Operately.AccessActivityContextAssignerTest do
       attrs = %{
         action: "task_description_change",
         author_id: ctx.author.id,
-        content: %{space_id: ctx.group.id, company_id: "-", task_id: "-"}
+        content: %{
+          company_id: "-",
+          space_id: ctx.group.id,
+          project_id: ctx.project.id,
+          project_name: "-",
+          task_id: "-",
+          task_name: "-",
+        }
       }
 
       create_activity(attrs)
-      |> assert_context_assigned(ctx.group.access_context.id)
+      |> assert_context_assigned(ctx.project.access_context.id)
     end
 
     test "task_name_editing action", ctx do
