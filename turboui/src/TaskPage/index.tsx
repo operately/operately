@@ -70,7 +70,6 @@ export namespace TaskPage {
     onSubscriptionToggle: (subscribed: boolean) => void;
 
     // Actions
-    onCopyUrl: () => void;
     onDelete: () => Promise<void>;
     onDuplicate?: () => void;
     onArchive?: () => void;

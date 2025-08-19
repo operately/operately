@@ -180,7 +180,6 @@ export function InProjectContextStory() {
                 setIsSubscribed(subscribed);
               }}
               // Actions
-              onCopyUrl={() => console.log("URL copied")}
               onDelete={async () => console.log("Task deleted")}
               onDuplicate={() => console.log("Task duplicated")}
               onArchive={() => console.log("Task archived")}
