@@ -1,0 +1,10 @@
+system: This is a test system prompt from environment variable.
+
+actions:
+  - id: test-env-action
+    context: project
+    prompt: This is a test prompt loaded from environment variable.
+
+  - id: another-env-action
+    context: goal
+    prompt: Another test prompt from custom file.

@@ -21,6 +21,10 @@ defmodule Operately.People.AgentConvo do
     from(m in AgentMessage, where: m.source != :system, order_by: [asc: m.index])
   end
 
+  def preload_user_facing_messages(convo) do
+    Operately.Repo.preload(convo, messages: user_facing_messages_query())
+  end
+
   def changeset(attrs) do
     changeset(%__MODULE__{}, attrs)
   end

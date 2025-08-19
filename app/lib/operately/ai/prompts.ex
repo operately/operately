@@ -5,7 +5,7 @@ defmodule Operately.Ai.Prompts do
   @default_path "priv/prompts.yaml"
 
   defmodule Action do
-    defstruct [:name, :prompt, :context]
+    defstruct [:id, :label, :context, :prompt]
   end
 
   def start_link(_opts \\ []) do
@@ -16,9 +16,13 @@ defmodule Operately.Ai.Prompts do
     get_cached_prompts().system_prompt
   end
 
-  def find_action(context_type, action_name) do
+  def actions do
     get_cached_prompts().actions
-    |> Enum.find(fn action -> action.name == action_name and action.context == context_type end)
+  end
+
+  def find_action(context_type, action_id) do
+    get_cached_prompts().actions
+    |> Enum.find(fn action -> action.id == action_id and action.context == context_type end)
     |> case do
       nil -> {:error, :not_found}
       action -> {:ok, action}
@@ -35,6 +39,10 @@ defmodule Operately.Ai.Prompts do
       cached_prompts ->
         cached_prompts
     end
+  end
+
+  def reload do
+    Agent.update(__MODULE__, fn _ -> load() end)
   end
 
   defp load do
@@ -56,9 +64,10 @@ defmodule Operately.Ai.Prompts do
   defp parse_actions(actions) when is_list(actions) do
     Enum.map(actions, fn action ->
       %Operately.Ai.Prompts.Action{
-        name: action["name"],
-        prompt: action["prompt"],
-        context: action["context"]
+        id: action["id"],
+        label: action["label"],
+        context: action["context"],
+        prompt: action["prompt"]
       }
     end)
   end
