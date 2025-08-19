@@ -88,9 +88,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         %{
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
-          # project_id: changes.project.id,
+          project_id: changes.project.id,
           task_id: changes.task.id,
-          # name: changes.task.name
+          project_name: changes.project.name,
+          task_name: changes.task.name,
         }
       end)
       |> Steps.commit()

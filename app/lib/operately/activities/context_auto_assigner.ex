@@ -49,7 +49,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "message_archiving",
 
     "task_assignee_assignment",
-    "task_description_change",
     "task_name_editing",
     "task_priority_change",
     "task_reopening",
@@ -96,6 +95,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_assignee_updating",
     "task_milestone_updating",
     "task_deleting",
+    "task_description_change",
   ]
 
   @task_actions [
