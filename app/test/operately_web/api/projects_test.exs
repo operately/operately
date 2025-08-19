@@ -557,7 +557,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {403, _} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
-        goal_id: Ecto.UUID.generate()
+        goal_id: Ecto.UUID.generate(),
+        goal_name: ""
       })
     end
 
@@ -569,7 +570,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project),
-        goal_id: Paths.goal_id(ctx.parent_goal)
+        goal_id: Paths.goal_id(ctx.parent_goal),
+        goal_name: ctx.parent_goal.name
       })
 
       updated_project = Repo.reload(ctx.project)
@@ -587,7 +589,8 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
         project_id: Paths.project_id(ctx.project2),
-        goal_id: nil
+        goal_id: nil,
+        goal_name: nil
       })
 
       updated_project = Repo.reload(ctx.project2)
@@ -597,21 +600,27 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it creates an activity", ctx do
       ctx =
         ctx
-        |> Factory.add_goal(:parent_goal, :engineering)
+        |> Factory.add_goal(:parent_goal1, :engineering, name: "Parent Goal 1")
+        |> Factory.add_goal(:parent_goal2, :engineering, name: "Parent Goal 2")
+        |> Factory.add_project(:project1, :engineering, goal: :parent_goal1)
         |> Factory.log_in_person(:creator)
 
-      # Count activities before
-      before_count = count_activities(ctx.project.id, "project_goal_connection")
-
       assert {200, %{success: true}} = mutation(ctx.conn, [:projects, :update_parent_goal], %{
-        project_id: Paths.project_id(ctx.project),
-        goal_id: Paths.goal_id(ctx.parent_goal)
+        project_id: Paths.project_id(ctx.project1),
+        goal_id: Paths.goal_id(ctx.parent_goal2),
+        goal_name: ctx.parent_goal2.name
       })
 
-      # Count activities after
-      after_count = count_activities(ctx.project.id, "project_goal_connection")
+      count = count_activities(ctx.project1.id, "project_goal_connection")
+      assert count == 1
 
-      assert after_count == before_count + 1
+      activity = get_activity(ctx.project1.id, "project_goal_connection")
+
+      assert activity.content["project_id"] == ctx.project1.id
+      assert activity.content["goal_id"] == ctx.parent_goal2.id
+      assert activity.content["goal_name"] == "Parent Goal 2"
+      assert activity.content["previous_goal_id"] == ctx.parent_goal1.id
+      assert activity.content["previous_goal_name"] == "Parent Goal 1"
     end
   end
 
@@ -1034,5 +1043,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       where: a.content["project_id"] == ^project_id
     )
     |> Repo.aggregate(:count)
+  end
+
+  defp get_activity(project_id, action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["project_id"] == ^project_id
+    )
+    |> Repo.one()
   end
 end

@@ -272,8 +272,11 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_project_goal_connection do
-    field? :project, :project, null: true
-    field? :goal, :goal, null: true
+    field :project, :project, null: false
+    field :goal, :goal, null: true
+    field :goal_name, :string, null: true
+    field :previous_goal, :goal, null: true
+    field :previous_goal_name, :string, null: true
   end
 
   object :update_content_project_discussion do

@@ -116,7 +116,12 @@ function Page() {
 
   const [parentGoal, setParentGoal] = usePageField({
     value: (data: { project: Projects.Project }) => Goals.parseParentGoalForTurboUi(paths, data.project.goal),
-    update: (v) => Api.projects.updateParentGoal({ projectId: project.id, goalId: v && v.id }),
+    update: (v) =>
+      Api.projects.updateParentGoal({
+        projectId: project.id,
+        goalId: v && v.id,
+        goalName: v && v.name,
+      }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
   });
 
