@@ -13,8 +13,11 @@ defmodule Operately.Operations.TaskDescriptionChange do
     |> Activities.insert_sync(author.id, :task_description_change, fn _changes ->
       %{
         company_id: author.company_id,
-        task_id: task.id,
         space_id: space.id,
+        project_id: task.project_id,
+        task_id: task.id,
+        task_name: task.name,
+        project_name: task.project.name
       }
     end)
     |> Repo.transaction()
