@@ -58,6 +58,11 @@ function AiSidebarElements() {
     refreshConversations();
   }, []);
 
+  const actions = React.useMemo(
+    () => window.appConfig.aiActions.filter((a) => a.context === conversationContext?.type),
+    [conversationContext],
+  );
+
   useNewAgentMessageSignal(refreshConversations, { convoId: activeConversationId! });
 
   const createConvo = useCreateConvo({
@@ -110,8 +115,7 @@ function useCreateConvo({
 
     Api.ai
       .createConversation({
-        title: action.label,
-        prompt: action.prompt,
+        actionId: action.id,
         contextType: conversationContext.type!,
         contextId: conversationContext.id!,
       })

@@ -53,21 +53,24 @@ defmodule Operately.People.AgentConvo do
     |> Operately.Repo.all()
   end
 
-  def create(person, title, action_name, context_type, context_id) do
+  def create(person, action_name, context_type, context_id) do
     case Operately.Ai.Prompts.find_action(context_type, action_name) do
-      {:ok, action} -> create_goal_convo(person, title, action, context_id)
+      {:ok, action} -> create_goal_convo(person, action, context_id)
       _ -> {:error, "Invalid context_type #{inspect(context_type)}"}
     end
   end
 
-  defp create_goal_convo(person, title, action, goal_id) do
+  defp create_goal_convo(person, action, goal_id) do
     goal = Operately.Repo.get!(Operately.Goals.Goal, goal_id)
     goal_details = Operately.MD.Goal.render(goal)
 
     Multi.new()
     |> Multi.insert(:convo, fn _ ->
-      %__MODULE__{}
-      |> changeset(%{title: title, author_id: person.id, goal_id: goal_id})
+      changeset(%{
+        title: action.label,
+        author_id: person.id,
+        goal_id: goal_id
+      })
     end)
     |> Multi.insert(:system_message, fn %{convo: convo} ->
       Operately.People.AgentMessage.changeset(%{

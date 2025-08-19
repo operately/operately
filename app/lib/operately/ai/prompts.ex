@@ -38,8 +38,13 @@ defmodule Operately.Ai.Prompts do
   end
 
   defp load do
-    content = load_file() |> YamlElixir.read_from_string!()
+    file_path()
+    |> File.read!()
+    |> YamlElixir.read_from_string!()
+    |> parse_prompts()
+  end
 
+  defp parse_prompts(content) when is_map(content) do
     %Operately.Ai.Prompts{
       system_prompt: content["system"],
       actions: parse_actions(content["actions"])
@@ -58,9 +63,9 @@ defmodule Operately.Ai.Prompts do
     end)
   end
 
-  defp load_file do
+  defp file_path do
     if System.get_env("OPERATELY_AI_PROMPTS_FILE_PATH") do
-      File.read!(System.get_env("OPERATELY_AI_PROMPTS_FILE_PATH"))
+      System.get_env("OPERATELY_AI_PROMPTS_FILE_PATH")
     else
       Application.app_dir(:operately, @default_path)
     end
