@@ -59,6 +59,7 @@ defmodule Operately.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:req, "~> 0.5.0"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
+      {:yaml_elixir, "~> 2.11"},
 
       # llm
       {:langchain, "0.4.0-rc.0"},
