@@ -42,6 +42,9 @@ config :operately, :sendgrid_saas_onboarding_list_id, System.get_env("SENDGRID_S
 config :operately, :send_company_creation_notifications, System.get_env("SEND_COMPANY_CREATION_NOTIFICATIONS", "no") == "yes"
 config :operately, :company_creation_notification_webhook_url, System.get_env("COMPANY_CREATION_NOTIFICATION_WEBHOOK_URL")
 
+config :operately, :ai_provider, System.get_env("OPERATELY_AI_PROVIDER") || "openai"
+config :operately, :openai_model, System.get_env("OPERATELY_AI_OPENAI_MODEL") || "gpt-5"
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||
