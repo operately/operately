@@ -6,7 +6,6 @@ export function pageOptions(props: TaskPage.State) {
     {
       type: "action" as const,
       label: "Copy URL",
-      onClick: props.onCopyUrl,
       icon: IconCopy,
     },
     {
