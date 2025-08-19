@@ -7,13 +7,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.AgentConvo do
       title: c.title,
       created_at: OperatelyWeb.Api.Serializer.serialize(c.inserted_at, level: :full),
       updated_at: OperatelyWeb.Api.Serializer.serialize(c.updated_at, level: :full),
-      messages: sorted_messages(c.messages)
+      messages: OperatelyWeb.Api.Serializer.serialize(c.messages, level: :full)
     }
-  end
-
-  defp sorted_messages(messages) do
-    messages
-    |> Enum.sort_by(fn m -> m.index end)
-    |> OperatelyWeb.Api.Serializer.serialize(level: :full)
   end
 end

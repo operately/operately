@@ -6,7 +6,7 @@ defmodule Operately.People.AgentMessage do
   schema "agent_messages" do
     belongs_to :convo, Operately.People.AgentConvo
 
-    field :source, Ecto.Enum, values: [:user, :ai], default: :user
+    field :source, Ecto.Enum, values: [:user, :ai, :system], default: :user
     field :status, Ecto.Enum, values: [:pending, :done], default: :pending
     field :message, :string
     field :prompt, :string
