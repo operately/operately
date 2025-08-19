@@ -34,6 +34,7 @@ function DueDate(props: TaskPage.State) {
         readonly={!props.canEdit}
         showOverdueWarning={!isCompleted}
         placeholder="Set due date"
+        calendarOnly
       />
       <OverdueWarning {...props} />
     </SidebarSection>
