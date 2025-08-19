@@ -93,6 +93,8 @@ export namespace TaskPage {
     onAddComment?: (content: any) => void;
     onEditComment?: (id: string, content: any) => void;
     timelineFilters?: TimelineFilters;
+
+    notifications?: any;
   }
 
   export interface State extends Props {
