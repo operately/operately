@@ -303,10 +303,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     %{}
   end
 
-  def serialize_content("task_description_change", _content) do
-    %{}
-  end
-
   def serialize_content("task_name_editing", _content) do
     %{}
   end

@@ -804,9 +804,8 @@ export interface ActivityContentTaskDeleting {
 }
 
 export interface ActivityContentTaskDescriptionChange {
-  companyId?: string | null;
-  spaceId?: string | null;
-  taskId?: string | null;
+  task: Task;
+  projectName: string;
 }
 
 export interface ActivityContentTaskNameEditing {
