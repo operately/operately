@@ -95,6 +95,8 @@ function Subscription(props: TaskPage.State) {
     props.onSubscriptionToggle(subscribed);
   };
 
+  if (!props.notifications) return null;
+
   return (
     <SidebarSection title="Notifications">
       <NotificationToggle isSubscribed={props.isSubscribed} onToggle={handleToggle} entityType="task" />
