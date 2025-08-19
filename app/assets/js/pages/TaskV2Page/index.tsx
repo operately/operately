@@ -92,11 +92,6 @@ function Page() {
   // Subscription status - placeholder
   const [isSubscribed, setIsSubscribed] = React.useState(true);
 
-  // Handlers for task actions
-  const handleCopyUrl = () => {
-    navigator.clipboard.writeText(window.location.href);
-  };
-
   const handleDelete = async () => {
     try {
       await Api.project_tasks.delete({ taskId: task.id });
@@ -174,9 +169,6 @@ function Page() {
     onSubscriptionToggle: (subscribed: boolean) => {
       setIsSubscribed(subscribed);
     },
-
-    // Actions
-    onCopyUrl: handleCopyUrl,
 
     // Placeholder for person lookup functionality
     peopleSearch: () => Promise.resolve([]),
