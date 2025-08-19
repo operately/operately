@@ -29,18 +29,14 @@ const mockGoalActions: Conversations.ContextAction[] = [
   {
     id: "evaluate-definition",
     label: "Evaluate goal definition",
-    prompt:
-      "Please evaluate the definition and clarity of this goal. Is it well-structured, measurable, and achievable?",
   },
   {
     id: "summarize-status",
     label: "Summarize current status",
-    prompt: "Please provide a summary of the current status and progress toward this goal.",
   },
   {
     id: "on-track-analysis",
     label: "Are we on track?",
-    prompt: "Based on current progress and timeline, are we on track to achieve this goal?",
   },
 ];
 
