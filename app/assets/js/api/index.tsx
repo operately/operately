@@ -811,6 +811,14 @@ export interface ActivityContentTaskDescriptionChange {
   projectName: string;
 }
 
+export interface ActivityContentTaskDueDateUpdating {
+  project: Project;
+  task: Task | null;
+  taskName: string | null;
+  oldDueDate: ContextualDate;
+  newDueDate: ContextualDate;
+}
+
 export interface ActivityContentTaskNameEditing {
   companyId?: string | null;
   spaceId?: string | null;

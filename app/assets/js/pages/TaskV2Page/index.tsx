@@ -4,7 +4,7 @@ import Api from "@/api";
 import { useNavigate } from "react-router-dom";
 import * as Tasks from "../../models/tasks";
 import * as People from "../../models/people";
-import { parseContextualDate } from "@/models/contextualDates";
+import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 
 import { usePaths } from "../../routes/paths";
@@ -69,10 +69,9 @@ function Page() {
     onError: () => showErrorToast("Error", "Failed to update task status."),
   });
 
-  // Due date field
   const [dueDate, setDueDate] = usePageField({
-    value: (data) => parseContextualDate(data.task.dueDate),
-    update: () => Promise.resolve(true), // Placeholder for updateTaskDueDate
+    value: (data: { task: Tasks.Task }) => parseContextualDate(data.task.dueDate),
+    update: (v) => Api.project_tasks.updateDueDate({ taskId: task.id!, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Error", "Failed to update due date."),
   });
 
