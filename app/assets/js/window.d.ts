@@ -8,6 +8,12 @@ declare global {
     socketToken: string;
   }
 
+  interface AiConvoAction {
+    id: string;
+    label: string;
+    context: string;
+  }
+
   interface AppConfig {
     configured: boolean;
     environment: string;
@@ -27,6 +33,8 @@ declare global {
     account: {
       id: number;
     };
+
+    aiActions: AiConvoAction[];
   }
 
   interface Window {
