@@ -35,10 +35,22 @@ defmodule OperatelyWeb.PageController do
         },
         account: %{
           id: conn.assigns.current_account.id
-        }
+        },
+        aiActions: ai_actions()
       })
     else
       config
     end
+  end
+
+  defp ai_actions do
+    Operately.Ai.Prompts.actions()
+    |> Enum.map(fn action ->
+      %{
+        id: action.id,
+        label: action.label,
+        context: action.context
+      }
+    end)
   end
 end
