@@ -43,7 +43,7 @@ config :operately, :send_company_creation_notifications, System.get_env("SEND_CO
 config :operately, :company_creation_notification_webhook_url, System.get_env("COMPANY_CREATION_NOTIFICATION_WEBHOOK_URL")
 
 config :operately, :ai_provider, System.get_env("OPERATELY_AI_PROVIDER") || "openai"
-config :operately, :openai_model, System.get_env("OPERATELY_AI_OPENAI_MODEL") || "gpt-5"
+config :operately, :openai_model, System.get_env("OPERATELY_AI_OPENAI_MODEL") || "gpt-4o"
 
 if config_env() == :prod do
   database_url =

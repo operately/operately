@@ -27,9 +27,10 @@ defmodule Operately.People.AgentMessage do
 
   def create(convo, message) do
     Multi.new()
-    |> Multi.insert(:message, fn _ ->
+    |> Multi.put(:message_count, find_last_index(convo.id))
+    |> Multi.insert(:message, fn ctx ->
       Operately.People.AgentMessage.changeset(%{
-        index: find_last_index(convo.id) + 1,
+        index: ctx.message_count + 1,
         convo_id: convo.id,
         status: :done,
         source: :user,
@@ -37,8 +38,18 @@ defmodule Operately.People.AgentMessage do
         message: message
       })
     end)
-    |> Multi.run(:schedule_response, fn _repo, _ ->
-      Operately.Ai.AgentConvoWorker.new(%{convo_id: convo.id}) |> Oban.insert()
+    |> Multi.insert(:response_placeholder, fn ctx ->
+      Operately.People.AgentMessage.changeset(%{
+        index: ctx.message_count + 2,
+        convo_id: convo.id,
+        status: :pending,
+        source: :ai,
+        prompt: "...",
+        message: "..."
+      })
+    end)
+    |> Multi.run(:schedule_response, fn _repo, ctx ->
+      Operately.Ai.AgentConvoWorker.schedule_message_response(ctx.response_placeholder)
     end)
     |> Operately.Repo.transaction()
     |> Operately.Repo.extract_result(:message)
