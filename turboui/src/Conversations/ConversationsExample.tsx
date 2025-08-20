@@ -1,7 +1,15 @@
 import React from "react";
 import { FloatingActionButton } from "../FloatingActionButton";
-import { IconRobotFace } from "../icons";
+import { Avatar } from "../Avatar";
 import { Conversations, useConversations } from "./index";
+import alfredAvatar from "./alfred01.png";
+
+// Alfred AI assistant person object
+const alfredPerson = {
+  id: "alfred-ai",
+  fullName: "Alfred",
+  avatarUrl: alfredAvatar,
+};
 
 // Mock context data for a goal page
 const mockGoalContext: Conversations.ContextAttachment = {
@@ -201,9 +209,7 @@ export function ConversationsExample() {
         <div className="space-y-4">
           <div className="bg-surface-highlight p-6 rounded-lg border border-surface-outline">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-accent-base rounded-full flex items-center justify-center">
-                <IconRobotFace size={20} className="text-white" />
-              </div>
+              <Avatar person={alfredPerson} size={40} />
               <div className="flex-1">
                 <h2 className="font-semibold mb-1">Alfred - Your AI COO</h2>
                 <p className="text-sm text-content-dimmed mb-3">
@@ -242,10 +248,10 @@ export function ConversationsExample() {
 
       {/* Floating Action Button for AI Assistant */}
       <FloatingActionButton
-        icon={<IconRobotFace size={20} />}
+        icon={<img src={alfredAvatar} alt="Alfred" className="w-5 h-5 rounded-full object-cover" />}
         text="Ask Alfred"
         onClick={openConversations}
-        label="Ask Alfred about this goal"
+        label="Ask AI agent about this goal"
         variant="primary"
         position="bottom-right"
       />
