@@ -1,4 +1,4 @@
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { isContentEmpty } from "turboui";
 import { AddErrorFn } from "../useForm/errors";
 
 export function validateRichContentPresence(required?: boolean) {
