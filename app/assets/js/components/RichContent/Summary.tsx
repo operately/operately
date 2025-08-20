@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import RichContent, { parseContent, richContentToString, shortenContent } from ".";
+import RichContent from ".";
+import { parseContent, richContentToString, shortenContent } from "turboui";
 
 interface SummaryProps {
   jsonContent: string;
