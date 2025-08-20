@@ -342,6 +342,43 @@ defmodule Operately.MD.RichTextTest do
 
       assert RichText.render(doc) == "* \n* Non-empty"
     end
+
+    test "renders bullet list where each item is a paragraph node" do
+      doc = %{
+        "type" => "doc",
+        "content" => [
+          %{
+            "type" => "bulletList",
+            "content" => [
+              %{
+                "type" => "listItem",
+                "content" => [
+                  %{
+                    "type" => "paragraph",
+                    "content" => [
+                      %{"type" => "text", "text" => "Paragraph item one"}
+                    ]
+                  }
+                ]
+              },
+              %{
+                "type" => "listItem",
+                "content" => [
+                  %{
+                    "type" => "paragraph",
+                    "content" => [
+                      %{"type" => "text", "text" => "Paragraph item two"}
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+
+      assert RichText.render(doc) == "* Paragraph item one\n* Paragraph item two"
+    end
   end
 
   describe "text formatting" do

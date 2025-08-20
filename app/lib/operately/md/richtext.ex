@@ -89,7 +89,19 @@ defmodule Operately.MD.RichText do
   defp render_block(_), do: ""
 
   defp render_list_item(%{"type" => "listItem", "content" => content}) do
-    render_inline(content)
+    # List item content can contain both inline nodes (text, mentions, etc.)
+    # and block nodes (paragraphs). We need to handle both cases.
+    content
+    |> Enum.map(fn node ->
+      case node do
+        %{"type" => "paragraph", "content" => children} -> render_inline(children)
+        %{"type" => "text"} -> render_inline_node(node)
+        %{"type" => "mention"} -> render_inline_node(node)
+        %{"type" => "blob"} -> render_inline_node(node)
+        _ -> render_inline_node(node)
+      end
+    end)
+    |> Enum.join("")
   end
 
   defp render_list_item(_), do: ""
