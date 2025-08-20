@@ -2,18 +2,10 @@ defmodule Operately.Data.Change069PopulateProjectMilestonesTimeframe do
   import Ecto.Query
   alias Operately.Repo
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
+  alias __MODULE__.Milestone
 
   def run do
-    milestones = Repo.all(
-      from(m in Operately.Projects.Milestone,
-      where: is_nil(m.deleted_at),
-      select: %{
-        id: m.id,
-        inserted_at: m.inserted_at,
-        deadline_at: m.deadline_at,
-        timeframe: m.timeframe
-      })
-    )
+    milestones = Repo.all(from(m in Milestone, where: is_nil(m.deleted_at)))
 
     Enum.each(milestones, fn milestone ->
       update_milestone_timeframe(milestone)
@@ -53,9 +45,31 @@ defmodule Operately.Data.Change069PopulateProjectMilestonesTimeframe do
   defp update_milestone_timeframe(milestone) do
     timeframe = build_timeframe(milestone)
 
-    {:ok, _} = from(m in Operately.Projects.Milestone, where: m.id == ^milestone.id)
+    {:ok, _} = from(m in Milestone, where: m.id == ^milestone.id)
     |> Repo.one()
     |> Ecto.Changeset.change(timeframe: timeframe)
     |> Repo.update()
+  end
+
+  defmodule Milestone do
+    use Operately.Schema
+
+    schema "project_milestones" do
+      field :deadline_at, :naive_datetime
+      embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
+
+      soft_delete()
+      timestamps()
+    end
+
+    def changeset(attrs) do
+      changeset(%__MODULE__{}, attrs)
+    end
+
+    def changeset(milestone, attrs) do
+      milestone
+      |> cast(attrs, [:deadline_at, :deleted_at])
+      |> cast_embed(:timeframe)
+    end
   end
 end
