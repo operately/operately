@@ -1,8 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
-import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
+import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconX } from "../icons";
 import { TextField } from "../TextField";
+import { Avatar } from "../Avatar";
+import alfredAvatar from "./alfred01.png";
+
+// Alfred AI assistant person object
+const alfredPerson = {
+  id: "alfred-ai",
+  fullName: "Alfred",
+  avatarUrl: alfredAvatar,
+};
 
 export namespace Conversations {
   export interface Message {
@@ -441,8 +450,8 @@ export function Conversations({
       {!activeConversation && (
         <div className="px-4 py-4 border-b border-surface-outline bg-surface-base">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-accent-base rounded-full flex items-center justify-center flex-shrink-0">
-              <IconRobotFace size={20} className="text-white" />
+            <div className="flex-shrink-0">
+              <Avatar person={alfredPerson} size={40} />
             </div>
             <div className="flex-1">
               <p className="text-sm text-content-dimmed">
@@ -465,8 +474,8 @@ export function Conversations({
           <div className="flex flex-col items-center justify-center h-full text-center text-content-dimmed">
             {contextActions.length === 0 && (
               <>
-                <div className="w-16 h-16 bg-accent-base rounded-full flex items-center justify-center mb-4">
-                  <IconRobotFace size={32} className="text-white" />
+                <div className="mb-4">
+                  <Avatar person={alfredPerson} size={64} />
                 </div>
                 <h3 className="font-medium mb-2">Welcome to Alfred</h3>
                 <p className="text-sm mb-4">Start a conversation to get AI assistance with your work.</p>
@@ -486,9 +495,7 @@ export function Conversations({
                 {/* Avatar */}
                 <div className="flex-shrink-0">
                   {message.sender === "ai" ? (
-                    <div className="w-8 h-8 bg-accent-base rounded-full flex items-center justify-center">
-                      <IconRobotFace size={16} className="text-white" />
-                    </div>
+                    <Avatar person={alfredPerson} size={32} />
                   ) : (
                     <div className="w-8 h-8 bg-surface-outline rounded-full flex items-center justify-center">
                       <span className="text-xs font-medium text-content-base">You</span>

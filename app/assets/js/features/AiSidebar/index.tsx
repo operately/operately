@@ -42,7 +42,7 @@ function AiSidebarElements() {
         icon={<IconRobotFace size={20} />}
         text="Ask Alfred"
         onClick={state.openSidebar}
-        label={"Ask Alfred about this " + state.conversationContext?.type}
+        label={"Ask AI agent about this " + state.conversationContext?.type}
         variant="primary"
         position="bottom-right"
       />
