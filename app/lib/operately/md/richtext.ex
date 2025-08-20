@@ -64,7 +64,7 @@ defmodule Operately.MD.RichText do
     filetype = Map.get(attrs, "filetype", "")
 
     if filetype != "" and not String.starts_with?(filetype, "image/") do
-      "[#{alt || title || "File"}](#{src}#{if title, do: " \"#{title}\"", else: ""})"
+      "[#{alt || "File"}](#{src}#{if title, do: " \"#{title}\"", else: ""})"
     else
       "![#{alt}](#{src}#{if title, do: " \"#{title}\"", else: ""})"
     end
