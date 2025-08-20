@@ -5,50 +5,55 @@ defmodule Operately.Ai.AgentConvoWorker do
   alias LangChain.Chains.LLMChain
   alias LangChain.Utils.ChainResult
 
+  alias Operately.Repo
+  alias Operately.People.AgentMessage
+
+  import Ecto.Query, only: [from: 2]
+
+  def schedule_message_response(message) do
+    new(%{message_id: message.id}) |> Oban.insert()
+  end
+
   @impl Oban.Worker
   def perform(job) do
     with(
-      convo <- find_convo(job.args["convo_id"]),
-      chain <- create_chain(convo),
+      message <- find_message(job.args["message_id"]),
+      messages <- find_previous_messages(message),
+      chain <- create_chain(messages),
       {:ok, chain} <- run_chain(chain),
-      {:ok, message} <- save_response(convo, chain)
+      {:ok, message} <- save_response(chain, message)
     ) do
-      broadcast_new_message(convo)
+      broadcast_new_message(message)
 
       {:ok, message}
     end
   end
 
-  def find_convo(id) do
-    import Ecto.Query, only: [from: 2]
-    Operately.Repo.one(from c in Operately.People.AgentConvo, where: c.id == ^id, preload: [:messages])
+  def find_message(id) do
+    Repo.one(from m in AgentMessage, where: m.id == ^id)
   end
 
-  def create_chain(convo) do
-    LLMChain.new!(%{llm: provider(), custom_context: %{}})
-    |> inject_messages(convo.messages)
+  def find_previous_messages(message) do
+    from(m in AgentMessage, where: m.convo_id == ^message.convo_id and m.index < ^message.index, order_by: [asc: m.index]) |> Repo.all()
   end
 
-  def save_response(convo, chain) do
+  def create_chain(messages) do
+    LLMChain.new!(%{llm: provider(), custom_context: %{}, verbose: true})
+    |> inject_messages(messages)
+  end
+
+  def save_response(chain, message) do
     resp = ChainResult.to_string!(chain)
 
-    Operately.People.AgentMessage.changeset(%{
-      convo_id: convo.id,
-      index: convo.messages |> Enum.count(),
-      status: :done,
-      source: :ai,
-      prompt: resp,
-      message: resp
-    })
-    |> Operately.Repo.insert()
+    AgentMessage.changeset(message, %{message: resp, status: :done}) |> Repo.update()
   end
 
   def run_chain(chain) do
     LLMChain.run(chain, mode: :while_needs_response)
   end
 
-  def broadcast_new_message(convo) do
-    OperatelyWeb.Api.Subscriptions.NewAgentMessage.broadcast(convo.id)
+  def broadcast_new_message(message) do
+    OperatelyWeb.Api.Subscriptions.NewAgentMessage.broadcast(message.convo_id)
   end
 
   def inject_messages(chain, messages) do

@@ -6,9 +6,6 @@ defmodule Operately.People.AgentConvo.Create do
   alias Operately.People.AgentMessage
 
   def run(person, action_name, context_type, context_id) do
-    IO.inspect(context_type, label: "Context Type in AgentConvo.Create")
-    IO.inspect(context_id, label: "Context ID in AgentConvo.Create")
-
     Multi.new()
     |> Multi.put(:person, person)
     |> Multi.put(:context_id, context_id)
@@ -18,6 +15,7 @@ defmodule Operately.People.AgentConvo.Create do
     |> insert_convo()
     |> insert_system_message()
     |> insert_user_message()
+    |> insert_response_placeholder()
     |> schedule_response()
     |> Repo.transaction()
     |> Repo.extract_result(:convo)
@@ -67,6 +65,19 @@ defmodule Operately.People.AgentConvo.Create do
     end)
   end
 
+  defp insert_response_placeholder(multi) do
+    Multi.insert(multi, :response_placeholder, fn ctx ->
+      AgentMessage.changeset(%{
+        index: 2,
+        convo_id: ctx.convo.id,
+        status: :pending,
+        source: :ai,
+        message: "...",
+        prompt: "..."
+      })
+    end)
+  end
+
   defp build_context_prompt(multi) do
     Multi.run(multi, :context_prompt, fn _, ctx ->
       case ctx.context_type do
@@ -85,8 +96,8 @@ defmodule Operately.People.AgentConvo.Create do
   end
 
   defp schedule_response(multi) do
-    Multi.run(multi, :schedule_response, fn _repo, %{convo: convo} ->
-      Operately.Ai.AgentConvoWorker.new(%{convo_id: convo.id}) |> Oban.insert()
+    Multi.run(multi, :schedule_response, fn _repo, ctx ->
+      Operately.Ai.AgentConvoWorker.schedule_message_response(ctx.response_placeholder)
     end)
   end
 end
