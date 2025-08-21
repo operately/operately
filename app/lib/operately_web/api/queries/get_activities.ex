@@ -11,49 +11,35 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
   import Ecto.Query, only: [from: 2, limit: 2, preload: 2]
 
   inputs do
-    field? :scope_id, :string, null: true
-    field? :scope_type, :string, null: true
-    field? :actions, list_of(:string), null: true
+    field :scope_id, :string, null: false
+    field :scope_type, :activity_scope_type, null: false
+    field :actions, list_of(:string), null: false
   end
 
   outputs do
-    field? :activities, list_of(:activity), null: true
+    field :activities, list_of(:activity), null: false
   end
 
   def call(conn, inputs) do
     actions = inputs[:actions] || []
-    {:ok, scope_type, scope_id} = decode_scope(inputs)
-    activities = load_activities(me(conn), scope_type, scope_id, actions)
+    {:ok, scope_id} = decode_scope_id(inputs)
+
+    activities = load_activities(me(conn), inputs.scope_type, scope_id, actions)
 
     {:ok, %{activities: OperatelyWeb.Api.Serializers.Activity.serialize(activities)}}
   end
 
-  def decode_scope(inputs) do
-    scope_id = inputs[:scope_id]
-    scope_type = inputs[:scope_type]
-
-    case scope_type do
-      "space" ->
-        {:ok, id} = decode_id(scope_id)
-        {:ok, scope_type, id}
-
-      "company" ->
-        scope_id = id_without_comments(scope_id)
+  def decode_scope_id(inputs) do
+    case inputs[:scope_type] do
+      :company ->
+        scope_id = id_without_comments(inputs[:scope_id])
         {:ok, id} = ShortId.decode(scope_id)
         company = Operately.Repo.get_by(Operately.Companies.Company, short_id: id)
-        {:ok, scope_type, company.id}
-
-      "project" ->
-        {:ok, id} = decode_id(scope_id)
-        {:ok, scope_type, id}
-
-      "goal" ->
-        {:ok, id} = decode_id(scope_id)
-        {:ok, scope_type, id}
+        {:ok, company.id}
 
       _ ->
-        {:ok, id} = decode_id(scope_id)
-        {:ok, scope_type, id}
+        {:ok, scope_id} = decode_id(inputs.scope_id)
+        {:ok, scope_id}
     end
   end
 
@@ -79,7 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     from a in query, where: fragment("? ->> ? = ?", a.content, "company_id", ^company_id)
   end
 
-  def scope_query(query, "person", scope_id) do
+  def scope_query(query, :person, scope_id) do
     from a in query, where: a.author_id == ^scope_id
   end
 
