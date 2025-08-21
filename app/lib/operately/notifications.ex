@@ -74,6 +74,7 @@ defmodule Operately.Notifications do
   def bulk_create(notifications) do
     alias Ecto.Multi
     alias Operately.Notifications.EmailWorker
+    alias Operately.Notifications.BulkCreate
 
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
@@ -83,8 +84,7 @@ defmodule Operately.Notifications do
 
     Multi.new()
     |> Multi.run(:notifications, fn repo, _ ->
-      {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email, :person_id])
-      {:ok, notifications}
+      BulkCreate.insert_notifications(repo, notifications)
     end)
     |> Multi.merge(fn %{notifications: notifications} ->
       Enum.reduce(notifications, Ecto.Multi.new(), fn notification, multi ->
