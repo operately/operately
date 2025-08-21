@@ -31,7 +31,9 @@ export function targetProgressPercentage(target: Target, clamped: boolean = true
   const value = target.value!;
 
   let percentage: number;
-  if (from < to) {
+  if (from === to) {
+    percentage = 0; // If from and to are equal, progress is 0%
+  } else if (from < to) {
     percentage = ((value - from) / (to - from)) * 100;
   } else {
     percentage = ((from - value) / (from - to)) * 100;
