@@ -125,7 +125,7 @@ defmodule Operately.MD.Goal do
     """
     ### Check-in on #{render_date(check_in.inserted_at)}
 
-    #{render_person_name_only(check_in.author)}
+    #{render_person(check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.message)}
     """
@@ -147,8 +147,8 @@ defmodule Operately.MD.Goal do
     """
     ## People Involved
 
-    #{render_person("Champion", goal.champion)}
-    #{render_person("Reviewer", goal.reviewer)}
+    #{render_person(goal.champion, role: "Champion")}
+    #{render_person(goal.reviewer, role: "Reviewer")}
     """
   end
 
@@ -164,19 +164,15 @@ defmodule Operately.MD.Goal do
   defp render_contextual_date(nil), do: "Not Set"
   defp render_contextual_date(date), do: date.value
 
-  defp render_person(role, person) do
-    if person do
-      "#{role}: #{person.full_name} (#{person.title})"
-    else
-      "#{role}: Not Assigned"
-    end
-  end
+  defp render_person(person, opts \\ []) do
+    role = Keyword.get(opts, :role)
 
-  defp render_person_name_only(person) do
-    if person do
-      "#{person.full_name} (#{person.title})"
-    else
-      "Not Assigned"
+    case person do
+      nil ->
+        if role, do: "#{role}: Not Assigned", else: "Not Assigned"
+      _ ->
+        name_and_title = "#{person.full_name} (#{person.title})"
+        if role, do: "#{role}: #{name_and_title}", else: name_and_title
     end
   end
 
