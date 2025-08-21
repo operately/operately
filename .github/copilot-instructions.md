@@ -4,6 +4,23 @@
 
 Operately is an Elixir Phoenix web application with a React TypeScript frontend. It uses Docker for development environment management and has comprehensive Make-based build automation.
 
+## Pull Request Naming Convention
+
+**CRITICAL**: When creating pull requests, ALWAYS use one of these prefixes in the PR title:
+
+- **feat:** - For new features and functionality that users can directly benefit from
+- **fix:** - For bug fixes, improvements to existing functionality, and UX enhancements  
+- **chore:** - For maintenance, refactoring, CI improvements, and infrastructure changes
+- **docs:** - For documentation changes and improvements
+
+**Examples of correct PR titles:**
+- `feat: Add goal progress tracking dashboard`
+- `fix: Resolve login redirect issue`
+- `chore: Update CI pipeline configuration`  
+- `docs: Add troubleshooting guide for common issues`
+
+The CI will fail with `make test.pr.name` if PR titles don't follow this format. See `docs/pull-request-guidelines.md` for detailed guidelines.
+
 ## Working Effectively
 
 ### Bootstrap and Build the Repository
@@ -252,6 +269,7 @@ make --version                     # Should show GNU Make 4.0+
 ## CI/CD Integration
 
 The project uses SemaphoreCI for continuous integration. Key validation steps match local commands:
+- `make test.pr.name` - Pull request naming validation
 - `make test.license.check` - License compliance
 - `make test.js.dead.code` - Dead code detection  
 - `make test.tsc.lint` - TypeScript validation
