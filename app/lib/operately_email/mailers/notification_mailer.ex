@@ -1,6 +1,8 @@
 defmodule OperatelyEmail.Mailers.NotificationMailer do
   defstruct [:company, :to, :from, :subject, :assigns]
 
+  import Swoosh.Email
+
   def new(company) do
     %__MODULE__{company: company, assigns: %{}}
   end
@@ -26,19 +28,16 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
     unless email.from, do: raise "You must set a from before rendering an email"
     unless email.to, do: raise "You must set a to before rendering an email"
 
-    import Bamboo.Email
-
     full_assigns = Map.put(email.assigns, :subject, email.subject)
 
-    email = new_email(
-      to: email.to,
-      from: email.from,
-      subject: email.subject,
-      html_body: html(template, full_assigns),
-      text_body: text(template, full_assigns)
-    )
+    swoosh_email = new()
+    |> to(email.to)
+    |> from(email.from)
+    |> subject(email.subject)
+    |> html_body(html(template, full_assigns))
+    |> text_body(text(template, full_assigns))
 
-    OperatelyEmail.Mailers.BaseMailer.deliver_now(email)
+    OperatelyEmail.Mailers.BaseMailer.deliver_now(swoosh_email)
   end
 
   #
