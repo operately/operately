@@ -149,10 +149,33 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # Configure Swoosh mailer for production
-  config :operately, Operately.Mailer,
-    adapter: Swoosh.Adapters.Sendgrid,
-    api_key: System.get_env("SENDGRID_API_KEY")
+  # Supports both SendGrid API and SMTP servers
+  cond do
+    System.get_env("SMTP_SERVER") ->
+      config :operately, Operately.Mailer,
+        adapter: Swoosh.Adapters.SMTP,
+        relay: System.get_env("SMTP_SERVER"),
+        port: String.to_integer(System.get_env("SMTP_PORT", "587")),
+        username: System.get_env("SMTP_USERNAME"),
+        password: System.get_env("SMTP_PASSWORD"),
+        ssl: System.get_env("SMTP_SSL", "false") == "true",
+        tls: :if_available,
+        auth: :always,
+        retries: 2
+
+    System.get_env("SENDGRID_API_KEY") ->
+      config :operately, Operately.Mailer,
+        adapter: Swoosh.Adapters.Sendgrid,
+        api_key: System.get_env("SENDGRID_API_KEY")
+
+    true ->
+      # Default to local for self-hosted without configuration
+      config :operately, Operately.Mailer,
+        adapter: Swoosh.Adapters.Local
+  end
   
-  # Configure API client for Swoosh
-  config :swoosh, :api_client, Finch
+  # Configure API client for Swoosh (only needed for API-based adapters)
+  if System.get_env("SENDGRID_API_KEY") do
+    config :swoosh, :api_client, Finch
+  end
 end
