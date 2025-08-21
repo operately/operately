@@ -12,7 +12,7 @@ export function CheckIns(props: GoalPage.State) {
         <div>
           <h2 className="font-bold text-lg">Check-Ins</h2>
           <div className="flex items-center gap-2 text-sm">
-            Operately ask the champion to check-in at least once a month.
+            Champions post monthly updates to document progress and share insights.
           </div>
         </div>
 
