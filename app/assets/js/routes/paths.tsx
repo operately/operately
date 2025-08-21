@@ -440,6 +440,10 @@ export class Paths {
     return this.createCompanyPath(["tasks", taskId]);
   }
 
+  taskV2Path(taskId: string) {
+    return this.createCompanyPath(["tasks", taskId, "v2"]);
+  }
+
   //
   // Private utility methods
   //

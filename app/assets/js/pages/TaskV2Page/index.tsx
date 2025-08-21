@@ -8,7 +8,7 @@ import { parseContextualDate, serializeContextualDate } from "@/models/contextua
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import * as Time from "@/utils/time";
 
-import { usePaths } from "../../routes/paths";
+import { Paths, usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
 import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
@@ -17,6 +17,7 @@ import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
+import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 
 type LoaderResult = {
   data: {
@@ -26,6 +27,9 @@ type LoaderResult = {
 };
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
+  const paths = new Paths({ companyId: params.companyId });
+  await redirectIfFeatureNotEnabled(params, { feature: "task_v2", path: paths.taskPath(params.id) });
+
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
