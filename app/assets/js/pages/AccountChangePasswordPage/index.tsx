@@ -6,6 +6,7 @@ import * as React from "react";
 import Forms from "@/components/Forms";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
+import { showSuccessToast, showErrorToast } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export default { name: "AccountChangePasswordPage", loader: Pages.emptyLoader, Page } as PageModule;
@@ -26,13 +27,18 @@ function Page() {
       }
     },
     submit: async () => {
-      await Accounts.changePassword({
-        currentPassword: form.values.currentPassword,
-        newPassword: form.values.newPassword,
-        newPasswordConfirmation: form.values.confirmPassword,
-      });
+      try {
+        await Accounts.changePassword({
+          currentPassword: form.values.currentPassword,
+          newPassword: form.values.newPassword,
+          newPasswordConfirmation: form.values.confirmPassword,
+        });
 
-      navigate(paths.accountSecurityPath());
+        showSuccessToast("Password Changed", "Your password has been updated successfully.");
+        navigate(paths.accountSecurityPath());
+      } catch (error) {
+        showErrorToast("Password Change Failed", "There was an error updating your password. Please try again.");
+      }
     },
     cancel: () => navigate(paths.accountSecurityPath()),
   });
