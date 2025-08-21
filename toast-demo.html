@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toast Demo</title>
+    <style>
+        body { font-family: system-ui; margin: 20px; background: #f8f9fa; }
+        .container { max-width: 600px; margin: 0 auto; padding: 24px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: white; padding: 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 12px; display: flex; gap: 8px; }
+        .icon { color: #059669; }
+        .title { font-weight: 600; color: #059669; }
+        .desc { color: #6b7280; margin-top: 2px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Password Change Form</h1>
+        <p>When user clicks "Change Password", they will now see a success toast in the bottom-right corner.</p>
+    </div>
+    
+    <div class="toast">
+        <div class="icon">✓</div>
+        <div>
+            <div class="title">Password Changed</div>
+            <div class="desc">Your password has been updated successfully.</div>
+        </div>
+    </div>
+</body>
+</html>
