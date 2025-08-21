@@ -60,7 +60,7 @@ describe("GoalClosingPage loader - findActiveProjects", () => {
     const activeProjects = findActiveProjects(projects, goals);
 
     expect(activeProjects).toHaveLength(1);
-    expect(activeProjects[0].id).toBe("project-1");
+    expect(activeProjects[0]!.id).toBe("project-1");
   });
 
   it("should return empty array when all projects are closed", () => {
