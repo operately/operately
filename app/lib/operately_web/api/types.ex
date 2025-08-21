@@ -440,20 +440,20 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity do
-    field? :id, :string, null: true
+    field :id, :string, null: false
     field? :scope_type, :string, null: true
     field? :scope_id, :string, null: true
     field? :resource_id, :string, null: true
     field? :resource_type, :string, null: true
-    field? :action, :string, null: true
-    field? :inserted_at, :datetime, null: true
+    field :action, :string, null: false
+    field :inserted_at, :datetime, null: false
     field? :updated_at, :datetime, null: true
     field? :comment_thread, :comment_thread, null: true
     field? :author, :person, null: true
     field? :resource, :activity_resource_union, null: true
     field? :person, :person, null: true
     field? :event_data, :activity_data_union, null: true
-    field? :content, :activity_content, null: true
+    field :content, :activity_content, null: false
     field? :notifications, list_of(:notification), null: true
     field? :permissions, :activity_permissions, null: true
   end
