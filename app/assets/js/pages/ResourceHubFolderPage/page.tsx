@@ -41,11 +41,15 @@ export function Page() {
   );
 }
 
-export function Options({ folder }: { folder: ResourceHubFolder }) {
+function Options({ folder }: { folder: ResourceHubFolder }) {
   assertPresent(folder.permissions, "permissions must be present in folder");
 
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const refresh = useRefresh();
+
+  if (!folder.permissions.canRenameFolder) {
+    return null;
+  }
 
   return (
     <>
