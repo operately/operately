@@ -36,6 +36,8 @@ export namespace TaskPage {
     link?: string;
   }
 
+  export type TimelineItemType = TimelineItem;
+
   export interface Props {
     // Navigation/Hierarchy
     projectName: string;

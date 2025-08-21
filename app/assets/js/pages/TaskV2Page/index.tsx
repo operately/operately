@@ -156,7 +156,7 @@ function Page() {
 
     // Timeline
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
-    timelineItems: prepareTimelineItems(paths, activities), 
+    timelineItems: prepareTimelineItems(paths, activities),
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -284,7 +284,7 @@ function prepareTimelineItems(paths: Paths, activities: Activities.Activity[]) {
   const parsedActivities = parseActivitiesForTurboUi(paths, activities);
 
   return parsedActivities.map((activity) => ({
-    type: "task-activity" as const,
+    type: "task-activity",
     value: activity,
-  }));
+  })) as TaskPage.TimelineItemType[];
 }
