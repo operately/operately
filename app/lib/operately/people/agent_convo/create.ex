@@ -86,9 +86,9 @@ defmodule Operately.People.AgentConvo.Create do
           {:ok, "\n\n** Input goal: **\n\n" <> Operately.MD.Goal.render(goal)}
 
         :project ->
-          # For projects, don't inject static context. The AI will use the get_project_description tool
-          # to get fresh project context when needed.
-          {:ok, "\n\n** Project context available via get_project_description tool **"}
+          # For projects, provide the project ID that the AI can use with the get_project_details tool
+          project_id_encoded = OperatelyWeb.Api.Helpers.encode_id(ctx.context_id)
+          {:ok, "\n\n** Project context: Use get_project_details tool with project_id \"#{project_id_encoded}\" **"}
 
         _ ->
           {:error, "Unsupported context type: #{inspect(ctx.context_type)}"}

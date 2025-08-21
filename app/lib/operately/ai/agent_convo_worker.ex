@@ -48,21 +48,14 @@ defmodule Operately.Ai.AgentConvoWorker do
     LLMChain.new!(%{llm: provider(), custom_context: context, verbose: true})
     |> LLMChain.add_tools(Tools.work_map())
     |> LLMChain.add_tools(Tools.get_goal_details())
-    |> LLMChain.add_tools(Tools.get_project_description())
+    |> LLMChain.add_tools(Tools.get_project_details())
     |> inject_messages(messages)
   end
 
   def build_context(conversation) do
-    base_context = %{
+    %{
       person: conversation.author
     }
-
-    # Add project_id to context if this is a project conversation
-    if conversation.project_id do
-      Map.put(base_context, :project_id, conversation.project_id)
-    else
-      base_context
-    end
   end
 
   def save_response(chain, message) do

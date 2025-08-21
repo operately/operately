@@ -211,10 +211,12 @@ defmodule OperatelyWeb.Api.AiTest do
       conversation = res.conversation
       assert conversation.project_id == ctx.project.id
       
-      # Verify that the conversation messages don't contain static project context
-      # but instead reference the tool
+      # Verify that the conversation messages contain the project_id for the tool
+      # but don't contain static project context
       user_message = Enum.find(conversation.messages, &(&1.source == "user"))
-      assert user_message.prompt =~ "get_project_description tool"
+      assert user_message.prompt =~ "get_project_details tool"
+      project_id_encoded = OperatelyWeb.Paths.project_id(ctx.project)
+      assert user_message.prompt =~ project_id_encoded  # Should contain the encoded project ID
       refute user_message.prompt =~ ctx.project.name  # Should not contain static project data
     end
   end
