@@ -32,7 +32,7 @@ export function MultiPeopleSelectField(props: MultiPeopleSelectFieldProps) {
 
 function PersonAlwaysSelected({ subscriber }: { subscriber: Subscriber }) {
   return (
-    <div className="flex gap-4 border-b border-bg-stroke-subtle px-2 pb-4 mb-4 last:border-0 last:mb-0">
+    <div className="flex gap-4 border-b border-stroke-base px-2 pb-4 mb-4 last:border-0 last:mb-0">
       <Avatar person={subscriber.person!} size="large" />
       <div className="flex w-full items-center justify-between">
         <div className="text-content-dimmed">
@@ -57,7 +57,7 @@ function PersonOption({ subscriber, field }: { subscriber: Subscriber; field: st
   };
 
   return (
-    <div className="flex gap-4 border-b border-bg-stroke-subtle px-2 pb-4 mb-4 last:border-0 last:mb-0">
+    <div className="flex gap-4 border-b border-stroke-base px-2 pb-4 mb-4 last:border-0 last:mb-0">
       <Avatar person={subscriber.person!} size="large" />
       <div className="flex w-full items-center justify-between">
         <div>
