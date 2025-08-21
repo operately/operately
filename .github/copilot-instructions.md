@@ -13,11 +13,25 @@ Operately is an Elixir Phoenix web application with a React TypeScript frontend.
 - **chore:** - For maintenance, refactoring, CI improvements, and infrastructure changes
 - **docs:** - For documentation changes and improvements
 
+**CRITICAL FOR WIP (Work-In-Progress) PRs**: Always place [WIP] AFTER the prefix, never before:
+- ✅ **CORRECT**: `feat: [WIP] Description`
+- ❌ **WRONG**: `[WIP] feat: Description` (will fail CI)
+
 **Examples of correct PR titles:**
 - `feat: Add goal progress tracking dashboard`
 - `fix: Resolve login redirect issue`
 - `chore: Update CI pipeline configuration`  
 - `docs: Add troubleshooting guide for common issues`
+
+**For Work-In-Progress (WIP) PRs, place [WIP] AFTER the prefix:**
+- `feat: [WIP] Add goal progress tracking dashboard`
+- `fix: [WIP] Resolve login redirect issue`  
+- `chore: [WIP] Update CI pipeline configuration`
+- `docs: [WIP] Add troubleshooting guide for common issues`
+
+**INCORRECT WIP format (will fail CI):**
+- ❌ `[WIP] feat: Add goal progress tracking dashboard`
+- ❌ `WIP: Add goal progress tracking dashboard`
 
 The CI will fail with `make test.pr.name` if PR titles don't follow this format. See `docs/pull-request-guidelines.md` for detailed guidelines.
 

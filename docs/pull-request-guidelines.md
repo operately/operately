@@ -110,4 +110,13 @@ When creating pull requests, include the appropriate prefix in your PR title to 
 - `chore: Migrate to new authentication library`
 - `docs: Add troubleshooting guide for common issues`
 
+**For Work-In-Progress (WIP) pull requests, place [WIP] after the prefix:**
+
+- `feat: [WIP] Implement user profile customization`
+- `fix: [WIP] Resolve team invitation email delivery`
+- `chore: [WIP] Migrate to new authentication library`
+- `docs: [WIP] Add troubleshooting guide for common issues`
+
+**Note:** Avoid placing [WIP] before the prefix (e.g., `[WIP] feat: ...`) as this will cause CI validation to fail.
+
 Following these guidelines helps maintain a clear and organized development process for the Operately project.
