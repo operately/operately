@@ -32,10 +32,13 @@ export function targetProgressPercentage(target: Target, clamped: boolean = true
 
   let percentage: number;
   if (from === to) {
-    percentage = 0; // If from and to are equal, progress is 0%
+    // When from and to are equal, there's no progress to be made, so return 0%
+    percentage = 0;
   } else if (from < to) {
+    // Ascending target: progress = (current - start) / (end - start) * 100
     percentage = ((value - from) / (to - from)) * 100;
   } else {
+    // Descending target: progress = (start - current) / (start - end) * 100  
     percentage = ((from - value) / (from - to)) * 100;
   }
 
