@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 
+import { genPerson } from "../utils/storybook/genPeople";
 import { ConversationsExample } from "./ConversationsExample";
 import { Conversations } from "./index";
 
@@ -39,6 +40,8 @@ const mockGoalActions: Conversations.ContextAction[] = [
     label: "Are we on track?",
   },
 ];
+
+const me = genPerson();
 
 // Template component for stories
 function ConversationsStory(args: any) {
@@ -137,6 +140,7 @@ function ConversationsStory(args: any) {
       </div>
 
       <Conversations
+        me={me}
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         conversations={conversations}

@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
+import type { AvatarPerson } from "../Avatar";
+import { Avatar } from "../Avatar";
 import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
 import { TextField } from "../TextField";
-import { Avatar } from "../Avatar";
-import type { AvatarPerson } from "../Avatar";
 
 export namespace Conversations {
   export interface Message {
@@ -97,7 +97,7 @@ export namespace Conversations {
     /**
      * Current user for displaying avatar instead of "You"
      */
-    me?: AvatarPerson;
+    me: AvatarPerson;
 
     /**
      * Initial width of the panel in pixels
@@ -498,13 +498,7 @@ export function Conversations({
                       <IconRobotFace size={16} className="text-white" />
                     </div>
                   ) : (
-                    me ? (
-                      <Avatar person={me} size={32} />
-                    ) : (
-                      <div className="w-8 h-8 bg-surface-outline rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium text-content-base">You</span>
-                      </div>
-                    )
+                    <Avatar person={me} size={32} />
                   )}
                 </div>
 

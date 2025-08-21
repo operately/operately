@@ -59,7 +59,7 @@ function AiSidebarElements() {
         onSendMessage={state.sendMessage}
         contextActions={state.actions}
         contextAttachment={state.conversationContext!}
-        me={me}
+        me={me!}
         maxWidth={1000}
       />
     </>
