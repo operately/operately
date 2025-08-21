@@ -13,7 +13,7 @@ export function Page() {
 
   return (
     <Pages.Page title={"Closing " + goal.name}>
-      <Paper.Root>
+      <Paper.Root data-testid="goal-closing-page">
         <Navigation />
 
         <Paper.Body minHeight="none">

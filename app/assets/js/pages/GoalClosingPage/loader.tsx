@@ -86,6 +86,6 @@ function findSubgoals(parentId: string, goals: Goals.Goal[]): Goals.Goal[] {
 
 function findActiveProjects(projects: Projects.Project[], goals: Goals.Goal[]): Projects.Project[] {
   return projects.filter((project) => {
-    return project.status !== "closed" && goals.some((goal) => compareIds(goal.id, project.goalId));
+    return project.state !== "closed" && goals.some((goal) => compareIds(goal.id, project.goalId));
   });
 }
