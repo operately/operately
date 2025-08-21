@@ -17,7 +17,6 @@ defmodule Operately.MD.Project do
     # #{project.name}
 
     #{render_overview_info(project)}
-
     #{render_description(project)}
     #{render_people(project)}
     #{render_timeframe(project)}
