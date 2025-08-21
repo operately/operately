@@ -1,6 +1,6 @@
 import React from "react";
 
-import { PageNew } from "../Page";
+import { ProjectPageLayout } from "../ProjectPageLayout";
 
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
@@ -11,15 +11,13 @@ import { ResourceManager } from "../ResourceManager";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
-import { Tabs, useTabs } from "../Tabs";
+import { useTabs } from "../Tabs";
 import { TaskBoard } from "../TaskBoard";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
-import { PageHeader } from "./PageHeader";
-import { StatusBanner } from "./StatusBanner";
 
 export namespace ProjectPage {
   export interface Space {
@@ -198,18 +196,7 @@ export function ProjectPage(props: ProjectPage.Props) {
   ]);
 
   return (
-    <PageNew title={[state.projectName]} size="fullwidth" testId="project-page">
-      <PageHeader {...state} />
-      {(state.state === "paused" || state.state === "closed") && (
-        <StatusBanner
-          state={state.state}
-          closedAt={state.closedAt}
-          reopenLink={state.reopenLink}
-          retrospectiveLink={state.retrospectiveLink}
-        />
-      )}
-      <Tabs tabs={tabs} />
-
+    <ProjectPageLayout title={[state.projectName]} testId="project-page" tabs={tabs} {...state}>
       <div className="flex-1 overflow-scroll">
         {tabs.active === "overview" && <Overview {...state} />}
         {tabs.active === "tasks" && (
@@ -237,11 +224,9 @@ export function ProjectPage(props: ProjectPage.Props) {
 
       <MoveModal {...state} />
       <DeleteModal {...state} />
-    </PageNew>
+    </ProjectPageLayout>
   );
 }
-
-export { StatusBanner };
 
 function Activity(props: ProjectPage.State) {
   return (
