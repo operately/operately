@@ -36,7 +36,7 @@ defmodule Operately.Notifications.BulkCreateTest do
       [notification] = result
       assert notification.person_id == person.id
       assert notification.should_send_email == true
-      assert is_integer(notification.id)
+      assert is_binary(notification.id)
     end
 
     test "handles multiple notifications in bulk insert", %{person: person, activity: activity} do
@@ -189,7 +189,7 @@ defmodule Operately.Notifications.BulkCreateTest do
       [notification] = result
       assert notification.person_id == person.id
       assert notification.should_send_email == false
-      assert is_integer(notification.id)
+      assert is_binary(notification.id)
     end
 
     test "handles multiple notifications in the full workflow", %{person: person, activity: activity} do
