@@ -90,6 +90,20 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.rename_folder(attrs)
       |> Steps.assert_folder_name(%{name: attrs.new_name, index: 0})
     end
+
+    feature "folder can be renamed from folder page header", ctx do
+      attrs = %{
+        current_name: "folder",
+        new_name: "edited folder from header"
+      }
+
+      ctx
+      |> Steps.given_folder_exists()
+      |> Steps.visit_folder_page(:folder)
+      |> Steps.rename_folder_from_page_header(attrs)
+      |> Steps.assert_page_title(attrs.new_name)
+    end
+    end
   end
 
   describe "Delete" do
