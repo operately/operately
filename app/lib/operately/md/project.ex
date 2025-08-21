@@ -7,7 +7,7 @@ defmodule Operately.MD.Project do
         :goal,
         :retrospective,
         :milestones,
-        [check_ins: [:author]],
+        [check_ins: [:author, [comments: [:author]]]],
         [contributors: [:person]]
       ])
 
@@ -23,6 +23,7 @@ defmodule Operately.MD.Project do
     #{render_milestones(project.milestones)}
     #{render_check_ins(project.check_ins)}
     #{render_discussions(discussions)}
+    #{Operately.MD.Project.TimelineActivities.render(project)}
     #{render_retrospective(project.retrospective)}
     """
     |> compact_empty_lines()
@@ -90,7 +91,7 @@ defmodule Operately.MD.Project do
 
     #{milestones |> Enum.sort_by(& &1.inserted_at) |> Enum.map_join("\n", fn milestone -> """
       - #{milestone.title} (Status: #{milestone.status})
-        Due: #{render_milestone_due(milestone)}
+        Due: #{render_milestone_due(milestone)}#{render_milestone_completion(milestone)}
       """ end)}
     """
   end
@@ -99,6 +100,13 @@ defmodule Operately.MD.Project do
     case Operately.ContextualDates.Timeframe.end_date(milestone.timeframe) do
       nil -> "Not Set"
       date -> render_date(date)
+    end
+  end
+
+  defp render_milestone_completion(milestone) do
+    case milestone.completed_at do
+      nil -> ""
+      completed_at -> "\n        Completed: #{render_date(completed_at)}"
     end
   end
 
@@ -125,6 +133,29 @@ defmodule Operately.MD.Project do
     #{render_person("Author", check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.description)}
+
+    #{render_check_in_comments(check_in.comments)}
+    """
+  end
+
+  defp render_check_in_comments([]) do
+    ""
+  end
+
+  defp render_check_in_comments(comments) do
+    """
+
+    #### Comments
+
+    #{Enum.map_join(comments, "\n\n", &render_check_in_comment/1)}
+    """
+  end
+
+  defp render_check_in_comment(comment) do
+    """
+    **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}
+
+    #{Operately.MD.RichText.render(comment.content["message"])}
     """
   end
 
@@ -177,6 +208,8 @@ defmodule Operately.MD.Project do
   defp render_contextual_date(nil), do: "Not Set"
   defp render_contextual_date(date), do: date.value
 
+
+
   defp compact_empty_lines(text) do
     text |> String.replace(~r/\n{3,}/, "\n\n")
   end
@@ -202,6 +235,7 @@ defmodule Operately.MD.Project do
     ### #{discussion.title}
 
     #{render_person("Author", discussion.author)}
+    Published on: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
     """
