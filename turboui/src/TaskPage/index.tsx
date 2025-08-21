@@ -25,6 +25,7 @@ export namespace TaskPage {
     id: string;
     fullName: string;
     avatarUrl: string | null;
+    profileLink: string;
   }
 
   export interface Milestone {

@@ -79,7 +79,7 @@ function CreatedBy(props: TaskPage.State) {
           person={props.createdBy}
           size={"tiny"}
           nameFormat="short"
-          link={`/people/${props.createdBy.id}`}
+          link={props.createdBy.profileLink}
         />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
