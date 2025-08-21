@@ -1,6 +1,7 @@
 import React from "react";
 import { FloatingActionButton } from "../FloatingActionButton";
 import { IconRobotFace } from "../icons";
+import { genPerson } from "../utils/storybook/genPeople";
 import { Conversations, useConversations } from "./index";
 
 // Mock context data for a goal page
@@ -30,6 +31,8 @@ const mockContextActions: Conversations.ContextAction[] = [
     label: "Identify blockers",
   },
 ];
+
+const me = genPerson();
 
 /**
  * Example component showing how to integrate the Conversations component
@@ -252,6 +255,7 @@ export function ConversationsExample() {
 
       {/* Conversations overlay */}
       <Conversations
+        me={me}
         isOpen={isOpen}
         onClose={closeConversations}
         conversations={conversations}
