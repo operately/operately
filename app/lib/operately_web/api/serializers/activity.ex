@@ -284,10 +284,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("task_adding", _content) do
-    %{}
-  end
-
   def serialize_content("task_assignee_assignment", _content) do
     %{}
   end

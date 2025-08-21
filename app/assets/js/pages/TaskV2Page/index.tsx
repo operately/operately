@@ -2,8 +2,9 @@ import React from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
-import * as Tasks from "../../models/tasks";
-import * as People from "../../models/people";
+import * as Tasks from "@/models/tasks";
+import * as People from "@/models/people";
+import * as Activities from "@/models/activities";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import * as Time from "@/utils/time";
@@ -18,11 +19,14 @@ import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
+import { parseActivitiesForTurboUi } from "@/models/activities/tasks";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 type LoaderResult = {
   data: {
     task: Tasks.Task;
     tasksCount: number;
+    activities: Activities.Activity[];
   };
   cacheVersion: number;
 };
@@ -45,12 +49,17 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSpace: true,
         }).then((d) => d.task!),
         tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useTaskId: true }).then((d) => d.count!),
+        activities: Api.getActivities({
+          scopeId: params.id,
+          scopeType: "task",
+          actions: ["task_adding"],
+        }).then((d) => d.activities!),
       }),
   });
 }
 
 function pageCacheKey(id: string): string {
-  return `v4-TaskV2Page.task-${id}`;
+  return `v5-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskV2Page", loader, Page } as PageModule;
@@ -58,7 +67,8 @@ export default { name: "TaskV2Page", loader, Page } as PageModule;
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { task, tasksCount } = PageCache.useData(loader).data;
+  const currentUser = useMe();
+  const { task, tasksCount, activities } = PageCache.useData(loader).data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
@@ -144,6 +154,10 @@ function Page() {
     searchPeople: assigneeSearch,
     updateProjectName: setProjectName,
 
+    // Timeline
+    currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
+    timelineItems: prepareTimelineItems(paths, activities),
+
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
     onMilestoneChange: setMilestone,
@@ -151,20 +165,13 @@ function Page() {
 
     // Core task data
     name: name as string,
-    onNameChange: (newName) => {
-      setName(newName);
-      return Promise.resolve(true);
-    },
-
+    onNameChange: setName,
     description,
     onDescriptionChange: setDescription,
-
     status,
     onStatusChange: setStatus,
-
     dueDate: dueDate || undefined,
     onDueDateChange: setDueDate,
-
     assignee,
     onAssigneeChange: setAssignee,
 
@@ -271,4 +278,13 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
 
     return parseMilestonesForTurboUi(paths, data.milestones || []);
   };
+}
+
+function prepareTimelineItems(paths: Paths, activities: Activities.Activity[]) {
+  const parsedActivities = parseActivitiesForTurboUi(paths, activities);
+
+  return parsedActivities.map((activity) => ({
+    type: "task-activity",
+    value: activity,
+  })) as TaskPage.TimelineItemType[];
 }
