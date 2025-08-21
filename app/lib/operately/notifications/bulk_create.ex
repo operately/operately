@@ -3,10 +3,68 @@ defmodule Operately.Notifications.BulkCreate do
   Handles bulk creation of notifications with duplicate prevention.
   
   This module provides functionality to insert multiple notifications efficiently,
-  with fallback handling for constraint violations (duplicates).
+  with fallback handling for constraint violations (duplicates), and manages
+  the complete workflow including email scheduling and socket broadcasting.
   """
 
+  alias Ecto.Multi
+  alias Operately.Repo
   alias Operately.Notifications.Notification
+  alias Operately.Notifications.EmailWorker
+
+  @doc """
+  Creates multiple notifications with email scheduling and broadcasting.
+  
+  This is the main entry point for bulk notification creation. It handles:
+  - Timestamping notifications
+  - Bulk insertion with duplicate prevention
+  - Email job scheduling for notifications that require it
+  - Broadcasting unread count updates to affected users
+  
+  ## Parameters
+  
+  - `notifications`: List of notification attribute maps to create
+  
+  ## Returns
+  
+  `{:ok, inserted_notifications}` on success or `{:error, :failed_to_create_notifications}` on failure.
+  """
+  def bulk_create(notifications) do
+    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+
+    notifications = Enum.map(notifications, fn notification ->
+      Map.merge(notification, %{inserted_at: now, updated_at: now})
+    end)
+
+    Multi.new()
+    |> Multi.run(:notifications, fn repo, _ ->
+      insert_notifications(repo, notifications)
+    end)
+    |> Multi.merge(fn %{notifications: notifications} ->
+      Enum.reduce(notifications, Ecto.Multi.new(), fn notification, multi ->
+        if notification.should_send_email do
+          Ecto.Multi.run(multi, "email_#{notification.id}", fn _repo, _ ->
+            EmailWorker.new(%{notification_id: notification.id}) |> Oban.insert()
+          end)
+        else
+          multi
+        end
+      end)
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{notifications: notifications}} ->
+        unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
+
+        Enum.each(unique_person_ids, fn person_id ->
+          OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{person_id}")
+        end)
+
+        {:ok, notifications}
+      {:error, _} ->
+        {:error, :failed_to_create_notifications}
+    end
+  end
 
   @doc """
   Inserts multiple notifications into the database.

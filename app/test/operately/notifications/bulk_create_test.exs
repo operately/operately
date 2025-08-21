@@ -163,4 +163,61 @@ defmodule Operately.Notifications.BulkCreateTest do
       assert result == []
     end
   end
+
+  describe "bulk_create/1" do
+    setup do
+      company = company_fixture()
+      person = person_fixture(company_id: company.id)
+      activity = activity_fixture(%{author_id: person.id})
+
+      {:ok, company: company, person: person, activity: activity}
+    end
+
+    test "successfully creates notifications with the full workflow", %{person: person, activity: activity} do
+      notifications = [
+        %{
+          person_id: person.id,
+          activity_id: activity.id,
+          should_send_email: false, # Use false to avoid external dependencies
+          read: false
+        }
+      ]
+
+      {:ok, result} = BulkCreate.bulk_create(notifications)
+
+      assert length(result) == 1
+      [notification] = result
+      assert notification.person_id == person.id
+      assert notification.should_send_email == false
+      assert is_integer(notification.id)
+    end
+
+    test "handles multiple notifications in the full workflow", %{person: person, activity: activity} do
+      company2 = company_fixture()
+      person2 = person_fixture(company_id: company2.id)
+      activity2 = activity_fixture(%{author_id: person2.id})
+
+      notifications = [
+        %{
+          person_id: person.id,
+          activity_id: activity.id,
+          should_send_email: false,
+          read: false
+        },
+        %{
+          person_id: person2.id,
+          activity_id: activity2.id,
+          should_send_email: false,
+          read: false
+        }
+      ]
+
+      {:ok, result} = BulkCreate.bulk_create(notifications)
+
+      assert length(result) == 2
+      person_ids = Enum.map(result, & &1.person_id)
+      assert person.id in person_ids
+      assert person2.id in person_ids
+    end
+  end
 end
