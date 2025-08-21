@@ -7,6 +7,7 @@ defmodule Operately.Ai.AgentConvoWorker do
 
   alias Operately.Repo
   alias Operately.People.AgentMessage
+  alias Operately.AI.Tools
 
   import Ecto.Query, only: [from: 2]
 
@@ -18,8 +19,10 @@ defmodule Operately.Ai.AgentConvoWorker do
   def perform(job) do
     with(
       message <- find_message(job.args["message_id"]),
+      conversation <- find_conversation(message.convo_id),
       messages <- find_previous_messages(message),
-      chain <- create_chain(messages),
+      context <- build_context(conversation),
+      chain <- create_chain(messages, context),
       {:ok, chain} <- run_chain(chain),
       {:ok, message} <- save_response(chain, message)
     ) do
@@ -33,13 +36,26 @@ defmodule Operately.Ai.AgentConvoWorker do
     Repo.one(from m in AgentMessage, where: m.id == ^id)
   end
 
+  def find_conversation(convo_id) do
+    Repo.one(from c in Operately.People.AgentConvo, where: c.id == ^convo_id, preload: [:author])
+  end
+
   def find_previous_messages(message) do
     from(m in AgentMessage, where: m.convo_id == ^message.convo_id and m.index < ^message.index, order_by: [asc: m.index]) |> Repo.all()
   end
 
-  def create_chain(messages) do
-    LLMChain.new!(%{llm: provider(), custom_context: %{}, verbose: true})
+  def create_chain(messages, context) do
+    LLMChain.new!(%{llm: provider(), custom_context: context, verbose: true})
+    |> LLMChain.add_tools(Tools.work_map())
+    |> LLMChain.add_tools(Tools.get_goal_details())
+    |> LLMChain.add_tools(Tools.get_project_details())
     |> inject_messages(messages)
+  end
+
+  def build_context(conversation) do
+    %{
+      person: conversation.author
+    }
   end
 
   def save_response(chain, message) do
