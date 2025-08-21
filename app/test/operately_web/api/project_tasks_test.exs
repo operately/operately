@@ -675,6 +675,82 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
+  describe "update task name" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+        name: "Updated Task Name"
+      })
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it requires a name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.task)
+      })
+      assert res.message == "Missing required fields: name"
+    end
+
+    test "it updates a task name", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.task),
+        name: "Updated Task Name"
+      })
+
+      # Check response
+      assert res.task.name == "Updated Task Name"
+
+      # Check database
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert updated_task.name == "Updated Task Name"
+    end
+
+    test "it creates an activity when name is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.project.id, "task_name_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.task),
+        name: "Activity Test Name"
+      })
+
+      after_count = count_activities(ctx.project.id, "task_name_updating")
+      assert after_count == before_count + 1
+    end
+
+    test "it returns not found for non-existent task", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+        task_id: Ecto.UUID.generate(),
+        name: "Name for non-existent task"
+      })
+    end
+
+    test "it returns forbidden for non-project members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_tasks, :update_name], %{
+        task_id: Paths.task_id(ctx.task),
+        name: "Forbidden name update"
+      })
+    end
+  end
+
   describe "delete task" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_tasks, :delete], %{})

@@ -124,6 +124,7 @@ export const DISPLAYED_IN_FEED = [
   "project_timeline_edited",
   "project_retrospective_commented",
   "project_discussion_submitted",
+  "task_name_updating",
   "task_status_updating",
   "task_deleting",
   "task_description_change",
@@ -195,6 +196,7 @@ import ProjectContributorRemoved from "@/features/activities/ProjectContributorR
 import ProjectContributorsAddition from "@/features/activities/ProjectContributorsAddition";
 import ProjectCreated from "@/features/activities/ProjectCreated";
 import ProjectDiscussionSubmitted from "@/features/activities/ProjectDiscussionSubmitted";
+import TaskNameUpdating from "@/features/activities/TaskNameUpdating";
 import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
 import TaskDescriptionChange from "@/features/activities/TaskDescriptionChange";
 import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
@@ -326,6 +328,7 @@ function handler(activity: Activity) {
     .with("goal_target_deleting", () => GoalTargetDeleting)
     .with("goal_target_updating", () => GoalTargetUpdating)
     .with("project_discussion_submitted", () => ProjectDiscussionSubmitted)
+    .with("task_name_updating", () => TaskNameUpdating)
     .with("task_status_updating", () => TaskStatusUpdating)
     .with("task_deleting", () => TaskDeleting)
     .with("task_description_change", () => TaskDescriptionChange)
