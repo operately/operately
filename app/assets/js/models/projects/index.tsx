@@ -33,7 +33,7 @@ export function isOverdue(project: Project) {
 
   const deadline = Time.parse(project.timeframe.contextualEndDate?.date);
 
-  return Time.compareAsc(deadline, Time.today()) === -1;
+  return deadline && !Time.isToday(deadline) && Time.isPast(deadline);
 }
 
 export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timeframe">) {
