@@ -42,8 +42,21 @@ and Docker Compose, follow the instructions for your operating system:
 
 ### Set up a mail server
 
-Operately uses SendGrid to send emails. You need to set up a SendGrid account and create an API key.
-Follow the instructions on the [SendGrid documentation](https://sendgrid.com/docs/ui/account-and-settings/api-keys/).
+Operately supports two email delivery options:
+
+#### Option 1: SendGrid (Recommended)
+Set up a SendGrid account and create an API key. Follow the instructions on the [SendGrid documentation](https://sendgrid.com/docs/ui/account-and-settings/api-keys/).
+
+#### Option 2: SMTP Server
+Alternatively, you can use your own SMTP server by configuring the following environment variables:
+- `SMTP_SERVER` - Your SMTP server hostname (e.g., `smtp.gmail.com`)
+- `SMTP_PORT` - SMTP port (default: 587)
+- `SMTP_USERNAME` - SMTP authentication username
+- `SMTP_PASSWORD` - SMTP authentication password
+- `SMTP_TLS` - Enable TLS encryption (default: true)
+- `SMTP_SSL` - Enable SSL encryption (default: false)
+
+**Note**: If you set `SMTP_SERVER`, Operately will use SMTP instead of SendGrid.
 
 ## Installation steps
 
@@ -69,7 +82,10 @@ The script will build the Docker images and configure the environment,
 and ask you for the following information:
 
 - *Domain*: The domain you pointed to your server (e.g. `operately.example.com`)
-- *SendGrid API key*: The API key you created in the SendGrid dashboard
+- *Email Configuration*: Choose between SendGrid API key or SMTP server settings
+
+**For SendGrid**: Provide your SendGrid API key from the SendGrid dashboard
+**For SMTP**: Provide your SMTP server hostname, credentials, and connection settings
 
 ### Start Operately
 
