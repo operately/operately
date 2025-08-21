@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
 import { PageNew } from "../Page";
-import { PageHeader } from "../ProjectPage/PageHeader";
+import { PageHeader } from "../ProjectPageLayout/PageHeader";
 import { Tabs, useTabs } from "../Tabs";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { IconClipboardText, IconListCheck, IconLogs, IconMessages } from "../icons";
@@ -130,13 +130,13 @@ export function InProjectContextStory() {
           <div className="flex-1 flex flex-col overflow-hidden">
             <TaskPage
               // Navigation
-              spaceLink="#"
-              spaceName="Product"
-              projectLink="#"
               projectName="Mobile App V2"
-              milestoneLink="#"
-              milestoneName={taskMilestone ? "Beta Release" : ""}
               workmapLink="#"
+              space={{
+                id: "space-123",
+                name: "Product",
+                link: "#"
+              }}
               // Core task data
               name={taskName}
               onNameChange={async (newName: string) => {
@@ -173,6 +173,11 @@ export function InProjectContextStory() {
               // Metadata
               createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // One week ago
               createdBy={mockTaskPeople[0]!}
+              closedAt={null}
+              updateProjectName={async (name: string) => {
+                console.log("Updating project name:", name);
+                return true;
+              }}
               // Subscription
               isSubscribed={isSubscribed}
               onSubscriptionToggle={(subscribed) => {

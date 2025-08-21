@@ -1,11 +1,28 @@
 import React from "react";
-import { ProjectPage } from ".";
 import { IconChevronRight, IconProject } from "../icons";
 import { BlackLink } from "../Link";
 import { StatusBadge } from "../StatusBadge";
 import { TextField } from "../TextField";
+import { BadgeStatus } from "../StatusBadge/types";
 
-export function PageHeader(props: ProjectPage.State) {
+namespace PageHeader {
+  interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
+  export interface Props {
+    space: Space;
+    workmapLink: string;
+    projectName: string;
+    canEdit: boolean;
+    status: BadgeStatus;
+    updateProjectName: (name: string) => Promise<boolean>;
+  }
+}
+
+export function PageHeader(props: PageHeader.Props) {
   const navigation = [
     { to: props.space.link, label: props.space.name },
     { to: props.workmapLink, label: "Projects" },
