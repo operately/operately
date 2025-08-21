@@ -1,8 +1,6 @@
 defmodule OperatelyEmail.Mailers.NotificationMailer do
   defstruct [:company, :to, :from, :subject, :assigns]
 
-  import Swoosh.Email
-
   def new(company) do
     %__MODULE__{company: company, assigns: %{}}
   end
@@ -30,12 +28,12 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
 
     full_assigns = Map.put(email.assigns, :subject, email.subject)
 
-    swoosh_email = new()
-    |> to(email.to)
-    |> from(email.from)
-    |> subject(email.subject)
-    |> html_body(html(template, full_assigns))
-    |> text_body(text(template, full_assigns))
+    swoosh_email = Swoosh.Email.new()
+    |> Swoosh.Email.to(email.to)
+    |> Swoosh.Email.from(email.from)
+    |> Swoosh.Email.subject(email.subject)
+    |> Swoosh.Email.html_body(html(template, full_assigns))
+    |> Swoosh.Email.text_body(text(template, full_assigns))
 
     OperatelyEmail.Mailers.BaseMailer.deliver_now(swoosh_email)
   end
