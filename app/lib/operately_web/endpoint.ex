@@ -1,5 +1,33 @@
 defmodule OperatelyWeb.Endpoint do
   use SiteEncrypt.Phoenix.Endpoint, otp_app: :operately
+  
+  import Plug.Conn
+  require Logger
+  
+  # Override the call/2 function to handle SiteEncrypt exceptions gracefully
+  def call(conn, opts) do
+    super(conn, opts)
+  rescue
+    %RuntimeError{message: "unknown challenge"} = error ->
+      Logger.warning("Malformed ACME challenge request blocked: #{conn.request_path}")
+      send_not_found_response(conn)
+      
+    %RuntimeError{message: message} = error ->
+      if String.contains?(message, "challenge") do
+        Logger.warning("ACME challenge error handled: #{message} for path: #{conn.request_path}")
+        send_not_found_response(conn)
+      else
+        # Re-raise other RuntimeErrors that aren't ACME-related
+        reraise error, __STACKTRACE__
+      end
+  end
+  
+  defp send_not_found_response(conn) do
+    conn
+    |> put_status(404)
+    |> put_resp_content_type("text/plain")
+    |> send_resp(404, "Not Found")
+  end
 
   # Allow running wallaby tests in parallel
   if sandbox = Application.compile_env(:operately, :sandbox) do

@@ -70,5 +70,16 @@ defmodule OperatelyWeb.Plugs.AcmeChallengeSanitizerTest do
         assert result.status == 404
       end
     end
+
+    test "blocks ACME challenge tokens that are too long" do
+      # Create a token longer than 128 characters
+      long_token = String.duplicate("a", 129)
+      
+      conn = conn(:get, "/.well-known/acme-challenge/#{long_token}")
+      result = AcmeChallengeSanitizer.call(conn, [])
+      
+      assert result.halted
+      assert result.status == 404
+    end
   end
 end

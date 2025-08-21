@@ -37,8 +37,13 @@ defmodule OperatelyWeb.Plugs.AcmeChallengeSanitizer do
       String.contains?(token, ".") ->
         send_not_found(conn)
       
-      # Token contains invalid characters
+      # Token contains URL encoding or other invalid characters
+      # ACME challenge tokens should only contain [A-Za-z0-9_-]
       not Regex.match?(@valid_token_pattern, token) ->
+        send_not_found(conn)
+      
+      # Token is too long (ACME tokens are typically 43 characters)
+      String.length(token) > 128 ->
         send_not_found(conn)
       
       # Token looks valid, let SiteEncrypt handle it
