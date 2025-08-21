@@ -86,8 +86,8 @@ defmodule Operately.People.AgentConvo.Create do
           {:ok, "\n\n** Input goal: **\n\n" <> Operately.MD.Goal.render(goal)}
 
         :project ->
-          project = Operately.Repo.get!(Operately.Projects.Project, ctx.context_id)
-          {:ok, "\n\n** Input project: **\n\n" <> Operately.MD.Project.render(project)}
+          # Project context is now provided through the tool context, not the prompt
+          {:ok, ""}
 
         _ ->
           {:error, "Unsupported context type: #{inspect(ctx.context_type)}"}
