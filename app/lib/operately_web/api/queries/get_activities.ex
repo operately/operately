@@ -65,7 +65,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivities do
     from a in query, where: fragment("? ->> ? = ?", a.content, "company_id", ^company_id)
   end
 
-  def scope_query(query, "person", scope_id) do
+  def scope_query(query, :person, scope_id) do
     from a in query, where: a.author_id == ^scope_id
   end
 
