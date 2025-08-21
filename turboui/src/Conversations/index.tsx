@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { BounceLoader } from "react-spinners";
 
 import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
 import { TextField } from "../TextField";
@@ -10,6 +11,7 @@ export namespace Conversations {
     content: string;
     timestamp: Date;
     sender: "user" | "ai";
+    status?: "pending" | "done";
     actions?: MessageAction[];
   }
 
@@ -481,7 +483,9 @@ export function Conversations({
           </div>
         ) : (
           <>
-            {activeConversation.messages.map((message) => (
+            {activeConversation.messages
+              .filter((message) => message.status !== "pending")
+              .map((message) => (
               <div key={message.id} className={`flex gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
                 {/* Avatar */}
                 <div className="flex-shrink-0">
@@ -529,6 +533,30 @@ export function Conversations({
                 </div>
               </div>
             ))}
+            
+            {/* Typing indicator for pending AI messages */}
+            {activeConversation.messages.some(
+              (message) => message.sender === "ai" && message.status === "pending"
+            ) && (
+              <div className="flex gap-3">
+                {/* AI Avatar */}
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-accent-base rounded-full flex items-center justify-center">
+                    <IconRobotFace size={16} className="text-white" />
+                  </div>
+                </div>
+
+                <div className="max-w-[75%]">
+                  <div className="rounded-lg px-3 py-2 bg-surface-highlight text-content-base">
+                    <div className="flex items-center gap-2">
+                      <BounceLoader size={16} color="#6B7280" />
+                      <span className="text-sm text-content-dimmed">AI is typing...</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
             <div ref={messagesEndRef} />
           </>
         )}

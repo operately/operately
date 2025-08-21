@@ -6,7 +6,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.AgentMessage do
       id: Operately.ShortUuid.encode!(m.id),
       content: m.message,
       timestamp: OperatelyWeb.Api.Serializer.serialize(m.inserted_at, level: :full),
-      sender: Atom.to_string(m.source)
+      sender: Atom.to_string(m.source),
+      status: Atom.to_string(m.status)
     }
   end
 end
