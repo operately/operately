@@ -70,6 +70,9 @@ defmodule OperatelyWeb.Endpoint do
     end
   end
 
+  # Handle malformed ACME challenge requests before they reach SiteEncrypt
+  plug OperatelyWeb.Plugs.AcmeChallengeSanitizer
+
   plug OperatelyWeb.Router
 
   alias OperatelyWeb.Certification, as: Cert
