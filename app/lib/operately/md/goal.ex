@@ -125,7 +125,7 @@ defmodule Operately.MD.Goal do
     """
     ### Check-in on #{render_date(check_in.inserted_at)}
 
-    #{render_person("Author", check_in.author)}
+    #{render_person_name_only(check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.message)}
     """
@@ -169,6 +169,14 @@ defmodule Operately.MD.Goal do
       "#{role}: #{person.full_name} (#{person.title})"
     else
       "#{role}: Not Assigned"
+    end
+  end
+
+  defp render_person_name_only(person) do
+    if person do
+      "#{person.full_name} (#{person.title})"
+    else
+      "Not Assigned"
     end
   end
 
