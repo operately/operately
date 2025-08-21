@@ -292,6 +292,7 @@ function TargetEdit({ state, target }: { state: State; target: TargetState }) {
       <form onSubmit={handleSubmit(onSubmit)}>
         <Textarea
           label="Name"
+          autoFocus
           error={errors.name?.message as string}
           {...register("name", { required: "Can't be empty" })}
         />
