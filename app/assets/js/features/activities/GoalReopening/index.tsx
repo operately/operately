@@ -1,7 +1,7 @@
 import * as People from "@/models/people";
 import * as React from "react";
 
-import { Activity, ActivityContentGoalClosing } from "@/api";
+import { Activity, ActivityContentGoalReopening } from "@/api";
 
 import { usePaths } from "@/routes/paths";
 import { Link } from "turboui";
@@ -12,7 +12,7 @@ import { feedTitle, goalLink } from "../feedItemLinks";
 
 import RichContent, { Summary } from "@/components/RichContent";
 
-const GoalClosing: ActivityHandler = {
+const GoalReopening: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
     return `Goal reopened`;
   },
@@ -78,12 +78,12 @@ const GoalClosing: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return content(activity).goal!.name!;
+    return content(activity).goal?.space?.name || content(activity).goal!.name!;
   },
 };
 
-function content(activity: Activity): ActivityContentGoalClosing {
-  return activity.content as ActivityContentGoalClosing;
+function content(activity: Activity): ActivityContentGoalReopening {
+  return activity.content as ActivityContentGoalReopening;
 }
 
-export default GoalClosing;
+export default GoalReopening;
