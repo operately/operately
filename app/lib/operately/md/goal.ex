@@ -13,8 +13,9 @@ defmodule Operately.MD.Goal do
     #{render_targets(goal.targets)}
     #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
-    #{render_check_ins(goal.updates)}
+    #{render_check_ins(goal.updates, goal.id)}
     #{Operately.MD.Goal.Discussions.render(discussions)}
+    #{Operately.MD.Goal.Activities.render(goal.id)}
     #{render_retrospective(goal.retrospective)}
     """
     |> compact_empty_lines()
@@ -105,7 +106,7 @@ defmodule Operately.MD.Goal do
 
   defp calculate_target_progress(_), do: 0.0
 
-  defp render_check_ins(check_ins) do
+  defp render_check_ins(check_ins, goal_id) do
     if check_ins == [] do
       """
       ## Check-ins
@@ -116,19 +117,84 @@ defmodule Operately.MD.Goal do
       """
       ## Check-ins
 
-      #{Enum.map_join(check_ins, "\n\n", &render_check_in/1)}
+      #{Enum.map_join(check_ins, "\n\n", &render_check_in(&1, goal_id))}
       """
     end
   end
 
-  defp render_check_in(check_in) do
+  defp render_check_in(check_in, goal_id) do
+    comments = get_check_in_comments(check_in.id, goal_id)
+    targets_diff = get_targets_diff(check_in)
+    
     """
     ### Check-in on #{render_date(check_in.inserted_at)}
 
     #{render_person("Author", check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.message)}
+    #{targets_diff}
+    #{render_check_in_comments(comments)}
     """
+  end
+
+  defp get_check_in_comments(check_in_id, goal_id) do
+    import Ecto.Query, only: [from: 2, where: 3]
+    
+    from(a in Operately.Activities.Activity,
+      where: a.resource_id == ^goal_id,
+      where: a.action == "goal_check_in_commented",
+      where: fragment("?->>'goal_check_in_id' = ?", a.content, ^to_string(check_in_id)),
+      preload: [:author],
+      order_by: [asc: a.inserted_at]
+    )
+    |> Operately.Repo.all()
+  rescue
+    _e ->
+      []
+  end
+
+  defp render_check_in_comments([]), do: ""
+  defp render_check_in_comments(comments) do
+    """
+
+    #### Comments
+    #{Enum.map_join(comments, "\n", &render_check_in_comment/1)}
+    """
+  end
+
+  defp render_check_in_comment(activity) do
+    timestamp = format_timestamp(activity.inserted_at)
+    author = if activity.author, do: activity.author.full_name, else: "Unknown User"
+    "- **#{timestamp}** - Comment by #{author}"
+  rescue
+    _e ->
+      "- Error rendering comment"
+  end
+
+  defp get_targets_diff(check_in) do
+    case check_in.targets do
+      nil -> ""
+      [] -> ""
+      targets when is_list(targets) ->
+        """
+
+        #### Target Updates
+        #{Enum.map_join(targets, "\n", &render_target_diff/1)}
+        """
+    end
+  end
+
+  defp render_target_diff(target) do
+    old_value = Map.get(target, "previous_value", "N/A")
+    new_value = Map.get(target, "value", "N/A")
+    name = Map.get(target, "name", "Unknown Target")
+    "- #{name}: #{old_value} → #{new_value}"
+  end
+
+  defp format_timestamp(datetime) do
+    datetime
+    |> Operately.Time.as_date()
+    |> Date.to_iso8601()
   end
 
   defp render_retrospective(retrospective) do
