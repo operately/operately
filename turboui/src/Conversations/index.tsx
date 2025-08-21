@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { BounceLoader } from "react-spinners";
 
 import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
 import { TextField } from "../TextField";
@@ -10,6 +11,7 @@ export namespace Conversations {
     content: string;
     timestamp: Date;
     sender: "user" | "ai";
+    status?: "pending" | "done";
     actions?: MessageAction[];
   }
 
@@ -481,54 +483,80 @@ export function Conversations({
           </div>
         ) : (
           <>
-            {activeConversation.messages.map((message) => (
-              <div key={message.id} className={`flex gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
-                {/* Avatar */}
-                <div className="flex-shrink-0">
-                  {message.sender === "ai" ? (
-                    <div className="w-8 h-8 bg-accent-base rounded-full flex items-center justify-center">
-                      <IconRobotFace size={16} className="text-white" />
-                    </div>
-                  ) : (
-                    <div className="w-8 h-8 bg-surface-outline rounded-full flex items-center justify-center">
-                      <span className="text-xs font-medium text-content-base">You</span>
-                    </div>
-                  )}
-                </div>
-
-                <div className={`max-w-[75%] space-y-2`}>
-                  <div
-                    className={`rounded-lg px-3 py-2 ${
-                      message.sender === "user"
-                        ? "bg-callout-info-content text-callout-info-bg shadow-sm"
-                        : "bg-surface-highlight text-content-base"
-                    }`}
-                  >
-                    <div className="text-sm whitespace-pre-wrap">{message.content}</div>
-                    <div
-                      className={`text-xs mt-1 ${message.sender === "user" ? "text-white/70" : "text-content-dimmed"}`}
-                    >
-                      {formatTime(message.timestamp)}
-                    </div>
+            {activeConversation.messages
+              .filter((message) => message.status !== "pending")
+              .map((message) => (
+                <div key={message.id} className={`flex gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
+                  {/* Avatar */}
+                  <div className="flex-shrink-0">
+                    {message.sender === "ai" ? (
+                      <div className="w-8 h-8 bg-accent-base rounded-full flex items-center justify-center">
+                        <IconRobotFace size={16} className="text-white" />
+                      </div>
+                    ) : (
+                      <div className="w-8 h-8 bg-surface-outline rounded-full flex items-center justify-center">
+                        <span className="text-xs font-medium text-content-base">You</span>
+                      </div>
+                    )}
                   </div>
 
-                  {/* Message Actions */}
-                  {message.actions && message.actions.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {message.actions.map((action) => (
-                        <button
-                          key={action.id}
-                          onClick={action.onClick}
-                          className="px-3 py-2 rounded text-sm font-medium transition-colors bg-surface-highlight text-content-base hover:text-white-1 hover:bg-brand-1 border border-surface-outline text-left"
-                        >
-                          {action.label}
-                        </button>
-                      ))}
+                  <div className={`max-w-[75%] space-y-2`}>
+                    <div
+                      className={`rounded-lg px-3 py-2 ${
+                        message.sender === "user"
+                          ? "bg-callout-info-content text-callout-info-bg shadow-sm"
+                          : "bg-surface-highlight text-content-base"
+                      }`}
+                    >
+                      <div className="text-sm whitespace-pre-wrap">{message.content}</div>
+                      <div
+                        className={`text-xs mt-1 ${
+                          message.sender === "user" ? "text-white/70" : "text-content-dimmed"
+                        }`}
+                      >
+                        {formatTime(message.timestamp)}
+                      </div>
                     </div>
-                  )}
+
+                    {/* Message Actions */}
+                    {message.actions && message.actions.length > 0 && (
+                      <div className="flex flex-wrap gap-2">
+                        {message.actions.map((action) => (
+                          <button
+                            key={action.id}
+                            onClick={action.onClick}
+                            className="px-3 py-2 rounded text-sm font-medium transition-colors bg-surface-highlight text-content-base hover:text-white-1 hover:bg-brand-1 border border-surface-outline text-left"
+                          >
+                            {action.label}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+            {/* Typing indicator for pending AI messages */}
+            {activeConversation.messages.some((message) => message.sender === "ai" && message.status === "pending") && (
+              <div className="flex gap-3">
+                {/* AI Avatar */}
+                <div className="flex-shrink-0">
+                  <div className="w-8 h-8 bg-accent-base rounded-full flex items-center justify-center">
+                    <IconRobotFace size={16} className="text-white" />
+                  </div>
+                </div>
+
+                <div className="max-w-[75%]">
+                  <div className="rounded-lg px-3 py-2 bg-surface-highlight text-content-base">
+                    <div className="flex items-center gap-2">
+                      <BounceLoader size={16} color="#6B7280" />
+                      <span className="text-sm text-content-dimmed">Alfred is typing...</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            ))}
+            )}
+
             <div ref={messagesEndRef} />
           </>
         )}

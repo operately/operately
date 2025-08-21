@@ -925,6 +925,7 @@ export interface AgentMessage {
   content: string;
   timestamp: string;
   sender: AgentMessageSender;
+  status: AgentMessageStatus;
 }
 
 export interface AgentRun {
@@ -1873,6 +1874,8 @@ export type UpdateContent =
   | UpdateContentMessage;
 
 export type AgentMessageSender = "user" | "ai";
+
+export type AgentMessageStatus = "pending" | "done";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
