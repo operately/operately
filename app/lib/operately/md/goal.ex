@@ -148,6 +148,9 @@ defmodule Operately.MD.Goal do
       order_by: [asc: a.inserted_at]
     )
     |> Operately.Repo.all()
+  rescue
+    _e ->
+      []
   end
 
   defp render_check_in_comments([]), do: ""
@@ -161,8 +164,11 @@ defmodule Operately.MD.Goal do
 
   defp render_check_in_comment(activity) do
     timestamp = format_timestamp(activity.inserted_at)
-    author = activity.author.full_name
+    author = if activity.author, do: activity.author.full_name, else: "Unknown User"
     "- **#{timestamp}** - Comment by #{author}"
+  rescue
+    _e ->
+      "- Error rendering comment"
   end
 
   defp get_targets_diff(check_in) do

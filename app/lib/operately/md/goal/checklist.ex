@@ -40,11 +40,14 @@ defmodule Operately.MD.Goal.Checklist do
     )
     |> Operately.Repo.one()
 
-    if activity do
+    if activity && activity.author do
       timestamp = activity.inserted_at |> Operately.Time.as_date() |> Date.to_iso8601()
       " (completed by #{activity.author.full_name} on #{timestamp})"
     else
       ""
     end
+  rescue
+    _e ->
+      ""
   end
 end

@@ -35,19 +35,20 @@ defmodule Operately.MD.Goal.Activities do
 
   defp render_activity(activity) do
     timestamp = format_timestamp(activity.inserted_at)
-    author = activity.author.full_name
+    author = if activity.author, do: activity.author.full_name, else: "Unknown User"
     
     case activity.action do
       "goal_check_toggled" ->
-        content = activity.content
+        content = activity.content || %{}
         status = if content["completed"], do: "completed", else: "unchecked"
-        "- **#{timestamp}** - #{author} #{status} checklist item \"#{content["name"]}\""
+        item_name = content["name"] || "Unknown Item"
+        "- **#{timestamp}** - #{author} #{status} checklist item \"#{item_name}\""
         
       "goal_check_in_commented" ->
         "- **#{timestamp}** - #{author} commented on a check-in"
         
       "goal_timeframe_editing" ->
-        content = activity.content
+        content = activity.content || %{}
         old_due_date = get_due_date(content["old_timeframe"])
         new_due_date = get_due_date(content["new_timeframe"])
         "- **#{timestamp}** - #{author} changed due date from #{old_due_date || "unset"} to #{new_due_date || "unset"}"
@@ -55,6 +56,9 @@ defmodule Operately.MD.Goal.Activities do
       _ ->
         "- **#{timestamp}** - #{author} performed #{activity.action}"
     end
+  rescue
+    e ->
+      "- **#{format_timestamp(activity.inserted_at)}** - Error rendering activity: #{inspect(e)}"
   end
 
   defp format_timestamp(datetime) do
