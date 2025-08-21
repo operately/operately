@@ -174,6 +174,8 @@ defmodule OperatelyWeb.Api.AiTest do
   describe "create_conversation" do
     setup ctx do
       Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
+      |> Factory.add_space(:product)
+      |> Factory.add_project(:project, :product)
     end
 
     test "requires authentication", ctx do
@@ -190,6 +192,33 @@ defmodule OperatelyWeb.Api.AiTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, _} = mutation(ctx.conn, [:ai, :create_conversation], %{context_type: "goal"})
+    end
+
+    test "creates project conversation with tool-based context", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      
+      params = %{
+        action_id: "test_action",
+        context_type: "project",
+        context_id: OperatelyWeb.Paths.project_id(ctx.project)
+      }
+
+      # Mock the action finding
+      with_mock Operately.Ai.Prompts, [find_action: fn _, _ -> {:ok, %{label: "Test Action", prompt: "Test prompt"}} end] do
+        assert {200, res} = mutation(ctx.conn, [:ai, :create_conversation], params)
+        assert res.success == true
+        assert res.conversation != nil
+        
+        # Check that the conversation has the project_id set
+        conversation = res.conversation
+        assert conversation.project_id == ctx.project.id
+        
+        # Verify that the conversation messages don't contain static project context
+        # but instead reference the tool
+        user_message = Enum.find(conversation.messages, &(&1.source == "user"))
+        assert user_message.prompt =~ "get_project_description tool"
+        refute user_message.prompt =~ ctx.project.name  # Should not contain static project data
+      end
     end
   end
 end
