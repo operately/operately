@@ -39,6 +39,7 @@ export namespace TaskPage {
   export interface Props {
     // Navigation/Hierarchy
     projectName: string;
+    projectLink: string;
     workmapLink: string;
 
     space: Space;
@@ -123,18 +124,22 @@ function useTaskPageState(props: TaskPage.Props): TaskPage.State {
 export function TaskPage(props: TaskPage.Props) {
   const state = useTaskPageState(props);
 
-  const tabs = useTabs("tasks", [
-    { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    {
-      id: "tasks",
-      label: "Tasks",
-      icon: <IconListCheck size={14} />,
-      count: 0,
-    },
-    { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
-    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
-    { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
-  ]);
+  const tabs = useTabs(
+    "tasks",
+    [
+      { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
+      {
+        id: "tasks",
+        label: "Tasks",
+        icon: <IconListCheck size={14} />,
+        count: 0,
+      },
+      { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
+      { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
+      { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
+    ],
+    { urlPath: state.projectLink },
+  );
 
   return (
     <ProjectPageLayout title={[state.projectName]} testId="project-page" tabs={tabs} {...state}>
