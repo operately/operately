@@ -79,7 +79,7 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
       return <IconFileText {...iconProps} className="text-purple-500" />;
     case "task-title":
       return <IconEdit {...iconProps} className="text-gray-500" />;
-    case "task-creation":
+    case "task_adding":
       return <IconPlus {...iconProps} className="text-green-500" />;
     default:
       return <IconActivity {...iconProps} />;
@@ -208,7 +208,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
         </span>
       );
 
-    case "task-creation":
+    case "task_adding":
       return <span className="text-content-dimmed">created this task</span>;
 
     default:
