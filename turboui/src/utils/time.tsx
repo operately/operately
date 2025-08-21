@@ -13,11 +13,7 @@ export function daysAgo(days: number) {
 }
 
 export function isOverdue(date: Date) {
-  const today = new Date();
-  const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-
-  return dateOnly < todayOnly;
+  return !isToday(date) && isPast(date);
 }
 
 export function isThisWeek(date: Date) {

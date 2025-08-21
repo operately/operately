@@ -2,25 +2,31 @@ import { isOverdue, isMilestoneOverdue, Milestone, Project } from "./index";
 
 import * as Time from "../../utils/time";
 
-function getCustomMilestone(date, status) {
+function getCustomMilestone(date, status): Pick<Milestone, "status" | "timeframe"> {
   return {
     status,
     timeframe: {
+      contextualStartDate: null,
       contextualEndDate: {
+        dateType: "date" as any,
+        value: date,
         date,
       },
     },
-  } as Pick<Milestone, "status" | "timeframe">;
+  };
 }
 
-function getCustomProject(date) {
+function getCustomProject(date): Pick<Project, "timeframe"> {
   return {
     timeframe: {
+      contextualStartDate: null,
       contextualEndDate: {
+        dateType: "date" as any,
+        value: date,
         date,
       },
     },
-  } as Pick<Project, "timeframe">;
+  };
 }
 
 describe(".isMilestoneOverdue", () => {

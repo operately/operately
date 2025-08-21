@@ -1,5 +1,5 @@
 import { match } from "ts-pattern";
-import { overdueDays } from "./time";
+import { isToday, isPast } from "./time";
 
 export type TimeframeType = "month" | "quarter" | "year" | "days";
 
@@ -148,9 +148,7 @@ function fourthQuarterOfYear(year: number): Timeframe {
 }
 
 export function isOverdue(timeframe: Timeframe) {
-  if (!timeframe.startDate) return false;
   if (!timeframe.endDate) return false;
 
-  const days = overdueDays(timeframe.endDate);
-  return days && days >= 1;
+  return !isToday(timeframe.endDate) && isPast(timeframe.endDate);
 }
