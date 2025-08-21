@@ -6,6 +6,7 @@ import * as Tasks from "../../models/tasks";
 import * as People from "../../models/people";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
+import * as Time from "@/utils/time";
 
 import { usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
@@ -15,6 +16,7 @@ import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
+import { parseSpaceForTurboUI } from "@/models/spaces";
 
 type LoaderResult = {
   data: {
@@ -114,23 +116,14 @@ function Page() {
   const searchMilestones = useMilestonesSearch(task.project.id);
 
   // Space and project info
-  const spaceName = task.space.name;
-  const spaceLink = paths.spacePath(task.space.id);
   const projectName = task.project.name;
-  const projectLink = paths.projectPath(task.project.id);
-  const milestoneLink = paths.projectMilestonePath(task.milestone.id);
-  const milestoneName = task.milestone.title;
   const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
 
   // Prepare TaskPage props
   const props: TaskPage.Props = {
-    spaceLink,
-    spaceName,
-    projectLink,
     projectName,
-    milestoneLink,
-    milestoneName,
     workmapLink,
+    space: parseSpaceForTurboUI(paths, task.space),
 
     searchPeople: assigneeSearch,
 
@@ -159,10 +152,12 @@ function Page() {
     onAssigneeChange: setAssignee,
 
     onDelete: handleDelete,
+    updateProjectName: () => Promise.resolve(true),
 
     // Metadata
     createdAt: new Date(task.insertedAt || Date.now()),
     createdBy: People.parsePersonForTurboUi(paths, task.creator) as TaskPage.Person,
+    closedAt: Time.parse(task.project.closedAt),
 
     // Subscription
     isSubscribed,

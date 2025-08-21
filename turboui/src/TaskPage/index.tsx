@@ -3,12 +3,11 @@ import { Status } from "../TaskBoard/types";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
-import { PageNew } from "../Page";
-import { useTabs } from "../Tabs";
-import { Tabs } from "../Tabs";
-import { IconClipboardText, IconMessage, IconLogs, IconListCheck, IconMessages } from "../icons";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { DateField } from "../DateField";
+import { ProjectPageLayout } from "../ProjectPageLayout";
+import { useTabs } from "../Tabs";
+import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
@@ -16,6 +15,12 @@ import { Sidebar } from "./Sidebar";
 import { DeleteModal } from "./DeleteModal";
 
 export namespace TaskPage {
+  export interface Space {
+    id: string;
+    name: string;
+    link: string;
+  }
+
   export interface Person {
     id: string;
     fullName: string;
@@ -32,13 +37,10 @@ export namespace TaskPage {
 
   export interface Props {
     // Navigation/Hierarchy
-    spaceLink: string;
-    spaceName: string;
-    projectLink: string;
     projectName: string;
-    milestoneLink: string;
-    milestoneName: string;
     workmapLink: string;
+
+    space: Space;
 
     // Milestone selection
     milestone: Milestone | null;
@@ -64,6 +66,7 @@ export namespace TaskPage {
     // Metadata (read-only)
     createdAt: Date;
     createdBy: Person;
+    closedAt: Date | null;
 
     // Subscription
     isSubscribed: boolean;
@@ -76,15 +79,15 @@ export namespace TaskPage {
 
     // Search functionality for assignees
     searchPeople?: (params: { query: string }) => Promise<Person[]>;
-
     // Search functionality for rich editor mentions
     peopleSearch?: SearchFn;
-
     // Person lookup for rich content mentions
     mentionedPersonLookup: MentionedPersonLookupFn;
 
     // Permissions
     canEdit: boolean;
+
+    updateProjectName: (name: string) => Promise<boolean>;
 
     // Timeline/Activity feed
     timelineItems?: TimelineItem[];
@@ -106,7 +109,7 @@ export namespace TaskPage {
 
 function useTaskPageState(props: TaskPage.Props): TaskPage.State {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
-  
+
   return {
     ...props,
 
@@ -121,27 +124,32 @@ export function TaskPage(props: TaskPage.Props) {
 
   const tabs = useTabs("tasks", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
-    { id: "tasks", label: "Tasks", icon: <IconListCheck size={14} /> },
+    {
+      id: "tasks",
+      label: "Tasks",
+      icon: <IconListCheck size={14} />,
+      count: 0,
+    },
     { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
     { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
 
   return (
-    <PageNew title={[state.name]} size="fullwidth" testId="task-page">
-      <PageHeader {...state} />
-      <Tabs tabs={tabs} />
-
-      <div className="flex-1 overflow-scroll">
-        <div className="px-4 py-6">
-          <div className="sm:grid sm:grid-cols-12">
-            <Overview {...state} />
-            <Sidebar {...state} />
+    <ProjectPageLayout title={[state.projectName]} testId="project-page" tabs={tabs} {...state}>
+      <div className="px-4 py-4">
+        <PageHeader {...state} />
+        <div className="flex-1 overflow-scroll">
+          <div className="px-4 py-6">
+            <div className="sm:grid sm:grid-cols-12">
+              <Overview {...state} />
+              <Sidebar {...state} />
+            </div>
           </div>
         </div>
       </div>
 
       <DeleteModal {...state} />
-    </PageNew>
+    </ProjectPageLayout>
   );
 }
