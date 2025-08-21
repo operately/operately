@@ -746,6 +746,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :discussion, :discussion, null: true
   end
 
+  object :activity_content_task_name_updating do
+    field :project, :project, null: false
+    field :task, :task, null: false
+    field :old_name, :string, null: false
+    field :new_name, :string, null: false
+  end
+
   object :activity_content_task_description_change do
     field :task, :task, null: false
     field :project_name, :string, null: false
@@ -1370,12 +1377,14 @@ defmodule OperatelyWeb.Api.Types do
 
   enum(:create_conversation_context_type, values: [:goal, :project])
   enum(:agent_message_sender, values: [:user, :ai])
+  enum(:agent_message_status, values: [:pending, :done])
 
   object :agent_message do
     field :id, :string
     field :content, :string
     field :timestamp, :date
     field :sender, :agent_message_sender
+    field :status, :agent_message_status
   end
 
   object :person_permissions do

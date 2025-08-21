@@ -5,6 +5,7 @@ defmodule Operately.Support.Features.SpacesSteps do
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.{Factory, RichText}
 
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
@@ -305,6 +306,38 @@ defmodule Operately.Support.Features.SpacesSteps do
   step :assert_all_goals_and_projects_are_completed_message, ctx do
     ctx |> UI.assert_text("All done!")
     ctx |> UI.assert_text("1 goal and 1 project completed this quarter")
+  end
+
+  step :given_active_and_closed_projects_exist, ctx do
+    ctx
+    |> Factory.add_project(:active_project, :marketing, name: "Active Project")
+    |> Factory.add_project(:closed_project, :marketing, name: "Closed Project")
+    |> then(fn ctx ->
+      # Close one project using the proper operation that sets closed_at
+      {:ok, _} =
+        Operately.Operations.ProjectClosed.run(ctx.creator, ctx.closed_project, %{
+          content: RichText.rich_text("Project closed for testing"),
+          success_status: :achieved,
+          subscription_parent_type: :comment_thread,
+          send_to_everyone: false,
+          subscriber_ids: []
+        })
+
+      ctx
+    end)
+  end
+
+  step :assert_closed_projects_not_shown_in_goals_and_projects, ctx do
+    # Closed projects should not appear in the Goals & Projects section
+    ctx
+    |> UI.click(testid: "goals-and-projects")
+    |> UI.refute_text("Closed Project")
+  end
+
+  step :assert_active_projects_shown_in_goals_and_projects, ctx do
+    # Active projects should still appear in the Goals & Projects section
+    ctx
+    |> UI.assert_text("Active Project")
   end
 
 end

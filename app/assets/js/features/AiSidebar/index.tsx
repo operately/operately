@@ -86,6 +86,7 @@ function prepareMessage(message: AgentMessage): Conversations.Message {
     content: message.content,
     timestamp: Time.parseISO(message.timestamp),
     sender: message.sender,
+    status: message.status as "pending" | "done",
   };
 }
 
