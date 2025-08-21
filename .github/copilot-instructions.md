@@ -13,15 +13,42 @@ Operately is an Elixir Phoenix web application with a React TypeScript frontend.
 - **chore:** - For maintenance, refactoring, CI improvements, and infrastructure changes
 - **docs:** - For documentation changes and improvements
 
+**CRITICAL FOR WIP (Work-In-Progress) PRs**: Always place [WIP] AFTER the prefix, never before:
+- ✅ **CORRECT**: `feat: [WIP] Description`
+- ❌ **WRONG**: `[WIP] feat: Description` (will fail CI)
+
 **Examples of correct PR titles:**
 - `feat: Add goal progress tracking dashboard`
 - `fix: Resolve login redirect issue`
 - `chore: Update CI pipeline configuration`  
 - `docs: Add troubleshooting guide for common issues`
 
+**For Work-In-Progress (WIP) PRs, place [WIP] AFTER the prefix:**
+- `feat: [WIP] Add goal progress tracking dashboard`
+- `fix: [WIP] Resolve login redirect issue`  
+- `chore: [WIP] Update CI pipeline configuration`
+- `docs: [WIP] Add troubleshooting guide for common issues`
+
+**INCORRECT WIP format (will fail CI):**
+- ❌ `[WIP] feat: Add goal progress tracking dashboard`
+- ❌ `WIP: Add goal progress tracking dashboard`
+
 The CI will fail with `make test.pr.name` if PR titles don't follow this format. See `docs/pull-request-guidelines.md` for detailed guidelines.
 
 ## Working Effectively
+
+**🚨 CRITICAL PRE-SUBMISSION REQUIREMENT 🚨**
+
+**BEFORE submitting ANY code changes, you MUST run and ensure these commands pass:**
+```bash
+make test.tsc.lint           # TypeScript compilation - MUST PASS
+make test.js.fmt.check       # JavaScript/TypeScript formatting - MUST PASS
+make test.elixir.warnings    # Elixir warnings check - MUST PASS
+```
+
+**Failure to run these commands will result in CI failures. Do not skip this step.**
+
+---
 
 ### Bootstrap and Build the Repository
 ```bash
@@ -72,10 +99,16 @@ make test.ee       # NEVER CANCEL: Takes 5-10 minutes. Set timeout to 20+ minute
 make js.fmt.fix              # Fixes JavaScript/TypeScript formatting
 make test.js.fmt.check       # Validates JavaScript/TypeScript formatting
 make test.elixir.warnings    # Validates Elixir code has no warnings
-make test.tsc.lint           # TypeScript compilation check
+make test.tsc.lint           # TypeScript compilation check - CRITICAL: MUST PASS before any code submission
 make test.license.check      # License compliance check
 make test.pr.name           # Pull request naming validation
 ```
+
+**CRITICAL TYPESCRIPT REQUIREMENT**: 
+- `make test.tsc.lint` **MUST** be run and **MUST PASS** before submitting any code changes
+- This command performs TypeScript compilation checks and catches type errors
+- **NEVER** submit code that fails TypeScript linting - it will cause CI failures
+- If `make test.tsc.lint` fails, fix all TypeScript errors before proceeding
 
 ## Development Workflow
 
@@ -165,7 +198,9 @@ make test.db.reset      # Reset test database
 1. **Application Startup**: Run `make dev.server` and verify the server starts without errors at http://localhost:4000
 2. **Build Validation**: Run `make test.all` to ensure all tests pass
 3. **Code Formatting**: Run `make js.fmt.fix` and `make test.js.fmt.check` to ensure proper formatting
-4. **TypeScript Compilation**: Run `make test.tsc.lint` to catch TypeScript errors
+4. **TypeScript Compilation**: Run `make test.tsc.lint` to catch TypeScript errors - **THIS IS MANDATORY**
+
+**CRITICAL**: Steps 3 and 4 are **REQUIRED** before any code submission. TypeScript linting failures will block CI.
 
 ### Manual Testing Requirements
 After making code changes, ALWAYS:
@@ -174,6 +209,7 @@ After making code changes, ALWAYS:
 3. Test the specific functionality you modified
 4. Verify no JavaScript console errors appear
 5. Check that the application loads and functions properly
+6. **MANDATORY**: Run `make test.tsc.lint` and ensure it passes - fix any TypeScript errors before proceeding
 
 ## Common Development Tasks
 
@@ -255,6 +291,18 @@ If builds fail:
 4. Check available disk space (builds require ~2GB free space)
 5. Network connectivity: If `make dev.build` fails with hex.pm or npm registry errors, this indicates network restrictions that prevent dependency installation
 
+### TypeScript Linting Issues
+If `make test.tsc.lint` fails:
+1. **Read the error output carefully** - TypeScript errors are usually very specific
+2. **Fix each TypeScript error** - do not ignore or work around them
+3. **Common issues**:
+   - Missing type annotations
+   - Incorrect type usage
+   - Import/export problems
+   - Unused variables or imports
+4. **Re-run `make test.tsc.lint`** after fixes until it passes
+5. **Never submit code** with TypeScript linting failures
+
 ### Expected Command Outputs
 ```bash
 # These commands should work offline and can be used to validate environment:
@@ -272,16 +320,19 @@ The project uses SemaphoreCI for continuous integration. Key validation steps ma
 - `make test.pr.name` - Pull request naming validation
 - `make test.license.check` - License compliance
 - `make test.js.dead.code` - Dead code detection  
-- `make test.tsc.lint` - TypeScript validation
+- `make test.tsc.lint` - **TypeScript validation (CRITICAL - MUST PASS)**
 - `make test.elixir.warnings` - Elixir compiler warnings
 - `make test.mix.unit` - Unit test suite
 - `make test.mix.features` - Feature test suite (runs in parallel)
 - `make test.npm` - JavaScript test suite
 
+**⚠️ IMPORTANT**: The `make test.tsc.lint` step is frequently the cause of CI failures. Always run this locally and fix any TypeScript errors before submitting code.
+
 **CRITICAL REMINDERS**:
 - **NEVER CANCEL long-running builds or tests** - they may take 45+ minutes
 - **ALWAYS set appropriate timeouts** (40+ minutes for builds, 45+ minutes for full test suites) 
 - **ALWAYS run formatting and linting** before committing changes
+- **MANDATORY: Run `make test.tsc.lint` before ANY code submission** - TypeScript errors will fail CI
 - **ALWAYS test manual scenarios** after making changes
 - The development environment requires Docker and significant time for initial setup
 
@@ -302,7 +353,7 @@ make gen                          # Regenerate TypeScript API from GraphQL
 
 # Quick validation before commits
 make test.js.fmt.check            # Validate JavaScript formatting
-make test.tsc.lint                # Validate TypeScript compilation
+make test.tsc.lint                # Validate TypeScript compilation - REQUIRED BEFORE ANY COMMIT
 make test.elixir.warnings         # Check for Elixir warnings
 ```
 

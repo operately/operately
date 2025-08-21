@@ -1,12 +1,11 @@
-import React from "react";
-import { useMemo } from "react";
-import { isPast } from "../../../utils/time";
+import React, { useMemo } from "react";
+import { isPast, isToday } from "../../../utils/time";
 
 import { WorkMap } from "..";
-import { useItemStatus } from "../../hooks/useItemStatus";
-import classNames from "../../../utils/classnames";
-import FormattedTime from "../../../FormattedTime";
 import { DateField } from "../../../DateField";
+import FormattedTime from "../../../FormattedTime";
+import classNames from "../../../utils/classnames";
+import { useItemStatus } from "../../hooks/useItemStatus";
 
 interface Props {
   tab: WorkMap.Filter;
@@ -53,7 +52,7 @@ function isDueDatePast(dueDate: DateField.ContextualDate | null | undefined): bo
     const { date } = dueDate;
     if (!date) return false;
 
-    return isPast(date);
+    return !isToday(date) && isPast(date);
   } catch (error) {
     console.error("Error checking if due date is past:", error);
     return false;

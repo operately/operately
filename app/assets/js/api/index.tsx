@@ -134,13 +134,13 @@ export interface Account {
 }
 
 export interface Activity {
-  id?: string | null;
+  id: string;
   scopeType?: string | null;
   scopeId?: string | null;
   resourceId?: string | null;
   resourceType?: string | null;
-  action?: string | null;
-  insertedAt?: string | null;
+  action: string;
+  insertedAt: string;
   updatedAt?: string | null;
   commentThread?: CommentThread | null;
   author?: Person | null;

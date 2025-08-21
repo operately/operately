@@ -38,8 +38,8 @@ function Page() {
     <Pages.Page title={"Lobby"} testId="lobby-page">
       <div className="p-4 py-8 sm:p-8 lg:p-12">
         <OperatelyLogo width="32px" height="32px" />
-        <div className="font-medium mt-4 sm:mt-8">Hey there, {firstName}! How's it going?</div>
-        <div className="font-medium hidden sm:block">Select one of your organizations below to get started:</div>
+        <div className="font-medium mt-4 sm:mt-8">Welcome to Operately, {firstName}!</div>
+        <div className="font-medium hidden sm:block">Let's get you started</div>
         <CompanyCards companies={companies} />
         <AdminsLink />
       </div>
@@ -107,8 +107,8 @@ function AddCompanyCard() {
 
   return (
     <DivLink to={Paths.newCompanyPath()} className={className} testId="add-company-card">
-      <div className="font-bold sm:text-lg">+ Create new</div>
-      <div className="text-xs sm:text-sm font-medium">Add new organization</div>
+      <div className="font-bold sm:text-lg">+ Create organization</div>
+      <div className="text-xs sm:text-sm font-medium">Start fresh with a new company account</div>
       <div className="flex justify-end mt-3">
         <IconSparkles size={32} className="text-white-1" strokeWidth={1} />
       </div>
