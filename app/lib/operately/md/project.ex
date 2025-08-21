@@ -114,7 +114,7 @@ defmodule Operately.MD.Project do
     """
     ### Check-in on #{render_date(check_in.inserted_at)}
 
-    #{render_person("Author", check_in.author)}
+    #{render_person_name_only(check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.description)}
     """
@@ -152,6 +152,21 @@ defmodule Operately.MD.Project do
         full_name = Map.get(person, :full_name, "Unknown")
         title = Map.get(person, :title, "Unknown")
         "#{role}: #{full_name} (#{title})"
+    end
+  end
+
+  defp render_person_name_only(person) do
+    case person do
+      %Ecto.Association.NotLoaded{} ->
+        "Not Loaded"
+
+      nil ->
+        "Not Assigned"
+
+      _ ->
+        full_name = Map.get(person, :full_name, "Unknown")
+        title = Map.get(person, :title, "Unknown")
+        "#{full_name} (#{title})"
     end
   end
 
@@ -193,7 +208,7 @@ defmodule Operately.MD.Project do
     """
     ### #{discussion.title}
 
-    #{render_person("Author", discussion.author)}
+    #{render_person_name_only(discussion.author)}
 
     #{Operately.MD.RichText.render(discussion.message)}
     """
