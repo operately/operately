@@ -81,10 +81,10 @@ export const linkLink = (link: api.ResourceHubLink) => {
   return <Link to={path}>{name}</Link>;
 };
 
-export const taskLink = (task: api.Task) => {
+export const taskLink = (task: api.Task, taskName?: string) => {
   const paths = usePaths();
   const path = paths.taskPath(task.id);
-  const name = task.name;
+  const name = taskName || task.name;
 
   return <Link to={path}>{name}</Link>;
 };

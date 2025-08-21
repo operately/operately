@@ -62,14 +62,14 @@ function Page() {
 
   const [projectName, setProjectName] = usePageField({
     value: (data: { task: Tasks.Task }) => data.task.project!.name,
-    update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }).then(() => true),
+    update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
   });
 
   const [name, setName] = usePageField({
-    value: (data) => data.task.name!,
-    update: () => Promise.resolve(true), // Placeholder for updateTaskName
+    value: (data: { task: Tasks.Task }) => data.task.name,
+    update: (v) => Api.project_tasks.updateName({ taskId: task.id!, name: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
   });
@@ -195,7 +195,12 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
+function usePageField<T>({
+  value,
+  update,
+  onError,
+  validations,
+}: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
