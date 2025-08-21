@@ -22,6 +22,7 @@ import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 type LoaderResult = {
   data: {
     task: Tasks.Task;
+    tasksCount: number;
   };
   cacheVersion: number;
 };
@@ -43,12 +44,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeCreator: true,
           includeSpace: true,
         }).then((d) => d.task!),
+        tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useTaskId: true }).then((d) => d.count!),
       }),
   });
 }
 
 function pageCacheKey(id: string): string {
-  return `v3-TaskV2Page.task-${id}`;
+  return `v4-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskV2Page", loader, Page } as PageModule;
@@ -56,7 +58,7 @@ export default { name: "TaskV2Page", loader, Page } as PageModule;
 function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
-  const { task } = PageCache.useData(loader).data;
+  const { task, tasksCount } = PageCache.useData(loader).data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
@@ -137,6 +139,7 @@ function Page() {
     projectName,
     projectLink: paths.projectV2Path(task.project.id),
     workmapLink,
+    tasksCount,
     space: parseSpaceForTurboUI(paths, task.space),
 
     searchPeople: assigneeSearch,
