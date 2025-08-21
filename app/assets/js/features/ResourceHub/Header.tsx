@@ -2,6 +2,7 @@ import React from "react";
 
 import * as Paper from "@/components/PaperContainer";
 import * as Hub from "@/features/ResourceHub";
+import * as Pages from "@/components/Pages";
 import { ResourceHub, ResourceHubFolder, useRenameResourceHubFolder } from "@/models/resourceHubs";
 import { TextField } from "turboui";
 import { usePaperSizeHelpers } from "@/components/PaperContainer";
@@ -33,13 +34,20 @@ export function Header({ resource }: Props) {
 function EditableHeader({ resource }: { resource: ResourceHubFolder }) {
   const [rename] = useRenameResourceHubFolder();
   const { negHor, negTop } = usePaperSizeHelpers();
+  // Get refresh function to update the folder data after rename
+  const refresh = Pages.useRefresh();
 
   const handleRename = (newName: string): void => {
     if (newName !== resource.name && newName.trim()) {
       rename({
         folderId: resource.id,
         newName: newName.trim(),
-      }).catch((error) => {
+      })
+      .then(() => {
+        // Refresh the folder data to get updated name
+        refresh();
+      })
+      .catch((error) => {
         console.error("Failed to rename folder:", error);
       });
     }
