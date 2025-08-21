@@ -187,6 +187,7 @@ export interface ActivityContentCompanyOwnerRemoving {
   companyId?: string | null;
   personId?: string | null;
   person?: Person | null;
+  company?: Company | null;
 }
 
 export interface ActivityContentCompanyOwnersAdding {

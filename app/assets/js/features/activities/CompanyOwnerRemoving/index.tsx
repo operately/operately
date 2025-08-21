@@ -54,7 +54,7 @@ const CompanyOwnerRemoving: ActivityHandler = {
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
-    return activity.author!.company!.name!;
+    return content(activity).company!.name!;
   },
 };
 

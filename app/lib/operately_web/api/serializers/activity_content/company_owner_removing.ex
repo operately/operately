@@ -5,6 +5,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Company
     %{
       person: Serializer.serialize(content["person"], level: :essential),
       person_id: content["person_id"],
+      company: Serializer.serialize(content["company"], level: :essential),
       company_id: content["company_id"]
     }
   end
