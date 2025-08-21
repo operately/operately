@@ -925,6 +925,7 @@ export interface AgentMessage {
   content: string;
   timestamp: string;
   sender: AgentMessageSender;
+  status: string;
 }
 
 export interface AgentRun {
