@@ -458,6 +458,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :activity_permissions, null: true
   end
 
+  enum(:activity_scope_type, values: [:person, :company, :space, :project, :task, :goal])
+
   object :activity_permissions do
     field? :can_comment_on_thread, :boolean, null: true
     field? :can_view, :boolean, null: true
