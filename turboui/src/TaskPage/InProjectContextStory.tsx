@@ -131,6 +131,7 @@ export function InProjectContextStory() {
             <TaskPage
               // Navigation
               projectName="Mobile App V2"
+              projectLink="#"
               workmapLink="#"
               space={{
                 id: "space-123",
