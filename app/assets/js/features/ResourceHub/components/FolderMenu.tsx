@@ -2,21 +2,22 @@ import React from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
-import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
-import { useBoolState } from "@/hooks/useBoolState";
-import { Menu, MenuActionItem } from "turboui";
-import { createTestId } from "@/utils/testid";
+import Modal from "@/components/Modal";
 import { useNodesContext } from "@/features/ResourceHub";
-import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
-import { CopyResourceMenuItem } from "./CopyResource";
+import { useBoolState } from "@/hooks/useBoolState";
+import { createTestId } from "@/utils/testid";
+import { Menu, MenuActionItem } from "turboui";
 import { CopyFolderModal } from "./CopyFolder";
+import { CopyResourceMenuItem } from "./CopyResource";
+import { MoveResourceMenuItem, MoveResourceModal } from "./MoveResource";
 
 interface Props {
   folder: Hub.ResourceHubFolder;
 }
 
 export function FolderMenu({ folder }: Props) {
+  const { refetch } = useNodesContext();
   const { permissions } = useNodesContext();
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const [showMoveForm, toggleMoveForm] = useBoolState(false);
@@ -39,7 +40,9 @@ export function FolderMenu({ folder }: Props) {
         {permissions.canRenameFolder && <RenameFolderMenuItem folder={folder} showForm={toggleRenameForm} />}
         {permissions.canCopyFolder && <CopyResourceMenuItem resource={folder} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={folder} showModal={toggleMoveForm} />}
-        {permissions.canDeleteFolder && <DeleteFolderMenuItem folder={folder} showConfirmModal={toggleDeleteConfirmModal} />}
+        {permissions.canDeleteFolder && (
+          <DeleteFolderMenuItem folder={folder} showConfirmModal={toggleDeleteConfirmModal} />
+        )}
       </Menu>
 
       <RenameFolderModal
@@ -49,6 +52,7 @@ export function FolderMenu({ folder }: Props) {
         // Key is needed because when the folder's name changes, if the component
         // is not rerendered, the old name will appear in the form
         key={folder.name}
+        onSave={refetch}
       />
       <MoveResourceModal resource={folder} resourceType="folder" isOpen={showMoveForm} hideModal={toggleMoveForm} />
       <CopyFolderModal resource={folder} isOpen={showCopyForm} hideModal={toggleCopyForm} />
@@ -57,7 +61,13 @@ export function FolderMenu({ folder }: Props) {
   );
 }
 
-function DeleteFolderMenuItem({ folder, showConfirmModal }: { folder: Hub.ResourceHubFolder; showConfirmModal: () => void }) {
+function DeleteFolderMenuItem({
+  folder,
+  showConfirmModal,
+}: {
+  folder: Hub.ResourceHubFolder;
+  showConfirmModal: () => void;
+}) {
   const deleteId = createTestId("delete", folder.id!);
 
   return (
@@ -83,7 +93,15 @@ interface FormProps {
   toggleForm: () => void;
 }
 
-function DeleteFolderModal({ folder, isOpen, hideModal }: { folder: Hub.ResourceHubFolder; isOpen: boolean; hideModal: () => void }) {
+function DeleteFolderModal({
+  folder,
+  isOpen,
+  hideModal,
+}: {
+  folder: Hub.ResourceHubFolder;
+  isOpen: boolean;
+  hideModal: () => void;
+}) {
   const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubFolder();
 
@@ -102,15 +120,16 @@ function DeleteFolderModal({ folder, isOpen, hideModal }: { folder: Hub.Resource
   return (
     <Modal isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
-        <p>Are you sure you want to delete the folder "<b>{folder.name}</b>"?</p>
+        <p>
+          Are you sure you want to delete the folder "<b>{folder.name}</b>"?
+        </p>
         <Forms.Submit saveText="Delete" cancelText="Cancel" />
       </Forms.Form>
     </Modal>
   );
 }
 
-function RenameFolderModal({ folder, showForm, toggleForm }: FormProps) {
-  const { refetch } = useNodesContext();
+export function RenameFolderModal({ folder, showForm, toggleForm, onSave }: FormProps & { onSave: () => void }) {
   const [rename] = Hub.useRenameResourceHubFolder();
 
   const form = Forms.useForm({
@@ -131,7 +150,7 @@ function RenameFolderModal({ folder, showForm, toggleForm }: FormProps) {
           folderId: folder.id,
           newName: name,
         });
-        refetch();
+        onSave();
       }
       toggleForm();
       form.actions.reset();
