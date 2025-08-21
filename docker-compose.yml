@@ -86,6 +86,15 @@ services:
     volumes:
       - ./locals3root:/containers3root
 
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    ports:
+      - "127.0.0.1:1025:1025"  # SMTP server port
+      - "127.0.0.1:8025:8025"  # Web UI port
+    profiles:
+      - dev
+      - ci
+
 volumes:
   postgres-data:
     driver: local
