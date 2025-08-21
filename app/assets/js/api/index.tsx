@@ -1880,6 +1880,8 @@ export type UpdateContent =
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
 
+export type ActivityScopeType = "person" | "company" | "space" | "project" | "task" | "goal";
+
 export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
@@ -1981,13 +1983,13 @@ export interface GetAccountResult {
 }
 
 export interface GetActivitiesInput {
-  scopeId?: string | null;
-  scopeType?: string | null;
-  actions?: string[] | null;
+  scopeId: string;
+  scopeType: ActivityScopeType;
+  actions: string[];
 }
 
 export interface GetActivitiesResult {
-  activities?: Activity[] | null;
+  activities: Activity[];
 }
 
 export interface GetActivityInput {

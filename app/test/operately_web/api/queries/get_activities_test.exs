@@ -9,6 +9,7 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
   alias Operately.Groups
   alias Operately.Access.Binding
   alias OperatelyWeb.Paths
+  alias Operately.Activities.Activity
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -120,5 +121,139 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
 
   describe "get_activities functionality" do
     setup :register_and_log_in_account
+  end
+
+  describe "activity scope types" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.log_in_person(:creator)
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project(:project, :space)
+      |> create_milestone()
+      |> create_task()
+    end
+
+    test "company scope includes all activities", ctx do
+      assert {200, res} = query(ctx.conn, :get_activities, %{
+        scope_type: :company,
+        scope_id: Paths.company_id(ctx.company),
+        actions: []
+      })
+
+      assert Enum.find(res.activities, fn act -> act.action == "company_adding" end)
+      assert Enum.find(res.activities, fn act -> act.action == "space_added" end)
+      assert Enum.find(res.activities, fn act -> act.action == "goal_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
+      assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
+    end
+
+    test "space scope includes space, goal, project, and task activities", ctx do
+      assert {200, res} = query(ctx.conn, :get_activities, %{
+        scope_type: :space,
+        scope_id: Paths.space_id(ctx.space),
+        actions: []
+      })
+
+      refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
+      assert Enum.find(res.activities, fn act -> act.action == "space_added" end)
+      assert Enum.find(res.activities, fn act -> act.action == "goal_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
+      assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
+    end
+
+    test "project scope includes project and task activities", ctx do
+      assert {200, res} = query(ctx.conn, :get_activities, %{
+        scope_type: :project,
+        scope_id: Paths.project_id(ctx.project),
+        actions: []
+      })
+
+      refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
+      refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
+      refute Enum.find(res.activities, fn act -> act.action == "goal_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
+      assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
+    end
+
+    test "goal scope includes only goal activities", ctx do
+      assert {200, res} = query(ctx.conn, :get_activities, %{
+        scope_type: :goal,
+        scope_id: Paths.goal_id(ctx.goal),
+        actions: []
+      })
+
+      refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
+      refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
+      assert Enum.find(res.activities, fn act -> act.action == "goal_created" end)
+      refute Enum.find(res.activities, fn act -> act.action == "project_created" end)
+      refute Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
+      refute Enum.find(res.activities, fn act -> act.action == "task_adding" end)
+    end
+
+    test "task scope includes only task activities", ctx do
+      assert {200, res} = query(ctx.conn, :get_activities, %{
+        scope_type: :task,
+        scope_id: Paths.task_id(ctx.task),
+        actions: []
+      })
+
+      refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
+      refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
+      refute Enum.find(res.activities, fn act -> act.action == "goal_created" end)
+      refute Enum.find(res.activities, fn act -> act.action == "project_created" end)
+      refute Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
+      assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
+    end
+  end
+
+  defp create_milestone(ctx) do
+    ctx =
+      ctx
+      |> Factory.preload(:project, :access_context)
+      |> Factory.add_project_milestone(:milestone, :project)
+
+    attrs = %{
+      action: "project_milestone_creation",
+      author_id: ctx.creator.id,
+      access_context_id: ctx.project.access_context.id,
+      content: %{
+        "company_id" => ctx.company.id,
+        "space_id" => ctx.space.id,
+        "project_id" => ctx.project.id,
+        "milestone_id" => ctx.milestone.id,
+        "milestone_name" => ctx.milestone.title,
+      }
+    }
+
+    {:ok, _} = Repo.insert(struct(Activity, attrs))
+
+    ctx
+  end
+
+  defp create_task(ctx) do
+    ctx = Factory.add_project_task(ctx, :task, :milestone)
+
+    attrs = %{
+      action: "task_adding",
+      author_id: ctx.creator.id,
+      access_context_id: ctx.project.access_context.id,
+      content: %{
+        "company_id" => ctx.company.id,
+        "space_id" => ctx.space.id,
+        "project_id" => ctx.project.id,
+        "milestone_id" => ctx.milestone.id,
+        "task_id" => ctx.task.id,
+        "name" => ctx.task.name,
+      }
+    }
+
+    {:ok, _} = Repo.insert(struct(Activity, attrs))
+
+    ctx
   end
 end
