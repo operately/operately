@@ -148,5 +148,11 @@ if config_env() == :prod do
   #
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
-  # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
+  # Configure Swoosh mailer for production
+  config :operately, Operately.Mailer,
+    adapter: Swoosh.Adapters.Sendgrid,
+    api_key: System.get_env("SENDGRID_API_KEY")
+  
+  # Configure API client for Swoosh
+  config :swoosh, :api_client, Finch
 end
