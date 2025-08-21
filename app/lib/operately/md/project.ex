@@ -4,6 +4,7 @@ defmodule Operately.MD.Project do
       Operately.Repo.preload(project, [
         :group,
         :creator,
+        :goal,
         :retrospective,
         :milestones,
         [check_ins: [:author]],
@@ -50,6 +51,14 @@ defmodule Operately.MD.Project do
         info
       end
     end)
+    |> then(fn info ->
+      if project.goal do
+        info <> "Parent Goal: #{project.goal.name}"
+      else
+        info <> "Parent Goal: None (Company-wide project)"
+      end
+    end)
+    |> then(fn info -> info <> "\n\n" end)
   end
 
   defp render_description(project) do
