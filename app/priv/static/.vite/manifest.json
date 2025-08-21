@@ -1,15 +1,15 @@
 {
-  "_vendor-BB-18C4m.js": {
-    "file": "assets/vendor-BB-18C4m.js",
+  "_vendor-Bh36ucGI.js": {
+    "file": "assets/vendor-Bh36ucGI.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-ClKEHrxs.js",
+    "file": "assets/app-D1p1qwvF.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-BB-18C4m.js"
+      "_vendor-Bh36ucGI.js"
     ]
   }
 }

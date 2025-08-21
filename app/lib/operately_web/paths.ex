@@ -43,6 +43,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goals", "new"])
   end
 
+  def goal_closing_path(company = %Company{}, goal = %Goal{}) do
+    create_path([company_id(company), "goals", goal_id(goal), "complete"])
+  end
+
   def goal_check_in_path(company = %Company{}, update) do
     create_path([company_id(company), "goal-check-ins", goal_update_id(update)])
   end

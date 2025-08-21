@@ -12,7 +12,7 @@ export function Page() {
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={"Closing " + goal.name}>
+    <Pages.Page title={"Closing " + goal.name} testId="goal-closing-page">
       <Paper.Root>
         <Navigation />
 
