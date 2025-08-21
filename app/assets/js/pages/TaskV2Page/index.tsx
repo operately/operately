@@ -58,11 +58,26 @@ function Page() {
   assertPresent(task.space, "Task must have a space");
   assertPresent(task.milestone, "Task must have a milestone");
 
+  const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
+
+  const [projectName, setProjectName] = usePageField({
+    value: (data: { task: Tasks.Task }) => data.task.project!.name,
+    update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }).then(() => true),
+    onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
+    validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+  });
+
   const [name, setName] = usePageField({
     value: (data) => data.task.name!,
     update: () => Promise.resolve(true), // Placeholder for updateTaskName
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+  });
+
+  const [description, setDescription] = usePageField({
+    value: (data: { task: Tasks.Task }) => data.task.description && JSON.parse(data.task.description),
+    update: (v) => Api.project_tasks.updateDescription({ taskId: task.id!, description: JSON.stringify(v) }),
+    onError: () => showErrorToast("Error", "Failed to update task description."),
   });
 
   const [status, setStatus] = usePageField({
@@ -89,8 +104,6 @@ function Page() {
     onError: () => showErrorToast("Error", "Failed to update milestone."),
   });
 
-  const { description, handleDescriptionChange } = useDescription(task);
-
   // Subscription status - placeholder
   const [isSubscribed, setIsSubscribed] = React.useState(true);
 
@@ -115,10 +128,6 @@ function Page() {
   });
   const searchMilestones = useMilestonesSearch(task.project.id);
 
-  // Space and project info
-  const projectName = task.project.name;
-  const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
-
   // Prepare TaskPage props
   const props: TaskPage.Props = {
     projectName,
@@ -126,6 +135,7 @@ function Page() {
     space: parseSpaceForTurboUI(paths, task.space),
 
     searchPeople: assigneeSearch,
+    updateProjectName: setProjectName,
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -140,7 +150,7 @@ function Page() {
     },
 
     description,
-    onDescriptionChange: handleDescriptionChange,
+    onDescriptionChange: setDescription,
 
     status,
     onStatusChange: setStatus,
@@ -152,7 +162,6 @@ function Page() {
     onAssigneeChange: setAssignee,
 
     onDelete: handleDelete,
-    updateProjectName: () => Promise.resolve(true),
 
     // Metadata
     createdAt: new Date(task.insertedAt || Date.now()),
@@ -186,7 +195,7 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
+function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -199,13 +208,13 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
     }
   }, [value, cacheVersion, stateVersion]);
 
-  const updateState = (newVal: T): void => {
+  const updateState = async (newVal: T): Promise<boolean> => {
     if (validations) {
       for (const validation of validations) {
         const error = validation(newVal);
         if (error) {
           onError?.(error);
-          return;
+          return false;
         }
       }
     }
@@ -223,15 +232,20 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
 
     setState(newVal);
 
-    update(newVal)
+    return update(newVal)
       .then((res) => {
         if (res === false || (typeof res === "object" && res?.success === false)) {
           errorHandler("Update failed");
+          return false;
         } else {
           successHandler();
+          return true;
         }
       })
-      .catch(errorHandler);
+      .catch((err) => {
+        errorHandler(err);
+        return false;
+      });
   };
 
   return [state, updateState];
@@ -245,19 +259,4 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
 
     return parseMilestonesForTurboUi(paths, data.milestones || []);
   };
-}
-
-function useDescription(task: Tasks.Task) {
-  const [description, setDescription] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.description && JSON.parse(data.task.description),
-    update: (v) => Api.project_tasks.updateDescription({ taskId: task.id!, description: JSON.stringify(v) }),
-    onError: () => showErrorToast("Error", "Failed to update task description."),
-  });
-
-  const handleDescriptionChange = (newDescription: any) => {
-    setDescription(newDescription);
-    return Promise.resolve(true);
-  };
-
-  return { description, handleDescriptionChange };
 }
