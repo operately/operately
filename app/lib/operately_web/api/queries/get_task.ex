@@ -34,8 +34,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     include_filters = extract_include_filters(inputs)
 
     from(t in Task,
-      join: m in assoc(t, :milestone),
-      join: p in assoc(m, :project), as: :project,
+      join: p in assoc(t, :project), as: :project,
       where: t.id == ^inputs.id
     )
     |> Task.scope_company(person.company_id)
@@ -48,7 +47,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     Enum.reduce(requested, query, fn include, q ->
       case include do
         :include_assignees -> from t in q, preload: [:assigned_people]
-        :include_milestone -> from [_, m, p] in q, preload: [milestone: {m, [project: p]}]
+        :include_milestone -> from t in q, preload: [milestone: :project]
         :include_project -> from [project: p] in q, preload: [project: p]
         :include_creator -> from t in q, preload: [:creator]
         :include_space -> from t in q, preload: :group
