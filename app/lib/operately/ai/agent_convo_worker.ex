@@ -7,6 +7,7 @@ defmodule Operately.Ai.AgentConvoWorker do
 
   alias Operately.Repo
   alias Operately.People.AgentMessage
+  alias Operately.AI.Tools
 
   import Ecto.Query, only: [from: 2]
 
@@ -45,9 +46,9 @@ defmodule Operately.Ai.AgentConvoWorker do
 
   def create_chain(messages, context) do
     LLMChain.new!(%{llm: provider(), custom_context: context, verbose: true})
-    |> LLMChain.add_tools(Operately.AI.Tools.work_map())
-    |> LLMChain.add_tools(Operately.AI.Tools.get_goal_details())
-    |> LLMChain.add_tools(Operately.AI.Tools.get_project_description())
+    |> LLMChain.add_tools(Tools.work_map())
+    |> LLMChain.add_tools(Tools.get_goal_details())
+    |> LLMChain.add_tools(Tools.get_project_description())
     |> inject_messages(messages)
   end
 
