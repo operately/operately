@@ -74,6 +74,7 @@ defmodule Operately.Notifications do
   def bulk_create(notifications) do
     alias Ecto.Multi
     alias Operately.Notifications.EmailWorker
+    alias Operately.Notifications.BulkCreate
 
     now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
 
@@ -83,20 +84,7 @@ defmodule Operately.Notifications do
 
     Multi.new()
     |> Multi.run(:notifications, fn repo, _ ->
-      try do
-        {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email, :person_id])
-        {:ok, notifications}
-      rescue
-        Ecto.ConstraintError ->
-          # If we hit a unique constraint error, try inserting one by one and skip duplicates
-          notifications_inserted = Enum.reduce(notifications, [], fn notification_attrs, acc ->
-            case repo.insert(%Notification{} |> Notification.changeset(notification_attrs)) do
-              {:ok, notification} -> [%{id: notification.id, should_send_email: notification.should_send_email, person_id: notification.person_id} | acc]
-              {:error, _} -> acc # Skip duplicates
-            end
-          end)
-          {:ok, Enum.reverse(notifications_inserted)}
-      end
+      BulkCreate.insert_notifications(repo, notifications)
     end)
     |> Multi.merge(fn %{notifications: notifications} ->
       Enum.reduce(notifications, Ecto.Multi.new(), fn notification, multi ->
