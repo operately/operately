@@ -41,6 +41,7 @@ export namespace TaskPage {
     projectName: string;
     projectLink: string;
     workmapLink: string;
+    tasksCount?: number;
 
     space: Space;
 
@@ -132,7 +133,7 @@ export function TaskPage(props: TaskPage.Props) {
         id: "tasks",
         label: "Tasks",
         icon: <IconListCheck size={14} />,
-        count: 0,
+        count: state.tasksCount,
       },
       { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
       { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
