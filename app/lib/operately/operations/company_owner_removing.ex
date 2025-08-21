@@ -8,7 +8,7 @@ defmodule Operately.Operations.CompanyOwnerRemoving do
     |> Multi.put(:author, author)
     |> Multi.put(:person_id, person_id)
     |> Multi.put(:member_group, find_member_group(author))
-    |> Multi.put(:owner_group, find_owners_group(author)) 
+    |> Multi.put(:owner_group, find_owners_group(author))
     |> Multi.run(:remove_from_owners_group, &remove_from_owners_group/2)
     |> Multi.run(:add_to_member_group, &add_to_member_group/2)
     |> Multi.run(:reduce_access_level_to_view, &reduce_access_level_to_view/2)
@@ -33,7 +33,7 @@ defmodule Operately.Operations.CompanyOwnerRemoving do
     Activities.insert_sync(multi, admin.id, :company_owner_removing, fn changes ->
       %{
         company_id: changes.author.company_id,
-        person_id: changes.person_id,
+        person_id: changes.person_id
       }
     end)
   end
