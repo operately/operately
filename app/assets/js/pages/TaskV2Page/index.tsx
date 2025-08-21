@@ -131,6 +131,7 @@ function Page() {
   // Prepare TaskPage props
   const props: TaskPage.Props = {
     projectName,
+    projectLink: paths.projectV2Path(task.project.id),
     workmapLink,
     space: parseSpaceForTurboUI(paths, task.space),
 

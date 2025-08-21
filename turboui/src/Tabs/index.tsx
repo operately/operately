@@ -26,12 +26,17 @@ interface Tab {
   hidden?: boolean;
 }
 
+interface TabsConfig {
+  urlPath?: string;
+}
+
 export interface TabsState {
   active: string;
   tabs: Tab[];
+  urlPath?: string;
 }
 
-export function useTabs(defaultTab: string, tabs: Tab[]): TabsState {
+export function useTabs(defaultTab: string, tabs: Tab[], config?: TabsConfig): TabsState {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const active = searchParams.get("tab") || defaultTab;
@@ -39,14 +44,16 @@ export function useTabs(defaultTab: string, tabs: Tab[]): TabsState {
   return {
     active,
     tabs: tabs.filter((tab) => !tab.hidden),
+    urlPath: config?.urlPath,
   };
 }
 
-function useTabPath(tabId: string) {
+function useTabPath(tabId: string, urlPath?: string) {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   searchParams.set("tab", tabId);
-  return `${location.pathname}?${searchParams.toString()}`;
+  const pathname = urlPath || location.pathname;
+  return `${pathname}?${searchParams.toString()}`;
 }
 
 export function Tabs({ tabs }: { tabs: TabsState }) {
@@ -54,15 +61,15 @@ export function Tabs({ tabs }: { tabs: TabsState }) {
     <div className="border-stroke-base border-b shadow-b-xs pl-4 mt-2 overflow-x-auto">
       <nav className="flex gap-4 px-2 sm:px-0 whitespace-nowrap">
         {tabs.tabs.map((tab) => (
-          <TabItem key={tab.id} tab={tab} activeTab={tabs.active} />
+          <TabItem key={tab.id} tab={tab} activeTab={tabs.active} urlPath={tabs.urlPath} />
         ))}
       </nav>
     </div>
   );
 }
 
-function TabItem({ tab, activeTab }: { tab: Tab; activeTab: string }) {
-  const tabPath = useTabPath(tab.id);
+function TabItem({ tab, activeTab, urlPath }: { tab: Tab; activeTab: string; urlPath?: string }) {
+  const tabPath = useTabPath(tab.id, urlPath);
   const testId = `tab-${tab.label.toLowerCase()}`;
 
   const labelClass = classNames("flex items-center gap-1 px-1.5 py-1.5 text-sm relative -mb-px font-medium -mx-1.5", {
