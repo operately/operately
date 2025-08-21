@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { BounceLoader } from "react-spinners";
 
+import type { AvatarPerson } from "../Avatar";
+import { Avatar } from "../Avatar";
 import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
 import { TextField } from "../TextField";
 
@@ -95,6 +97,11 @@ export namespace Conversations {
     contextAttachment?: ContextAttachment;
 
     /**
+     * Current user for displaying avatar instead of "You"
+     */
+    me: AvatarPerson;
+
+    /**
      * Initial width of the panel in pixels
      */
     initialWidth?: number;
@@ -122,6 +129,7 @@ export function Conversations({
   onUpdateConversationTitle,
   contextActions = [],
   contextAttachment,
+  me,
   initialWidth = 448, // (w-md equivalent)
   minWidth = 320, // Minimum usable width
   maxWidth = 600, // Maximum width
@@ -494,9 +502,7 @@ export function Conversations({
                         <IconRobotFace size={16} className="text-white" />
                       </div>
                     ) : (
-                      <div className="w-8 h-8 bg-surface-outline rounded-full flex items-center justify-center">
-                        <span className="text-xs font-medium text-content-base">You</span>
-                      </div>
+                      <Avatar person={me} size={32} />
                     )}
                   </div>
 
