@@ -347,7 +347,7 @@ function TimelineSection(props: ProjectPage.State) {
           </CollapsibleSection>
         )}
 
-        <EmptyState canEdit={props.canEdit} setShowAddForm={setShowAddForm} display={validMilestones.length === 0} />
+        <EmptyState canEdit={props.canEdit} setShowAddForm={setShowAddForm} display={validMilestones.length === 0 && !showAddForm} />
 
         <AddMilestoneForm
           showAddForm={showAddForm}
