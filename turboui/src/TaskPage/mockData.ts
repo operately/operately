@@ -34,6 +34,7 @@ export const mockTaskPeople: TaskPage.Person[] = timelinePeople.map(p => ({
   id: p.id,
   fullName: p.fullName,
   avatarUrl: p.avatarUrl || null,
+  profileLink: "#",
 }));
 
 // Mock milestone data for TaskPage - sorted by due date (earliest first), with some without due dates
