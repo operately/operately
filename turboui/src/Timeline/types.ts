@@ -66,7 +66,7 @@ export interface TaskTitleActivity {
 
 export interface TaskCreationActivity {
   id: string;
-  type: "task-creation";
+  type: "task_adding";
   author: Person;
   insertedAt: string;
 }

@@ -131,7 +131,7 @@ const mockTaskCreation: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-6",
-    type: "task-creation",
+    type: "task_adding",
     author: mockUser,
     insertedAt: new Date(Date.now() - 86400000).toISOString(), // 1 day ago
   } as TaskActivity,

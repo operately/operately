@@ -36,6 +36,8 @@ export namespace TaskPage {
     link?: string;
   }
 
+  export type TimelineItemType = TimelineItem;
+
   export interface Props {
     // Navigation/Hierarchy
     projectName: string;
@@ -81,9 +83,9 @@ export namespace TaskPage {
     onArchive?: () => void;
 
     // Search functionality for assignees
-    searchPeople?: (params: { query: string }) => Promise<Person[]>;
+    searchPeople: (params: { query: string }) => Promise<Person[]>;
     // Search functionality for rich editor mentions
-    peopleSearch?: SearchFn;
+    peopleSearch: SearchFn;
     // Person lookup for rich content mentions
     mentionedPersonLookup: MentionedPersonLookupFn;
 
