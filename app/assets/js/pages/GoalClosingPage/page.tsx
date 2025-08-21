@@ -12,8 +12,8 @@ export function Page() {
   const { goal } = useLoadedData();
 
   return (
-    <Pages.Page title={"Closing " + goal.name}>
-      <Paper.Root data-testid="goal-closing-page">
+    <Pages.Page title={"Closing " + goal.name} testId="goal-closing-page">
+      <Paper.Root>
         <Navigation />
 
         <Paper.Body minHeight="none">
