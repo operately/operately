@@ -30,14 +30,14 @@ defmodule OperatelyEmail.Mailers.NotificationMailer do
 
     full_assigns = Map.put(email.assigns, :subject, email.subject)
 
-    email = new()
+    swoosh_email = new()
     |> to(email.to)
     |> from(email.from)
     |> subject(email.subject)
     |> html_body(html(template, full_assigns))
     |> text_body(text(template, full_assigns))
 
-    OperatelyEmail.Mailers.BaseMailer.deliver_now(email)
+    OperatelyEmail.Mailers.BaseMailer.deliver_now(swoosh_email)
   end
 
   #
