@@ -120,4 +120,18 @@ export const AllStates: Story = {
   },
 };
 
+export const LongGoalName: Story = {
+  render: () => {
+    const longGoal = { id: "1", name: "Enhance the AI Platform with Advanced Features and Integrations for Better User Experience", link: "#" };
+    return (
+      <Page title="GoalField Long Name Test" size="medium">
+        <div className="p-12 max-w-xs">
+          <Label>Long Goal Name (should truncate)</Label>
+          <Component goal={longGoal} searchGoals={searchGoals} />
+        </div>
+      </Page>
+    );
+  },
+};
+
 const Label = ({ children }) => <div className="font-bold text-xs text-content-dimmed mb-3">{children}</div>;
