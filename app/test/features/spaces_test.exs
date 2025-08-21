@@ -153,4 +153,13 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.visit_space()
     |> Steps.assert_all_goals_and_projects_are_completed_message()
   end
+
+  feature "closed projects are not shown in goals and projects tool", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.given_active_and_closed_projects_exist()
+    |> Steps.visit_space()
+    |> Steps.assert_closed_projects_not_shown_in_goals_and_projects()
+    |> Steps.assert_active_projects_shown_in_goals_and_projects()
+  end
 end
