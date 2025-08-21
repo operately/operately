@@ -3,7 +3,8 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
     Bamboo.Mailer.deliver_now(adapter(), email, config(), [])
   end
 
-  defp adapter do
+  # Public function for testing adapter selection
+  def adapter() do
     cond do
       Application.get_env(:operately, :dev_routes)  -> Bamboo.LocalAdapter
       Application.get_env(:operately, :test_routes) -> Bamboo.TestAdapter
