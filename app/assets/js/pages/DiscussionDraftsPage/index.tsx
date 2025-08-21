@@ -6,12 +6,11 @@ import { PageModule } from "@/routes/types";
 import * as Time from "@/utils/time";
 import * as React from "react";
 
-import { richContentToString } from "@/components/RichContent";
 import { Discussion } from "@/models/discussions";
 import { assertPresent } from "@/utils/assertions";
 import { truncateString } from "@/utils/strings";
 import { createTestId } from "@/utils/testid";
-import { DivLink, PrimaryButton } from "turboui";
+import { DivLink, PrimaryButton, richContentToString } from "turboui";
 
 import FormattedTime from "@/components/FormattedTime";
 import classNames from "classnames";

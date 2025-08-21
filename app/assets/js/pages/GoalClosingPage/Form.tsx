@@ -1,7 +1,6 @@
 import React from "react";
 
 import Forms from "@/components/Forms";
-import { emptyContent } from "@/components/RichContent";
 import * as Goals from "@/models/goals";
 
 import { Options, SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
@@ -10,6 +9,7 @@ import { assertPresent } from "@/utils/assertions";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { emptyContent } from "turboui";
 export function Form() {
   const paths = usePaths();
   const { goal } = useLoadedData();

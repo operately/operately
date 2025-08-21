@@ -4,10 +4,11 @@ import { useNavigate } from "react-router-dom";
 import { ResourceHubFile, useEditResourceHubFile } from "@/models/resourceHubs";
 
 import Forms from "@/components/Forms";
-import { areRichTextObjectsEqual } from "@/components/RichContent";
 import { findNameAndExtension } from "@/features/ResourceHub";
 
 import { usePaths } from "@/routes/paths";
+import { areRichTextObjectsEqual } from "turboui";
+
 export function Form({ file }: { file: ResourceHubFile }) {
   const paths = usePaths();
   const navigate = useNavigate();

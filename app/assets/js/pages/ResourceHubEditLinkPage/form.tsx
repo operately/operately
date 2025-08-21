@@ -7,10 +7,10 @@ import Forms from "@/components/Forms";
 import { assertPresent } from "@/utils/assertions";
 import { isValidURL } from "@/utils/validators";
 
-import { areRichTextObjectsEqual } from "@/components/RichContent";
 import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
+import { areRichTextObjectsEqual } from "turboui";
 export function Form() {
   const paths = usePaths();
   const { link } = useLoadedData();

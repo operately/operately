@@ -24,3 +24,4 @@ export default function RichContent({ content, className, mentionedPersonLookup 
 
 export * from "./contentOps";
 export * from "./Summary";
+export * from "./isContentEmpty";

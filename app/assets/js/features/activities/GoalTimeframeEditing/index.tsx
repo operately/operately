@@ -2,7 +2,7 @@ import * as People from "@/models/people";
 import * as React from "react";
 
 import * as Timeframes from "@/utils/timeframes";
-import { IconArrowRight } from "turboui";
+import { IconArrowRight, isContentEmpty } from "turboui";
 
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 
@@ -10,7 +10,6 @@ import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
 import RichContent from "@/components/RichContent";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ActivityHandler } from "../interfaces";

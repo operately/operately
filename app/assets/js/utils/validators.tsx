@@ -1,5 +1,5 @@
 import * as TipTapEditor from "@/components/Editor";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
+import { isContentEmpty } from "turboui";
 
 export class Validators {
   public static nonEmptyNumber(value: number | null | undefined): boolean {

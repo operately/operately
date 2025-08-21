@@ -5,9 +5,10 @@ import { ResourceHubDocument, useEditResourceHubDocument, usePublishResourceHubD
 
 import Forms from "@/components/Forms";
 import { useFormContext } from "@/components/Forms/FormContext";
-import { areRichTextObjectsEqual } from "@/components/RichContent";
 
 import { usePaths } from "@/routes/paths";
+import { areRichTextObjectsEqual } from "turboui";
+
 export function Form({ document }: { document: ResourceHubDocument }) {
   const paths = usePaths();
   const navigate = useNavigate();

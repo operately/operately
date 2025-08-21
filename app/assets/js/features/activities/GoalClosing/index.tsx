@@ -5,9 +5,8 @@ import { ActivityContentGoalClosing } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 import { Activity } from "@/models/activities";
 
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { usePaths } from "@/routes/paths";
-import { Link, StatusBadge } from "turboui";
+import { isContentEmpty, Link, StatusBadge } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 

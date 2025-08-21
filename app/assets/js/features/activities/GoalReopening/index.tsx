@@ -4,10 +4,9 @@ import * as React from "react";
 import { Activity, ActivityContentGoalClosing } from "@/api";
 
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { isContentEmpty, Link } from "turboui";
 import { ActivityHandler } from "../interfaces";
 
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
 import RichContent, { Summary } from "@/components/RichContent";
