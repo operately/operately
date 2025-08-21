@@ -53,8 +53,8 @@ const CompanyOwnerRemoving: ActivityHandler = {
     return firstName(activity.author!) + " has revoked your account owner status";
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    return content(activity).company!.name!;
   },
 };
 
