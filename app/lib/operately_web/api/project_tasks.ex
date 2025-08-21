@@ -101,6 +101,42 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
   end
 
+  defmodule UpdateName do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :name, :string, null: false
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.update_task_name(inputs.name)
+      |> Steps.save_activity(:task_name_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          task_id: changes.task.id,
+          old_name: changes.task.name,
+          new_name: changes.updated_task.name
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateDueDate do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -360,6 +396,12 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     def update_task_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{due_date: new_due_date})
+      end)
+    end
+
+    def update_task_name(multi, new_name) do
+      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
+        Operately.Tasks.Task.changeset(task, %{name: new_name})
       end)
     end
 

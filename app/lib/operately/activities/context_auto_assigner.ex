@@ -90,6 +90,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "project_reviewer_updating",
     "project_milestone_creation",
     "project_milestone_updating",
+    "task_name_updating",
     "task_status_updating",
     "task_due_date_updating",
     "task_assignee_updating",

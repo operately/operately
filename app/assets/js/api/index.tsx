@@ -827,6 +827,13 @@ export interface ActivityContentTaskNameEditing {
   newName?: string | null;
 }
 
+export interface ActivityContentTaskNameUpdating {
+  project: Project;
+  task: Task;
+  oldName: string;
+  newName: string;
+}
+
 export interface ActivityContentTaskPriorityChange {
   companyId?: string | null;
   spaceId?: string | null;
@@ -3702,6 +3709,15 @@ export interface ProjectTasksUpdateMilestoneResult {
   task: Task;
 }
 
+export interface ProjectTasksUpdateNameInput {
+  taskId: Id;
+  name: string;
+}
+
+export interface ProjectTasksUpdateNameResult {
+  task: Task;
+}
+
 export interface ProjectTasksUpdateStatusInput {
   taskId: Id;
   status: string;
@@ -4658,6 +4674,10 @@ class ApiNamespaceProjectTasks {
 
   async updateMilestone(input: ProjectTasksUpdateMilestoneInput): Promise<ProjectTasksUpdateMilestoneResult> {
     return this.client.post("/project_tasks/update_milestone", input);
+  }
+
+  async updateName(input: ProjectTasksUpdateNameInput): Promise<ProjectTasksUpdateNameResult> {
+    return this.client.post("/project_tasks/update_name", input);
   }
 
   async updateStatus(input: ProjectTasksUpdateStatusInput): Promise<ProjectTasksUpdateStatusResult> {
@@ -7238,6 +7258,12 @@ export default {
     useUpdateMilestone: () =>
       useMutation<ProjectTasksUpdateMilestoneInput, ProjectTasksUpdateMilestoneResult>(
         defaultApiClient.apiNamespaceProjectTasks.updateMilestone,
+      ),
+
+    updateName: (input: ProjectTasksUpdateNameInput) => defaultApiClient.apiNamespaceProjectTasks.updateName(input),
+    useUpdateName: () =>
+      useMutation<ProjectTasksUpdateNameInput, ProjectTasksUpdateNameResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateName,
       ),
 
     create: (input: ProjectTasksCreateInput) => defaultApiClient.apiNamespaceProjectTasks.create(input),
