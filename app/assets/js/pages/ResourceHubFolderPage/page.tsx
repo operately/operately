@@ -47,6 +47,10 @@ export function Options({ folder }: { folder: ResourceHubFolder }) {
   const [showRenameForm, toggleRenameForm] = useBoolState(false);
   const refresh = useRefresh();
 
+  if (!folder.permissions.canRenameFolder) {
+    return null;
+  }
+
   return (
     <>
       <PageOptions.Root testId="options-button">
