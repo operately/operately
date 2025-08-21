@@ -75,19 +75,25 @@ export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) 
 }
 
 export function daysOverdue(milestone: Milestone) {
-  const deadline = +(milestone.timeframe?.contextualEndDate?.date || 0);
-  const now = +Time.today();
-
-  return Math.ceil((now - deadline) / (1000 * 60 * 60 * 24));
+  if (!milestone.timeframe?.contextualEndDate?.date) return 0;
+  
+  const deadline = Time.parse(milestone.timeframe.contextualEndDate.date);
+  if (!deadline) return 0;
+  
+  // If it's today or in the future, not overdue
+  if (Time.isToday(deadline) || Time.isFuture(deadline)) return 0;
+  
+  // Calculate days difference from today
+  return Math.ceil((+Time.today() - +deadline) / (1000 * 60 * 60 * 24));
 }
 
 export function isOverdue(milestone: Milestone) {
   if (!milestone.timeframe?.contextualEndDate?.date) return false;
+  if (isDone(milestone)) return false;
 
-  const deadline = +milestone.timeframe.contextualEndDate.date;
-  const now = +Time.today();
-
-  return !isDone(milestone) && deadline < now;
+  const deadline = Time.parse(milestone.timeframe.contextualEndDate.date);
+  
+  return deadline && !Time.isToday(deadline) && Time.isPast(deadline);
 }
 
 function isDone(milestone: Milestone) {
