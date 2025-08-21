@@ -49,14 +49,20 @@ function Component(props: Partial<TaskPage.Props>) {
     ...restProps,
 
     // Navigation
-    spaceLink: "#",
-    spaceName: "Product",
-    projectLink: "#",
     projectName: props.projectName ?? "Mobile App V2",
-    // Clear legacy milestone props when milestone is null to prevent fallback
-    milestoneLink: "#",
-    milestoneName: milestone ? props.milestoneName ?? "Beta Release" : "",
     workmapLink: "#",
+
+    space: {
+      id: "space-123",
+      name: "Product",
+      link: "#"
+    },
+
+    closedAt: null,
+    updateProjectName: async (name: string) => {
+      console.log("Updating project name:", name);
+      return true;
+    },
 
     // Core data - use local state
     name: name,

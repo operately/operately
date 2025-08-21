@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { createContextualDate } from "../DateField/mockData";
 import { PageNew } from "../Page";
-import { PageHeader } from "../ProjectPage/PageHeader";
+import { PageHeader } from "../ProjectPageLayout/PageHeader";
 import { Tabs, useTabs } from "../Tabs";
 import { mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
