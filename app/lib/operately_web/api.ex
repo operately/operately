@@ -85,6 +85,7 @@ defmodule OperatelyWeb.Api do
 
   namespace(:project_tasks) do
     query(:list, OperatelyWeb.Api.ProjectTasks.List)
+    query(:get_open_task_count, OperatelyWeb.Api.ProjectTasks.GetOpenTaskCount)
 
     mutation(:create, OperatelyWeb.Api.ProjectTasks.Create)
     mutation(:delete, OperatelyWeb.Api.ProjectTasks.Delete)

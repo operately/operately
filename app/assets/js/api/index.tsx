@@ -2545,6 +2545,15 @@ export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
 }
 
+export interface ProjectTasksGetOpenTaskCountInput {
+  id: Id;
+  useTaskId?: boolean;
+}
+
+export interface ProjectTasksGetOpenTaskCountResult {
+  count: number;
+}
+
 export interface ProjectTasksListInput {
   projectId: Id;
 }
@@ -4647,6 +4656,10 @@ class ApiNamespaceProjectDiscussions {
 
 class ApiNamespaceProjectTasks {
   constructor(private client: ApiClient) {}
+
+  async getOpenTaskCount(input: ProjectTasksGetOpenTaskCountInput): Promise<ProjectTasksGetOpenTaskCountResult> {
+    return this.client.get("/project_tasks/get_open_task_count", input);
+  }
 
   async list(input: ProjectTasksListInput): Promise<ProjectTasksListResult> {
     return this.client.get("/project_tasks/list", input);
@@ -7242,6 +7255,13 @@ export default {
   },
 
   project_tasks: {
+    getOpenTaskCount: (input: ProjectTasksGetOpenTaskCountInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.getOpenTaskCount(input),
+    useGetOpenTaskCount: (input: ProjectTasksGetOpenTaskCountInput) =>
+      useQuery<ProjectTasksGetOpenTaskCountResult>(() =>
+        defaultApiClient.apiNamespaceProjectTasks.getOpenTaskCount(input),
+      ),
+
     list: (input: ProjectTasksListInput) => defaultApiClient.apiNamespaceProjectTasks.list(input),
     useList: (input: ProjectTasksListInput) =>
       useQuery<ProjectTasksListResult>(() => defaultApiClient.apiNamespaceProjectTasks.list(input)),

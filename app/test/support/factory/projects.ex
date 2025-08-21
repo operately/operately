@@ -303,11 +303,21 @@ defmodule Operately.Support.Factory.Projects do
   end
 
   def add_project_task(ctx, testid, milestone_name, opts \\ []) do
-    milestone = Map.fetch!(ctx, milestone_name)
+    # To add a task without milestone,
+    # set milestone_name to nil and include project_id in opts
+    {milestone_id, project_id} =
+      if milestone_name do
+        m = Map.fetch!(ctx, milestone_name)
+        {m.id, m.project_id}
+      else
+        project_id = Keyword.get(opts, :project_id)
+        {nil, project_id}
+      end
+
     attrs = Enum.into(opts, %{
       creator_id: ctx.creator.id,
-      milestone_id: milestone.id,
-      project_id: milestone.project_id,
+      milestone_id: milestone_id,
+      project_id: project_id,
       title: Keyword.get(opts, :title, "Task #{testid}")
     })
 
