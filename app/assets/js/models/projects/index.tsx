@@ -28,7 +28,7 @@ export {
   useUpdateProjectDescription,
 } from "@/api";
 
-export function isOverdue(project: Project) {
+export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");
 
   const deadline = Time.parse(project.timeframe.contextualEndDate?.date);
