@@ -78,27 +78,6 @@ function DetailsSection({ target, editing }) {
 }
 
 function NameField({ editing, target }: { target: Target; editing: boolean }) {
-  const [shouldAutoFocus, setShouldAutoFocus] = React.useState(false);
-
-  // Track when editing transitions from false to true
-  React.useEffect(() => {
-    if (editing) {
-      setShouldAutoFocus(true);
-    } else {
-      setShouldAutoFocus(false);
-    }
-  }, [editing]);
-
-  // Reset auto-focus after it's been applied
-  React.useEffect(() => {
-    if (shouldAutoFocus) {
-      const timer = setTimeout(() => {
-        setShouldAutoFocus(false);
-      }, 100); // Brief delay to ensure the input is rendered and focused
-      return () => clearTimeout(timer);
-    }
-  }, [shouldAutoFocus]);
-
   if (!editing) {
     return <div className="font-medium truncate">{target.name}</div>;
   } else {
@@ -109,7 +88,6 @@ function NameField({ editing, target }: { target: Target; editing: boolean }) {
           field="name"
           testid="target-input-name"
           placeholder="e.g. Average Onboarding Time is twice as fast"
-          autoFocus={shouldAutoFocus}
         />
       </div>
     );

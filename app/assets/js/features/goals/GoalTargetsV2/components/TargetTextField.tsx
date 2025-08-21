@@ -11,10 +11,9 @@ interface Props {
   testid: string;
   placeholder: string;
   label?: string;
-  autoFocus?: boolean;
 }
 
-export function TargetTextField({ target, field, testid, placeholder, label, autoFocus }: Props) {
+export function TargetTextField({ target, field, testid, placeholder, label }: Props) {
   const { editTextValue } = useTargetsContext();
   const value = React.useMemo(() => target[field]?.toString() || "", [target]);
   const isError = useTargetError(target, field);
@@ -41,7 +40,6 @@ export function TargetTextField({ target, field, testid, placeholder, label, aut
         onChange={handleChange}
         onKeyDown={handleKeyDown}
         error={Boolean(isError)}
-        autoFocus={autoFocus}
       />
     </div>
   );
