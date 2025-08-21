@@ -74,10 +74,11 @@ defmodule Operately.Support.Features.ResourceHubFolderSteps do
 
   step :rename_folder_from_page_header, ctx, attrs do
     ctx
-    |> UI.click(testid: "folder-name-field")
-    |> UI.fill(testid: "folder-name-field-input", with: attrs.new_name)
-    |> UI.send_keys(:enter)
-    |> UI.refute_has(testid: "folder-name-field-input")
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "rename-folder")
+    |> UI.fill(testid: "new-folder-name", with: attrs.new_name)
+    |> UI.click(testid: "submit")
+    |> UI.sleep(100)
   end
 
   step :assert_page_title, ctx, title do

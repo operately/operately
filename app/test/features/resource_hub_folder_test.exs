@@ -103,7 +103,6 @@ defmodule Operately.Features.ResourceHubFolderTest do
       |> Steps.rename_folder_from_page_header(attrs)
       |> Steps.assert_page_title(attrs.new_name)
     end
-    end
   end
 
   describe "Delete" do
