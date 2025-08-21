@@ -53,14 +53,9 @@ defmodule Operately.Ai.AgentConvoWorker do
   end
 
   def build_context(conversation) do
-    base_context = %{person: conversation.author}
-    
-    # Add project_id to context if this conversation is about a project
-    if conversation.project_id do
-      Map.put(base_context, :project_id, OperatelyWeb.Api.Helpers.encode_id(conversation.project_id))
-    else
-      base_context
-    end
+    %{
+      person: conversation.author
+    }
   end
 
   def save_response(chain, message) do

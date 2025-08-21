@@ -32,7 +32,7 @@ defmodule Operately.People.AgentConvo do
 
   def changeset(agent_convo, attrs) do
     agent_convo
-    |> cast(attrs, [:author_id, :title, :goal_id, :project_id])
+    |> cast(attrs, [:author_id, :title, :goal_id])
     |> validate_required([:author_id])
     |> assoc_constraint(:author)
   end
