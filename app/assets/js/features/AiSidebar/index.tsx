@@ -2,6 +2,7 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 
 import Api, { AgentConversation, AgentMessage } from "@/api";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
 import { useNewAgentMessageSignal } from "../../signals";
@@ -35,6 +36,7 @@ export function AiSidebar() {
 
 function AiSidebarElements() {
   const state = useSidebarState();
+  const me = useMe();
 
   return (
     <>
@@ -57,6 +59,7 @@ function AiSidebarElements() {
         onSendMessage={state.sendMessage}
         contextActions={state.actions}
         contextAttachment={state.conversationContext!}
+        me={me}
         maxWidth={1000}
       />
     </>
