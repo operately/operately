@@ -5,7 +5,6 @@ defmodule Operately.FeatureCase do
     quote do
       use ExUnit.Case, async: false
       use Wallaby.Feature
-      use Swoosh.TestAssertions
 
       import Operately.FeatureSteps
 
