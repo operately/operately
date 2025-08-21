@@ -55,20 +55,20 @@ defmodule Operately.Goals.Target do
 
     cond do
       from == to ->
-        100
+        0
 
       from < to ->
         cond do
           current > to -> 100
           current < from -> 0
-          true -> (from - current) / (from - to) * 100
+          true -> (current - from) / (to - from) * 100
         end
 
       from > to ->
         cond do
           current < to -> 100
           current > from -> 0
-          true -> (to - current) / (to - from) * 100
+          true -> (from - current) / (from - to) * 100
         end
     end
   end

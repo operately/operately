@@ -496,12 +496,14 @@ function calculateProgress(target: GoalTargetList.Target, clamped = true): numbe
   const value = target.value!;
 
   let percentage: number;
-  if (from < to) {
+  if (from === to) {
+    percentage = 0; // If from and to are equal, progress is 0%
+  } else if (from < to) {
     percentage = ((value - from) / (to - from)) * 100;
   } else if (from > to) {
     percentage = ((from - value) / (from - to)) * 100;
   } else {
-    percentage = 100; // If from and to are equal, progress is 100%
+    percentage = 0; // Fallback case
   }
 
   if (clamped) {
