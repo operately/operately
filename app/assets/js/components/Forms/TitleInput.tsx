@@ -7,8 +7,8 @@ import { useValidation } from "./validations/hook";
 import { validatePresence } from "./validations/presence";
 import { validateTextLength } from "./validations/textLength";
 
-import { useFieldValue, useFieldError } from "./FormContext";
 import { createTestId } from "@/utils/testid";
+import { useFieldError, useFieldValue } from "./FormContext";
 
 interface StyleOptions {
   fontBold?: boolean;
@@ -64,9 +64,11 @@ export function TitleInput(props: TitleInputProps) {
       // Use setTimeout to ensure the component is fully mounted and visible
       const timer = setTimeout(() => {
         textareaRef.current?.focus();
-      }, 0);
-      
+      }, 10);
+
       return () => clearTimeout(timer);
+    } else {
+      return () => {};
     }
   }, [props.autoFocus, props.readonly]);
 
