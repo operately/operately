@@ -344,6 +344,13 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_name, :string, null: true
   end
 
+  object :activity_content_task_milestone_updating do
+    field :project, :project, null: false
+    field :task, :task, null: true
+    field :old_milestone, :milestone, null: true
+    field :new_milestone, :milestone, null: true
+  end
+
   object :activity_content_task_priority_change do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true

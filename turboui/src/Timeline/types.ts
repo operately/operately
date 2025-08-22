@@ -23,7 +23,7 @@ export interface TaskStatusChangeActivity {
 
 export interface TaskMilestoneActivity {
   id: string;
-  type: "task-milestone";
+  type: "task_milestone_updating";
   author: Person;
   insertedAt: string;
   milestone: Milestone;
@@ -78,9 +78,9 @@ export type TaskPriority = "low" | "normal" | "high" | "urgent";
 
 export interface Milestone {
   id: string;
-  title: string;
-  dueDate?: string;
-  status: "pending" | "complete";
+  name: string;
+  dueDate: DateField.ContextualDate | null;
+  status: "pending" | "done";
 }
 
 export interface Task {

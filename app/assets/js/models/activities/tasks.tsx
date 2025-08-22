@@ -3,6 +3,7 @@ import {
   ActivityContentTaskNameUpdating,
   ActivityContentTaskAssigneeUpdating,
   ActivityContentTaskDueDateUpdating,
+  ActivityContentTaskMilestoneUpdating,
 } from "@/api";
 import {
   TaskCreationActivity,
@@ -10,10 +11,12 @@ import {
   TaskDescriptionActivity,
   TaskAssignmentActivity,
   TaskDueDateActivity,
+  TaskMilestoneActivity,
 } from "turboui";
 import { parsePersonForTurboUi } from "../people";
-import { Paths } from "@/routes/paths";
+import { compareIds, Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
+import { parseMilestoneForTurboUi } from "../milestones";
 
 export const SUPPORTED_ACTIVITY_TYPES = [
   "task_adding",
@@ -21,6 +24,7 @@ export const SUPPORTED_ACTIVITY_TYPES = [
   "task_description_change",
   "task_assignee_updating",
   "task_due_date_updating",
+  "task_milestone_updating",
 ];
 
 type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
@@ -54,6 +58,13 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
         author!,
         activity,
         activity.content as ActivityContentTaskDueDateUpdating,
+      );
+    case "task_milestone_updating":
+      return parseTaskMilestoneUpdatingActivity(
+        paths,
+        author!,
+        activity,
+        activity.content as ActivityContentTaskMilestoneUpdating,
       );
     default:
       return null;
@@ -122,5 +133,27 @@ function parseTaskDueDateUpdatingActivity(
     insertedAt: activity.insertedAt,
     fromDueDate: parseContextualDate(content.oldDueDate),
     toDueDate: parseContextualDate(content.newDueDate),
+  };
+}
+
+function parseTaskMilestoneUpdatingActivity(
+  paths: Paths,
+  author: TurboUiPerson,
+  activity: Activity,
+  content: ActivityContentTaskMilestoneUpdating,
+): TaskMilestoneActivity | null {
+  if (compareIds(content.newMilestone?.id, content.oldMilestone?.id)) {
+    return null;
+  }
+
+  return {
+    id: activity.id,
+    type: "task_milestone_updating",
+    author,
+    insertedAt: activity.insertedAt,
+    milestone: content.newMilestone
+      ? parseMilestoneForTurboUi(paths, content.newMilestone)
+      : parseMilestoneForTurboUi(paths, content.oldMilestone!),
+    action: content.newMilestone ? "attached" : "detached",
   };
 }

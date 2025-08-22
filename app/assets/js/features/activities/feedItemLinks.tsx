@@ -81,6 +81,14 @@ export const linkLink = (link: api.ResourceHubLink) => {
   return <Link to={path}>{name}</Link>;
 };
 
+export const milestoneLink = (milestone: api.Milestone) => {
+  const paths = usePaths();
+  const path = paths.projectMilestonePath(milestone.id!);
+  const name = milestone.title;
+
+  return <Link to={path}>{name}</Link>;
+};
+
 export const taskLink = (task: api.Task, taskName?: string) => {
   const paths = usePaths();
   const path = paths.taskPath(task.id);

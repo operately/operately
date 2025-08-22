@@ -90,13 +90,17 @@ const mockMilestoneAttachment: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-3",
-    type: "task-milestone",
+    type: "task_milestone_updating",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
     milestone: {
       id: "milestone-1",
-      title: "Beta Release",
-      dueDate: "2024-02-15",
+      name: "Beta Release",
+      dueDate: {
+        date: new Date("2024-02-15"),
+        dateType: "day",
+        value: "Feb 15, 2024",
+      },
       status: "pending",
     },
     action: "attached",
