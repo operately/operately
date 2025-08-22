@@ -64,7 +64,7 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
       return <IconUserPlus {...iconProps} className="text-blue-500" />;
     case "task-status-change":
       return getStatusIcon(activity.toStatus);
-    case "task-milestone":
+    case "task_milestone_updating":
       return activity.action === "attached" ? (
         <IconFlag {...iconProps} className="text-green-500" />
       ) : (
@@ -149,19 +149,19 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
         </span>
       );
 
-    case "task-milestone":
+    case "task_milestone_updating":
       if (activity.action === "attached") {
         return (
           <span className="text-content-dimmed">
             attached this task to milestone{" "}
-            <span className="font-medium text-content-dimmed">{activity.milestone.title}</span>
+            <span className="font-medium text-content-dimmed">{activity.milestone.name}</span>
           </span>
         );
       } else {
         return (
           <span className="text-content-dimmed">
             detached this task from milestone{" "}
-            <span className="font-medium text-content-dimmed">{activity.milestone.title}</span>
+            <span className="font-medium text-content-dimmed">{activity.milestone.name}</span>
           </span>
         );
       }
