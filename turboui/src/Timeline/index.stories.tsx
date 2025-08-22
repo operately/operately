@@ -66,7 +66,7 @@ const mockTaskAssignment: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-1",
-    type: "task-assignment",
+    type: "task_assignee_updating",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
     assignee: mockAssignee,

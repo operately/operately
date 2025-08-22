@@ -229,7 +229,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id)
+      |> Steps.find_task(inputs.task_id, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_assignee(inputs.assignee_id)
       |> Steps.save_activity(:task_assignee_updating, fn changes ->
@@ -389,9 +389,11 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
-    def find_task(multi, task_id) do
+    def find_task(multi, task_id, preloads \\ []) do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
-        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
+        preloads = [:project] ++ preloads
+
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: preloads]) do
           {:ok, task} -> {:ok, task}
           {:error, _} -> {:error, {:not_found, "Task not found"}}
         end
@@ -499,7 +501,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         end
 
         # Return the updated task with preloaded assignees
-        updated_task = Operately.Repo.preload(task, :assigned_people)
+        updated_task = Operately.Repo.preload(task, :assigned_people, force: true)
 
         {:ok, updated_task}
       end)

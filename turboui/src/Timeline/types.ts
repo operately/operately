@@ -3,7 +3,7 @@ import { Person, Comment, CommentActivity } from "../CommentSection/types";
 // Task-specific activity types
 export interface TaskAssignmentActivity {
   id: string;
-  type: "task-assignment";
+  type: "task_assignee_updating";
   author: Person;
   insertedAt: string;
   assignee: Person;
