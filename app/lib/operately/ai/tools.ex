@@ -8,6 +8,7 @@ defmodule Operately.AI.Tools do
 
   defdelegate work_map(), to: Operately.AI.Tools.WorkMap
   defdelegate get_goal_details(), to: Operately.AI.Tools.GetGoalDetails
+  defdelegate get_project_details(), to: Operately.AI.Tools.GetProjectDetails
 
   def add_agent_task do
     Base.new_tool(%{
