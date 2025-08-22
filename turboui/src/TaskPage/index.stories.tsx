@@ -50,6 +50,7 @@ function Component(props: Partial<TaskPage.Props>) {
 
     // Navigation
     projectName: props.projectName ?? "Mobile App V2",
+    projectStatus: props.projectStatus ?? "on_track",
     projectLink: "#",
     workmapLink: "#",
 
