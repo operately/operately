@@ -62,14 +62,14 @@ function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoa
   const refresh = useRefresh();
   const [ack] = ProjectCheckIns.useAcknowledgeProjectCheckIn();
 
-  const handleAck = async () => {
+  const handleAck = React.useCallback(async () => {
     if (checkIn.acknowledgedAt) return;
     if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return;
 
     await ack({ id: checkIn.id });
 
     refresh();
-  };
+  }, [checkIn.acknowledgedAt, checkIn.project?.permissions?.canAcknowledgeCheckIn, checkIn.id, ack, refresh]);
 
   //
   // If the user navigated to this page with ?acknowledge=true, acknowledge the check-in
@@ -79,7 +79,7 @@ function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoa
     if (ackOnLoad) {
       handleAck();
     }
-  }, []);
+  }, [ackOnLoad, handleAck]);
 
   return handleAck;
 }
