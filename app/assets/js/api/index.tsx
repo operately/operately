@@ -1949,7 +1949,10 @@ export interface AiGetConversationMessagesResult {
   messages: AgentMessage[];
 }
 
-export interface AiGetConversationsInput {}
+export interface AiGetConversationsInput {
+  contextType?: string;
+  contextId?: Id;
+}
 
 export interface AiGetConversationsResult {
   conversations: AgentConversation[];
