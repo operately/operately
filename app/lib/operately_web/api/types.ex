@@ -187,9 +187,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_company_owner_removing do
-    field? :company_id, :string, null: true
-    field? :person_id, :string, null: true
-    field? :person, :person, null: true
+    field :company, :company, null: false
+    field :person, :person, null: true
   end
 
   object :activity_content_space_added do
