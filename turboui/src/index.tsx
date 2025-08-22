@@ -20,6 +20,7 @@ export * from "./WorkMap";
 import RichContent from "./RichContent";
 
 export { InfoCallout } from "./Callouts";
+export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
 export { Conversations, useConversations } from "./Conversations";
 export { DateField } from "./DateField";
