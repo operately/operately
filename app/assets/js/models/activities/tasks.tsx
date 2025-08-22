@@ -4,6 +4,7 @@ import {
   ActivityContentTaskAssigneeUpdating,
   ActivityContentTaskDueDateUpdating,
   ActivityContentTaskMilestoneUpdating,
+  ActivityContentTaskStatusUpdating,
 } from "@/api";
 import {
   TaskCreationActivity,
@@ -12,11 +13,13 @@ import {
   TaskAssignmentActivity,
   TaskDueDateActivity,
   TaskMilestoneActivity,
+  TaskStatusChangeActivity,
 } from "turboui";
 import { parsePersonForTurboUi } from "../people";
 import { compareIds, Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 import { parseMilestoneForTurboUi } from "../milestones";
+import { parseTaskStatus } from "../tasks";
 
 export const SUPPORTED_ACTIVITY_TYPES = [
   "task_adding",
@@ -25,6 +28,7 @@ export const SUPPORTED_ACTIVITY_TYPES = [
   "task_assignee_updating",
   "task_due_date_updating",
   "task_milestone_updating",
+  "task_status_updating",
 ];
 
 type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
@@ -66,6 +70,8 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
         activity,
         activity.content as ActivityContentTaskMilestoneUpdating,
       );
+    case "task_status_updating":
+      return parseTaskStatusUpdatingActivity(author!, activity, activity.content as ActivityContentTaskStatusUpdating);
     default:
       return null;
   }
@@ -155,5 +161,20 @@ function parseTaskMilestoneUpdatingActivity(
       ? parseMilestoneForTurboUi(paths, content.newMilestone)
       : parseMilestoneForTurboUi(paths, content.oldMilestone!),
     action: content.newMilestone ? "attached" : "detached",
+  };
+}
+
+function parseTaskStatusUpdatingActivity(
+  author: TurboUiPerson,
+  activity: Activity,
+  content: ActivityContentTaskStatusUpdating,
+): TaskStatusChangeActivity {
+  return {
+    id: activity.id,
+    type: "task_status_updating",
+    author,
+    insertedAt: activity.insertedAt,
+    fromStatus: parseTaskStatus(content.oldStatus),
+    toStatus: parseTaskStatus(content.newStatus),
   };
 }

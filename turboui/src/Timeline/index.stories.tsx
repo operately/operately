@@ -78,7 +78,7 @@ const mockStatusChange: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-2",
-    type: "task-status-change",
+    type: "task_status_updating",
     author: mockUser,
     insertedAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
     fromStatus: "todo",
