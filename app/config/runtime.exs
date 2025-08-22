@@ -29,6 +29,12 @@ config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABL
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "local")
 
+# Sentry configuration for backend error reporting
+# SENTRY_DSN - DSN URL for streaming backend errors (including background jobs) to Sentry
+if System.get_env("SENTRY_DSN") do
+  config :sentry, dsn: System.get_env("SENTRY_DSN")
+end
+
 config :operately, :allow_login_with_email, System.get_env("ALLOW_LOGIN_WITH_EMAIL", "no") == "yes"
 config :operately, :allow_signup_with_email, System.get_env("ALLOW_SIGNUP_WITH_EMAIL", "no") == "yes"
 config :operately, :require_email_verification, System.get_env("REQUIRE_EMAIL_VERIFICATION", "no") == "yes"
