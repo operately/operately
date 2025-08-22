@@ -1,5 +1,6 @@
 import { DateField } from "../DateField";
 import { Person, Comment, CommentActivity } from "../CommentSection/types";
+import { Status } from "../TaskBoard/types";
 
 // Task-specific activity types
 export interface TaskAssignmentActivity {
@@ -13,12 +14,12 @@ export interface TaskAssignmentActivity {
 
 export interface TaskStatusChangeActivity {
   id: string;
-  type: "task-status-change";
+  type: "task_status_updating";
   author: Person;
   insertedAt: string;
-  fromStatus: TaskStatus;
-  toStatus: TaskStatus;
-  task?: Task; // Optional for backward compatibility
+  fromStatus: Status;
+  toStatus: Status;
+  task?: Task;
 }
 
 export interface TaskMilestoneActivity {
@@ -73,7 +74,6 @@ export interface TaskCreationActivity {
 }
 
 // Supporting types
-export type TaskStatus = "todo" | "in_progress" | "done";
 export type TaskPriority = "low" | "normal" | "high" | "urgent";
 
 export interface Milestone {
@@ -86,7 +86,7 @@ export interface Milestone {
 export interface Task {
   id: string;
   title: string;
-  status?: TaskStatus;
+  status?: Status;
 }
 
 // Union type for all activities
