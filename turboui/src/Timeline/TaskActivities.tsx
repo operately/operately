@@ -75,9 +75,9 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
       ) : (
         <IconCalendarMinus {...iconProps} className="text-orange-500" />
       );
-    case "task-description":
+    case "task_description_change":
       return <IconFileText {...iconProps} className="text-purple-500" />;
-    case "task-title":
+    case "task_name_updating":
       return <IconEdit {...iconProps} className="text-gray-500" />;
     case "task_adding":
       return <IconPlus {...iconProps} className="text-green-500" />;
@@ -193,14 +193,14 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
       }
       return <span className="text-content-dimmed">updated due date</span>;
 
-    case "task-description":
+    case "task_description_change":
       return (
         <span className="text-content-dimmed">
           {activity.hasContent ? "updated the description" : "removed the description"}
         </span>
       );
 
-    case "task-title":
+    case "task_name_updating":
       return (
         <span className="text-content-dimmed">
           changed title from <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
