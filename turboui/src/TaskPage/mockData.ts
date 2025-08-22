@@ -223,7 +223,7 @@ export function createActiveTaskTimeline(): TimelineItemType[] {
       toStatus: "in_progress",
     }), // 2 hours ago
     createTaskActivity("task_assignee_updating", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
-    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, {
+    createTaskActivity("task_milestone_updating", alice, 4 * 60 * 60 * 1000, {
       milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
       action: "attached",
     }),

@@ -131,6 +131,7 @@ export const DISPLAYED_IN_FEED = [
   "task_description_change",
   "task_due_date_updating",
   "task_assignee_updating",
+  "task_milestone_updating",
   "resource_hub_document_created",
   "resource_hub_document_edited",
   "resource_hub_document_commented",
@@ -205,6 +206,7 @@ import TaskDescriptionChange from "@/features/activities/TaskDescriptionChange";
 import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
 import TaskDeleting from "@/features/activities/TaskDeleting";
 import TaskAssigneeUpdating from "@/features/activities/TaskAssigneeUpdating";
+import TaskMilestoneUpdating from "@/features/activities/TaskMilestoneUpdating";
 import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
 import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
 import ProjectKeyResourceAdded from "@/features/activities/ProjectKeyResourceAdded";
@@ -339,6 +341,7 @@ function handler(activity: Activity) {
     .with("task_description_change", () => TaskDescriptionChange)
     .with("task_due_date_updating", () => TaskDueDateUpdating)
     .with("task_assignee_updating", () => TaskAssigneeUpdating)
+    .with("task_milestone_updating", () => TaskMilestoneUpdating)
     .with("project_champion_updating", () => ProjectChampionUpdating)
     .with("project_due_date_updating", () => ProjectDueDateUpdating)
     .with("project_reviewer_updating", () => ProjectReviewerUpdating)
