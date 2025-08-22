@@ -59,7 +59,7 @@ export function Form() {
   return (
     <Forms.Form form={form}>
       <Forms.FieldGroup>
-        <Forms.TitleInput field="title" placeholder="Title..." />
+        <Forms.TitleInput field="title" placeholder="Title..." autoFocus />
 
         <Forms.RichTextArea
           field="content"
