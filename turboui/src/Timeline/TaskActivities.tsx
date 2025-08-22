@@ -18,6 +18,7 @@ import {
 } from "../icons";
 import { TaskActivityProps, TaskActivity } from "./types";
 import { DateField } from "../DateField";
+import { capitalizeFirstLetter } from "../utils/strings";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
@@ -62,7 +63,7 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
   switch (activity.type) {
     case "task_assignee_updating":
       return <IconUserPlus {...iconProps} className="text-blue-500" />;
-    case "task-status-change":
+    case "task_status_updating":
       return getStatusIcon(activity.toStatus);
     case "task_milestone_updating":
       return activity.action === "attached" ? (
@@ -140,7 +141,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
         );
       }
 
-    case "task-status-change":
+    case "task_status_updating":
       return (
         <span className="text-content-dimmed">
           changed status{activity.task ? ` of "${activity.task.title}"` : ""} from{" "}
@@ -226,6 +227,6 @@ function formatStatus(status: string): string {
     case "done":
       return "Done";
     default:
-      return status;
+      return capitalizeFirstLetter(status);
   }
 }

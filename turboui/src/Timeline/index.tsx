@@ -12,7 +12,6 @@ export type {
   TaskDescriptionActivity,
   TaskTitleActivity,
   TaskCreationActivity,
-  TaskStatus,
   TaskPriority,
   Milestone,
   TimelineItem as TimelineItemType,

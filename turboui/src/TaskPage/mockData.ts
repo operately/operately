@@ -218,7 +218,7 @@ export function createActiveTaskTimeline(): TimelineItemType[] {
       "I've started working on the login component. Should have a first version ready by tomorrow.",
       30 * 60 * 1000,
     ), // 30 min ago
-    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, {
+    createTaskActivity("task_status_updating", alice, 2 * 60 * 60 * 1000, {
       fromStatus: "not_started",
       toStatus: "in_progress",
     }), // 2 hours ago
@@ -241,7 +241,7 @@ export function createMinimalTaskTimeline(): TimelineItemType[] {
 export function createCompletedTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "Great work everyone! This turned out really well.", 30 * 60 * 1000),
-    createTaskActivity("task-status-change", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
+    createTaskActivity("task_status_updating", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
     createComment(bob, "All tests are passing and the feature is ready for release!", 2 * 60 * 60 * 1000),
     createComment(charlie, "The design looks perfect. Nice work on the animations!", 4 * 60 * 60 * 1000),
     createTaskActivity("task_assignee_updating", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
@@ -279,7 +279,7 @@ export function createLongContentTimeline(): TimelineItemType[] {
       4 * 60 * 60 * 1000,
     ),
     createTaskActivity("task_description_change", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
-    createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
+    createTaskActivity("task_status_updating", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
     createTaskActivity("task_assignee_updating", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
     createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000),
   ];
