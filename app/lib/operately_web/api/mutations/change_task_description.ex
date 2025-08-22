@@ -8,8 +8,8 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescription do
   alias Operately.Repo
 
   inputs do
-    field? :task_id, :string, null: true
-    field? :description, :string, null: true
+    field :task_id, :id, null: false
+    field :description, :json, null: false
   end
 
   outputs do
@@ -18,16 +18,14 @@ defmodule OperatelyWeb.Api.Mutations.ChangeTaskDescription do
 
   def call(conn, inputs) do
     author = me(conn)
-    {:ok, task_id} = decode_id(inputs.task_id)
 
-    case load_task(author, task_id) do
+    case load_task(author, inputs.task_id) do
       nil ->
-        query(task_id)
+        query(inputs.task_id)
         |> forbidden_or_not_found(author.id, join_parent: :project)
 
       task ->
-        description = inputs.description && Jason.decode!(inputs.description)
-        {:ok, task} = Operately.Operations.TaskDescriptionChange.run(author, task, description)
+        {:ok, task} = Operately.Operations.TaskDescriptionChange.run(author, task, inputs.description)
 
         {:ok, %{task: Serializer.serialize(task, level: :essential)}}
     end
