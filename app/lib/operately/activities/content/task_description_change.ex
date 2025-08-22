@@ -9,6 +9,7 @@ defmodule Operately.Activities.Content.TaskDescriptionChange do
 
     field :task_name, :string
     field :project_name, :string
+    field :has_description, :boolean
   end
 
   def changeset(attrs) do

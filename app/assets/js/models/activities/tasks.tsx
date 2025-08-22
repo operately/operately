@@ -5,6 +5,7 @@ import {
   ActivityContentTaskDueDateUpdating,
   ActivityContentTaskMilestoneUpdating,
   ActivityContentTaskStatusUpdating,
+  ActivityContentTaskDescriptionChange,
 } from "@/api";
 import {
   TaskCreationActivity,
@@ -49,7 +50,11 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
     case "task_name_updating":
       return parseTaskNameUpdatingActivity(author!, activity, activity.content as ActivityContentTaskNameUpdating);
     case "task_description_change":
-      return parseTaskDescriptionChangeActivity(author!, activity);
+      return parseTaskDescriptionChangeActivity(
+        author!,
+        activity,
+        activity.content as ActivityContentTaskDescriptionChange,
+      );
     case "task_assignee_updating":
       return parseTaskAssigneeUpdatingActivity(
         paths,
@@ -101,13 +106,17 @@ function parseTaskNameUpdatingActivity(
   };
 }
 
-function parseTaskDescriptionChangeActivity(author: TurboUiPerson, activity: Activity): TaskDescriptionActivity {
+function parseTaskDescriptionChangeActivity(
+  author: TurboUiPerson,
+  activity: Activity,
+  content: ActivityContentTaskDescriptionChange,
+): TaskDescriptionActivity {
   return {
     id: activity.id,
     type: "task_description_change",
     author,
     insertedAt: activity.insertedAt,
-    hasContent: true,
+    hasContent: content.hasDescription,
   };
 }
 
