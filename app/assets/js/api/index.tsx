@@ -792,6 +792,13 @@ export interface ActivityContentTaskAssigneeAssignment {
   personId?: string | null;
 }
 
+export interface ActivityContentTaskAssigneeUpdating {
+  project: Project;
+  task: Task;
+  oldAssignee: Person;
+  newAssignee: Person;
+}
+
 export interface ActivityContentTaskClosing {
   companyId?: string | null;
   spaceId?: string | null;

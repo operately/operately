@@ -1,9 +1,9 @@
-import { Activity, ActivityContentTaskNameUpdating } from "@/api";
-import { TaskCreationActivity, TaskTitleActivity, TaskDescriptionActivity } from "turboui";
+import { Activity, ActivityContentTaskNameUpdating, ActivityContentTaskAssigneeUpdating } from "@/api";
+import { TaskCreationActivity, TaskTitleActivity, TaskDescriptionActivity, TaskAssignmentActivity } from "turboui";
 import { parsePersonForTurboUi } from "../people";
 import { Paths } from "@/routes/paths";
 
-export const SUPPORTED_ACTIVITY_TYPES = ["task_adding", "task_name_updating", "task_description_change"];
+export const SUPPORTED_ACTIVITY_TYPES = ["task_adding", "task_name_updating", "task_description_change", "task_assignee_updating"];
 
 type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
 
@@ -23,10 +23,9 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
     case "task_name_updating":
       return parseTaskNameUpdatingActivity(author!, activity, activity.content as ActivityContentTaskNameUpdating);
     case "task_description_change":
-      return parseTaskDescriptionChangeActivity(
-        author!,
-        activity,
-      );
+      return parseTaskDescriptionChangeActivity(author!, activity);
+    case "task_assignee_updating":
+      return parseTaskAssigneeUpdatingActivity(paths, author!, activity, activity.content as ActivityContentTaskAssigneeUpdating);
     default:
       return null;
   }
@@ -66,5 +65,21 @@ function parseTaskDescriptionChangeActivity(
     author,
     insertedAt: activity.insertedAt,
     hasContent: true,
+  };
+}
+
+function parseTaskAssigneeUpdatingActivity(
+  paths: Paths,
+  author: TurboUiPerson,
+  activity: Activity,
+  content: ActivityContentTaskAssigneeUpdating,
+): TaskAssignmentActivity {
+  return {
+    id: activity.id,
+    type: "task_assignee_updating",
+    author,
+    insertedAt: activity.insertedAt,
+    assignee: parsePersonForTurboUi(paths, content.newAssignee || content.oldAssignee)!,
+    action: content.newAssignee ? "assigned" : "unassigned",
   };
 }
