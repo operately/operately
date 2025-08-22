@@ -5,7 +5,6 @@ defmodule Operately.FeatureCase do
     quote do
       use ExUnit.Case, async: false
       use Wallaby.Feature
-      use Bamboo.Test, shared: true
 
       import Operately.FeatureSteps
 

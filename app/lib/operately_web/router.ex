@@ -78,7 +78,8 @@ defmodule OperatelyWeb.Router do
 
   if Application.compile_env(:operately, :dev_routes) do
     scope "/" do
-      forward "/sent_emails", Bamboo.SentEmailViewerPlug
+      pipe_through :browser
+      forward "/dev/mailbox", Plug.Swoosh.MailboxPreview
     end
   end
 

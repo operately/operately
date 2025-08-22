@@ -37,12 +37,33 @@ defmodule Operately.Support.Features.UI.Emails do
   end
 
   def list_sent_emails do
+    # Swoosh Test adapter doesn't have a get_sent_emails() function
+    # Instead, it sends emails as messages to the test process
+    # We need to collect all these messages from the process mailbox
+    
+    # Get current process mailbox messages
     {:messages, messages} = Process.info(self(), :messages)
-
-    messages
-    |> Enum.filter(fn m -> match?({:delivered_email, _}, m) end)
-    |> Enum.map(fn {:delivered_email, email} -> email end)
-    |> SentEmails.new()
+    
+    # Extract emails from messages - Swoosh uses different patterns than Bamboo
+    emails = messages
+    |> Enum.reduce([], fn message, acc ->
+         case message do
+           # Swoosh typically sends messages in this format to the test process
+           {:email, email} when is_struct(email, Swoosh.Email) ->
+             [email | acc]
+           # Some versions might use different message formats
+           {_, :email, email} when is_struct(email, Swoosh.Email) ->
+             [email | acc]
+           # Direct email struct messages  
+           email when is_struct(email, Swoosh.Email) ->
+             [email | acc]
+           _ ->
+             acc
+         end
+       end)
+    |> Enum.reverse()
+    
+    emails |> SentEmails.new()
   end
 
   def last_sent_email() do
@@ -50,7 +71,7 @@ defmodule Operately.Support.Features.UI.Emails do
   end
 
   def last_sent_email(to: email) do
-    list_sent_emails() |> Enum.filter(fn s -> hd(s.to) == email end) |> List.last()
+    list_sent_emails() |> Enum.filter(fn s -> email in s.to end) |> List.last()
   end
 
   def find_link(email, text) do
@@ -94,7 +115,7 @@ defmodule Operately.Support.Features.UI.Emails do
 
   def wait_for_email_for(email, attempts: attempts) do
     emails = list_sent_emails()
-    emails = Enum.filter(emails, fn s -> hd(s.to) == email end)
+    emails = Enum.filter(emails, fn s -> email in s.to end)
 
     case emails do
       [] -> 
@@ -112,14 +133,25 @@ defmodule Operately.Support.Features.UI.Emails do
   defmodule SentEmail do
     defstruct subject: nil, to: nil, html: nil, text: nil
 
-    def new(bamboo_email = %Bamboo.Email{}) do
+    def new(swoosh_email = %Swoosh.Email{}) do
       %SentEmail{
-        subject: bamboo_email.subject,
-        to: Enum.map(bamboo_email.to, fn {_name, email} -> email end),
-        html: bamboo_email.html_body,
-        text: bamboo_email.text_body
+        subject: swoosh_email.subject,
+        to: extract_addresses(swoosh_email.to),
+        html: swoosh_email.html_body,
+        text: swoosh_email.text_body
       }
     end
+
+    defp extract_addresses(to) when is_list(to) do
+      Enum.map(to, fn
+        %{address: address} -> address
+        {_name, address} -> address
+        address when is_binary(address) -> address
+      end)
+    end
+    defp extract_addresses(to) when is_binary(to), do: [to]
+    defp extract_addresses(%{address: address}), do: [address]
+    defp extract_addresses({_name, address}), do: [address]
 
     def as_string(email) do
       Enum.join([

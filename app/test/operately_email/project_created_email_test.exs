@@ -1,6 +1,6 @@
 defmodule OperatelyEmail.ProjectCreatedEmailTest do
   use Operately.DataCase
-  use Bamboo.Test
+  use Swoosh.TestAssertions
 
   import Operately.PeopleFixtures
   import Operately.GroupsFixtures
@@ -36,6 +36,6 @@ defmodule OperatelyEmail.ProjectCreatedEmailTest do
   end
 
   test "sends an email to the project contributors", ctx do
-    assert_email_delivered_with(to: [{nil, ctx.champion.email}])
+    assert_email_sent(to: ctx.champion.email)
   end
 end

@@ -53,7 +53,6 @@ defmodule Operately.MixProject do
       {:ex_aws, "~> 2.5"},
       {:custom_base, "~> 0.2"},
       {:oban, "~> 2.14"},
-      {:bamboo, "~> 2.3.0"},
       {:site_encrypt, "~> 0.6.0"},
       {:hackney, "~> 1.20"},
       {:sweet_xml, "~> 0.7"},

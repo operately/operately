@@ -40,10 +40,26 @@ and Docker Compose, follow the instructions for your operating system:
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
 
-### Set up a mail server
+### Set up email delivery
 
-Operately uses SendGrid to send emails. You need to set up a SendGrid account and create an API key.
-Follow the instructions on the [SendGrid documentation](https://sendgrid.com/docs/ui/account-and-settings/api-keys/).
+Operately supports two methods for sending emails:
+
+#### Option 1: SendGrid API (Recommended)
+Set up a SendGrid account and create an API key. Follow the instructions on the [SendGrid documentation](https://sendgrid.com/docs/ui/account-and-settings/api-keys/).
+
+#### Option 2: SMTP Server
+You can use any SMTP server (such as your own mail server, Google Workspace, Office 365, etc.) by configuring the following environment variables:
+
+- `SMTP_SERVER` - Your SMTP server hostname
+- `SMTP_PORT` - SMTP port (usually 587 for TLS or 25 for plain)
+- `SMTP_USERNAME` - Your SMTP username
+- `SMTP_PASSWORD` - Your SMTP password
+- `SMTP_SSL` - Set to "true" to use SSL, "false" for TLS/plain (optional, default: false)
+
+**Example SMTP configurations:**
+- **Gmail/Google Workspace**: `SMTP_SERVER=smtp.gmail.com`, `SMTP_PORT=587`
+- **Office 365**: `SMTP_SERVER=smtp-mail.outlook.com`, `SMTP_PORT=587`
+- **Custom server**: `SMTP_SERVER=mail.yourcompany.com`, `SMTP_PORT=587`
 
 ## Installation steps
 
@@ -69,7 +85,7 @@ The script will build the Docker images and configure the environment,
 and ask you for the following information:
 
 - *Domain*: The domain you pointed to your server (e.g. `operately.example.com`)
-- *SendGrid API key*: The API key you created in the SendGrid dashboard
+- *Email configuration*: Either your SendGrid API key OR your SMTP server details (server, port, username, password)
 
 ### Start Operately
 

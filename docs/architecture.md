@@ -21,12 +21,12 @@ Table of Contents:
 - **Backend**: Elixir (Phoenix Framework) + Absinthe (GraphQL)
 - **Database**: PostgreSQL
 - **Background Jobs Processing**: Oban
-- **Email Notifications**: Bamboo
+- **Email Notifications**: Swoosh
 
 ## Project Directory Structure
 
 - `assets` - Contains all frontend code, including React components, styles, and GraphQL queries.
-- `lib` - Contains all backend code, including Elixir modules, GraphQL schemas, and Phoenix controllers, Bamboo email notifications.
+- `lib` - Contains all backend code, including Elixir modules, GraphQL schemas, and Phoenix controllers, Swoosh email notifications.
 - `priv` - Contains private files, such as static assets, seeds, and configuration files.
 - `config` - Contains configuration files for the application, including database settings, environment variables, and routes.
 - `test` - Contains test files for backend modules and e2e tests that cover both frontend and backend code.
@@ -93,7 +93,7 @@ The directory structure follows a typical Phoenix project layout:
   and responses. These controllers interact with the context modules to fetch data
   and send it back to the client. Mostly used for Session management and file uploads.
 
-- `lib/operately_email` - Contains email notification modules using Bamboo. This directory
+- `lib/operately_email` - Contains email notification modules using Swoosh. This directory
   is responsible for sending email notifications to users based on specific events or triggers.
 
 ## Database Schema

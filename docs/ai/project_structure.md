@@ -22,7 +22,7 @@ The `app/` directory contains the main application code, which follows the Elixi
 
 - `lib/operately/` - Core business logic and domain models
 - `lib/operately_web/` - Web-specific code (controllers, views, etc.)
-- `lib/operately_email/` - Email notification modules using Bamboo
+- `lib/operately_email/` - Email notification modules using Swoosh
 - `lib/turbo_connect/` - Custom JSON API implementation with TypeScript generation
 - `config/` - Application configuration files
 - `priv/repo/migrations/` - Database migrations
@@ -38,7 +38,7 @@ The `app/` directory contains the main application code, which follows the Elixi
 - **Backend**: Elixir, Phoenix Framework, PostgreSQL
 - **Frontend**: React, TypeScript, TailwindCSS
 - **API**: Custom JSON API (TurboConnect) with TypeScript code generation
-- **Email**: Bamboo for email notifications
+- **Email**: Swoosh for email notifications
 - **Testing**: Mix test for backend, Jest for frontend
 
 ### Design Directory
