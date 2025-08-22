@@ -58,6 +58,18 @@ export function TitleInput(props: TitleInputProps) {
     return () => textarea.removeEventListener("input", resize);
   }, [props.readonly]);
 
+  // Ensure focus works reliably when autoFocus is set
+  React.useEffect(() => {
+    if (props.autoFocus && textareaRef.current && !props.readonly) {
+      // Use setTimeout to ensure the component is fully mounted and visible
+      const timer = setTimeout(() => {
+        textareaRef.current?.focus();
+      }, 0);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [props.autoFocus, props.readonly]);
+
   return (
     <InputField field={field} error={error}>
       {props.readonly ? (
