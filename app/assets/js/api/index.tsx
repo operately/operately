@@ -147,7 +147,7 @@ export interface Activity {
   resource?: ActivityResourceUnion | null;
   person?: Person | null;
   eventData?: ActivityDataUnion | null;
-  content?: ActivityContent | null;
+  content: ActivityContent;
   notifications?: Notification[] | null;
   permissions?: ActivityPermissions | null;
 }
@@ -187,7 +187,6 @@ export interface ActivityContentCompanyOwnerRemoving {
   companyId?: string | null;
   personId?: string | null;
   person?: Person | null;
-  company?: Company | null;
 }
 
 export interface ActivityContentCompanyOwnersAdding {
@@ -792,6 +791,13 @@ export interface ActivityContentTaskAssigneeAssignment {
   spaceId?: string | null;
   taskId?: string | null;
   personId?: string | null;
+}
+
+export interface ActivityContentTaskAssigneeUpdating {
+  project: Project;
+  task: Task;
+  oldAssignee: Person;
+  newAssignee: Person;
 }
 
 export interface ActivityContentTaskClosing {
