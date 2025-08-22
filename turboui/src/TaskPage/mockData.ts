@@ -278,7 +278,7 @@ export function createLongContentTimeline(): TimelineItemType[] {
       "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.",
       4 * 60 * 60 * 1000,
     ),
-    createTaskActivity("task-description", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
+    createTaskActivity("task_description_change", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
     createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
     createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
     createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000),
