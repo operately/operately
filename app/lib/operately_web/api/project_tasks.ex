@@ -501,7 +501,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         end
 
         # Return the updated task with preloaded assignees
-        updated_task = Operately.Repo.preload(task, :assigned_people)
+        updated_task = Operately.Repo.preload(task, :assigned_people, force: true)
 
         {:ok, updated_task}
       end)
