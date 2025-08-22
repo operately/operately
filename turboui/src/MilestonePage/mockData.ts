@@ -30,7 +30,7 @@ export const createMockTimelineItems = (): any[] => [
     type: "task-activity" as const,
     value: {
       id: "activity-3",
-      type: "task-status-change" as const,
+      type: "task_status_updating" as const,
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
       fromStatus: "pending" as const,
@@ -46,7 +46,7 @@ export const createMockTimelineItems = (): any[] => [
     type: "task-activity" as const,
     value: {
       id: "activity-4",
-      type: "task-status-change" as const,
+      type: "task_status_updating" as const,
       author: mockPeople[2],
       insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
       fromStatus: "pending" as const,
@@ -97,7 +97,7 @@ export const createMockTimelineItems = (): any[] => [
     type: "task-activity" as const,
     value: {
       id: "activity-6",
-      type: "task-status-change" as const,
+      type: "task_status_updating" as const,
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
       fromStatus: "in_progress" as const,

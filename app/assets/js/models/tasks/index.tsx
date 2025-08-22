@@ -47,7 +47,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
   };
 }
 
-function parseTaskStatus(status: string | null | undefined): Status {
+export function parseTaskStatus(status: string | null | undefined): Status {
   const validStatuses: Status[] = ["pending", "in_progress", "done", "canceled"];
 
   if (status && validStatuses.includes(status as Status)) {
