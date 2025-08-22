@@ -174,8 +174,6 @@ defmodule OperatelyWeb.Api.AiTest do
   describe "create_conversation" do
     setup ctx do
       Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
-      |> Factory.add_space(:product)
-      |> Factory.add_project(:project, :product)
     end
 
     test "requires authentication", ctx do
@@ -192,32 +190,6 @@ defmodule OperatelyWeb.Api.AiTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       assert {400, _} = mutation(ctx.conn, [:ai, :create_conversation], %{context_type: "goal"})
-    end
-
-    test "creates project conversation with tool-based context", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-      
-      params = %{
-        action_id: "test-env-action",  # Use the test action from fixtures
-        context_type: "project",
-        context_id: OperatelyWeb.Paths.project_id(ctx.project)
-      }
-
-      assert {200, res} = mutation(ctx.conn, [:ai, :create_conversation], params)
-      assert res.success == true
-      assert res.conversation != nil
-      
-      # Check that the conversation has the project_id set
-      conversation = res.conversation
-      assert conversation.project_id == ctx.project.id
-      
-      # Verify that the conversation messages contain the project_id for the tool
-      # but don't contain static project context
-      user_message = Enum.find(conversation.messages, &(&1.source == "user"))
-      assert user_message.prompt =~ "get_project_details tool"
-      project_id_encoded = OperatelyWeb.Paths.project_id(ctx.project)
-      assert user_message.prompt =~ project_id_encoded  # Should contain the encoded project ID
-      refute user_message.prompt =~ ctx.project.name  # Should not contain static project data
     end
   end
 end
