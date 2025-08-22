@@ -49,7 +49,7 @@ export interface TaskDueDateActivity {
 
 export interface TaskDescriptionActivity {
   id: string;
-  type: "task-description";
+  type: "task_description_change";
   author: Person;
   insertedAt: string;
   hasContent: boolean; // Whether description was added/updated vs removed
@@ -57,7 +57,7 @@ export interface TaskDescriptionActivity {
 
 export interface TaskTitleActivity {
   id: string;
-  type: "task-title";
+  type: "task_name_updating";
   author: Person;
   insertedAt: string;
   fromTitle: string;
