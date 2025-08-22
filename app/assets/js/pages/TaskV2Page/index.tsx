@@ -147,6 +147,7 @@ function Page() {
   const props: TaskPage.Props = {
     projectName,
     projectLink: paths.projectV2Path(task.project.id),
+    projectStatus: task.project.status,
     workmapLink,
     tasksCount,
     space: parseSpaceForTurboUI(paths, task.space),

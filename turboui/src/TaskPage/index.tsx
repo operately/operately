@@ -44,6 +44,7 @@ export namespace TaskPage {
     projectLink: string;
     workmapLink: string;
     tasksCount?: number;
+    projectStatus: string;
 
     space: Space;
 
@@ -145,7 +146,7 @@ export function TaskPage(props: TaskPage.Props) {
   );
 
   return (
-    <ProjectPageLayout title={[state.projectName]} testId="project-page" tabs={tabs} {...state}>
+    <ProjectPageLayout {...state} title={[state.projectName]} testId="project-page" tabs={tabs} status={state.projectStatus}>
       <div className="px-4 py-4">
         <PageHeader {...state} />
         <div className="flex-1 overflow-scroll">
