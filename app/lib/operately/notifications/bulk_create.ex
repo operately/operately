@@ -97,6 +97,8 @@ defmodule Operately.Notifications.BulkCreate do
       )
       {:ok, inserted_notifications}
     rescue
+      Postgrex.Error ->
+        insert_notifications_individually(repo, notifications)
       Ecto.ConstraintError ->
         insert_notifications_individually(repo, notifications)
     end
