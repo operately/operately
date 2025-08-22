@@ -37,8 +37,33 @@ defmodule Operately.Support.Features.UI.Emails do
   end
 
   def list_sent_emails do
-    Swoosh.Adapters.Test.get_sent_emails()
-    |> SentEmails.new()
+    # Swoosh Test adapter doesn't have a get_sent_emails() function
+    # Instead, it sends emails as messages to the test process
+    # We need to collect all these messages from the process mailbox
+    
+    # Get current process mailbox messages
+    {:messages, messages} = Process.info(self(), :messages)
+    
+    # Extract emails from messages - Swoosh uses different patterns than Bamboo
+    emails = messages
+    |> Enum.reduce([], fn message, acc ->
+         case message do
+           # Swoosh typically sends messages in this format to the test process
+           {:email, email} when is_struct(email, Swoosh.Email) ->
+             [email | acc]
+           # Some versions might use different message formats
+           {_, :email, email} when is_struct(email, Swoosh.Email) ->
+             [email | acc]
+           # Direct email struct messages  
+           email when is_struct(email, Swoosh.Email) ->
+             [email | acc]
+           _ ->
+             acc
+         end
+       end)
+    |> Enum.reverse()
+    
+    emails |> SentEmails.new()
   end
 
   def last_sent_email() do
