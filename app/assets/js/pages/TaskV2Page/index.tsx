@@ -7,6 +7,7 @@ import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
+import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/tasks";
 import * as Time from "@/utils/time";
 
 import { Paths, usePaths } from "../../routes/paths";
@@ -19,7 +20,6 @@ import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { parseActivitiesForTurboUi } from "@/models/activities/tasks";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 type LoaderResult = {
@@ -52,7 +52,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "task",
-          actions: ["task_adding"],
+          actions: SUPPORTED_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
       }),
   });
