@@ -1,3 +1,4 @@
+import { DateField } from "../DateField";
 import { Person, Comment, CommentActivity } from "../CommentSection/types";
 
 // Task-specific activity types
@@ -40,11 +41,11 @@ export interface TaskPriorityActivity {
 
 export interface TaskDueDateActivity {
   id: string;
-  type: "task-due-date";
+  type: "task_due_date_updating";
   author: Person;
   insertedAt: string;
-  fromDueDate: string | null;
-  toDueDate: string | null;
+  fromDueDate: DateField.ContextualDate | null;
+  toDueDate: DateField.ContextualDate | null;
 }
 
 export interface TaskDescriptionActivity {

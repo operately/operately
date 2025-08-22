@@ -17,6 +17,7 @@ import {
   IconClockPlay,
 } from "../icons";
 import { TaskActivityProps, TaskActivity } from "./types";
+import { DateField } from "../DateField";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
@@ -69,7 +70,7 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
       ) : (
         <IconFlagX {...iconProps} className="text-orange-500" />
       );
-    case "task-due-date":
+    case "task_due_date_updating":
       return activity.toDueDate ? (
         <IconCalendarPlus {...iconProps} className="text-blue-500" />
       ) : (
@@ -165,13 +166,13 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
         );
       }
 
-    case "task-due-date":
+    case "task_due_date_updating":
       if (activity.toDueDate && !activity.fromDueDate) {
         return (
-          <span className="text-content-dimmed">
+          <span className="text-content-dimmed flex items-center gap-1">
             set due date to{" "}
             <span className="font-medium text-content-dimmed">
-              <FormattedTime time={activity.toDueDate} format="short-date" />
+              <DateField date={activity.toDueDate} readonly hideCalendarIcon  />
             </span>
           </span>
         );
@@ -179,14 +180,14 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
         return <span className="text-content-subtle">removed due date</span>;
       } else if (activity.toDueDate && activity.fromDueDate) {
         return (
-          <span className="text-content-subtle">
+          <span className="text-content-dimmed flex items-center gap-1">
             changed due date from{" "}
             <span className="font-medium text-content-dimmed">
-              <FormattedTime time={activity.fromDueDate} format="short-date" />
+              <DateField date={activity.fromDueDate} readonly hideCalendarIcon />
             </span>{" "}
             to{" "}
             <span className="font-medium text-content-dimmed">
-              <FormattedTime time={activity.toDueDate} format="short-date" />
+              <DateField date={activity.toDueDate} readonly hideCalendarIcon />
             </span>
           </span>
         );
