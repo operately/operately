@@ -10,15 +10,14 @@ defmodule Operately.AI.Tools.GetProjectDetails do
 
   Expected context:
   - :person - The person who started the conversation (for authorization)
-  - :agent_run - The agent run context (optional, for logging)
-  
+
   Expected arguments:
   - "project_id": The ID of the project to retrieve details for
   """
   def get_project_details do
     Base.new_tool(%{
       name: "get_project_details",
-      description: "Returns the current markdown details of the specified project.",
+      description: "Returns the markdown details of the specified project.",
       parameters_schema: %{
         type: "object",
         properties: %{
@@ -33,35 +32,25 @@ defmodule Operately.AI.Tools.GetProjectDetails do
         me = Map.get(context, :person)
         project_id = Map.get(args, "project_id")
 
-        case decode_project_id(project_id) do
-          {:ok, id} ->
-            case get_project_with_permissions(me, id) do
-              {:ok, project} ->
-                markdown = Operately.MD.Project.render(project)
-                {:ok, markdown}
-              
-              {:error, reason} ->
-                {:error, "Unable to access project: #{reason}"}
-            end
-          
+        with(
+          {:ok, id} <- OperatelyWeb.Api.Helpers.decode_id(project_id),
+          {:ok, project} <- get_project(me, id)
+        ) do
+          markdown = Operately.MD.Project.render(project)
+          {:ok, markdown}
+        else
+          {:error, reason} when is_binary(reason) ->
+            {:error, "Unable to access project: #{reason}"}
+
           {:error, reason} ->
-            {:error, "Invalid project ID: #{reason}"}
+            {:error, "Invalid project ID: #{inspect(reason)}"}
         end
       end
     })
   end
 
-  # Decode the project ID (similar to get_goal_details pattern)
-  defp decode_project_id(project_id) do
-    case OperatelyWeb.Api.Helpers.decode_id(project_id) do
-      {:ok, id} -> {:ok, id}
-      {:error, _} -> {:error, "Invalid project ID format"}
-    end
-  end
-
-  # Get the project with proper permission checking
-  defp get_project_with_permissions(person, project_id) do
-    case Operately.Projects.Project.get(person, 
+  defp get_project(person, project_id) do
+    Operately.Projects.Project.get(person,
       id: project_id,
       opts: [
         with_deleted: false,
@@ -75,9 +64,6 @@ defmodule Operately.AI.Tools.GetProjectDetails do
           [contributors: [:person]]
         ]
       ]
-    ) do
-      {:ok, project} -> {:ok, project}
-      {:error, _} -> {:error, "Project not found or access denied"}
-    end
+    )
   end
 end
