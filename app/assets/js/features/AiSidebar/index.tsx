@@ -116,11 +116,17 @@ function useSidebarState() {
   }, []);
 
   const refreshConversations = React.useCallback(() => {
-    Api.ai.getConversations({}).then((data) => {
+    const params: any = {};
+    if (conversationContext) {
+      params.contextType = conversationContext.type;
+      params.contextId = conversationContext.id;
+    }
+    
+    Api.ai.getConversations(params).then((data) => {
       const convos = prepareConvos(data.conversations);
       setConversations(convos);
     });
-  }, []);
+  }, [conversationContext]);
 
   const createConvo = React.useCallback(
     (action: Conversations.ContextAction | null) => {
@@ -177,7 +183,7 @@ function useSidebarState() {
   // On component mount, load conversations
   React.useEffect(() => {
     refreshConversations();
-  }, []);
+  }, [refreshConversations]);
 
   // On new agent message signal, refresh conversations
   useNewAgentMessageSignal(refreshConversations, { convoId: activeConversationId! });
