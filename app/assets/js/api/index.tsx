@@ -815,6 +815,7 @@ export interface ActivityContentTaskDeleting {
 export interface ActivityContentTaskDescriptionChange {
   task: Task;
   projectName: string;
+  hasDescription: boolean;
 }
 
 export interface ActivityContentTaskDueDateUpdating {
@@ -2906,8 +2907,8 @@ export interface ChangePasswordInput {
 export interface ChangePasswordResult {}
 
 export interface ChangeTaskDescriptionInput {
-  taskId?: string | null;
-  description?: string | null;
+  taskId: Id;
+  description: Json;
 }
 
 export interface ChangeTaskDescriptionResult {
