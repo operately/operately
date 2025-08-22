@@ -59,7 +59,7 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
   const iconProps = { size: 12, className: "text-content-subtle" };
 
   switch (activity.type) {
-    case "task-assignment":
+    case "task_assignee_updating":
       return <IconUserPlus {...iconProps} className="text-blue-500" />;
     case "task-status-change":
       return getStatusIcon(activity.toStatus);
@@ -101,7 +101,7 @@ function getStatusIcon(status: string) {
 
 function ActivityText({ activity }: { activity: TaskActivity }) {
   switch (activity.type) {
-    case "task-assignment":
+    case "task_assignee_updating":
       if (activity.action === "assigned") {
         return (
           <span className="text-content-dimmed">
