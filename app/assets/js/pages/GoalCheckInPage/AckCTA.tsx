@@ -56,14 +56,14 @@ function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean) 
   const refresh = useRefresh();
   const [ack] = GoalCheckIns.useAcknowledgeGoalProgressUpdate();
 
-  const handleAck = async () => {
+  const handleAck = React.useCallback(async () => {
     if (update.acknowledgedAt) return;
     if (!update.permissions!.canAcknowledge) return;
 
     await ack({ id: update.id });
 
     refresh();
-  };
+  }, [update.acknowledgedAt, update.permissions?.canAcknowledge, update.id, ack, refresh]);
 
   //
   // If the user navigated to this page with ?acknowledge=true, acknowledge the check-in
@@ -73,7 +73,7 @@ function useAcknowledgeHandler(update: GoalCheckIns.Update, ackOnLoad: boolean) 
     if (ackOnLoad) {
       handleAck();
     }
-  }, []);
+  }, [ackOnLoad, handleAck]);
 
   return handleAck;
 }
