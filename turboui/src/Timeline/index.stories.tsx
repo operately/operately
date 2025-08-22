@@ -119,11 +119,15 @@ const mockDueDateChange: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-5",
-    type: "task-due-date",
+    type: "task_due_date_updating",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 18000000).toISOString(), // 5 hours ago
     fromDueDate: null,
-    toDueDate: "2024-01-30",
+    toDueDate: {
+      date: new Date("2024-01-30"),
+      dateType: "day",
+      value: "Jan 30, 2024"
+    },
   } as TaskActivity,
 };
 

@@ -1,9 +1,27 @@
-import { Activity, ActivityContentTaskNameUpdating, ActivityContentTaskAssigneeUpdating } from "@/api";
-import { TaskCreationActivity, TaskTitleActivity, TaskDescriptionActivity, TaskAssignmentActivity } from "turboui";
+import {
+  Activity,
+  ActivityContentTaskNameUpdating,
+  ActivityContentTaskAssigneeUpdating,
+  ActivityContentTaskDueDateUpdating,
+} from "@/api";
+import {
+  TaskCreationActivity,
+  TaskTitleActivity,
+  TaskDescriptionActivity,
+  TaskAssignmentActivity,
+  TaskDueDateActivity,
+} from "turboui";
 import { parsePersonForTurboUi } from "../people";
 import { Paths } from "@/routes/paths";
+import { parseContextualDate } from "../contextualDates";
 
-export const SUPPORTED_ACTIVITY_TYPES = ["task_adding", "task_name_updating", "task_description_change", "task_assignee_updating"];
+export const SUPPORTED_ACTIVITY_TYPES = [
+  "task_adding",
+  "task_name_updating",
+  "task_description_change",
+  "task_assignee_updating",
+  "task_due_date_updating",
+];
 
 type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
 
@@ -25,7 +43,18 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
     case "task_description_change":
       return parseTaskDescriptionChangeActivity(author!, activity);
     case "task_assignee_updating":
-      return parseTaskAssigneeUpdatingActivity(paths, author!, activity, activity.content as ActivityContentTaskAssigneeUpdating);
+      return parseTaskAssigneeUpdatingActivity(
+        paths,
+        author!,
+        activity,
+        activity.content as ActivityContentTaskAssigneeUpdating,
+      );
+    case "task_due_date_updating":
+      return parseTaskDueDateUpdatingActivity(
+        author!,
+        activity,
+        activity.content as ActivityContentTaskDueDateUpdating,
+      );
     default:
       return null;
   }
@@ -55,10 +84,7 @@ function parseTaskNameUpdatingActivity(
   };
 }
 
-function parseTaskDescriptionChangeActivity(
-  author: TurboUiPerson,
-  activity: Activity,
-): TaskDescriptionActivity {
+function parseTaskDescriptionChangeActivity(author: TurboUiPerson, activity: Activity): TaskDescriptionActivity {
   return {
     id: activity.id,
     type: "task_description_change",
@@ -81,5 +107,20 @@ function parseTaskAssigneeUpdatingActivity(
     insertedAt: activity.insertedAt,
     assignee: parsePersonForTurboUi(paths, content.newAssignee || content.oldAssignee)!,
     action: content.newAssignee ? "assigned" : "unassigned",
+  };
+}
+
+function parseTaskDueDateUpdatingActivity(
+  author: TurboUiPerson,
+  activity: Activity,
+  content: ActivityContentTaskDueDateUpdating,
+): TaskDueDateActivity {
+  return {
+    id: activity.id,
+    type: "task_due_date_updating",
+    author,
+    insertedAt: activity.insertedAt,
+    fromDueDate: parseContextualDate(content.oldDueDate),
+    toDueDate: parseContextualDate(content.newDueDate),
   };
 }
