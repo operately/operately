@@ -147,7 +147,7 @@ export interface Activity {
   resource?: ActivityResourceUnion | null;
   person?: Person | null;
   eventData?: ActivityDataUnion | null;
-  content?: ActivityContent | null;
+  content: ActivityContent;
   notifications?: Notification[] | null;
   permissions?: ActivityPermissions | null;
 }
@@ -184,10 +184,8 @@ export interface ActivityContentCompanyMemberRestoring {
 }
 
 export interface ActivityContentCompanyOwnerRemoving {
-  companyId?: string | null;
-  personId?: string | null;
-  person?: Person | null;
-  company?: Company | null;
+  company: Company;
+  person: Person | null;
 }
 
 export interface ActivityContentCompanyOwnersAdding {
