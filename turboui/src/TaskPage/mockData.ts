@@ -252,7 +252,7 @@ export function createCompletedTaskTimeline(): TimelineItemType[] {
 export function createOverdueTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
-    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, {
+    createTaskActivity("task_due_date_updating", alice, 3 * 24 * 60 * 60 * 1000, {
       fromDueDate: null,
       toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     }),
