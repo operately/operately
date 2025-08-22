@@ -222,7 +222,7 @@ export function createActiveTaskTimeline(): TimelineItemType[] {
       fromStatus: "not_started",
       toStatus: "in_progress",
     }), // 2 hours ago
-    createTaskActivity("task-assignment", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
+    createTaskActivity("task_assignee_updating", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
     createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, {
       milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
       action: "attached",
@@ -244,7 +244,7 @@ export function createCompletedTaskTimeline(): TimelineItemType[] {
     createTaskActivity("task-status-change", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
     createComment(bob, "All tests are passing and the feature is ready for release!", 2 * 60 * 60 * 1000),
     createComment(charlie, "The design looks perfect. Nice work on the animations!", 4 * 60 * 60 * 1000),
-    createTaskActivity("task-assignment", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
+    createTaskActivity("task_assignee_updating", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
     createTaskActivity("task_adding", alice, 3 * 24 * 60 * 60 * 1000),
   ];
 }
@@ -256,7 +256,7 @@ export function createOverdueTaskTimeline(): TimelineItemType[] {
       fromDueDate: null,
       toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     }),
-    createTaskActivity("task-assignment", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
+    createTaskActivity("task_assignee_updating", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
     createTaskActivity("task_adding", alice, 7 * 24 * 60 * 60 * 1000),
   ];
 }
@@ -280,7 +280,7 @@ export function createLongContentTimeline(): TimelineItemType[] {
     ),
     createTaskActivity("task_description_change", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
     createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
-    createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
+    createTaskActivity("task_assignee_updating", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
     createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000),
   ];
 }
