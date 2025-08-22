@@ -131,6 +131,7 @@ export function InProjectContextStory() {
             <TaskPage
               // Navigation
               projectName="Mobile App V2"
+              projectStatus="on_track"
               projectLink="#"
               workmapLink="#"
               space={{
