@@ -60,6 +60,7 @@ defmodule Operately.MixProject do
       {:req, "~> 0.5.0"},
       {:telemetry_metrics_statsd, "~> 0.7.0"},
       {:yaml_elixir, "~> 2.11"},
+      {:sentry, "~> 10.0"},
 
       # llm
       {:langchain, "0.4.0-rc.0"},
