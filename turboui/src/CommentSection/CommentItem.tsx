@@ -1,21 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 import { Avatar } from "../Avatar";
-import { shortName } from "../Avatar/AvatarWithName";
 import { Menu, MenuActionItem } from "../Menu";
-import { BlackLink } from "../Link";
-import FormattedTime from "../FormattedTime";
+import { FormattedTime } from "../FormattedTime";
 import RichContent from "../RichContent";
 import { IconEdit } from "../icons";
 import { CommentItemProps } from "./types";
+import { compareIds } from "../utils/ids";
+import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
+import { PrimaryButton, SecondaryButton } from "../Button";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+
+// Function to shorten name for display
+function shortName(name: string | undefined): string {
+  if (!name) return "";
+  const firstPart = name.split(" ")[0];
+  return firstPart || "";
+}
+
+// BlackLink component for consistent styling
+function BlackLink({
+  to,
+  underline,
+  children,
+}: {
+  to: string;
+  underline: "hover" | "none";
+  children: React.ReactNode;
+}) {
+  return (
+    <Link to={to} className={`text-content-accent ${underline === "hover" ? "hover:underline" : ""}`}>
+      {children}
+    </Link>
+  );
+}
 
 export function CommentItem({
   comment,
-  onEdit,
   canComment,
   currentUserId,
+  mentionedPersonLookup,
+  peopleSearch,
+  form,
 }: CommentItemProps & { currentUserId?: string }) {
-  const content = JSON.parse(comment.content)["message"];
-  const isOwnComment = currentUserId === comment.author.id;
+  const [isEditing, setIsEditing] = useState(false);
+  const parsedContent = JSON.parse(comment.content)["message"];
+  const isOwnComment = compareIds(currentUserId, comment.author.id);
+
+  const handleSaveEdit = (content: any) => {
+    if (form && form.editComment) {
+      form.editComment(comment.id, content);
+      setIsEditing(false);
+    }
+  };
 
   return (
     <div
@@ -43,9 +80,9 @@ export function CommentItem({
               <FormattedTime time={comment.insertedAt} format="relative" />
             </span>
 
-            {isOwnComment && onEdit && (
+            {isOwnComment && !isEditing && (
               <Menu size="small">
-                <MenuActionItem onClick={onEdit} icon={IconEdit}>
+                <MenuActionItem onClick={() => setIsEditing(true)} icon={IconEdit}>
                   Edit
                 </MenuActionItem>
               </Menu>
@@ -53,20 +90,78 @@ export function CommentItem({
           </div>
         </div>
 
-        <div className="mb-2">
-          <RichContent
-            content={content}
-            mentionedPersonLookup={async () => ({
-              id: "",
-              fullName: "",
-              avatarUrl: null,
-              title: "",
-              profileLink: "",
-            })}
+        {isEditing ? (
+          <CommentEditMode
+            content={parsedContent}
+            onSave={handleSaveEdit}
+            onCancel={() => setIsEditing(false)}
+            mentionedPersonLookup={mentionedPersonLookup}
+            peopleSearch={peopleSearch}
           />
-        </div>
+        ) : (
+          <CommentViewMode
+            content={parsedContent}
+            mentionedPersonLookup={mentionedPersonLookup}
+            reactions={comment.reactions}
+            canComment={canComment}
+          />
+        )}
+      </div>
+    </div>
+  );
+}
 
-        {canComment && <ReactionList reactions={comment.reactions} />}
+interface CommentViewModeProps {
+  content: any;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  reactions: any[];
+  canComment: boolean;
+}
+
+function CommentViewMode({ content, mentionedPersonLookup, reactions, canComment }: CommentViewModeProps) {
+  return (
+    <div>
+      <div className="mb-2">
+        <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
+      </div>
+      {canComment && false && <ReactionList reactions={reactions} />}
+    </div>
+  );
+}
+
+interface CommentEditModeProps {
+  content: any;
+  onSave: (content: any) => void;
+  onCancel: () => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
+}
+
+function CommentEditMode({ content, onSave, onCancel, mentionedPersonLookup, peopleSearch }: CommentEditModeProps) {
+  const editor = useEditor({
+    content: content,
+    editable: true,
+    placeholder: "Edit your comment...",
+    mentionedPersonLookup: mentionedPersonLookup,
+    peopleSearch: peopleSearch,
+  });
+
+  const handleSave = () => {
+    const updatedContent = editor.getJson();
+    if (!updatedContent || editor.empty) return;
+    onSave(updatedContent);
+  };
+
+  return (
+    <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1">
+      <Editor editor={editor} hideBorder hideToolbar />
+      <div className="flex gap-2 p-2 mt-2">
+        <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty}>
+          Save
+        </PrimaryButton>
+        <SecondaryButton size="xs" onClick={onCancel}>
+          Cancel
+        </SecondaryButton>
       </div>
     </div>
   );

@@ -1,17 +1,25 @@
 import React from "react";
 import { CommentItem } from "../CommentSection/CommentItem";
-import { 
-  MilestoneCompletedActivity, 
-  MilestoneReopenedActivity, 
+import {
+  MilestoneCompletedActivity,
+  MilestoneReopenedActivity,
   MilestoneCreatedActivity,
   MilestoneDescriptionActivity,
   MilestoneUpdateActivity,
-  AcknowledgmentActivity 
+  AcknowledgmentActivity,
 } from "../CommentSection/ActivityComponents";
 import { TaskActivityItem } from "./TaskActivities";
 import { TimelineItemProps } from "./types";
 
-export function TimelineItem({ item, currentUser, canComment, commentParentType, onEditComment }: TimelineItemProps) {
+export function TimelineItem({
+  item,
+  currentUser,
+  canComment,
+  commentParentType,
+  onEditComment,
+  mentionedPersonLookup,
+  peopleSearch,
+}: TimelineItemProps) {
   switch (item.type) {
     case "comment":
       return (
@@ -26,10 +34,8 @@ export function TimelineItem({ item, currentUser, canComment, commentParentType,
           commentParentType={commentParentType}
           canComment={canComment}
           currentUserId={currentUser.id}
-          onEdit={() => {
-            // Handle edit logic - this would need to be passed down from parent
-            console.log("Edit comment", item.value.id);
-          }}
+          mentionedPersonLookup={mentionedPersonLookup}
+          peopleSearch={peopleSearch}
         />
       );
 
