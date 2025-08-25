@@ -104,7 +104,7 @@ function CommentInputActive({
       <Avatar person={currentUser} size="normal" />
       <div className="flex-1">
         <div className="border border-surface-outline rounded-lg overflow-hidden">
-          <Editor editor={editor} hideBorder />
+          <Editor editor={editor} hideBorder hideToolbar />
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">

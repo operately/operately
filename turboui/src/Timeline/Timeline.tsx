@@ -79,6 +79,8 @@ export function Timeline({
             canComment={canComment}
             commentParentType={commentParentType}
             onEditComment={onEditComment}
+            mentionedPersonLookup={mentionedPersonLookup}
+            peopleSearch={peopleSearch}
           />
         ))
       )}

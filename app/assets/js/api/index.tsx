@@ -3191,13 +3191,13 @@ export interface DisconnectGoalFromProjectResult {
 }
 
 export interface EditCommentInput {
-  content?: string | null;
-  commentId?: string | null;
-  parentType?: string | null;
+  content: string;
+  commentId: Id;
+  parentType: CommentParentType;
 }
 
 export interface EditCommentResult {
-  comment?: Comment | null;
+  comment: Comment;
 }
 
 export interface EditCompanyInput {

@@ -151,6 +151,8 @@ export interface TimelineItemProps {
   canComment: boolean;
   commentParentType: string;
   onEditComment?: (id: string, content: any) => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
 }
 
 // Activity component props

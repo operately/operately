@@ -73,6 +73,8 @@ export interface CommentItemProps {
   commentParentType: string;
   canComment: boolean;
   onEdit?: () => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
 }
 
 export interface CommentInputProps {

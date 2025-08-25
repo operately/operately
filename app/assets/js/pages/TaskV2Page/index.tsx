@@ -169,6 +169,21 @@ function Page() {
     [refreshPageData, task.id],
   );
 
+  const handleEditComment = useCallback(
+    async (commentId: string, content: any) => {
+      try {
+        await Api.editComment({ commentId, parentType: "project_task", content: JSON.stringify(content) });
+
+        if (refreshPageData) {
+          refreshPageData();
+        }
+      } catch (error) {
+        showErrorToast("Error", "Failed to edit comment.");
+      }
+    },
+    [refreshPageData],
+  );
+
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
@@ -195,6 +210,7 @@ function Page() {
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
     onAddComment: handleAddComment,
+    onEditComment: handleEditComment,
     canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection
