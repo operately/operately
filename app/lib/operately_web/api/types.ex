@@ -1086,6 +1086,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :assignees, list_of(:person), null: true
     field? :creator, :person, null: true
     field? :space, :space, null: true
+    field? :permissions, :project_permissions, null: true
   end
 
   object :activity_content_discussion_editing do
