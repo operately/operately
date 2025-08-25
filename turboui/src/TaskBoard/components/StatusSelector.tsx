@@ -244,7 +244,7 @@ export function StatusSelector({
             <div className="p-1 pb-0.5">
               <input
                 ref={inputRef}
-                className="w-full border border-stroke-base rounded px-2 py-1 text-sm focus:border-indigo-500 focus:outline-none"
+                className="w-full border border-stroke-base rounded px-2 py-1 text-sm bg-surface-base text-content-accent placeholder:text-content-dimmed focus:outline outline-brand-1 focus:border-stroke-base"
                 placeholder="Change status..."
                 value={searchTerm}
                 autoFocus
