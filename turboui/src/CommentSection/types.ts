@@ -1,3 +1,6 @@
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { MentionedPersonLookupFn } from "../RichEditor";
+
 export interface Person {
   id: string;
   fullName: string;
@@ -23,23 +26,32 @@ export interface Comment {
 
 export interface CommentActivity {
   id: string;
-  type: "milestone-completed" | "milestone-reopened" | "milestone-created" | "milestone-description-added" | "milestone_update" | "acknowledgment";
+  type:
+    | "milestone-completed"
+    | "milestone-reopened"
+    | "milestone-created"
+    | "milestone-description-added"
+    | "milestone_update"
+    | "acknowledgment";
   author: Person;
   insertedAt: string;
   content?: string; // For activities that have descriptive content
 }
 
-export type CommentItem = {
-  type: "comment";
-  value: Comment;
-} | {
-  type: "milestone-completed" | "milestone-reopened";
-  value: CommentActivity;
-} | {
-  type: "acknowledgment";
-  value: Person;
-  insertedAt: string;
-};
+export type CommentItem =
+  | {
+      type: "comment";
+      value: Comment;
+    }
+  | {
+      type: "milestone-completed" | "milestone-reopened";
+      value: CommentActivity;
+    }
+  | {
+      type: "acknowledgment";
+      value: Person;
+      insertedAt: string;
+    };
 
 export interface CommentFormState {
   items: CommentItem[];
@@ -67,6 +79,8 @@ export interface CommentInputProps {
   form: CommentFormState;
   onSubmit?: () => void;
   onCancel?: () => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
 }
 
 export interface ActivityProps {

@@ -1,6 +1,8 @@
 import { DateField } from "../DateField";
 import { Person, Comment, CommentActivity } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
+import { MentionedPersonLookupFn } from "../RichEditor";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 
 // Task-specific activity types
 export interface TaskAssignmentActivity {
@@ -90,7 +92,7 @@ export interface Task {
 }
 
 // Union type for all activities
-export type TaskActivity = 
+export type TaskActivity =
   | TaskAssignmentActivity
   | TaskStatusChangeActivity
   | TaskMilestoneActivity
@@ -101,20 +103,24 @@ export type TaskActivity =
   | TaskCreationActivity;
 
 // Timeline item types
-export type TimelineItem = {
-  type: "comment";
-  value: Comment;
-} | {
-  type: "task-activity";
-  value: TaskActivity;
-} | {
-  type: "milestone-activity";
-  value: CommentActivity;
-} | {
-  type: "acknowledgment";
-  value: Person;
-  insertedAt: string;
-};
+export type TimelineItem =
+  | {
+      type: "comment";
+      value: Comment;
+    }
+  | {
+      type: "task-activity";
+      value: TaskActivity;
+    }
+  | {
+      type: "milestone-activity";
+      value: CommentActivity;
+    }
+  | {
+      type: "acknowledgment";
+      value: Person;
+      insertedAt: string;
+    };
 
 // Timeline component props
 export interface TimelineProps {
@@ -124,6 +130,8 @@ export interface TimelineProps {
   commentParentType: string;
   onAddComment?: (content: any) => void;
   onEditComment?: (id: string, content: any) => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
   filters?: TimelineFilters;
 }
 

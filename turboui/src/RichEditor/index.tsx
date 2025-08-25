@@ -4,6 +4,7 @@ import { Toolbar } from "./components/Toolbar";
 import { EditorContext, TipTapEditorContent } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 import { EditorState } from "./useEditor";
+import classNames from "../utils/classnames";
 
 export { useEditor } from "./useEditor";
 export type { MentionedPersonLookupFn } from "./useEditor";
@@ -11,6 +12,7 @@ export type { MentionedPersonLookupFn } from "./useEditor";
 interface EditorProps {
   editor: EditorState;
   className?: string;
+  hideBorder?: boolean;
 }
 
 //
@@ -24,18 +26,23 @@ interface EditorProps {
 //
 // <Editor editor={editor} />
 //
-export function Editor({ editor }: EditorProps) {
+export function Editor(props: EditorProps) {
   return (
-    <EditorContext.Provider value={editor}>
-      <EditorContent />
+    <EditorContext.Provider value={props.editor}>
+      <EditorContent {...props} />
     </EditorContext.Provider>
   );
 }
 
-function EditorContent(): JSX.Element {
+function EditorContent(props: EditorProps): JSX.Element {
   const handleClick = useLinkEditFormClose();
 
-  const className = "border border-surface-outline rounded-lg";
+  const className = classNames(
+    {
+      "border border-surface-outline rounded-lg": !props.hideBorder,
+    },
+    props.className,
+  );
 
   return (
     <div onClick={handleClick} className={className}>

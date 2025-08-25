@@ -21,7 +21,7 @@ import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 
 type LoaderResult = {
   data: {
@@ -175,6 +175,8 @@ function Page() {
   });
   const searchMilestones = useMilestonesSearch(task.project.id);
 
+  const mentionedPersonLookup = useMentionedPersonLookupFn();
+
   // Prepare TaskPage props
   const props: TaskPage.Props = {
     projectName,
@@ -184,6 +186,8 @@ function Page() {
     tasksCount,
     space: parseSpaceForTurboUI(paths, task.space),
 
+    canEdit: Boolean(task.permissions.canEditTimeline),
+
     searchPeople: assigneeSearch,
     updateProjectName: setProjectName,
 
@@ -191,7 +195,7 @@ function Page() {
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
     onAddComment: handleAddComment,
-    canComment: task.permissions.canComment,
+    canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -223,10 +227,7 @@ function Page() {
 
     // Placeholder for person lookup functionality
     peopleSearch: () => Promise.resolve([]),
-    mentionedPersonLookup: () => Promise.resolve(null),
-
-    // Permissions - simplified placeholder
-    canEdit: true,
+    mentionedPersonLookup,
   };
 
   return <TaskPage key={task.id!} {...props} />;
