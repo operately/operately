@@ -10,19 +10,16 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
   alias Operately.Activities.Activity
 
   inputs do
-    field :entity_id, :string
-    field :entity_type, :string
+    field :entity_id, :id, null: false
+    field :entity_type, :comment_parent_type, null: false
   end
 
   outputs do
-    field? :comments, list_of(:comment), null: true
+    field :comments, list_of(:comment), null: false
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.entity_id)
-    type = String.to_existing_atom(inputs.entity_type)
-
-    comments = load(id, type, me(conn))
+    comments = load(inputs.entity_id, inputs.entity_type, me(conn))
 
     {:ok, %{comments: Serializer.serialize(comments, level: :full)}}
   end
@@ -37,16 +34,25 @@ defmodule OperatelyWeb.Api.Queries.GetComments do
 
   defp load(id, :project_retrospective, person) do
     from(c in Comment,
-      join: retro in Operately.Projects.Retrospective,
-      on: c.entity_id == retro.id,
-      join: project in assoc(retro, :project),
-      as: :project,
+      join: retro in Operately.Projects.Retrospective, on: c.entity_id == retro.id,
+      join: project in assoc(retro, :project), as: :project,
       where: retro.id == ^id and c.entity_type == :project_retrospective
     )
     |> preload_resources()
     |> filter_by_view_access(person.id, named_binding: :project)
     |> Repo.all()
     |> load_notifications(person, action: "project_retrospective_commented")
+  end
+
+  defp load(id, :project_task, person) do
+    from(c in Comment,
+      join: task in Operately.Tasks.Task, on: c.entity_id == task.id, as: :task,
+      where: task.id == ^id and c.entity_type == :project_task
+    )
+    |> preload_resources()
+    |> filter_by_view_access(person.id, named_binding: :task)
+    |> Repo.all()
+    |> load_notifications(person, action: "project_task_commented")
   end
 
   defp load(id, :goal_update, person) do

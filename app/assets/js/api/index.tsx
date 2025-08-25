@@ -1910,7 +1910,8 @@ export type CommentParentType =
   | "resource_hub_document"
   | "resource_hub_file"
   | "resource_hub_link"
-  | "project_task";
+  | "project_task"
+  | "milestone";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
@@ -2052,12 +2053,12 @@ export interface GetBindedPeopleResult {
 }
 
 export interface GetCommentsInput {
-  entityId: string;
-  entityType: string;
+  entityId: Id;
+  entityType: CommentParentType;
 }
 
 export interface GetCommentsResult {
-  comments?: Comment[] | null;
+  comments: Comment[];
 }
 
 export interface GetCompaniesInput {
