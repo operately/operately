@@ -31,6 +31,8 @@ defmodule Operately.Tasks.Task do
     has_many :assignees, Operately.Tasks.Assignee
     has_many :assigned_people, through: [:assignees, :person]
 
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: :project_task], foreign_key: :entity_id
+
     field :name, :string
     field :priority, :string
     field :size, :string

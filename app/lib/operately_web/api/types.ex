@@ -1605,6 +1605,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_comment, :boolean
   end
 
+  enum(:comment_parent_type, values: [
+    :project_check_in,
+    :project_retrospective,
+    :comment_thread,
+    :goal_update,
+    :message,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+    :project_task
+  ])
+
   object :comment do
     field? :id, :string, null: true
     field? :inserted_at, :datetime, null: true

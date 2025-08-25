@@ -783,6 +783,26 @@ defmodule Operately.Operations.CommentAddingTest do
     end
   end
 
+  describe "Commenting on a task" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_project(:project, :space)
+      |> Factory.add_project_milestone(:milestone, :project)
+      |> Factory.add_project_task(:task, :milestone)
+      |> Factory.preload(:task, :project)
+    end
+
+    test "Can add a comment to Task", ctx do
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.task, "project_task", RichText.rich_text("Some comment"))
+
+      assert comment.entity_id == ctx.task.id
+      assert comment.entity_type == :project_task
+      assert comment.content == %{"message" => RichText.rich_text("Some comment")}
+    end
+  end
+
   #
   # Helpers
   #
