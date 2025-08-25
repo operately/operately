@@ -191,7 +191,7 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
     end
 
     tabletest @project_table do
-      test "if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the milestone comment, then expect code=#{@test.expected}", ctx do
+      test "milestone comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the milestone comment, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx)
         project = create_project(ctx, space, @test.company, @test.space, @test.project)
         milestone = milestone_fixture(%{project_id: project.id})
@@ -202,6 +202,36 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
                    comment_id: Paths.comment_id(comment),
                    content: RichText.rich_text("New content", :as_string),
                    parent_type: "milestone"
+                 })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 ->
+            comment = Repo.reload(comment)
+            assert res.comment == Serializer.serialize(comment, level: :essential)
+
+          403 ->
+            assert res.message == "You don't have permission to perform this action"
+
+          404 ->
+            assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
+    tabletest @project_table do
+      test "task comment - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the milestone comment, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        task = create_task(ctx.creator, project)
+        comment = create_comment(ctx, task, "project_task")
+
+        assert {code, res} =
+                 mutation(ctx.conn, :edit_comment, %{
+                   comment_id: Paths.comment_id(comment),
+                   content: RichText.rich_text("New content", :as_string),
+                   parent_type: "project_task"
                  })
 
         assert code == @test.expected
@@ -314,6 +344,11 @@ defmodule OperatelyWeb.Api.Mutations.EditCommentTest do
 
   def create_space(ctx) do
     group_fixture(ctx.creator, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+  end
+
+  defp create_task(creator, project) do
+    Operately.TasksFixtures.task_fixture(%{creator_id: creator.id, project_id: project.id})
+    |> Repo.preload(:project)
   end
 
   def create_space(ctx, company_members_level, space_members_level) do
