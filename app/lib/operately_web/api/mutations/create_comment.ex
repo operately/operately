@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateComment do
   end
 
   outputs do
-    field? :comment, :comment, null: true
+    field :comment, :comment, null: false
   end
 
   def call(conn, inputs) do
