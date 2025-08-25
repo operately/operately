@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
@@ -47,6 +47,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAssignees: true,
           includeCreator: true,
           includeSpace: true,
+          includePermissions: true,
         }).then((d) => d.task!),
         tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useTaskId: true }).then((d) => d.count!),
         activities: Api.getActivities({
@@ -75,6 +76,7 @@ function Page() {
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
+  assertPresent(task.permissions, "Task must have permissions");
 
   const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
 
@@ -146,6 +148,21 @@ function Page() {
     }
   };
 
+  const handleAddComment = useCallback(
+    async (content: any) => {
+      try {
+        await Api.createComment({ entityId: task.id, entityType: "project_task", content: JSON.stringify(content) });
+
+        if (refreshPageData) {
+          refreshPageData();
+        }
+      } catch (error) {
+        showErrorToast("Error", "Failed to add comment.");
+      }
+    },
+    [refreshPageData, task.id]
+  );
+
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
@@ -164,9 +181,11 @@ function Page() {
     searchPeople: assigneeSearch,
     updateProjectName: setProjectName,
 
-    // Timeline
+    // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
+    onAddComment: handleAddComment,
+    canComment: task.permissions.canComment,
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -202,9 +221,6 @@ function Page() {
 
     // Permissions - simplified placeholder
     canEdit: true,
-
-    // Timeline/Comments - placeholder
-    canComment: true,
   };
 
   return <TaskPage key={task.id!} {...props} />;

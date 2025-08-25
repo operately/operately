@@ -1671,6 +1671,7 @@ export interface Task {
   assignees?: Person[] | null;
   creator?: Person | null;
   space?: Space | null;
+  permissions?: ProjectPermissions | null;
 }
 
 export interface Timeframe {
@@ -1908,7 +1909,8 @@ export type CommentParentType =
   | "message"
   | "resource_hub_document"
   | "resource_hub_file"
-  | "resource_hub_link";
+  | "resource_hub_link"
+  | "project_task";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
@@ -2452,6 +2454,7 @@ export interface GetTaskInput {
   includeProject?: boolean;
   includeCreator?: boolean;
   includeSpace?: boolean;
+  includePermissions?: boolean;
 }
 
 export interface GetTaskResult {
