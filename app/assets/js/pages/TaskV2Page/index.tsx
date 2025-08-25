@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
+import * as Comments from "@/models/comments";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/tasks";
@@ -27,6 +28,7 @@ type LoaderResult = {
     task: Tasks.Task;
     tasksCount: number;
     activities: Activities.Activity[];
+    comments: Comments.Comment[];
   };
   cacheVersion: number;
 };
@@ -55,12 +57,16 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           scopeType: "task",
           actions: SUPPORTED_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
+        comments: Api.getComments({
+          entityId: params.id,
+          entityType: "project_task",
+        }).then((d) => d.comments!),
       }),
   });
 }
 
 function pageCacheKey(id: string): string {
-  return `v5-TaskV2Page.task-${id}`;
+  return `v6-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskV2Page", loader, Page } as PageModule;
@@ -72,7 +78,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data, refresh: refreshPageData } = pageData;
-  const { task, tasksCount, activities } = data;
+  const { task, tasksCount, activities, comments } = data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
@@ -131,7 +137,7 @@ function Page() {
     refreshPageData,
   });
 
-  const timelineItems = useMemo(() => prepareTimelineItems(paths, activities), [paths, activities]);
+  const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
   const handleDelete = async () => {
     try {
@@ -160,7 +166,7 @@ function Page() {
         showErrorToast("Error", "Failed to add comment.");
       }
     },
-    [refreshPageData, task.id]
+    [refreshPageData, task.id],
   );
 
   const assigneeSearch = usePersonFieldContributorsSearch({
@@ -311,11 +317,32 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
   };
 }
 
-function prepareTimelineItems(paths: Paths, activities: Activities.Activity[]) {
-  const parsedActivities = parseActivitiesForTurboUi(paths, activities);
-
-  return parsedActivities.map((activity) => ({
+function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
+  const parsedActivities = parseActivitiesForTurboUi(paths, activities).map((activity) => ({
     type: "task-activity",
     value: activity,
-  })) as TaskPage.TimelineItemType[];
+  }));
+  const parsedComments = Comments.parseCommentsForTurboUi(paths, comments).map((comment) => ({
+    type: "comment",
+    value: comment,
+  }));
+
+  const timelineItems = [...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[];
+
+  return timelineItems.sort((a, b) => {
+    let aInsertedAt, bInsertedAt;
+
+    if (a.type === "acknowledgment") {
+      aInsertedAt = a.insertedAt;
+    } else {
+      aInsertedAt = a.value.insertedAt;
+    }
+    if (b.type === "acknowledgment") {
+      bInsertedAt = b.insertedAt;
+    } else {
+      bInsertedAt = b.value.insertedAt;
+    }
+
+    return new Date(bInsertedAt).getTime() - new Date(aInsertedAt).getTime();
+  });
 }
