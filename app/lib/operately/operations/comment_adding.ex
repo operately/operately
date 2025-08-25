@@ -9,7 +9,7 @@ defmodule Operately.Operations.CommentAdding do
       Comment.changeset(%{
         author_id: creator.id,
         entity_id: entity.id,
-        entity_type: String.to_existing_atom(entity_type),
+        entity_type: entity_type,
         content: %{"message" => content}
       })
 
@@ -43,5 +43,6 @@ defmodule Operately.Operations.CommentAdding do
   defp find_action(%Operately.ResourceHubs.Document{}), do: :resource_hub_document_commented
   defp find_action(%Operately.ResourceHubs.File{}), do: :resource_hub_file_commented
   defp find_action(%Operately.ResourceHubs.Link{}), do: :resource_hub_link_commented
+  defp find_action(%Operately.Tasks.Task{}), do: :project_task_commented
   defp find_action(e), do: raise("Unknown entity type #{inspect(e)}")
 end
