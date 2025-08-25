@@ -1900,6 +1900,16 @@ export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
 
+export type CommentParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "comment_thread"
+  | "goal_update"
+  | "message"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link";
+
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
 export type CreateConversationContextType = "goal" | "project";
@@ -2978,9 +2988,9 @@ export interface CreateBlobResult {
 }
 
 export interface CreateCommentInput {
-  entityId?: string | null;
-  entityType?: string | null;
-  content?: string | null;
+  entityId: Id;
+  entityType: CommentParentType;
+  content: string;
 }
 
 export interface CreateCommentResult {
