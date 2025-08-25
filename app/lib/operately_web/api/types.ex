@@ -1615,7 +1615,8 @@ defmodule OperatelyWeb.Api.Types do
     :resource_hub_document,
     :resource_hub_file,
     :resource_hub_link,
-    :project_task
+    :project_task,
+    :milestone
   ])
 
   object :comment do

@@ -1,19 +1,12 @@
 import * as api from "@/api";
 import * as Time from "@/utils/time";
+import * as People from "@/models/people";
+import { Paths } from "@/routes/paths";
 
 type Comment = api.Comment;
 
+export type { CommentParentType } from "@/api";
 export type { CommentableResource } from "./CommentableResource";
-export type CommentParentType =
-  | "project_check_in"
-  | "comment_thread"
-  | "goal_update"
-  | "message"
-  | "milestone"
-  | "project_retrospective"
-  | "resource_hub_document"
-  | "resource_hub_file"
-  | "resource_hub_link";
 
 export type { Comment };
 export { useCreateComment, useEditComment, useGetComments, getComments } from "@/api";
@@ -40,4 +33,26 @@ export function splitComments(
   });
 
   return { before, after };
+}
+
+/**
+ * Parses backend Comment objects to the format expected by TurboUI CommentSection
+ *
+ * @param paths - Paths helper for generating links
+ * @param comments - Array of backend Comment objects
+ * @returns Array of TurboUI Comment objects
+ */
+export function parseCommentsForTurboUi(paths: Paths, comments: Comment[]) {
+  return comments.map((comment) => parseCommentForTurboUi(paths, comment));
+}
+
+function parseCommentForTurboUi(paths: Paths, comment: Comment) {
+  return {
+    id: comment.id,
+    content: comment.content || "{}",
+    author: People.parsePersonForTurboUi(paths, comment.author),
+    insertedAt: comment.insertedAt,
+    reactions: comment.reactions || [],
+    notification: comment.notification,
+  };
 }
