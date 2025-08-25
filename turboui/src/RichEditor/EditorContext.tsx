@@ -18,8 +18,8 @@ export function usePerson(id: string): Person | null {
 
     const fetchPerson = async () => {
       try {
-        const result = await mentionedPersonLookup(id);
-        if (isMounted) {
+        const result = await mentionedPersonLookup?.(id);
+        if (isMounted && result) {
           setPerson(result);
         }
       } catch (error) {
