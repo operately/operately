@@ -104,7 +104,7 @@ export function TaskCreationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create Task" size="medium">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <TextField
           variant="form-field"
           label="Task title"
@@ -115,7 +115,7 @@ export function TaskCreationModal({
           testId="task-title"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-content-base mb-1">Due date</label>
             <DateField
@@ -162,7 +162,7 @@ export function TaskCreationModal({
           />
         </div>
 
-        <div className="flex items-center mt-6">
+        <div className="flex items-center mt-8">
           <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" />
           <div className="flex-1"></div>
           <div className="flex space-x-3">
