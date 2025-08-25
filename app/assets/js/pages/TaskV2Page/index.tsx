@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
@@ -68,7 +68,9 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const currentUser = useMe();
-  const { task, tasksCount, activities } = PageCache.useData(loader).data;
+
+  const [{ data }, refreshPageData] = PageCache.useData(loader);
+  const { task, tasksCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
@@ -76,51 +78,57 @@ function Page() {
   const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
 
   const [projectName, setProjectName] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.project!.name,
+    value: ({ task }) => task.project!.name,
     update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    refreshPageData,
   });
 
   const [name, setName] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.name,
+    value: ({ task }) => task.name,
     update: (v) => Api.project_tasks.updateName({ taskId: task.id!, name: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    refreshPageData,
   });
 
   const [description, setDescription] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.description && JSON.parse(data.task.description),
+    value: ({ task }) => task.description && JSON.parse(task.description),
     update: (v) => Api.project_tasks.updateDescription({ taskId: task.id!, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
+    refreshPageData,
   });
 
   const [status, setStatus] = usePageField({
-    value: (data: { task: Tasks.Task }) => Tasks.parseTaskForTurboUi(paths, data.task).status,
+    value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task).status,
     update: (v) => Api.project_tasks.updateStatus({ taskId: task.id!, status: v }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
+    refreshPageData,
   });
 
   const [dueDate, setDueDate] = usePageField({
-    value: (data: { task: Tasks.Task }) => parseContextualDate(data.task.dueDate),
+    value: ({ task }) => parseContextualDate(task.dueDate),
     update: (v) => Api.project_tasks.updateDueDate({ taskId: task.id!, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Error", "Failed to update due date."),
+    refreshPageData,
   });
 
   const [assignee, setAssignee] = usePageField({
-    value: (data: { task: Tasks.Task }) => People.parsePersonForTurboUi(paths, data.task.assignees?.[0] || null),
+    value: ({ task }) => People.parsePersonForTurboUi(paths, task.assignees?.[0] || null),
     update: (v) => Api.project_tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
+    refreshPageData,
   });
 
   const [milestone, setMilestone] = usePageField({
-    value: (data) => (data.task.milestone ? parseMilestoneForTurboUi(paths, data.task.milestone) : null),
+    value: ({ task }) => (task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null),
     update: (v) => Api.project_tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
+    refreshPageData,
   });
 
-  // Subscription status - placeholder
-  const [isSubscribed, setIsSubscribed] = React.useState(true);
+  const timelineItems = useMemo(() => prepareTimelineItems(paths, activities), [paths, activities]);
 
   const handleDelete = async () => {
     try {
@@ -157,7 +165,7 @@ function Page() {
 
     // Timeline
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
-    timelineItems: prepareTimelineItems(paths, activities),
+    timelineItems,
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -184,10 +192,8 @@ function Page() {
     closedAt: Time.parse(task.project.closedAt),
 
     // Subscription
-    isSubscribed,
-    onSubscriptionToggle: (subscribed: boolean) => {
-      setIsSubscribed(subscribed);
-    },
+    isSubscribed: false,
+    onSubscriptionToggle: () => {},
 
     // Placeholder for person lookup functionality
     peopleSearch: () => Promise.resolve([]),
@@ -204,10 +210,11 @@ function Page() {
 }
 
 interface usePageFieldProps<T> {
-  value: (LoaderResult) => T;
+  value: (data: { task: Tasks.Task; tasksCount: number; activities: Activities.Activity[] }) => T;
   update: (newValue: T) => Promise<any>;
   onError?: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
+  refreshPageData?: () => Promise<void>;
 }
 
 function usePageField<T>({
@@ -215,8 +222,11 @@ function usePageField<T>({
   update,
   onError,
   validations,
+  refreshPageData,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
+  const [pageData] = PageCache.useData(loader);
+
+  const { cacheVersion, data } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
   const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
@@ -242,7 +252,11 @@ function usePageField<T>({
     const oldVal = state;
 
     const successHandler = () => {
+      // Invalidate the cache and refresh the data
       PageCache.invalidate(pageCacheKey(data.task.id!));
+      if (refreshPageData) {
+        refreshPageData();
+      }
     };
 
     const errorHandler = (error: any) => {
