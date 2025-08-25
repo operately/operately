@@ -1908,7 +1908,8 @@ export type CommentParentType =
   | "message"
   | "resource_hub_document"
   | "resource_hub_file"
-  | "resource_hub_link";
+  | "resource_hub_link"
+  | "project_task";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
