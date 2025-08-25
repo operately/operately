@@ -2052,12 +2052,12 @@ export interface GetBindedPeopleResult {
 }
 
 export interface GetCommentsInput {
-  entityId: string;
-  entityType: string;
+  entityId: Id;
+  entityType: CommentParentType;
 }
 
 export interface GetCommentsResult {
-  comments?: Comment[] | null;
+  comments: Comment[];
 }
 
 export interface GetCompaniesInput {
