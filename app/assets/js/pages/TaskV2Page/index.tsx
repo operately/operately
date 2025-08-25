@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
@@ -146,6 +146,21 @@ function Page() {
     }
   };
 
+  const handleAddComment = useCallback(
+    async (content: any) => {
+      try {
+        await Api.createComment({ entityId: task.id, entityType: "project_task", content: JSON.stringify(content) });
+
+        if (refreshPageData) {
+          refreshPageData();
+        }
+      } catch (error) {
+        showErrorToast("Error", "Failed to add comment.");
+      }
+    },
+    [refreshPageData, task.id]
+  );
+
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
@@ -164,9 +179,11 @@ function Page() {
     searchPeople: assigneeSearch,
     updateProjectName: setProjectName,
 
-    // Timeline
+    // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
+    onAddComment: handleAddComment,
+    canComment: true,
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -202,9 +219,6 @@ function Page() {
 
     // Permissions - simplified placeholder
     canEdit: true,
-
-    // Timeline/Comments - placeholder
-    canComment: true,
   };
 
   return <TaskPage key={task.id!} {...props} />;
