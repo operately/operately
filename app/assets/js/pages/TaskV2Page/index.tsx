@@ -69,7 +69,8 @@ function Page() {
   const navigate = useNavigate();
   const currentUser = useMe();
 
-  const [{ data }, refreshPageData] = PageCache.useData(loader);
+  const pageData = PageCache.useData(loader);
+  const { data, refresh: refreshPageData } = pageData;
   const { task, tasksCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
@@ -224,8 +225,7 @@ function usePageField<T>({
   validations,
   refreshPageData,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const [pageData] = PageCache.useData(loader);
-
+  const pageData = PageCache.useData(loader);
   const { cacheVersion, data } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
