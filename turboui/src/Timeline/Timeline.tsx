@@ -47,15 +47,6 @@ export function Timeline({
     });
   }, [items, filters]);
 
-  const sortedItems = useMemo(() => {
-    return [...filteredItems].sort((a, b) => {
-      const dateA = getItemDate(a);
-      const dateB = getItemDate(b);
-      if (!dateA || !dateB) return 0;
-      return new Date(dateB).getTime() - new Date(dateA).getTime(); // Most recent first
-    });
-  }, [filteredItems]);
-
   const mockForm = useMemo(
     () => ({
       items: [],
@@ -68,10 +59,10 @@ export function Timeline({
 
   return (
     <div className="flex flex-col">
-      {sortedItems.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <EmptyTimeline />
       ) : (
-        sortedItems.map((item, index) => (
+        filteredItems.map((item, index) => (
           <TimelineItem
             key={getItemKey(item, index)}
             item={item}

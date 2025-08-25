@@ -2998,7 +2998,7 @@ export interface CreateCommentInput {
 }
 
 export interface CreateCommentResult {
-  comment?: Comment | null;
+  comment: Comment;
 }
 
 export interface CreateEmailActivationCodeInput {
