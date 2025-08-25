@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/mi
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/tasks";
 import * as Time from "@/utils/time";
 
-import { Paths, usePaths } from "../../routes/paths";
+import { compareIds, Paths, usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
 import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
@@ -78,7 +78,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data, refresh: refreshPageData } = pageData;
-  const { task, tasksCount, activities, comments } = data;
+  const { task, tasksCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
@@ -137,6 +137,8 @@ function Page() {
     refreshPageData,
   });
 
+  const { comments, handleAddComment, handleEditComment } = useComments(task, data.comments);
+
   const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
   const handleDelete = async () => {
@@ -153,36 +155,6 @@ function Page() {
       showErrorToast("Error", "Failed to delete task.");
     }
   };
-
-  const handleAddComment = useCallback(
-    async (content: any) => {
-      try {
-        await Api.createComment({ entityId: task.id, entityType: "project_task", content: JSON.stringify(content) });
-
-        if (refreshPageData) {
-          refreshPageData();
-        }
-      } catch (error) {
-        showErrorToast("Error", "Failed to add comment.");
-      }
-    },
-    [refreshPageData, task.id],
-  );
-
-  const handleEditComment = useCallback(
-    async (commentId: string, content: any) => {
-      try {
-        await Api.editComment({ commentId, parentType: "project_task", content: JSON.stringify(content) });
-
-        if (refreshPageData) {
-          refreshPageData();
-        }
-      } catch (error) {
-        showErrorToast("Error", "Failed to edit comment.");
-      }
-    },
-    [refreshPageData],
-  );
 
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: task.project.id,
@@ -334,6 +306,80 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
   };
 }
 
+function useComments(task: Tasks.Task, initialComments: Comments.Comment[]) {
+  const currentUser = useMe();
+  const [comments, setComments] = React.useState(initialComments);
+
+  useEffect(() => {
+    setComments(initialComments);
+  }, [initialComments]);
+
+  const handleAddComment = useCallback(
+    async (content: any) => {
+      const randomId = `temp-${Math.random().toString(36).substring(2, 15)}`;
+
+      try {
+        const optimisticComment: Comments.Comment = {
+          id: randomId,
+          author: currentUser,
+          content: JSON.stringify({ message: content }),
+          insertedAt: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
+          reactions: [],
+        };
+
+        setComments((prevComments) => [optimisticComment, ...prevComments]);
+
+        const res = await Api.createComment({
+          entityId: task.id,
+          entityType: "project_task",
+          content: JSON.stringify(content),
+        });
+
+        if (res.comment) {
+          setComments((prev) =>
+            prev.map((c) => (c.id === randomId ? { ...c, id: res.comment.id, insertedAt: res.comment.insertedAt } : c)),
+          );
+          PageCache.invalidate(pageCacheKey(task.id));
+        }
+      } catch (error) {
+        setComments((prev) => prev.filter((c) => c.id !== randomId));
+        showErrorToast("Error", "Failed to add comment.");
+      }
+    },
+    [task.id, comments],
+  );
+
+  const handleEditComment = useCallback(
+    async (commentId: string, content: any) => {
+      const comment = comments.find((c) => compareIds(c.id, commentId));
+
+      try {
+        if (comment) {
+          setComments((prev) =>
+            prev.map((c) =>
+              compareIds(c.id, commentId) ? { ...c, content: JSON.stringify({ message: content }) } : c,
+            ),
+          );
+        }
+
+        await Api.editComment({ commentId, parentType: "project_task", content: JSON.stringify(content) });
+
+        PageCache.invalidate(pageCacheKey(task.id));
+      } catch (error) {
+        setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...c, content: comment?.content } : c)));
+        showErrorToast("Error", "Failed to edit comment.");
+      }
+    },
+    [task.id, comments],
+  );
+
+  return {
+    comments,
+    handleAddComment,
+    handleEditComment,
+  };
+}
+
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
   const parsedActivities = parseActivitiesForTurboUi(paths, activities).map((activity) => ({
     type: "task-activity",
@@ -346,10 +392,21 @@ function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], c
 
   const timelineItems = [...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[];
 
-  return timelineItems.sort((a, b) => {
+  timelineItems.sort((a, b) => {
+    // Special handling for temporary comments - always show them first
+    const aIsTemp = a.value.id.startsWith("temp-");
+    const bIsTemp = b.value.id.startsWith("temp-");
+
+    // If one is temporary and the other isn't, prioritize the temporary one
+    if (aIsTemp && !bIsTemp) return -1;
+    if (!aIsTemp && bIsTemp) return 1;
+
+    // Otherwise use standard date comparison
     const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
     const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
 
-    return new Date(bInsertedAt).getTime() - new Date(aInsertedAt).getTime();
+    return bInsertedAt.localeCompare(aInsertedAt);
   });
+
+  return timelineItems;
 }
