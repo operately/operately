@@ -159,6 +159,11 @@ function Page() {
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
 
+  const mentionedPersonSearch = People.usePersonFieldSearch({
+    scope: { type: "project", id: project.id },
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
+
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
     ignoredIds: [champion?.id!, reviewer?.id!],
@@ -250,7 +255,6 @@ function Page() {
     onProjectDelete: deleteProject,
 
     tasks,
-    searchPeople: assigneeSearch,
     onTaskCreate: createTask,
     onTaskDueDateChange: updateTaskDueDate,
     onTaskAssigneeChange: updateTaskAssignee,
@@ -263,9 +267,12 @@ function Page() {
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
-    mentionedPersonLookup,
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
+    searchPeople: assigneeSearch,
+
+    mentionedPersonLookup,
+    mentionedPersonSearch,
 
     resources,
     onResourceAdd: createResource,

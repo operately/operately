@@ -150,7 +150,7 @@ function deepCopy(obj: any): any {
 
   const copy: any = {};
   for (const key in obj) {
-    if (obj.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
       copy[key] = deepCopy(obj[key]);
     }
   }
