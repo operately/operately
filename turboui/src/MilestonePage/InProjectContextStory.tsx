@@ -166,6 +166,8 @@ export function InProjectContextStory() {
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <MilestonePage
+              projectName={mockProjectState.projectName} 
+              projectLink="#"
               milestone={milestones.find((m) => m.id === targetMilestone.id) || targetMilestone}
               tasks={tasks}
               milestones={milestones}
@@ -353,6 +355,8 @@ export function EmptyMilestoneInProjectContextStory() {
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden">
             <MilestonePage
+              projectName={mockProjectState.projectName}
+              projectLink="#"
               milestone={milestones.find((m) => m.id === emptyMilestone.id) || emptyMilestone}
               tasks={tasks}
               milestones={milestones}

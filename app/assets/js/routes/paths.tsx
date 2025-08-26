@@ -200,6 +200,10 @@ export class Paths {
     return this.createCompanyPath(["milestones", milestoneId]);
   }
 
+  projectMilestoneV2Path(milestoneId: string) {
+    return this.createCompanyPath(["milestones", milestoneId, "v2"]);
+  }
+
   projectContributorsPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "contributors"]);
   }

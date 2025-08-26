@@ -1512,6 +1512,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :tasks_kanban_state, :string, null: true
     field? :tasks_ordering_state, list_of(:string), null: true
     field? :permissions, :project_permissions, null: true
+    field? :space, :space, null: true
   end
 
   object :activity_content_goal_check_in_edit do
