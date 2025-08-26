@@ -81,10 +81,10 @@ export const linkLink = (link: api.ResourceHubLink) => {
   return <Link to={path}>{name}</Link>;
 };
 
-export const milestoneLink = (milestone: api.Milestone) => {
+export const milestoneLink = (milestone: api.Milestone, milestoneName?: string) => {
   const paths = usePaths();
   const path = paths.projectMilestonePath(milestone.id!);
-  const name = milestone.title;
+  const name = milestoneName || milestone.title;
 
   return <Link to={path}>{name}</Link>;
 };

@@ -195,7 +195,8 @@ export const Default: Story = {
         onTaskDueDateChange={() => {}}
         onTaskStatusChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
-        onMilestoneNameChange={handleMilestoneNameChange}
+        onMilestoneTitleChange={handleMilestoneNameChange}
+        title={milestone.name}
         searchPeople={mockSearchPeople}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
@@ -294,7 +295,8 @@ export const EmptyMilestone: Story = {
             setMilestone(prev => ({ ...prev, name: updates.name! }));
           }
         }}
-        onMilestoneNameChange={async (newName) => {
+        title={milestone.name}
+        onMilestoneTitleChange={async (newName) => {
           console.log("Milestone name changed:", newName);
           setMilestone(prev => ({ ...prev, name: newName }));
           return true;

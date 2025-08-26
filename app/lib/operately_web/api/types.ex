@@ -788,6 +788,13 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
   end
 
+  object :activity_content_milestone_title_updating do
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :old_title, :string, null: false
+    field :new_title, :string, null: false
+  end
+
   object :activity_content_task_adding do
     field :company, :company
     field :space, :space

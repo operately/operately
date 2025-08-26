@@ -56,7 +56,8 @@ export namespace MilestonePage {
     onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange?: (taskId: string, status: string) => void;
     onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
-    onMilestoneNameChange?: (name: string) => Promise<boolean>;
+    title: string;
+    onMilestoneTitleChange: (name: string) => Promise<boolean>;
     searchPeople: (params: { query: string }) => Promise<Types.Person[]>;
   
     // Filtering
@@ -122,7 +123,8 @@ export function MilestonePage(props: MilestonePage.Props) {
     onTaskDueDateChange,
     onTaskStatusChange,
     onMilestoneUpdate,
-    onMilestoneNameChange,
+    title,
+    onMilestoneTitleChange,
     searchPeople,
     filters = [],
     onFiltersChange,
@@ -278,8 +280,8 @@ export function MilestonePage(props: MilestonePage.Props) {
                     <IconFlag size={20} className="text-blue-500" />
                     <TextField
                       className="font-semibold text-xl"
-                      text={milestone.name}
-                      onChange={onMilestoneNameChange || (async () => true)}
+                      text={title}
+                      onChange={onMilestoneTitleChange}
                       readonly={!canEdit}
                       trimBeforeSave
                     />
