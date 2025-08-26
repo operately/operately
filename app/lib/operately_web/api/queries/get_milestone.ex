@@ -5,20 +5,20 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   alias Operately.Projects.{Milestone, Permissions}
 
   inputs do
-    field? :id, :string, null: true
-    field? :include_comments, :boolean, null: true
-    field? :include_project, :boolean, null: true
-    field? :include_permissions, :boolean, null: true
+    field :id, :id, null: false
+    field? :include_comments, :boolean, null: false
+    field? :include_project, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
+    field? :include_space, :boolean, null: false
   end
 
   outputs do
-    field? :milestone, :milestone, null: true
+    field :milestone, :milestone, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.id) end)
     |> run(:milestone, fn ctx -> load(ctx, inputs) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.milestone.request_info.access_level, :can_view) end)
     |> run(:serialized, fn ctx -> {:ok, %{milestone: Serializer.serialize(ctx.milestone)}} end)
@@ -36,7 +36,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   end
 
   defp load(ctx, inputs) do
-    Milestone.get(ctx.me, id: ctx.id, opts: [
+    Milestone.get(ctx.me, id: inputs.id, opts: [
       preload: preload(inputs),
       after_load: after_load(inputs, ctx.me),
     ])
@@ -45,6 +45,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   defp preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_project: :project,
+      include_space: :space,
       include_comments: [comments: [comment: [:author, reactions: :person]]],
     ])
   end

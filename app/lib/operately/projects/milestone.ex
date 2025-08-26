@@ -7,6 +7,7 @@ defmodule Operately.Projects.Milestone do
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
     has_one :access_context, through: [:project, :access_context]
+    has_one :space, through: [:project, :group]
 
     has_many :tasks, Operately.Tasks.Task
 

@@ -175,6 +175,8 @@ export const Default: Story = {
 
     return (
       <MilestonePage
+        projectName="Demo Project"
+        projectLink="#"
         milestone={milestone}
         tasks={tasks}
         milestones={[milestone]}
@@ -264,6 +266,8 @@ export const EmptyMilestone: Story = {
 
     return (
       <MilestonePage
+        projectName="New Initiative"
+        projectLink="#"
         milestone={milestone}
         tasks={[]}
         milestones={[milestone]}

@@ -39,6 +39,7 @@ import HomePage from "./HomePage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
 import LoginPage from "./LoginPage";
+import MilestoneV2Page from "./MilestoneV2Page";
 import NewCompanyPage from "./NewCompanyPage";
 import NotFoundPage from "./NotFoundPage";
 import NotificationsPage from "./NotificationsPage";
@@ -145,6 +146,7 @@ export default {
   JoinPage,
   LobbyPage,
   LoginPage,
+  MilestoneV2Page,
   NewCompanyPage,
   NotFoundPage,
   NotificationsPage,
