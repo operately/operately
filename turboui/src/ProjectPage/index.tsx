@@ -130,14 +130,16 @@ export namespace ProjectPage {
     onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
-    searchPeople: (params: { query: string }) => Promise<TaskBoardTypes.Person[]>;
+    searchPeople: SearchFn;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
 
     contributors: Person[];
     checkIns: CheckIn[];
     discussions: Discussion[];
+
     mentionedPersonLookup: MentionedPersonLookupFn;
+    mentionedPersonSearch: SearchFn;
 
     // Resource management
     resources: ResourceManager.Resource[];

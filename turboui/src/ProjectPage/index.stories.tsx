@@ -81,9 +81,15 @@ const defaultSpace: ProjectPage.Space = {
 };
 
 // Mock search function for people
-const mockSearchPeople = async ({ query }: { query: string }): Promise<TaskBoardTypes.Person[]> => {
+const mockSearchPeople = async ({ query }: { query: string }) => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
-  return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
+  return mockPeople
+    .filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()))
+    .map(person => ({
+      ...person,
+      profileLink: "#", // Add required profileLink property
+      title: "Team Member", // Add required title property
+    }));
 };
 
 // Mock parent goal search
@@ -307,6 +313,7 @@ export const Default: Story = {
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
         mentionedPersonLookup={async () => null}
@@ -381,6 +388,7 @@ export const ReadOnly: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
         mentionedPersonLookup={async () => null}
@@ -501,6 +509,7 @@ export const EmptyTasks: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
         mentionedPersonLookup={async () => null}
@@ -608,6 +617,7 @@ export const EmptyProject: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
         mentionedPersonLookup={async () => null}
@@ -675,6 +685,7 @@ export const EmptyProjectReadOnly: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
         mentionedPersonLookup={async () => null}
@@ -819,6 +830,7 @@ export const PausedProject: Story = {
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
         mentionedPersonLookup={async () => null}
@@ -901,6 +913,7 @@ export const ClosedProject: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
+        mentionedPersonSearch={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
         mentionedPersonLookup={async () => null}
