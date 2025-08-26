@@ -46,7 +46,7 @@ function pageCacheKey(id: string): string {
   return `v4-MilestoneV2Page.task-${id}`;
 }
 
-export function Page() {
+function Page() {
   const paths = usePaths();
   const currentUser = useMe();
 
