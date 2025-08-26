@@ -26,7 +26,7 @@ function ActivitySection(props: TaskPage.State) {
           onAddComment={props.onAddComment}
           onEditComment={props.onEditComment}
           mentionedPersonLookup={props.mentionedPersonLookup}
-          peopleSearch={props.peopleSearch}
+          peopleSearch={props.mentionedPeopleSearch}
           filters={props.timelineFilters}
         />
       </div>
