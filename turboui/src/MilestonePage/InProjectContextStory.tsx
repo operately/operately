@@ -168,9 +168,11 @@ export function InProjectContextStory() {
             <MilestonePage
               projectName={mockProjectState.projectName} 
               projectLink="#"
+              workmapLink="#"
+              space={mockProjectState.space}
+              updateProjectName={mockProjectState.updateProjectName}
               milestone={milestones.find((m) => m.id === targetMilestone.id) || targetMilestone}
               tasks={tasks}
-              milestones={milestones}
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
               onTaskReorder={handleTaskReorder}
@@ -357,9 +359,11 @@ export function EmptyMilestoneInProjectContextStory() {
             <MilestonePage
               projectName={mockProjectState.projectName}
               projectLink="#"
+              workmapLink="#"
+              space={mockProjectState.space}
+              updateProjectName={mockProjectState.updateProjectName}
               milestone={milestones.find((m) => m.id === emptyMilestone.id) || emptyMilestone}
               tasks={tasks}
-              milestones={milestones}
               onStatusChange={handleTaskStatusChange}
               onTaskCreate={handleTaskCreate}
               onTaskReorder={handleTaskReorder}

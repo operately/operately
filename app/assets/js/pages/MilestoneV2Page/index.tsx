@@ -1,4 +1,5 @@
 import * as React from "react";
+import Api from "@/api";
 
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
@@ -11,7 +12,6 @@ import { fetchAll } from "@/utils/async";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
-import { usePageField } from "@/hooks";
 import { PageModule } from "@/routes/types";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
@@ -51,7 +51,7 @@ function Page() {
   const currentUser = useMe();
 
   const pageData = PageCache.useData(loader);
-  const { data, refresh: refreshPageData } = pageData;
+  const { data } = pageData;
   const { milestone } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
@@ -60,36 +60,24 @@ function Page() {
 
   const workmapLink = paths.spaceWorkMapPath(milestone.space.id, "projects" as const);
 
-  const [projectName, _] = usePageField({
+  const [projectName, setProjectName] = usePageField(pageData, {
     value: ({ milestone }) => milestone.project?.name!,
-    update: () => Promise.resolve(), // Placeholder for API call
+    update: (v) => Api.editProjectName({ projectId: milestone.project?.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
-    pageData,
-    pageCacheKey,
-    entityId: milestone.project.id,
-    refreshPageData,
   });
 
-  const [_name, setName] = usePageField({
+  const [_name, setName] = usePageField(pageData, {
     value: ({ milestone }) => milestone.title,
     update: () => Promise.resolve(), // Placeholder for API call
     onError: (e: string) => showErrorToast(e, "Failed to update milestone name."),
     validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
-    pageData,
-    pageCacheKey,
-    entityId: milestone.id,
-    refreshPageData,
   });
 
-  const [description, setDescription] = usePageField({
+  const [description, setDescription] = usePageField(pageData, {
     value: ({ milestone }) => milestone.description && JSON.parse(milestone.description),
     update: () => Promise.resolve(), // Placeholder for API call
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
-    pageData,
-    pageCacheKey,
-    entityId: milestone.id,
-    refreshPageData,
   });
 
   const mentionedPeopleSearch = People.useMentionedPersonSearch({
@@ -98,9 +86,6 @@ function Page() {
   });
 
   const props: MilestonePage.Props = {
-    projectName,
-    projectLink: paths.projectV2Path(milestone.project.id),
-    projectStatus: milestone.project.status,
     workmapLink,
     tasksCount: 0,
     space: parseSpaceForTurboUI(paths, milestone.space),
@@ -109,10 +94,15 @@ function Page() {
 
     searchPeople: mentionedPeopleSearch,
 
+    // Project
+    projectName,
+    projectLink: paths.projectV2Path(milestone.project.id),
+    projectStatus: milestone.project.status,
+    updateProjectName: setProjectName,
+
     // Milestone data
     milestone: Milestones.parseMilestoneForTurboUi(paths, milestone),
     tasks: [],
-    milestones: [], // Other milestones in the project
 
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
@@ -152,4 +142,66 @@ function Page() {
   };
 
   return <MilestonePage key={milestone.id!} {...props} />;
+}
+
+function usePageField<T>(
+  pageData: LoaderResult & { refresh?: () => Promise<void> },
+  {
+    value,
+    update,
+    onError,
+    validations,
+  }: {
+    value: (data: { milestone: Milestones.Milestone }) => T;
+    update: (value: T) => Promise<any>;
+    onError?: (error: string) => void;
+    validations?: ((value: T) => string | null)[];
+  },
+): [T, (v: T) => Promise<boolean>] {
+  const { cacheVersion, data, refresh: refreshPageData } = pageData;
+
+  const [state, setState] = React.useState<T>(() => value(data));
+  const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
+
+  React.useEffect(() => {
+    if (cacheVersion !== stateVersion) {
+      setState(value(data));
+      setStateVersion(cacheVersion);
+    }
+  }, [value, cacheVersion, stateVersion, data]);
+
+  const updateState = async (newVal: T): Promise<boolean> => {
+    if (validations) {
+      for (const validation of validations) {
+        const error = validation(newVal);
+        if (error) {
+          onError?.(error);
+          return false;
+        }
+      }
+    }
+
+    try {
+      setState(newVal);
+      await update(newVal);
+
+      // Invalidate the cache for this entity
+      if (data.milestone.id) {
+        PageCache.invalidate(pageCacheKey(data.milestone.id));
+      }
+
+      // Refresh the page data if requested
+      if (refreshPageData) {
+        await refreshPageData();
+      }
+
+      return true;
+    } catch (e) {
+      setState(value(data));
+      onError?.(e instanceof Error ? e.message : String(e));
+      return false;
+    }
+  };
+
+  return [state, updateState];
 }

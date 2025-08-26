@@ -177,9 +177,15 @@ export const Default: Story = {
       <MilestonePage
         projectName="Demo Project"
         projectLink="#"
+        workmapLink="#"
+        space={{
+          id: "1",
+          name: "Product",
+          link: "#",
+        }}
+        updateProjectName={() => Promise.resolve(true)}
         milestone={milestone}
         tasks={tasks}
-        milestones={[milestone]}
         onTaskCreate={handleTaskCreate}
         onTaskReorder={handleTaskReorder}
         onStatusChange={handleStatusChange}
@@ -270,7 +276,13 @@ export const EmptyMilestone: Story = {
         projectLink="#"
         milestone={milestone}
         tasks={[]}
-        milestones={[milestone]}
+        workmapLink="#"
+        space={{
+          id: "1",
+          name: "Product",
+          link: "#",
+        }}
+        updateProjectName={() => Promise.resolve(true)}
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee updated:", taskId, assignee)}
