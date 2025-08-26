@@ -26,6 +26,7 @@ export namespace TaskPage {
     fullName: string;
     avatarUrl: string | null;
     profileLink: string;
+    title?: string; // Added to match RichEditor.Person type
   }
 
   export interface Milestone {
@@ -84,11 +85,9 @@ export namespace TaskPage {
     onArchive?: () => void;
 
     // Search functionality for assignees
-    searchPeople: (params: { query: string }) => Promise<Person[]>;
-    // Search functionality for rich editor mentions
-    peopleSearch: SearchFn;
-    // Person lookup for rich content mentions
+    searchPeople: SearchFn;
     mentionedPersonLookup: MentionedPersonLookupFn;
+    mentionedPeopleSearch: SearchFn;
 
     // Permissions
     canEdit: boolean;
