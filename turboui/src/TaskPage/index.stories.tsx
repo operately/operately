@@ -133,7 +133,7 @@ function Component(props: Partial<TaskPage.Props>) {
     // Search
     searchPeople: searchTaskPeople,
     searchMilestones: searchMilestones,
-    peopleSearch: searchRichEditorPeople,
+    mentionedPeopleSearch: searchRichEditorPeople,
     mentionedPersonLookup: mockMentionedPersonLookup,
 
     // Permissions

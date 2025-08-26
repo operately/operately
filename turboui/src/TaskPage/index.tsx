@@ -26,7 +26,6 @@ export namespace TaskPage {
     fullName: string;
     avatarUrl: string | null;
     profileLink: string;
-    title?: string; // Added to match RichEditor.Person type
   }
 
   export interface Milestone {
