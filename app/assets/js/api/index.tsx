@@ -2209,10 +2209,11 @@ export interface GetMeResult {
 }
 
 export interface GetMilestoneInput {
-  id?: string | null;
-  includeComments?: boolean | null;
-  includeProject?: boolean | null;
-  includePermissions?: boolean | null;
+  id: Id;
+  includeComments?: boolean;
+  includeProject?: boolean;
+  includePermissions?: boolean;
+  includeSpace?: boolean;
 }
 
 export interface GetMilestoneResult {

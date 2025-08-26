@@ -32,13 +32,18 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
     refreshCache,
     fetchFn: () =>
       fetchAll({
-        milestone: Milestones.getMilestone({ id: params.id }).then((d) => d.milestone),
+        milestone: Milestones.getMilestone({
+          id: params.id,
+          includeProject: true,
+          includeSpace: true,
+          includePermissions: true,
+        }).then((d) => d.milestone),
       }),
   });
 }
 
 function pageCacheKey(id: string): string {
-  return `v1-MilestoneV2Page.task-${id}`;
+  return `v4-MilestoneV2Page.task-${id}`;
 }
 
 export function Page() {
