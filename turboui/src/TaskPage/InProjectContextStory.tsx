@@ -193,7 +193,7 @@ export function InProjectContextStory() {
               // Search functionality
               searchPeople={searchTaskPeople}
               searchMilestones={searchMilestones}
-              peopleSearch={searchRichEditorPeople}
+              mentionedPeopleSearch={searchRichEditorPeople}
               mentionedPersonLookup={mockMentionedPersonLookup}
               // Permissions
               canEdit={true}

@@ -160,6 +160,10 @@ function Page() {
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
+  const mentionedPeopleSearch = People.useMentionedPersonSearch({
+    scope: { type: "project", id: task.project.id },
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
   const searchMilestones = useMilestonesSearch(task.project.id);
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -214,7 +218,7 @@ function Page() {
     onSubscriptionToggle: () => {},
 
     // Placeholder for person lookup functionality
-    peopleSearch: () => Promise.resolve([]),
+    mentionedPeopleSearch,
     mentionedPersonLookup,
   };
 

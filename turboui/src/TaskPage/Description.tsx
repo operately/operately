@@ -116,7 +116,7 @@ function useDescriptionState(props: TaskPage.Props): State {
     editable: true,
     placeholder: "Describe the task...",
     mentionedPersonLookup: props.mentionedPersonLookup,
-    peopleSearch: props.peopleSearch,
+    peopleSearch: props.mentionedPeopleSearch,
   });
 
   const save = React.useCallback(async () => {
