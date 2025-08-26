@@ -3,8 +3,7 @@ import * as React from "react";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
 
-import { showErrorToast } from "turboui";
-import { MilestonePage } from "turboui/src/MilestonePage";
+import { showErrorToast, MilestonePage } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageCache } from "@/routes/PageCache";
@@ -13,6 +12,9 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { usePageField } from "@/hooks";
+import { PageModule } from "@/routes/types";
+
+export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
 type LoaderResult = {
   data: {
@@ -23,7 +25,7 @@ type LoaderResult = {
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   const paths = new Paths({ companyId: params.companyId });
-  await redirectIfFeatureNotEnabled(params, { feature: "task_v2", path: paths.taskPath(params.id) });
+  await redirectIfFeatureNotEnabled(params, { feature: "milestone_v2", path: paths.projectMilestonePath(params.id) });
 
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
