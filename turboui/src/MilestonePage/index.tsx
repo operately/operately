@@ -22,17 +22,20 @@ export namespace MilestonePage {
   export type Milestone = Types.Milestone;
 
   export interface Props {
-    // Project information for navigation
-    projectName: string;
-    projectLink: string;
-    workmapLink?: string;
-    projectStatus?: string;
-    space?: {
+    // Navigation info
+    workmapLink: string;
+    space: {
       id: string;
       name: string;
       link: string;
     };
     tasksCount?: number;
+
+    // Project
+    projectName: string;
+    projectLink: string;
+    projectStatus?: string;
+    updateProjectName: (name: string) => Promise<boolean>;
   
     // Milestone to display
     milestone: Milestone;
@@ -41,7 +44,6 @@ export namespace MilestonePage {
     tasks: Types.Task[];
   
     // All milestones for context
-    milestones?: Milestone[];
   
     // Optional callbacks
     onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
@@ -113,7 +115,6 @@ export function MilestonePage(props: MilestonePage.Props) {
   const {
     milestone,
     tasks,
-    milestones,
     onTaskCreate,
     onTaskReorder,
     onDueDateChange,
@@ -248,18 +249,18 @@ export function MilestonePage(props: MilestonePage.Props) {
     testId: "milestone-page",
     tabs: tabs,
     status: projectStatus,
-    updateProjectName: async () => true, // Stub implementation
+    updateProjectName: props.updateProjectName,
     closedAt: null,
-    space: state.space || { id: "", name: "", link: "" },
-    workmapLink: state.workmapLink || "",
+    space: state.space,
+    workmapLink: state.workmapLink,
     canEdit: canEdit,
   };
 
   return (
     <ProjectPageLayout {...layoutProps}>
-      <div className="px-4 py-4 flex-1 overflow-scroll">
+      <div className="flex-1 overflow-scroll">
         <div className="flex-1 overflow-auto">
-          <div className="px-4 py-6">
+          <div className="px-4 py-2">
             <div className="sm:grid sm:grid-cols-12">
               {/* Main content - left column (8 columns) */}
               <div className="sm:col-span-8 sm:px-4 space-y-6">
@@ -430,7 +431,7 @@ export function MilestonePage(props: MilestonePage.Props) {
           onCreateTask={handleCreateTask}
           searchPeople={searchPeople}
           currentMilestoneId={milestone.id}
-          milestones={milestones || [milestone]}
+          milestones={[]}
         />
       </div>
     </ProjectPageLayout>
