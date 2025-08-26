@@ -180,7 +180,8 @@ export function InProjectContextStory() {
               onTaskDueDateChange={() => {}}
               onTaskStatusChange={() => {}}
               onMilestoneUpdate={handleMilestoneUpdate}
-              onMilestoneNameChange={async (newName) => {
+              title={targetMilestone.name}
+              onMilestoneTitleChange={async (newName) => {
                 console.log("Milestone name changed:", newName);
                 return true;
               }}
@@ -371,7 +372,8 @@ export function EmptyMilestoneInProjectContextStory() {
               onTaskDueDateChange={() => {}}
               onTaskStatusChange={() => {}}
               onMilestoneUpdate={handleMilestoneUpdate}
-              onMilestoneNameChange={async (newName) => {
+              title={emptyMilestone.name}
+              onMilestoneTitleChange={async (newName) => {
                 console.log("Milestone name changed:", newName);
                 return true;
               }}
