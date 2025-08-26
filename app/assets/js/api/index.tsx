@@ -1251,6 +1251,7 @@ export interface Milestone {
   tasksKanbanState?: string | null;
   tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
+  space?: Space | null;
 }
 
 export interface MilestoneComment {
@@ -2215,7 +2216,7 @@ export interface GetMilestoneInput {
 }
 
 export interface GetMilestoneResult {
-  milestone?: Milestone | null;
+  milestone: Milestone;
 }
 
 export interface GetNotificationsInput {

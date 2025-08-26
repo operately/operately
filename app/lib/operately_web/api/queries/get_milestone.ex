@@ -12,7 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   end
 
   outputs do
-    field? :milestone, :milestone, null: true
+    field :milestone, :milestone, null: false
   end
 
   def call(conn, inputs) do
