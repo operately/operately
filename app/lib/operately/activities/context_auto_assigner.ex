@@ -98,6 +98,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_deleting",
     "task_description_change",
     "project_task_commented",
+    "milestone_title_updating",
   ]
 
   @task_actions [

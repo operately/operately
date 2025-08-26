@@ -83,6 +83,10 @@ defmodule OperatelyWeb.Api do
     mutation(:delete, OperatelyWeb.Api.Projects.DeleteProject)
   end
 
+  namespace(:project_milestones) do
+    mutation(:update_title, OperatelyWeb.Api.ProjectMilestones.UpdateTitle)
+  end
+
   namespace(:project_tasks) do
     query(:list, OperatelyWeb.Api.ProjectTasks.List)
     query(:get_open_task_count, OperatelyWeb.Api.ProjectTasks.GetOpenTaskCount)

@@ -416,6 +416,13 @@ export interface ActivityContentMessageArchiving {
   title?: string | null;
 }
 
+export interface ActivityContentMilestoneTitleUpdating {
+  project: Project;
+  milestone: Milestone | null;
+  oldTitle: string;
+  newTitle: string;
+}
+
 export interface ActivityContentProjectArchived {
   projectId?: string | null;
   project?: Project | null;
@@ -3693,6 +3700,15 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectMilestonesUpdateTitleInput {
+  milestoneId: Id;
+  title: string;
+}
+
+export interface ProjectMilestonesUpdateTitleResult {
+  milestone: Milestone;
+}
+
 export interface ProjectTasksCreateInput {
   projectId: Id;
   milestoneId: Id | null;
@@ -4950,6 +4966,14 @@ class ApiNamespaceAi {
   }
 }
 
+class ApiNamespaceProjectMilestones {
+  constructor(private client: ApiClient) {}
+
+  async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
+    return this.client.post("/project_milestones/update_title", input);
+  }
+}
+
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -4960,6 +4984,7 @@ export class ApiClient {
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceAi: ApiNamespaceAi;
+  public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
@@ -4969,6 +4994,7 @@ export class ApiClient {
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
+    this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
   }
 
   setBasePath(basePath: string) {
@@ -7615,6 +7641,15 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
         defaultApiClient.apiNamespaceAi.editAgentDailyRun,
+      ),
+  },
+
+  project_milestones: {
+    updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
+    useUpdateTitle: () =>
+      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateTitle,
       ),
   },
 };

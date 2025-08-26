@@ -67,9 +67,9 @@ function Page() {
     validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
   });
 
-  const [_name, setName] = usePageField(pageData, {
+  const [title, setTitle] = usePageField(pageData, {
     value: ({ milestone }) => milestone.title,
-    update: () => Promise.resolve(), // Placeholder for API call
+    update: (v) => Api.project_milestones.updateTitle({ milestoneId: milestone.id, title: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone name."),
     validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
   });
@@ -112,7 +112,8 @@ function Page() {
     canComment: Boolean(milestone.permissions.canComment),
 
     // Core milestone data
-    onMilestoneNameChange: setName,
+    title,
+    onMilestoneTitleChange: setTitle,
     description,
     onDescriptionChange: setDescription,
     onDueDateChange: () => Promise.resolve(),
