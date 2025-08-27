@@ -9,7 +9,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
@@ -104,6 +104,8 @@ function Page() {
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
+  const mentionedPersonLookup = useMentionedPersonLookupFn();
+
   const props: MilestonePage.Props = {
     workmapLink,
     tasksCount: 0,
@@ -157,7 +159,8 @@ function Page() {
     onCopyUrl: () => {},
 
     // Rich text editor support
-    peopleSearch: mentionedPeopleSearch,
+    mentionedPersonLookup,
+    mentionedPeopleSearch,
   };
 
   return <MilestonePage key={milestone.id!} {...props} />;
