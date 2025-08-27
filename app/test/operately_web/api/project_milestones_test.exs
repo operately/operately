@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectMilestonesTest do
   use OperatelyWeb.TurboCase
+  alias Operately.Support.RichText
 
   setup ctx do
     ctx
@@ -477,6 +478,213 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone1.timeframe) == ~D[2026-01-15]
       assert Operately.ContextualDates.Timeframe.end_date(updated_milestone2.timeframe) == ~D[2026-02-15]
+    end
+  end
+
+  describe "update description" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{})
+    end
+
+    test "it requires a milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{description: RichText.rich_text("Test description", :as_string)})
+      assert res.message == "Missing required fields: milestone_id"
+    end
+
+    test "it requires a description", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{milestone_id: Paths.milestone_id(ctx.milestone)})
+      assert res.message == "Missing required fields: description"
+    end
+
+    test "it returns not found for non-existent milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Ecto.UUID.generate(),
+        description: RichText.rich_text("Test description", :as_string)
+      })
+    end
+
+    test "it returns forbidden for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: RichText.rich_text("Test description", :as_string)
+      })
+    end
+
+    test "it returns forbidden for space members without edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: RichText.rich_text("Test description", :as_string)
+      })
+    end
+
+    test "it updates the milestone description for project creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      description = RichText.rich_text("Updated milestone description")
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(description)
+      })
+
+      assert res.milestone.description == Jason.encode!(description)
+      assert res.milestone.id == Paths.milestone_id(ctx.milestone)
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.description == description
+    end
+
+    test "it updates the milestone description for space members with edit access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.log_in_person(:space_member)
+
+      description = RichText.rich_text("Updated by space member")
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(description)
+      })
+
+      assert res.milestone.description == Jason.encode!(description)
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.description == description
+    end
+
+    test "it updates the milestone description for project champion", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.preload(:champion, :person)
+
+      ctx = log_in_account(ctx, ctx.champion.person)
+
+      description = RichText.rich_text("Updated by champion")
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(description)
+      })
+
+      assert res.milestone.description == Jason.encode!(description)
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.description == description
+    end
+
+    test "it updates the milestone description for project reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.preload(:reviewer, :person)
+
+      ctx = log_in_account(ctx, ctx.reviewer.person)
+
+      description = RichText.rich_text("Updated by reviewer")
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(description)
+      })
+
+      assert res.milestone.description == Jason.encode!(description)
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.description == description
+    end
+
+    test "it preserves other milestone fields when updating description", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      original_title = ctx.milestone.title
+      original_status = ctx.milestone.status
+      original_timeframe = ctx.milestone.timeframe
+      original_project_id = ctx.milestone.project_id
+
+      description = RichText.rich_text("New description only")
+
+      assert {200, _res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(description)
+      })
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.description == description
+      assert updated_milestone.title == original_title
+      assert updated_milestone.status == original_status
+      assert updated_milestone.timeframe == original_timeframe
+      assert updated_milestone.project_id == original_project_id
+    end
+
+    test "it can set description to empty", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      empty_description = RichText.rich_text("")
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: Jason.encode!(empty_description)
+      })
+
+      assert res.milestone.description == Jason.encode!(empty_description)
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.description == empty_description
+    end
+
+    test "it creates an activity when description is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.milestone.id, "milestone_description_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: RichText.rich_text("Activity test description", :as_string)
+      })
+
+      after_count = count_activities(ctx.milestone.id, "milestone_description_updating")
+      assert after_count == before_count + 1
+
+      activity = get_activity(ctx.milestone.id, "milestone_description_updating")
+      assert activity.content["milestone_id"] == ctx.milestone.id
+      assert activity.content["project_id"] == ctx.project.id
+      assert activity.content["company_id"] == ctx.project.company_id
+      assert activity.content["space_id"] == ctx.project.group_id
+      assert activity.content["milestone_name"] == ctx.milestone.title
+      assert activity.content["has_description"] == true
+    end
+
+    test "it tracks has_description correctly for empty descriptions", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_description], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        description: RichText.rich_text("", :as_string)
+      })
+
+      activity = get_activity(ctx.milestone.id, "milestone_description_updating")
+      assert activity.content["has_description"] == false
     end
   end
 
