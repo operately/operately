@@ -189,7 +189,7 @@ function ZeroState({
         </div>
 
         <PrimaryButton size="sm" onClick={open} testId="add-work-item">
-          Add your first item
+          Add goal or project
         </PrimaryButton>
 
         <AddItemModal
