@@ -146,3 +146,13 @@ actions:
       demand immediate attention. For each blocker, briefly suggest a concrete
       action or owner to address it. No fluff—focus on what will actually move
       the needle.
+
+  - id: "experimental-project-optimizer" 
+    label: "Optimize project workflow"
+    context: "project"
+    experimental: true
+    prompt: |
+      Analyze this project's current workflow and suggest specific optimizations
+      to improve velocity and reduce waste. Focus on actionable process improvements,
+      tool recommendations, or structural changes that could boost team productivity.
+      Be concrete and implementation-focused.

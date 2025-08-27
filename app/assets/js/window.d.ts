@@ -12,6 +12,7 @@ declare global {
     id: string;
     label: string;
     context: string;
+    experimental?: boolean;
   }
 
   interface AppConfig {
