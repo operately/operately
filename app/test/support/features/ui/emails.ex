@@ -3,6 +3,20 @@ defmodule Operately.Support.Features.UI.Emails do
 
   alias __MODULE__.SentEmail
   alias __MODULE__.SentEmails
+  
+  def clear_sent_emails do
+    # Flush all messages from the mailbox to start fresh
+    receive_all_and_discard()
+  end
+
+  # Helper to discard all messages in the mailbox
+  defp receive_all_and_discard do
+    receive do
+      _ -> receive_all_and_discard()
+    after
+      0 -> :ok
+    end
+  end
 
   def assert_email_sent(subject, receiver) do
     {found, emails} = retry(times: 50, sleep: 200, fun: fn -> 
@@ -37,33 +51,24 @@ defmodule Operately.Support.Features.UI.Emails do
   end
 
   def list_sent_emails do
-    # Swoosh Test adapter doesn't have a get_sent_emails() function
-    # Instead, it sends emails as messages to the test process
-    # We need to collect all these messages from the process mailbox
-    
-    # Get current process mailbox messages
-    {:messages, messages} = Process.info(self(), :messages)
-    
-    # Extract emails from messages - Swoosh uses different patterns than Bamboo
-    emails = messages
-    |> Enum.reduce([], fn message, acc ->
-         case message do
-           # Swoosh typically sends messages in this format to the test process
-           {:email, email} when is_struct(email, Swoosh.Email) ->
-             [email | acc]
-           # Some versions might use different message formats
-           {_, :email, email} when is_struct(email, Swoosh.Email) ->
-             [email | acc]
-           # Direct email struct messages  
-           email when is_struct(email, Swoosh.Email) ->
-             [email | acc]
-           _ ->
-             acc
-         end
-       end)
-    |> Enum.reverse()
-    
+    # Swoosh Test adapter delivers emails to the test process mailbox
+    # Let's receive all email messages from the mailbox
+    emails = receive_all_emails([])
     emails |> SentEmails.new()
+  end
+
+  # Recursively receive all email messages from the mailbox
+  defp receive_all_emails(acc) do
+    receive do
+      {:delivered_email, email} -> 
+        receive_all_emails([email | acc])
+      {ref, email} when is_reference(ref) and is_struct(email, Swoosh.Email) ->
+        receive_all_emails([email | acc])
+      email when is_struct(email, Swoosh.Email) ->
+        receive_all_emails([email | acc])
+    after
+      0 -> Enum.reverse(acc)
+    end
   end
 
   def last_sent_email() do
