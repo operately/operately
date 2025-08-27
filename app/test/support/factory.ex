@@ -78,4 +78,7 @@ defmodule Operately.Support.Factory do
 
   # blobs
   defdelegate add_blob(ctx, testid, author_name \\ :creator), to: Factory.Blobs
+
+  # agent convos
+  defdelegate add_agent_convo(ctx, testid, author, resource_name), to: Factory.AgentConvos
 end
