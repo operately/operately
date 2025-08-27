@@ -222,8 +222,28 @@ function stripAnsiCodes(str) {
   return str.replace(/\x1b\[[0-9;]*m/g, "");
 }
 
+// Function to get CI URL from status checks
+async function getCiUrl(prNumber) {
+  try {
+    const { stdout } = await execAsync(
+      `gh pr view ${prNumber} --json statusCheckRollup --jq '.statusCheckRollup[] | select(.context and (.context | contains("semaphoreci"))) | .targetUrl'`,
+    );
+
+    const url = stdout.trim();
+    if (url && url !== "null") {
+      return url;
+    }
+
+    // Fallback to general Semaphore CI project page
+    return "https://operately.semaphoreci.com/projects/operately";
+  } catch (error) {
+    // Fallback to general Semaphore CI project page
+    return "https://operately.semaphoreci.com/projects/operately";
+  }
+}
+
 // Function to render agent row with current terminal width
-function renderAgentRow(prNumber, title, author, created, updatedDays, ciStatus, copilotStatus, termWidth) {
+function renderAgentRow(prNumber, title, author, created, updatedDays, ciStatus, copilotStatus, ciUrl, termWidth) {
   // Format CI status with colors
   let formattedCi;
   switch (ciStatus) {
@@ -268,13 +288,16 @@ function renderAgentRow(prNumber, title, author, created, updatedDays, ciStatus,
       formattedCopilot = `${colors.GRAY}? UNK${colors.RESET}`;
   }
 
-  // Create clickable "Open PR" button
+  // Create clickable action buttons
   const prUrl = `https://github.com/operately/operately/pull/${prNumber}`;
+  // Use the CI URL passed from the fetched data
+  const ciUrlToUse = ciUrl || `https://operately.semaphoreci.com/projects/operately`;
   const openPrButton = `\x1b]8;;${prUrl}\x1b\\${colors.BRIGHT_GREEN}[Open PR]${colors.RESET}\x1b]8;;\x1b\\`;
+  const openCiButton = `\x1b]8;;${ciUrlToUse}\x1b\\${colors.BRIGHT_CYAN}[Open CI]${colors.RESET}\x1b]8;;\x1b\\`;
 
   // Fixed columns width: "#1234 " (6) + "12 DAYS AGO  " (13) + "✗ FAIL     " (11) + "● WORK     " (10) + extra space (1) = 41
   const fixedWidth = 41;
-  const actionWidth = 9; // "[Open PR]"
+  const actionWidth = 19; // "[Open PR] [Open CI]" (9 + 1 + 9 = 19)
   const availableTitleWidth = termWidth - fixedWidth - actionWidth - 2; // -2 for safety margin
 
   // Truncate title to fit available space
@@ -293,7 +316,7 @@ function renderAgentRow(prNumber, title, author, created, updatedDays, ciStatus,
   // Calculate the visible length of main content (without ANSI codes)
   const visibleLength = stripAnsiCodes(mainContent).length;
 
-  // Calculate exact padding to right-align the action button
+  // Calculate exact padding to right-align the action buttons
   let padding = termWidth - visibleLength - actionWidth;
 
   // Ensure we have at least 1 space padding
@@ -301,8 +324,8 @@ function renderAgentRow(prNumber, title, author, created, updatedDays, ciStatus,
     padding = 1;
   }
 
-  // Output with right-aligned action button
-  return mainContent + " ".repeat(padding) + openPrButton;
+  // Output with right-aligned action buttons
+  return mainContent + " ".repeat(padding) + openPrButton + " " + openCiButton;
 }
 
 // Function to fetch fresh data from GitHub (heavy operation - do less frequently)
@@ -326,8 +349,12 @@ async function fetchAgentData() {
         const days = daysAgo(created);
         const updatedDays = daysAgo(updated);
 
-        // Get both CI and Copilot status in parallel
-        const [ciStatus, copilotStatus] = await Promise.all([getCiStatus(prNumber), getCopilotStatus(prNumber)]);
+        // Get both CI status and Copilot status in parallel, and also fetch CI URL
+        const [ciStatus, copilotStatus, ciUrl] = await Promise.all([
+          getCiStatus(prNumber),
+          getCopilotStatus(prNumber),
+          getCiUrl(prNumber),
+        ]);
 
         processedAgents.push({
           prNumber,
@@ -339,6 +366,7 @@ async function fetchAgentData() {
           updatedDays,
           ciStatus,
           copilotStatus,
+          ciUrl,
         });
       }
 
@@ -375,14 +403,14 @@ function renderDisplay(countdown) {
     const headerMain = `${"PR".padEnd(5)} ${"UPDATED".padEnd(12)} ${"CI".padEnd(6)} ${"COPILOT".padEnd(5)} ${"TITLE"}`; // Extra space before TITLE
     const headerMainLength = headerMain.length;
 
-    // Calculate padding to right-align ACTION
-    let actionPadding = termWidth - headerMainLength - 6; // 6 is length of "ACTION"
+    // Calculate padding to right-align ACTIONS
+    let actionPadding = termWidth - headerMainLength - 7; // 7 is length of "ACTIONS"
     if (actionPadding < 1) {
       actionPadding = 1;
     }
 
     // Build the complete header line
-    output += `${colors.DIM}${headerMain}${" ".repeat(actionPadding)}ACTION${colors.RESET}\n`;
+    output += `${colors.DIM}${headerMain}${" ".repeat(actionPadding)}ACTIONS${colors.RESET}\n`;
     output += `${colors.DIM}${"─".repeat(termWidth)}${colors.RESET}\n`;
 
     // Render each agent row
@@ -396,6 +424,7 @@ function renderDisplay(countdown) {
           agent.updatedDays,
           agent.ciStatus,
           agent.copilotStatus,
+          agent.ciUrl,
           termWidth,
         ) + "\n";
     }
