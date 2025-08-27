@@ -356,8 +356,8 @@ defmodule OperatelyWeb.Api.Ai do
     alias OperatelyWeb.Api.Serializer
 
     inputs do
-      field :context_type, :string, optional: true
-      field :context_id, :id, optional: true
+      field :context_id, :id
+      field :context_type, :string
     end
 
     outputs do
