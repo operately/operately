@@ -108,6 +108,37 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
   end
 
+  defmodule Delete do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :milestone_id, :id, null: false
+    end
+
+    outputs do
+      field :success, :boolean
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.save_activity(:milestone_deleting, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.milestone.id,
+          milestone_name: changes.milestone.title,
+        }
+      end)
+      |> Steps.delete_milestone()
+      |> Steps.commit()
+      |> Steps.respond(fn _ -> %{success: true} end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -178,6 +209,15 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     def update_milestone_description(multi, new_description) do
       Ecto.Multi.update(multi, :updated_milestone, fn %{milestone: milestone} ->
         Operately.Projects.Milestone.changeset(milestone, %{description: new_description})
+      end)
+    end
+
+    def delete_milestone(multi) do
+      Ecto.Multi.run(multi, :delete_milestone, fn repo, %{milestone: milestone} ->
+        case repo.delete(milestone) do
+          {:ok, deleted_milestone} -> {:ok, deleted_milestone}
+          {:error, changeset} -> {:error, changeset}
+        end
       end)
     end
 

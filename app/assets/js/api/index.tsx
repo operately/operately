@@ -416,6 +416,11 @@ export interface ActivityContentMessageArchiving {
   title?: string | null;
 }
 
+export interface ActivityContentMilestoneDeleting {
+  project: Project;
+  milestoneName: string;
+}
+
 export interface ActivityContentMilestoneDescriptionUpdating {
   project: Project;
   milestone: Milestone | null;
@@ -2000,8 +2005,8 @@ export interface AiGetConversationMessagesResult {
 }
 
 export interface AiGetConversationsInput {
-  contextType?: string;
-  contextId?: Id;
+  contextId: Id;
+  contextType: string;
 }
 
 export interface AiGetConversationsResult {
@@ -3719,6 +3724,14 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectMilestonesDeleteInput {
+  milestoneId: Id;
+}
+
+export interface ProjectMilestonesDeleteResult {
+  success: boolean;
+}
+
 export interface ProjectMilestonesUpdateDescriptionInput {
   milestoneId: Id;
   description: Json;
@@ -5005,6 +5018,10 @@ class ApiNamespaceAi {
 
 class ApiNamespaceProjectMilestones {
   constructor(private client: ApiClient) {}
+
+  async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
+    return this.client.post("/project_milestones/delete", input);
+  }
 
   async updateDescription(
     input: ProjectMilestonesUpdateDescriptionInput,
@@ -7692,6 +7709,12 @@ export default {
   },
 
   project_milestones: {
+    delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
+    useDelete: () =>
+      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.delete,
+      ),
+
     updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
     useUpdateDescription: () =>
