@@ -18,7 +18,7 @@ defmodule Operately.Operations.TaskDescriptionChange do
         task_id: task.id,
         task_name: task.name,
         project_name: task.project.name,
-        has_description: Operately.Tasks.has_description?(description)
+        has_description: Operately.RichContent.empty?(description)
       }
     end)
     |> Repo.transaction()
