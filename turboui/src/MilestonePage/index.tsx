@@ -36,42 +36,40 @@ export namespace MilestonePage {
     projectLink: string;
     projectStatus?: string;
     updateProjectName: (name: string) => Promise<boolean>;
+
+    // Milestone
+    milestone: Milestone;
+    title: string;
+    onMilestoneTitleChange: (name: string) => Promise<boolean>;
     dueDate: DateField.ContextualDate | null;
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
-  
-    // Milestone to display
-    milestone: Milestone;
-  
+    status: Types.Status;
+    onStatusChange: (status: Types.Status) => void;
+
     // Tasks for this milestone
     tasks: Types.Task[];
-  
-    // All milestones for context
-  
+
     // Optional callbacks
-    onStatusChange?: (taskId: string, newStatus: Types.Status) => void;
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskReorder?: (tasks: Types.Task[]) => void;
     onCommentCreate?: (comment: string) => void;
-  
     onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
     onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange?: (taskId: string, status: string) => void;
-    onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
-    title: string;
-    onMilestoneTitleChange: (name: string) => Promise<boolean>;
+
     searchPeople: (params: { query: string }) => Promise<Types.Person[]>;
-  
+
     // Filtering
     filters?: Types.FilterCondition[];
     onFiltersChange?: (filters: Types.FilterCondition[]) => void;
-  
+
     // Timeline data
     timelineItems?: any[];
     currentUser?: Types.Person;
     canComment?: boolean;
     onAddComment?: (comment: string) => void;
     onEditComment?: (commentId: string, content: string) => void;
-  
+
     // Milestone metadata
     createdBy?: Types.Person;
     createdAt?: Date;
@@ -81,7 +79,7 @@ export namespace MilestonePage {
     onArchive?: () => void;
     onDelete?: () => void;
     canEdit?: boolean;
-  
+
     // Rich editor support for description
     description?: any; // Rich content description
     onDescriptionChange?: (newDescription: any) => Promise<boolean>;
@@ -96,7 +94,6 @@ export namespace MilestonePage {
     setIsHeaderStuck: (stuck: boolean) => void;
   }
 }
-
 
 function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State {
   // State
@@ -124,6 +121,7 @@ export function MilestonePage(props: MilestonePage.Props) {
     onTaskStatusChange,
     title,
     onMilestoneTitleChange,
+    status,
     searchPeople,
     filters = [],
     onFiltersChange,
@@ -278,8 +276,8 @@ export function MilestonePage(props: MilestonePage.Props) {
                       trimBeforeSave
                     />
                     <StatusBadge
-                      status={milestone.status === "done" ? "completed" : "in_progress"}
-                      customLabel={milestone.status === "done" ? undefined : "Active"}
+                      status={status === "done" ? "completed" : "in_progress"}
+                      customLabel={status === "done" ? undefined : "Active"}
                       hideIcon={true}
                     />
                   </div>
@@ -436,4 +434,3 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
-

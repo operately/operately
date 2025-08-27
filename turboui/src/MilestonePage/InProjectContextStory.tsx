@@ -173,7 +173,10 @@ export function InProjectContextStory() {
               updateProjectName={mockProjectState.updateProjectName}
               milestone={milestones.find((m) => m.id === targetMilestone.id) || targetMilestone}
               tasks={tasks}
-              onStatusChange={handleTaskStatusChange}
+              status={targetMilestone.status}
+              onStatusChange={(status) => {
+                console.log("Milestone status changed:", status);
+              }}
               onTaskCreate={handleTaskCreate}
               onTaskReorder={handleTaskReorder}
               onTaskAssigneeChange={() => {}}
@@ -369,7 +372,10 @@ export function EmptyMilestoneInProjectContextStory() {
               updateProjectName={mockProjectState.updateProjectName}
               milestone={milestones.find((m) => m.id === emptyMilestone.id) || emptyMilestone}
               tasks={tasks}
-              onStatusChange={handleTaskStatusChange}
+              status={emptyMilestone.status}
+              onStatusChange={(status) => {
+                console.log("Milestone status changed:", status);
+              }}
               onTaskCreate={handleTaskCreate}
               onTaskReorder={handleTaskReorder}
               onTaskAssigneeChange={() => {}}
