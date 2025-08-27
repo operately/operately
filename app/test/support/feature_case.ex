@@ -5,7 +5,6 @@ defmodule Operately.FeatureCase do
     quote do
       use ExUnit.Case, async: false
       use Wallaby.Feature
-      use Bamboo.Test, shared: true
 
       import Operately.FeatureSteps
 
@@ -19,6 +18,9 @@ defmodule Operately.FeatureCase do
       import Operately.FeatureCase
 
       setup data do
+        # Clear any emails from previous tests
+        Operately.Support.Features.UI.Emails.clear_sent_emails()
+        
         Wallaby.Browser.resize_window(data.session, 1920, 2000)
 
         screenshots_before = Path.wildcard("/tmp/screenshots/*")

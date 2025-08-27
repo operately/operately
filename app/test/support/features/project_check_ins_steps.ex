@@ -37,6 +37,10 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :submit_check_in, ctx, %{status: status, description: description} do
+    # Clear any emails from setup (like contributor addition emails)
+    # to ensure we only check emails from the check-in submission
+    UI.Emails.clear_sent_emails()
+    
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "check-in-now")
