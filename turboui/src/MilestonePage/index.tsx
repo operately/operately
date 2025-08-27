@@ -36,6 +36,8 @@ export namespace MilestonePage {
     projectLink: string;
     projectStatus?: string;
     updateProjectName: (name: string) => Promise<boolean>;
+    dueDate: DateField.ContextualDate | null;
+    onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
   
     // Milestone to display
     milestone: Milestone;
@@ -50,7 +52,6 @@ export namespace MilestonePage {
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskReorder?: (tasks: Types.Task[]) => void;
     onCommentCreate?: (comment: string) => void;
-    onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
   
     onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
     onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
@@ -118,11 +119,9 @@ export function MilestonePage(props: MilestonePage.Props) {
     tasks,
     onTaskCreate,
     onTaskReorder,
-    onDueDateChange,
     onTaskAssigneeChange,
     onTaskDueDateChange,
     onTaskStatusChange,
-    onMilestoneUpdate,
     title,
     onMilestoneTitleChange,
     searchPeople,
@@ -133,13 +132,6 @@ export function MilestonePage(props: MilestonePage.Props) {
     canComment = false,
     onAddComment,
     onEditComment,
-    createdBy,
-    createdAt,
-    isSubscribed = false,
-    onSubscriptionToggle,
-    onCopyUrl,
-    onArchive,
-    onDelete,
     canEdit = true,
     description,
     onDescriptionChange,
@@ -408,19 +400,7 @@ export function MilestonePage(props: MilestonePage.Props) {
                 </div>
 
                 <div className="space-y-6">
-                  <MilestoneSidebar
-                    milestone={milestone}
-                    onDueDateChange={onDueDateChange}
-                    onMilestoneUpdate={onMilestoneUpdate}
-                    createdBy={createdBy}
-                    createdAt={createdAt}
-                    isSubscribed={isSubscribed}
-                    onSubscriptionToggle={onSubscriptionToggle}
-                    onCopyUrl={onCopyUrl}
-                    onArchive={onArchive}
-                    onDelete={onDelete}
-                    canEdit={canEdit}
-                  />
+                  <MilestoneSidebar {...state} />
                 </div>
               </div>
             </div>

@@ -37,6 +37,42 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
   end
 
+  defmodule UpdateDueDate do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :milestone_id, :id, null: false
+      field :due_date, :contextual_date, null: true
+    end
+
+    outputs do
+      field :milestone, :milestone
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.update_milestone_due_date(inputs.due_date)
+      |> Steps.save_activity(:milestone_due_date_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.milestone.id,
+          milestone_name: changes.milestone.title,
+          old_due_date: changes.milestone.timeframe && changes.milestone.timeframe.contextual_end_date,
+          new_due_date: inputs.due_date,
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{milestone: Serializer.serialize(changes.updated_milestone)}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
 
@@ -76,6 +112,31 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       end)
       |> Ecto.Multi.update(:updated_milestone, fn %{milestone: milestone} ->
         Operately.Projects.Milestone.changeset(milestone, %{title: new_title})
+      end)
+    end
+
+    def update_milestone_due_date(multi, new_due_date) do
+      Ecto.Multi.update(multi, :updated_milestone, fn %{milestone: milestone} ->
+        cond do
+          new_due_date == nil && milestone.timeframe == nil ->
+            Operately.Projects.Milestone.changeset(milestone, %{timeframe: nil})
+
+          milestone.timeframe == nil ->
+            Operately.Projects.Milestone.changeset(milestone, %{
+              timeframe: %{
+                contextual_start_date: nil,
+                contextual_end_date: new_due_date
+              }
+            })
+
+          true ->
+            Operately.Projects.Milestone.changeset(milestone, %{
+              timeframe: %{
+                contextual_start_date: milestone.timeframe.contextual_start_date,
+                contextual_end_date: new_due_date
+              }
+            })
+        end
       end)
     end
 

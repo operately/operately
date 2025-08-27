@@ -13,6 +13,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
+import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
@@ -80,6 +81,12 @@ function Page() {
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
   });
 
+  const [dueDate, setDueDate] = usePageField(pageData, {
+    value: ({ milestone }) => parseContextualDate(milestone.timeframe?.contextualEndDate),
+    update: (v) => Api.project_milestones.updateDueDate({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
+    onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
+  });
+
   const mentionedPeopleSearch = People.useMentionedPersonSearch({
     scope: { type: "project", id: milestone.project.id },
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
@@ -116,7 +123,8 @@ function Page() {
     onMilestoneTitleChange: setTitle,
     description,
     onDescriptionChange: setDescription,
-    onDueDateChange: () => Promise.resolve(),
+    dueDate,
+    onDueDateChange: setDueDate,
 
     // Task operations
     onTaskCreate: () => Promise.resolve(),
