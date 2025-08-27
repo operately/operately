@@ -124,22 +124,16 @@ function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: Types.Person; c
   );
 }
 
-function SidebarNotifications({
-  isSubscribed,
-  onSubscriptionToggle,
-}: {
-  isSubscribed: boolean;
-  onSubscriptionToggle?: (subscribed: boolean) => void;
-}) {
+function SidebarNotifications(props: { isSubscribed: boolean; onSubscriptionToggle?: (subscribed: boolean) => void }) {
+  if (!props.onSubscriptionToggle) return null;
+
   const handleToggle = (subscribed: boolean) => {
-    if (onSubscriptionToggle) {
-      onSubscriptionToggle(subscribed);
-    }
+    props.onSubscriptionToggle?.(subscribed);
   };
 
   return (
     <SidebarSection title="Notifications">
-      <NotificationToggle isSubscribed={isSubscribed} onToggle={handleToggle} entityType="milestone" />
+      <NotificationToggle isSubscribed={props.isSubscribed} onToggle={handleToggle} entityType="milestone" />
     </SidebarSection>
   );
 }

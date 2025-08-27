@@ -156,10 +156,6 @@ function Page() {
     onArchive: () => {},
     onCopyUrl: () => {},
 
-    // Subscription
-    isSubscribed: false,
-    onSubscriptionToggle: () => {},
-
     // Rich text editor support
     peopleSearch: mentionedPeopleSearch,
   };
