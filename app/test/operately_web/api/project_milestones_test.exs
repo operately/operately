@@ -250,6 +250,236 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     end
   end
 
+  describe "update due date" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{})
+    end
+
+    test "it requires a milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{due_date: %{date: "2026-01-01", date_type: "day"}})
+      assert res.message == "Missing required fields: milestone_id"
+    end
+
+    test "it returns not found for non-existent milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Ecto.UUID.generate(),
+        due_date: %{date: "2026-01-01", date_type: "day"}
+      })
+    end
+
+    test "it returns forbidden for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: %{date: "2026-01-01", date_type: "day"}
+      })
+    end
+
+    test "it returns forbidden for space members without edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: %{date: "2026-01-01", date_type: "day"}
+      })
+    end
+
+    test "it updates the milestone due date for project creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-01-01",
+        date_type: "day",
+        value: "Jan 1, 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: contextual_date
+      })
+
+      assert res.milestone.id == Paths.milestone_id(ctx.milestone)
+      assert res.milestone.timeframe.contextual_end_date == contextual_date
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-01-01]
+    end
+
+    test "it can set due date to nil", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: nil
+      })
+
+      assert res.milestone.id == Paths.milestone_id(ctx.milestone)
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.timeframe == nil || updated_milestone.timeframe.contextual_end_date == nil
+    end
+
+    test "it preserves start date when updating due date", ctx do
+      # First set a timeframe with both start and end dates
+      {:ok, milestone_with_timeframe} = Operately.Projects.update_milestone(ctx.milestone, %{
+        timeframe: %{
+          contextual_start_date: %{date: "2025-12-01", date_type: "day", value: "Dec 1, 2025"},
+          contextual_end_date: %{date: "2025-12-31", date_type: "day", value: "Dec 31, 2025"}
+        }
+      })
+
+      ctx = %{ctx | milestone: milestone_with_timeframe}
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      new_due_date = %{
+        date: "2026-03-15",
+        date_type: "day",
+        value: "Mar 15, 2026"
+      }
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: new_due_date
+      })
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert Operately.ContextualDates.Timeframe.start_date(updated_milestone.timeframe) == ~D[2025-12-01]
+      assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-03-15]
+    end
+
+    test "it creates timeframe when milestone has none", ctx do
+      # Ensure milestone has no timeframe
+      {:ok, milestone_no_timeframe} = Operately.Projects.update_milestone(ctx.milestone, %{timeframe: nil})
+      ctx = %{ctx | milestone: milestone_no_timeframe}
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      contextual_date = %{
+        date: "2026-06-01",
+        date_type: "day",
+        value: "Jun 1, 2026"
+      }
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: contextual_date
+      })
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert updated_milestone.timeframe != nil
+      assert Operately.ContextualDates.Timeframe.start_date(updated_milestone.timeframe) == nil
+      assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-06-01]
+    end
+
+    test "it updates due date for space members with edit access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.log_in_person(:space_member)
+
+      contextual_date = %{
+        date: "2026-02-14",
+        date_type: "day",
+        value: "Feb 14, 2026"
+      }
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: contextual_date
+      })
+
+      updated_milestone = Repo.reload(ctx.milestone)
+      assert Operately.ContextualDates.Timeframe.end_date(updated_milestone.timeframe) == ~D[2026-02-14]
+    end
+
+    test "it creates an activity when due date is updated", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.milestone.id, "milestone_due_date_updating")
+
+      contextual_date = %{
+        "date" => "2026-04-01",
+        "date_type" => "day",
+        "value" => "Apr 1, 2026"
+      }
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: contextual_date
+      })
+
+      after_count = count_activities(ctx.milestone.id, "milestone_due_date_updating")
+      assert after_count == before_count + 1
+
+      activity = get_activity(ctx.milestone.id, "milestone_due_date_updating")
+      assert activity.content["milestone_id"] == ctx.milestone.id
+      assert activity.content["project_id"] == ctx.project.id
+      assert activity.content["company_id"] == ctx.project.company_id
+      assert activity.content["space_id"] == ctx.project.group_id
+      assert activity.content["new_due_date"] == contextual_date
+    end
+
+    test "it handles different date types", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      quarter_date = %{
+        date: "2026-06-01",
+        date_type: "quarter",
+        value: "Q2 2026"
+      }
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: quarter_date
+      })
+
+      assert res.milestone.timeframe.contextual_end_date == quarter_date
+    end
+
+    test "it works with milestones from different projects", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:other_project, :engineering)
+        |> Factory.add_project_milestone(:other_milestone, :other_project)
+        |> Factory.log_in_person(:creator)
+
+      date1 = %{date: "2026-01-15", date_type: "day", value: "Jan 15, 2026"}
+      date2 = %{date: "2026-02-15", date_type: "day", value: "Feb 15, 2026"}
+
+      # Update milestone from first project
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        due_date: date1
+      })
+
+      # Update milestone from second project
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :update_due_date], %{
+        milestone_id: Paths.milestone_id(ctx.other_milestone),
+        due_date: date2
+      })
+
+      # Verify both milestones were updated correctly
+      updated_milestone1 = Repo.reload(ctx.milestone)
+      updated_milestone2 = Repo.reload(ctx.other_milestone)
+
+      assert Operately.ContextualDates.Timeframe.end_date(updated_milestone1.timeframe) == ~D[2026-01-15]
+      assert Operately.ContextualDates.Timeframe.end_date(updated_milestone2.timeframe) == ~D[2026-02-15]
+    end
+  end
+
   #
   # Utility functions
   #

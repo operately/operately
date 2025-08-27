@@ -146,8 +146,8 @@ export const Default: Story = {
     };
 
     // Handler for due date changes
-    const handleDueDateChange = (milestoneId: string, dueDate: DateField.ContextualDate | null) => {
-      console.log("Due date changed:", { milestoneId, dueDate });
+    const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
+      console.log("Due date changed:", { dueDate });
       // If dueDate is null, we're clearing the date
       if (dueDate === null) {
         const { dueDate, ...restOfMilestone } = milestone;
@@ -190,6 +190,7 @@ export const Default: Story = {
         onTaskReorder={handleTaskReorder}
         onStatusChange={handleStatusChange}
         onCommentCreate={(comment) => console.log("Comment created:", comment)}
+        dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
@@ -245,8 +246,8 @@ export const EmptyMilestone: Story = {
     const [isSubscribed, setIsSubscribed] = useState(true);
 
     // Handler for due date changes
-    const handleDueDateChange = (milestoneId: string, dueDate: DateField.ContextualDate | null) => {
-      console.log("Due date changed:", { milestoneId, dueDate });
+    const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
+      console.log("Due date changed:", { dueDate });
       // If dueDate is null, we're clearing the date
       if (dueDate === null) {
         const { dueDate, ...restOfMilestone } = milestone;
@@ -285,6 +286,7 @@ export const EmptyMilestone: Story = {
         }}
         updateProjectName={() => Promise.resolve(true)}
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
+        dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee updated:", taskId, assignee)}
         onTaskDueDateChange={(taskId, dueDate) => console.log("Task due date updated:", taskId, dueDate)}

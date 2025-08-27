@@ -179,10 +179,14 @@ export function InProjectContextStory() {
               onTaskAssigneeChange={() => {}}
               onTaskDueDateChange={() => {}}
               onTaskStatusChange={() => {}}
-              onMilestoneUpdate={handleMilestoneUpdate}
               title={targetMilestone.name}
               onMilestoneTitleChange={async (newName) => {
                 console.log("Milestone name changed:", newName);
+                return true;
+              }}
+              dueDate={targetMilestone.dueDate || null}
+              onDueDateChange={(newDate) => {
+                console.log("Due date changed:", newDate);
                 return true;
               }}
               searchPeople={mockSearchPeople}
@@ -371,10 +375,14 @@ export function EmptyMilestoneInProjectContextStory() {
               onTaskAssigneeChange={() => {}}
               onTaskDueDateChange={() => {}}
               onTaskStatusChange={() => {}}
-              onMilestoneUpdate={handleMilestoneUpdate}
               title={emptyMilestone.name}
               onMilestoneTitleChange={async (newName) => {
                 console.log("Milestone name changed:", newName);
+                return true;
+              }}
+              dueDate={targetMilestone.dueDate || null}
+              onDueDateChange={(newDate) => {
+                console.log("Due date changed:", newDate);
                 return true;
               }}
               searchPeople={mockSearchPeople}

@@ -795,6 +795,14 @@ defmodule OperatelyWeb.Api.Types do
     field :new_title, :string, null: false
   end
 
+  object :activity_content_milestone_due_date_updating do
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :milestone_name, :string, null: false
+    field :old_due_date, :contextual_date, null: false
+    field :new_due_date, :contextual_date, null: false
+  end
+
   object :activity_content_task_adding do
     field :company, :company
     field :space, :space

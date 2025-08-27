@@ -416,6 +416,14 @@ export interface ActivityContentMessageArchiving {
   title?: string | null;
 }
 
+export interface ActivityContentMilestoneDueDateUpdating {
+  project: Project;
+  milestone: Milestone | null;
+  milestoneName: string;
+  oldDueDate: ContextualDate;
+  newDueDate: ContextualDate;
+}
+
 export interface ActivityContentMilestoneTitleUpdating {
   project: Project;
   milestone: Milestone | null;
@@ -3700,6 +3708,15 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectMilestonesUpdateDueDateInput {
+  milestoneId: Id;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectMilestonesUpdateDueDateResult {
+  milestone: Milestone;
+}
+
 export interface ProjectMilestonesUpdateTitleInput {
   milestoneId: Id;
   title: string;
@@ -4968,6 +4985,10 @@ class ApiNamespaceAi {
 
 class ApiNamespaceProjectMilestones {
   constructor(private client: ApiClient) {}
+
+  async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
+    return this.client.post("/project_milestones/update_due_date", input);
+  }
 
   async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
     return this.client.post("/project_milestones/update_title", input);
@@ -7645,6 +7666,13 @@ export default {
   },
 
   project_milestones: {
+    updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
+    useUpdateDueDate: () =>
+      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate,
+      ),
+
     updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
     useUpdateTitle: () =>

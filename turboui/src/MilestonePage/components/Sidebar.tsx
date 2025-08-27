@@ -6,20 +6,7 @@ import { GhostButton, SecondaryButton } from "../../Button";
 import { NotificationToggle } from "../../NotificationToggle";
 import { IconArchive, IconCalendar, IconCheck, IconLink, IconTrash } from "../../icons";
 import FormattedTime from "../../FormattedTime";
-
-interface Props {
-  milestone: Types.Milestone;
-  onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
-  onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
-  createdBy?: Types.Person;
-  createdAt?: Date;
-  isSubscribed?: boolean;
-  onSubscriptionToggle?: (subscribed: boolean) => void;
-  onCopyUrl?: () => void;
-  onArchive?: () => void;
-  onDelete?: () => void;
-  canEdit?: boolean;
-}
+import { MilestonePage } from "..";
 
 export function MilestoneSidebar({
   milestone,
@@ -33,7 +20,7 @@ export function MilestoneSidebar({
   onArchive,
   onDelete,
   canEdit = true,
-}: Props) {
+}: MilestonePage.State) {
   return (
     <>
       <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
@@ -60,7 +47,7 @@ function SidebarDueDate({
   canEdit,
 }: {
   milestone: Types.Milestone;
-  onDueDateChange?: (milestoneId: string, dueDate: DateField.ContextualDate | null) => void;
+  onDueDateChange?: (dueDate: DateField.ContextualDate | null) => void;
   canEdit: boolean;
 }) {
   return (
@@ -69,7 +56,7 @@ function SidebarDueDate({
         date={milestone.dueDate || null}
         onDateSelect={(date) => {
           if (onDueDateChange) {
-            onDueDateChange(milestone.id, date);
+            onDueDateChange(date);
           }
         }}
         readonly={!canEdit}
