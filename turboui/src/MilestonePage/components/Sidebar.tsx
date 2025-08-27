@@ -11,7 +11,7 @@ import { MilestonePage } from "..";
 export function MilestoneSidebar({
   milestone,
   onDueDateChange,
-  onMilestoneUpdate,
+  onStatusChange,
   createdBy,
   createdAt,
   isSubscribed = false,
@@ -24,7 +24,7 @@ export function MilestoneSidebar({
   return (
     <>
       <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
-      <SidebarStatus milestone={milestone} onMilestoneUpdate={onMilestoneUpdate} canEdit={canEdit} />
+      <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
       {createdBy && createdAt && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
       <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
       <SidebarActions onCopyUrl={onCopyUrl} onArchive={onArchive} onDelete={onDelete} canEdit={canEdit} />
@@ -69,23 +69,19 @@ function SidebarDueDate({
 
 function SidebarStatus({
   milestone,
-  onMilestoneUpdate,
+  onStatusChange,
   canEdit,
 }: {
   milestone: Types.Milestone;
-  onMilestoneUpdate?: (milestoneId: string, updates: Types.UpdateMilestonePayload) => void;
+  onStatusChange: (status: Types.Status) => void;
   canEdit: boolean;
 }) {
-  // Assume milestone has a status field (you may need to add this to Types.Milestone)
   const isCompleted = milestone.status === "done";
 
   const handleStatusToggle = () => {
-    if (onMilestoneUpdate) {
-      // Toggle the completion status (stored as any property for demo)
-      const newStatus = isCompleted ? "active" : "completed";
-      // Pass status info through the callback - parent would handle this
-      onMilestoneUpdate(milestone.id, { ...milestone, status: newStatus } as any);
-    }
+    // Toggle the completion status (stored as any property for demo)
+    const newStatus = isCompleted ? "pending" : "done";
+    onStatusChange(newStatus);
   };
 
   if (!canEdit) {
