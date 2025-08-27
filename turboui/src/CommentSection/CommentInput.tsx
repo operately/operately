@@ -70,6 +70,8 @@ function CommentInputActive({
     placeholder: "Write a comment here...",
     mentionedPersonLookup: mentionedPersonLookup || (async () => null),
     peopleSearch: peopleSearch || (async () => []),
+    localStorageKey: `comment-new-${globalThis?.location?.pathname || 'unknown'}`,
+    userId: currentUser.id,
   });
 
   const handlePost = async () => {
@@ -80,6 +82,7 @@ function CommentInputActive({
     try {
       form.postComment(content);
       editor.setContent("");
+      editor.clearSavedContent(); // Clear localStorage on successful submit
       onPost();
     } catch (error) {
       console.error("Failed to post comment:", error);

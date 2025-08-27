@@ -75,19 +75,25 @@ function Comment({ comment, form, commentParentType, canComment }) {
 function EditComment({ comment, onCancel, form }) {
   const me = useMe()!;
 
-  const { editor, uploading } = TipTapEditor.useEditor({
+  const { editor, uploading, clearSavedContent } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
     className: "min-h-[200px] p-4",
     content: JSON.parse(comment.content)["message"],
     mentionSearchScope: form.mentionSearchScope,
+    localStorageKey: `comment-edit-${comment.id}`,
   });
 
   const handlePost = async () => {
     if (!editor) return;
     if (uploading) return;
 
-    form.editComment(comment.id, editor.getJSON());
-    onCancel();
+    try {
+      form.editComment(comment.id, editor.getJSON());
+      clearSavedContent(); // Clear localStorage on successful submit
+      onCancel();
+    } catch (error) {
+      console.error("Failed to edit comment:", error);
+    }
   };
 
   return (
@@ -277,19 +283,25 @@ function AddCommentNonActive({ onClick }) {
 function AddCommentActive({ onBlur, onPost, form }) {
   const me = useMe()!;
 
-  const { editor, uploading } = TipTapEditor.useEditor({
+  const { editor, uploading, clearSavedContent } = TipTapEditor.useEditor({
     placeholder: "Write a comment here...",
     className: "min-h-[200px] px-4 py-3",
     autoFocus: true,
     mentionSearchScope: form.mentionSearchScope,
+    localStorageKey: `comment-new-${window.location.pathname}`,
   });
 
   const handlePost = async () => {
     if (!editor) return;
     if (uploading) return;
 
-    form.postComment(editor.getJSON());
-    onPost();
+    try {
+      form.postComment(editor.getJSON());
+      clearSavedContent(); // Clear localStorage on successful submit
+      onPost();
+    } catch (error) {
+      console.error("Failed to post comment:", error);
+    }
   };
 
   React.useEffect(() => {
