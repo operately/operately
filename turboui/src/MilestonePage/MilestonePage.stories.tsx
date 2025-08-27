@@ -139,11 +139,6 @@ export const Default: Story = {
       setTasks(reorderedTasks);
     };
 
-    // Handler for status changes
-    const handleStatusChange = (taskId: string, newStatus: Types.Status) => {
-      const updatedTasks = tasks.map((task) => (task.id === taskId ? { ...task, status: newStatus } : task));
-      setTasks(updatedTasks);
-    };
 
     // Handler for due date changes
     const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
@@ -156,14 +151,6 @@ export const Default: Story = {
         // Otherwise set the new date
         setMilestone({ ...milestone, dueDate });
       }
-    };
-
-    // Handler for milestone updates (including status)
-    const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
-      console.log("Milestone updated:", { milestoneId, updates });
-      
-      // Update the milestone with the provided updates
-      setMilestone(prev => ({ ...prev, ...updates }));
     };
 
     // Handler for milestone name changes
@@ -188,14 +175,16 @@ export const Default: Story = {
         tasks={tasks}
         onTaskCreate={handleTaskCreate}
         onTaskReorder={handleTaskReorder}
-        onStatusChange={handleStatusChange}
+        status={milestone.status}
+        onStatusChange={(status) => {
+          console.log("Milestone status changed:", status);
+        }}
         onCommentCreate={(comment) => console.log("Comment created:", comment)}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={() => {}}
         onTaskDueDateChange={() => {}}
         onTaskStatusChange={() => {}}
-        onMilestoneUpdate={handleMilestoneUpdate}
         onMilestoneTitleChange={handleMilestoneNameChange}
         title={milestone.name}
         searchPeople={mockSearchPeople}
@@ -285,18 +274,17 @@ export const EmptyMilestone: Story = {
           link: "#",
         }}
         updateProjectName={() => Promise.resolve(true)}
+        status={milestone.status}
+        onStatusChange={(status) => {
+          console.log("Milestone status changed:", status);
+          setMilestone(prev => ({ ...prev, status: status as "pending" | "done" }));
+        }}
         onTaskCreate={(taskData) => console.log("Task created:", taskData)}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee updated:", taskId, assignee)}
         onTaskDueDateChange={(taskId, dueDate) => console.log("Task due date updated:", taskId, dueDate)}
         onTaskStatusChange={(taskId, status) => console.log("Task status updated:", taskId, status)}
-        onMilestoneUpdate={(milestoneId, updates) => {
-          console.log("Milestone updated:", { milestoneId, updates });
-          if (updates.name) {
-            setMilestone(prev => ({ ...prev, name: updates.name! }));
-          }
-        }}
         title={milestone.name}
         onMilestoneTitleChange={async (newName) => {
           console.log("Milestone name changed:", newName);

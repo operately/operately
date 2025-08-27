@@ -83,8 +83,20 @@ function Page() {
 
   const [dueDate, setDueDate] = usePageField(pageData, {
     value: ({ milestone }) => parseContextualDate(milestone.timeframe?.contextualEndDate),
-    update: (v) => Api.project_milestones.updateDueDate({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
+    update: (v) =>
+      Api.project_milestones.updateDueDate({ milestoneId: milestone.id, dueDate: serializeContextualDate(v) }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
+  });
+
+  const [status, setStatus] = usePageField(pageData, {
+    value: ({ milestone }) => milestone.status,
+    update: (v) =>
+      Api.postMilestoneComment({
+        milestoneId: milestone.id,
+        content: null,
+        action: v === "done" ? "complete" : "reopen",
+      }),
+    onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
 
   const mentionedPeopleSearch = People.useMentionedPersonSearch({
@@ -125,6 +137,8 @@ function Page() {
     onDescriptionChange: setDescription,
     dueDate,
     onDueDateChange: setDueDate,
+    status,
+    onStatusChange: setStatus,
 
     // Task operations
     onTaskCreate: () => Promise.resolve(),
