@@ -20,14 +20,6 @@ defmodule Operately.Ai.PromptsTest do
     assert action.experimental == false
   end
 
-  test "find_action returns experimental action" do
-    assert {:ok, action} = Prompts.find_action("project", "experimental-project-optimizer")
-    assert action.id == "experimental-project-optimizer"
-    assert action.label == "Optimize project workflow"
-    assert action.experimental == true
-    assert String.contains?(action.prompt, "Analyze this project's current workflow")
-  end
-
   test "find_action returns error for non-existing action" do
     assert {:error, :not_found} = Prompts.find_action("goal", "non_existing_action")
   end
@@ -78,6 +70,14 @@ defmodule Operately.Ai.PromptsTest do
 
     test "find_action returns error for wrong context in custom file" do
       assert {:error, :not_found} = Prompts.find_action("wrong_context", "test_env_action")
+    end
+
+    test "find_action returns experimental action" do
+      assert {:ok, action} = Prompts.find_action("project", "experimental-test-action")
+      assert action.id == "experimental-test-action"
+      assert action.label == "Experimental Test Action"
+      assert action.experimental == true
+      assert action.prompt == "This is an experimental test action."
     end
 
     test "loads different content than default prompts file" do

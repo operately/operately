@@ -3,13 +3,16 @@ system: This is a test system prompt from environment variable.
 actions:
   - id: test-env-action
     context: project
+    label: Test Env Action
     prompt: This is a test prompt loaded from environment variable.
 
   - id: another-env-action
     context: goal
+    label: Another Env Action
     prompt: Another test prompt from custom file.
 
   - id: experimental-test-action
     context: project
     experimental: true
+    label: Experimental Test Action
     prompt: This is an experimental test action.
