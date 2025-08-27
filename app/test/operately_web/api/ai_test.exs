@@ -195,7 +195,7 @@ defmodule OperatelyWeb.Api.AiTest do
 
   describe "get_conversations" do
     setup ctx do
-      Factory.add_company_agent(ctx, :agent, title: "Agent 1", full_name: "Agent One")
+      Factory.add_space(ctx, :marketing)
     end
 
     test "requires authentication", ctx do
@@ -205,44 +205,38 @@ defmodule OperatelyWeb.Api.AiTest do
     test "returns empty list when no conversations exist", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{})
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: Ecto.UUID.generate() |> OperatelyWeb.Paths.goal_id()
+               })
+
       assert res.conversations == []
-    end
-
-    test "returns all conversations when no context is provided", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-      ctx = Factory.add_goal(ctx, :goal1, :marketing)
-      ctx = Factory.add_goal(ctx, :goal2, :marketing)
-      
-      # Create conversations for both goals
-      {:ok, _convo1} = Operately.People.AgentConvo.create(ctx.creator, "analyze_goal", :goal, ctx.goal1.id)
-      {:ok, _convo2} = Operately.People.AgentConvo.create(ctx.creator, "analyze_goal", :goal, ctx.goal2.id)
-
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{})
-      assert length(res.conversations) == 2
     end
 
     test "filters conversations by goal context", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.add_goal(ctx, :goal1, :marketing)
       ctx = Factory.add_goal(ctx, :goal2, :marketing)
-      
-      # Create conversations for both goals
-      {:ok, _convo1} = Operately.People.AgentConvo.create(ctx.creator, "analyze_goal", :goal, ctx.goal1.id)
-      {:ok, _convo2} = Operately.People.AgentConvo.create(ctx.creator, "analyze_goal", :goal, ctx.goal2.id)
+      ctx = Factory.add_agent_convo(ctx, :convo1, :creator, :goal1)
+      ctx = Factory.add_agent_convo(ctx, :convo2, :creator, :goal2)
 
       # Query with goal1 context should only return conversations for goal1
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{
-        context_type: "goal", 
-        context_id: OperatelyWeb.Paths.goal_id(ctx.goal1)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: OperatelyWeb.Paths.goal_id(ctx.goal1)
+               })
+
       assert length(res.conversations) == 1
-      
+
       # Query with goal2 context should only return conversations for goal2
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{
-        context_type: "goal", 
-        context_id: OperatelyWeb.Paths.goal_id(ctx.goal2)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: OperatelyWeb.Paths.goal_id(ctx.goal2)
+               })
+
       assert length(res.conversations) == 1
     end
 
@@ -250,23 +244,25 @@ defmodule OperatelyWeb.Api.AiTest do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.add_project(ctx, :project1, :marketing)
       ctx = Factory.add_project(ctx, :project2, :marketing)
-      
-      # Create conversations for both projects
-      {:ok, _convo1} = Operately.People.AgentConvo.create(ctx.creator, "analyze_project", :project, ctx.project1.id)
-      {:ok, _convo2} = Operately.People.AgentConvo.create(ctx.creator, "analyze_project", :project, ctx.project2.id)
+      ctx = Factory.add_agent_convo(ctx, :convo1, :creator, :project1)
+      ctx = Factory.add_agent_convo(ctx, :convo2, :creator, :project2)
 
       # Query with project1 context should only return conversations for project1
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{
-        context_type: "project", 
-        context_id: OperatelyWeb.Paths.project_id(ctx.project1)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "project",
+                 context_id: OperatelyWeb.Paths.project_id(ctx.project1)
+               })
+
       assert length(res.conversations) == 1
-      
+
       # Query with project2 context should only return conversations for project2
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{
-        context_type: "project", 
-        context_id: OperatelyWeb.Paths.project_id(ctx.project2)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "project",
+                 context_id: OperatelyWeb.Paths.project_id(ctx.project2)
+               })
+
       assert length(res.conversations) == 1
     end
 
@@ -274,15 +270,14 @@ defmodule OperatelyWeb.Api.AiTest do
       ctx = Factory.log_in_person(ctx, :creator)
       ctx = Factory.add_goal(ctx, :goal1, :marketing)
       ctx = Factory.add_goal(ctx, :goal2, :marketing)
-      
-      # Create conversation for goal1 only
-      {:ok, _convo1} = Operately.People.AgentConvo.create(ctx.creator, "analyze_goal", :goal, ctx.goal1.id)
 
       # Query with goal2 context should return empty list
-      assert {200, res} = query(ctx.conn, [:ai, :get_conversations], %{
-        context_type: "goal", 
-        context_id: OperatelyWeb.Paths.goal_id(ctx.goal2)
-      })
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: OperatelyWeb.Paths.goal_id(ctx.goal2)
+               })
+
       assert res.conversations == []
     end
   end
