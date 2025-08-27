@@ -1,0 +1,35 @@
+{
+  "name": "operately-operator",
+  "version": "1.0.0",
+  "description": "A terminal dashboard for monitoring GitHub Copilot agents and PR status in the Operately repository",
+  "main": "main.js",
+  "bin": {
+    "operately-operator": "./main.js"
+  },
+  "scripts": {
+    "start": "node main.js",
+    "dev": "node main.js"
+  },
+  "keywords": [
+    "github",
+    "copilot",
+    "pr",
+    "monitoring",
+    "terminal",
+    "dashboard",
+    "blessed"
+  ],
+  "author": "Operately Team",
+  "license": "MIT",
+  "dependencies": {
+    "blessed": "^0.1.81"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/operately/operately.git",
+    "directory": "operator"
+  }
+}

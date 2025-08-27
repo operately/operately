@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# Script wrapper for the Operately Copilot Monitor
+# This script runs the blessed-based monitoring tool
+
+cd "$(dirname "$0")/../operator"
+node main.js
