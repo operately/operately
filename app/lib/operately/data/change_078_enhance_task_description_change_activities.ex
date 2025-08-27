@@ -1,6 +1,6 @@
 defmodule Operately.Data.Change078EnhanceTaskDescriptionChangeActivities do
   import Ecto.Query, only: [from: 2]
-  alias Operately.{Repo, Tasks}
+  alias Operately.Repo
   alias Operately.Tasks.Task
   alias __MODULE__.Activity
 
@@ -12,7 +12,7 @@ defmodule Operately.Data.Change078EnhanceTaskDescriptionChangeActivities do
 
       has_description = case get_task(task_id) do
         nil -> false
-        task -> Tasks.has_description?(task)
+        task -> Operately.RichContent.empty?(task)
       end
 
       new_content = activity.content

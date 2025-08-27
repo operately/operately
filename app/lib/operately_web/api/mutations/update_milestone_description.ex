@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api.Mutations.UpdateMilestoneDescription do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
-  
+
   alias Operately.Projects
   alias Operately.Projects.Permissions
 

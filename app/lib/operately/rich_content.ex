@@ -50,6 +50,49 @@ defmodule Operately.RichContent do
 
   def extract_mentions_from_node(_), do: []
 
+  def empty?(rich_content) do
+    case rich_content do
+      nil -> false
+
+      rich_content when rich_content == %{} -> false
+
+      %{"type" => "doc", "content" => content} when is_list(content) ->
+        # Convert TipTap content to string and check if it's meaningful
+        content
+        |> rich_content_to_string()
+        |> String.trim()
+        |> case do
+          "" -> false
+          _non_empty -> true
+        end
+
+      _ -> false
+    end
+  end
+
+  @doc """
+  Converts TipTap rich content to a plain string, similar to the JavaScript richContentToString function.
+  """
+  def rich_content_to_string(content) when is_list(content) do
+    content
+    |> Enum.map(&rich_content_to_string/1)
+    |> Enum.join(" ")
+  end
+
+  def rich_content_to_string(%{"type" => "text", "text" => text}) when is_binary(text) do
+    text
+  end
+
+  def rich_content_to_string(%{"type" => "mention", "attrs" => %{"label" => label}}) when is_binary(label) do
+    label
+  end
+
+  def rich_content_to_string(%{"content" => content}) when is_list(content) do
+    rich_content_to_string(content)
+  end
+
+  def rich_content_to_string(_), do: ""
+
   defmodule Builder do
     def doc(content) do
       %{type: "doc", content: content} |> Jason.encode!() |> Jason.decode!()

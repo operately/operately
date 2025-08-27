@@ -568,6 +568,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_goal_connection,
       :activity_content_project_goal_disconnection,
       :activity_content_project_milestone_commented,
+      :activity_content_milestone_description_updating,
       :activity_content_project_moved,
       :activity_content_project_pausing,
       :activity_content_project_renamed,
@@ -801,6 +802,13 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone_name, :string, null: false
     field :old_due_date, :contextual_date, null: false
     field :new_due_date, :contextual_date, null: false
+  end
+
+  object :activity_content_milestone_description_updating do
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :milestone_name, :string, null: false
+    field :has_description, :boolean, null: false
   end
 
   object :activity_content_task_adding do

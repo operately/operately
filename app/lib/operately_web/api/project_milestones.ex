@@ -37,6 +37,41 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
   end
 
+  defmodule UpdateDescription do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :milestone_id, :id, null: false
+      field :description, :json, null: false
+    end
+
+    outputs do
+      field :milestone, :milestone
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.update_milestone_description(inputs.description)
+      |> Steps.save_activity(:milestone_description_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          milestone_id: changes.milestone.id,
+          milestone_name: changes.milestone.title,
+          has_description: Operately.RichContent.empty?(inputs.description)
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{milestone: Serializer.serialize(changes.updated_milestone)}
+      end)
+    end
+  end
+
   defmodule UpdateDueDate do
     use TurboConnect.Mutation
 
@@ -137,6 +172,12 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
               }
             })
         end
+      end)
+    end
+
+    def update_milestone_description(multi, new_description) do
+      Ecto.Multi.update(multi, :updated_milestone, fn %{milestone: milestone} ->
+        Operately.Projects.Milestone.changeset(milestone, %{description: new_description})
       end)
     end
 

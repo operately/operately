@@ -416,6 +416,13 @@ export interface ActivityContentMessageArchiving {
   title?: string | null;
 }
 
+export interface ActivityContentMilestoneDescriptionUpdating {
+  project: Project;
+  milestone: Milestone | null;
+  milestoneName: string;
+  hasDescription: boolean;
+}
+
 export interface ActivityContentMilestoneDueDateUpdating {
   project: Project;
   milestone: Milestone | null;
@@ -1859,6 +1866,7 @@ export type ActivityContent =
   | ActivityContentProjectGoalConnection
   | ActivityContentProjectGoalDisconnection
   | ActivityContentProjectMilestoneCommented
+  | ActivityContentMilestoneDescriptionUpdating
   | ActivityContentProjectMoved
   | ActivityContentProjectPausing
   | ActivityContentProjectRenamed
@@ -3708,6 +3716,15 @@ export interface ProjectDiscussionsEditResult {
   discussion: Update;
 }
 
+export interface ProjectMilestonesUpdateDescriptionInput {
+  milestoneId: Id;
+  description: Json;
+}
+
+export interface ProjectMilestonesUpdateDescriptionResult {
+  milestone: Milestone;
+}
+
 export interface ProjectMilestonesUpdateDueDateInput {
   milestoneId: Id;
   dueDate: ContextualDate | null;
@@ -4985,6 +5002,12 @@ class ApiNamespaceAi {
 
 class ApiNamespaceProjectMilestones {
   constructor(private client: ApiClient) {}
+
+  async updateDescription(
+    input: ProjectMilestonesUpdateDescriptionInput,
+  ): Promise<ProjectMilestonesUpdateDescriptionResult> {
+    return this.client.post("/project_milestones/update_description", input);
+  }
 
   async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
     return this.client.post("/project_milestones/update_due_date", input);
@@ -7666,6 +7689,13 @@ export default {
   },
 
   project_milestones: {
+    updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
+    useUpdateDescription: () =>
+      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateDescription,
+      ),
+
     updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
     useUpdateDueDate: () =>
