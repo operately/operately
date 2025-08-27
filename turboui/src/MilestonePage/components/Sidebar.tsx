@@ -25,7 +25,7 @@ export function MilestoneSidebar({
     <>
       <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
       <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
-      {createdBy && createdAt && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
+      {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
       <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
       <SidebarActions onCopyUrl={onCopyUrl} onArchive={onArchive} onDelete={openDeleteModal} canEdit={canEdit} />
     </>

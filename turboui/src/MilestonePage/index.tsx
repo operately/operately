@@ -69,8 +69,8 @@ export namespace MilestonePage {
     onEditComment?: (commentId: string, content: string) => void;
 
     // Milestone metadata
-    createdBy?: Types.Person;
-    createdAt?: Date;
+    createdBy: Types.Person | null;
+    createdAt: Date;
     isSubscribed?: boolean;
     onSubscriptionToggle?: (subscribed: boolean) => void;
     onCopyUrl?: () => void;

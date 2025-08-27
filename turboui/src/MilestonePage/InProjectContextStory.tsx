@@ -203,7 +203,7 @@ export function InProjectContextStory() {
               canComment={true}
               onAddComment={(comment) => console.log("Add comment:", comment)}
               onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
-              createdBy={mockPeople[0]}
+              createdBy={mockPeople[0] || null}
               createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
               isSubscribed={isSubscribed}
               onSubscriptionToggle={(subscribed) => {
@@ -422,7 +422,7 @@ export function EmptyMilestoneInProjectContextStory() {
               canComment={true}
               onAddComment={(comment) => console.log("Add comment:", comment)}
               onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
-              createdBy={mockPeople[0]}
+              createdBy={mockPeople[0] || null}
               createdAt={new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)} // 2 days ago
               isSubscribed={isSubscribed}
               onSubscriptionToggle={(subscribed) => {

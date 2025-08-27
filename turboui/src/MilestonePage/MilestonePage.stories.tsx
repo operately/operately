@@ -198,7 +198,7 @@ export const Default: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
-        createdBy={mockPeople[0]}
+        createdBy={mockPeople[0] || null}
         createdAt={new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)} // 7 days ago
         isSubscribed={isSubscribed}
         onSubscriptionToggle={(subscribed) => {
@@ -307,7 +307,7 @@ export const EmptyMilestone: Story = {
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
-        createdBy={mockPeople[1]}
+        createdBy={mockPeople[1] || null}
         createdAt={new Date(Date.now() - 3 * 24 * 60 * 60 * 1000)} // 3 days ago
         isSubscribed={isSubscribed}
         onSubscriptionToggle={(subscribed) => {

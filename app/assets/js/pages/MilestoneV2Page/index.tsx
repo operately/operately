@@ -2,6 +2,7 @@ import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import Api from "@/api";
 
+import * as Time from "@/utils/time";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
 
@@ -38,6 +39,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         milestone: Milestones.getMilestone({
           id: params.id,
           includeProject: true,
+          includeCreator: true,
           includeSpace: true,
           includePermissions: true,
         }).then((d) => d.milestone),
@@ -46,7 +48,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 function pageCacheKey(id: string): string {
-  return `v4-MilestoneV2Page.task-${id}`;
+  return `v5-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {
@@ -165,8 +167,8 @@ function Page() {
     onTaskDueDateChange: () => {},
 
     // Metadata
-    createdAt: new Date(milestone.insertedAt || Date.now()),
-    createdBy: undefined,
+    createdBy: People.parsePersonForTurboUi(paths, milestone.creator),
+    createdAt: Time.parseDate(milestone.insertedAt)!,
 
     // Actions
     onDelete: handleDelete,
