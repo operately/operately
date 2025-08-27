@@ -192,4 +192,93 @@ defmodule OperatelyWeb.Api.AiTest do
       assert {400, _} = mutation(ctx.conn, [:ai, :create_conversation], %{context_type: "goal"})
     end
   end
+
+  describe "get_conversations" do
+    setup ctx do
+      Factory.add_space(ctx, :marketing)
+    end
+
+    test "requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:ai, :get_conversations], %{})
+    end
+
+    test "returns empty list when no conversations exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: Ecto.UUID.generate() |> OperatelyWeb.Paths.goal_id()
+               })
+
+      assert res.conversations == []
+    end
+
+    test "filters conversations by goal context", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_goal(ctx, :goal1, :marketing)
+      ctx = Factory.add_goal(ctx, :goal2, :marketing)
+      ctx = Factory.add_agent_convo(ctx, :convo1, :creator, :goal1)
+      ctx = Factory.add_agent_convo(ctx, :convo2, :creator, :goal2)
+
+      # Query with goal1 context should only return conversations for goal1
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: OperatelyWeb.Paths.goal_id(ctx.goal1)
+               })
+
+      assert length(res.conversations) == 1
+
+      # Query with goal2 context should only return conversations for goal2
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: OperatelyWeb.Paths.goal_id(ctx.goal2)
+               })
+
+      assert length(res.conversations) == 1
+    end
+
+    test "filters conversations by project context", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_project(ctx, :project1, :marketing)
+      ctx = Factory.add_project(ctx, :project2, :marketing)
+      ctx = Factory.add_agent_convo(ctx, :convo1, :creator, :project1)
+      ctx = Factory.add_agent_convo(ctx, :convo2, :creator, :project2)
+
+      # Query with project1 context should only return conversations for project1
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "project",
+                 context_id: OperatelyWeb.Paths.project_id(ctx.project1)
+               })
+
+      assert length(res.conversations) == 1
+
+      # Query with project2 context should only return conversations for project2
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "project",
+                 context_id: OperatelyWeb.Paths.project_id(ctx.project2)
+               })
+
+      assert length(res.conversations) == 1
+    end
+
+    test "returns empty list when context has no conversations", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_goal(ctx, :goal1, :marketing)
+      ctx = Factory.add_goal(ctx, :goal2, :marketing)
+
+      # Query with goal2 context should return empty list
+      assert {200, res} =
+               query(ctx.conn, [:ai, :get_conversations], %{
+                 context_type: "goal",
+                 context_id: OperatelyWeb.Paths.goal_id(ctx.goal2)
+               })
+
+      assert res.conversations == []
+    end
+  end
 end
