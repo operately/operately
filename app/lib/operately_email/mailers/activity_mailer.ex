@@ -13,6 +13,7 @@ defmodule OperatelyEmail.Mailers.ActivityMailer do
   end
 
   def subject(email, where: where, who: who, action: action) do
-    NotificationMailer.subject(email, "(#{where}) #{Person.short_name(who)} #{action}")
+    company_name = email.company.name
+    NotificationMailer.subject(email, "[#{company_name}] (#{where}) #{Person.short_name(who)} #{action}")
   end
 end
