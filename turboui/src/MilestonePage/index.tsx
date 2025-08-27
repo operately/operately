@@ -10,6 +10,8 @@ import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
 import { MilestoneDescription } from "./components/Description";
 import { MilestoneSidebar } from "./components/Sidebar";
+import { MentionedPersonLookupFn } from "../RichEditor";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -52,7 +54,7 @@ export namespace MilestonePage {
     onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange?: (taskId: string, status: string) => void;
 
-    searchPeople: (params: { query: string }) => Promise<Types.Person[]>;
+    searchPeople: SearchFn;
 
     // Filtering
     filters?: Types.FilterCondition[];
@@ -76,8 +78,8 @@ export namespace MilestonePage {
     canEdit?: boolean;
 
     // Rich editor support for description
-    mentionedPersonLookup?: (id: string) => Types.Person | undefined;
-    peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
+    mentionedPersonLookup?: MentionedPersonLookupFn;
+    mentionedPeopleSearch?: SearchFn;
   }
 
   export interface State extends Props {
@@ -121,7 +123,6 @@ export function MilestonePage(props: MilestonePage.Props) {
     description,
     onDescriptionChange,
     mentionedPersonLookup,
-    peopleSearch,
     projectName,
     projectLink,
     projectStatus = "active",
@@ -240,7 +241,7 @@ export function MilestonePage(props: MilestonePage.Props) {
                   description={description}
                   onDescriptionChange={onDescriptionChange}
                   mentionedPersonLookup={mentionedPersonLookup}
-                  peopleSearch={peopleSearch}
+                  peopleSearch={state.mentionedPeopleSearch}
                   canEdit={canEdit}
                 />
 
@@ -285,6 +286,7 @@ export function MilestonePage(props: MilestonePage.Props) {
             </div>
           </div>
         </div>
+
         {/* Task creation modal */}
         <TaskCreationModal
           isOpen={isTaskModalOpen}
