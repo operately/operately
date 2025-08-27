@@ -8,3 +8,8 @@ actions:
   - id: another-env-action
     context: goal
     prompt: Another test prompt from custom file.
+
+  - id: experimental-test-action
+    context: project
+    experimental: true
+    prompt: This is an experimental test action.
