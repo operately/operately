@@ -12,7 +12,7 @@ defmodule Operately.Data.Change078EnhanceTaskDescriptionChangeActivities do
 
       has_description = case get_task(task_id) do
         nil -> false
-        task -> Operately.RichContent.empty?(task)
+        task -> Operately.RichContent.empty?(task.description)
       end
 
       new_content = activity.content
