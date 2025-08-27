@@ -121,7 +121,7 @@ function useSidebarState() {
       params.contextType = conversationContext.type;
       params.contextId = conversationContext.id;
     }
-    
+
     Api.ai.getConversations(params).then((data) => {
       const convos = prepareConvos(data.conversations);
       setConversations(convos);
