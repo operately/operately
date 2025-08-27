@@ -2,12 +2,12 @@ import React, { useMemo, useState, useEffect, useCallback } from "react";
 import * as Types from "../../TaskBoard/types";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../../RichContent";
-import { Editor, useEditor } from "../../RichEditor";
+import { Editor, MentionedPersonLookupFn, useEditor } from "../../RichEditor";
 
 interface Props {
   description?: any;
   onDescriptionChange?: (newDescription: any) => Promise<boolean>;
-  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
   peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
   canEdit: boolean;
 }
@@ -96,8 +96,9 @@ function MilestoneDescriptionContent({ state }: { state: MilestoneDescriptionSta
       <RichContent
         content={displayedDescription}
         mentionedPersonLookup={async (id: string) => {
-          const person = state.mentionedPersonLookup?.(id);
+          const person = await state.mentionedPersonLookup?.(id);
           if (!person) return null;
+
           return {
             id: person.id,
             fullName: person.fullName,
@@ -142,7 +143,7 @@ interface MilestoneDescriptionState {
   setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
   setDescription: React.Dispatch<React.SetStateAction<string | null>>;
   editor: ReturnType<typeof useEditor>;
-  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
   startEdit: () => void;
   save: () => void;
   cancel: () => void;
@@ -156,7 +157,7 @@ function useMilestoneDescriptionState({
 }: {
   description?: any;
   onDescriptionChange?: (newDescription: any) => Promise<boolean>;
-  mentionedPersonLookup?: (id: string) => Types.Person | undefined;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
   peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
 }): MilestoneDescriptionState {
   const initialMode = isContentEmpty(initialDescription) ? "zero" : "view";
@@ -170,8 +171,9 @@ function useMilestoneDescriptionState({
 
   // Convert TaskBoard Person to RichEditor Person format
   const editorMentionLookup = async (id: string) => {
-    const person = mentionedPersonLookup?.(id);
+    const person = await mentionedPersonLookup?.(id);
     if (!person) return null;
+
     return {
       id: person.id,
       fullName: person.fullName,

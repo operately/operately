@@ -192,7 +192,10 @@ export function InProjectContextStory() {
                 console.log("Due date changed:", newDate);
                 return true;
               }}
-              searchPeople={mockSearchPeople}
+              mentionedPeopleSearch={async ({ query }) => {
+                const people = await mockSearchPeople({ query });
+                return people.map(person => ({ ...person, profileLink: "#" }));
+              }}
               filters={filters}
               onFiltersChange={setFilters}
               timelineItems={createMockTimelineItems()}
@@ -216,8 +219,14 @@ export function InProjectContextStory() {
                 console.log("Description changed:", newDescription);
                 return true;
               }}
-              mentionedPersonLookup={(id) => mockPeople.find((p) => p.id === id)}
-              peopleSearch={mockSearchPeople}
+              mentionedPersonLookup={async (id) => {
+                const person = mockPeople.find((p) => p.id === id);
+                return person ? { ...person, profileLink: "#", title: "" } : null;
+              }}
+              searchPeople={async ({ query }) => {
+                const people = await mockSearchPeople({ query });
+                return people.map(person => ({ ...person, profileLink: "#" }));
+              }}
             />
           </div>
         )}
@@ -391,7 +400,10 @@ export function EmptyMilestoneInProjectContextStory() {
                 console.log("Due date changed:", newDate);
                 return true;
               }}
-              searchPeople={mockSearchPeople}
+              searchPeople={async ({ query }) => {
+                const people = await mockSearchPeople({ query });
+                return people.map(person => ({ ...person, profileLink: "#" }));
+              }}
               filters={filters}
               onFiltersChange={setFilters}
               timelineItems={[
@@ -426,8 +438,10 @@ export function EmptyMilestoneInProjectContextStory() {
                 console.log("Description changed:", newDescription);
                 return true;
               }}
-              mentionedPersonLookup={(id) => mockPeople.find((p) => p.id === id)}
-              peopleSearch={mockSearchPeople}
+              mentionedPersonLookup={async (id) => {
+                const person = mockPeople.find((p) => p.id === id);
+                return person ? { ...person, profileLink: "#", title: "" } : null;
+              }}
             />
           </div>
         )}

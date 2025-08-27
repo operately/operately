@@ -187,7 +187,10 @@ export const Default: Story = {
         onTaskStatusChange={() => {}}
         onMilestoneTitleChange={handleMilestoneNameChange}
         title={milestone.name}
-        searchPeople={mockSearchPeople}
+        searchPeople={async ({ query }) => {
+          const people = await mockSearchPeople({ query });
+          return people.map(person => ({ ...person, profileLink: "#" }));
+        }}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={createMockTimelineItems()}
@@ -211,8 +214,10 @@ export const Default: Story = {
           console.log("Description changed:", newDescription);
           return true;
         }}
-        mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
-        peopleSearch={mockSearchPeople}
+        mentionedPersonLookup={async (id) => {
+          const person = mockPeople.find(p => p.id === id);
+          return person ? { ...person, profileLink: "#", title: "" } : null;
+        }}
       />
     );
   },
@@ -291,7 +296,10 @@ export const EmptyMilestone: Story = {
           setMilestone(prev => ({ ...prev, name: newName }));
           return true;
         }}
-        searchPeople={mockSearchPeople}
+        searchPeople={async ({ query }) => {
+          const people = await mockSearchPeople({ query });
+          return people.map(person => ({ ...person, profileLink: "#" }));
+        }}
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={emptyMilestoneTimeline}
@@ -315,8 +323,10 @@ export const EmptyMilestone: Story = {
           console.log("Description changed:", newDescription);
           return true;
         }}
-        mentionedPersonLookup={(id) => mockPeople.find(p => p.id === id)}
-        peopleSearch={mockSearchPeople}
+        mentionedPersonLookup={async (id) => {
+          const person = mockPeople.find(p => p.id === id);
+          return person ? { ...person, profileLink: "#", title: "" } : null;
+        }}
       />
     );
   },
