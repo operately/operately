@@ -1,5 +1,6 @@
 defmodule Operately.People.FetchOrCreateAccountOperation do
   alias Operately.People.Account
+  import Ecto.Changeset
 
   def call(attrs = %{email: _email, name: _name, image: _image}) do
     strategies = [
