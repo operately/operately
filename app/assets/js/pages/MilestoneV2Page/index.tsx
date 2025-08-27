@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import Api from "@/api";
 
 import * as People from "@/models/people";
@@ -14,6 +15,7 @@ import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
+import { projectPageCacheKey } from "../ProjectV2Page";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
@@ -50,6 +52,7 @@ function pageCacheKey(id: string): string {
 function Page() {
   const paths = usePaths();
   const currentUser = useMe();
+  const navigate = useNavigate();
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
@@ -77,7 +80,8 @@ function Page() {
 
   const [description, setDescription] = usePageField(pageData, {
     value: ({ milestone }) => milestone.description && JSON.parse(milestone.description),
-    update: (v) => Api.project_milestones.updateDescription({ milestoneId: milestone.id, description: JSON.stringify(v) }),
+    update: (v) =>
+      Api.project_milestones.updateDescription({ milestoneId: milestone.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
   });
 
@@ -98,6 +102,17 @@ function Page() {
       }),
     onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
+
+  const handleDelete = React.useCallback(async () => {
+    await Api.project_milestones.delete({ milestoneId: milestone.id });
+
+    if (milestone.project) {
+        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+        navigate(paths.projectPath(milestone.project.id));
+      } else {
+        navigate(paths.homePath());
+      }
+  }, [milestone.id]);
 
   const mentionedPeopleSearch = People.useMentionedPersonSearch({
     scope: { type: "project", id: milestone.project.id },
@@ -154,7 +169,7 @@ function Page() {
     createdBy: undefined,
 
     // Actions
-    onDelete: () => {},
+    onDelete: handleDelete,
     onArchive: () => {},
     onCopyUrl: () => {},
 

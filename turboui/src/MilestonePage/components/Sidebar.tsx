@@ -18,7 +18,7 @@ export function MilestoneSidebar({
   onSubscriptionToggle,
   onCopyUrl,
   onArchive,
-  onDelete,
+  openDeleteModal,
   canEdit = true,
 }: MilestonePage.State) {
   return (
@@ -27,7 +27,7 @@ export function MilestoneSidebar({
       <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
       {createdBy && createdAt && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
       <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
-      <SidebarActions onCopyUrl={onCopyUrl} onArchive={onArchive} onDelete={onDelete} canEdit={canEdit} />
+      <SidebarActions onCopyUrl={onCopyUrl} onArchive={onArchive} onDelete={openDeleteModal} canEdit={canEdit} />
     </>
   );
 }
