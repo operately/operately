@@ -9,13 +9,8 @@ const { exec } = require("child_process");
 const { promisify } = require("util");
 const execAsync = promisify(exec);
 
-// Color definitions for hacker-themed  // Start with table header (no status at top)
-  if (agentDataBuffer.length > 0) {
-    // Create the main header content with exact spacing to match data rows
-    const headerMain = `${"PR".padEnd(5)} ${"UPDATED".padEnd(12)} ${"CI".padEnd(
-      10,
-    )} ${"COPILOT".padEnd(9)}  ${"TITLE"}`; // Extra space before TITLE
-    const headerMainLength = headerMain.length;st colors = {
+// Color definitions for hacker-themed display
+const colors = {
   GREEN: "\x1b[0;32m",
   BRIGHT_GREEN: "\x1b[1;32m",
   DARK_GREEN: "\x1b[2;32m",
@@ -110,16 +105,56 @@ function daysAgo(dateStr) {
 // Function to get Copilot status for a specific PR
 async function getCopilotStatus(prNumber) {
   try {
-    // Get PR assignees and update time
+    // Get recent events to check for Copilot work status
     const { stdout } = await execAsync(
-      `gh pr view ${prNumber} --json assignees,updatedAt --jq '{assignees: [.assignees[]?.login], updatedAt: .updatedAt}'`,
+      `gh api repos/operately/operately/issues/${prNumber}/events --jq '[.[] | select(.event == "copilot_work_started" or .event == "copilot_work_finished" or .event == "review_requested") | {event: .event, created_at: .created_at, actor: .actor.login}] | sort_by(.created_at) | reverse'`,
     );
 
     if (!stdout.trim()) {
       return "UNKNOWN";
     }
 
-    const data = JSON.parse(stdout.trim());
+    const events = JSON.parse(stdout.trim());
+
+    // Check the most recent relevant event
+    if (events.length > 0) {
+      const latestEvent = events[0];
+
+      // If the most recent event is "copilot_work_finished", Copilot is done
+      if (latestEvent.event === "copilot_work_finished") {
+        return "DONE";
+      }
+      // If the most recent event is "review_requested" by Copilot, it's also done
+      else if (latestEvent.event === "review_requested" && latestEvent.actor === "Copilot") {
+        return "DONE";
+      }
+      // If the most recent event is "copilot_work_started", Copilot is working
+      else if (latestEvent.event === "copilot_work_started") {
+        // Check how recent it is to determine if still active
+        const eventTime = new Date(latestEvent.created_at);
+        const now = new Date();
+        const hoursSinceStart = (now - eventTime) / (1000 * 60 * 60);
+
+        if (hoursSinceStart < 4) {
+          return "WORKING";
+        } else if (hoursSinceStart < 12) {
+          return "ACTIVE";
+        } else {
+          return "IDLE";
+        }
+      }
+    }
+
+    // Fallback to checking assignees if no specific events found
+    const assigneeResult = await execAsync(
+      `gh pr view ${prNumber} --json assignees,updatedAt --jq '{assignees: [.assignees[]?.login], updatedAt: .updatedAt}'`,
+    );
+
+    if (!assigneeResult.stdout.trim()) {
+      return "UNKNOWN";
+    }
+
+    const data = JSON.parse(assigneeResult.stdout.trim());
     const assignees = data.assignees || [];
     const updatedAt = new Date(data.updatedAt);
     const now = new Date();
@@ -129,7 +164,6 @@ async function getCopilotStatus(prNumber) {
     const copilotAssigned = assignees.includes("Copilot") || assignees.includes("copilot");
 
     if (copilotAssigned) {
-      // If Copilot is assigned and recently updated (within 2 hours), it's working
       if (hoursSinceUpdate < 2) {
         return "WORKING";
       } else if (hoursSinceUpdate < 12) {
@@ -138,7 +172,6 @@ async function getCopilotStatus(prNumber) {
         return "IDLE";
       }
     } else {
-      // No Copilot assignment
       if (hoursSinceUpdate < 24) {
         return "RECENT";
       } else {
@@ -190,7 +223,7 @@ function stripAnsiCodes(str) {
 }
 
 // Function to render agent row with current terminal width
-function renderAgentRow(prNumber, title, author, created, daysAgoStr, updatedDays, ciStatus, copilotStatus, termWidth) {
+function renderAgentRow(prNumber, title, author, created, updatedDays, ciStatus, copilotStatus, termWidth) {
   // Format CI status with colors
   let formattedCi;
   switch (ciStatus) {
@@ -213,6 +246,9 @@ function renderAgentRow(prNumber, title, author, created, daysAgoStr, updatedDay
   // Format Copilot status with colors
   let formattedCopilot;
   switch (copilotStatus) {
+    case "DONE":
+      formattedCopilot = `${colors.BRIGHT_GREEN}✓ DONE${colors.RESET}`;
+      break;
     case "WORKING":
       formattedCopilot = `${colors.GREEN}● WORK${colors.RESET}`;
       break;
@@ -236,8 +272,8 @@ function renderAgentRow(prNumber, title, author, created, daysAgoStr, updatedDay
   const prUrl = `https://github.com/operately/operately/pull/${prNumber}`;
   const openPrButton = `\x1b]8;;${prUrl}\x1b\\${colors.BRIGHT_GREEN}[Open PR]${colors.RESET}\x1b]8;;\x1b\\`;
 
-  // Fixed columns width: "#1234 " (6) + "12 DAYS AGO  " (13) + "12 DAYS AGO  " (13) + "✗ FAIL     " (11) + "● WORK     " (10) + extra space (1) = 54
-  const fixedWidth = 54;
+  // Fixed columns width: "#1234 " (6) + "12 DAYS AGO  " (13) + "✗ FAIL     " (11) + "● WORK     " (10) + extra space (1) = 41
+  const fixedWidth = 41;
   const actionWidth = 9; // "[Open PR]"
   const availableTitleWidth = termWidth - fixedWidth - actionWidth - 2; // -2 for safety margin
 
@@ -247,12 +283,12 @@ function renderAgentRow(prNumber, title, author, created, daysAgoStr, updatedDay
     truncatedTitle += "...";
   }
 
-  // Format the main content without action button
+  // Format the main content without action button (removed the started column)
   const mainContent = `${colors.BRIGHT_CYAN}#${prNumber.toString().padEnd(4)}${colors.RESET} ${
-    colors.YELLOW
-  }${daysAgoStr.padEnd(12)}${colors.RESET} ${colors.GRAY}${updatedDays.padEnd(12)}${colors.RESET} ${formattedCi.padEnd(
-    10,
-  )} ${formattedCopilot.padEnd(9)}  ${colors.BRIGHT_WHITE}${truncatedTitle}${colors.RESET}`; // Extra space before title
+    colors.GRAY
+  }${updatedDays.padEnd(12)}${colors.RESET} ${formattedCi.padEnd(10)} ${formattedCopilot.padEnd(9)}  ${
+    colors.BRIGHT_WHITE
+  }${truncatedTitle}${colors.RESET}`; // Extra space before title
 
   // Calculate the visible length of main content (without ANSI codes)
   const visibleLength = stripAnsiCodes(mainContent).length;
@@ -336,9 +372,7 @@ function renderDisplay(countdown) {
   // Start with table header (no status at top)
   if (agentDataBuffer.length > 0) {
     // Create the main header content with exact spacing to match data rows
-    const headerMain = `${"PR".padEnd(5)} ${"STARTED".padEnd(12)} ${"UPDATED".padEnd(12)} ${"CI".padEnd(
-      6,
-    )} ${"COPILOT".padEnd(5)} ${"TITLE"}`; // Extra space before TITLE
+    const headerMain = `${"PR".padEnd(5)} ${"UPDATED".padEnd(12)} ${"CI".padEnd(6)} ${"COPILOT".padEnd(5)} ${"TITLE"}`; // Extra space before TITLE
     const headerMainLength = headerMain.length;
 
     // Calculate padding to right-align ACTION
@@ -359,7 +393,6 @@ function renderDisplay(countdown) {
           agent.title,
           agent.author,
           agent.created,
-          agent.days,
           agent.updatedDays,
           agent.ciStatus,
           agent.copilotStatus,
