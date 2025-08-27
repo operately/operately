@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Avatar, Checkbox } from "turboui";
 import { Subscriber } from "@/models/notifications";
 import { compareIds, includesId } from "@/routes/paths";
+import { Avatar, Checkbox } from "turboui";
 import { useFieldValue } from "./FormContext";
 
 interface MultiPeopleSelectFieldProps {
@@ -33,7 +33,6 @@ export function MultiPeopleSelectField(props: MultiPeopleSelectFieldProps) {
 function PersonAlwaysSelected({ subscriber }: { subscriber: Subscriber }) {
   return (
     <div className="flex gap-4 border-b border-stroke-base px-2 pb-4 mb-4 last:border-0 last:mb-0">
-      <Avatar person={subscriber.person!} size="large" />
       <div className="flex w-full items-center justify-between">
         <div className="text-content-dimmed">
           <p className="font-bold">{subscriber.person!.fullName}</p>
@@ -59,7 +58,7 @@ function PersonOption({ subscriber, field }: { subscriber: Subscriber; field: st
   };
 
   return (
-    <div className="flex gap-4 border-b border-stroke-base px-2 pb-4 mb-4 last:border-0 last:mb-0">
+    <div className="flex gap-4 border-b border-stroke-dimmed px-2 pb-4 mb-4 last:border-0 last:mb-0">
       <Avatar person={subscriber.person!} size="large" />
       <div className="flex w-full items-center justify-between">
         <div>
