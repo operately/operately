@@ -87,6 +87,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_title, OperatelyWeb.Api.ProjectMilestones.UpdateTitle)
     mutation(:update_due_date, OperatelyWeb.Api.ProjectMilestones.UpdateDueDate)
     mutation(:update_description, OperatelyWeb.Api.ProjectMilestones.UpdateDescription)
+    mutation(:delete, OperatelyWeb.Api.ProjectMilestones.Delete)
   end
 
   namespace(:project_tasks) do

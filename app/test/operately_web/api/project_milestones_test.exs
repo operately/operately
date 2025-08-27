@@ -688,6 +688,224 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     end
   end
 
+  describe "delete" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_milestones, :delete], %{})
+    end
+
+    test "it requires a milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :delete], %{})
+      assert res.message == "Missing required fields: milestone_id"
+    end
+
+    test "it returns not found for non-existent milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns forbidden for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :view_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+    end
+
+    test "it returns forbidden for space members without edit permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+    end
+
+    test "it deletes the milestone for project creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      milestone_id = ctx.milestone.id
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+
+      # Verify milestone is deleted
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+
+    test "it deletes the milestone for space members with edit access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :edit_access)
+        |> Factory.log_in_person(:space_member)
+
+      milestone_id = ctx.milestone.id
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+
+      # Verify milestone is deleted
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+
+    test "it deletes the milestone for project champion", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.preload(:champion, :person)
+
+      ctx = log_in_account(ctx, ctx.champion.person)
+      milestone_id = ctx.milestone.id
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+
+      # Verify milestone is deleted
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+
+    test "it deletes the milestone for project reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.preload(:reviewer, :person)
+
+      ctx = log_in_account(ctx, ctx.reviewer.person)
+      milestone_id = ctx.milestone.id
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+
+      # Verify milestone is deleted
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+
+    test "it creates an activity when milestone is deleted", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      before_count = count_activities(ctx.milestone.id, "milestone_deleting")
+      milestone_name = ctx.milestone.title
+
+      assert {200, _} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      after_count = count_activities(ctx.milestone.id, "milestone_deleting")
+      assert after_count == before_count + 1
+
+      activity = get_activity(ctx.milestone.id, "milestone_deleting")
+      assert activity.content["milestone_id"] == ctx.milestone.id
+      assert activity.content["project_id"] == ctx.project.id
+      assert activity.content["company_id"] == ctx.project.company_id
+      assert activity.content["space_id"] == ctx.project.group_id
+      assert activity.content["milestone_name"] == milestone_name
+    end
+
+    test "it works with milestones from different projects", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:other_project, :engineering)
+        |> Factory.add_project_milestone(:other_milestone, :other_project)
+        |> Factory.log_in_person(:creator)
+
+      milestone1_id = ctx.milestone.id
+      milestone2_id = ctx.other_milestone.id
+
+      # Delete milestone from first project
+      assert {200, res1} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      # Delete milestone from second project
+      assert {200, res2} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.other_milestone)
+      })
+
+      assert res1.success == true
+      assert res2.success == true
+
+      # Verify both milestones are deleted
+      assert Repo.get(Operately.Projects.Milestone, milestone1_id) == nil
+      assert Repo.get(Operately.Projects.Milestone, milestone2_id) == nil
+    end
+
+    test "it handles deletion of milestone with no tasks", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      milestone_id = ctx.milestone.id
+
+      # Ensure milestone has no tasks (should be the default)
+      tasks = Operately.Tasks.list_tasks(%{milestone_id: milestone_id})
+      assert length(tasks) == 0
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+
+    test "it handles deletion of milestone with description", ctx do
+      # Set up milestone with description
+      description = %{"type" => "doc", "content" => [%{"type" => "paragraph", "content" => [%{"type" => "text", "text" => "Test description"}]}]}
+      {:ok, milestone_with_desc} = Operately.Projects.update_milestone(ctx.milestone, %{description: description})
+
+      ctx = %{ctx | milestone: milestone_with_desc}
+      ctx = Factory.log_in_person(ctx, :creator)
+      milestone_id = ctx.milestone.id
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+
+    test "it handles deletion of milestone with timeframe", ctx do
+      # Set up milestone with timeframe
+      timeframe = %{
+        contextual_start_date: %{date: "2025-01-01", date_type: "day", value: "Jan 1, 2025"},
+        contextual_end_date: %{date: "2025-12-31", date_type: "day", value: "Dec 31, 2025"}
+      }
+      {:ok, milestone_with_timeframe} = Operately.Projects.update_milestone(ctx.milestone, %{timeframe: timeframe})
+
+      ctx = %{ctx | milestone: milestone_with_timeframe}
+      ctx = Factory.log_in_person(ctx, :creator)
+      milestone_id = ctx.milestone.id
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert res.success == true
+      assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+    end
+  end
+
   #
   # Utility functions
   #

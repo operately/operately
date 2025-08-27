@@ -10,6 +10,7 @@ import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
 import { MilestoneDescription } from "./components/Description";
 import { MilestoneSidebar } from "./components/Sidebar";
+import { DeleteModal } from "./components/DeleteModal";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 
@@ -87,6 +88,9 @@ export namespace MilestonePage {
     setIsTaskModalOpen: (open: boolean) => void;
     isHeaderStuck: boolean;
     setIsHeaderStuck: (stuck: boolean) => void;
+    isDeleteModalOpen: boolean;
+    openDeleteModal: () => void;
+    closeDeleteModal: () => void;
   }
 }
 
@@ -94,6 +98,7 @@ function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State 
   // State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isHeaderStuck, setIsHeaderStuck] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   return {
     ...props,
@@ -101,6 +106,9 @@ function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State 
     setIsTaskModalOpen,
     isHeaderStuck,
     setIsHeaderStuck,
+    isDeleteModalOpen,
+    openDeleteModal: () => setIsDeleteModalOpen(true),
+    closeDeleteModal: () => setIsDeleteModalOpen(false),
   };
 }
 
@@ -287,7 +295,6 @@ export function MilestonePage(props: MilestonePage.Props) {
           </div>
         </div>
 
-        {/* Task creation modal */}
         <TaskCreationModal
           isOpen={isTaskModalOpen}
           onClose={() => setIsTaskModalOpen(false)}
@@ -296,6 +303,8 @@ export function MilestonePage(props: MilestonePage.Props) {
           currentMilestoneId={milestone.id}
           milestones={[]}
         />
+
+        <DeleteModal {...state} />
       </div>
     </ProjectPageLayout>
   );
