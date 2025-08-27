@@ -492,7 +492,7 @@ function AddMilestoneForm({
           placeholder="Milestone name"
           value={newMilestoneName}
           onChange={(e) => setNewMilestoneName(e.target.value)}
-          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-transparent"
+          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-surface-base"
           autoFocus
           onKeyDown={handleInputKeyDown}
         />

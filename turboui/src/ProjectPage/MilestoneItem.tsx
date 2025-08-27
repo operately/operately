@@ -58,7 +58,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
                 type="text"
                 value={editName}
                 onChange={(e) => setEditName(e.target.value)}
-                className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-transparent"
+                className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-surface-base"
                 autoFocus
               />
               <DateField date={editDueDate} onDateSelect={setEditDueDate} placeholder="Due date (optional)" />
