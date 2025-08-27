@@ -17,7 +17,7 @@ defmodule Operately.Projects.EditTimelineOperation do
     Multi.new()
     |> Multi.update(:project, changeset)
     |> update_milestones(attrs)
-    |> insert_new_milestones(project, attrs)
+    |> insert_new_milestones(author, project, attrs)
     |> record_activity(author, project, attrs)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
@@ -41,12 +41,13 @@ defmodule Operately.Projects.EditTimelineOperation do
     end)
   end
 
-  defp insert_new_milestones(multi, project, attrs) do
+  defp insert_new_milestones(multi, author, project, attrs) do
     attrs.new_milestones
     |> Enum.with_index()
     |> Enum.reduce(multi, fn {milestone, index}, multi ->
       changeset = Milestone.changeset(%{
         project_id: project.id,
+        creator_id: author.id,
         title: milestone.title,
         description: milestone.description,
         tasks_kanban_state: Operately.Tasks.KanbanState.initialize(),
