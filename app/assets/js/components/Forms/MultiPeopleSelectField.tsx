@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Avatar } from "turboui";
 import { Subscriber } from "@/models/notifications";
 import { compareIds, includesId } from "@/routes/paths";
+import { Avatar, Checkbox } from "turboui";
 import { useFieldValue } from "./FormContext";
 
 interface MultiPeopleSelectFieldProps {
@@ -33,7 +33,6 @@ export function MultiPeopleSelectField(props: MultiPeopleSelectFieldProps) {
 function PersonAlwaysSelected({ subscriber }: { subscriber: Subscriber }) {
   return (
     <div className="flex gap-4 border-b border-stroke-base px-2 pb-4 mb-4 last:border-0 last:mb-0">
-      <Avatar person={subscriber.person!} size="large" />
       <div className="flex w-full items-center justify-between">
         <div className="text-content-dimmed">
           <p className="font-bold">{subscriber.person!.fullName}</p>
@@ -48,29 +47,25 @@ function PersonOption({ subscriber, field }: { subscriber: Subscriber; field: st
   const [value, setValue] = useFieldValue<string[]>(field);
   const testId = "person-option-" + subscriber.person!.id;
 
-  const handleChange = () => {
-    if (includesId(value, subscriber.person!.id)) {
-      setValue(value.filter((item) => !compareIds(item, subscriber.person!.id)));
-    } else {
+  const isChecked = includesId(value, subscriber.person!.id);
+
+  const handleChange = (checked: boolean) => {
+    if (checked) {
       setValue([...value, subscriber.person!.id!]);
+    } else {
+      setValue(value.filter((item) => !compareIds(item, subscriber.person!.id)));
     }
   };
 
   return (
-    <div className="flex gap-4 border-b border-stroke-base px-2 pb-4 mb-4 last:border-0 last:mb-0">
+    <div className="flex gap-4 border-b border-stroke-dimmed px-2 pb-4 mb-4 last:border-0 last:mb-0">
       <Avatar person={subscriber.person!} size="large" />
       <div className="flex w-full items-center justify-between">
         <div>
           <p className="font-bold">{subscriber.person!.fullName}</p>
           <p className="text-sm">{subscriber.role}</p>
         </div>
-        <input
-          checked={includesId(value, subscriber.person!.id)}
-          onChange={handleChange}
-          type="checkbox"
-          className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-500"
-          data-test-id={testId}
-        />
+        <Checkbox checked={isChecked} onChange={handleChange} testId={testId} />
       </div>
     </div>
   );
