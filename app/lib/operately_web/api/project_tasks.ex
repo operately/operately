@@ -131,7 +131,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           task_id: changes.task.id,
           project_name: changes.project.name,
           task_name: changes.task.name,
-          has_description: Operately.Tasks.has_description?(inputs.description)
+          has_description: Operately.RichContent.empty?(inputs.description)
         }
       end)
       |> Steps.commit()

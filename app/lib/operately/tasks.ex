@@ -6,8 +6,6 @@ defmodule Operately.Tasks do
   alias Operately.Tasks.Assignee
   alias Operately.Access.Fetch
 
-  defdelegate has_description?(task_or_description), to: Operately.Tasks.Description
-
   def get_task!(id), do: Repo.get!(Task, id)
 
   def get_task_with_access_level(id, requester_id) do

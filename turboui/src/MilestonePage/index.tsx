@@ -45,6 +45,8 @@ export namespace MilestonePage {
     onDueDateChange: (newDate: DateField.ContextualDate | null) => void;
     status: Types.Status;
     onStatusChange: (status: Types.Status) => void;
+    description: any;
+    onDescriptionChange: (newDescription: any) => Promise<boolean>;
 
     // Tasks for this milestone
     tasks: Types.Task[];
@@ -81,8 +83,6 @@ export namespace MilestonePage {
     canEdit?: boolean;
 
     // Rich editor support for description
-    description?: any; // Rich content description
-    onDescriptionChange?: (newDescription: any) => Promise<boolean>;
     mentionedPersonLookup?: (id: string) => Types.Person | undefined;
     peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
   }

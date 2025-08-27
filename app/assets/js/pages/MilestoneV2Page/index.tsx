@@ -77,7 +77,7 @@ function Page() {
 
   const [description, setDescription] = usePageField(pageData, {
     value: ({ milestone }) => milestone.description && JSON.parse(milestone.description),
-    update: () => Promise.resolve(), // Placeholder for API call
+    update: (v) => Api.project_milestones.updateDescription({ milestoneId: milestone.id, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update milestone description."),
   });
 
