@@ -6,6 +6,7 @@ import type { AvatarPerson } from "../Avatar";
 import { Avatar } from "../Avatar";
 import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
 import { TextField } from "../TextField";
+import { StatusBadge } from "../StatusBadge";
 
 export namespace Conversations {
   export interface Message {
@@ -34,6 +35,7 @@ export namespace Conversations {
   export interface ContextAction {
     id: string;
     label: string;
+    experimental?: boolean;
   }
 
   export interface Conversation {
@@ -440,7 +442,16 @@ export function Conversations({
                 onClick={() => handleContextAction(action)}
                 className="px-3 py-2 rounded text-sm font-medium transition-colors bg-surface-highlight text-content-base hover:text-white-1 hover:bg-brand-1 border border-surface-outline text-left"
               >
-                {action.label}
+                <div className="flex items-center justify-between">
+                  <span>{action.label}</span>
+                  {action.experimental && (
+                    <StatusBadge 
+                      status="pending" 
+                      customLabel="Experimental"
+                      className="ml-2 text-xs"
+                    />
+                  )}
+                </div>
               </button>
             ))}
           </div>
