@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
     field :id, :id, null: false
     field? :include_comments, :boolean, null: false
     field? :include_project, :boolean, null: false
+    field? :include_creator, :boolean, null: false
     field? :include_permissions, :boolean, null: false
     field? :include_space, :boolean, null: false
   end
@@ -45,6 +46,7 @@ defmodule OperatelyWeb.Api.Queries.GetMilestone do
   defp preload(inputs) do
     Inputs.parse_includes(inputs, [
       include_project: :project,
+      include_creator: :creator,
       include_space: :space,
       include_comments: [comments: [comment: [:author, reactions: :person]]],
     ])

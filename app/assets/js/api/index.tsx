@@ -1268,6 +1268,7 @@ export interface MessagesBoard {
 export interface Milestone {
   id: string;
   project?: Project | null;
+  creator?: Person | null;
   title: string;
   status: MilestoneStatus;
   insertedAt: string;
@@ -2243,6 +2244,7 @@ export interface GetMilestoneInput {
   id: Id;
   includeComments?: boolean;
   includeProject?: boolean;
+  includeCreator?: boolean;
   includePermissions?: boolean;
   includeSpace?: boolean;
 }

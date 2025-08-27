@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
     %{
       id: OperatelyWeb.Paths.milestone_id(milestone),
       project: OperatelyWeb.Api.Serializer.serialize(milestone.project),
+      creator: OperatelyWeb.Api.Serializer.serialize(milestone.creator),
       title: milestone.title,
       status: to_string(milestone.status),
       description: milestone.description && Jason.encode!(milestone.description),
