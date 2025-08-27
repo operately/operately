@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import classNames from "../utils/classnames";
 import { ChecklistItemState, State, useChecklistState } from "./useChecklistState";
 
+import { Checkbox } from "../Checkbox";
 import { Textfield } from "../forms/Textfield";
 import { PieChart } from "../PieChart";
 import { SwitchToggle } from "../SwitchToggle";
@@ -337,8 +338,7 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
     zoneId: "checklist",
   });
 
-  const handleCheckboxChange = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  const handleCheckboxChange = () => {
     if (state.togglable) {
       state.toggleItem(item.id, !item.completed);
     }
@@ -369,7 +369,13 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
       data-test-id={createTestId("checklist-item", item.name)}
     >
       <IconGripVertical size={16} className={dragGripClass} />
-      <ChecklistItemCheckbox item={item} onClick={handleCheckboxChange} togglable={state.togglable} />
+      <Checkbox
+        checked={item.completed}
+        onChange={handleCheckboxChange}
+        disabled={!state.togglable}
+        className="mt-0.5"
+        testId={createTestId("checkbox", item.name)}
+      />
       <ChecklistItemName item={item} />
       {item.editButtonVisible && state.togglable && (
         <ChecklistItemEditButton state={state} item={item} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
@@ -384,45 +390,6 @@ function ChecklistItemName({ item }: { item: ChecklistItemState }) {
   });
 
   return <div className={className}>{item.name}</div>;
-}
-
-function ChecklistItemCheckbox({
-  item,
-  onClick,
-  togglable = true,
-}: {
-  item: ChecklistItemState;
-  onClick: (e: React.MouseEvent) => void;
-  togglable?: boolean;
-}) {
-  const buttonClassName = classNames(
-    "w-5 h-5 mt-0.5 border border-surface-outline rounded flex items-center justify-center flex-shrink-0",
-    {
-      "hover:bg-surface-base transition-colors cursor-pointer": togglable,
-      "opacity-50": !togglable,
-    },
-  );
-
-  return (
-    <button
-      onClick={onClick}
-      className={buttonClassName}
-      disabled={!togglable}
-      data-test-id={createTestId("checkbox", item.name)}
-    >
-      {item.completed && (
-        <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-          <path
-            d="M10 3L4.5 8.5L2 6"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      )}
-    </button>
-  );
 }
 
 function ChecklistItemEditButton({
