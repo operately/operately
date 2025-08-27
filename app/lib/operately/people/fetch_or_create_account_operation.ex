@@ -1,5 +1,6 @@
 defmodule Operately.People.FetchOrCreateAccountOperation do
   alias Operately.People.Account
+  import Ecto.Changeset
 
   def call(attrs = %{email: _email, name: _name, image: _image}) do
     strategies = [
@@ -22,7 +23,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp create_new_account(attrs) do
-    Account.create(attrs[:name], attrs[:email], random_password())
+    Account.create(attrs[:name], attrs[:email], random_password(), attrs[:image])
   end
 
   #
@@ -49,13 +50,22 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   defp update_avatar(account, image) do
     people = Operately.Repo.preload(account, :people).people
 
+    # Update all associated person records
     Enum.each(people, fn person ->
       if person.avatar_url != image do
         {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
       end
     end)
 
-    {:ok, account}
+    # Also update the account's avatar_url if it's different
+    updated_account = if account.avatar_url != image do
+      {:ok, updated} = Operately.Repo.update(Ecto.Changeset.change(account, avatar_url: image))
+      updated
+    else
+      account
+    end
+
+    {:ok, updated_account}
   end
 
 end

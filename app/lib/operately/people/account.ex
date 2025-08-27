@@ -11,14 +11,22 @@ defmodule Operately.People.Account do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
     field :site_admin, :boolean, default: false
+    field :avatar_url, :string
 
     request_info()
     timestamps()
   end
 
   def create(full_name, email, password) do
+    create(full_name, email, password, nil)
+  end
+
+  def create(full_name, email, password, avatar_url) do
+    attrs = %{full_name: full_name, email: email, password: password}
+    attrs = if avatar_url, do: Map.put(attrs, :avatar_url, avatar_url), else: attrs
+    
     Ecto.Multi.new()
-    |> Ecto.Multi.insert(:account, registration_changeset(%{full_name: full_name, email: email, password: password}))
+    |> Ecto.Multi.insert(:account, registration_changeset(attrs))
     |> Oban.insert(:send_onboarding_email, fn %{account: account} -> OperatelyEE.AccountOnboardingJob.new(%{account_id: account.id}) end)
     |> Repo.transaction()
     |> Repo.extract_result(:account)
@@ -30,7 +38,7 @@ defmodule Operately.People.Account do
 
   def registration_changeset(account, attrs, opts \\ []) do
     account
-    |> cast(attrs, [:email, :password, :full_name])
+    |> cast(attrs, [:email, :password, :full_name, :avatar_url])
     |> validate_email(opts)
     |> validate_password(opts)
     |> validate_required([:full_name])
