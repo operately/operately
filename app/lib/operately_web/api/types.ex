@@ -1530,6 +1530,7 @@ defmodule OperatelyWeb.Api.Types do
   object :milestone do
     field :id, :string, null: false
     field? :project, :project, null: true
+    field? :creator, :person, null: true
     field :title, :string, null: false
     field :status, :milestone_status
     field :inserted_at, :date
