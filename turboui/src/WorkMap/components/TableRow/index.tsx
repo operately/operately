@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { WorkMap } from "..";
 
 import { SpaceField } from "../../../SpaceField";
+import { useWorkMapExpandable } from "../../context/Expandable";
 import { ChildRows } from "./ChildRows";
 import { DueDateCell } from "./DueDateCell";
 import { ItemNameCell } from "./ItemNameCell";
@@ -27,7 +28,14 @@ interface Props {
 
 export function TableRow(props: Props) {
   const { item, tab, level, columnOptions } = props;
-  const [expanded, setExpanded] = useState<boolean>(true);
+  const { expanded, toggleExpanded } = useWorkMapExpandable();
+  
+  const isExpanded = expanded[item.id] ?? true; // Default to true if not set
+  const setExpanded = (newExpanded: boolean) => {
+    if (newExpanded !== isExpanded) {
+      toggleExpanded(item.id);
+    }
+  };
 
   return (
     <>
@@ -35,7 +43,7 @@ export function TableRow(props: Props) {
         <ItemNameCell
           item={item}
           level={level}
-          expanded={expanded}
+          expanded={isExpanded}
           setExpanded={setExpanded}
           showIndentation={props.showIndentation}
           canAddChildren={Boolean(props.addingEnabled) && tab !== "completed"}
@@ -64,7 +72,7 @@ export function TableRow(props: Props) {
         />
       </RowContainer>
 
-      <ChildRows {...props} expanded={expanded} />
+      <ChildRows {...props} expanded={isExpanded} />
     </>
   );
 }
