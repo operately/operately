@@ -21,6 +21,8 @@ import { useComments } from "./useComments";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
+type TurboUiComment = CommentSection.Comment | CommentSection.CommentActivity;
+
 type LoaderResult = {
   data: {
     milestone: Milestones.Milestone;
@@ -96,18 +98,8 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
   });
 
-  const [status, setStatus] = usePageField(pageData, {
-    value: ({ milestone }) => milestone.status,
-    update: (v) =>
-      Api.postMilestoneComment({
-        milestoneId: milestone.id,
-        content: null,
-        action: v === "done" ? "complete" : "reopen",
-      }),
-    onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
-  });
-
-  const { comments, handleCreateComment } = useComments(paths, milestone);
+  const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
+  const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
   const timelineItems = React.useMemo(() => prepareTimelineItems(comments), [comments]);
 
@@ -248,7 +240,7 @@ function usePageField<T>(
   return [state, updateState];
 }
 
-function prepareTimelineItems(comments: (CommentSection.Comment | CommentSection.CommentActivity)[]) {
+function prepareTimelineItems(comments: TurboUiComment[]) {
   const timelineItems = comments.map((comment) => {
     const type = "type" in comment ? "milestone-activity" : "comment";
 
@@ -271,4 +263,52 @@ function prepareTimelineItems(comments: (CommentSection.Comment | CommentSection
   });
 
   return timelineItems;
+}
+
+function useStatusField(
+  paths: Paths,
+  pageData: LoaderResult,
+  setComments: React.Dispatch<React.SetStateAction<TurboUiComment[]>>,
+) {
+  const me = useMe()!;
+
+  const { data } = pageData;
+  const milestone = data.milestone;
+
+  const [status, setStatus] = usePageField(pageData, {
+    value: ({ milestone }) => milestone.status,
+    update: async (v) => {
+      const tmpId = `temp-${Date.now()}`;
+      const optimisticComment: Milestones.MilestoneComment = {
+        action: v === "done" ? "complete" : "reopen",
+        comment: {
+          id: tmpId,
+          insertedAt: new Date().toISOString(),
+          author: me,
+        },
+      };
+
+      setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
+
+      const res = await Api.postMilestoneComment({
+        milestoneId: milestone.id,
+        content: null,
+        action: v === "done" ? "complete" : "reopen",
+      });
+
+      setComments((prev) =>
+        prev.map((c) => {
+          if (c.id === tmpId) {
+            const comment = { ...res.comment.comment, author: me };
+            return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment });
+          } else {
+            return c;
+          }
+        }),
+      );
+    },
+    onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
+  });
+
+  return [status, setStatus] as const;
 }

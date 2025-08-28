@@ -49,5 +49,5 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone) {
     PageCache.invalidate(pageCacheKey(milestone.id));
   }, [paths, me, milestone.id]);
 
-  return { comments, handleCreateComment };
+  return { comments, setComments, handleCreateComment };
 }
