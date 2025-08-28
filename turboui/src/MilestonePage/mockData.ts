@@ -1,8 +1,7 @@
 import { genPeople } from "../utils/storybook/genPeople";
-import type { Person } from "../TaskBoard/types";
 
 // Generate mock people for stories
-export const mockPeople: Person[] = genPeople(4);
+export const mockPeople = genPeople(4);
 
 // Mock timeline items shared across stories
 export const createMockTimelineItems = (): any[] => [
@@ -184,7 +183,7 @@ export const mockDescription = {
 };
 
 // Mock search function for people
-export const mockSearchPeople = async ({ query }: { query: string }): Promise<Person[]> => {
+export const mockSearchPeople = async ({ query }: { query: string }) => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
   return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
