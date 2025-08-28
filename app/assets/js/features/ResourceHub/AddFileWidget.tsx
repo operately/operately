@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { IconX } from "turboui";
+import { emptyContent, IconX } from "turboui";
 import { findFileSize, resizeImage, uploadFile } from "@/models/blobs";
 import { ResourceHub, ResourceHubFile, ResourceHubFolder, createResourceHubFile } from "@/models/resourceHubs";
 
@@ -10,7 +10,6 @@ import { Options, SubscribersSelector, useSubscriptions, SubscriptionsState } fr
 import { assertPresent } from "@/utils/assertions";
 import { Spacer } from "@/components/Spacer";
 import { LoadingProgressBar } from "@/components/LoadingProgressBar";
-import { emptyContent } from "@/components/RichContent";
 
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { FileIcon } from "./NodeIcon";
