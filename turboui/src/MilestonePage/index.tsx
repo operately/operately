@@ -125,7 +125,7 @@ export function MilestonePage(props: MilestonePage.Props) {
   const state = useMilestonePageState(props);
   const {
     milestone,
-    tasks,
+    tasksCount,
     onTaskCreate,
     title,
     onMilestoneTitleChange,
@@ -186,14 +186,14 @@ export function MilestonePage(props: MilestonePage.Props) {
   };
 
   const tabs = useTabs(
-    "milestone",
+    "tasks",
     [
       { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
       {
         id: "tasks",
         label: "Tasks",
         icon: <IconListCheck size={14} />,
-        count: tasks.length,
+        count: tasksCount,
       },
       { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
       { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
