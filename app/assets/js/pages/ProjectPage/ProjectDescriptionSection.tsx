@@ -60,7 +60,7 @@ function DescriptionContent({ project }) {
 
   return (
     <div>
-      <RichContent jsonContent={description} />
+      <RichContent jsonContent={description} skipParse />
       {length > DESCRIPTION_CHAR_LIMIT && <ExpandCollapseButton showMore={showMore} setShowMore={setShowMore} />}
     </div>
   );
