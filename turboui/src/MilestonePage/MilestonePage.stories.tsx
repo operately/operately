@@ -194,7 +194,7 @@ export const Default: Story = {
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={createMockTimelineItems()}
-        currentUser={mockPeople[0]}
+        currentUser={mockPeople[0]!}
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
@@ -256,10 +256,10 @@ export const EmptyMilestone: Story = {
         type: "milestone-activity" as const,
         value: {
           id: "activity-1",
-          author: mockPeople[1], // Bob Smith created it
+          author: mockPeople[1]!, // Bob Smith created it
           insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
           content: "created the milestone",
-          type: "milestone-created",
+          type: "milestone-created" as const,
         },
       },
     ];
@@ -301,7 +301,7 @@ export const EmptyMilestone: Story = {
         filters={[]}
         onFiltersChange={(filters) => console.log("Filters changed:", filters)}
         timelineItems={emptyMilestoneTimeline}
-        currentUser={mockPeople[0]}
+        currentUser={mockPeople[0]!}
         canComment={true}
         onAddComment={(comment) => console.log("Add comment:", comment)}
         onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}

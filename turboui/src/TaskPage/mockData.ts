@@ -19,7 +19,7 @@ export const timelinePeople: TimelinePerson[] = [
     avatarUrl: "https://i.pravatar.cc/150?u=charlie",
     profileLink: "/people/charlie",
   },
-  { id: "user-4", fullName: "Diana Prince", avatarUrl: undefined, profileLink: "/people/diana" },
+  { id: "user-4", fullName: "Diana Prince", avatarUrl: null, profileLink: "/people/diana" },
 ];
 
 // Named exports for easier access
