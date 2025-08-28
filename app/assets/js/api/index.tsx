@@ -1283,9 +1283,8 @@ export interface Milestone {
 }
 
 export interface MilestoneComment {
-  id?: string | null;
-  action?: string | null;
-  comment?: Comment | null;
+  action: MilestoneCommentAction;
+  comment: Comment;
 }
 
 export interface Notification {
@@ -1958,6 +1957,8 @@ export type GoalStatus =
   | "off_track"
   | "pending"
   | "outdated";
+
+export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
 export type MilestoneStatus = "pending" | "done";
 

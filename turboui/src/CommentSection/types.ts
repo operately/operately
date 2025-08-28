@@ -4,8 +4,8 @@ import { MentionedPersonLookupFn } from "../RichEditor";
 export interface Person {
   id: string;
   fullName: string;
-  avatarUrl?: string;
-  profileLink?: string;
+  avatarUrl: string | null;
+  profileLink: string;
 }
 
 export interface Reaction {
