@@ -6,20 +6,19 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneComment do
   alias Operately.Projects.Permissions
 
   inputs do
-    field? :milestone_id, :string, null: true
-    field? :content, :string, null: true
-    field? :action, :string, null: true
+    field :milestone_id, :id, null: false
+    field :content, :json, null: true
+    field :action, :string, null: false
   end
 
   outputs do
-    field? :comment, :milestone_comment, null: true
+    field :comment, :milestone_comment, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:id, fn -> decode_id(inputs.milestone_id) end)
-    |> run(:milestone, fn ctx -> Projects.get_milestone_with_access_level(ctx.id, ctx.me.id) end)
+    |> run(:milestone, fn ctx -> Projects.get_milestone_with_access_level(inputs.milestone_id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.milestone, inputs.action) end)
     |> run(:operation, fn ctx -> execute(ctx.me, ctx.milestone, inputs) end)
     |> run(:serialized, fn ctx -> {:ok, %{comment: Serializer.serialize(ctx.operation)}} end)
@@ -38,14 +37,12 @@ defmodule OperatelyWeb.Api.Mutations.PostMilestoneComment do
   end
 
   defp execute(person, milestone, inputs) do
-    message = inputs.content && Jason.decode!(inputs.content)
-
     Operately.Comments.create_milestone_comment(
       person,
       milestone,
       inputs.action,
       %{
-        content: %{"message" => message},
+        content: %{"message" => inputs.content},
         author_id: person.id,
         entity_id: milestone.id,
         entity_type: :project_milestone,

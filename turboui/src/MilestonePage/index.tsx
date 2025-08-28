@@ -77,7 +77,7 @@ export namespace MilestonePage {
     timelineItems: TimelineItemType[];
     currentUser: Person;
     canComment: boolean;
-    onAddComment?: (comment: string) => void;
+    onAddComment: (comment: string) => void;
     onEditComment?: (commentId: string, content: string) => void;
 
     // Milestone metadata
