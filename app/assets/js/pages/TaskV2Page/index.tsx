@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
@@ -11,7 +11,7 @@ import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/mi
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/tasks";
 import * as Time from "@/utils/time";
 
-import { compareIds, Paths, usePaths } from "../../routes/paths";
+import { Paths, usePaths } from "../../routes/paths";
 import { showErrorToast, TaskPage } from "turboui";
 import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
@@ -22,6 +22,7 @@ import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useComments } from "./useComments";
 
 type LoaderResult = {
   data: {
@@ -65,7 +66,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 }
 
-function pageCacheKey(id: string): string {
+export function pageCacheKey(id: string): string {
   return `v6-TaskV2Page.task-${id}`;
 }
 
@@ -307,80 +308,6 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
     const data = await Api.projects.getMilestones({ projectId: projectId, query: query.trim() });
 
     return parseMilestonesForTurboUi(paths, data.milestones || []);
-  };
-}
-
-function useComments(task: Tasks.Task, initialComments: Comments.Comment[]) {
-  const currentUser = useMe();
-  const [comments, setComments] = React.useState(initialComments);
-
-  useEffect(() => {
-    setComments(initialComments);
-  }, [initialComments]);
-
-  const handleAddComment = useCallback(
-    async (content: any) => {
-      const randomId = `temp-${Math.random().toString(36).substring(2, 15)}`;
-
-      try {
-        const optimisticComment: Comments.Comment = {
-          id: randomId,
-          author: currentUser,
-          content: JSON.stringify({ message: content }),
-          insertedAt: new Date().toISOString().replace(/\.\d+Z$/, "Z"),
-          reactions: [],
-        };
-
-        setComments((prevComments) => [optimisticComment, ...prevComments]);
-
-        const res = await Api.createComment({
-          entityId: task.id,
-          entityType: "project_task",
-          content: JSON.stringify(content),
-        });
-
-        if (res.comment) {
-          setComments((prev) =>
-            prev.map((c) => (c.id === randomId ? { ...c, id: res.comment.id, insertedAt: res.comment.insertedAt } : c)),
-          );
-          PageCache.invalidate(pageCacheKey(task.id));
-        }
-      } catch (error) {
-        setComments((prev) => prev.filter((c) => c.id !== randomId));
-        showErrorToast("Error", "Failed to add comment.");
-      }
-    },
-    [task.id, comments],
-  );
-
-  const handleEditComment = useCallback(
-    async (commentId: string, content: any) => {
-      const comment = comments.find((c) => compareIds(c.id, commentId));
-
-      try {
-        if (comment) {
-          setComments((prev) =>
-            prev.map((c) =>
-              compareIds(c.id, commentId) ? { ...c, content: JSON.stringify({ message: content }) } : c,
-            ),
-          );
-        }
-
-        await Api.editComment({ commentId, parentType: "project_task", content: JSON.stringify(content) });
-
-        PageCache.invalidate(pageCacheKey(task.id));
-      } catch (error) {
-        setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...c, content: comment?.content } : c)));
-        showErrorToast("Error", "Failed to edit comment.");
-      }
-    },
-    [task.id, comments],
-  );
-
-  return {
-    comments,
-    handleAddComment,
-    handleEditComment,
   };
 }
 
