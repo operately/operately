@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import RichContent, { parseContent, richContentToString, shortenContent } from ".";
+import RichContent from ".";
+import { parseContent, richContentToString, shortenContent } from "turboui";
 
 interface SummaryProps {
   jsonContent: string;
@@ -10,7 +11,7 @@ interface SummaryProps {
 export function Summary({ jsonContent, characterCount }: SummaryProps) {
   const summary = useSummarized(jsonContent, characterCount);
 
-  return <RichContent jsonContent={summary} />;
+  return <RichContent jsonContent={summary} skipParse />;
 }
 
 //

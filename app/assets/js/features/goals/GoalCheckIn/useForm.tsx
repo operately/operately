@@ -6,12 +6,12 @@ import * as Pages from "@/components/Pages";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 
 import Forms from "@/components/Forms";
-import { emptyContent } from "@/components/RichContent";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import { assertPresent } from "@/utils/assertions";
 import { validateTargets } from "../GoalTargetsV2/targetErrors";
 
 import { usePaths } from "@/routes/paths";
+import { emptyContent } from "turboui";
 
 interface NewProps {
   mode: "new";

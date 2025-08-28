@@ -14,7 +14,6 @@ import Forms from "@/components/Forms";
 import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
@@ -24,7 +23,7 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
-import { PrimaryButton } from "turboui";
+import { isContentEmpty, PrimaryButton } from "turboui";
 import { BulletDot } from "@/components/TextElements";
 import FormattedTime from "@/components/FormattedTime";
 
