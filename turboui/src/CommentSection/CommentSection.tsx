@@ -1,22 +1,23 @@
 import React, { useState } from "react";
 import { CommentItem } from "./CommentItem";
 import { CommentInput } from "./CommentInput";
+import { Avatar } from "../Avatar";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { MilestoneCompletedActivity, MilestoneReopenedActivity, AcknowledgmentActivity } from "./ActivityComponents";
-import { CommentSectionProps, Person, Comment } from "./types";
+import * as types from "./types";
 
-interface EditingCommentProps {
-  comment: Comment;
-  currentUser: Person;
-  onCancel: () => void;
-  onSave: (commentId: string, content: any) => void;
+export namespace CommentSection {
+  export type Comment = types.Comment;
+
+  export type CommentActivity = types.CommentActivity;
 }
 
-export function CommentSection({ 
-  form, 
-  commentParentType, 
+export function CommentSection({
+  form,
+  commentParentType,
   canComment,
-  currentUser 
-}: CommentSectionProps & { currentUser: Person }) {
+  currentUser,
+}: types.CommentSectionProps & { currentUser: types.Person }) {
   return (
     <div className="flex flex-col">
       {form.items.map((item, index) => {
@@ -32,27 +33,11 @@ export function CommentSection({
             />
           );
         } else if (item.type === "milestone-completed") {
-          return (
-            <MilestoneCompletedActivity 
-              key={`${item.type}-${index}`} 
-              activity={item.value} 
-            />
-          );
+          return <MilestoneCompletedActivity key={`${item.type}-${index}`} activity={item.value} />;
         } else if (item.type === "milestone-reopened") {
-          return (
-            <MilestoneReopenedActivity 
-              key={`${item.type}-${index}`} 
-              activity={item.value} 
-            />
-          );
+          return <MilestoneReopenedActivity key={`${item.type}-${index}`} activity={item.value} />;
         } else if (item.type === "acknowledgment") {
-          return (
-            <AcknowledgmentActivity 
-              key={`${item.type}-${index}`} 
-              person={item.value} 
-              ackAt={item.insertedAt} 
-            />
-          );
+          return <AcknowledgmentActivity key={`${item.type}-${index}`} person={item.value} ackAt={item.insertedAt} />;
         }
         return null;
       })}
@@ -62,18 +47,18 @@ export function CommentSection({
   );
 }
 
-function CommentWrapper({ 
-  comment, 
-  form, 
-  commentParentType, 
-  canComment, 
-  currentUser 
+function CommentWrapper({
+  comment,
+  form,
+  commentParentType,
+  canComment,
+  currentUser,
 }: {
-  comment: Comment;
-  form: CommentSectionProps["form"];
+  comment: types.Comment;
+  form: types.CommentSectionProps["form"];
   commentParentType: string;
   canComment: boolean;
-  currentUser: Person;
+  currentUser: types.Person;
 }) {
   const [editing, setEditing] = useState(false);
 
@@ -87,12 +72,7 @@ function CommentWrapper({
 
   if (editing) {
     return (
-      <EditingComment
-        comment={comment}
-        currentUser={currentUser}
-        onCancel={handleCancelEdit}
-        onSave={handleSaveEdit}
-      />
+      <EditingComment comment={comment} currentUser={currentUser} onCancel={handleCancelEdit} onSave={handleSaveEdit} />
     );
   }
 
@@ -106,6 +86,13 @@ function CommentWrapper({
       onEdit={handleEdit}
     />
   );
+}
+
+interface EditingCommentProps {
+  comment: types.Comment;
+  currentUser: types.Person;
+  onCancel: () => void;
+  onSave: (commentId: string, content: any) => void;
 }
 
 function EditingComment({ comment, currentUser, onCancel, onSave }: EditingCommentProps) {
@@ -146,12 +133,7 @@ function EditingComment({ comment, currentUser, onCancel, onSave }: EditingComme
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
-              <PrimaryButton
-                size="xs"
-                onClick={handleSave}
-                loading={uploading}
-                disabled={!content.trim()}
-              >
+              <PrimaryButton size="xs" onClick={handleSave} loading={uploading} disabled={!content.trim()}>
                 {uploading ? "Uploading..." : "Save Changes"}
               </PrimaryButton>
 
@@ -165,7 +147,3 @@ function EditingComment({ comment, currentUser, onCancel, onSave }: EditingComme
     </div>
   );
 }
-
-// Actual imports
-import { Avatar } from "../Avatar";
-import { PrimaryButton, SecondaryButton } from "../Button";
