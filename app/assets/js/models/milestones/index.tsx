@@ -40,7 +40,7 @@ export function parseMilestoneCommentsForTurboUi(paths: Paths, comments: Milesto
   return comments.map((comment) => parseMilestoneCommentForTurboUi(paths, comment));
 }
 
-function parseMilestoneCommentForTurboUi(paths: Paths, comment: MilestoneComment) {
+export function parseMilestoneCommentForTurboUi(paths: Paths, comment: MilestoneComment) {
   if (comment.action === "complete") {
     return {
       id: comment.comment.id,

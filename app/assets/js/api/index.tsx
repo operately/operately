@@ -3683,13 +3683,13 @@ export interface PostGoalProgressUpdateResult {
 }
 
 export interface PostMilestoneCommentInput {
-  milestoneId?: string | null;
-  content?: string | null;
-  action?: string | null;
+  milestoneId: Id;
+  content: Json | null;
+  action: string;
 }
 
 export interface PostMilestoneCommentResult {
-  comment?: MilestoneComment | null;
+  comment: MilestoneComment;
 }
 
 export interface PostProjectCheckInInput {
