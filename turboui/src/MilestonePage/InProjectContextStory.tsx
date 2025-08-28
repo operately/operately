@@ -409,7 +409,7 @@ export function EmptyMilestoneInProjectContextStory() {
                   type: "milestone-activity" as const,
                   value: {
                     id: "activity-1",
-                    author: mockPeople[0], // Alice created the empty milestone
+                    author: mockPeople[0]!, // Alice created the empty milestone
                     insertedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
                     content: "created the milestone",
                     type: "milestone-created",

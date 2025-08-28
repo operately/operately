@@ -502,10 +502,11 @@ defmodule OperatelyWeb.Api.Types do
     field? :value, :float, null: true
   end
 
+  enum(:milestone_comment_action, values: Operately.Comments.MilestoneComment.valid_actions())
+
   object :milestone_comment do
-    field? :id, :string, null: true
-    field? :action, :string, null: true
-    field? :comment, :comment, null: true
+    field :action, :milestone_comment_action, null: false
+    field :comment, :comment, null: false
   end
 
   object :space do

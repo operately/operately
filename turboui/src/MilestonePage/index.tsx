@@ -13,9 +13,12 @@ import { MilestoneSidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { TimelineItem } from "../Timeline/types";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
+
+  export type TimelineItemType = TimelineItem;
 
   export type Person = {
     id: string;
@@ -71,9 +74,9 @@ export namespace MilestonePage {
     onFiltersChange?: (filters: Types.FilterCondition[]) => void;
 
     // Timeline data
-    timelineItems?: any[];
-    currentUser?: Person;
-    canComment?: boolean;
+    timelineItems: TimelineItemType[];
+    currentUser: Person;
+    canComment: boolean;
     onAddComment?: (comment: string) => void;
     onEditComment?: (commentId: string, content: string) => void;
 
@@ -267,15 +270,7 @@ export function MilestonePage(props: MilestonePage.Props) {
 
                   <Timeline
                     items={timelineItems}
-                    currentUser={
-                      currentUser
-                        ? {
-                            id: currentUser.id,
-                            fullName: currentUser.fullName,
-                            avatarUrl: currentUser.avatarUrl || undefined,
-                          }
-                        : { id: "", fullName: "", avatarUrl: undefined }
-                    }
+                    currentUser={currentUser}
                     canComment={canComment}
                     commentParentType="milestone"
                     onAddComment={onAddComment}
