@@ -44,6 +44,8 @@ export namespace MilestonePage {
     description: any;
     onDescriptionChange: (newDescription: any) => Promise<boolean>;
 
+    onDelete?: () => void;
+
     // Tasks for this milestone
     tasks: Types.Task[];
 
@@ -73,9 +75,6 @@ export namespace MilestonePage {
     createdAt: Date;
     isSubscribed?: boolean;
     onSubscriptionToggle?: (subscribed: boolean) => void;
-    onCopyUrl?: () => void;
-    onArchive?: () => void;
-    onDelete?: () => void;
     canEdit?: boolean;
 
     // Rich editor support for description

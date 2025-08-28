@@ -210,8 +210,6 @@ export function InProjectContextStory() {
                 console.log("Subscription toggled:", subscribed);
                 setIsSubscribed(subscribed);
               }}
-              onCopyUrl={() => console.log("URL copied")}
-              onArchive={() => console.log("Milestone archived")}
               onDelete={() => console.log("Milestone deleted")}
               canEdit={true}
               description={mockDescription}
@@ -429,8 +427,6 @@ export function EmptyMilestoneInProjectContextStory() {
                 console.log("Subscription toggled:", subscribed);
                 setIsSubscribed(subscribed);
               }}
-              onCopyUrl={() => console.log("URL copied")}
-              onArchive={() => console.log("Milestone archived")}
               onDelete={() => console.log("Milestone deleted")}
               canEdit={true}
               description={null}

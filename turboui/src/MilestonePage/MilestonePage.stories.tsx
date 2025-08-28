@@ -205,8 +205,6 @@ export const Default: Story = {
           console.log("Subscription toggled:", subscribed);
           setIsSubscribed(subscribed);
         }}
-        onCopyUrl={() => console.log("URL copied")}
-        onArchive={() => console.log("Milestone archived")}
         onDelete={() => console.log("Milestone deleted")}
         canEdit={true}
         description={mockDescription}
@@ -314,8 +312,6 @@ export const EmptyMilestone: Story = {
           console.log("Subscription toggled:", subscribed);
           setIsSubscribed(subscribed);
         }}
-        onCopyUrl={() => console.log("URL copied")}
-        onArchive={() => console.log("Milestone archived")}
         onDelete={() => console.log("Milestone deleted")}
         canEdit={true}
         description={null}
