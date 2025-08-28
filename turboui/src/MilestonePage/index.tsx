@@ -17,6 +17,13 @@ import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
 
+  export type Person = {
+    id: string;
+    fullName: string;
+    avatarUrl: string | null;
+    profileLink: string;
+  };
+
   export interface Props {
     // Navigation info
     workmapLink: string;
@@ -51,7 +58,7 @@ export namespace MilestonePage {
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskReorder?: (tasks: Types.Task[]) => void;
     onCommentCreate?: (comment: string) => void;
-    onTaskAssigneeChange?: (taskId: string, assignee: Types.Person | null) => void;
+    onTaskAssigneeChange?: (taskId: string, assignee: Person | null) => void;
     onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange?: (taskId: string, status: string) => void;
 
@@ -63,13 +70,13 @@ export namespace MilestonePage {
 
     // Timeline data
     timelineItems?: any[];
-    currentUser?: Types.Person;
+    currentUser?: Person;
     canComment?: boolean;
     onAddComment?: (comment: string) => void;
     onEditComment?: (commentId: string, content: string) => void;
 
     // Milestone metadata
-    createdBy: Types.Person | null;
+    createdBy: Person | null;
     createdAt: Date;
     isSubscribed?: boolean;
     onSubscriptionToggle?: (subscribed: boolean) => void;

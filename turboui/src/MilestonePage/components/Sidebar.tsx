@@ -110,11 +110,11 @@ function SidebarStatus({
   );
 }
 
-function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: Types.Person; createdAt: Date }) {
+function SidebarCreatedBy({ createdBy, createdAt }: { createdBy: MilestonePage.Person; createdAt: Date }) {
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">
-        <AvatarWithName person={createdBy} size="tiny" nameFormat="short" link={`/people/${createdBy.id}`} />
+        <AvatarWithName person={createdBy} size="tiny" nameFormat="short" link={createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
           <FormattedTime time={createdAt} format="short-date" />
