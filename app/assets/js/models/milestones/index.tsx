@@ -1,11 +1,11 @@
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
-import { Milestone, MilestoneComment, MilestoneStatus } from "@/api";
+import { Milestone, MilestoneComment } from "@/api";
 import { CommentSection, DateField } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
-export type { Milestone, MilestoneComment, MilestoneStatus };
+export type { Milestone, MilestoneComment };
 export {
   getMilestone,
   useUpdateMilestone,
