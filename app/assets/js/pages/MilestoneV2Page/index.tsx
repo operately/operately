@@ -26,6 +26,7 @@ type TurboUiComment = CommentSection.Comment | CommentSection.CommentActivity;
 type LoaderResult = {
   data: {
     milestone: Milestones.Milestone;
+    tasksCount: number;
   };
   cacheVersion: number;
 };
@@ -47,12 +48,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePermissions: true,
           includeComments: true,
         }).then((d) => d.milestone),
+        tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useMilestoneId: true }).then((d) => d.count!),
       }),
   });
 }
 
 export function pageCacheKey(id: string): string {
-  return `v6-MilestoneV2Page.task-${id}`;
+  return `v7-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {
@@ -62,7 +64,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
-  const { milestone } = data;
+  const { milestone, tasksCount } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -123,7 +125,7 @@ function Page() {
 
   const props: MilestonePage.Props = {
     workmapLink,
-    tasksCount: 0,
+    tasksCount,
     space: parseSpaceForTurboUI(paths, milestone.space),
 
     canEdit: Boolean(milestone.permissions.canEditTimeline),

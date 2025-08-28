@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     inputs do
       field :id, :id, null: false
       field? :use_task_id, :boolean, null: false
+      field? :use_milestone_id, :boolean, null: false
     end
 
     outputs do
@@ -53,16 +54,18 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
 
     defp find_project(multi, inputs) do
-      case Map.get(inputs, :use_task_id, false) do
-        true -> Steps.find_project_by_task(multi, inputs.id)
-        false -> Steps.find_project(multi, inputs.id)
+      cond do
+        Map.get(inputs, :use_task_id, false) -> Steps.find_project_by_task(multi, inputs.id)
+        Map.get(inputs, :use_milestone_id, false) -> Steps.find_project_by_milestone(multi, inputs.id)
+        true -> Steps.find_project(multi, inputs.id)
       end
     end
 
     defp check_permissions(multi, inputs) do
-      case Map.get(inputs, :use_task_id, false) do
-        true -> Steps.check_task_permissions(multi, :can_view)
-        false -> Steps.check_permissions(multi, :can_view)
+      cond do
+        Map.get(inputs, :use_task_id, false) -> Steps.check_task_permissions(multi, :can_view)
+        Map.get(inputs, :use_milestone_id, false) -> Steps.check_milestone_permissions(multi, :can_view)
+        true -> Steps.check_permissions(multi, :can_view)
       end
     end
   end
@@ -416,6 +419,18 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
+    def find_project_by_milestone(multi, milestone_id) do
+      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
+        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+          {:ok, milestone} -> {:ok, milestone}
+          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+        end
+      end)
+      |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
+        {:ok, milestone.project}
+      end)
+    end
+
     def get_tasks(multi) do
       Ecto.Multi.run(multi, :tasks, fn _repo, %{project: project} ->
         tasks =
@@ -457,6 +472,12 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     def check_task_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
         Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      end)
+    end
+
+    def check_milestone_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
+        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
       end)
     end
 

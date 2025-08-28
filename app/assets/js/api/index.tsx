@@ -2614,6 +2614,7 @@ export interface ProjectDiscussionsListResult {
 export interface ProjectTasksGetOpenTaskCountInput {
   id: Id;
   useTaskId?: boolean;
+  useMilestoneId?: boolean;
 }
 
 export interface ProjectTasksGetOpenTaskCountResult {
