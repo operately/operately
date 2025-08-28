@@ -1,6 +1,7 @@
 import * as Time from "@/utils/time";
+import * as People from "@/models/people";
 import { Milestone, MilestoneComment } from "@/api";
-import { DateField } from "turboui";
+import { CommentSection, DateField } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
@@ -31,6 +32,39 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     link: paths.projectMilestonePath(milestone.id),
     tasksOrderingState: milestone.tasksOrderingState ?? [],
   };
+}
+
+export function parseMilestoneCommentsForTurboUi(paths: Paths, comments: MilestoneComment[] | undefined | null) {
+  if (!comments) return [];
+
+  return comments.map((comment) => parseMilestoneCommentForTurboUi(paths, comment));
+}
+
+function parseMilestoneCommentForTurboUi(paths: Paths, comment: MilestoneComment) {
+  if (comment.action === "complete") {
+    return {
+      id: comment.comment.id,
+      type: "milestone-completed",
+      insertedAt: comment.comment.insertedAt,
+      author: People.parsePersonForTurboUi(paths, comment.comment.author),
+    } as CommentSection.CommentActivity;
+  } else if (comment.action === "reopen") {
+    return {
+      id: comment.comment.id,
+      type: "milestone-reopened",
+      insertedAt: comment.comment.insertedAt,
+      author: People.parsePersonForTurboUi(paths, comment.comment.author),
+    } as CommentSection.CommentActivity;
+  } else {
+    return {
+      id: comment.comment.id,
+      content: comment.comment.content || "{}",
+      author: People.parsePersonForTurboUi(paths, comment.comment.author),
+      insertedAt: comment.comment.insertedAt,
+      reactions: [],
+      notification: comment.comment.notification,
+    } as CommentSection.Comment;
+  }
 }
 
 export function filterPending(milestones: Milestone[]) {

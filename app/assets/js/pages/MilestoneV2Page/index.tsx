@@ -42,13 +42,14 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeCreator: true,
           includeSpace: true,
           includePermissions: true,
+          includeComments: true,
         }).then((d) => d.milestone),
       }),
   });
 }
 
 function pageCacheKey(id: string): string {
-  return `v5-MilestoneV2Page.task-${id}`;
+  return `v6-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {
@@ -105,15 +106,17 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
 
+  const timelineItems = React.useMemo(() => prepareTimelineItems(paths, milestone.comments), [paths, milestone.comments]);
+
   const handleDelete = React.useCallback(async () => {
     await Api.project_milestones.delete({ milestoneId: milestone.id });
 
     if (milestone.project) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
-        navigate(paths.projectPath(milestone.project.id));
-      } else {
-        navigate(paths.homePath());
-      }
+      PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      navigate(paths.projectPath(milestone.project.id));
+    } else {
+      navigate(paths.homePath());
+    }
   }, [milestone.id]);
 
   const mentionedPeopleSearch = People.useMentionedPersonSearch({
@@ -144,7 +147,7 @@ function Page() {
 
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
-    timelineItems: [],
+    timelineItems,
     onAddComment: () => Promise.resolve(),
     onEditComment: () => Promise.resolve(),
     canComment: Boolean(milestone.permissions.canComment),
@@ -240,4 +243,22 @@ function usePageField<T>(
   };
 
   return [state, updateState];
+}
+
+function prepareTimelineItems(paths: Paths, comments: Milestones.MilestoneComment[] | undefined | null) {
+  const parsedComments = Milestones.parseMilestoneCommentsForTurboUi(paths, comments);
+
+  const timelineItems = parsedComments.map((comment) => {
+    const type = "type" in comment ? "milestone-activity" : "comment";
+    return { type, value: comment } as MilestonePage.TimelineItemType;
+  });
+
+  timelineItems.sort((a, b) => {
+    const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
+    const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
+
+    return bInsertedAt.localeCompare(aInsertedAt);
+  });
+
+  return timelineItems;
 }
