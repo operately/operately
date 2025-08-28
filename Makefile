@@ -135,7 +135,22 @@ test.build:
 test.up:
 	$(MAKE) test.init
 	$(MAKE) test.seed.env
-	./devenv up
+	@for i in 1 2 3; do \
+		echo "Attempt $$i: Starting devenv..."; \
+		if ./devenv up; then \
+			echo "devenv up succeeded on attempt $$i"; \
+			break; \
+		else \
+			echo "devenv up failed on attempt $$i"; \
+			if [ $$i -lt 3 ]; then \
+				echo "Waiting 10 seconds before retry..."; \
+				sleep 10; \
+			else \
+				echo "All attempts failed"; \
+				exit 1; \
+			fi; \
+		fi; \
+	done
 
 test.turboui.build:
 	./devenv bash -c "cd turboui && npm install"

@@ -6,7 +6,7 @@ import * as Time from "@/utils/time";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
 
-import { showErrorToast, MilestonePage } from "turboui";
+import { showErrorToast, MilestonePage, CommentSection } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageCache } from "@/routes/PageCache";
@@ -17,6 +17,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { projectPageCacheKey } from "../ProjectV2Page";
+import { useComments } from "./useComments";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
@@ -48,7 +49,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 }
 
-function pageCacheKey(id: string): string {
+export function pageCacheKey(id: string): string {
   return `v6-MilestoneV2Page.task-${id}`;
 }
 
@@ -106,7 +107,9 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update milestone status."),
   });
 
-  const timelineItems = React.useMemo(() => prepareTimelineItems(paths, milestone.comments), [paths, milestone.comments]);
+  const { comments, handleCreateComment } = useComments(paths, milestone);
+
+  const timelineItems = React.useMemo(() => prepareTimelineItems(comments), [comments]);
 
   const handleDelete = React.useCallback(async () => {
     await Api.project_milestones.delete({ milestoneId: milestone.id });
@@ -148,7 +151,7 @@ function Page() {
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
-    onAddComment: () => Promise.resolve(),
+    onAddComment: handleCreateComment,
     onEditComment: () => Promise.resolve(),
     canComment: Boolean(milestone.permissions.canComment),
 
@@ -245,15 +248,22 @@ function usePageField<T>(
   return [state, updateState];
 }
 
-function prepareTimelineItems(paths: Paths, comments: Milestones.MilestoneComment[] | undefined | null) {
-  const parsedComments = Milestones.parseMilestoneCommentsForTurboUi(paths, comments);
-
-  const timelineItems = parsedComments.map((comment) => {
+function prepareTimelineItems(comments: (CommentSection.Comment | CommentSection.CommentActivity)[]) {
+  const timelineItems = comments.map((comment) => {
     const type = "type" in comment ? "milestone-activity" : "comment";
+
     return { type, value: comment } as MilestonePage.TimelineItemType;
   });
 
   timelineItems.sort((a, b) => {
+    // Special handling for temporary comments - always show them first
+    const aIsTemp = a.value.id.startsWith("temp-");
+    const bIsTemp = b.value.id.startsWith("temp-");
+
+    // If one is temporary and the other isn't, prioritize the temporary one
+    if (aIsTemp && !bIsTemp) return -1;
+    if (!aIsTemp && bIsTemp) return 1;
+
     const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
     const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
 
