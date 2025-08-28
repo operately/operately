@@ -6,9 +6,8 @@ import * as Tasks from "@/models/tasks";
 import * as React from "react";
 
 import RichContent from "@/components/RichContent";
-import { Avatar, PrimaryButton, SecondaryButton, IconPencil, IconChecks } from "turboui";
+import { Avatar, PrimaryButton, SecondaryButton, IconPencil, IconChecks, isContentEmpty } from "turboui";
 
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 import { MultiPeopleSearch } from "@/features/Tasks/NewTaskModal/MultiPeopleSearch";
 import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";

@@ -1,9 +1,9 @@
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
-import { Link, SecondaryButton } from "turboui";
+import { countCharacters, Link, SecondaryButton, shortenContent } from "turboui";
 
-import RichContent, { countCharacters, shortenContent } from "@/components/RichContent";
+import RichContent from "@/components/RichContent";
 
 import { usePaths } from "@/routes/paths";
 export function ProjectDescriptionSection({ project }: { project: Projects.Project }) {
@@ -60,7 +60,7 @@ function DescriptionContent({ project }) {
 
   return (
     <div>
-      <RichContent jsonContent={description} />
+      <RichContent jsonContent={description} skipParse />
       {length > DESCRIPTION_CHAR_LIMIT && <ExpandCollapseButton showMore={showMore} setShowMore={setShowMore} />}
     </div>
   );

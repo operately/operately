@@ -5,11 +5,10 @@ import * as People from "@/models/people";
 
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
-import { Link, IconEdit } from "turboui";
+import { Link, IconEdit, isContentEmpty } from "turboui";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, goalLink } from "./../feedItemLinks";
 
