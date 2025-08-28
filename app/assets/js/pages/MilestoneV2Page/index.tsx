@@ -159,6 +159,8 @@ function Page() {
     status,
     onStatusChange: setStatus,
 
+    onDelete: handleDelete,
+
     // Task operations
     onTaskCreate: () => Promise.resolve(),
     onTaskReorder: () => {},
@@ -169,11 +171,6 @@ function Page() {
     // Metadata
     createdBy: People.parsePersonForTurboUi(paths, milestone.creator),
     createdAt: Time.parseDate(milestone.insertedAt)!,
-
-    // Actions
-    onDelete: handleDelete,
-    onArchive: () => {},
-    onCopyUrl: () => {},
 
     // Rich text editor support
     mentionedPersonLookup,

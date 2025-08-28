@@ -4,7 +4,7 @@ import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
 import { NotificationToggle } from "../../NotificationToggle";
-import { IconArchive, IconCalendar, IconCheck, IconLink, IconTrash } from "../../icons";
+import { IconCalendar, IconCheck, IconLink, IconTrash } from "../../icons";
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
 
@@ -16,8 +16,6 @@ export function MilestoneSidebar({
   createdAt,
   isSubscribed = false,
   onSubscriptionToggle,
-  onCopyUrl,
-  onArchive,
   openDeleteModal,
   canEdit = true,
 }: MilestonePage.State) {
@@ -27,7 +25,7 @@ export function MilestoneSidebar({
       <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
       {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
       <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
-      <SidebarActions onCopyUrl={onCopyUrl} onArchive={onArchive} onDelete={openDeleteModal} canEdit={canEdit} />
+      <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
     </>
   );
 }
@@ -139,28 +137,18 @@ function SidebarNotifications(props: { isSubscribed: boolean; onSubscriptionTogg
 }
 
 function SidebarActions({
-  onCopyUrl,
-  onArchive,
   onDelete,
   canEdit,
 }: {
-  onCopyUrl?: () => void;
-  onArchive?: () => void;
   onDelete?: () => void;
   canEdit: boolean;
 }) {
   const actions = [
     {
       label: "Copy URL",
-      onClick: onCopyUrl,
+      onClick: () => navigator.clipboard.writeText(window.location.href),
       icon: IconLink,
-      show: !!onCopyUrl,
-    },
-    {
-      label: "Archive",
-      onClick: onArchive,
-      icon: IconArchive,
-      show: !!onArchive,
+      show: true,
     },
     {
       label: "Delete",
