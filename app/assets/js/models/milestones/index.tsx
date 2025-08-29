@@ -47,14 +47,14 @@ export function parseMilestoneCommentForTurboUi(paths: Paths, comment: Milestone
       type: "milestone-completed",
       insertedAt: comment.comment.insertedAt,
       author: People.parsePersonForTurboUi(paths, comment.comment.author),
-    } as CommentSection.CommentActivity;
+    } as CommentSection.MilestoneActivity;
   } else if (comment.action === "reopen") {
     return {
       id: comment.comment.id,
       type: "milestone-reopened",
       insertedAt: comment.comment.insertedAt,
       author: People.parsePersonForTurboUi(paths, comment.comment.author),
-    } as CommentSection.CommentActivity;
+    } as CommentSection.MilestoneActivity;
   } else {
     return {
       id: comment.comment.id,

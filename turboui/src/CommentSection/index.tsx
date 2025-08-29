@@ -11,7 +11,7 @@ export type {
   Person,
   Reaction,
   Comment,
-  CommentActivity,
+  MilestoneActivity,
   CommentItem as CommentItemType,
   CommentFormState,
   CommentSectionProps,

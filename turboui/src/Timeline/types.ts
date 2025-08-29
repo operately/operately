@@ -1,5 +1,5 @@
 import { DateField } from "../DateField";
-import { Person, Comment, CommentActivity } from "../CommentSection/types";
+import { Person, Comment, MilestoneActivity } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
@@ -114,7 +114,7 @@ export type TimelineItem =
     }
   | {
       type: "milestone-activity";
-      value: CommentActivity;
+      value: MilestoneActivity;
     }
   | {
       type: "acknowledgment";
