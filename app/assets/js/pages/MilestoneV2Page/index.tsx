@@ -254,12 +254,10 @@ function usePageField<T>(
 }
 
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: TurboUiComment[]) {
-  const parsedActivities: MilestonePage.TimelineItemType[] = parseActivitiesForTurboUi(paths, activities).map(
-    (activity) => ({
-      type: "task-activity",
-      value: activity,
-    }),
-  );
+  const parsedActivities: MilestonePage.TimelineItemType[] = parseActivitiesForTurboUi(paths, activities)
+    .filter((activity): activity is NonNullable<typeof activity> => activity !== null)
+    .map((activity) => ({ type: "task-activity", value: activity }));
+
   const timelineItems = comments.map((comment) => {
     const type = "type" in comment ? "milestone-activity" : "comment";
 
