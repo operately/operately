@@ -225,7 +225,7 @@ export function MilestonePage(props: MilestonePage.Props) {
           <div className="px-4 py-2">
             <div className="sm:grid sm:grid-cols-12">
               {/* Main content - left column (8 columns) */}
-              <div className="sm:col-span-8 sm:px-4 space-y-6">
+              <div className="sm:col-span-8 sm:px-4 space-y-4">
                 {/* Sentinel element for intersection observer */}
                 <div ref={sentinelRef} className="h-0"></div>
 
@@ -239,7 +239,7 @@ export function MilestonePage(props: MilestonePage.Props) {
                   <div className="flex items-center gap-2">
                     <IconFlag size={20} className="text-blue-500" />
                     <TextField
-                      className="font-semibold text-xl"
+                      className="font-semibold text-2xl"
                       text={title}
                       onChange={onMilestoneTitleChange}
                       readonly={!canEdit}
@@ -263,11 +263,8 @@ export function MilestonePage(props: MilestonePage.Props) {
                 />
 
                 {/* Timeline section */}
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <h2 className="font-bold">Activity & Comments</h2>
-                  </div>
-
+                <div className="pt-8">
+                  <h3 className="font-bold mb-4">Comments & Activity</h3>
                   <Timeline
                     items={timelineItems}
                     currentUser={currentUser}
@@ -288,7 +285,7 @@ export function MilestonePage(props: MilestonePage.Props) {
                   </div>
                 </div>
 
-                <div className="space-y-6">
+                <div className="space-y-6 pt-8">
                   <MilestoneSidebar {...state} />
                 </div>
               </div>
