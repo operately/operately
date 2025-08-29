@@ -102,12 +102,14 @@ function getStatusIcon(status: string) {
 }
 
 function ActivityText({ activity }: { activity: TaskActivity }) {
+  const taskName = formatTaskName(activity);
+
   switch (activity.type) {
     case "task_assignee_updating":
       if (activity.action === "assigned") {
         return (
           <span className="text-content-dimmed">
-            assigned this task to{" "}
+            assigned {taskName} to{" "}
             {activity.assignee.profileLink ? (
               <BlackLink
                 to={activity.assignee.profileLink}
@@ -136,7 +138,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
             ) : (
               <span className="font-medium text-content-dimmed">{shortName(activity.assignee.fullName)}</span>
             )}{" "}
-            from this task
+            from {taskName}
           </span>
         );
       }
@@ -144,7 +146,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task_status_updating":
       return (
         <span className="text-content-dimmed">
-          changed status{activity.task ? ` of "${activity.task.title}"` : ""} from{" "}
+          changed status of {taskName} from{" "}
           <span className="font-medium text-content-dimmed">{formatStatus(activity.fromStatus)}</span> to{" "}
           <span className="font-medium text-content-dimmed">{formatStatus(activity.toStatus)}</span>
         </span>
@@ -154,14 +156,14 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
       if (activity.action === "attached") {
         return (
           <span className="text-content-dimmed">
-            attached this task to milestone{" "}
+            attached {taskName} to milestone{" "}
             <span className="font-medium text-content-dimmed">{activity.milestone.name}</span>
           </span>
         );
       } else {
         return (
           <span className="text-content-dimmed">
-            detached this task from milestone{" "}
+            detached {taskName} from milestone{" "}
             <span className="font-medium text-content-dimmed">{activity.milestone.name}</span>
           </span>
         );
@@ -171,18 +173,18 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
       if (activity.toDueDate && !activity.fromDueDate) {
         return (
           <span className="text-content-dimmed flex items-center gap-1">
-            set due date to{" "}
+            set due date for {taskName} to{" "}
             <span className="font-medium text-content-dimmed">
-              <DateField date={activity.toDueDate} readonly hideCalendarIcon  />
+              <DateField date={activity.toDueDate} readonly hideCalendarIcon />
             </span>
           </span>
         );
       } else if (!activity.toDueDate && activity.fromDueDate) {
-        return <span className="text-content-subtle">removed due date</span>;
+        return <span className="text-content-subtle">removed due date from {taskName}</span>;
       } else if (activity.toDueDate && activity.fromDueDate) {
         return (
           <span className="text-content-dimmed flex items-center gap-1">
-            changed due date from{" "}
+            changed due date of {taskName} from{" "}
             <span className="font-medium text-content-dimmed">
               <DateField date={activity.fromDueDate} readonly hideCalendarIcon />
             </span>{" "}
@@ -198,23 +200,36 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task_description_change":
       return (
         <span className="text-content-dimmed">
-          {activity.hasContent ? "updated the description" : "removed the description"}
+          {activity.hasContent
+            ? `updated the description ${activity.page === "task" ? "" : "of " + taskName}`
+            : `removed the description ${activity.page === "task" ? "" : "from " + taskName}`}
         </span>
       );
 
     case "task_name_updating":
       return (
         <span className="text-content-dimmed">
-          changed title from <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
+          changed title of {activity.page === "task" ? "this task" : "a task"} from{" "}
+          <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
           <span className="font-medium text-content-dimmed">"{activity.toTitle}"</span>
         </span>
       );
 
     case "task_adding":
-      return <span className="text-content-dimmed">created this task</span>;
+      return <span className="text-content-dimmed">created {taskName}</span>;
 
     default:
       return <span className="text-content-dimmed">performed an action</span>;
+  }
+}
+
+function formatTaskName(activity: TaskActivity): string {
+  if (activity.page === "task") {
+    return "this task";
+  } else if ("taskName" in activity) {
+    return `"${activity.taskName}"`;
+  } else {
+    return `"${activity.toTitle}"`;
   }
 }
 
