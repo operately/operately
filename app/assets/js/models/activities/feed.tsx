@@ -32,6 +32,9 @@ export const SUPPORTED_ACTIVITY_TYPES = [
   "task_milestone_updating",
   "task_status_updating",
   "project_milestone_creation",
+  "milestone_description_updating",
+  "milestone_title_updating",
+  "milestone_due_date_updating",
 ];
 
 type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
@@ -81,6 +84,9 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
       return parseTaskStatusUpdatingActivity(author!, activity, activity.content as ActivityContentTaskStatusUpdating);
 
     case "project_milestone_creation":
+    case "milestone_description_updating":
+    case "milestone_title_updating":
+    case "milestone_due_date_updating":
       return parseMilestoneActivity(author!, activity);
 
     default:
@@ -196,11 +202,11 @@ function parseTaskStatusUpdatingActivity(
 
 function parseMilestoneActivity(author: TurboUiPerson, activity: Activity): MilestoneActivity | null {
   try {
-    assertMilestoneActivityAction(activity.action);
+    const type = findMilestoneActivityType(activity.action);
 
     return {
       id: activity.id,
-      type: activity.action,
+      type,
       author,
       insertedAt: activity.insertedAt,
     };
@@ -210,10 +216,16 @@ function parseMilestoneActivity(author: TurboUiPerson, activity: Activity): Mile
   }
 }
 
-function assertMilestoneActivityAction(action: string): asserts action is MilestoneActivity["type"] {
-  const validActions = ["project_milestone_creation", "milestone-description-added", "milestone_update"];
-
-  if (!validActions.includes(action)) {
-    throw new Error(`Invalid milestone activity action: ${action}`);
+function findMilestoneActivityType(action: string): MilestoneActivity["type"] {
+  switch (action) {
+    case "project_milestone_creation":
+      return "project_milestone_creation";
+    case "milestone_description_updating":
+      return "milestone_description_updating";
+    case "milestone_title_updating":
+    case "milestone_due_date_updating":
+      return "milestone_update";
+    default:
+      throw new Error(`Invalid milestone activity action: ${action}`);
   }
 }

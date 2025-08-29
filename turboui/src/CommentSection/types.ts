@@ -30,7 +30,7 @@ export interface MilestoneActivity {
     | "milestone-completed"
     | "milestone-reopened"
     | "project_milestone_creation"
-    | "milestone-description-added"
+    | "milestone_description_updating"
     | "milestone_update"
     | "acknowledgment";
   author: Person;
