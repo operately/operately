@@ -14,7 +14,7 @@ defmodule Operately.Activities.Content.TaskNameUpdating do
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required(__schema__(:fields))
+    |> validate_required([:company_id, :space_id, :project_id, :task_id, :old_name, :new_name])
   end
 
   def build(params) do
