@@ -5,6 +5,8 @@ import Api from "@/api";
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
+import * as Activities from "@/models/activities";
+import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
 
 import { showErrorToast, MilestonePage, CommentSection } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
@@ -27,6 +29,7 @@ type LoaderResult = {
   data: {
     milestone: Milestones.Milestone;
     tasksCount: number;
+    activities: Activities.Activity[];
   };
   cacheVersion: number;
 };
@@ -49,12 +52,17 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeComments: true,
         }).then((d) => d.milestone),
         tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useMilestoneId: true }).then((d) => d.count!),
+        activities: Api.getActivities({
+          scopeId: params.id,
+          scopeType: "milestone",
+          actions: SUPPORTED_ACTIVITY_TYPES,
+        }).then((d) => d.activities!),
       }),
   });
 }
 
 export function pageCacheKey(id: string): string {
-  return `v7-MilestoneV2Page.task-${id}`;
+  return `v8-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {
@@ -64,7 +72,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
-  const { milestone, tasksCount } = data;
+  const { milestone, tasksCount, activities } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -103,7 +111,10 @@ function Page() {
   const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
-  const timelineItems = React.useMemo(() => prepareTimelineItems(comments), [comments]);
+  const timelineItems = React.useMemo(
+    () => prepareTimelineItems(paths, activities, comments),
+    [paths, activities, comments],
+  );
 
   const handleDelete = React.useCallback(async () => {
     await Api.project_milestones.delete({ milestoneId: milestone.id });
@@ -242,14 +253,20 @@ function usePageField<T>(
   return [state, updateState];
 }
 
-function prepareTimelineItems(comments: TurboUiComment[]) {
+function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: TurboUiComment[]) {
+  const parsedActivities: MilestonePage.TimelineItemType[] = parseActivitiesForTurboUi(paths, activities).map(
+    (activity) => ({
+      type: "task-activity",
+      value: activity,
+    }),
+  );
   const timelineItems = comments.map((comment) => {
     const type = "type" in comment ? "milestone-activity" : "comment";
 
     return { type, value: comment } as MilestonePage.TimelineItemType;
   });
 
-  timelineItems.sort((a, b) => {
+  return [...parsedActivities, ...timelineItems].sort((a, b) => {
     // Special handling for temporary comments - always show them first
     const aIsTemp = a.value.id.startsWith("temp-");
     const bIsTemp = b.value.id.startsWith("temp-");
@@ -263,8 +280,6 @@ function prepareTimelineItems(comments: TurboUiComment[]) {
 
     return bInsertedAt.localeCompare(aInsertedAt);
   });
-
-  return timelineItems;
 }
 
 function useStatusField(

@@ -195,6 +195,21 @@ defmodule OperatelyWeb.Api.Queries.GetActivitiesTest do
       refute Enum.find(res.activities, fn act -> act.action == "task_adding" end)
     end
 
+    test "milestone scope includes only milestone activities", ctx do
+      assert {200, res} = query(ctx.conn, :get_activities, %{
+        scope_type: :milestone,
+        scope_id: Paths.milestone_id(ctx.milestone),
+        actions: []
+      })
+
+      refute Enum.find(res.activities, fn act -> act.action == "company_adding" end)
+      refute Enum.find(res.activities, fn act -> act.action == "space_added" end)
+      refute Enum.find(res.activities, fn act -> act.action == "goal_created" end)
+      refute Enum.find(res.activities, fn act -> act.action == "project_created" end)
+      assert Enum.find(res.activities, fn act -> act.action == "project_milestone_creation" end)
+      assert Enum.find(res.activities, fn act -> act.action == "task_adding" end)
+    end
+
     test "task scope includes only task activities", ctx do
       assert {200, res} = query(ctx.conn, :get_activities, %{
         scope_type: :task,
