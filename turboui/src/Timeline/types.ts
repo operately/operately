@@ -4,6 +4,8 @@ import { Status } from "../TaskBoard/types";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 
+export type ActivityPageContext = "task" | "milestone";
+
 // Task-specific activity types
 export interface TaskAssignmentActivity {
   id: string;
@@ -12,6 +14,8 @@ export interface TaskAssignmentActivity {
   insertedAt: string;
   assignee: Person;
   action: "assigned" | "unassigned";
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskStatusChangeActivity {
@@ -21,6 +25,8 @@ export interface TaskStatusChangeActivity {
   insertedAt: string;
   fromStatus: Status;
   toStatus: Status;
+  taskName: string;
+  page: ActivityPageContext;
   task?: Task;
 }
 
@@ -31,6 +37,8 @@ export interface TaskMilestoneActivity {
   insertedAt: string;
   milestone: Milestone;
   action: "attached" | "detached";
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskPriorityActivity {
@@ -40,6 +48,8 @@ export interface TaskPriorityActivity {
   insertedAt: string;
   fromPriority: TaskPriority;
   toPriority: TaskPriority;
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskDueDateActivity {
@@ -49,6 +59,8 @@ export interface TaskDueDateActivity {
   insertedAt: string;
   fromDueDate: DateField.ContextualDate | null;
   toDueDate: DateField.ContextualDate | null;
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskDescriptionActivity {
@@ -57,6 +69,8 @@ export interface TaskDescriptionActivity {
   author: Person;
   insertedAt: string;
   hasContent: boolean; // Whether description was added/updated vs removed
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskTitleActivity {
@@ -66,6 +80,7 @@ export interface TaskTitleActivity {
   insertedAt: string;
   fromTitle: string;
   toTitle: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskCreationActivity {
@@ -73,6 +88,8 @@ export interface TaskCreationActivity {
   type: "task_adding";
   author: Person;
   insertedAt: string;
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 // Supporting types

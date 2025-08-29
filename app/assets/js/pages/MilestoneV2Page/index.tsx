@@ -254,7 +254,7 @@ function usePageField<T>(
 }
 
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: TurboUiComment[]) {
-  const parsedActivities: MilestonePage.TimelineItemType[] = parseActivitiesForTurboUi(paths, activities)
+  const parsedActivities: MilestonePage.TimelineItemType[] = parseActivitiesForTurboUi(paths, activities, "milestone")
     .filter((activity): activity is NonNullable<typeof activity> => activity !== null)
     .map((activity) => {
       if (activity.type.startsWith("task_")) {
