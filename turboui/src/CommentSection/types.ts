@@ -24,12 +24,12 @@ export interface Comment {
   notification?: any; // For notification intersection handling
 }
 
-export interface CommentActivity {
+export interface MilestoneActivity {
   id: string;
   type:
     | "milestone-completed"
     | "milestone-reopened"
-    | "milestone-created"
+    | "project_milestone_creation"
     | "milestone-description-added"
     | "milestone_update"
     | "acknowledgment";
@@ -45,7 +45,7 @@ export type CommentItem =
     }
   | {
       type: "milestone-completed" | "milestone-reopened";
-      value: CommentActivity;
+      value: MilestoneActivity;
     }
   | {
       type: "acknowledgment";
@@ -86,7 +86,7 @@ export interface CommentInputProps {
 }
 
 export interface ActivityProps {
-  activity: CommentActivity;
+  activity: MilestoneActivity;
 }
 
 export interface AcknowledgmentProps {
