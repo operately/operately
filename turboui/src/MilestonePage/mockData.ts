@@ -22,7 +22,7 @@ export const createMockTimelineItems = (): any[] => [
       author: mockPeople[1],
       insertedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // 6 days ago
       content: "added a description",
-      type: "milestone-description-added",
+      type: "milestone_description_updating",
     },
   },
   {

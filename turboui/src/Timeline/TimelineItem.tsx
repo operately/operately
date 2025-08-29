@@ -49,7 +49,7 @@ export function TimelineItem({
         return <MilestoneReopenedActivity activity={item.value} />;
       } else if (item.value.type === "project_milestone_creation") {
         return <MilestoneCreatedActivity activity={item.value} />;
-      } else if (item.value.type === "milestone-description-added") {
+      } else if (item.value.type === "milestone_description_updating") {
         return <MilestoneDescriptionActivity activity={item.value} />;
       } else if (item.value.type === "milestone_update") {
         return <MilestoneUpdateActivity activity={item.value} />;
