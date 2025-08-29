@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import React, { useState } from "react";
 import { MilestonePage } from "./index";
 import * as Types from "../TaskBoard/types";
-import { InProjectContextStory, EmptyMilestoneInProjectContextStory } from "./InProjectContextStory";
 import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
@@ -325,26 +324,5 @@ export const EmptyMilestone: Story = {
         }}
       />
     );
-  },
-};
-
-
-/**
- * Full Project Context - Shows MilestonePage within a complete ProjectPage experience
- */
-export const InProjectContext: Story = {
-  render: () => <InProjectContextStory />,
-  parameters: {
-    layout: "fullscreen",
-  },
-};
-
-/**
- * Empty Milestone in Full Project Context - Shows an empty MilestonePage within a complete ProjectPage experience
- */
-export const EmptyMilestoneInProjectContext: Story = {
-  render: () => <EmptyMilestoneInProjectContextStory />,
-  parameters: {
-    layout: "fullscreen",
   },
 };
