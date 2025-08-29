@@ -29,7 +29,7 @@ export interface MilestoneActivity {
   type:
     | "milestone-completed"
     | "milestone-reopened"
-    | "milestone-created"
+    | "project_milestone_creation"
     | "milestone-description-added"
     | "milestone_update"
     | "acknowledgment";

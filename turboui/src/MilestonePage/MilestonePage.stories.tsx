@@ -258,7 +258,7 @@ export const EmptyMilestone: Story = {
           author: mockPeople[1]!, // Bob Smith created it
           insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
           content: "created the milestone",
-          type: "milestone-created" as const,
+          type: "project_milestone_creation" as const,
         },
       },
     ];
