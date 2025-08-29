@@ -23,7 +23,7 @@ import { useComments } from "./useComments";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
-type TurboUiComment = CommentSection.Comment | CommentSection.CommentActivity;
+type TurboUiComment = CommentSection.Comment | CommentSection.MilestoneActivity;
 
 type LoaderResult = {
   data: {
@@ -256,7 +256,13 @@ function usePageField<T>(
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: TurboUiComment[]) {
   const parsedActivities: MilestonePage.TimelineItemType[] = parseActivitiesForTurboUi(paths, activities)
     .filter((activity): activity is NonNullable<typeof activity> => activity !== null)
-    .map((activity) => ({ type: "task-activity", value: activity }));
+    .map((activity) => {
+      if (activity.type.startsWith("task_")) {
+        return { type: "task-activity", value: activity as any };
+      } else {
+        return { type: "milestone-activity", value: activity as any };
+      }
+    });
 
   const timelineItems = comments.map((comment) => {
     const type = "type" in comment ? "milestone-activity" : "comment";

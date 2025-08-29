@@ -94,6 +94,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           old_status: changes.task.status,
           new_status: changes.updated_task.status,
@@ -131,6 +132,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           project_name: changes.project.name,
           task_name: changes.task.name,
@@ -168,6 +170,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           old_name: changes.task.name,
           new_name: changes.updated_task.name
@@ -204,6 +207,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           task_name: changes.task.name,
           old_due_date: changes.task.due_date,
@@ -241,6 +245,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           old_assignee_id: get_old_assignee_id(changes.task),
           new_assignee_id: inputs.assignee_id
@@ -361,6 +366,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           name: changes.task.name,
         }

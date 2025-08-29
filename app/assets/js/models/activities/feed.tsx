@@ -15,6 +15,7 @@ import {
   TaskDueDateActivity,
   TaskMilestoneActivity,
   TaskStatusChangeActivity,
+  MilestoneActivity,
 } from "turboui";
 import { parsePersonForTurboUi } from "../people";
 import { compareIds, Paths } from "@/routes/paths";
@@ -30,6 +31,7 @@ export const SUPPORTED_ACTIVITY_TYPES = [
   "task_due_date_updating",
   "task_milestone_updating",
   "task_status_updating",
+  "project_milestone_creation",
 ];
 
 type TurboUiPerson = NonNullable<ReturnType<typeof parsePersonForTurboUi>>;
@@ -77,6 +79,10 @@ function parseActivityForTurboUi(paths: Paths, activity: Activity) {
       );
     case "task_status_updating":
       return parseTaskStatusUpdatingActivity(author!, activity, activity.content as ActivityContentTaskStatusUpdating);
+
+    case "project_milestone_creation":
+      return parseMilestoneActivity(author!, activity);
+
     default:
       return null;
   }
@@ -186,4 +192,28 @@ function parseTaskStatusUpdatingActivity(
     fromStatus: parseTaskStatus(content.oldStatus),
     toStatus: parseTaskStatus(content.newStatus),
   };
+}
+
+function parseMilestoneActivity(author: TurboUiPerson, activity: Activity): MilestoneActivity | null {
+  try {
+    assertMilestoneActivityAction(activity.action);
+
+    return {
+      id: activity.id,
+      type: activity.action,
+      author,
+      insertedAt: activity.insertedAt,
+    };
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+function assertMilestoneActivityAction(action: string): asserts action is MilestoneActivity["type"] {
+  const validActions = ["project_milestone_creation", "milestone-description-added", "milestone_update"];
+
+  if (!validActions.includes(action)) {
+    throw new Error(`Invalid milestone activity action: ${action}`);
+  }
 }
