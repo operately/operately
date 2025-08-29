@@ -312,7 +312,7 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
 }
 
 function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
-  const parsedActivities = parseActivitiesForTurboUi(paths, activities).map((activity) => ({
+  const parsedActivities = parseActivitiesForTurboUi(paths, activities, "task").map((activity) => ({
     type: "task-activity",
     value: activity,
   }));
