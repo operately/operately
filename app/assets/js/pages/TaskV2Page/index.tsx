@@ -324,19 +324,19 @@ function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], c
   const timelineItems = [...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[];
 
   timelineItems.sort((a, b) => {
-    // Special handling for temporary comments - always show them first
+    // Special handling for temporary comments - always show them last
     const aIsTemp = a.value.id.startsWith("temp-");
     const bIsTemp = b.value.id.startsWith("temp-");
 
-    // If one is temporary and the other isn't, prioritize the temporary one
-    if (aIsTemp && !bIsTemp) return -1;
-    if (!aIsTemp && bIsTemp) return 1;
+    // If one is temporary and the other isn't, prioritize the non-temporary one
+    if (aIsTemp && !bIsTemp) return 1;
+    if (!aIsTemp && bIsTemp) return -1;
 
     // Otherwise use standard date comparison
     const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
     const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
 
-    return bInsertedAt.localeCompare(aInsertedAt);
+    return aInsertedAt.localeCompare(bInsertedAt);
   });
 
   return timelineItems;
