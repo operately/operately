@@ -1924,7 +1924,7 @@ export type UpdateContent =
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
 
-export type ActivityScopeType = "person" | "company" | "space" | "project" | "task" | "goal";
+export type ActivityScopeType = "person" | "company" | "space" | "project" | "milestone" | "task" | "goal";
 
 export type AgentMessageSender = "user" | "ai";
 
