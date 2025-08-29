@@ -23,7 +23,7 @@ import { useComments } from "./useComments";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
-type TurboUiComment = CommentSection.Comment | CommentSection.CommentActivity;
+type TurboUiComment = CommentSection.Comment | CommentSection.MilestoneActivity;
 
 type LoaderResult = {
   data: {

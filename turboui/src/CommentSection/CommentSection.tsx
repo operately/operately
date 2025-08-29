@@ -9,7 +9,7 @@ import * as types from "./types";
 export namespace CommentSection {
   export type Comment = types.Comment;
 
-  export type CommentActivity = types.CommentActivity;
+  export type MilestoneActivity = types.MilestoneActivity;
 }
 
 export function CommentSection({
