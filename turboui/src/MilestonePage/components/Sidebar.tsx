@@ -20,13 +20,15 @@ export function MilestoneSidebar({
   canEdit = true,
 }: MilestonePage.State) {
   return (
-    <>
-      <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
-      <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
-      {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
-      <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
-      <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
-    </>
+    <div className="sm:col-span-4 hidden sm:block sm:pl-8">
+      <div className="space-y-6 mt-4">
+        <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
+        <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
+        {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
+        <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
+        <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
+      </div>
+    </div>
   );
 }
 
@@ -136,13 +138,7 @@ function SidebarNotifications(props: { isSubscribed: boolean; onSubscriptionTogg
   );
 }
 
-function SidebarActions({
-  onDelete,
-  canEdit,
-}: {
-  onDelete?: () => void;
-  canEdit: boolean;
-}) {
+function SidebarActions({ onDelete, canEdit }: { onDelete?: () => void; canEdit: boolean }) {
   const actions = [
     {
       label: "Copy URL",

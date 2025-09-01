@@ -57,7 +57,7 @@ export function TasksSection({
   const hiddenTasks = baseFilteredTasks.filter((task) => task.status === "done" || task.status === "canceled");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-6">
       {/* Task header container - visually groups all task-related controls */}
       <div className="bg-surface-dimmed rounded-lg border border-surface-outline">
         {/* Header bar with title, pie chart, and primary action */}
