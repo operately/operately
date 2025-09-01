@@ -1,11 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { DateField } from "../DateField";
-import { StatusBadge } from "../StatusBadge";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 import * as Types from "../TaskBoard/types";
-import { TextField } from "../TextField";
 import { Timeline } from "../Timeline";
-import { IconClipboardText, IconFlag, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
 import { MilestoneDescription } from "./components/Description";
@@ -14,6 +12,8 @@ import { DeleteModal } from "./components/DeleteModal";
 import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { TimelineItem } from "../Timeline/types";
+import { Header } from "./components/Header";
+import { TasksSection } from "./components/TasksSection";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -57,6 +57,7 @@ export namespace MilestonePage {
     onDelete?: () => void;
 
     // Tasks for this milestone
+    tasksEnabled?: boolean;
     tasks: Types.Task[];
 
     // Optional callbacks
@@ -95,8 +96,6 @@ export namespace MilestonePage {
   export interface State extends Props {
     isTaskModalOpen: boolean;
     setIsTaskModalOpen: (open: boolean) => void;
-    isHeaderStuck: boolean;
-    setIsHeaderStuck: (stuck: boolean) => void;
     isDeleteModalOpen: boolean;
     openDeleteModal: () => void;
     closeDeleteModal: () => void;
@@ -106,15 +105,12 @@ export namespace MilestonePage {
 function useMilestonePageState(props: MilestonePage.Props): MilestonePage.State {
   // State
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
-  const [isHeaderStuck, setIsHeaderStuck] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   return {
     ...props,
     isTaskModalOpen,
     setIsTaskModalOpen,
-    isHeaderStuck,
-    setIsHeaderStuck,
     isDeleteModalOpen,
     openDeleteModal: () => setIsDeleteModalOpen(true),
     closeDeleteModal: () => setIsDeleteModalOpen(false),
@@ -131,11 +127,6 @@ export function MilestonePage(props: MilestonePage.Props) {
     onMilestoneTitleChange,
     status,
     searchPeople,
-    timelineItems = [],
-    currentUser,
-    canComment = false,
-    onAddComment,
-    onEditComment,
     canEdit = true,
     description,
     onDescriptionChange,
@@ -145,35 +136,7 @@ export function MilestonePage(props: MilestonePage.Props) {
     projectStatus = "active",
     isTaskModalOpen,
     setIsTaskModalOpen,
-    isHeaderStuck,
-    setIsHeaderStuck,
   } = state;
-  // Ref for the sentinel element (placed above sticky header)
-  const sentinelRef = useRef<HTMLDivElement>(null);
-
-  // Set up intersection observer to detect when header becomes stuck
-  useEffect(() => {
-    const sentinelElement = sentinelRef.current;
-    if (!sentinelElement) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry) {
-          setIsHeaderStuck(!entry.isIntersecting);
-        }
-      },
-      {
-        threshold: 0,
-        rootMargin: "0px",
-      },
-    );
-
-    observer.observe(sentinelElement);
-    return () => observer.disconnect();
-  }, []);
-
- // Handle task creation
   const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
       // Add the milestone to the task
@@ -220,91 +183,64 @@ export function MilestonePage(props: MilestonePage.Props) {
 
   return (
     <ProjectPageLayout {...layoutProps}>
-      <div className="flex-1 overflow-scroll">
-        <div className="flex-1 overflow-auto">
-          <div className="px-4 py-2">
-            <div className="sm:grid sm:grid-cols-12">
-              {/* Main content - left column (8 columns) */}
-              <div className="sm:col-span-8 sm:px-4 space-y-4">
-                {/* Sentinel element for intersection observer */}
-                <div ref={sentinelRef} className="h-0"></div>
+      <MainContainer>
+        <Header title={title} canEdit={canEdit} status={status} onMilestoneTitleChange={onMilestoneTitleChange} />
 
-                {/* Header section with milestone info */}
-                <div
-                  className={`sticky top-0 bg-surface-base z-10 pb-2 pt-2 space-y-2 transition-all duration-200 ${
-                    isHeaderStuck ? "border-b border-surface-outline shadow-sm" : ""
-                  }`}
-                >
-                  {/* Title line: flag icon + milestone name + status badge */}
-                  <div className="flex items-center gap-2">
-                    <IconFlag size={20} className="text-blue-500" />
-                    <TextField
-                      className="font-semibold text-2xl"
-                      text={title}
-                      onChange={onMilestoneTitleChange}
-                      readonly={!canEdit}
-                      trimBeforeSave
-                    />
-                    <StatusBadge
-                      status={status === "done" ? "completed" : "in_progress"}
-                      customLabel={status === "done" ? undefined : "Active"}
-                      hideIcon={true}
-                    />
-                  </div>
-                </div>
+        <div className="sm:grid sm:grid-cols-12">
+          {/* Main content - left column (8 columns) */}
+          <div className="sm:col-span-8 sm:px-4 space-y-4">
+            <MilestoneDescription
+              description={description}
+              onDescriptionChange={onDescriptionChange}
+              mentionedPersonLookup={mentionedPersonLookup}
+              peopleSearch={state.mentionedPeopleSearch}
+              canEdit={canEdit}
+            />
 
-                {/* Description section */}
-                <MilestoneDescription
-                  description={description}
-                  onDescriptionChange={onDescriptionChange}
-                  mentionedPersonLookup={mentionedPersonLookup}
-                  peopleSearch={state.mentionedPeopleSearch}
-                  canEdit={canEdit}
-                />
+            {props.tasksEnabled && <TasksSection {...state} />}
 
-                {/* Timeline section */}
-                <div className="pt-8">
-                  <h3 className="font-bold mb-4">Comments & Activity</h3>
-                  <Timeline
-                    items={timelineItems}
-                    currentUser={currentUser}
-                    canComment={canComment}
-                    commentParentType="milestone"
-                    onAddComment={onAddComment}
-                    onEditComment={onEditComment}
-                  />
-                </div>
-              </div>
-
-              {/* Sidebar - right column (4 columns) */}
-              <div className="sm:col-span-4 hidden sm:block sm:pl-8">
-                {/* Add spacing to align with description section */}
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center gap-2">
-                    <h1 className="text-xl font-semibold opacity-0">{milestone.name}</h1>
-                  </div>
-                </div>
-
-                <div className="space-y-6 pt-8">
-                  <MilestoneSidebar {...state} />
-                </div>
-              </div>
-            </div>
+            <TimelineSection {...state} />
           </div>
+
+          <MilestoneSidebar {...state} />
         </div>
+      </MainContainer>
 
-        <TaskCreationModal
-          isOpen={isTaskModalOpen}
-          onClose={() => setIsTaskModalOpen(false)}
-          onCreateTask={handleCreateTask}
-          searchPeople={searchPeople}
-          currentMilestoneId={milestone.id}
-          milestones={[]}
-        />
-
-        <DeleteModal {...state} />
-      </div>
+      <TaskCreationModal
+        isOpen={isTaskModalOpen}
+        onClose={() => setIsTaskModalOpen(false)}
+        onCreateTask={handleCreateTask}
+        searchPeople={searchPeople}
+        currentMilestoneId={milestone.id}
+        milestones={[]}
+      />
+      <DeleteModal {...state} />
     </ProjectPageLayout>
   );
 }
 
+function MainContainer({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex-1 overflow-scroll">
+      <div className="flex-1 overflow-auto">
+        <div className="px-4 py-2">{children}</div>
+      </div>
+    </div>
+  );
+}
+
+function TimelineSection(props: MilestonePage.State) {
+  return (
+    <div className="pt-8">
+      <h3 className="font-bold mb-4">Comments & Activity</h3>
+      <Timeline
+        items={props.timelineItems}
+        currentUser={props.currentUser}
+        canComment={props.canComment}
+        commentParentType="milestone"
+        onAddComment={props.onAddComment}
+        onEditComment={props.onEditComment}
+      />
+    </div>
+  );
+}

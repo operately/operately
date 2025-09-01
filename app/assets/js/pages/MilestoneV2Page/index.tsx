@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Api from "@/api";
 
 import * as Time from "@/utils/time";
+import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
 import * as Activities from "@/models/activities";
@@ -30,6 +31,7 @@ type LoaderResult = {
     milestone: Milestones.Milestone;
     tasksCount: number;
     activities: Activities.Activity[];
+    company: Companies.Company;
   };
   cacheVersion: number;
 };
@@ -57,12 +59,13 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           scopeType: "milestone",
           actions: SUPPORTED_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
+        company: Api.getCompany({ id: params.companyId! }).then((d) => d.company!),
       }),
   });
 }
 
 export function pageCacheKey(id: string): string {
-  return `v8-MilestoneV2Page.task-${id}`;
+  return `v10-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {
@@ -72,7 +75,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
-  const { milestone, tasksCount, activities } = data;
+  const { milestone, tasksCount, activities, company } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -173,6 +176,7 @@ function Page() {
     onDelete: handleDelete,
 
     // Task operations
+    tasksEnabled: Companies.hasFeature(company, "milestone_tasks"),
     onTaskCreate: () => Promise.resolve(),
     onTaskReorder: () => {},
     onTaskStatusChange: () => {},
