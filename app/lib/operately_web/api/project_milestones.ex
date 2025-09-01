@@ -2,6 +2,30 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   alias __MODULE__.SharedMultiSteps, as: Steps
   alias OperatelyWeb.Api.Serializer
 
+   defmodule ListTasks do
+    use TurboConnect.Query
+
+    inputs do
+      field :milestone_id, :id, null: false
+    end
+
+    outputs do
+      field :tasks, list_of(:task), null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_milestone(inputs.milestone_id)
+      |> Steps.check_permissions(:can_view)
+      |> Steps.get_milestone_tasks()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{tasks: Serializer.serialize(changes.tasks, level: :full)}
+      end)
+    end
+  end
+
   defmodule UpdateTitle do
     use TurboConnect.Mutation
 
@@ -140,6 +164,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   end
 
   defmodule SharedMultiSteps do
+    import Ecto.Query, only: [from: 2]
     require Logger
 
     def start_transaction(conn) do
@@ -218,6 +243,19 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           {:ok, deleted_milestone} -> {:ok, deleted_milestone}
           {:error, changeset} -> {:error, changeset}
         end
+      end)
+    end
+
+    def get_milestone_tasks(multi) do
+      Ecto.Multi.run(multi, :tasks, fn _repo, %{milestone: milestone} ->
+        tasks =
+          from(t in Operately.Tasks.Task,
+            where: t.milestone_id == ^milestone.id,
+            preload: [:assigned_people, :milestone]
+          )
+          |> Operately.Repo.all()
+
+        {:ok, tasks}
       end)
     end
 

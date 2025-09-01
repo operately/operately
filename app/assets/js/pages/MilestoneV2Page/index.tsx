@@ -6,6 +6,7 @@ import * as Time from "@/utils/time";
 import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
+import * as Tasks from "@/models/tasks";
 import * as Activities from "@/models/activities";
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
 
@@ -29,6 +30,7 @@ type TurboUiComment = CommentSection.Comment | CommentSection.MilestoneActivity;
 type LoaderResult = {
   data: {
     milestone: Milestones.Milestone;
+    tasks: Tasks.Task[];
     tasksCount: number;
     activities: Activities.Activity[];
     company: Companies.Company;
@@ -53,6 +55,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePermissions: true,
           includeComments: true,
         }).then((d) => d.milestone),
+        tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
         tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useMilestoneId: true }).then((d) => d.count!),
         activities: Api.getActivities({
           scopeId: params.id,
@@ -65,7 +68,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 export function pageCacheKey(id: string): string {
-  return `v10-MilestoneV2Page.task-${id}`;
+  return `v11-MilestoneV2Page.task-${id}`;
 }
 
 function Page() {
@@ -75,7 +78,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
-  const { milestone, tasksCount, activities, company } = data;
+  const { milestone, tasks, tasksCount, activities, company } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -154,7 +157,6 @@ function Page() {
 
     // Milestone data
     milestone: Milestones.parseMilestoneForTurboUi(paths, milestone),
-    tasks: [],
 
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
@@ -175,7 +177,8 @@ function Page() {
 
     onDelete: handleDelete,
 
-    // Task operations
+    // Tasks
+    tasks: Tasks.parseTasksForTurboUi(paths, tasks), 
     tasksEnabled: Companies.hasFeature(company, "milestone_tasks"),
     onTaskCreate: () => Promise.resolve(),
     onTaskReorder: () => {},

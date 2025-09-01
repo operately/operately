@@ -820,7 +820,7 @@ export interface ActivityContentTaskAssigneeAssignment {
 
 export interface ActivityContentTaskAssigneeUpdating {
   project: Project;
-  task: Task;
+  task: Task | null;
   oldAssignee: Person;
   newAssignee: Person;
 }
@@ -839,7 +839,7 @@ export interface ActivityContentTaskDeleting {
 }
 
 export interface ActivityContentTaskDescriptionChange {
-  task: Task;
+  task: Task | null;
   projectName: string;
   hasDescription: boolean;
 }
@@ -2608,6 +2608,14 @@ export interface ProjectDiscussionsListInput {
 
 export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
+}
+
+export interface ProjectMilestonesListTasksInput {
+  milestoneId: Id;
+}
+
+export interface ProjectMilestonesListTasksResult {
+  tasks: Task[];
 }
 
 export interface ProjectTasksGetOpenTaskCountInput {
@@ -4799,6 +4807,32 @@ class ApiNamespaceProjectTasks {
   }
 }
 
+class ApiNamespaceProjectMilestones {
+  constructor(private client: ApiClient) {}
+
+  async listTasks(input: ProjectMilestonesListTasksInput): Promise<ProjectMilestonesListTasksResult> {
+    return this.client.get("/project_milestones/list_tasks", input);
+  }
+
+  async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
+    return this.client.post("/project_milestones/delete", input);
+  }
+
+  async updateDescription(
+    input: ProjectMilestonesUpdateDescriptionInput,
+  ): Promise<ProjectMilestonesUpdateDescriptionResult> {
+    return this.client.post("/project_milestones/update_description", input);
+  }
+
+  async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
+    return this.client.post("/project_milestones/update_due_date", input);
+  }
+
+  async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
+    return this.client.post("/project_milestones/update_title", input);
+  }
+}
+
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
 
@@ -5019,28 +5053,6 @@ class ApiNamespaceAi {
   }
 }
 
-class ApiNamespaceProjectMilestones {
-  constructor(private client: ApiClient) {}
-
-  async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
-    return this.client.post("/project_milestones/delete", input);
-  }
-
-  async updateDescription(
-    input: ProjectMilestonesUpdateDescriptionInput,
-  ): Promise<ProjectMilestonesUpdateDescriptionResult> {
-    return this.client.post("/project_milestones/update_description", input);
-  }
-
-  async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
-    return this.client.post("/project_milestones/update_due_date", input);
-  }
-
-  async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
-    return this.client.post("/project_milestones/update_title", input);
-  }
-}
-
 export class ApiClient {
   private basePath: string;
   private headers: any;
@@ -5048,20 +5060,20 @@ export class ApiClient {
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceProjectTasks: ApiNamespaceProjectTasks;
+  public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceAi: ApiNamespaceAi;
-  public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceProjectTasks = new ApiNamespaceProjectTasks(this);
+    this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
-    this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
   }
 
   setBasePath(basePath: string) {
@@ -7441,6 +7453,40 @@ export default {
       useMutation<ProjectTasksDeleteInput, ProjectTasksDeleteResult>(defaultApiClient.apiNamespaceProjectTasks.delete),
   },
 
+  project_milestones: {
+    listTasks: (input: ProjectMilestonesListTasksInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.listTasks(input),
+    useListTasks: (input: ProjectMilestonesListTasksInput) =>
+      useQuery<ProjectMilestonesListTasksResult>(() => defaultApiClient.apiNamespaceProjectMilestones.listTasks(input)),
+
+    delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
+    useDelete: () =>
+      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.delete,
+      ),
+
+    updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
+    useUpdateDescription: () =>
+      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateDescription,
+      ),
+
+    updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
+    useUpdateDueDate: () =>
+      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate,
+      ),
+
+    updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
+    useUpdateTitle: () =>
+      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateTitle,
+      ),
+  },
+
   projects: {
     getContributors: (input: ProjectsGetContributorsInput) =>
       defaultApiClient.apiNamespaceProjects.getContributors(input),
@@ -7708,35 +7754,6 @@ export default {
     useEditAgentDailyRun: () =>
       useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
         defaultApiClient.apiNamespaceAi.editAgentDailyRun,
-      ),
-  },
-
-  project_milestones: {
-    delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
-    useDelete: () =>
-      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.delete,
-      ),
-
-    updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
-    useUpdateDescription: () =>
-      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.updateDescription,
-      ),
-
-    updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
-    useUpdateDueDate: () =>
-      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate,
-      ),
-
-    updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
-      defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
-    useUpdateTitle: () =>
-      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.updateTitle,
       ),
   },
 };
