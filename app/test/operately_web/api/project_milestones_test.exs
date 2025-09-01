@@ -11,6 +11,204 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     |> Factory.add_space_member(:space_member, :engineering)
   end
 
+  describe "list tasks" do
+    setup ctx do
+      ctx
+      |> Factory.add_project_task(:task1, :milestone)
+      |> Factory.add_project_task(:task2, :milestone)
+      |> Factory.add_project_task(:task3, :milestone)
+      |> Factory.add_company_member(:assignee_person)
+      |> Factory.add_task_assignee(:assignee, :task3, :assignee_person)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{})
+    end
+
+    test "it requires a milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{})
+      assert res.message == "Missing required fields: milestone_id"
+    end
+
+    test "it returns not found for non-existent milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns 404 for non-space-members", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.add_company_member(:member)
+        |> Factory.log_in_person(:member)
+
+      assert {404, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+    end
+
+    test "it returns 404 for space members without view permission", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :no_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {404, _} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+    end
+
+    test "it returns tasks for project creator", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert length(res.tasks) == 3
+      task_ids = Enum.map(res.tasks, & &1.id)
+      assert Paths.task_id(ctx.task1) in task_ids
+      assert Paths.task_id(ctx.task2) in task_ids
+      assert Paths.task_id(ctx.task3) in task_ids
+
+      # Verify task details are included
+      task1 = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task1)))
+      assert task1.name == ctx.task1.name
+      assert task1.status == ctx.task1.status
+      assert task1.milestone.id == Paths.milestone_id(ctx.milestone)
+    end
+
+    test "it returns tasks for space members with view access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert length(res.tasks) == 3
+    end
+
+    test "it returns tasks for project champion", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:champion, :project, role: :champion)
+        |> Factory.preload(:champion, :person)
+
+      ctx = log_in_account(ctx, ctx.champion.person)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert length(res.tasks) == 3
+    end
+
+    test "it returns tasks for project reviewer", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_contributor(:reviewer, :project, role: :reviewer)
+        |> Factory.preload(:reviewer, :person)
+
+      ctx = log_in_account(ctx, ctx.reviewer.person)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      assert length(res.tasks) == 3
+    end
+
+    test "it includes assigned people in task details", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      # Find the task with assignee
+      assigned_task = Enum.find(res.tasks, &(&1.id == Paths.task_id(ctx.task3)))
+
+      assert length(assigned_task.assignees) == 1
+      assert hd(assigned_task.assignees).id == Paths.person_id(ctx.assignee_person)
+    end
+
+    test "it returns empty list for milestone with no tasks", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:empty_milestone, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.empty_milestone)
+      })
+
+      assert res.tasks == []
+    end
+
+    test "it only returns tasks for the specified milestone", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:other_milestone, :project)
+        |> Factory.add_project_task(:other_task, :other_milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      # Should only return tasks from the first milestone, not the other one
+      assert length(res.tasks) == 3
+      task_ids = Enum.map(res.tasks, & &1.id)
+      assert Paths.task_id(ctx.other_task) not in task_ids
+    end
+
+    test "it works with milestones from different projects", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:other_project, :engineering)
+        |> Factory.add_project_milestone(:other_milestone, :other_project)
+        |> Factory.add_project_task(:other_task, :other_milestone)
+        |> Factory.log_in_person(:creator)
+
+      # Query tasks from first milestone
+      assert {200, res1} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      # Query tasks from second milestone
+      assert {200, res2} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.other_milestone)
+      })
+
+      assert length(res1.tasks) == 3
+      assert length(res2.tasks) == 1
+      assert hd(res2.tasks).id == Paths.task_id(ctx.other_task)
+    end
+
+    test "it includes milestone information in task details", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:project_milestones, :list_tasks], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+
+      task = hd(res.tasks)
+      assert task.milestone != nil
+      assert task.milestone.id == Paths.milestone_id(ctx.milestone)
+      assert task.milestone.title == ctx.milestone.title
+    end
+  end
+
   describe "update title" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_milestones, :update_title], %{})

@@ -36,7 +36,7 @@ const TaskDescriptionChange: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
     const data = content(activity);
-    const task = taskLink(data.task);
+    const task = data.task ? taskLink(data.task) : "a task";
 
     if (page === "project") {
       return feedTitle(activity, "updated the description of", task);
@@ -48,7 +48,7 @@ const TaskDescriptionChange: ActivityHandler = {
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
 
-    if (!data.task.description) return null;
+    if (!data.task?.description) return null;
     
     const description = typeof data.task.description === "string" 
       ? JSON.parse(data.task.description) 

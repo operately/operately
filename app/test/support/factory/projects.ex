@@ -326,6 +326,18 @@ defmodule Operately.Support.Factory.Projects do
     Map.put(ctx, testid, task)
   end
 
+  def add_task_assignee(ctx, testid, task_name, person_name) do
+    task = Map.fetch!(ctx, task_name)
+    person = Map.fetch!(ctx, person_name)
+
+    assignee = Operately.TasksFixtures.assignee_fixture(%{
+      task_id: task.id,
+      person_id: person.id
+    })
+
+    Map.put(ctx, testid, assignee)
+  end
+
   #
   # Helpers
   #
