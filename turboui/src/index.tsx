@@ -20,6 +20,7 @@ export * from "./RichContent";
 
 import RichContent from "./RichContent";
 
+export { TaskBoard } from "./TaskBoard";
 export { InfoCallout } from "./Callouts";
 export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
