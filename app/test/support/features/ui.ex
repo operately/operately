@@ -153,21 +153,42 @@ defmodule Operately.Support.Features.UI do
   end
 
   def click_button(state, text) do
-    execute("click_button", state, fn session ->
-      session |> Browser.click(Query.button(text))
-    end)
+    click_with_retry(state, Query.button(text))
   end
 
   def click_link(state, text) do
-    execute("click_link", state, fn session ->
-      session |> Browser.click(Query.link(text))
-    end)
+    click_with_retry(state, Query.link(text))
   end
 
   def click_text(state, text) do
-    execute("click_text", state, fn session ->
-      session |> Browser.click(Query.text(text))
+    click_with_retry(state, Query.text(text))
+  end
+
+  defp click_with_retry(state, query) do
+    click_with_retry(state, query, attempts: [50, 150, 250, 400, 1000])
+  end
+
+  defp click_with_retry(state, query, attempts: []) do
+    execute("click_with_retry", state, fn session ->
+      session |> Browser.click(query)
     end)
+  end
+
+  defp click_with_retry(state, query, attempts: [delay | remaining_attempts]) do
+    :timer.sleep(delay)
+
+    try do
+      execute("click_with_retry", state, fn session ->
+        session |> Browser.click(query)
+      end)
+    rescue
+      e in [Wallaby.QueryError, Wallaby.ExpectationNotMetError] ->
+        if remaining_attempts != [] do
+          click_with_retry(state, query, attempts: remaining_attempts)
+        else
+          reraise e, __STACKTRACE__
+        end
+    end
   end
 
   def fill(ctx, query, with: value) do
