@@ -1607,11 +1607,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_milestone_commented do
-    field? :project_id, :string, null: true
-    field? :project, :project, null: true
-    field? :milestone, :milestone, null: true
-    field? :comment_action, :string, null: true
-    field? :comment, :comment, null: true
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :comment_action, :string, null: false
+    field :comment, :comment, null: false
   end
 
   object :activity_content_project_review_submitted do

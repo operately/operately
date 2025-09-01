@@ -7,9 +7,7 @@ import type { ActivityHandler } from "../interfaces";
 
 import { Summary } from "@/components/RichContent";
 
-import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -33,17 +31,14 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: any }) {
-    const paths = usePaths();
-    const project = content(activity).project!;
-    const milestone = content(activity).milestone!;
-    const path = paths.projectMilestonePath(milestone.id!);
-    const link = <Link to={path}>{milestone!.title!}</Link>;
+    const { milestone, project } = content(activity);
+    const milestoneName = milestone ? milestoneLink(milestone) : "a milestone";
     const what = didWhat(content(activity).commentAction!);
 
     if (page === "project") {
-      return feedTitle(activity, what, "the", link, "milestone");
+      return feedTitle(activity, what, "the", milestoneName, "milestone");
     } else {
-      return feedTitle(activity, what, "the", link, "milestone in the", projectLink(project), "project");
+      return feedTitle(activity, what, "the", milestoneName, "milestone in the", projectLink(project), "project");
     }
   },
 

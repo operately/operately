@@ -572,11 +572,10 @@ export interface ActivityContentProjectKeyResourceDeleted {
 }
 
 export interface ActivityContentProjectMilestoneCommented {
-  projectId?: string | null;
-  project?: Project | null;
-  milestone?: Milestone | null;
-  commentAction?: string | null;
-  comment?: Comment | null;
+  project: Project;
+  milestone: Milestone | null;
+  commentAction: string;
+  comment: Comment;
 }
 
 export interface ActivityContentProjectMilestoneCreation {
