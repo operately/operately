@@ -20,7 +20,7 @@ export function ProjectDiscussionsSection({ project, discussions }: ProjectDiscu
   );
 
   return (
-    <div className="border-t border-stroke-base py-6">
+    <div className="border-t border-stroke-base py-6" data-test-id="project-discussions-section">
       <div className="flex items-start gap-4">
         <div className="w-1/5">
           <div className="font-bold text-sm">Discussions</div>
