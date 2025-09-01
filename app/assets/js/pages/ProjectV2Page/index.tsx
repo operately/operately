@@ -150,7 +150,7 @@ function Page() {
   const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
   const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
-    Tasks.useTasksForTurboUi(backendTasks, project.id, setMilestones, pageCacheKey(project.id));
+    Tasks.useTasksForTurboUi(backendTasks, project.id, pageCacheKey(project.id), setMilestones);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();

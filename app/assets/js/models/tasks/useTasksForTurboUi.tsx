@@ -13,11 +13,15 @@ import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "../mileston
 export function useTasksForTurboUi(
   backendTasks: Tasks.Task[],
   projectId: string,
-  setMilestones: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>,
   cacheKey: string,
+  setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>,
 ) {
   const paths = usePaths();
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
+
+  React.useEffect(() => {
+    setTasks(Tasks.parseTasksForTurboUi(paths, backendTasks));
+  }, [backendTasks, paths]);
 
   const createTask = async (task: TaskBoard.NewTaskPayload) => {
     return Api.project_tasks
@@ -134,7 +138,7 @@ export function useTasksForTurboUi(
           return t;
         }),
       );
-      setMilestones(parseMilestonesForTurboUi(paths, milestonesResponse.milestones || []));
+      setMilestones?.(parseMilestonesForTurboUi(paths, milestonesResponse.milestones || []));
 
       return { success: true };
     } catch (e) {
