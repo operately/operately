@@ -11,6 +11,18 @@ import { MilestoneCard } from "./MilestoneCard";
 import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 
+export namespace TaskBoard {
+  export type Person = Types.Person;
+
+  export type Status = Types.Status;
+
+  export type Milestone = Types.Milestone;
+
+  export type Task = Types.Task;
+
+  export type NewTaskPayload = Types.NewTaskPayload;
+}
+
 export function TaskBoard({
   tasks: externalTasks,
   milestones: externalMilestones = [],

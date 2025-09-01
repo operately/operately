@@ -12,7 +12,7 @@ import * as Time from "@/utils/time";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
-import { DateField, ProjectPage, showErrorToast } from "turboui";
+import { ProjectPage, showErrorToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
@@ -149,12 +149,8 @@ function Page() {
 
   const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
-  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } = useTasks(
-    paths,
-    backendTasks,
-    project,
-    setMilestones,
-  );
+  const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
+    Tasks.useTasksForTurboUi(backendTasks, project.id, setMilestones, pageCacheKey(project.id));
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -558,137 +554,4 @@ function useResources(project: Projects.Project) {
   };
 
   return { resources, createResource, updateResource, removeResource };
-}
-
-function useTasks(
-  paths: Paths,
-  backendTasks: Tasks.Task[],
-  project: Projects.Project,
-  setMilestones: React.Dispatch<React.SetStateAction<ProjectPage.Milestone[]>>,
-) {
-  const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
-
-  const createTask = async (task: ProjectPage.NewTaskPayload) => {
-    return Api.project_tasks
-      .create({
-        name: task.title,
-        assigneeId: task.assignee,
-        dueDate: serializeContextualDate(task.dueDate),
-        milestoneId: task.milestone?.id || null,
-        projectId: project.id,
-      })
-      .then((data) => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setTasks((prev) => [...prev, Tasks.parseTaskForTurboUi(paths, data.task)]);
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to create task", e);
-        showErrorToast("Error", "Failed to create task");
-
-        return { success: false };
-      });
-  };
-
-  const updateTaskDueDate = async (taskId: string, dueDate: DateField.ContextualDate | null) => {
-    return Api.project_tasks
-      .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
-      .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setTasks((prev) =>
-          prev.map((t) => {
-            if (t.id === taskId) {
-              return { ...t, dueDate };
-            }
-            return t;
-          }),
-        );
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update task due date", e);
-        showErrorToast("Error", "Failed to update task due date");
-
-        return { success: false };
-      });
-  };
-
-  const updateTaskAssignee = async (taskId: string, assignee: ProjectPage.Person | null) => {
-    return Api.project_tasks
-      .updateAssignee({ taskId, assigneeId: assignee?.id || null })
-      .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setTasks((prev) =>
-          prev.map((t) => {
-            if (t.id === taskId) {
-              return { ...t, assignee };
-            }
-            return t;
-          }),
-        );
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update task assignee", e);
-        showErrorToast("Error", "Failed to update task assignee");
-
-        return { success: false };
-      });
-  };
-
-  const updateTaskStatus = async (taskId: string, status: string) => {
-    return Api.project_tasks
-      .updateStatus({ taskId, status })
-      .then(() => {
-        PageCache.invalidate(pageCacheKey(project.id));
-        setTasks((prev) =>
-          prev.map((t) => {
-            if (t.id === taskId) {
-              return { ...t, status: status as ProjectPage.Task["status"] };
-            }
-            return t;
-          }),
-        );
-
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update task status", e);
-        showErrorToast("Error", "Failed to update task status");
-
-        return { success: false };
-      });
-  };
-
-  const updateTaskMilestone = async (taskId: string, milestoneId: string, index: number) => {
-    try {
-      const data = await Api.project_tasks.updateMilestone({ taskId, milestoneId, index });
-
-      PageCache.invalidate(pageCacheKey(project.id));
-
-      const milestonesResponse = await Api.projects.getMilestones({ projectId: project.id });
-
-      setTasks((prev) =>
-        prev.map((t) => {
-          if (t.id === taskId) {
-            return { ...t, milestone: parseMilestoneForTurboUi(paths, data.task.milestone!) };
-          }
-          return t;
-        }),
-      );
-      setMilestones(parseMilestonesForTurboUi(paths, milestonesResponse.milestones || []));
-
-      return { success: true };
-    } catch (e) {
-      console.error("Failed to update task milestone", e);
-      showErrorToast("Error", "Failed to update task milestone");
-
-      return { success: false };
-    }
-  };
-
-  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone };
 }
