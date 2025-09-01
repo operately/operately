@@ -63,7 +63,6 @@ export namespace MilestonePage {
     // Optional callbacks
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
     onTaskReorder?: (tasks: Types.Task[]) => void;
-    onCommentCreate?: (comment: string) => void;
     onTaskAssigneeChange?: (taskId: string, assignee: Person | null) => void;
     onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
     onTaskStatusChange?: (taskId: string, status: string) => void;
@@ -212,7 +211,8 @@ export function MilestonePage(props: MilestonePage.Props) {
         onCreateTask={handleCreateTask}
         searchPeople={searchPeople}
         currentMilestoneId={milestone.id}
-        milestones={[]}
+        milestones={[milestone]}
+        milestoneReadOnly={true}
       />
       <DeleteModal {...state} />
     </ProjectPageLayout>
