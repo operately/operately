@@ -78,7 +78,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
-  const { milestone, tasks, tasksCount, activities, company } = data;
+  const { milestone, tasksCount, activities, company } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -114,6 +114,11 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
   });
 
+  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus } = Tasks.useTasksForTurboUi(
+    data.tasks,
+    milestone.project.id,
+    pageCacheKey(milestone.id),
+  );
   const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
@@ -178,13 +183,13 @@ function Page() {
     onDelete: handleDelete,
 
     // Tasks
-    tasks: Tasks.parseTasksForTurboUi(paths, tasks), 
+    tasks,
     tasksEnabled: Companies.hasFeature(company, "milestone_tasks"),
-    onTaskCreate: () => Promise.resolve(),
+    onTaskCreate: createTask,
     onTaskReorder: () => {},
-    onTaskStatusChange: () => {},
-    onTaskAssigneeChange: () => {},
-    onTaskDueDateChange: () => {},
+    onTaskStatusChange: updateTaskStatus,
+    onTaskAssigneeChange: updateTaskAssignee,
+    onTaskDueDateChange: updateTaskDueDate,
 
     // Metadata
     createdBy: People.parsePersonForTurboUi(paths, milestone.creator),

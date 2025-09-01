@@ -17,6 +17,7 @@ interface TaskCreationModalProps {
   people?: Types.Person[];
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   searchMilestones?: (params: { query: string }) => Promise<Types.Milestone[]>;
+  milestoneReadOnly?: boolean;
 }
 
 export function TaskCreationModal({
@@ -28,6 +29,7 @@ export function TaskCreationModal({
   people = [],
   searchPeople,
   searchMilestones,
+  milestoneReadOnly,
 }: TaskCreationModalProps) {
   // Form state
   const [title, setTitle] = useState("");
@@ -159,6 +161,7 @@ export function TaskCreationModal({
             }}
             searchMilestones={searchMilestones || defaultSearchMilestones}
             emptyStateMessage="Select milestone"
+            readonly={milestoneReadOnly}
           />
         </div>
 
