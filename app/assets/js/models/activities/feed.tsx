@@ -157,7 +157,7 @@ function parseTaskDescriptionChangeActivity(
     author,
     insertedAt: activity.insertedAt,
     hasContent: content.hasDescription,
-    taskName: content.task.name,
+    taskName: content.task?.name || "a task",
     page: pageContext,
   };
 }
@@ -176,7 +176,7 @@ function parseTaskAssigneeUpdatingActivity(
     insertedAt: activity.insertedAt,
     assignee: parsePersonForTurboUi(paths, content.newAssignee || content.oldAssignee)!,
     action: content.newAssignee ? "assigned" : "unassigned",
-    taskName: content.task.name,
+    taskName: content.task?.name || "a task",
     page: pageContext,
   };
 }
