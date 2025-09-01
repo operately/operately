@@ -44,7 +44,9 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   end
 
   step :click_on_discussion, ctx do
-    ctx |> UI.click_link("Existing Discussion")
+    UI.find(ctx, UI.query(testid: "project-discussions-section"), fn ctx ->
+      ctx |> UI.click_link("Existing Discussion")
+    end)
   end
 
   step :assert_discussion_page_displayed, ctx do
