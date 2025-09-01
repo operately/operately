@@ -32,11 +32,12 @@ const TaskAssigneeUpdating: ActivityHandler = {
     const { project, task, newAssignee, oldAssignee } = content(activity);
     const assigneeText = newAssignee ? `assigned to ${newAssignee.fullName}` : `unassigned ${oldAssignee.fullName} from`;
     const message = `${assigneeText} task`;
+    const taskName = task ? taskLink(task) : "a task";
 
     if (page === "project") {
-      return feedTitle(activity, message, taskLink(task));
+      return feedTitle(activity, message, taskName);
     } else {
-      return feedTitle(activity, message, taskLink(task), "in", projectLink(project));
+      return feedTitle(activity, message, taskName, "in", projectLink(project));
     }
   },
 
@@ -76,8 +77,9 @@ const TaskAssigneeUpdating: ActivityHandler = {
   NotificationTitle(props: { activity: Activity }) {
     const { task, newAssignee } = content(props.activity);
     const assigneeText = newAssignee ? `assigned to ${newAssignee.fullName}` : "unassigned";
+    const taskName = task ? `Task "${task.name}"` : "A task";
 
-    return `Task "${task.name}" was ${assigneeText}`;
+    return `${taskName} was ${assigneeText}`;
   },
 
   NotificationLocation(props: { activity: Activity }) {
