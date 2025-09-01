@@ -178,7 +178,6 @@ export const Default: Story = {
         onStatusChange={(status) => {
           console.log("Milestone status changed:", status);
         }}
-        onCommentCreate={(comment) => console.log("Comment created:", comment)}
         dueDate={milestone.dueDate || null}
         onDueDateChange={handleDueDateChange}
         onTaskAssigneeChange={() => {}}
