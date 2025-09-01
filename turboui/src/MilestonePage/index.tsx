@@ -144,7 +144,6 @@ export function MilestonePage(props: MilestonePage.Props) {
         milestone: milestone,
       });
     }
-    setIsTaskModalOpen(false);
   };
 
   const tabs = useTabs(
