@@ -5,7 +5,7 @@ import { parseMilestoneForTurboUi } from "../milestones";
 import { Status } from "turboui/src/TaskBoard/types";
 import { parseContent, richContentToString } from "turboui/RichContent";
 
-export type { Task } from "@/api";
+export type { Task, EditMilestoneOrderingStateInput } from "@/api";
 export { useTasksForTurboUi } from "./useTasksForTurboUi";
 
 export {

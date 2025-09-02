@@ -272,7 +272,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     inputs do
       field :task_id, :id, null: false
       field :milestone_id, :id, null: true
-      field? :index, :integer, null: false
+      field :milestones_ordering_state, list_of(:edit_milestone_ordering_state_input), null: false
     end
 
     outputs do
@@ -284,8 +284,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
-      |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
-      |> Steps.update_task_milestone_with_ordering(inputs.milestone_id, inputs[:index])
+      |> Steps.validate_milestone_if_changed(inputs.milestone_id)
+      |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
+      |> Steps.load_milestones_for_ordering(inputs.milestones_ordering_state)
+      |> Steps.update_milestones_ordering_states(inputs.milestones_ordering_state)
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -560,107 +562,70 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
-    def update_task_milestone_with_ordering(multi, new_milestone_id, index) do
-      multi
-      |> load_milestones_for_ordering(new_milestone_id)
-      |> update_task_milestone(new_milestone_id)
-      |> update_milestone_ordering_states(new_milestone_id, index)
-    end
-
-    defp load_milestones_for_ordering(multi, new_milestone_id) do
-      multi
-      |> Ecto.Multi.run(:old_milestone, fn repo, changes ->
-        load_milestone_with_lock(repo, changes.task.milestone_id)
-      end)
-      |> Ecto.Multi.run(:new_milestone, fn repo, _changes ->
-        load_milestone_with_lock(repo, new_milestone_id)
-      end)
-    end
-
-    defp load_milestone_with_lock(_repo, nil), do: {:ok, nil}
-    defp load_milestone_with_lock(repo, milestone_id) do
-      query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
-      case repo.one(query) do
-        nil -> {:ok, nil}
-        milestone -> {:ok, milestone}
-      end
-    end
-
-    defp update_task_milestone(multi, new_milestone_id) do
-      Ecto.Multi.run(multi, :updated_task, fn _repo, changes ->
-        old_milestone_id = changes.task.milestone_id
-
-        # Only update task if milestone actually changed
-        if old_milestone_id == new_milestone_id do
-          task = Map.put(changes.task, :milestone, changes.validate_milestone)
-          {:ok, task}
+    def validate_milestone_if_changed(multi, new_milestone_id) do
+      Ecto.Multi.run(multi, :validate_milestone, fn _repo, %{task: task, project: project} ->
+        # Only validate if milestone is changing
+        if task.milestone_id != new_milestone_id do
+          case new_milestone_id do
+            nil ->
+              {:ok, nil}
+            _ ->
+              milestone = Operately.Projects.get_milestone!(new_milestone_id)
+              if milestone.project_id == project.id do
+                {:ok, milestone}
+              else
+                {:error, "Milestone must belong to the same project as the task"}
+              end
+          end
         else
-          {:ok, task} = Operately.Tasks.update_task(changes.task, %{milestone_id: new_milestone_id})
-          task = Map.put(task, :milestone, changes.validate_milestone)
+          # No change, no validation needed
+          {:ok, nil}
+        end
+      end)
+    end
 
+    def update_task_milestone_if_changed(multi, new_milestone_id) do
+      Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task} ->
+        # Check if milestone_id is different from current task.milestone_id
+        if task.milestone_id != new_milestone_id do
+          {:ok, updated_task} = Operately.Tasks.update_task(task, %{milestone_id: new_milestone_id})
+          {:ok, updated_task}
+        else
+          # No change needed, return the existing task
           {:ok, task}
         end
       end)
     end
 
-    defp update_milestone_ordering_states(multi, new_milestone_id, index) do
-      Ecto.Multi.run(multi, :update_milestone_ordering, fn repo, changes ->
-        old_milestone_id = changes.task.milestone_id
-        task = changes.task
+    def load_milestones_for_ordering(multi, milestones_ordering_state) do
+      Ecto.Multi.run(multi, :milestones_for_ordering, fn repo, _changes ->
+        milestone_ids = Enum.map(milestones_ordering_state, & &1.milestone_id)
 
-        cond do
-          # Case 1: Milestone didn't change, just reorder within the same milestone
-          old_milestone_id == new_milestone_id and old_milestone_id != nil ->
-            update_single_milestone_ordering(repo, changes.old_milestone, task, index)
+        milestones = Enum.map(milestone_ids, fn milestone_id ->
+          query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
+          repo.one(query)
+        end)
 
-          # Case 2: Task moving from one milestone to another
-          old_milestone_id != nil and new_milestone_id != nil ->
-            with {:ok, _} <- remove_from_old_milestone_ordering(repo, changes.old_milestone, task),
-                 {:ok, _} <- add_to_new_milestone_ordering(repo, changes.new_milestone, task, index) do
-              {:ok, :updated}
-            end
-
-          # Case 3: Task gaining a milestone (was nil)
-          old_milestone_id == nil and new_milestone_id != nil ->
-            add_to_new_milestone_ordering(repo, changes.new_milestone, task, index)
-
-          # Case 4: Task losing a milestone (now nil)
-          old_milestone_id != nil and new_milestone_id == nil ->
-            remove_from_old_milestone_ordering(repo, changes.old_milestone, task)
-
-          # Case 5: No milestone change and both are nil
-          true ->
-            {:ok, :no_change}
-        end
+        {:ok, milestones}
       end)
     end
 
-    defp update_single_milestone_ordering(repo, milestone, task, index) do
-      ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
-      task_index = if index != nil, do: index, else: length(ordering_state)
+    def update_milestones_ordering_states(multi, milestones_ordering_state) do
+      Ecto.Multi.run(multi, :update_milestone_orderings, fn repo, %{milestones_for_ordering: milestones} ->
+        results = Enum.zip(milestones_ordering_state, milestones)
+        |> Enum.map(fn {ordering_input, milestone} ->
+          changeset = Operately.Projects.Milestone.changeset(milestone, %{
+            tasks_ordering_state: ordering_input.ordering_state
+          })
+          repo.update(changeset)
+        end)
 
-      updated_ordering = Operately.Tasks.OrderingState.move_task(ordering_state, task, task_index)
-
-      changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
-      repo.update(changeset)
-    end
-
-    defp remove_from_old_milestone_ordering(repo, old_milestone, task) do
-      ordering_state = Operately.Tasks.OrderingState.load(old_milestone.tasks_ordering_state)
-      updated_ordering = Operately.Tasks.OrderingState.remove_task(ordering_state, task)
-
-      changeset = Operately.Projects.Milestone.changeset(old_milestone, %{tasks_ordering_state: updated_ordering})
-      repo.update(changeset)
-    end
-
-    defp add_to_new_milestone_ordering(repo, new_milestone, task, index) do
-      ordering_state = Operately.Tasks.OrderingState.load(new_milestone.tasks_ordering_state)
-      task_index = if index != nil, do: index, else: length(ordering_state)
-
-      updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, task, task_index)
-
-      changeset = Operately.Projects.Milestone.changeset(new_milestone, %{tasks_ordering_state: updated_ordering})
-      repo.update(changeset)
+        # Check if all updates succeeded
+        case Enum.find(results, fn result -> match?({:error, _}, result) end) do
+          nil -> {:ok, :updated}
+          {:error, changeset} -> {:error, changeset}
+        end
+      end)
     end
 
     def create_task(multi, inputs) do

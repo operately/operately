@@ -78,7 +78,8 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 
 function Page() {
   const paths = usePaths();
-  const { project, checkIns, discussions, company, backendTasks } = PageCache.useData(loader).data;
+  const { data, refresh } = PageCache.useData(loader);
+  const { project, checkIns, discussions, company, backendTasks } = data;
   const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -149,8 +150,16 @@ function Page() {
 
   const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
+
   const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
-    Tasks.useTasksForTurboUi(backendTasks, project.id, pageCacheKey(project.id), setMilestones);
+    Tasks.useTasksForTurboUi({
+      backendTasks,
+      projectId: project.id,
+      cacheKey: pageCacheKey(project.id),
+      milestones,
+      setMilestones,
+      refresh,
+    });
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
