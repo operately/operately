@@ -3,19 +3,23 @@ import * as React from "react";
 import Api from "@/api";
 import * as Tasks from "./index";
 
-import { usePaths } from "@/routes/paths";
+import { compareIds, usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { serializeContextualDate } from "../contextualDates";
 
 import { DateField, showErrorToast, TaskBoard } from "turboui";
-import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "../milestones";
+import { buildMilestonesOrderingState } from "./milestoneOrdering";
 
-export function useTasksForTurboUi(
-  backendTasks: Tasks.Task[],
-  projectId: string,
-  cacheKey: string,
-  setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>,
-) {
+interface Attrs {
+  backendTasks: Tasks.Task[];
+  projectId: string;
+  cacheKey: string;
+  milestones: TaskBoard.Milestone[];
+  setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
+  refresh?: () => Promise<void>;
+}
+
+export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones }: Attrs) {
   const paths = usePaths();
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
 
@@ -122,23 +126,62 @@ export function useTasksForTurboUi(
       });
   };
 
-  const updateTaskMilestone = async (taskId: string, milestoneId: string, index: number) => {
+  const updateTaskMilestone = async (taskId: string, milestoneId: string, indexInMilestone: number) => {
     try {
-      const data = await Api.project_tasks.updateMilestone({ taskId, milestoneId, index });
+      const normalizedMilestoneId = milestoneId === "no-milestone" ? null : milestoneId;
+      const taskToMove = tasks.find((t) => t.id === taskId);
 
-      PageCache.invalidate(cacheKey);
+      if (!taskToMove) {
+        console.error("Task not found", taskId);
+        showErrorToast("Error", "Failed to update task milestone");
+        return { success: false };
+      }
 
-      const milestonesResponse = await Api.projects.getMilestones({ projectId: projectId });
+      const milestonesOrderingState = buildMilestonesOrderingState(
+        milestones,
+        taskToMove,
+        normalizedMilestoneId,
+        indexInMilestone,
+      );
 
-      setTasks((prev) =>
-        prev.map((t) => {
-          if (t.id === taskId) {
-            return { ...t, milestone: parseMilestoneForTurboUi(paths, data.task.milestone!) };
+      // Optimistically update tasks
+      setTasks((prev) => {
+        const foundMilestone = milestones.find((m) => compareIds(m.id, normalizedMilestoneId)) || null;
+
+        return prev.map((t) => {
+          if (compareIds(t.id, taskId)) {
+            return { ...t, milestone: foundMilestone as any };
           }
           return t;
-        }),
-      );
-      setMilestones?.(parseMilestonesForTurboUi(paths, milestonesResponse.milestones || []));
+        });
+      });
+
+      // Optimistically update milestones ordering states
+      if (setMilestones && milestonesOrderingState.length > 0) {
+        setMilestones((prevMilestones) => {
+          return prevMilestones.map((milestone) => {
+            const orderingUpdate = milestonesOrderingState.find((update) =>
+              compareIds(update.milestoneId, milestone.id),
+            );
+
+            if (orderingUpdate) {
+              return {
+                ...milestone,
+                tasksOrderingState: orderingUpdate.orderingState,
+              };
+            }
+            return milestone;
+          });
+        });
+      }
+
+      await Api.project_tasks.updateMilestone({
+        taskId,
+        milestoneId: normalizedMilestoneId,
+        milestonesOrderingState,
+      });
+
+      PageCache.invalidate(cacheKey);
 
       return { success: true };
     } catch (e) {
