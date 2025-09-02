@@ -22,6 +22,7 @@ import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { useComments } from "./useComments";
+import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
@@ -145,6 +146,11 @@ function Page() {
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
+  const assigneeSearch = usePersonFieldContributorsSearch({
+    projectId: milestone.project.id,
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
+
   const props: MilestonePage.Props = {
     workmapLink,
     tasksCount,
@@ -152,7 +158,7 @@ function Page() {
 
     canEdit: Boolean(milestone.permissions.canEditTimeline),
 
-    searchPeople: mentionedPeopleSearch,
+    searchPeople: assigneeSearch,
 
     // Project
     projectName,
