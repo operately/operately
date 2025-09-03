@@ -16,6 +16,7 @@ export interface Milestone {
   hasComments?: boolean;
   commentCount?: number;
   projectLink?: string;
+  link?: string;
 }
 
 interface DialogMenuOptionProps {
@@ -229,6 +230,14 @@ function DialogMenu({ state }: { state: State }) {
       onClick?: () => void;
       danger?: boolean;
     }> = [];
+
+    if (state.milestone?.link) {
+      options.push({
+        icon: IconExternalLink,
+        label: "See milestone",
+        linkTo: state.milestone.link,
+      });
+    }
 
     if (state.milestone?.projectLink) {
       options.push({
