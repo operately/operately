@@ -323,7 +323,8 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
 
     outputs do
-      field :task, :task
+      field :task, :task, null: false
+      field :updated_milestone, :milestone, null: true
     end
 
     def call(conn, inputs) do
@@ -333,6 +334,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.check_permissions(:can_edit_timeline)
       |> Steps.validate_milestone_belongs_to_project(inputs.milestone_id)
       |> Steps.create_task(inputs)
+      |> Steps.add_task_to_milestone_ordering(inputs.milestone_id)
       |> Steps.save_activity(:task_adding, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -345,7 +347,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
-        %{task: OperatelyWeb.Api.Serializer.serialize(changes.task, level: :full)}
+        %{
+          task: OperatelyWeb.Api.Serializer.serialize(changes.task, level: :full),
+          updated_milestone: changes[:updated_milestone] && OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+        }
       end)
     end
   end
@@ -688,12 +693,11 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
         {:ok, task}
       end)
-      |> add_task_to_milestone_ordering(inputs.milestone_id)
     end
 
-    defp add_task_to_milestone_ordering(multi, nil), do: multi
-    defp add_task_to_milestone_ordering(multi, milestone_id) do
-      Ecto.Multi.run(multi, :update_milestone_ordering_for_new_task, fn repo, changes ->
+    def add_task_to_milestone_ordering(multi, nil), do: multi
+    def add_task_to_milestone_ordering(multi, milestone_id) do
+      Ecto.Multi.run(multi, :updated_milestone, fn repo, changes ->
         # Load the milestone with a lock to update its ordering state
         query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
 

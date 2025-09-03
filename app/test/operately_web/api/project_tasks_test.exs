@@ -266,6 +266,35 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert res.message == "Milestone must belong to the same project as the task"
     end
+
+    test "it adds the task ID to the milestone ordering state and returns the updated milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Get the milestone's ordering state before task creation
+      milestone_before = Operately.Projects.get_milestone!(ctx.milestone.id)
+      ordering_state_before = milestone_before.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task for ordering test",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      # Verify the task was created
+      assert res.task.name == "Task for ordering test"
+
+      # Verify the milestone was returned in the response
+      assert res.updated_milestone.id == Paths.milestone_id(ctx.milestone)
+      assert res.updated_milestone.tasks_ordering_state == [res.task.id]
+
+      # Verify the milestone's ordering state contains the new task ID
+      milestone_after = Operately.Projects.get_milestone!(ctx.milestone.id)
+      ordering_state_after = milestone_after.tasks_ordering_state
+
+      assert ordering_state_after == ordering_state_before ++ [res.task.id]
+    end
   end
 
   describe "update task status" do
