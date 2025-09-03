@@ -23,4 +23,9 @@ defmodule Operately.Tasks.OrderingState do
       idx -> List.insert_at(ordering_state, idx, task_short_id)
     end
   end
+
+  def remove_task(ordering_state, task) do
+    task_short_id = OperatelyWeb.Paths.task_id(task)
+    List.delete(ordering_state, task_short_id)
+  end
 end

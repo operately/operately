@@ -365,6 +365,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     outputs do
       field :success, :boolean
+      field :updated_milestone, :milestone, null: true
     end
 
     def call(conn, inputs) do
@@ -372,6 +373,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.start_transaction()
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.remove_task_from_milestone_ordering()
       |> Steps.delete_task()
       |> Steps.save_activity(:task_deleting, fn changes ->
         %{
@@ -384,8 +386,11 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         }
       end)
       |> Steps.commit()
-      |> Steps.respond(fn _changes ->
-        %{success: true}
+      |> Steps.respond(fn changes ->
+        %{
+          success: true,
+          updated_milestone: changes[:updated_milestone] && OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+        }
       end)
     end
   end
@@ -553,6 +558,27 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         case repo.delete(task) do
           {:ok, deleted_task} -> {:ok, deleted_task}
           {:error, changeset} -> {:error, changeset}
+        end
+      end)
+    end
+
+    def remove_task_from_milestone_ordering(multi) do
+      Ecto.Multi.run(multi, :updated_milestone, fn repo, %{task: task} ->
+        case task.milestone_id do
+          nil -> {:ok, nil}
+          milestone_id ->
+            query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
+
+            case repo.one(query) do
+              nil -> {:ok, nil}
+
+              milestone ->
+                ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
+                updated_ordering = Operately.Tasks.OrderingState.remove_task(ordering_state, task)
+
+                changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
+                repo.update(changeset)
+            end
         end
       end)
     end

@@ -1005,6 +1005,38 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       after_count = count_activities(ctx.project.id, "task_deleting")
       assert after_count == before_count + 1
     end
+
+    test "it removes the task from the milestone's ordering state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      task_id = Paths.task_id(ctx.task)
+
+      # Get the milestone and ensure the task is in its ordering state
+      ordering_state = Operately.Tasks.OrderingState.load(ctx.milestone.tasks_ordering_state)
+      updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, ctx.task)
+
+      {:ok, milestone} = Operately.Projects.Milestone.changeset(ctx.milestone, %{
+        tasks_ordering_state: updated_ordering
+      }) |> Operately.Repo.update()
+
+      assert task_id in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :delete], %{
+        task_id: task_id
+      })
+
+      # Verify the task is deleted
+      assert res.success == true
+
+      # Verify the milestone was returned in the response
+      assert res.updated_milestone.id == Paths.milestone_id(ctx.milestone)
+
+      # Verify the task is no longer in the milestone's ordering state
+      milestone_after = Repo.reload(ctx.milestone)
+      refute task_id in milestone_after.tasks_ordering_state
+
+      # Verify the response matches what's in the database
+      assert res.updated_milestone.tasks_ordering_state == milestone_after.tasks_ordering_state
+    end
   end
 
   describe "open tasks count" do
