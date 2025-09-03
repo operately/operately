@@ -277,6 +277,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     outputs do
       field :task, :task
+      field :updated_milestones, list_of(:milestone)
     end
 
     def call(conn, inputs) do
@@ -287,6 +288,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.validate_milestone_if_changed(inputs.milestone_id)
       |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
       |> Steps.load_milestones_for_ordering(inputs.milestones_ordering_state)
+      |> Steps.validate_milestone_ordering_tasks(inputs.milestones_ordering_state)
       |> Steps.update_milestones_ordering_states(inputs.milestones_ordering_state)
       |> Steps.save_activity(:task_milestone_updating, fn changes ->
         %{
@@ -300,7 +302,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
-        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+        %{
+            task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
+            updated_milestones: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestones),
+          }
       end)
     end
   end
@@ -383,6 +388,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
   defmodule SharedMultiSteps do
     require Logger
     import Ecto.Query, only: [from: 2]
+    use OperatelyWeb.Api.Helpers
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -610,21 +616,49 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
-    def update_milestones_ordering_states(multi, milestones_ordering_state) do
-      Ecto.Multi.run(multi, :update_milestone_orderings, fn repo, %{milestones_for_ordering: milestones} ->
-        results = Enum.zip(milestones_ordering_state, milestones)
-        |> Enum.map(fn {ordering_input, milestone} ->
-          changeset = Operately.Projects.Milestone.changeset(milestone, %{
-            tasks_ordering_state: ordering_input.ordering_state
-          })
-          repo.update(changeset)
+    def validate_milestone_ordering_tasks(multi, milestones_ordering_state) do
+      Ecto.Multi.run(multi, :filtered_ordering_states, fn repo, _changes ->
+        # Process each milestone ordering state and filter out invalid tasks
+        filtered_states = Enum.map(milestones_ordering_state, fn state ->
+          case state.ordering_state do
+            nil -> state
+            [] -> state
+            ordering ->
+              {:ok, task_ids} = decode_id(ordering)
+
+              valid_tasks =
+                from(t in Operately.Tasks.Task,
+                  where: t.id in ^task_ids,
+                  where: t.milestone_id == ^state.milestone_id and t.status not in ["done", "canceled"]
+                )
+                |> repo.all()
+
+              # Create a set of valid encoded IDs for efficient lookup
+              valid_encoded_ids = Enum.map(valid_tasks, &OperatelyWeb.Paths.task_id/1) |> MapSet.new()
+              filtered_ordering = Enum.filter(ordering, &MapSet.member?(valid_encoded_ids, &1))
+
+              %{state | ordering_state: filtered_ordering}
+          end
         end)
 
-        # Check if all updates succeeded
-        case Enum.find(results, fn result -> match?({:error, _}, result) end) do
-          nil -> {:ok, :updated}
-          {:error, changeset} -> {:error, changeset}
-        end
+        {:ok, filtered_states}
+      end)
+    end
+
+    def update_milestones_ordering_states(multi, _original_ordering_state) do
+      Ecto.Multi.run(multi, :updated_milestones, fn repo, %{milestones_for_ordering: milestones, filtered_ordering_states: filtered_states} ->
+        updated_milestones =
+          Enum.zip(filtered_states, milestones)
+          |> Enum.map(fn {ordering_input, milestone} ->
+            {:ok, updated_milestone} = Operately.Projects.Milestone.changeset(milestone, %{
+              tasks_ordering_state: ordering_input.ordering_state
+            })
+            |> repo.update()
+
+            updated_milestone
+          end)
+
+        {:ok, updated_milestones}
       end)
     end
 
