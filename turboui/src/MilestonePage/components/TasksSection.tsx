@@ -90,7 +90,7 @@ export function TasksSection({
         )}
 
         {/* Task list content */}
-        <div className="bg-surface-base">
+        <div className="bg-surface-base rounded-b-lg overflow-hidden">
           {visibleTasks.length === 0 && hiddenTasks.length === 0 ? (
             /* Empty state */
             <div className="px-4 py-8 text-center text-content-subtle">
