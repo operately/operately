@@ -1,6 +1,5 @@
 defmodule Operately.People.FetchOrCreateAccountOperation do
   alias Operately.People.Account
-  import Ecto.Changeset
 
   def call(attrs = %{email: _email, name: _name, image: _image}) do
     strategies = [
@@ -32,7 +31,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
 
   defp first_succesfull([strategy | rest], params, on_not_found: on_not_found) do
     case strategy.(params) do
-      {:ok, result} ->     {:ok, result}
+      {:ok, result} -> {:ok, result}
       {:error, _reason} -> first_succesfull(rest, params, on_not_found: on_not_found)
     end
   end
@@ -57,15 +56,10 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
       end
     end)
 
-    # Also update the account's avatar_url if it's different
-    updated_account = if account.avatar_url != image do
-      {:ok, updated} = Operately.Repo.update(Ecto.Changeset.change(account, avatar_url: image))
-      updated
+    if account.avatar_url != image do
+      Operately.Repo.update(Ecto.Changeset.change(account, avatar_url: image))
     else
-      account
+      {:ok, account}
     end
-
-    {:ok, updated_account}
   end
-
 end
