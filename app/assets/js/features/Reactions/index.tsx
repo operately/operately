@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconMoodPlus, IconX } from "turboui";
+import { IconMoodPlus, IconX, IconTrash } from "turboui";
 import * as Reactions from "@/models/reactions";
 import * as Popover from "@radix-ui/react-popover";
 import * as api from "@/api";
@@ -102,10 +102,48 @@ interface ReactionListProps {
 }
 
 export function ReactionList({ form, size, canAddReaction }: ReactionListProps) {
+  const [deleteMode, setDeleteMode] = React.useState<string | null>(null);
+  
+  const handleReactionClick = (reactionId: string) => {
+    if (deleteMode === reactionId) {
+      setDeleteMode(null); // Hide delete button if clicking the same reaction
+    } else {
+      setDeleteMode(reactionId); // Show delete button for this reaction
+    }
+  };
+
+  const handleDeleteClick = (reactionId: string, emoji: string) => {
+    form.remove(reactionId, emoji);
+    setDeleteMode(null); // Hide delete button after removing
+  };
+
+  // Hide delete mode when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // If we're in delete mode and the click is outside reaction elements
+      if (deleteMode && !(event.target as Element)?.closest('[data-reaction-item]')) {
+        setDeleteMode(null);
+      }
+    };
+
+    if (deleteMode) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [deleteMode]);
+
   return (
     <div className="flex items-start gap-2 flex-wrap">
       {form.reactions.map((reaction, index) => (
-        <ReactionItem key={index} reaction={reaction} size={size} form={form} />
+        <ReactionItem 
+          key={index} 
+          reaction={reaction} 
+          size={size} 
+          form={form}
+          isInDeleteMode={deleteMode === reaction.id}
+          onReactionClick={handleReactionClick}
+          onDeleteClick={handleDeleteClick}
+        />
       ))}
 
       {canAddReaction && <AddReaction form={form} size={size} />}
@@ -113,27 +151,60 @@ export function ReactionList({ form, size, canAddReaction }: ReactionListProps) 
   );
 }
 
-function ReactionItem({ reaction, size, form }) {
+interface ReactionItemProps {
+  reaction: ReactionListItem;
+  size: number;
+  form: ReactionsFormState;
+  isInDeleteMode: boolean;
+  onReactionClick: (reactionId: string) => void;
+  onDeleteClick: (reactionId: string, emoji: string) => void;
+}
+
+function ReactionItem({ reaction, size, form, isInDeleteMode, onReactionClick, onDeleteClick }: ReactionItemProps) {
   const me = useMe()!;
   const testId = `reaction-${reaction.reactionType}`;
   const isMyReaction = reaction.person.id === me.id;
+  
   const className = classNames(
-    "flex items-center transition-all bg-surface-dimmed rounded-full",
-    isMyReaction ? "cursor-pointer hover:bg-red-100" : ""
+    "flex items-center transition-all bg-surface-dimmed rounded-full relative",
+    isMyReaction ? "cursor-pointer hover:bg-accent-100" : "",
+    isInDeleteMode ? "bg-accent-100" : ""
   );
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the outside click handler
     if (isMyReaction) {
-      form.remove(reaction.id, reaction.emoji);
+      onReactionClick(reaction.id);
     }
   };
 
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDeleteClick(reaction.id, reaction.emoji);
+  };
+
   return (
-    <div className={className} data-test-id={testId} onClick={handleClick} title={isMyReaction ? "Click to remove your reaction" : ""}>
+    <div 
+      className={className} 
+      data-test-id={testId} 
+      data-reaction-item
+      onClick={handleClick}
+      title={isMyReaction ? (isInDeleteMode ? "" : "Click to remove your reaction") : ""}
+    >
       <Avatar person={reaction.person} size={size} />
       <div style={{ fontSize: size - 4 }} className="pl-1.5 pr-2">
         {reaction.emoji}
       </div>
+      
+      {isInDeleteMode && isMyReaction && (
+        <div 
+          className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 rounded-full p-1 cursor-pointer shadow-sm transition-colors"
+          onClick={handleDeleteClick}
+          title="Remove reaction"
+        >
+          <IconTrash size={12} className="text-white" />
+        </div>
+      )}
     </div>
   );
 }
