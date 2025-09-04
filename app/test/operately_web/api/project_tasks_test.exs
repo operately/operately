@@ -844,6 +844,88 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
     end
   end
 
+  describe "update milestone" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+        milestone_id: Paths.milestone_id(ctx.milestone)
+      })
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it updates a task milestone", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2)
+      })
+
+      # Verify response
+      assert res.task.milestone.id == Paths.milestone_id(ctx.milestone2)
+
+      # Verify database update
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert updated_task.milestone_id == ctx.milestone2.id
+    end
+
+    test "it can remove a milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: nil
+      })
+
+      # Verify response
+      assert res.task.milestone == nil
+
+      # Verify database update
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert updated_task.milestone_id == nil
+    end
+
+    test "it creates an activity when milestone is updated", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      before_count = count_activities(ctx.project.id, "task_milestone_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2)
+      })
+
+      after_count = count_activities(ctx.project.id, "task_milestone_updating")
+      assert after_count == before_count + 1
+    end
+
+    test "it can't update to a milestone from a different project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project2, :engineering)
+        |> Factory.add_project_milestone(:milestone2, :project2)
+        |> Factory.log_in_person(:creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2)
+      })
+
+      assert res.message == "Milestone must belong to the same project as the task"
+    end
+  end
+
   describe "update task description" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_description], %{})

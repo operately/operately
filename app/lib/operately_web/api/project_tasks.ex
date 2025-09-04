@@ -325,6 +325,43 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
   end
 
+  defmodule UpdateMilestone do
+    use TurboConnect.Mutation
+    use OperatelyWeb.Api.Helpers
+
+    inputs do
+      field :task_id, :id, null: false
+      field :milestone_id, :id, null: true
+    end
+
+    outputs do
+      field :task, :task
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_task(inputs.task_id)
+      |> Steps.check_task_permissions(:can_edit_task)
+      |> Steps.validate_milestone_if_changed(inputs.milestone_id)
+      |> Steps.update_task_milestone_if_changed(inputs.milestone_id)
+      |> Steps.save_activity(:task_milestone_updating, fn changes ->
+        %{
+          company_id: changes.project.company_id,
+          space_id: changes.project.group_id,
+          project_id: changes.project.id,
+          task_id: changes.task.id,
+          old_milestone_id: changes.task.milestone_id,
+          new_milestone_id: inputs.milestone_id
+        }
+      end)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{ task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full) }
+      end)
+    end
+  end
+
   defmodule Create do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -616,11 +653,11 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
 
     def update_task_milestone_if_changed(multi, new_milestone_id) do
-      Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task} ->
+      Ecto.Multi.run(multi, :updated_task, fn _repo, %{task: task, validate_milestone: milestone} ->
         # Check if milestone_id is different from current task.milestone_id
         if task.milestone_id != new_milestone_id do
           {:ok, updated_task} = Operately.Tasks.update_task(task, %{milestone_id: new_milestone_id})
-          {:ok, updated_task}
+          {:ok, Map.put(updated_task, :milestone, milestone)}
         else
           # No change needed, return the existing task
           {:ok, task}
