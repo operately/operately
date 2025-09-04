@@ -347,11 +347,57 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "resume-project-button")
   end
 
+  step :resume_project_with_message, ctx do
+    message = "Project resumed after vacation break"
+    ctx
+    |> UI.click(testid: "project-options-button")
+    |> UI.click(testid: "resume-project-link")
+    |> UI.fill(testid: "resume-message-input", with: message)
+    |> UI.click(testid: "resume-project-button")
+    |> Map.put(:resume_message, message)
+  end
+
   step :assert_project_active, ctx do
     ctx |> UI.assert_text("On Track")
   end
 
+  step :assert_next_checkin_properly_scheduled, ctx do
+    project = Operately.Repo.reload(ctx.project)
+    today = DateTime.utc_now()
+    
+    # Verify project is active
+    assert project.status == "active", "Project should be active after resume"
+    
+    # Verify next check-in is scheduled in the future (at least 3 days from now to account for various weekdays)
+    assert DateTime.compare(project.next_check_in_scheduled_at, today) == :gt, 
+           "Next check-in should be scheduled in the future"
+    
+    # Verify next check-in is not more than 7 days in the future (should be next Friday)
+    week_from_now = DateTime.add(today, 7, :day)
+    assert DateTime.compare(project.next_check_in_scheduled_at, week_from_now) != :gt,
+           "Next check-in should not be more than a week away"
+    
+    ctx
+  end
+
   step :assert_resume_notification_sent_to_reviewer, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "resumed the #{ctx.project.name} project"
+    })
+  end
+
+  step :assert_resume_with_message_notification_sent, ctx do
+    # Verify the activity was created with the message content
+    activity = Operately.Activities.list_activities()
+               |> Enum.find(&(&1.action == :project_resuming and &1.content["project_id"] == ctx.project.id))
+    
+    assert activity != nil, "Project resuming activity should exist"
+    assert activity.content["message"] == ctx.resume_message, "Activity should contain the resume message"
+    
     ctx
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.visit_notifications_page()
