@@ -48,40 +48,30 @@
   text-underline-offset: 2px;
 }
 
-.ProseMirror > ul:first-child, 
-.ProseMirror > ul:last-child, 
-.ProseMirror > ol:first-child, 
-.ProseMirror > ol:last-child {
-  margin-top: 0;
-  margin-bottom: 0;
-}
-
 .ProseMirror ul {
   padding: 0;
   padding-left: 1.5em;
   list-style: unset;
-  margin-bottom: 1em;
-  margin-top: 1em;
-}
-
-.ProseMirror li {
-  margin-bottom: 0.3em;
-  margin-top: 0.3em;
-}
-
-.ProseMirror li ul {
-  padding: 0;
-  padding-left: 1.5em;
-  list-style: unset;
-  margin-bottom: 0em;
-  margin-top: 0em;
+  margin: 0.5em 0;
 }
 
 .ProseMirror ol {
   padding: 0;
-  padding-left: 36px;
+  padding-left: 1.5em;
   list-style: auto;
-  margin-top: 0px;
+  margin: 0.5em 0;
+}
+
+.ProseMirror li {
+  margin: 0.2em 0;
+  line-height: 1.5;
+}
+
+.ProseMirror li ul,
+.ProseMirror li ol {
+  padding: 0;
+  padding-left: 1.5em;
+  margin: 0.2em 0;
 }
 
 .ProseMirror h1,
