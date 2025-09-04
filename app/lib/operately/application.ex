@@ -57,17 +57,19 @@ defmodule Operately.Application do
     :telemetry.attach_many(
       "sentry-oban-errors",
       events,
-      &handle_oban_exception/4,
+      &__MODULE__.handle_oban_exception/4,
       %{}
     )
   end
 
-  defp handle_oban_exception(
-         [:oban, :job, :exception],
-         measurements,
-         %{job: job} = metadata,
-         _config
-       ) do
+  # Attach Sentry telemetry for Oban job failures
+  # This function is public for testing purposes
+  def handle_oban_exception(
+        [:oban, :job, :exception],
+        measurements,
+        %{job: job} = metadata,
+        _config
+      ) do
     extra = %{
       job_id: job.id,
       queue: job.queue,

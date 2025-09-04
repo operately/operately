@@ -32,7 +32,15 @@ config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "loca
 # Sentry configuration for backend error reporting
 # SENTRY_DSN - DSN URL for streaming backend errors (including background jobs) to Sentry
 if System.get_env("SENTRY_DSN") do
-  config :sentry, dsn: System.get_env("SENTRY_DSN")
+  config :sentry,
+    dsn: System.get_env("SENTRY_DSN"),
+    environment_name: Mix.env(),
+    enable_source_code_context: true,
+    root_source_code_path: File.cwd!(),
+    tags: %{
+      env: "#{Mix.env()}"
+    },
+    included_environments: [:dev, :prod]
 end
 
 config :operately, :allow_login_with_email, System.get_env("ALLOW_LOGIN_WITH_EMAIL", "no") == "yes"
