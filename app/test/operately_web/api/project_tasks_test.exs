@@ -343,6 +343,66 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       after_count = count_activities(ctx.project.id, "task_status_updating")
       assert after_count == before_count + 1
     end
+
+    test "it removes task from milestone ordering state when status changes to done", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Ensure task is in milestone's ordering state initially
+      ordering_state = Operately.Tasks.OrderingState.add_task(ctx.milestone.tasks_ordering_state, ctx.task)
+      {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_ordering_state: ordering_state})
+
+      assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "done"
+      })
+
+      # Check that task is now in the milestone's ordering state
+      milestone_after = Repo.reload(ctx.milestone)
+      refute Paths.task_id(ctx.task) in milestone_after.tasks_ordering_state
+      refute Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
+    end
+
+    test "it removes task from milestone ordering state when status changes to canceled", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Ensure task is in milestone's ordering state initially
+      ordering_state = Operately.Tasks.OrderingState.add_task(ctx.milestone.tasks_ordering_state, ctx.task)
+      {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_ordering_state: ordering_state})
+
+      assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "canceled"
+      })
+
+      # Check that task is now in the milestone's ordering state
+      milestone_after = Repo.reload(ctx.milestone)
+      refute Paths.task_id(ctx.task) in milestone_after.tasks_ordering_state
+      refute Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
+    end
+
+    test "it adds task from milestone ordering state when status changes from done to in_progress", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      {:ok, _} = Operately.Tasks.update_task(ctx.task, %{status: "done"})
+
+      # Verify task is not in milestone's ordering state
+      milestone = Repo.reload(ctx.milestone)
+      refute Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "in_progress"
+      })
+
+      # Check that task is added from the milestone's ordering state
+      milestone = Repo.reload(ctx.milestone)
+      assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+      assert Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
+    end
   end
 
   describe "update task due date" do

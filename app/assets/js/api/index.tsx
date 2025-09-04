@@ -3785,6 +3785,7 @@ export interface ProjectTasksCreateInput {
 
 export interface ProjectTasksCreateResult {
   task: Task;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectTasksDeleteInput {
@@ -3793,6 +3794,7 @@ export interface ProjectTasksDeleteInput {
 
 export interface ProjectTasksDeleteResult {
   success: boolean;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectTasksUpdateAssigneeInput {
@@ -3830,6 +3832,7 @@ export interface ProjectTasksUpdateMilestoneInput {
 
 export interface ProjectTasksUpdateMilestoneResult {
   task: Task;
+  updatedMilestones: Milestone[];
 }
 
 export interface ProjectTasksUpdateNameInput {
@@ -3848,6 +3851,7 @@ export interface ProjectTasksUpdateStatusInput {
 
 export interface ProjectTasksUpdateStatusResult {
   task: Task;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectsCreateMilestoneInput {

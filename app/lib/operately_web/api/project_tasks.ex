@@ -81,6 +81,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     outputs do
       field :task, :task
+      field :updated_milestone, :milestone, null: true
     end
 
     def call(conn, inputs) do
@@ -89,6 +90,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       |> Steps.find_task(inputs.task_id)
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_status(inputs.status)
+      |> Steps.update_milestone_ordering_based_on_status()
       |> Steps.save_activity(:task_status_updating, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -103,7 +105,10 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
       |> Steps.commit()
       |> Steps.respond(fn changes ->
-        %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
+        %{
+          task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
+          updated_milestone: changes[:updated_milestone] && OperatelyWeb.Api.Serializer.serialize(changes.updated_milestone)
+        }
       end)
     end
   end
@@ -509,6 +514,35 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{status: new_status})
       end)
+    end
+
+    def update_milestone_ordering_based_on_status(multi) do
+      Ecto.Multi.run(multi, :updated_milestone, fn repo, %{task: task, updated_task: updated_task} ->
+        case task.milestone_id do
+          nil ->
+            {:ok, nil}
+          milestone_id ->
+            operation = get_ordering_operation(updated_task.status)
+            update_milestone_with_ordering_operation(repo, milestone_id, updated_task, operation)
+        end
+      end)
+    end
+
+    defp get_ordering_operation(status) when status in ["done", "canceled"], do: &Operately.Tasks.OrderingState.remove_task/2
+    defp get_ordering_operation(_status), do: &Operately.Tasks.OrderingState.add_task/2
+
+    defp update_milestone_with_ordering_operation(repo, milestone_id, task, operation) do
+      query = from(m in Operately.Projects.Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
+
+      case repo.one(query) do
+        nil ->
+          {:ok, nil}
+        milestone ->
+          ordering_state = Operately.Tasks.OrderingState.load(milestone.tasks_ordering_state)
+          updated_ordering = operation.(ordering_state, task)
+          changeset = Operately.Projects.Milestone.changeset(milestone, %{tasks_ordering_state: updated_ordering})
+          repo.update(changeset)
+      end
     end
 
     def update_task_due_date(multi, new_due_date) do
