@@ -130,6 +130,53 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountTest do
     end
   end
 
+  describe "consistency with GetAssignments - Bug #3319" do
+    setup :register_and_log_in_account
+
+    test "count matches assignments list length", ctx do
+      # This test verifies that GetAssignmentsCount returns the same count
+      # as the length of assignments returned by GetAssignments.
+      # This addresses the bug where the Review button showed a count 
+      # but the page showed no items.
+      
+      # Create some assignments
+      create_project(ctx, past_date())
+      create_goal(ctx, past_date())
+      
+      # Create assignments where person is reviewer
+      another_ctx = register_and_log_in_account(ctx)
+      project = create_project(ctx, upcoming_date(), %{
+        reviewer_id: ctx.person.id,
+        champion_id: another_ctx.person.id,
+      })
+      create_check_in(project)
+      
+      goal = create_goal(ctx, upcoming_date(), %{
+        reviewer_id: ctx.person.id,
+        champion_id: another_ctx.person.id,
+      })
+      goal_update_fixture(another_ctx.person, goal)
+      
+      # Get count and assignments
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+      
+      # They should match!
+      assignment_types = Enum.map(assignments, &(&1.type))
+      assert count == length(assignments), 
+        "Count (#{count}) should match assignments length (#{length(assignments)}). Assignment types: #{inspect(assignment_types)}"
+    end
+
+    test "empty state - both return zero", ctx do
+      # When there are no assignments, both should return 0
+      assert {200, %{count: count}} = query(ctx.conn, :get_assignments_count, %{})
+      assert {200, %{assignments: assignments}} = query(ctx.conn, :get_assignments, %{})
+      
+      assert count == 0
+      assert length(assignments) == 0
+    end
+  end
+
   #
   # Helpers
   #
