@@ -121,7 +121,6 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       const realTask = Tasks.parseTaskForTurboUi(paths, res.task);
       setTasks(prev => prev.map(t => t.id === tempId ? realTask : t));
 
-      // Update milestones with server response
       updateMilestonesFromServer(res.updatedMilestone, null);
 
       // Replace temp ID in milestone ordering
@@ -199,38 +198,45 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
   };
 
   const updateTaskStatus = async (taskId: string, status: string) => {
-    return Api.project_tasks
-      .updateStatus({ taskId, status })
-      .then(() => {
-        PageCache.invalidate(cacheKey);
+    const snapshot = createSnapshot();
 
-        setTasks((prev) =>
-          prev.map((t) => {
-            if (t.id === taskId) {
-              return { ...t, status: status as TaskBoard.Status };
-            }
-            return t;
-          }),
-        );
+    // Optimistic update
+    setTasks(prev => prev.map(t => {
+      if (compareIds(t.id, taskId)) {
+        return { ...t, status: status as TaskBoard.Status };
+      }
+      return t;
+    }));
 
-        return { success: true };
-      })
-      .catch((e) => {
-        console.error("Failed to update task status", e);
-        showErrorToast("Error", "Failed to update task status");
+    try {
+      const response = await Api.project_tasks.updateStatus({ taskId, status });
 
-        return { success: false };
-      });
+      const updatedTask = Tasks.parseTaskForTurboUi(paths, response.task);
+      setTasks(prev => prev.map(t => compareIds(t.id, taskId) ? {...t, status: updatedTask.status} : t));
+
+      updateMilestonesFromServer(response.updatedMilestone, null);
+
+      PageCache.invalidate(cacheKey);
+      return { success: true };
+
+    } catch (e) {
+      console.error("Failed to update task status", e);
+      showErrorToast("Error", "Failed to update task status");
+      restoreSnapshot(snapshot);
+      return { success: false };
+    }
   };
 
   const updateTaskMilestone = async (taskId: string, milestoneId: string, indexInMilestone: number) => {
+    const snapshot = createSnapshot();
+
     try {
       const normalizedMilestoneId = milestoneId === "no-milestone" ? null : milestoneId;
-      const taskToMove = tasks.find((t) => t.id === taskId);
+      const taskToMove = tasks.find((t) => compareIds(t.id, taskId));
 
       if (!taskToMove) {
         console.error("Task not found", taskId);
-        showErrorToast("Error", "Failed to update task milestone");
+        showErrorToast("Error", "Something went wrong");
         return { success: false };
       }
 
@@ -241,10 +247,9 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         indexInMilestone,
       );
 
-      // Optimistically update tasks
-      setTasks((prev) => {
+      // Optimistic update - update task milestone
+      setTasks(prev => {
         const foundMilestone = milestones.find((m) => compareIds(m.id, normalizedMilestoneId)) || null;
-
         return prev.map((t) => {
           if (compareIds(t.id, taskId)) {
             return { ...t, milestone: foundMilestone as any };
@@ -253,9 +258,9 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         });
       });
 
-      // Optimistically update milestones ordering states
+      // Optimistic update - update milestones ordering
       if (setMilestones && milestonesOrderingState.length > 0) {
-        setMilestones((prevMilestones) => {
+        setMilestones(prevMilestones => {
           return prevMilestones.map((milestone) => {
             const orderingUpdate = milestonesOrderingState.find((update) =>
               compareIds(update.milestoneId, milestone.id),
@@ -272,19 +277,21 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         });
       }
 
-      await Api.project_tasks.updateMilestone({
+      const res = await Api.project_tasks.updateMilestone({
         taskId,
         milestoneId: normalizedMilestoneId,
         milestonesOrderingState,
       });
 
-      PageCache.invalidate(cacheKey);
+      updateMilestonesFromServer(null, res.updatedMilestones);
 
+      PageCache.invalidate(cacheKey);
       return { success: true };
+
     } catch (e) {
       console.error("Failed to update task milestone", e);
       showErrorToast("Error", "Failed to update task milestone");
-
+      restoreSnapshot(snapshot);
       return { success: false };
     }
   };
