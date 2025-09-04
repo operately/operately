@@ -12,6 +12,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 interface ReactionsFormState {
   reactions: ReactionListItem[];
   submit: (type: string) => void;
+  remove: (id: string, emoji: string) => void;
 }
 
 interface ReactionListItem {
@@ -23,6 +24,7 @@ interface ReactionListItem {
 export function useReactionsForm(entity: Reactions.Entity, initial: Reactions.Reaction[]): ReactionsFormState {
   const me = useMe()!;
   const [add] = Reactions.useAddReaction();
+  const [removeReaction] = Reactions.useRemoveReaction();
 
   const [reactions, setReactions] = React.useState<ReactionListItem[]>(() => {
     return initial.map((reaction: api.Reaction | Reactions.Reaction) => {
@@ -62,9 +64,34 @@ export function useReactionsForm(entity: Reactions.Entity, initial: Reactions.Re
     }
   };
 
+  const remove = async (id: string, emoji: string) => {
+    // Get the reaction before removing it for potential restoration
+    const reactionToRemove = reactions.find((r) => r.id === id);
+    
+    // Optimistically remove the reaction from UI
+    setReactions((prev) => {
+      return prev.filter((r) => r.id !== id);
+    });
+
+    try {
+      await removeReaction({
+        entityId: entity.id,
+        entityType: entity.type,
+        parentType: entity.parentType,
+        emoji: emoji,
+      });
+    } catch (error) {
+      // If removal fails, restore the reaction
+      if (reactionToRemove) {
+        setReactions((prev) => [...prev, reactionToRemove]);
+      }
+    }
+  };
+
   return {
     reactions,
     submit,
+    remove,
   };
 }
 
@@ -78,7 +105,7 @@ export function ReactionList({ form, size, canAddReaction }: ReactionListProps) 
   return (
     <div className="flex items-start gap-2 flex-wrap">
       {form.reactions.map((reaction, index) => (
-        <ReactionItem key={index} reaction={reaction} size={size} />
+        <ReactionItem key={index} reaction={reaction} size={size} form={form} />
       ))}
 
       {canAddReaction && <AddReaction form={form} size={size} />}
@@ -86,12 +113,23 @@ export function ReactionList({ form, size, canAddReaction }: ReactionListProps) 
   );
 }
 
-function ReactionItem({ reaction, size }) {
+function ReactionItem({ reaction, size, form }) {
+  const me = useMe()!;
   const testId = `reaction-${reaction.reactionType}`;
-  const className = classNames("flex items-center transition-all bg-surface-dimmed rounded-full");
+  const isMyReaction = reaction.person.id === me.id;
+  const className = classNames(
+    "flex items-center transition-all bg-surface-dimmed rounded-full",
+    isMyReaction ? "cursor-pointer hover:bg-red-100" : ""
+  );
+
+  const handleClick = () => {
+    if (isMyReaction) {
+      form.remove(reaction.id, reaction.emoji);
+    }
+  };
 
   return (
-    <div className={className} data-test-id={testId}>
+    <div className={className} data-test-id={testId} onClick={handleClick} title={isMyReaction ? "Click to remove your reaction" : ""}>
       <Avatar person={reaction.person} size={size} />
       <div style={{ fontSize: size - 4 }} className="pl-1.5 pr-2">
         {reaction.emoji}

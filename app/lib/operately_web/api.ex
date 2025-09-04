@@ -179,6 +179,7 @@ defmodule OperatelyWeb.Api do
   mutation(:add_project_contributor, M.AddProjectContributor)
   mutation(:add_project_contributors, M.AddProjectContributors)
   mutation(:add_reaction, M.AddReaction)
+  mutation(:remove_reaction, M.RemoveReaction)
 
   mutation(:copy_resource_hub_folder, M.CopyResourceHubFolder)
   mutation(:create_account, M.CreateAccount)
