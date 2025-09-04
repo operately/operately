@@ -131,6 +131,7 @@ export function InProjectContextStory() {
             <TaskPage
               // Navigation
               projectName="Mobile App V2"
+              projectStatus="on_track"
               projectLink="#"
               workmapLink="#"
               space={{
@@ -192,7 +193,7 @@ export function InProjectContextStory() {
               // Search functionality
               searchPeople={searchTaskPeople}
               searchMilestones={searchMilestones}
-              peopleSearch={searchRichEditorPeople}
+              mentionedPeopleSearch={searchRichEditorPeople}
               mentionedPersonLookup={mockMentionedPersonLookup}
               // Permissions
               canEdit={true}

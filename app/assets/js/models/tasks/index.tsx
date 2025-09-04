@@ -6,6 +6,7 @@ import { Status } from "turboui/src/TaskBoard/types";
 import { parseContent, richContentToString } from "turboui/RichContent";
 
 export type { Task } from "@/api";
+export { useTasksForTurboUi } from "./useTasksForTurboUi";
 
 export {
   getTask,
@@ -47,7 +48,7 @@ export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
   };
 }
 
-function parseTaskStatus(status: string | null | undefined): Status {
+export function parseTaskStatus(status: string | null | undefined): Status {
   const validStatuses: Status[] = ["pending", "in_progress", "done", "canceled"];
 
   if (status && validStatuses.includes(status as Status)) {

@@ -2,22 +2,22 @@ import { useLoadedData } from "@/components/Pages";
 import React from "react";
 import { useParams } from "react-router-dom";
 
-type PageLoaderFn<T> = ({ params, request, refreshCache }: { params: any; request?: Request; refreshCache?: boolean }) => Promise<T>;
+type PageLoaderFn<T> = (attrs: { params: any; request?: Request; refreshCache?: boolean }) => Promise<T>;
+
+type FetchFn = () => Promise<any>;
+
+interface FetchParams {
+  cacheKey: string;
+  fetchFn: FetchFn;
+  maxAgeMs?: number;
+  refreshCache: boolean;
+}
 
 const DEFAULT_MAX_AGE_MS = 1000 * 60 * 5; // 5 minutes
 
 export const PageCache = {
-  fetch: async function getOrSetCache({
-    cacheKey,
-    fetchFn,
-    maxAgeMs = DEFAULT_MAX_AGE_MS,
-    refreshCache,
-  }: {
-    cacheKey: string;
-    fetchFn: () => Promise<any>;
-    maxAgeMs?: number;
-    refreshCache: boolean;
-  }): Promise<{ data: any; cacheVersion: number }> {
+  fetch: async function getOrSetCache(attrs: FetchParams): Promise<{ data: any; cacheVersion: number }> {
+    const { cacheKey, fetchFn, maxAgeMs = DEFAULT_MAX_AGE_MS, refreshCache } = attrs;
     const cached = localStorage.getItem(cacheKey);
 
     if (cached && !refreshCache) {
@@ -38,7 +38,7 @@ export const PageCache = {
     return { data, cacheVersion: timestamp };
   },
 
-  useData: function <T>(loader: PageLoaderFn<T>, opts: { refreshCache?: boolean } = {}): T {
+  useData: function <T>(loader: PageLoaderFn<T>, opts: { refreshCache?: boolean } = {}): T & { refresh?: () => Promise<void> } {
     const params = useParams();
     const loadedData = useLoadedData<T>();
 
@@ -63,7 +63,12 @@ export const PageCache = {
       };
     }, [params]);
 
-    return data;
+    const refresh = React.useCallback(async () => {
+      const newData = await loader({ params, refreshCache: true });
+      setData(newData);
+    }, [params, loader]);
+
+    return { ...data, refresh };
   },
 
   invalidate: function invalidateCache(cacheKey: string): void {

@@ -1,7 +1,8 @@
 import React from "react";
 
-import RichContent, { shortenContent } from "@/components/RichContent";
+import RichContent from "@/components/RichContent";
 import { ProjectCheckIn } from "@/models/projectCheckIns";
+import { shortenContent } from "turboui";
 
 export function DescriptionSection({ checkIn, limit }: { checkIn: ProjectCheckIn; limit?: number }) {
   const message = limit ? shortenContent(checkIn.description!, limit, { suffix: "..." }) : checkIn.description!;

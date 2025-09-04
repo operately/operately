@@ -1,12 +1,14 @@
-import React from "react";
+import React, { useMemo } from "react";
 import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
 import * as Tasks from "@/models/tasks";
 import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
+import * as Comments from "@/models/comments";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
+import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
 import * as Time from "@/utils/time";
 
 import { Paths, usePaths } from "../../routes/paths";
@@ -19,14 +21,15 @@ import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
-import { parseActivitiesForTurboUi } from "@/models/activities/tasks";
-import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useComments } from "./useComments";
 
 type LoaderResult = {
   data: {
     task: Tasks.Task;
     tasksCount: number;
     activities: Activities.Activity[];
+    comments: Comments.Comment[];
   };
   cacheVersion: number;
 };
@@ -47,19 +50,24 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeAssignees: true,
           includeCreator: true,
           includeSpace: true,
+          includePermissions: true,
         }).then((d) => d.task!),
         tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useTaskId: true }).then((d) => d.count!),
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "task",
-          actions: ["task_adding"],
+          actions: SUPPORTED_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
+        comments: Api.getComments({
+          entityId: params.id,
+          entityType: "project_task",
+        }).then((d) => d.comments!),
       }),
   });
 }
 
-function pageCacheKey(id: string): string {
-  return `v5-TaskV2Page.task-${id}`;
+export function pageCacheKey(id: string): string {
+  return `v6-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskV2Page", loader, Page } as PageModule;
@@ -68,59 +76,71 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const currentUser = useMe();
-  const { task, tasksCount, activities } = PageCache.useData(loader).data;
+
+  const pageData = PageCache.useData(loader);
+  const { data, refresh: refreshPageData } = pageData;
+  const { task, tasksCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
+  assertPresent(task.permissions, "Task must have permissions");
 
   const workmapLink = paths.spaceWorkMapPath(task.space.id, "projects" as const);
 
   const [projectName, setProjectName] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.project!.name,
+    value: ({ task }) => task.project!.name,
     update: (v) => Api.editProjectName({ projectId: task.project!.id, name: v }),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+    refreshPageData,
   });
 
   const [name, setName] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.name,
+    value: ({ task }) => task.name,
     update: (v) => Api.project_tasks.updateName({ taskId: task.id!, name: v }),
     onError: (e: string) => showErrorToast(e, "Failed to update task name."),
     validations: [(v) => (v.trim() === "" ? "Task name cannot be empty" : null)],
+    refreshPageData,
   });
 
   const [description, setDescription] = usePageField({
-    value: (data: { task: Tasks.Task }) => data.task.description && JSON.parse(data.task.description),
+    value: ({ task }) => task.description && JSON.parse(task.description),
     update: (v) => Api.project_tasks.updateDescription({ taskId: task.id!, description: JSON.stringify(v) }),
     onError: () => showErrorToast("Error", "Failed to update task description."),
+    refreshPageData,
   });
 
   const [status, setStatus] = usePageField({
-    value: (data: { task: Tasks.Task }) => Tasks.parseTaskForTurboUi(paths, data.task).status,
+    value: ({ task }) => Tasks.parseTaskForTurboUi(paths, task).status,
     update: (v) => Api.project_tasks.updateStatus({ taskId: task.id!, status: v }),
     onError: () => showErrorToast("Error", "Failed to update task status."),
+    refreshPageData,
   });
 
   const [dueDate, setDueDate] = usePageField({
-    value: (data: { task: Tasks.Task }) => parseContextualDate(data.task.dueDate),
+    value: ({ task }) => parseContextualDate(task.dueDate),
     update: (v) => Api.project_tasks.updateDueDate({ taskId: task.id!, dueDate: serializeContextualDate(v) }),
     onError: () => showErrorToast("Error", "Failed to update due date."),
+    refreshPageData,
   });
 
   const [assignee, setAssignee] = usePageField({
-    value: (data: { task: Tasks.Task }) => People.parsePersonForTurboUi(paths, data.task.assignees?.[0] || null),
+    value: ({ task }) => People.parsePersonForTurboUi(paths, task.assignees?.[0] || null),
     update: (v) => Api.project_tasks.updateAssignee({ taskId: task.id, assigneeId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update assignees."),
+    refreshPageData,
   });
 
   const [milestone, setMilestone] = usePageField({
-    value: (data) => (data.task.milestone ? parseMilestoneForTurboUi(paths, data.task.milestone) : null),
+    value: ({ task }) => (task.milestone ? parseMilestoneForTurboUi(paths, task.milestone) : null),
     update: (v) => Api.project_tasks.updateMilestone({ taskId: task.id, milestoneId: v?.id ?? null }),
     onError: () => showErrorToast("Error", "Failed to update milestone."),
+    refreshPageData,
   });
 
-  // Subscription status - placeholder
-  const [isSubscribed, setIsSubscribed] = React.useState(true);
+  const { comments, handleAddComment, handleEditComment } = useComments(task, data.comments);
+
+  const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
   const handleDelete = async () => {
     try {
@@ -141,22 +161,34 @@ function Page() {
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
+  const mentionedPeopleSearch = People.useMentionedPersonSearch({
+    scope: { type: "project", id: task.project.id },
+    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
+  });
   const searchMilestones = useMilestonesSearch(task.project.id);
+
+  const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   // Prepare TaskPage props
   const props: TaskPage.Props = {
     projectName,
     projectLink: paths.projectV2Path(task.project.id),
+    projectStatus: task.project.status,
     workmapLink,
     tasksCount,
     space: parseSpaceForTurboUI(paths, task.space),
 
+    canEdit: Boolean(task.permissions.canEditTimeline),
+
     searchPeople: assigneeSearch,
     updateProjectName: setProjectName,
 
-    // Timeline
+    // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
-    timelineItems: prepareTimelineItems(paths, activities),
+    timelineItems,
+    onAddComment: handleAddComment,
+    onEditComment: handleEditComment,
+    canComment: Boolean(task.permissions.canComment),
 
     // Milestone selection
     milestone: milestone as TaskPage.Milestone | null,
@@ -183,30 +215,23 @@ function Page() {
     closedAt: Time.parse(task.project.closedAt),
 
     // Subscription
-    isSubscribed,
-    onSubscriptionToggle: (subscribed: boolean) => {
-      setIsSubscribed(subscribed);
-    },
+    isSubscribed: false,
+    onSubscriptionToggle: () => {},
 
     // Placeholder for person lookup functionality
-    peopleSearch: () => Promise.resolve([]),
-    mentionedPersonLookup: () => Promise.resolve(null),
-
-    // Permissions - simplified placeholder
-    canEdit: true,
-
-    // Timeline/Comments - placeholder
-    canComment: true,
+    mentionedPeopleSearch,
+    mentionedPersonLookup,
   };
 
   return <TaskPage key={task.id!} {...props} />;
 }
 
 interface usePageFieldProps<T> {
-  value: (LoaderResult) => T;
+  value: (data: { task: Tasks.Task; tasksCount: number; activities: Activities.Activity[] }) => T;
   update: (newValue: T) => Promise<any>;
   onError?: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
+  refreshPageData?: () => Promise<void>;
 }
 
 function usePageField<T>({
@@ -214,8 +239,10 @@ function usePageField<T>({
   update,
   onError,
   validations,
+  refreshPageData,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
-  const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
+  const pageData = PageCache.useData(loader);
+  const { cacheVersion, data } = pageData;
 
   const [state, setState] = React.useState<T>(() => value(data));
   const [stateVersion, setStateVersion] = React.useState<number | undefined>(cacheVersion);
@@ -241,7 +268,11 @@ function usePageField<T>({
     const oldVal = state;
 
     const successHandler = () => {
+      // Invalidate the cache and refresh the data
       PageCache.invalidate(pageCacheKey(data.task.id!));
+      if (refreshPageData) {
+        refreshPageData();
+      }
     };
 
     const errorHandler = (error: any) => {
@@ -280,11 +311,33 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
   };
 }
 
-function prepareTimelineItems(paths: Paths, activities: Activities.Activity[]) {
-  const parsedActivities = parseActivitiesForTurboUi(paths, activities);
-
-  return parsedActivities.map((activity) => ({
+function prepareTimelineItems(paths: Paths, activities: Activities.Activity[], comments: Comments.Comment[]) {
+  const parsedActivities = parseActivitiesForTurboUi(paths, activities, "task").map((activity) => ({
     type: "task-activity",
     value: activity,
-  })) as TaskPage.TimelineItemType[];
+  }));
+  const parsedComments = Comments.parseCommentsForTurboUi(paths, comments).map((comment) => ({
+    type: "comment",
+    value: comment,
+  }));
+
+  const timelineItems = [...parsedActivities, ...parsedComments] as TaskPage.TimelineItemType[];
+
+  timelineItems.sort((a, b) => {
+    // Special handling for temporary comments - always show them last
+    const aIsTemp = a.value.id.startsWith("temp-");
+    const bIsTemp = b.value.id.startsWith("temp-");
+
+    // If one is temporary and the other isn't, prioritize the non-temporary one
+    if (aIsTemp && !bIsTemp) return 1;
+    if (!aIsTemp && bIsTemp) return -1;
+
+    // Otherwise use standard date comparison
+    const aInsertedAt = a.type === "acknowledgment" ? a.insertedAt : a.value.insertedAt;
+    const bInsertedAt = b.type === "acknowledgment" ? b.insertedAt : b.value.insertedAt;
+
+    return aInsertedAt.localeCompare(bInsertedAt);
+  });
+
+  return timelineItems;
 }

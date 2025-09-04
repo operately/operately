@@ -1,32 +1,44 @@
-import { Person, Comment, CommentActivity } from "../CommentSection/types";
+import { DateField } from "../DateField";
+import { Person, Comment, MilestoneActivity } from "../CommentSection/types";
+import { Status } from "../TaskBoard/types";
+import { MentionedPersonLookupFn } from "../RichEditor";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+
+export type ActivityPageContext = "task" | "milestone";
 
 // Task-specific activity types
 export interface TaskAssignmentActivity {
   id: string;
-  type: "task-assignment";
+  type: "task_assignee_updating";
   author: Person;
   insertedAt: string;
   assignee: Person;
   action: "assigned" | "unassigned";
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskStatusChangeActivity {
   id: string;
-  type: "task-status-change";
+  type: "task_status_updating";
   author: Person;
   insertedAt: string;
-  fromStatus: TaskStatus;
-  toStatus: TaskStatus;
-  task?: Task; // Optional for backward compatibility
+  fromStatus: Status;
+  toStatus: Status;
+  taskName: string;
+  page: ActivityPageContext;
+  task?: Task;
 }
 
 export interface TaskMilestoneActivity {
   id: string;
-  type: "task-milestone";
+  type: "task_milestone_updating";
   author: Person;
   insertedAt: string;
   milestone: Milestone;
   action: "attached" | "detached";
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskPriorityActivity {
@@ -36,32 +48,39 @@ export interface TaskPriorityActivity {
   insertedAt: string;
   fromPriority: TaskPriority;
   toPriority: TaskPriority;
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskDueDateActivity {
   id: string;
-  type: "task-due-date";
+  type: "task_due_date_updating";
   author: Person;
   insertedAt: string;
-  fromDueDate: string | null;
-  toDueDate: string | null;
+  fromDueDate: DateField.ContextualDate | null;
+  toDueDate: DateField.ContextualDate | null;
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskDescriptionActivity {
   id: string;
-  type: "task-description";
+  type: "task_description_change";
   author: Person;
   insertedAt: string;
   hasContent: boolean; // Whether description was added/updated vs removed
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskTitleActivity {
   id: string;
-  type: "task-title";
+  type: "task_name_updating";
   author: Person;
   insertedAt: string;
   fromTitle: string;
   toTitle: string;
+  page: ActivityPageContext;
 }
 
 export interface TaskCreationActivity {
@@ -69,27 +88,28 @@ export interface TaskCreationActivity {
   type: "task_adding";
   author: Person;
   insertedAt: string;
+  taskName: string;
+  page: ActivityPageContext;
 }
 
 // Supporting types
-export type TaskStatus = "todo" | "in_progress" | "done";
 export type TaskPriority = "low" | "normal" | "high" | "urgent";
 
 export interface Milestone {
   id: string;
-  title: string;
-  dueDate?: string;
-  status: "pending" | "complete";
+  name: string;
+  dueDate: DateField.ContextualDate | null;
+  status: "pending" | "done";
 }
 
 export interface Task {
   id: string;
   title: string;
-  status?: TaskStatus;
+  status?: Status;
 }
 
 // Union type for all activities
-export type TaskActivity = 
+export type TaskActivity =
   | TaskAssignmentActivity
   | TaskStatusChangeActivity
   | TaskMilestoneActivity
@@ -100,20 +120,24 @@ export type TaskActivity =
   | TaskCreationActivity;
 
 // Timeline item types
-export type TimelineItem = {
-  type: "comment";
-  value: Comment;
-} | {
-  type: "task-activity";
-  value: TaskActivity;
-} | {
-  type: "milestone-activity";
-  value: CommentActivity;
-} | {
-  type: "acknowledgment";
-  value: Person;
-  insertedAt: string;
-};
+export type TimelineItem =
+  | {
+      type: "comment";
+      value: Comment;
+    }
+  | {
+      type: "task-activity";
+      value: TaskActivity;
+    }
+  | {
+      type: "milestone-activity";
+      value: MilestoneActivity;
+    }
+  | {
+      type: "acknowledgment";
+      value: Person;
+      insertedAt: string;
+    };
 
 // Timeline component props
 export interface TimelineProps {
@@ -123,6 +147,8 @@ export interface TimelineProps {
   commentParentType: string;
   onAddComment?: (content: any) => void;
   onEditComment?: (id: string, content: any) => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
   filters?: TimelineFilters;
 }
 
@@ -142,6 +168,8 @@ export interface TimelineItemProps {
   canComment: boolean;
   commentParentType: string;
   onEditComment?: (id: string, content: any) => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
 }
 
 // Activity component props

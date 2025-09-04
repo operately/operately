@@ -187,9 +187,8 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_company_owner_removing do
-    field? :company_id, :string, null: true
-    field? :person_id, :string, null: true
-    field? :person, :person, null: true
+    field :company, :company, null: false
+    field :person, :person, null: true
   end
 
   object :activity_content_space_added do
@@ -345,6 +344,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_name, :string, null: true
   end
 
+  object :activity_content_task_milestone_updating do
+    field :project, :project, null: false
+    field :task, :task, null: true
+    field :old_milestone, :milestone, null: true
+    field :new_milestone, :milestone, null: true
+  end
+
+  object :activity_content_milestone_deleting do
+    field :project, :project, null: false
+    field :milestone_name, :string, null: false
+  end
+
   object :activity_content_task_priority_change do
     field? :company_id, :string, null: true
     field? :space_id, :string, null: true
@@ -458,7 +469,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :permissions, :activity_permissions, null: true
   end
 
-  enum(:activity_scope_type, values: [:person, :company, :space, :project, :task, :goal])
+  enum(:activity_scope_type, values: [:person, :company, :space, :project, :milestone, :task, :goal])
 
   object :activity_permissions do
     field? :can_comment_on_thread, :boolean, null: true
@@ -491,10 +502,11 @@ defmodule OperatelyWeb.Api.Types do
     field? :value, :float, null: true
   end
 
+  enum(:milestone_comment_action, values: Operately.Comments.MilestoneComment.valid_actions())
+
   object :milestone_comment do
-    field? :id, :string, null: true
-    field? :action, :string, null: true
-    field? :comment, :comment, null: true
+    field :action, :milestone_comment_action, null: false
+    field :comment, :comment, null: false
   end
 
   object :space do
@@ -562,6 +574,7 @@ defmodule OperatelyWeb.Api.Types do
       :activity_content_project_goal_connection,
       :activity_content_project_goal_disconnection,
       :activity_content_project_milestone_commented,
+      :activity_content_milestone_description_updating,
       :activity_content_project_moved,
       :activity_content_project_pausing,
       :activity_content_project_renamed,
@@ -756,8 +769,9 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_task_description_change do
-    field :task, :task, null: false
+    field :task, :task, null: true
     field :project_name, :string, null: false
+    field :has_description, :boolean, null: false
   end
 
   object :activity_content_task_due_date_updating do
@@ -781,6 +795,28 @@ defmodule OperatelyWeb.Api.Types do
     field :name, :string
   end
 
+  object :activity_content_milestone_title_updating do
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :old_title, :string, null: false
+    field :new_title, :string, null: false
+  end
+
+  object :activity_content_milestone_due_date_updating do
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :milestone_name, :string, null: false
+    field :old_due_date, :contextual_date, null: false
+    field :new_due_date, :contextual_date, null: false
+  end
+
+  object :activity_content_milestone_description_updating do
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :milestone_name, :string, null: false
+    field :has_description, :boolean, null: false
+  end
+
   object :activity_content_task_adding do
     field :company, :company
     field :space, :space
@@ -788,6 +824,13 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone, :milestone
     field :task, :task
     field :task_name, :string
+  end
+
+  object :activity_content_task_assignee_updating do
+    field :project, :project
+    field :task, :task, null: true
+    field :old_assignee, :person
+    field :new_assignee, :person
   end
 
   object :activity_content_task_deleting do
@@ -1072,6 +1115,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :assignees, list_of(:person), null: true
     field? :creator, :person, null: true
     field? :space, :space, null: true
+    field? :permissions, :project_permissions, null: true
   end
 
   object :activity_content_discussion_editing do
@@ -1487,6 +1531,7 @@ defmodule OperatelyWeb.Api.Types do
   object :milestone do
     field :id, :string, null: false
     field? :project, :project, null: true
+    field? :creator, :person, null: true
     field :title, :string, null: false
     field :status, :milestone_status
     field :inserted_at, :date
@@ -1497,6 +1542,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :tasks_kanban_state, :string, null: true
     field? :tasks_ordering_state, list_of(:string), null: true
     field? :permissions, :project_permissions, null: true
+    field? :space, :space, null: true
   end
 
   object :activity_content_goal_check_in_edit do
@@ -1561,11 +1607,10 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :activity_content_project_milestone_commented do
-    field? :project_id, :string, null: true
-    field? :project, :project, null: true
-    field? :milestone, :milestone, null: true
-    field? :comment_action, :string, null: true
-    field? :comment, :comment, null: true
+    field :project, :project, null: false
+    field :milestone, :milestone, null: true
+    field :comment_action, :string, null: false
+    field :comment, :comment, null: false
   end
 
   object :activity_content_project_review_submitted do
@@ -1590,6 +1635,19 @@ defmodule OperatelyWeb.Api.Types do
     field? :space, :space
     field? :can_comment, :boolean
   end
+
+  enum(:comment_parent_type, values: [
+    :project_check_in,
+    :project_retrospective,
+    :comment_thread,
+    :goal_update,
+    :message,
+    :resource_hub_document,
+    :resource_hub_file,
+    :resource_hub_link,
+    :project_task,
+    :milestone
+  ])
 
   object :comment do
     field? :id, :string, null: true

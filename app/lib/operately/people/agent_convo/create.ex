@@ -33,8 +33,19 @@ defmodule Operately.People.AgentConvo.Create do
   defp insert_convo(multi) do
     Multi.insert(multi, :convo, fn ctx ->
       case ctx.context_type do
-        :goal -> AgentConvo.changeset(%{title: ctx.action.label, author_id: ctx.person.id, goal_id: ctx.context_id})
-        :project -> AgentConvo.changeset(%{title: ctx.action.label, author_id: ctx.person.id, project_id: ctx.context_id})
+        :goal ->
+          AgentConvo.changeset(%{
+            title: ctx.action.label,
+            author_id: ctx.person.id,
+            goal_id: ctx.context_id
+          })
+
+        :project ->
+          AgentConvo.changeset(%{
+            title: ctx.action.label,
+            author_id: ctx.person.id,
+            project_id: ctx.context_id
+          })
       end
     end)
   end
@@ -82,12 +93,12 @@ defmodule Operately.People.AgentConvo.Create do
     Multi.run(multi, :context_prompt, fn _, ctx ->
       case ctx.context_type do
         :goal ->
-          goal = Operately.Repo.get!(Operately.Goals.Goal, ctx.context_id)
-          {:ok, "\n\n** Input goal: **\n\n" <> Operately.MD.Goal.render(goal)}
+          goal_id = Operately.ShortUuid.encode!(ctx.context_id)
+          {:ok, "\n\nYou are currently in the context of the following goal: #{goal_id}\n\nUse the get_goal_details tool to fetch the current goal details when needed."}
 
         :project ->
           project_id = Operately.ShortUuid.encode!(ctx.context_id)
-          {:ok, "\n\n You are currently in the context of the following project: #{project_id} **"}
+          {:ok, "\n\n You are currently in the context of the following project: #{project_id}\n\nUse the get_project_details tool to fetch the current project details when needed."}
 
         _ ->
           {:error, "Unsupported context type: #{inspect(ctx.context_type)}"}

@@ -15,6 +15,7 @@ defmodule Operately.Tasks.Task do
           creator_id: Ecto.UUID.t() | nil,
           milestone_id: Ecto.UUID.t() | nil,
           project_id: Ecto.UUID.t() | nil,
+          permissions: map() | nil,
           inserted_at: NaiveDateTime.t() | nil,
           updated_at: NaiveDateTime.t() | nil
         }
@@ -31,6 +32,8 @@ defmodule Operately.Tasks.Task do
     has_many :assignees, Operately.Tasks.Assignee
     has_many :assigned_people, through: [:assignees, :person]
 
+    has_many :comments, Operately.Updates.Comment, where: [entity_type: :project_task], foreign_key: :entity_id
+
     field :name, :string
     field :priority, :string
     field :size, :string
@@ -42,6 +45,9 @@ defmodule Operately.Tasks.Task do
     field :status, :string, default: "todo"
     field :closed_at, :naive_datetime
     field :reopened_at, :naive_datetime
+
+    # populated with after load hooks
+    field :permissions, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -71,5 +77,14 @@ defmodule Operately.Tasks.Task do
 
   def scope_milestone(query, milestone_id) do
     from t in query, where: t.milestone_id == ^milestone_id
+  end
+
+  #
+  # After load hooks
+  #
+
+  def set_permissions(task = %__MODULE__{}) do
+    perms = Operately.Projects.Permissions.calculate(task.request_info.access_level)
+    Map.put(task, :permissions, perms)
   end
 end

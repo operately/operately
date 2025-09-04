@@ -4,10 +4,9 @@ import * as People from "@/models/people";
 
 import { Activity, ActivityContentProjectDiscussionSubmitted } from "@/api";
 import { Summary } from "@/components/RichContent";
-import { isContentEmpty } from "@/components/RichContent/isContentEmpty";
 
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { isContentEmpty, Link } from "turboui";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 

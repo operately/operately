@@ -3,6 +3,7 @@ import * as React from "react";
 
 import Api, { AgentConversation, AgentMessage } from "@/api";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useCurrentCompany } from "@/contexts/CurrentCompanyContext";
 
 import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
 import { useNewAgentMessageSignal } from "../../signals";
@@ -91,10 +92,20 @@ function prepareMessage(message: AgentMessage): Conversations.Message {
 }
 
 function useAvailableActions(conversationContext: Conversations.ContextAttachment | null) {
-  return React.useMemo(
-    () => window.appConfig.aiActions.filter((a) => a.context === conversationContext?.type),
-    [conversationContext?.type],
-  );
+  const company = useCurrentCompany();
+
+  return React.useMemo(() => {
+    const allActions = window.appConfig.aiActions.filter((a) => a.context === conversationContext?.type);
+    
+    // Filter out experimental actions if the experimental AI feature is not enabled
+    return allActions.filter((action) => {
+      if (!action.experimental) return true;
+      
+      if (!company?.enabledExperimentalFeatures) return false;
+      
+      return company.enabledExperimentalFeatures.includes("experimental-ai");
+    });
+  }, [conversationContext?.type, company?.enabledExperimentalFeatures]);
 }
 
 function useSidebarState() {
@@ -116,11 +127,17 @@ function useSidebarState() {
   }, []);
 
   const refreshConversations = React.useCallback(() => {
-    Api.ai.getConversations({}).then((data) => {
+    const params: any = {};
+    if (conversationContext) {
+      params.contextType = conversationContext.type;
+      params.contextId = conversationContext.id;
+    }
+
+    Api.ai.getConversations(params).then((data) => {
       const convos = prepareConvos(data.conversations);
       setConversations(convos);
     });
-  }, []);
+  }, [conversationContext]);
 
   const createConvo = React.useCallback(
     (action: Conversations.ContextAction | null) => {
@@ -177,7 +194,7 @@ function useSidebarState() {
   // On component mount, load conversations
   React.useEffect(() => {
     refreshConversations();
-  }, []);
+  }, [refreshConversations]);
 
   // On new agent message signal, refresh conversations
   useNewAgentMessageSignal(refreshConversations, { convoId: activeConversationId! });

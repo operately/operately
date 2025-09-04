@@ -1,8 +1,7 @@
 import { genPeople } from "../utils/storybook/genPeople";
-import type { Person } from "../TaskBoard/types";
 
 // Generate mock people for stories
-export const mockPeople: Person[] = genPeople(4);
+export const mockPeople = genPeople(4);
 
 // Mock timeline items shared across stories
 export const createMockTimelineItems = (): any[] => [
@@ -13,7 +12,7 @@ export const createMockTimelineItems = (): any[] => [
       author: mockPeople[1],
       insertedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
       content: "created the milestone",
-      type: "milestone-created",
+      type: "project_milestone_creation",
     },
   },
   {
@@ -23,14 +22,14 @@ export const createMockTimelineItems = (): any[] => [
       author: mockPeople[1],
       insertedAt: new Date(Date.now() - 6 * 24 * 60 * 60 * 1000).toISOString(), // 6 days ago
       content: "added a description",
-      type: "milestone-description-added",
+      type: "milestone_description_updating",
     },
   },
   {
     type: "task-activity" as const,
     value: {
       id: "activity-3",
-      type: "task-status-change" as const,
+      type: "task_status_updating" as const,
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(), // 4 days ago
       fromStatus: "pending" as const,
@@ -46,7 +45,7 @@ export const createMockTimelineItems = (): any[] => [
     type: "task-activity" as const,
     value: {
       id: "activity-4",
-      type: "task-status-change" as const,
+      type: "task_status_updating" as const,
       author: mockPeople[2],
       insertedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
       fromStatus: "pending" as const,
@@ -97,7 +96,7 @@ export const createMockTimelineItems = (): any[] => [
     type: "task-activity" as const,
     value: {
       id: "activity-6",
-      type: "task-status-change" as const,
+      type: "task_status_updating" as const,
       author: mockPeople[0],
       insertedAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
       fromStatus: "in_progress" as const,
@@ -184,7 +183,7 @@ export const mockDescription = {
 };
 
 // Mock search function for people
-export const mockSearchPeople = async ({ query }: { query: string }): Promise<Person[]> => {
+export const mockSearchPeople = async ({ query }: { query: string }) => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
   return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };

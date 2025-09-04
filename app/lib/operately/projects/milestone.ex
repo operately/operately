@@ -6,7 +6,9 @@ defmodule Operately.Projects.Milestone do
 
   schema "project_milestones" do
     belongs_to :project, Operately.Projects.Project
+    belongs_to :creator, Operately.People.Person
     has_one :access_context, through: [:project, :access_context]
+    has_one :space, through: [:project, :group]
 
     has_many :tasks, Operately.Tasks.Task
 
@@ -43,7 +45,7 @@ defmodule Operately.Projects.Milestone do
 
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :project_id, :deadline_at, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state, :tasks_ordering_state])
+    |> cast(attrs, [:title, :project_id, :creator_id, :deadline_at, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state, :tasks_ordering_state])
     |> cast_embed(:timeframe)
     |> validate_required([:title, :tasks_kanban_state, :project_id])
   end

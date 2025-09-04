@@ -2,10 +2,8 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   use TurboConnect.Query
   use OperatelyWeb.Api.Helpers
 
-  import Ecto.Query, only: [from: 2]
-  import Operately.Access.Filters, only: [filter_by_view_access: 3]
-
   alias Operately.Tasks.Task
+  alias Operately.Projects.Permissions
 
   inputs do
     field :id, :id, null: false
@@ -14,6 +12,7 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
     field? :include_project, :boolean, null: false
     field? :include_creator, :boolean, null: false
     field? :include_space, :boolean, null: false
+    field? :include_permissions, :boolean, null: false
   end
 
   outputs do
@@ -21,38 +20,35 @@ defmodule OperatelyWeb.Api.Queries.GetTask do
   end
 
   def call(conn, inputs) do
-    task = load(me(conn), inputs)
-
-    if task do
-      {:ok, %{task: Serializer.serialize(task, level: :full)}}
+    with {:ok, task} <- load(me(conn), inputs),
+      {:ok, :allowed} <- Permissions.check(task.request_info.access_level, :can_view) do
+        {:ok, %{task: Serializer.serialize(task, level: :full)}}
     else
-      {:error, :not_found}
+      {:error, :forbidden} -> {:error, :forbidden}
+      {:error, _} -> {:error, :not_found}
     end
   end
 
   defp load(person, inputs) do
-    include_filters = extract_include_filters(inputs)
-
-    from(t in Task,
-      join: p in assoc(t, :project), as: :project,
-      where: t.id == ^inputs.id
-    )
-    |> Task.scope_company(person.company_id)
-    |> filter_by_view_access(person.id, named_binding: :project)
-    |> include_requested(include_filters)
-    |> Repo.one()
+    Task.get(person, id: inputs.id, opts: [
+      preload: preload(inputs),
+      after_load: after_load(inputs)
+    ])
   end
 
-  defp include_requested(query, requested) do
-    Enum.reduce(requested, query, fn include, q ->
-      case include do
-        :include_assignees -> from t in q, preload: [:assigned_people]
-        :include_milestone -> from t in q, preload: [milestone: :project]
-        :include_project -> from [project: p] in q, preload: [project: p]
-        :include_creator -> from t in q, preload: [:creator]
-        :include_space -> from t in q, preload: :group
-        e -> raise "Unknown include filter: #{e}"
-      end
-    end)
+  defp preload(inputs) do
+    Inputs.parse_includes(inputs,
+      include_assignees: [:assigned_people],
+      include_milestone: [milestone: :project],
+      include_project: [:project],
+      include_creator: [:creator],
+      include_space: [:group]
+    )
+  end
+
+  defp after_load(inputs) do
+    Inputs.parse_includes(inputs,
+      include_permissions: &Task.set_permissions/1
+    )
   end
 end

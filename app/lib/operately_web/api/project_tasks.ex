@@ -34,6 +34,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     inputs do
       field :id, :id, null: false
       field? :use_task_id, :boolean, null: false
+      field? :use_milestone_id, :boolean, null: false
     end
 
     outputs do
@@ -53,16 +54,18 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
 
     defp find_project(multi, inputs) do
-      case Map.get(inputs, :use_task_id, false) do
-        true -> Steps.find_project_by_task(multi, inputs.id)
-        false -> Steps.find_project(multi, inputs.id)
+      cond do
+        Map.get(inputs, :use_task_id, false) -> Steps.find_project_by_task(multi, inputs.id)
+        Map.get(inputs, :use_milestone_id, false) -> Steps.find_project_by_milestone(multi, inputs.id)
+        true -> Steps.find_project(multi, inputs.id)
       end
     end
 
     defp check_permissions(multi, inputs) do
-      case Map.get(inputs, :use_task_id, false) do
-        true -> Steps.check_task_permissions(multi, :can_view)
-        false -> Steps.check_permissions(multi, :can_view)
+      cond do
+        Map.get(inputs, :use_task_id, false) -> Steps.check_task_permissions(multi, :can_view)
+        Map.get(inputs, :use_milestone_id, false) -> Steps.check_milestone_permissions(multi, :can_view)
+        true -> Steps.check_permissions(multi, :can_view)
       end
     end
   end
@@ -91,6 +94,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           old_status: changes.task.status,
           new_status: changes.updated_task.status,
@@ -128,9 +132,11 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           project_name: changes.project.name,
           task_name: changes.task.name,
+          has_description: Operately.RichContent.empty?(inputs.description)
         }
       end)
       |> Steps.commit()
@@ -164,6 +170,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           old_name: changes.task.name,
           new_name: changes.updated_task.name
@@ -200,6 +207,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           task_name: changes.task.name,
           old_due_date: changes.task.due_date,
@@ -229,7 +237,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id)
+      |> Steps.find_task(inputs.task_id, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_assignee(inputs.assignee_id)
       |> Steps.save_activity(:task_assignee_updating, fn changes ->
@@ -237,6 +245,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           old_assignee_id: get_old_assignee_id(changes.task),
           new_assignee_id: inputs.assignee_id
@@ -357,6 +366,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           company_id: changes.project.company_id,
           space_id: changes.project.group_id,
           project_id: changes.project.id,
+          milestone_id: changes.task.milestone_id,
           task_id: changes.task.id,
           name: changes.task.name,
         }
@@ -389,9 +399,11 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
-    def find_task(multi, task_id) do
+    def find_task(multi, task_id, preloads \\ []) do
       Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
-        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
+        preloads = [:project] ++ preloads
+
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: preloads]) do
           {:ok, task} -> {:ok, task}
           {:error, _} -> {:error, {:not_found, "Task not found"}}
         end
@@ -410,6 +422,18 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
       |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
         {:ok, task.project}
+      end)
+    end
+
+    def find_project_by_milestone(multi, milestone_id) do
+      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
+        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+          {:ok, milestone} -> {:ok, milestone}
+          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+        end
+      end)
+      |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
+        {:ok, milestone.project}
       end)
     end
 
@@ -457,6 +481,12 @@ defmodule OperatelyWeb.Api.ProjectTasks do
       end)
     end
 
+    def check_milestone_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
+        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
+      end)
+    end
+
     def update_task_status(multi, new_status) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{status: new_status})
@@ -499,7 +529,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         end
 
         # Return the updated task with preloaded assignees
-        updated_task = Operately.Repo.preload(task, :assigned_people)
+        updated_task = Operately.Repo.preload(task, :assigned_people, force: true)
 
         {:ok, updated_task}
       end)

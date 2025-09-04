@@ -49,7 +49,8 @@ defmodule OperatelyWeb.PageController do
       %{
         id: action.id,
         label: action.label,
-        context: action.context
+        context: action.context,
+        experimental: action.experimental || false
       }
     end)
   end

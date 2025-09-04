@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Avatar, AvatarWithName } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, Person } from "./types";
+import { Editor, useEditor } from "../RichEditor";
 
 interface CommentInputActiveProps extends CommentInputProps {
   currentUser: Person;
@@ -14,7 +15,12 @@ interface CommentInputInactiveProps {
   onClick: () => void;
 }
 
-export function CommentInput({ form, currentUser }: CommentInputProps & { currentUser: Person }) {
+export function CommentInput({
+  form,
+  currentUser,
+  mentionedPersonLookup,
+  peopleSearch,
+}: CommentInputProps & { currentUser: Person }) {
   const [active, setActive] = useState(false);
 
   const handleActivate = () => setActive(true);
@@ -27,6 +33,8 @@ export function CommentInput({ form, currentUser }: CommentInputProps & { curren
         currentUser={currentUser}
         onBlur={handleDeactivate}
         onPost={handleDeactivate}
+        mentionedPersonLookup={mentionedPersonLookup}
+        peopleSearch={peopleSearch}
       />
     );
   }
@@ -40,58 +48,63 @@ function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProp
       className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
       onClick={onClick}
     >
-      <AvatarWithName 
-        person={currentUser} 
-        size="normal" 
-        nameFormat="short"
-        link={currentUser.profileLink}
-      />
+      <AvatarWithName person={currentUser} size="normal" nameFormat="short" link={currentUser.profileLink} />
       <span className="text-content-dimmed ml-2">Write a comment here...</span>
     </div>
   );
 }
 
-function CommentInputActive({ form, currentUser, onBlur, onPost }: CommentInputActiveProps) {
-  const [content, setContent] = useState("");
+function CommentInputActive({
+  form,
+  currentUser,
+  onBlur,
+  onPost,
+  mentionedPersonLookup,
+  peopleSearch,
+}: CommentInputActiveProps) {
   const [uploading] = useState(false);
 
+  const editor = useEditor({
+    content: "",
+    editable: true,
+    placeholder: "Write a comment here...",
+    mentionedPersonLookup: mentionedPersonLookup || (async () => null),
+    peopleSearch: peopleSearch || (async () => []),
+  });
+
   const handlePost = async () => {
-    if (!content.trim()) return;
+    const content = editor.getJson();
+    if (!content || editor.empty) return;
     if (uploading) return;
 
     try {
-      // This would integrate with the actual rich text editor
-      const editorContent = { message: content };
-      form.postComment(editorContent);
-      setContent("");
+      form.postComment(content);
+      editor.setContent("");
       onPost();
     } catch (error) {
       console.error("Failed to post comment:", error);
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      onBlur();
-    }
-  };
+  React.useEffect(() => {
+    const handleEscapeKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onBlur();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscapeKey);
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [onBlur]);
 
   return (
     <div className="py-6 not-first:border-t border-stroke-base flex items-start gap-3">
       <Avatar person={currentUser} size="normal" />
       <div className="flex-1">
         <div className="border border-surface-outline rounded-lg overflow-hidden">
-          {/* Placeholder for rich text editor */}
-          <div className="p-4">
-            <textarea
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Write a comment here..."
-              className="w-full min-h-[200px] resize-none border-none outline-none bg-transparent"
-              autoFocus
-            />
-          </div>
+          <Editor editor={editor} hideBorder hideToolbar />
 
           <div className="flex justify-between items-center m-4">
             <div className="flex items-center gap-2">
@@ -99,7 +112,7 @@ function CommentInputActive({ form, currentUser, onBlur, onPost }: CommentInputA
                 size="xs"
                 onClick={handlePost}
                 loading={form.submitting || uploading}
-                disabled={!content.trim()}
+                disabled={editor.empty}
               >
                 {uploading ? "Uploading..." : "Post"}
               </PrimaryButton>

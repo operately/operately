@@ -5,7 +5,7 @@ import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 interface RichContentProps {
   content: any;
   className?: string;
-  mentionedPersonLookup: MentionedPersonLookupFn;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
 }
 
 export default function RichContent({ content, className, mentionedPersonLookup }: RichContentProps): JSX.Element {
@@ -24,3 +24,4 @@ export default function RichContent({ content, className, mentionedPersonLookup 
 
 export * from "./contentOps";
 export * from "./Summary";
+export * from "./isContentEmpty";

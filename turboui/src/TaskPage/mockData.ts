@@ -19,7 +19,7 @@ export const timelinePeople: TimelinePerson[] = [
     avatarUrl: "https://i.pravatar.cc/150?u=charlie",
     profileLink: "/people/charlie",
   },
-  { id: "user-4", fullName: "Diana Prince", avatarUrl: undefined, profileLink: "/people/diana" },
+  { id: "user-4", fullName: "Diana Prince", avatarUrl: null, profileLink: "/people/diana" },
 ];
 
 // Named exports for easier access
@@ -218,12 +218,12 @@ export function createActiveTaskTimeline(): TimelineItemType[] {
       "I've started working on the login component. Should have a first version ready by tomorrow.",
       30 * 60 * 1000,
     ), // 30 min ago
-    createTaskActivity("task-status-change", alice, 2 * 60 * 60 * 1000, {
+    createTaskActivity("task_status_updating", alice, 2 * 60 * 60 * 1000, {
       fromStatus: "not_started",
       toStatus: "in_progress",
     }), // 2 hours ago
-    createTaskActivity("task-assignment", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
-    createTaskActivity("task-milestone", alice, 4 * 60 * 60 * 1000, {
+    createTaskActivity("task_assignee_updating", alice, 3 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }), // 3 hours ago
+    createTaskActivity("task_milestone_updating", alice, 4 * 60 * 60 * 1000, {
       milestone: { id: "milestone-1", title: "Beta Release", status: "pending" },
       action: "attached",
     }),
@@ -241,10 +241,10 @@ export function createMinimalTaskTimeline(): TimelineItemType[] {
 export function createCompletedTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "Great work everyone! This turned out really well.", 30 * 60 * 1000),
-    createTaskActivity("task-status-change", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
+    createTaskActivity("task_status_updating", bob, 60 * 60 * 1000, { fromStatus: "in_progress", toStatus: "done" }),
     createComment(bob, "All tests are passing and the feature is ready for release!", 2 * 60 * 60 * 1000),
     createComment(charlie, "The design looks perfect. Nice work on the animations!", 4 * 60 * 60 * 1000),
-    createTaskActivity("task-assignment", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
+    createTaskActivity("task_assignee_updating", alice, 2 * 24 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
     createTaskActivity("task_adding", alice, 3 * 24 * 60 * 60 * 1000),
   ];
 }
@@ -252,11 +252,11 @@ export function createCompletedTaskTimeline(): TimelineItemType[] {
 export function createOverdueTaskTimeline(): TimelineItemType[] {
   return [
     createComment(alice, "This is overdue. Can we get an update on the progress?", 60 * 60 * 1000),
-    createTaskActivity("task-due-date", alice, 3 * 24 * 60 * 60 * 1000, {
+    createTaskActivity("task_due_date_updating", alice, 3 * 24 * 60 * 60 * 1000, {
       fromDueDate: null,
       toDueDate: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
     }),
-    createTaskActivity("task-assignment", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
+    createTaskActivity("task_assignee_updating", alice, 5 * 24 * 60 * 60 * 1000, { assignee: charlie, action: "assigned" }),
     createTaskActivity("task_adding", alice, 7 * 24 * 60 * 60 * 1000),
   ];
 }
@@ -278,9 +278,9 @@ export function createLongContentTimeline(): TimelineItemType[] {
       "I've implemented all the requirements from the spec. The authentication flow now supports both email/password and social login.",
       4 * 60 * 60 * 1000,
     ),
-    createTaskActivity("task-description", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
-    createTaskActivity("task-status-change", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
-    createTaskActivity("task-assignment", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
+    createTaskActivity("task_description_change", alice, 6 * 60 * 60 * 1000, { hasContent: true }),
+    createTaskActivity("task_status_updating", bob, 8 * 60 * 60 * 1000, { fromStatus: "todo", toStatus: "in_progress" }),
+    createTaskActivity("task_assignee_updating", alice, 12 * 60 * 60 * 1000, { assignee: bob, action: "assigned" }),
     createTaskActivity("task_adding", alice, 24 * 60 * 60 * 1000),
   ];
 }

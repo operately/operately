@@ -264,10 +264,11 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id)
       |> Steps.check_permissions(:can_edit_timeline)
-      |> Ecto.Multi.run(:milestone, fn _repo, %{project: project} ->
+      |> Ecto.Multi.run(:milestone, fn _repo, %{project: project, me: me} ->
         Operately.Projects.create_milestone(%{
           title: inputs.name,
           project_id: project.id,
+          creator_id: me.id,
           timeframe: %{
             contextual_start_date: nil,
             contextual_end_date: inputs.due_date

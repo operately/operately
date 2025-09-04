@@ -3,6 +3,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Permissions do
     %{
       can_view: permissions.can_view,
       can_comment_on_milestone: permissions.can_comment_on_milestone,
+      can_comment_on_task: permissions.can_comment_on_task,
       can_complete_milestone: permissions.can_complete_milestone,
       can_reopen_milestone: permissions.can_reopen_milestone,
       can_create_milestone: permissions.can_create_milestone,

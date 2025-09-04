@@ -3,26 +3,28 @@ import { TimelineItem } from "./TimelineItem";
 import { CommentInput } from "../CommentSection/CommentInput";
 import { TimelineProps } from "./types";
 
-export function Timeline({ 
-  items, 
-  currentUser, 
-  canComment, 
-  commentParentType, 
-  onAddComment, 
+export function Timeline({
+  items,
+  currentUser,
+  canComment,
+  commentParentType,
+  onAddComment,
   onEditComment,
-  filters 
+  mentionedPersonLookup,
+  peopleSearch,
+  filters,
 }: TimelineProps) {
   const filteredItems = useMemo(() => {
     if (!filters) return items;
 
-    return items.filter(item => {
+    return items.filter((item) => {
       // Filter by type
       if (!filters.showComments && item.type === "comment") return false;
-      if (!filters.showActivities && (
-        item.type === "task-activity" || 
-        item.type === "milestone-activity" || 
-        item.type === "acknowledgment"
-      )) return false;
+      if (
+        !filters.showActivities &&
+        (item.type === "task-activity" || item.type === "milestone-activity" || item.type === "acknowledgment")
+      )
+        return false;
 
       // Filter by author
       if (filters.authorFilter && filters.authorFilter.length > 0) {
@@ -45,28 +47,22 @@ export function Timeline({
     });
   }, [items, filters]);
 
-  const sortedItems = useMemo(() => {
-    return [...filteredItems].sort((a, b) => {
-      const dateA = getItemDate(a);
-      const dateB = getItemDate(b);
-      if (!dateA || !dateB) return 0;
-      return new Date(dateB).getTime() - new Date(dateA).getTime(); // Most recent first
-    });
-  }, [filteredItems]);
-
-  const mockForm = useMemo(() => ({
-    items: [],
-    submitting: false,
-    postComment: onAddComment || (() => {}),
-    editComment: onEditComment || (() => {}),
-  }), [onAddComment, onEditComment]);
+  const mockForm = useMemo(
+    () => ({
+      items: [],
+      submitting: false,
+      postComment: onAddComment || (() => {}),
+      editComment: onEditComment || (() => {}),
+    }),
+    [onAddComment, onEditComment],
+  );
 
   return (
     <div className="flex flex-col">
-      {sortedItems.length === 0 ? (
+      {filteredItems.length === 0 ? (
         <EmptyTimeline />
       ) : (
-        sortedItems.map((item, index) => (
+        filteredItems.map((item, index) => (
           <TimelineItem
             key={getItemKey(item, index)}
             item={item}
@@ -74,12 +70,19 @@ export function Timeline({
             canComment={canComment}
             commentParentType={commentParentType}
             onEditComment={onEditComment}
+            mentionedPersonLookup={mentionedPersonLookup}
+            peopleSearch={peopleSearch}
           />
         ))
       )}
 
       {canComment && (
-        <CommentInput form={mockForm} currentUser={currentUser} />
+        <CommentInput
+          form={mockForm}
+          currentUser={currentUser}
+          mentionedPersonLookup={mentionedPersonLookup}
+          peopleSearch={peopleSearch}
+        />
       )}
     </div>
   );
@@ -89,9 +92,7 @@ function EmptyTimeline() {
   return (
     <div className="flex flex-col items-center justify-center py-12 text-center">
       <div className="text-content-dimmed text-lg mb-2">No activity yet</div>
-      <div className="text-content-dimmed text-sm">
-        Comments and task updates will appear here
-      </div>
+      <div className="text-content-dimmed text-sm">Comments and task updates will appear here</div>
     </div>
   );
 }

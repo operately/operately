@@ -147,7 +147,7 @@ export interface Activity {
   resource?: ActivityResourceUnion | null;
   person?: Person | null;
   eventData?: ActivityDataUnion | null;
-  content?: ActivityContent | null;
+  content: ActivityContent;
   notifications?: Notification[] | null;
   permissions?: ActivityPermissions | null;
 }
@@ -184,10 +184,8 @@ export interface ActivityContentCompanyMemberRestoring {
 }
 
 export interface ActivityContentCompanyOwnerRemoving {
-  companyId?: string | null;
-  personId?: string | null;
-  person?: Person | null;
-  company?: Company | null;
+  company: Company;
+  person: Person | null;
 }
 
 export interface ActivityContentCompanyOwnersAdding {
@@ -418,6 +416,33 @@ export interface ActivityContentMessageArchiving {
   title?: string | null;
 }
 
+export interface ActivityContentMilestoneDeleting {
+  project: Project;
+  milestoneName: string;
+}
+
+export interface ActivityContentMilestoneDescriptionUpdating {
+  project: Project;
+  milestone: Milestone | null;
+  milestoneName: string;
+  hasDescription: boolean;
+}
+
+export interface ActivityContentMilestoneDueDateUpdating {
+  project: Project;
+  milestone: Milestone | null;
+  milestoneName: string;
+  oldDueDate: ContextualDate;
+  newDueDate: ContextualDate;
+}
+
+export interface ActivityContentMilestoneTitleUpdating {
+  project: Project;
+  milestone: Milestone | null;
+  oldTitle: string;
+  newTitle: string;
+}
+
 export interface ActivityContentProjectArchived {
   projectId?: string | null;
   project?: Project | null;
@@ -547,11 +572,10 @@ export interface ActivityContentProjectKeyResourceDeleted {
 }
 
 export interface ActivityContentProjectMilestoneCommented {
-  projectId?: string | null;
-  project?: Project | null;
-  milestone?: Milestone | null;
-  commentAction?: string | null;
-  comment?: Comment | null;
+  project: Project;
+  milestone: Milestone | null;
+  commentAction: string;
+  comment: Comment;
 }
 
 export interface ActivityContentProjectMilestoneCreation {
@@ -794,6 +818,13 @@ export interface ActivityContentTaskAssigneeAssignment {
   personId?: string | null;
 }
 
+export interface ActivityContentTaskAssigneeUpdating {
+  project: Project;
+  task: Task | null;
+  oldAssignee: Person;
+  newAssignee: Person;
+}
+
 export interface ActivityContentTaskClosing {
   companyId?: string | null;
   spaceId?: string | null;
@@ -808,8 +839,9 @@ export interface ActivityContentTaskDeleting {
 }
 
 export interface ActivityContentTaskDescriptionChange {
-  task: Task;
+  task: Task | null;
   projectName: string;
+  hasDescription: boolean;
 }
 
 export interface ActivityContentTaskDueDateUpdating {
@@ -818,6 +850,13 @@ export interface ActivityContentTaskDueDateUpdating {
   taskName: string | null;
   oldDueDate: ContextualDate;
   newDueDate: ContextualDate;
+}
+
+export interface ActivityContentTaskMilestoneUpdating {
+  project: Project;
+  task: Task | null;
+  oldMilestone: Milestone | null;
+  newMilestone: Milestone | null;
 }
 
 export interface ActivityContentTaskNameEditing {
@@ -1228,6 +1267,7 @@ export interface MessagesBoard {
 export interface Milestone {
   id: string;
   project?: Project | null;
+  creator?: Person | null;
   title: string;
   status: MilestoneStatus;
   insertedAt: string;
@@ -1238,12 +1278,12 @@ export interface Milestone {
   tasksKanbanState?: string | null;
   tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
+  space?: Space | null;
 }
 
 export interface MilestoneComment {
-  id?: string | null;
-  action?: string | null;
-  comment?: Comment | null;
+  action: MilestoneCommentAction;
+  comment: Comment;
 }
 
 export interface Notification {
@@ -1658,6 +1698,7 @@ export interface Task {
   assignees?: Person[] | null;
   creator?: Person | null;
   space?: Space | null;
+  permissions?: ProjectPermissions | null;
 }
 
 export interface Timeframe {
@@ -1829,6 +1870,7 @@ export type ActivityContent =
   | ActivityContentProjectGoalConnection
   | ActivityContentProjectGoalDisconnection
   | ActivityContentProjectMilestoneCommented
+  | ActivityContentMilestoneDescriptionUpdating
   | ActivityContentProjectMoved
   | ActivityContentProjectPausing
   | ActivityContentProjectRenamed
@@ -1881,11 +1923,23 @@ export type UpdateContent =
   | UpdateContentProjectDiscussion
   | UpdateContentMessage;
 
-export type ActivityScopeType = "person" | "company" | "space" | "project" | "task" | "goal";
+export type ActivityScopeType = "person" | "company" | "space" | "project" | "milestone" | "task" | "goal";
 
 export type AgentMessageSender = "user" | "ai";
 
 export type AgentMessageStatus = "pending" | "done";
+
+export type CommentParentType =
+  | "project_check_in"
+  | "project_retrospective"
+  | "comment_thread"
+  | "goal_update"
+  | "message"
+  | "resource_hub_document"
+  | "resource_hub_file"
+  | "resource_hub_link"
+  | "project_task"
+  | "milestone";
 
 export type ContextualDateType = "day" | "month" | "quarter" | "year";
 
@@ -1902,6 +1956,8 @@ export type GoalStatus =
   | "off_track"
   | "pending"
   | "outdated";
+
+export type MilestoneCommentAction = "none" | "complete" | "reopen";
 
 export type MilestoneStatus = "pending" | "done";
 
@@ -1949,7 +2005,10 @@ export interface AiGetConversationMessagesResult {
   messages: AgentMessage[];
 }
 
-export interface AiGetConversationsInput {}
+export interface AiGetConversationsInput {
+  contextId: Id;
+  contextType: string;
+}
 
 export interface AiGetConversationsResult {
   conversations: AgentConversation[];
@@ -2027,12 +2086,12 @@ export interface GetBindedPeopleResult {
 }
 
 export interface GetCommentsInput {
-  entityId: string;
-  entityType: string;
+  entityId: Id;
+  entityType: CommentParentType;
 }
 
 export interface GetCommentsResult {
-  comments?: Comment[] | null;
+  comments: Comment[];
 }
 
 export interface GetCompaniesInput {
@@ -2182,14 +2241,16 @@ export interface GetMeResult {
 }
 
 export interface GetMilestoneInput {
-  id?: string | null;
-  includeComments?: boolean | null;
-  includeProject?: boolean | null;
-  includePermissions?: boolean | null;
+  id: Id;
+  includeComments?: boolean;
+  includeProject?: boolean;
+  includeCreator?: boolean;
+  includePermissions?: boolean;
+  includeSpace?: boolean;
 }
 
 export interface GetMilestoneResult {
-  milestone?: Milestone | null;
+  milestone: Milestone;
 }
 
 export interface GetNotificationsInput {
@@ -2429,6 +2490,7 @@ export interface GetTaskInput {
   includeProject?: boolean;
   includeCreator?: boolean;
   includeSpace?: boolean;
+  includePermissions?: boolean;
 }
 
 export interface GetTaskResult {
@@ -2548,9 +2610,18 @@ export interface ProjectDiscussionsListResult {
   discussions: CommentThread[];
 }
 
+export interface ProjectMilestonesListTasksInput {
+  milestoneId: Id;
+}
+
+export interface ProjectMilestonesListTasksResult {
+  tasks: Task[];
+}
+
 export interface ProjectTasksGetOpenTaskCountInput {
   id: Id;
   useTaskId?: boolean;
+  useMilestoneId?: boolean;
 }
 
 export interface ProjectTasksGetOpenTaskCountResult {
@@ -2894,8 +2965,8 @@ export interface ChangePasswordInput {
 export interface ChangePasswordResult {}
 
 export interface ChangeTaskDescriptionInput {
-  taskId?: string | null;
-  description?: string | null;
+  taskId: Id;
+  description: Json;
 }
 
 export interface ChangeTaskDescriptionResult {
@@ -2965,13 +3036,13 @@ export interface CreateBlobResult {
 }
 
 export interface CreateCommentInput {
-  entityId?: string | null;
-  entityType?: string | null;
-  content?: string | null;
+  entityId: Id;
+  entityType: CommentParentType;
+  content: string;
 }
 
 export interface CreateCommentResult {
-  comment?: Comment | null;
+  comment: Comment;
 }
 
 export interface CreateEmailActivationCodeInput {
@@ -3164,13 +3235,13 @@ export interface DisconnectGoalFromProjectResult {
 }
 
 export interface EditCommentInput {
-  content?: string | null;
-  commentId?: string | null;
-  parentType?: string | null;
+  content: string;
+  commentId: Id;
+  parentType: CommentParentType;
 }
 
 export interface EditCommentResult {
-  comment?: Comment | null;
+  comment: Comment;
 }
 
 export interface EditCompanyInput {
@@ -3620,13 +3691,13 @@ export interface PostGoalProgressUpdateResult {
 }
 
 export interface PostMilestoneCommentInput {
-  milestoneId?: string | null;
-  content?: string | null;
-  action?: string | null;
+  milestoneId: Id;
+  content: Json | null;
+  action: string;
 }
 
 export interface PostMilestoneCommentResult {
-  comment?: MilestoneComment | null;
+  comment: MilestoneComment;
 }
 
 export interface PostProjectCheckInInput {
@@ -3662,6 +3733,41 @@ export interface ProjectDiscussionsEditInput {
 
 export interface ProjectDiscussionsEditResult {
   discussion: Update;
+}
+
+export interface ProjectMilestonesDeleteInput {
+  milestoneId: Id;
+}
+
+export interface ProjectMilestonesDeleteResult {
+  success: boolean;
+}
+
+export interface ProjectMilestonesUpdateDescriptionInput {
+  milestoneId: Id;
+  description: Json;
+}
+
+export interface ProjectMilestonesUpdateDescriptionResult {
+  milestone: Milestone;
+}
+
+export interface ProjectMilestonesUpdateDueDateInput {
+  milestoneId: Id;
+  dueDate: ContextualDate | null;
+}
+
+export interface ProjectMilestonesUpdateDueDateResult {
+  milestone: Milestone;
+}
+
+export interface ProjectMilestonesUpdateTitleInput {
+  milestoneId: Id;
+  title: string;
+}
+
+export interface ProjectMilestonesUpdateTitleResult {
+  milestone: Milestone;
 }
 
 export interface ProjectTasksCreateInput {
@@ -4701,6 +4807,32 @@ class ApiNamespaceProjectTasks {
   }
 }
 
+class ApiNamespaceProjectMilestones {
+  constructor(private client: ApiClient) {}
+
+  async listTasks(input: ProjectMilestonesListTasksInput): Promise<ProjectMilestonesListTasksResult> {
+    return this.client.get("/project_milestones/list_tasks", input);
+  }
+
+  async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
+    return this.client.post("/project_milestones/delete", input);
+  }
+
+  async updateDescription(
+    input: ProjectMilestonesUpdateDescriptionInput,
+  ): Promise<ProjectMilestonesUpdateDescriptionResult> {
+    return this.client.post("/project_milestones/update_description", input);
+  }
+
+  async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
+    return this.client.post("/project_milestones/update_due_date", input);
+  }
+
+  async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
+    return this.client.post("/project_milestones/update_title", input);
+  }
+}
+
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
 
@@ -4928,6 +5060,7 @@ export class ApiClient {
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceProjectTasks: ApiNamespaceProjectTasks;
+  public apiNamespaceProjectMilestones: ApiNamespaceProjectMilestones;
   public apiNamespaceProjects: ApiNamespaceProjects;
   public apiNamespaceGoals: ApiNamespaceGoals;
   public apiNamespaceAi: ApiNamespaceAi;
@@ -4937,6 +5070,7 @@ export class ApiClient {
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceProjectTasks = new ApiNamespaceProjectTasks(this);
+    this.apiNamespaceProjectMilestones = new ApiNamespaceProjectMilestones(this);
     this.apiNamespaceProjects = new ApiNamespaceProjects(this);
     this.apiNamespaceGoals = new ApiNamespaceGoals(this);
     this.apiNamespaceAi = new ApiNamespaceAi(this);
@@ -7317,6 +7451,40 @@ export default {
     delete: (input: ProjectTasksDeleteInput) => defaultApiClient.apiNamespaceProjectTasks.delete(input),
     useDelete: () =>
       useMutation<ProjectTasksDeleteInput, ProjectTasksDeleteResult>(defaultApiClient.apiNamespaceProjectTasks.delete),
+  },
+
+  project_milestones: {
+    listTasks: (input: ProjectMilestonesListTasksInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.listTasks(input),
+    useListTasks: (input: ProjectMilestonesListTasksInput) =>
+      useQuery<ProjectMilestonesListTasksResult>(() => defaultApiClient.apiNamespaceProjectMilestones.listTasks(input)),
+
+    delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
+    useDelete: () =>
+      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.delete,
+      ),
+
+    updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
+    useUpdateDescription: () =>
+      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateDescription,
+      ),
+
+    updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
+    useUpdateDueDate: () =>
+      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate,
+      ),
+
+    updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
+    useUpdateTitle: () =>
+      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>(
+        defaultApiClient.apiNamespaceProjectMilestones.updateTitle,
+      ),
   },
 
   projects: {

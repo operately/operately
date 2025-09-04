@@ -96,6 +96,16 @@ defmodule Operately.Updates do
           where: comment.id == ^id
         )
 
+      :project_task ->
+        from(comment in Comment,
+          as: :comment,
+          join: task in Operately.Tasks.Task,
+          on: task.id == comment.entity_id,
+          join: project in assoc(task, :project),
+          as: :resource,
+          where: comment.id == ^id
+        )
+
       :comment_thread ->
         from(c in Comment,
           as: :comment,

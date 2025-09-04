@@ -32,7 +32,7 @@ defmodule Operately.People.AgentConvo do
 
   def changeset(agent_convo, attrs) do
     agent_convo
-    |> cast(attrs, [:author_id, :title, :goal_id])
+    |> cast(attrs, [:author_id, :title, :goal_id, :project_id])
     |> validate_required([:author_id])
     |> assoc_constraint(:author)
   end
@@ -50,12 +50,22 @@ defmodule Operately.People.AgentConvo do
     end
   end
 
-  def list(person) do
-    from(c in __MODULE__,
-      where: c.author_id == ^person.id,
-      preload: [messages: ^user_facing_messages_query()]
-    )
-    |> Operately.Repo.all()
+  def list(person, context_type, context_id) do
+    query =
+      from(c in __MODULE__,
+        where: c.author_id == ^person.id,
+        preload: [messages: ^user_facing_messages_query()],
+        order_by: [desc: c.inserted_at]
+      )
+
+    query =
+      case context_type do
+        "goal" -> from(c in query, where: c.goal_id == ^context_id)
+        "project" -> from(c in query, where: c.project_id == ^context_id)
+        _ -> query
+      end
+
+    Operately.Repo.all(query)
   end
 
   def create(person, action_name, context_type, context_id) do

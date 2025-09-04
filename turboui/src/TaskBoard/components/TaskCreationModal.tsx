@@ -17,6 +17,7 @@ interface TaskCreationModalProps {
   people?: Types.Person[];
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   searchMilestones?: (params: { query: string }) => Promise<Types.Milestone[]>;
+  milestoneReadOnly?: boolean;
 }
 
 export function TaskCreationModal({
@@ -28,6 +29,7 @@ export function TaskCreationModal({
   people = [],
   searchPeople,
   searchMilestones,
+  milestoneReadOnly,
 }: TaskCreationModalProps) {
   // Form state
   const [title, setTitle] = useState("");
@@ -104,7 +106,7 @@ export function TaskCreationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create Task" size="medium">
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <TextField
           variant="form-field"
           label="Task title"
@@ -115,7 +117,7 @@ export function TaskCreationModal({
           testId="task-title"
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium text-content-base mb-1">Due date</label>
             <DateField
@@ -159,10 +161,11 @@ export function TaskCreationModal({
             }}
             searchMilestones={searchMilestones || defaultSearchMilestones}
             emptyStateMessage="Select milestone"
+            readonly={milestoneReadOnly}
           />
         </div>
 
-        <div className="flex items-center mt-6">
+        <div className="flex items-center mt-8">
           <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" />
           <div className="flex-1"></div>
           <div className="flex space-x-3">

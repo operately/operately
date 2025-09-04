@@ -11,6 +11,18 @@ import { MilestoneCard } from "./MilestoneCard";
 import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 
+export namespace TaskBoard {
+  export type Person = Types.Person;
+
+  export type Status = Types.Status;
+
+  export type Milestone = Types.Milestone;
+
+  export type Task = Types.Task;
+
+  export type NewTaskPayload = Types.NewTaskPayload;
+}
+
 export function TaskBoard({
   tasks: externalTasks,
   milestones: externalMilestones = [],
@@ -272,7 +284,22 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
         hasTasks,
       };
     })
-    .sort((a, b) => a.milestone.id.localeCompare(b.milestone.id));
+    .sort((a, b) => {
+      const dateA = a.milestone.dueDate?.date;
+      const dateB = b.milestone.dueDate?.date;
+
+      // If both have due dates, sort by date (earlier dates first)
+      if (dateA && dateB) {
+        return new Date(dateA).getTime() - new Date(dateB).getTime();
+      }
+
+      // If only one has a due date, prioritize the one with a due date
+      if (dateA && !dateB) return -1;
+      if (!dateA && dateB) return 1;
+
+      // If neither has a due date, sort by milestone ID for consistency
+      return a.milestone.id.localeCompare(b.milestone.id);
+    });
 };
 
 const groupTasksByMilestone = (tasks: Types.Task[]) => {

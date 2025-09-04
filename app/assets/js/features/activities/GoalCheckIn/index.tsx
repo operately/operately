@@ -6,10 +6,9 @@ import type { Activity } from "@/models/activities";
 
 import { ActivityHandler } from "../interfaces";
 
-import { richContentToString } from "@/components/RichContent";
 import { usePaths } from "@/routes/paths";
 import { truncateString } from "@/utils/strings";
-import { Link } from "turboui";
+import { Link, richContentToString } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { SmallStatusIndicator } from "@/components/status";
 

@@ -18,7 +18,12 @@ config :operately, Operately.Repo,
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool: Ecto.Adapters.SQL.Sandbox,
-  pool_size: 10
+
+  pool_size: if(System.get_env("CI"), do: 30, else: 10),
+  queue_target: if(System.get_env("CI"), do: 10_000, else: 5_000),
+  queue_interval: if(System.get_env("CI"), do: 2_000, else: 1_000),
+  timeout: if(System.get_env("CI"), do: 30_000, else: 15_000),
+  ownership_timeout: if(System.get_env("CI"), do: 30_000, else: 10_000)
 
 config :operately, OperatelyWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}, port: 4002],
@@ -28,12 +33,6 @@ config :operately, OperatelyWeb.Endpoint,
 
 # Enable test routes, login helpers, etc.
 config :operately, :test_routes, true
-
-# In test we don't send emails.
-config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Test
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
 
 # Print only warnings and errors during test
 config :logger, level: :warning

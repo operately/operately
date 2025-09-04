@@ -16,10 +16,13 @@ export * from "./StatusBadge";
 export * from "./TimeframeSelector";
 export * from "./Timeline";
 export * from "./WorkMap";
+export * from "./RichContent";
 
 import RichContent from "./RichContent";
 
+export { TaskBoard } from "./TaskBoard";
 export { InfoCallout } from "./Callouts";
+export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
 export { Conversations, useConversations } from "./Conversations";
 export { DateField } from "./DateField";
@@ -33,6 +36,7 @@ export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
 export { TaskPage } from "./TaskPage";
+export { MilestonePage } from "./MilestonePage";
 export { StatusSelector } from "./TaskBoard/components/StatusSelector";
 export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";

@@ -5,7 +5,7 @@ defmodule Operately.Ai.Prompts do
   @default_path "priv/prompts.yaml"
 
   defmodule Action do
-    defstruct [:id, :label, :context, :prompt]
+    defstruct [:id, :label, :context, :prompt, :experimental]
   end
 
   def start_link(_opts \\ []) do
@@ -70,7 +70,8 @@ defmodule Operately.Ai.Prompts do
         id: action["id"],
         label: action["label"],
         context: action["context"],
-        prompt: action["prompt"]
+        prompt: action["prompt"],
+        experimental: action["experimental"] || false
       }
     end)
   end

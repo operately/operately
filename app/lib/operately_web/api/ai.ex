@@ -356,18 +356,20 @@ defmodule OperatelyWeb.Api.Ai do
     alias OperatelyWeb.Api.Serializer
 
     inputs do
+      field :context_id, :id
+      field :context_type, :string
     end
 
     outputs do
       field :conversations, list_of(:agent_conversation)
     end
 
-    def call(conn, _inputs) do
+    def call(conn, inputs) do
       conn
       |> Steps.start()
       |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:convos, fn _repo, %{me: me} ->
-        {:ok, Operately.People.AgentConvo.list(me)}
+        {:ok, Operately.People.AgentConvo.list(me, inputs.context_type, inputs.context_id)}
       end)
       |> Steps.respond(fn res -> %{conversations: Serializer.serialize(res.convos, level: :full)} end)
     end

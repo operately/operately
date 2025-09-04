@@ -17,6 +17,8 @@ import {
   IconClockPlay,
 } from "../icons";
 import { TaskActivityProps, TaskActivity } from "./types";
+import { DateField } from "../DateField";
+import { capitalizeFirstLetter } from "../utils/strings";
 
 export function TaskActivityItem({ activity }: TaskActivityProps) {
   return (
@@ -59,25 +61,25 @@ function ActivityIcon({ activity }: { activity: TaskActivity }) {
   const iconProps = { size: 12, className: "text-content-subtle" };
 
   switch (activity.type) {
-    case "task-assignment":
+    case "task_assignee_updating":
       return <IconUserPlus {...iconProps} className="text-blue-500" />;
-    case "task-status-change":
+    case "task_status_updating":
       return getStatusIcon(activity.toStatus);
-    case "task-milestone":
+    case "task_milestone_updating":
       return activity.action === "attached" ? (
         <IconFlag {...iconProps} className="text-green-500" />
       ) : (
         <IconFlagX {...iconProps} className="text-orange-500" />
       );
-    case "task-due-date":
+    case "task_due_date_updating":
       return activity.toDueDate ? (
         <IconCalendarPlus {...iconProps} className="text-blue-500" />
       ) : (
         <IconCalendarMinus {...iconProps} className="text-orange-500" />
       );
-    case "task-description":
+    case "task_description_change":
       return <IconFileText {...iconProps} className="text-purple-500" />;
-    case "task-title":
+    case "task_name_updating":
       return <IconEdit {...iconProps} className="text-gray-500" />;
     case "task_adding":
       return <IconPlus {...iconProps} className="text-green-500" />;
@@ -100,12 +102,14 @@ function getStatusIcon(status: string) {
 }
 
 function ActivityText({ activity }: { activity: TaskActivity }) {
+  const taskName = formatTaskName(activity);
+
   switch (activity.type) {
-    case "task-assignment":
+    case "task_assignee_updating":
       if (activity.action === "assigned") {
         return (
           <span className="text-content-dimmed">
-            assigned this task to{" "}
+            assigned {taskName} to{" "}
             {activity.assignee.profileLink ? (
               <BlackLink
                 to={activity.assignee.profileLink}
@@ -134,85 +138,98 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
             ) : (
               <span className="font-medium text-content-dimmed">{shortName(activity.assignee.fullName)}</span>
             )}{" "}
-            from this task
+            from {taskName}
           </span>
         );
       }
 
-    case "task-status-change":
+    case "task_status_updating":
       return (
         <span className="text-content-dimmed">
-          changed status{activity.task ? ` of "${activity.task.title}"` : ""} from{" "}
+          changed status of {taskName} from{" "}
           <span className="font-medium text-content-dimmed">{formatStatus(activity.fromStatus)}</span> to{" "}
           <span className="font-medium text-content-dimmed">{formatStatus(activity.toStatus)}</span>
         </span>
       );
 
-    case "task-milestone":
+    case "task_milestone_updating":
       if (activity.action === "attached") {
         return (
           <span className="text-content-dimmed">
-            attached this task to milestone{" "}
-            <span className="font-medium text-content-dimmed">{activity.milestone.title}</span>
+            attached {taskName} to milestone{" "}
+            <span className="font-medium text-content-dimmed">{activity.milestone.name}</span>
           </span>
         );
       } else {
         return (
           <span className="text-content-dimmed">
-            detached this task from milestone{" "}
-            <span className="font-medium text-content-dimmed">{activity.milestone.title}</span>
+            detached {taskName} from milestone{" "}
+            <span className="font-medium text-content-dimmed">{activity.milestone.name}</span>
           </span>
         );
       }
 
-    case "task-due-date":
+    case "task_due_date_updating":
       if (activity.toDueDate && !activity.fromDueDate) {
         return (
-          <span className="text-content-dimmed">
-            set due date to{" "}
+          <span className="text-content-dimmed flex items-center gap-1">
+            set due date for {taskName} to{" "}
             <span className="font-medium text-content-dimmed">
-              <FormattedTime time={activity.toDueDate} format="short-date" />
+              <DateField date={activity.toDueDate} readonly hideCalendarIcon />
             </span>
           </span>
         );
       } else if (!activity.toDueDate && activity.fromDueDate) {
-        return <span className="text-content-subtle">removed due date</span>;
+        return <span className="text-content-subtle">removed due date from {taskName}</span>;
       } else if (activity.toDueDate && activity.fromDueDate) {
         return (
-          <span className="text-content-subtle">
-            changed due date from{" "}
+          <span className="text-content-dimmed flex items-center gap-1">
+            changed due date of {taskName} from{" "}
             <span className="font-medium text-content-dimmed">
-              <FormattedTime time={activity.fromDueDate} format="short-date" />
+              <DateField date={activity.fromDueDate} readonly hideCalendarIcon />
             </span>{" "}
             to{" "}
             <span className="font-medium text-content-dimmed">
-              <FormattedTime time={activity.toDueDate} format="short-date" />
+              <DateField date={activity.toDueDate} readonly hideCalendarIcon />
             </span>
           </span>
         );
       }
       return <span className="text-content-dimmed">updated due date</span>;
 
-    case "task-description":
+    case "task_description_change":
       return (
         <span className="text-content-dimmed">
-          {activity.hasContent ? "updated the description" : "removed the description"}
+          {activity.hasContent
+            ? `updated the description ${activity.page === "task" ? "" : "of " + taskName}`
+            : `removed the description ${activity.page === "task" ? "" : "from " + taskName}`}
         </span>
       );
 
-    case "task-title":
+    case "task_name_updating":
       return (
         <span className="text-content-dimmed">
-          changed title from <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
+          changed title of {activity.page === "task" ? "this task" : "a task"} from{" "}
+          <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
           <span className="font-medium text-content-dimmed">"{activity.toTitle}"</span>
         </span>
       );
 
     case "task_adding":
-      return <span className="text-content-dimmed">created this task</span>;
+      return <span className="text-content-dimmed">created {taskName}</span>;
 
     default:
       return <span className="text-content-dimmed">performed an action</span>;
+  }
+}
+
+function formatTaskName(activity: TaskActivity): string {
+  if (activity.page === "task") {
+    return "this task";
+  } else if ("taskName" in activity) {
+    return `"${activity.taskName}"`;
+  } else {
+    return `"${activity.toTitle}"`;
   }
 }
 
@@ -225,6 +242,6 @@ function formatStatus(status: string): string {
     case "done":
       return "Done";
     default:
-      return status;
+      return capitalizeFirstLetter(status);
   }
 }

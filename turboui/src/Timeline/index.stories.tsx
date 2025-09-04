@@ -66,7 +66,7 @@ const mockTaskAssignment: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-1",
-    type: "task-assignment",
+    type: "task_assignee_updating",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 3600000).toISOString(), // 1 hour ago
     assignee: mockAssignee,
@@ -78,7 +78,7 @@ const mockStatusChange: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-2",
-    type: "task-status-change",
+    type: "task_status_updating",
     author: mockUser,
     insertedAt: new Date(Date.now() - 7200000).toISOString(), // 2 hours ago
     fromStatus: "todo",
@@ -90,13 +90,17 @@ const mockMilestoneAttachment: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-3",
-    type: "task-milestone",
+    type: "task_milestone_updating",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 10800000).toISOString(), // 3 hours ago
     milestone: {
       id: "milestone-1",
-      title: "Beta Release",
-      dueDate: "2024-02-15",
+      name: "Beta Release",
+      dueDate: {
+        date: new Date("2024-02-15"),
+        dateType: "day",
+        value: "Feb 15, 2024",
+      },
       status: "pending",
     },
     action: "attached",
@@ -119,11 +123,15 @@ const mockDueDateChange: TimelineItem = {
   type: "task-activity",
   value: {
     id: "activity-5",
-    type: "task-due-date",
+    type: "task_due_date_updating",
     author: mockAuthor,
     insertedAt: new Date(Date.now() - 18000000).toISOString(), // 5 hours ago
     fromDueDate: null,
-    toDueDate: "2024-01-30",
+    toDueDate: {
+      date: new Date("2024-01-30"),
+      dateType: "day",
+      value: "Jan 30, 2024"
+    },
   } as TaskActivity,
 };
 

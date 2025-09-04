@@ -1,8 +1,11 @@
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { MentionedPersonLookupFn } from "../RichEditor";
+
 export interface Person {
   id: string;
   fullName: string;
-  avatarUrl?: string;
-  profileLink?: string;
+  avatarUrl: string | null;
+  profileLink: string;
 }
 
 export interface Reaction {
@@ -21,25 +24,34 @@ export interface Comment {
   notification?: any; // For notification intersection handling
 }
 
-export interface CommentActivity {
+export interface MilestoneActivity {
   id: string;
-  type: "milestone-completed" | "milestone-reopened" | "milestone-created" | "milestone-description-added" | "milestone_update" | "acknowledgment";
+  type:
+    | "milestone-completed"
+    | "milestone-reopened"
+    | "project_milestone_creation"
+    | "milestone_description_updating"
+    | "milestone_update"
+    | "acknowledgment";
   author: Person;
   insertedAt: string;
   content?: string; // For activities that have descriptive content
 }
 
-export type CommentItem = {
-  type: "comment";
-  value: Comment;
-} | {
-  type: "milestone-completed" | "milestone-reopened";
-  value: CommentActivity;
-} | {
-  type: "acknowledgment";
-  value: Person;
-  insertedAt: string;
-};
+export type CommentItem =
+  | {
+      type: "comment";
+      value: Comment;
+    }
+  | {
+      type: "milestone-completed" | "milestone-reopened";
+      value: MilestoneActivity;
+    }
+  | {
+      type: "acknowledgment";
+      value: Person;
+      insertedAt: string;
+    };
 
 export interface CommentFormState {
   items: CommentItem[];
@@ -61,16 +73,20 @@ export interface CommentItemProps {
   commentParentType: string;
   canComment: boolean;
   onEdit?: () => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
 }
 
 export interface CommentInputProps {
   form: CommentFormState;
   onSubmit?: () => void;
   onCancel?: () => void;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
 }
 
 export interface ActivityProps {
-  activity: CommentActivity;
+  activity: MilestoneActivity;
 }
 
 export interface AcknowledgmentProps {

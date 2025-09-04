@@ -5,7 +5,7 @@ import { PieChart } from "../PieChart";
 import { ResourceManager } from "../ResourceManager";
 import RichContent, { countCharacters, shortenContent } from "../RichContent";
 import { isContentEmpty } from "../RichContent/isContentEmpty";
-import { Editor as RichEditor, useEditor } from "../RichEditor";
+import { MentionedPersonLookupFn, Editor as RichEditor, useEditor } from "../RichEditor";
 import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
@@ -14,6 +14,7 @@ import classNames from "../utils/classnames";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
+import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -47,6 +48,8 @@ function OverviewSection(props: ProjectPage.State) {
     description: props.description,
     onDescriptionChange: props.updateDescription,
     canEdit: props.canEdit,
+    mentionedPersonLookup: props.mentionedPersonLookup,
+    mentionedPersonSearch: props.mentionedPersonSearch,
   });
 
   return (
@@ -125,7 +128,7 @@ function ProjectDescriptionContent({ state }: { state: ProjectDescriptionState }
     <div className="mt-2">
       <RichContent
         content={displayedDescription}
-        mentionedPersonLookup={async () => null} // TODO: Add person lookup if needed
+        mentionedPersonLookup={state.mentionedPersonLookup}
       />
 
       {length > 200 && (
@@ -162,6 +165,7 @@ interface ProjectDescriptionState {
   mode: "view" | "edit" | "zero";
   setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
   setDescription: React.Dispatch<React.SetStateAction<string | null>>;
+  mentionedPersonLookup: MentionedPersonLookupFn;
   editor: ReturnType<typeof useEditor>;
   startEdit: () => void;
   save: () => void;
@@ -187,10 +191,14 @@ function useProjectDescriptionState({
   description: initialDescription,
   onDescriptionChange,
   canEdit,
+  mentionedPersonLookup,
+  mentionedPersonSearch,
 }: {
   description?: string;
   onDescriptionChange?: (newDescription: any) => Promise<boolean>;
   canEdit: boolean;
+  mentionedPersonLookup: MentionedPersonLookupFn;
+  mentionedPersonSearch: SearchFn;
 }): ProjectDescriptionState {
   const initialMode = isDescriptionEmpty(initialDescription) ? "zero" : "view";
 
@@ -205,8 +213,8 @@ function useProjectDescriptionState({
     content: initialDescription,
     editable: canEdit,
     placeholder: "Add a project description...",
-    mentionedPersonLookup: async () => null, // TODO: Add person lookup if needed
-    peopleSearch: async () => [], // TODO: Add people search if needed
+    mentionedPersonLookup: mentionedPersonLookup,
+    peopleSearch: mentionedPersonSearch,
   });
 
   const save = useCallback(async () => {
@@ -249,6 +257,7 @@ function useProjectDescriptionState({
     setDescription,
     save,
     cancel,
+    mentionedPersonLookup,
   };
 }
 
@@ -483,7 +492,7 @@ function AddMilestoneForm({
           placeholder="Milestone name"
           value={newMilestoneName}
           onChange={(e) => setNewMilestoneName(e.target.value)}
-          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-transparent"
+          className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-surface-base"
           autoFocus
           onKeyDown={handleInputKeyDown}
         />

@@ -21,14 +21,7 @@ config :operately, OperatelyWeb.Endpoint,
   pubsub_server: Operately.PubSub,
   live_view: [signing_salt: "id39WNH9"]
 
-# Configures the mailer
-#
-# By default it uses the "Local" adapter which stores the emails
-# locally. You can see the emails in your browser, at "/dev/mailbox".
-#
-# For production it's recommended to configure a different adapter
-# at the `config/runtime.exs`.
-config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Local
+config :swoosh, :api_client, Finch
 
 # Configure tailwind (the version is required)
 config :tailwind,
@@ -84,8 +77,6 @@ config :operately, Oban,
     mailer: 10
   ]
 
-config :operately, OperatelyEmail.Mailer, adapter: Bamboo.LocalAdapter
-
 config :sentry,
   dsn: {System, :get_env, ["SENTRY_DSN"]},
   environment_name: Mix.env(),
@@ -95,7 +86,7 @@ config :sentry,
     env: "#{Mix.env()}"
   },
   included_environments: [:dev, :prod]
-
+  
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"

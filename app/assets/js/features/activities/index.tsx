@@ -130,6 +130,12 @@ export const DISPLAYED_IN_FEED = [
   "task_deleting",
   "task_description_change",
   "task_due_date_updating",
+  "task_assignee_updating",
+  "task_milestone_updating",
+  "milestone_title_updating",
+  "milestone_due_date_updating",
+  "milestone_description_updating",
+  "milestone_deleting",
   "resource_hub_document_created",
   "resource_hub_document_edited",
   "resource_hub_document_commented",
@@ -203,6 +209,12 @@ import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
 import TaskDescriptionChange from "@/features/activities/TaskDescriptionChange";
 import TaskDueDateUpdating from "@/features/activities/TaskDueDateUpdating";
 import TaskDeleting from "@/features/activities/TaskDeleting";
+import TaskAssigneeUpdating from "@/features/activities/TaskAssigneeUpdating";
+import TaskMilestoneUpdating from "@/features/activities/TaskMilestoneUpdating";
+import MilestoneTitleUpdating from "@/features/activities/MilestoneTitleUpdating";
+import MilestoneDueDateUpdating from "@/features/activities/MilestoneDueDateUpdating";
+import MilestoneDescriptionUpdating from "@/features/activities/MilestoneDescriptionUpdating";
+import MilestoneDeleting from "@/features/activities/MilestoneDeleting";
 import ProjectGoalConnection from "@/features/activities/ProjectGoalConnection";
 import ProjectGoalDisconnection from "@/features/activities/ProjectGoalDisconnection";
 import ProjectKeyResourceAdded from "@/features/activities/ProjectKeyResourceAdded";
@@ -336,6 +348,12 @@ function handler(activity: Activity) {
     .with("task_deleting", () => TaskDeleting)
     .with("task_description_change", () => TaskDescriptionChange)
     .with("task_due_date_updating", () => TaskDueDateUpdating)
+    .with("task_assignee_updating", () => TaskAssigneeUpdating)
+    .with("task_milestone_updating", () => TaskMilestoneUpdating)
+    .with("milestone_title_updating", () => MilestoneTitleUpdating)
+    .with("milestone_due_date_updating", () => MilestoneDueDateUpdating)
+    .with("milestone_description_updating", () => MilestoneDescriptionUpdating)
+    .with("milestone_deleting", () => MilestoneDeleting)
     .with("project_champion_updating", () => ProjectChampionUpdating)
     .with("project_due_date_updating", () => ProjectDueDateUpdating)
     .with("project_reviewer_updating", () => ProjectReviewerUpdating)

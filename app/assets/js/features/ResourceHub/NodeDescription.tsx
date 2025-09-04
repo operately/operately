@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as Hub from "@/models/resourceHubs";
 
-import { richContentToString } from "@/components/RichContent";
 import { truncateString } from "@/utils/strings";
 import { assertPresent } from "@/utils/assertions";
 import { match } from "ts-pattern";
 
 import plurarize from "@/utils/plurarize";
 import { BulletDot, MDash } from "@/components/TextElements";
+import { richContentToString } from "turboui";
 
 interface NodeDescriptionProps {
   node: Hub.ResourceHubNode;

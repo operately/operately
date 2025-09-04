@@ -42,7 +42,7 @@ interface UseEditorProps {
   autoFocus?: boolean;
   tabindex?: string;
 
-  mentionedPersonLookup: MentionedPersonLookupFn;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
 }
@@ -55,7 +55,7 @@ export interface EditorState {
   uploading: boolean;
   linkEditActive: boolean;
   setLinkEditActive: (active: boolean) => void;
-  mentionedPersonLookup: MentionedPersonLookupFn;
+  mentionedPersonLookup?: MentionedPersonLookupFn;
   uploadFile: UploadFileFn;
   setContent: (content: any) => void;
   setFocused: (focused: boolean) => void;

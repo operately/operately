@@ -117,6 +117,28 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
       end
     end
 
+    tabletest @project_table do
+      test "project task - if caller has levels company=#{@test.company}, space=#{@test.space}, project=#{@test.project} on the project, then expect code=#{@test.expected}", ctx do
+        space = create_space(ctx)
+        project = create_project(ctx, space, @test.company, @test.space, @test.project)
+        task = create_task(ctx.creator, project)
+
+        assert {code, res} = mutation(ctx.conn, :create_comment, %{
+          entity_id: Paths.task_id(task),
+          entity_type: "project_task",
+          content: RichText.rich_text("Content", :as_string)
+        })
+
+        assert code == @test.expected
+
+        case @test.expected do
+          200 -> assert count_comments(task.id, :project_task) == 1
+          403 -> assert res.message == "You don't have permission to perform this action"
+          404 -> assert res.message == "The requested resource was not found"
+        end
+      end
+    end
+
     tabletest @space_table do
       test "resource hub document - if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
@@ -414,6 +436,10 @@ defmodule OperatelyWeb.Api.Mutations.CreateCommentTest do
 
   defp create_check_in(author, project) do
     check_in_fixture(%{author_id: author.id, project_id: project.id})
+  end
+
+  defp create_task(creator, project) do
+    Operately.TasksFixtures.task_fixture(%{creator_id: creator.id, project_id: project.id})
   end
 
   defp create_goal(ctx, space, company_members_level, space_members_level, goal_member_level) do
