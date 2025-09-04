@@ -3,48 +3,44 @@ defmodule Operately.Support.Features.UI.Emails do
 
   alias __MODULE__.SentEmail
   alias __MODULE__.SentEmails
-  
-  def clear_sent_emails do
-    # Flush all messages from the mailbox to start fresh
-    receive_all_and_discard()
-  end
-
-  # Helper to discard all messages in the mailbox
-  defp receive_all_and_discard do
-    receive do
-      _ -> receive_all_and_discard()
-    after
-      0 -> :ok
-    end
-  end
 
   def assert_email_sent(subject, receiver) do
-    {found, emails} = retry(times: 50, sleep: 200, fun: fn -> 
-      emails = list_sent_emails()
-      found = SentEmails.any?(emails, %{subject: subject, to: receiver})
+    {found, emails} =
+      retry(
+        times: 50,
+        sleep: 200,
+        fun: fn ->
+          emails = list_sent_emails()
+          found = SentEmails.any?(emails, %{subject: subject, to: receiver})
 
-      if found do
-        {:ok, {found, emails}}
-      else
-        {:error, {found, emails}}
-      end
-    end)
+          if found do
+            {:ok, {found, emails}}
+          else
+            {:error, {found, emails}}
+          end
+        end
+      )
 
     error = assert_email_error_message(emails, subject, receiver, "Expected email to be sent")
     assert found, error
   end
 
   def refute_email_sent(subject, receiver) do
-    {found, emails} = retry(times: 10, sleep: 200, fun: fn -> 
-      emails = list_sent_emails()
-      found = SentEmails.any?(emails, %{subject: subject, to: receiver})
+    {found, emails} =
+      retry(
+        times: 10,
+        sleep: 200,
+        fun: fn ->
+          emails = list_sent_emails()
+          found = SentEmails.any?(emails, %{subject: subject, to: receiver})
 
-      if !found do
-        {:ok, {found, emails}}
-      else
-        {:error, {found, emails}}
-      end
-    end)
+          if !found do
+            {:ok, {found, emails}}
+          else
+            {:error, {found, emails}}
+          end
+        end
+      )
 
     error = assert_email_error_message(emails, subject, receiver, "Expected email not to be sent")
     refute !found, error
@@ -53,19 +49,14 @@ defmodule Operately.Support.Features.UI.Emails do
   def list_sent_emails do
     # Swoosh Test adapter delivers emails to the test process mailbox
     # Let's receive all email messages from the mailbox
+
     emails = receive_all_emails([])
     emails |> SentEmails.new()
   end
 
-  # Recursively receive all email messages from the mailbox
   defp receive_all_emails(acc) do
     receive do
-      {:delivered_email, email} -> 
-        receive_all_emails([email | acc])
-      {ref, email} when is_reference(ref) and is_struct(email, Swoosh.Email) ->
-        receive_all_emails([email | acc])
-      email when is_struct(email, Swoosh.Email) ->
-        receive_all_emails([email | acc])
+      {:email, email} -> receive_all_emails([email | acc])
     after
       0 -> Enum.reverse(acc)
     end
@@ -81,11 +72,11 @@ defmodule Operately.Support.Features.UI.Emails do
 
   def find_link(email, text) do
     email.html
-    |> Floki.find("a[href]") 
+    |> Floki.find("a[href]")
     |> Enum.filter(fn el -> Floki.text(el) == text end)
     |> Floki.attribute("href")
     |> case do
-      [] -> 
+      [] ->
         raise "No links found in email with text: #{text}"
 
       links ->
@@ -107,7 +98,8 @@ defmodule Operately.Support.Features.UI.Emails do
 
   defp retry(times: times, sleep: sleep, fun: fun) do
     case fun.() do
-      {:ok, result} -> result
+      {:ok, result} ->
+        result
 
       {:error, _result} when times > 0 ->
         Process.sleep(sleep)
@@ -123,7 +115,7 @@ defmodule Operately.Support.Features.UI.Emails do
     emails = Enum.filter(emails, fn s -> email in s.to end)
 
     case emails do
-      [] -> 
+      [] ->
         if attempts == 0 do
           raise "#{email} did not receive an email"
         else
@@ -131,7 +123,8 @@ defmodule Operately.Support.Features.UI.Emails do
           wait_for_email_for(email, attempts: attempts - 1)
         end
 
-      _ -> emails
+      _ ->
+        emails
     end
   end
 
@@ -154,15 +147,19 @@ defmodule Operately.Support.Features.UI.Emails do
         address when is_binary(address) -> address
       end)
     end
+
     defp extract_addresses(to) when is_binary(to), do: [to]
     defp extract_addresses(%{address: address}), do: [address]
     defp extract_addresses({_name, address}), do: [address]
 
     def as_string(email) do
-      Enum.join([
-        "- Subject: #{inspect(email.subject)}",
-        "  To: #{Enum.join(email.to, ", ")}",
-      ], "\n")
+      Enum.join(
+        [
+          "- Subject: #{inspect(email.subject)}",
+          "  To: #{Enum.join(email.to, ", ")}"
+        ],
+        "\n"
+      )
     end
 
     def matches?(email, %{subject: subject, to: to}) do
@@ -183,5 +180,4 @@ defmodule Operately.Support.Features.UI.Emails do
       Enum.any?(emails, fn email -> SentEmail.matches?(email, %{subject: subject, to: to}) end)
     end
   end
-
 end

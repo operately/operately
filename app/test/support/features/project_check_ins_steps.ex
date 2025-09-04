@@ -9,11 +9,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   @status_to_on_screen %{
     "on_track" => "On Track",
     "caution" => "Caution",
-    "issue" => "Issue",
+    "issue" => "Issue"
   }
 
   step :given_a_project_exists, ctx do
-    has_reviewer = Map.get(ctx, :has_reviewer, true) # set @tag has_reviewer: false to not add a reviewer
+    # set @tag has_reviewer: false to not add a reviewer
+    has_reviewer = Map.get(ctx, :has_reviewer, true)
 
     ctx
     |> Factory.setup()
@@ -37,10 +38,6 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :submit_check_in, ctx, %{status: status, description: description} do
-    # Clear any emails from setup (like contributor addition emails)
-    # to ensure we only check emails from the check-in submission
-    UI.Emails.clear_sent_emails()
-    
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "check-in-now")
@@ -87,11 +84,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :assert_email_sent_to_reviewer, ctx, %{status: _status, description: _description} do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "submitted a check-in",
-      author: ctx.champion,
+      author: ctx.champion
     })
   end
 
@@ -101,7 +99,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "submitted a check-in",
+      action: "submitted a check-in"
     })
   end
 
@@ -115,7 +113,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   step :acknowledge_check_in, ctx do
     ctx
     |> UI.click(testid: "acknowledge-check-in")
-    |> UI.sleep(300) # Wait for the check-in to be acknowledged
+    # Wait for the check-in to be acknowledged
+    |> UI.sleep(300)
   end
 
   step :assert_check_in_acknowledged, ctx, %{status: _status, description: _description} do
@@ -131,7 +130,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       where: ctx.project.name,
       to: ctx.champion,
       action: "acknowledged your check-in",
-      author: ctx.reviewer,
+      author: ctx.reviewer
     })
   end
 
@@ -142,7 +141,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       where: ctx.project.name,
       to: ctx.champion,
       action: "acknowledged your check-in",
-      author: ctx.reviewer,
+      author: ctx.reviewer
     })
   end
 
@@ -169,7 +168,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.click(testid: "add-comment")
     |> UI.fill_rich_text("This is a comment.")
     |> UI.click(testid: "post-comment")
-    |> UI.sleep(300) # Wait for the comment to be posted
+    # Wait for the comment to be posted
+    |> UI.sleep(300)
   end
 
   step :assert_comment_on_check_in_received_in_notifications, ctx do
@@ -179,16 +179,17 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       where: ctx.project.name,
       action: "commented on the project check-in",
-      author: ctx.reviewer,
+      author: ctx.reviewer
     })
   end
 
   step :assert_comment_on_check_in_received_in_email, ctx do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.champion,
       action: "commented on a check-in",
-      author: ctx.reviewer,
+      author: ctx.reviewer
     })
   end
 
@@ -204,13 +205,12 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :assert_email_is_sent_to_contributors, ctx do
-    ctx 
+    ctx
     |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.developer,
       author: ctx.champion,
-      action: "submitted a check-in",
+      action: "submitted a check-in"
     })
   end
-
 end
