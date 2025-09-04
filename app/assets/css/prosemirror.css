@@ -53,7 +53,6 @@
   padding-left: 1.5em;
   list-style: unset;
   margin: 0.5em 0;
-  transition: margin 0.1s ease;
 }
 
 .ProseMirror ol {
@@ -61,7 +60,6 @@
   padding-left: 1.5em;
   list-style: auto;
   margin: 0.5em 0;
-  transition: margin 0.1s ease;
 }
 
 .ProseMirror li {
