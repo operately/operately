@@ -4,6 +4,7 @@ import { Paths } from "@/routes/paths";
 import { parseMilestoneForTurboUi } from "../milestones";
 import { Status } from "turboui/src/TaskBoard/types";
 import { parseContent, richContentToString } from "turboui/RichContent";
+import { TaskBoard } from "turboui";
 
 export type { Task, EditMilestoneOrderingStateInput } from "@/api";
 export { useTasksForTurboUi } from "./useTasksForTurboUi";
@@ -25,11 +26,11 @@ export {
  * @param tasks - Array of backend Task objects
  * @returns Array of TurboUI Task objects
  */
-export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[]) {
+export function parseTasksForTurboUi(paths: Paths, tasks: BackendTask[]): TaskBoard.Task[] {
   return tasks.map((task) => parseTaskForTurboUi(paths, task));
 }
 
-export function parseTaskForTurboUi(paths: Paths, task: BackendTask) {
+export function parseTaskForTurboUi(paths: Paths, task: BackendTask): TaskBoard.Task {
   const description = parseContent(task.description || "{}");
 
   return {
