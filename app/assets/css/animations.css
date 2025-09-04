@@ -39,11 +39,15 @@
 
 @keyframes pulse {
   0% {
-    transform: scale(1);
+    opacity: 0.3;
+  }
+
+  50% {
+    opacity: 1;
   }
 
   100% {
-    transform: scale(0.01);
+    opacity: 0.3;
   }
 }
 
@@ -66,7 +70,7 @@
 }
 
 .animate-pulse {
-  animation: pulse 0.3s linear infinite;
+  animation: pulse 1.5s linear infinite;
 }
 
 .animate-shake:nth-child(2n) {
