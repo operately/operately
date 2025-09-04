@@ -5,61 +5,26 @@ defmodule Operately.Support.Features.UI.Emails do
   alias __MODULE__.SentEmails
 
   def assert_email_sent(subject, receiver) do
-    {found, emails} =
-      retry(
-        times: 50,
-        sleep: 200,
-        fun: fn ->
-          emails = list_sent_emails()
-          found = SentEmails.any?(emails, %{subject: subject, to: receiver})
-
-          if found do
-            {:ok, {found, emails}}
-          else
-            {:error, {found, emails}}
-          end
-        end
-      )
+    {found, emails} = wait_for_emails(subject, receiver)
 
     error = assert_email_error_message(emails, subject, receiver, "Expected email to be sent")
     assert found, error
   end
 
   def refute_email_sent(subject, receiver) do
-    {found, emails} =
-      retry(
-        times: 10,
-        sleep: 200,
-        fun: fn ->
-          emails = list_sent_emails()
-          found = SentEmails.any?(emails, %{subject: subject, to: receiver})
-
-          if !found do
-            {:ok, {found, emails}}
-          else
-            {:error, {found, emails}}
-          end
-        end
-      )
+    {found, emails} = wait_for_emails(subject, receiver)
 
     error = assert_email_error_message(emails, subject, receiver, "Expected email not to be sent")
     refute !found, error
   end
 
   def list_sent_emails do
-    # Swoosh Test adapter delivers emails to the test process mailbox
-    # Let's receive all email messages from the mailbox
+    {:messages, messages} = Process.info(self(), :messages)
 
-    emails = receive_all_emails([])
-    emails |> SentEmails.new()
-  end
-
-  defp receive_all_emails(acc) do
-    receive do
-      {:email, email} -> receive_all_emails([email | acc])
-    after
-      0 -> Enum.reverse(acc)
-    end
+    messages
+    |> Enum.filter(fn m -> match?({:email, _}, m) end)
+    |> Enum.map(fn {:email, email} -> email end)
+    |> SentEmails.new()
   end
 
   def last_sent_email() do
@@ -165,6 +130,23 @@ defmodule Operately.Support.Features.UI.Emails do
     def matches?(email, %{subject: subject, to: to}) do
       email.subject == subject && Enum.any?(email.to, fn t -> t == to end)
     end
+  end
+
+  defp wait_for_emails(subject, receiver) do
+    retry(
+      times: 50,
+      sleep: 200,
+      fun: fn ->
+        emails = list_sent_emails()
+        found = SentEmails.any?(emails, %{subject: subject, to: receiver})
+
+        if found do
+          {:ok, {found, emails}}
+        else
+          {:error, {found, emails}}
+        end
+      end
+    )
   end
 
   defmodule SentEmails do
