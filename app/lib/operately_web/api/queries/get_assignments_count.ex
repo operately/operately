@@ -24,8 +24,5 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCount do
     length(my_assignments)
   end
 
-  # Note: Previous implementation used individual count functions for each assignment type,
-  # but this has been replaced with using Assignments.Loader directly to ensure consistency
-  # with GetAssignments and prevent the notification badge count from diverging from the
-  # actual displayed items.
+
 end
