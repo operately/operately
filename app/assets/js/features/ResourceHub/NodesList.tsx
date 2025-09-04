@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 
 import * as Hub from "@/models/resourceHubs";
 
@@ -12,12 +12,14 @@ import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 import { NodeDescription } from "./NodeDescription";
 import { NodeIcon } from "./NodeIcon";
-import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst } from "./utils";
+import { SortControl } from "./SortControl";
+import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst, SortBy } from "./utils";
 
 export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
+  const [sortBy, setSortBy] = useState<SortBy>("updatedAt");
 
-  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!), [props.nodes]);
+  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!, sortBy, "desc"), [props.nodes, sortBy]);
 
   if (props.nodes.length < 1) {
     if (filesSelected) return <></>;
@@ -28,6 +30,9 @@ export function NodesList(props: NodesProps) {
   return (
     <NodesProvider {...props}>
       <div className="md:m-6">
+        <div className="flex justify-end mb-4">
+          <SortControl sortBy={sortBy} onSortChange={setSortBy} />
+        </div>
         {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}
