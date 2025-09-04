@@ -28,6 +28,13 @@ export function useLoadedData() {
 
 export function useBindedPeopleList(): { people: People.Person[] | undefined; loading: boolean } {
   const { space } = useLoadedData();
+  
+  // For company spaces (General space), there should be no "Other People"
+  // All company members should be explicit members
+  if (space.isCompanySpace) {
+    return { people: [], loading: false };
+  }
+  
   const { data, loading } = useGetBindedPeople({ resourseType: "space", resourseId: space.id! });
   if (loading) return { people: undefined, loading: true };
 
