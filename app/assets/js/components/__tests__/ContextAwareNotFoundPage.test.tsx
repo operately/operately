@@ -1,5 +1,10 @@
 import { render, screen } from "@testing-library/react";
-import { SimpleNotFoundPage } from "../SimpleNotFoundPage";
+import { ContextAwareNotFoundPage } from "../ContextAwareNotFoundPage";
+
+// Mock the useHomePath hook
+jest.mock("@/hooks/useHomePath", () => ({
+  useHomePath: () => "/",
+}));
 
 // Mock turboui
 jest.mock("turboui", () => ({
@@ -10,9 +15,9 @@ jest.mock("turboui", () => ({
   ),
 }));
 
-describe("SimpleNotFoundPage", () => {
-  it("should render 404 page with link to root path", () => {
-    render(<SimpleNotFoundPage />);
+describe("ContextAwareNotFoundPage", () => {
+  it("should render 404 page with link to home path", () => {
+    render(<ContextAwareNotFoundPage />);
 
     // Check for 404 text
     expect(screen.getByText("404")).toBeInTheDocument();

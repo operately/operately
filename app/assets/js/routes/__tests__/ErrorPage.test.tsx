@@ -2,24 +2,14 @@ import { render, screen } from "@testing-library/react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "../ErrorPage";
 
-// Mock the SimpleNotFoundPage component since it uses external dependencies
-jest.mock("@/components/SimpleNotFoundPage", () => ({
-  SimpleNotFoundPage: () => <div data-testid="simple-not-found">Simple 404 Page</div>,
+// Mock the ContextAwareNotFoundPage component
+jest.mock("@/components/ContextAwareNotFoundPage", () => ({
+  ContextAwareNotFoundPage: () => <div data-testid="context-aware-not-found">Context Aware 404 Page</div>,
 }));
 
-// Mock the NotFoundPage component
-jest.mock("@/pages/NotFoundPage", () => ({
-  __esModule: true,
-  default: {
-    Page: () => <div data-testid="company-not-found">Company 404 Page</div>,
-  },
-}));
-
-// Mock the usePaths hook
-jest.mock("@/routes/paths", () => ({
-  usePaths: () => ({
-    homePath: () => "/test-company/home",
-  }),
+// Mock the useHomePath hook
+jest.mock("@/hooks/useHomePath", () => ({
+  useHomePath: () => "/",
 }));
 
 // Mock Sentry
@@ -36,17 +26,16 @@ jest.mock("turboui", () => ({
   ),
 }));
 
-// Mock useRouteLoaderData to simulate different contexts
-const mockUseRouteLoaderData = jest.fn();
+// Mock useRouteError to control what error is returned
+const mockUseRouteError = jest.fn();
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useRouteLoaderData: () => mockUseRouteLoaderData(),
-  useRouteError: () => ({ status: 404 }),
+  useRouteError: () => mockUseRouteError(),
 }));
 
 describe("ErrorPage", () => {
   beforeEach(() => {
-    mockUseRouteLoaderData.mockClear();
+    mockUseRouteError.mockClear();
     
     // Mock window.appConfig for StackTrace component
     Object.defineProperty(window, "appConfig", {
@@ -55,9 +44,9 @@ describe("ErrorPage", () => {
     });
   });
 
-  it("should render SimpleNotFoundPage when not in company context", () => {
-    // Mock being outside company context (no data)
-    mockUseRouteLoaderData.mockReturnValue(null);
+  it("should render ContextAwareNotFoundPage for 404 errors", () => {
+    // Mock 404 error
+    mockUseRouteError.mockReturnValue({ status: 404 });
 
     const router = createBrowserRouter([
       {
@@ -69,13 +58,13 @@ describe("ErrorPage", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByTestId("simple-not-found")).toBeInTheDocument();
-    expect(screen.getByText("Simple 404 Page")).toBeInTheDocument();
+    expect(screen.getByTestId("context-aware-not-found")).toBeInTheDocument();
+    expect(screen.getByText("Context Aware 404 Page")).toBeInTheDocument();
   });
 
-  it("should render SimpleNotFoundPage when company data is missing", () => {
-    // Mock being in company context but no company data
-    mockUseRouteLoaderData.mockReturnValue({ company: null });
+  it("should render ServerErrorPage for non-404 errors", () => {
+    // Mock 500 error
+    mockUseRouteError.mockReturnValue({ status: 500, stack: "Error stack trace" });
 
     const router = createBrowserRouter([
       {
@@ -87,25 +76,13 @@ describe("ErrorPage", () => {
 
     render(<RouterProvider router={router} />);
 
-    expect(screen.getByTestId("simple-not-found")).toBeInTheDocument();
-    expect(screen.getByText("Simple 404 Page")).toBeInTheDocument();
-  });
-
-  it("should render company NotFoundPage when in valid company context", () => {
-    // Mock being in valid company context
-    mockUseRouteLoaderData.mockReturnValue({ company: { id: "test-company" } });
-
-    const router = createBrowserRouter([
-      {
-        path: "/",
-        element: <div>Home</div>,
-        errorElement: <ErrorPage />,
-      },
-    ]);
-
-    render(<RouterProvider router={router} />);
-
-    expect(screen.getByTestId("company-not-found")).toBeInTheDocument();
-    expect(screen.getByText("Company 404 Page")).toBeInTheDocument();
+    expect(screen.getByText("500")).toBeInTheDocument();
+    expect(screen.getByText("Oops! Something went wrong.")).toBeInTheDocument();
+    expect(screen.getByText("An unexpected error has occurred.")).toBeInTheDocument();
+    
+    // Check for home link
+    const homeLink = screen.getByTestId("back-to-lobby");
+    expect(homeLink).toBeInTheDocument();
+    expect(homeLink).toHaveAttribute("href", "/");
   });
 });
