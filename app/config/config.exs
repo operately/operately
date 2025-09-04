@@ -77,6 +77,16 @@ config :operately, Oban,
     mailer: 10
   ]
 
+config :sentry,
+  dsn: {System, :get_env, ["SENTRY_DSN"]},
+  environment_name: Mix.env(),
+  enable_source_code_context: true,
+  root_source_code_path: File.cwd!(),
+  tags: %{
+    env: "#{Mix.env()}"
+  },
+  included_environments: [:dev, :prod]
+  
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
