@@ -22,7 +22,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   end
 
   defp create_new_account(attrs) do
-    Account.create(attrs[:name], attrs[:email], random_password())
+    Account.create(attrs[:name], attrs[:email], random_password(), attrs[:image])
   end
 
   #
@@ -31,7 +31,7 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
 
   defp first_succesfull([strategy | rest], params, on_not_found: on_not_found) do
     case strategy.(params) do
-      {:ok, result} ->     {:ok, result}
+      {:ok, result} -> {:ok, result}
       {:error, _reason} -> first_succesfull(rest, params, on_not_found: on_not_found)
     end
   end
@@ -49,13 +49,17 @@ defmodule Operately.People.FetchOrCreateAccountOperation do
   defp update_avatar(account, image) do
     people = Operately.Repo.preload(account, :people).people
 
+    # Update all associated person records
     Enum.each(people, fn person ->
       if person.avatar_url != image do
         {:ok, _} = Operately.People.update_person(person, %{avatar_url: image})
       end
     end)
 
-    {:ok, account}
+    if account.avatar_url != image do
+      Operately.Repo.update(Ecto.Changeset.change(account, avatar_url: image))
+    else
+      {:ok, account}
+    end
   end
-
 end

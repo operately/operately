@@ -122,12 +122,14 @@ defmodule Operately.Operations.CompanyAdding do
     multi
     |> Multi.run(:company_space, fn _, changes -> {:ok, changes.group} end)
     |> Operately.People.insert_person(fn changes ->
+      avatar_url = changes[:account].avatar_url || ""
+      
       Person.changeset(%{
         company_id: changes[:company].id,
         account_id: changes[:account].id,
         full_name: changes[:account].full_name,
         email: changes[:account].email,
-        avatar_url: "",
+        avatar_url: avatar_url,
         title: attrs.title,
       })
     end)

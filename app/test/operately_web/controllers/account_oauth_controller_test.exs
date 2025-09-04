@@ -27,6 +27,41 @@ defmodule OperatelyWeb.AccountOauthControllerTest do
       assert Operately.People.get_account_by_email("john@example.localhost")
     end
 
+    test "creating a new account with Google OAuth preserves avatar image", ctx do
+      # This test simulates the full flow: OAuth login -> company creation
+      # to ensure that the avatar from Google is preserved throughout
+      
+      conn = Plug.Conn.assign(ctx.conn, :ueberauth_auth, %{
+        info: %{
+          email: "jane@example.localhost",
+          image: "http://example.com/google-avatar.png",
+          name: "Jane Smith"
+        }
+      })
+
+      # First, authenticate with Google OAuth
+      conn = get(conn, "/accounts/auth/google/callback", %{"provider" => "google"})
+      assert conn.status == 302
+
+      # Verify account was created with avatar URL
+      account = Operately.People.get_account_by_email("jane@example.localhost")
+      assert account
+      assert account.full_name == "Jane Smith"
+      assert account.avatar_url == "http://example.com/google-avatar.png"
+
+      # Now create a company (this is when person record gets created)
+      {:ok, company} = Operately.Operations.CompanyAdding.run(%{
+        company_name: "Jane's Company", 
+        title: "CEO"
+      }, account)
+
+      # Get the person that was created
+      person = Operately.People.get_person!(account, company)
+      
+      # Verify the avatar was carried over to the person record
+      assert person.avatar_url == "http://example.com/google-avatar.png"
+    end
+
     test "when a person with the given email exists in the company", ctx do
       assert Operately.Repo.aggregate(Operately.People.Person, :count, :id) == 1 # company creator
 
