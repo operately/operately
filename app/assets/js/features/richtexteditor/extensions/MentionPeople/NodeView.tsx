@@ -50,5 +50,5 @@ function getFontSize(element: HTMLElement): number {
   const style = window.getComputedStyle(element, null);
   const fontSize = parseFloat(style.getPropertyValue("font-size"));
 
-  return fontSize;
+  return fontSize + 3;
 }
