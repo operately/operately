@@ -68,9 +68,6 @@ config :operately, OperatelyWeb.Endpoint,
 # Enable dev routes for dashboard and mailbox
 config :operately, dev_routes: true
 
-# Configure Swoosh mailer for development
-config :operately, Operately.Mailer, adapter: Swoosh.Adapters.Local
-
 # Do not include metadata nor timestamps in development logs
 config :logger, :console, format: "$time [$level] $message\n", level: :info
 
@@ -80,9 +77,6 @@ config :phoenix, :stacktrace_depth, 20
 
 # Initialize plugs at runtime for faster development compilation
 config :phoenix, :plug_init_mode, :runtime
-
-# Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
 
 config :operately, :start_query_counter, true
 
