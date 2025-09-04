@@ -3824,13 +3824,13 @@ export interface ProjectTasksUpdateDueDateResult {
   task: Task;
 }
 
-export interface ProjectTasksUpdateMilestoneInput {
+export interface ProjectTasksUpdateMilestoneAndOrderingInput {
   taskId: Id;
   milestoneId: Id | null;
   milestonesOrderingState: EditMilestoneOrderingStateInput[];
 }
 
-export interface ProjectTasksUpdateMilestoneResult {
+export interface ProjectTasksUpdateMilestoneAndOrderingResult {
   task: Task;
   updatedMilestones: Milestone[];
 }
@@ -4803,8 +4803,10 @@ class ApiNamespaceProjectTasks {
     return this.client.post("/project_tasks/update_due_date", input);
   }
 
-  async updateMilestone(input: ProjectTasksUpdateMilestoneInput): Promise<ProjectTasksUpdateMilestoneResult> {
-    return this.client.post("/project_tasks/update_milestone", input);
+  async updateMilestoneAndOrdering(
+    input: ProjectTasksUpdateMilestoneAndOrderingInput,
+  ): Promise<ProjectTasksUpdateMilestoneAndOrderingResult> {
+    return this.client.post("/project_tasks/update_milestone_and_ordering", input);
   }
 
   async updateName(input: ProjectTasksUpdateNameInput): Promise<ProjectTasksUpdateNameResult> {
@@ -7419,13 +7421,6 @@ export default {
         defaultApiClient.apiNamespaceProjectTasks.updateDueDate,
       ),
 
-    updateMilestone: (input: ProjectTasksUpdateMilestoneInput) =>
-      defaultApiClient.apiNamespaceProjectTasks.updateMilestone(input),
-    useUpdateMilestone: () =>
-      useMutation<ProjectTasksUpdateMilestoneInput, ProjectTasksUpdateMilestoneResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateMilestone,
-      ),
-
     updateName: (input: ProjectTasksUpdateNameInput) => defaultApiClient.apiNamespaceProjectTasks.updateName(input),
     useUpdateName: () =>
       useMutation<ProjectTasksUpdateNameInput, ProjectTasksUpdateNameResult>(
@@ -7441,6 +7436,13 @@ export default {
     useUpdateDescription: () =>
       useMutation<ProjectTasksUpdateDescriptionInput, ProjectTasksUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceProjectTasks.updateDescription,
+      ),
+
+    updateMilestoneAndOrdering: (input: ProjectTasksUpdateMilestoneAndOrderingInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering(input),
+    useUpdateMilestoneAndOrdering: () =>
+      useMutation<ProjectTasksUpdateMilestoneAndOrderingInput, ProjectTasksUpdateMilestoneAndOrderingResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering,
       ),
 
     updateAssignee: (input: ProjectTasksUpdateAssigneeInput) =>

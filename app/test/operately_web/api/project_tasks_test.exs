@@ -584,13 +584,13 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task milestone" do
     test "it requires authentication", ctx do
-      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{})
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{})
     end
 
     test "it requires a task_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         milestone_id: Paths.milestone_id(ctx.milestone),
         milestones_ordering_state: []
       })
@@ -605,7 +605,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Moving task from milestone to milestone2, updating ordering for both
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -637,7 +637,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_task(:task2, :milestone)
         |> Factory.log_in_person(:creator)
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: nil,
         milestones_ordering_state: [
@@ -664,7 +664,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       before_count = count_activities(ctx.project.id, "task_milestone_updating")
 
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -690,7 +690,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.add_project_milestone(:milestone2, :project2)
         |> Factory.log_in_person(:creator)
 
-      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -712,7 +712,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Task stays in same milestone, but ordering changes
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
         milestones_ordering_state: [
@@ -741,7 +741,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Task moves from milestone to milestone2, affecting both ordering states
-      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -777,7 +777,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Move task to another milestone and include all tasks in the ordering state
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone2),
         milestones_ordering_state: [
@@ -819,7 +819,7 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         |> Factory.log_in_person(:creator)
 
       # Try to include a task from milestone2 in milestone's ordering state
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
         task_id: Paths.task_id(ctx.task),
         milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
         milestones_ordering_state: [

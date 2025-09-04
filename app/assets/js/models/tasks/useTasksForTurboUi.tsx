@@ -277,7 +277,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         });
       }
 
-      const res = await Api.project_tasks.updateMilestone({
+      const res = await Api.project_tasks.updateMilestoneAndOrdering({
         taskId,
         milestoneId: normalizedMilestoneId,
         milestonesOrderingState,

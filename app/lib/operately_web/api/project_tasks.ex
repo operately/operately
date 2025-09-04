@@ -271,7 +271,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
   end
 
-  defmodule UpdateMilestone do
+  defmodule UpdateMilestoneAndOrdering do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
 
