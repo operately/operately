@@ -89,4 +89,39 @@ defmodule OperatelyWeb.Api.Mutations.ResumeProjectTest do
     
     project
   end
+
+  describe "resume project with message" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+      creator = person_fixture(%{company_id: ctx.company.id})
+      space = group_fixture(creator, %{company_id: ctx.company.id})
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: creator.id,
+        group_id: space.id,
+        status: "paused"
+      })
+      Map.merge(ctx, %{creator: creator, space: space, project: project})
+    end
+
+    test "can resume project with a message", ctx do
+      message = "Resuming project after vacation break"
+      
+      assert {200, res} = mutation(ctx.conn, :resume_project, %{
+        project_id: Paths.project_id(ctx.project),
+        message: message
+      })
+
+      # The project should be resumed
+      project = Operately.Repo.reload(ctx.project)
+      assert project.status == "active"
+      
+      # Check that an activity was created with the message
+      activity = Operately.Activities.list_activities()
+                 |> Enum.find(&(&1.action == :project_resuming))
+      
+      assert activity != nil
+      assert activity.content["message"] == message
+    end
+  end
 end 
