@@ -296,5 +296,47 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     }
   };
 
-  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone };
+  const deleteTask = async (taskId: string) => {
+    const snapshot = createSnapshot();
+    const taskToDelete = tasks.find(t => compareIds(t.id, taskId));
+
+    if (!taskToDelete) {
+      console.error("Task not found", taskId);
+      showErrorToast("Error", "Something went wrong");
+      return { success: false };
+    }
+
+    // Optimistic update - remove task
+    setTasks(prev => prev.filter(t => !compareIds(t.id, taskId)));
+
+    // Optimistic update - remove from milestone ordering
+    if (taskToDelete.milestone && setMilestones) {
+      setMilestones(prev => prev.map(m => {
+        if (compareIds(m.id, taskToDelete.milestone!.id)) {
+          return {
+            ...m,
+            tasksOrderingState: m.tasksOrderingState ? m.tasksOrderingState.filter(id => !compareIds(id, taskId)) : []
+          };
+        }
+        return m;
+      }));
+    }
+
+    try {
+      const response = await Api.project_tasks.delete({ taskId });
+
+      updateMilestonesFromServer(response.updatedMilestone, null);
+
+      PageCache.invalidate(cacheKey);
+      return { success: true };
+
+    } catch (e) {
+      console.error("Failed to delete task", e);
+      showErrorToast("Error", "Failed to delete task");
+      restoreSnapshot(snapshot);
+      return { success: false };
+    }
+  };
+
+  return { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone, deleteTask };
 }
