@@ -103,6 +103,7 @@ defmodule OperatelyWeb.Api do
     mutation(:update_due_date, OperatelyWeb.Api.ProjectTasks.UpdateDueDate)
     mutation(:update_assignee, OperatelyWeb.Api.ProjectTasks.UpdateAssignee)
     mutation(:update_milestone, OperatelyWeb.Api.ProjectTasks.UpdateMilestone)
+    mutation(:update_milestone_and_ordering, OperatelyWeb.Api.ProjectTasks.UpdateMilestoneAndOrdering)
     mutation(:update_description, OperatelyWeb.Api.ProjectTasks.UpdateDescription)
   end
 
