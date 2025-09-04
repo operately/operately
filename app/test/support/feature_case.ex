@@ -5,7 +5,6 @@ defmodule Operately.FeatureCase do
     quote do
       use ExUnit.Case, async: false
       use Wallaby.Feature
-      use Bamboo.Test, shared: true
 
       import Operately.FeatureSteps
 
@@ -17,6 +16,9 @@ defmodule Operately.FeatureCase do
       import Wallaby.Browser, except: [assert_text: 2, click: 2, fill: 2, find: 2, visit: 1]
 
       import Operately.FeatureCase
+      import Swoosh.TestAssertions
+
+      setup :set_swoosh_global
 
       setup data do
         Wallaby.Browser.resize_window(data.session, 1920, 2000)
