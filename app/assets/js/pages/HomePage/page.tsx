@@ -57,10 +57,54 @@ function ActivityFeed() {
   const { company } = useLoadedData();
   const { data, loading, error } = useItemsQuery("company", company.id!);
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <ActivityFeedSkeleton />;
   if (error) return <div>Error</div>;
 
   return <Feed items={data!.activities!} testId="company-feed" page="company" hideTopBorder paddedGroups />;
+}
+
+function ActivityFeedSkeleton() {
+  return (
+    <div className="w-full p-8">
+      {/* Simulate 2 activity groups */}
+      <ActivityGroupSkeleton />
+      <ActivityGroupSkeleton />
+    </div>
+  );
+}
+
+function ActivityGroupSkeleton() {
+  return (
+    <div className="w-full border-t border-stroke-base flex flex-col sm:flex-row items-start gap-2 py-4">
+      {/* Date section skeleton */}
+      <div className="w-1/5 shrink-0 mb-2">
+        <div className="h-4 bg-surface-dimmed rounded animate-pulse mb-1"></div>
+        <div className="h-3 bg-surface-dimmed rounded animate-pulse w-3/4"></div>
+      </div>
+      
+      {/* Activity items skeleton */}
+      <div className="flex-1 flex flex-col gap-4">
+        <ActivityItemSkeleton />
+        <ActivityItemSkeleton />
+        <ActivityItemSkeleton />
+      </div>
+    </div>
+  );
+}
+
+function ActivityItemSkeleton() {
+  return (
+    <div className="flex flex-1 gap-3">
+      {/* Avatar skeleton */}
+      <div className="w-8 h-8 bg-surface-dimmed rounded-full animate-pulse"></div>
+      
+      {/* Content skeleton */}
+      <div className="w-full break-words -mt-0.5">
+        <div className="h-4 bg-surface-dimmed rounded animate-pulse mb-1 w-3/4"></div>
+        <div className="h-3 bg-surface-dimmed rounded animate-pulse w-1/2"></div>
+      </div>
+    </div>
+  );
 }
 
 function AddSpaceButton() {
