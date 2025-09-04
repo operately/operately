@@ -1,4 +1,3 @@
-import NotFoundPage from "@/pages/NotFoundPage";
 import * as React from "react";
 
 import { captureException } from "@sentry/react";
@@ -6,20 +5,22 @@ import { AxiosError } from "axios";
 import { useRouteError } from "react-router-dom";
 import { GhostButton } from "turboui";
 
-import { usePaths } from "@/routes/paths";
+import { useHomePath } from "@/hooks/useHomePath";
+import { ContextAwareNotFoundPage } from "@/components/ContextAwareNotFoundPage";
+
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
 
   if (error && error["status"] === 404) {
-    return <NotFoundPage.Page />;
+    return <ContextAwareNotFoundPage />;
   } else {
     return <ServerErrorPage />;
   }
 }
 
 function ServerErrorPage() {
-  const paths = usePaths();
   const error = useRouteError() as AxiosError | null;
+  const homePath = useHomePath();
 
   React.useEffect(() => {
     console.error(error);
@@ -36,7 +37,7 @@ function ServerErrorPage() {
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
         <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo={paths.homePath()} testId="back-to-lobby">
+          <GhostButton linkTo={homePath} testId="back-to-lobby">
             Go back to Home
           </GhostButton>
         </div>
