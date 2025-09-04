@@ -2,7 +2,7 @@ import * as api from "@/api";
 
 export type Reaction = api.Reaction;
 
-export { useAddReaction } from "@/api";
+export { useAddReaction, useRemoveReaction } from "@/api";
 
 type EntityType =
   | "project_check_in"
