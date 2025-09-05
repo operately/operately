@@ -20,7 +20,6 @@ import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectV2Page";
 import { parseSpaceForTurboUI } from "@/models/spaces";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useComments } from "./useComments";
 
@@ -35,9 +34,6 @@ type LoaderResult = {
 };
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
-  await redirectIfFeatureNotEnabled(params, { feature: "task_v2", path: paths.taskPath(params.id) });
-
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
@@ -172,7 +168,7 @@ function Page() {
   // Prepare TaskPage props
   const props: TaskPage.Props = {
     projectName,
-    projectLink: paths.projectV2Path(task.project.id),
+    projectLink: paths.projectPath(task.project.id),
     projectStatus: task.project.status,
     workmapLink,
     tasksCount,

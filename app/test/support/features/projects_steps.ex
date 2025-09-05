@@ -538,7 +538,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> Factory.add_project(:project, :product, name: "Project alpha")
     |> Factory.log_in_person(:creator)
     |> then(fn ctx ->
-      UI.visit(ctx, Paths.project_v2_path(ctx.company, ctx.project))
+      UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
     end)
   end
 

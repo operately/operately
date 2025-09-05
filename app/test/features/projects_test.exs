@@ -76,8 +76,7 @@ defmodule Operately.Features.ProjectsTest do
 
     feature "changing project name", ctx do
       ctx
-      |> Factory.enable_feature("project_v2")
-      |> UI.visit(Paths.project_v2_path(ctx.company, ctx.project))
+      |> UI.visit(Paths.project_path(ctx.company, ctx.project))
       |> Steps.change_project_name()
       |> Steps.assert_project_name_changed()
       |> Steps.assert_project_name_changed_feed_posted()

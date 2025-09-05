@@ -120,7 +120,6 @@ export namespace ProjectPage {
     onProjectDelete: () => void;
 
     // TaskBoard props
-    tasksEnabled?: boolean;
     tasks: TaskBoardTypes.Task[];
     milestones: Milestone[];
     onTaskCreate: (task: NewTaskPayload) => void;
@@ -190,7 +189,6 @@ export function ProjectPage(props: ProjectPage.Props) {
       label: "Tasks",
       icon: <IconListCheck size={14} />,
       count: openTasksCount,
-      hidden: !state.tasksEnabled,
     },
     { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
     { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
