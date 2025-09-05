@@ -133,9 +133,20 @@ export const Default: Story = {
     };
 
     // Handler for reordering tasks
-    const handleTaskReorder = (reorderedTasks: Types.Task[]) => {
-      console.log("Tasks reordered:", reorderedTasks);
-      setTasks(reorderedTasks);
+    const handleTaskReorder = (taskId: string, milestoneId: string | null, index: number) => {
+      console.log("Task reordered:", { taskId, milestoneId, index });
+
+      // Find the task to move
+      const taskToMove = tasks.find(t => t.id === taskId);
+      if (!taskToMove) return;
+
+      // Remove the task from its current position
+      const newTasks = tasks.filter(t => t.id !== taskId);
+      
+      // Insert the task at the new position
+      newTasks.splice(index, 0, taskToMove);
+      
+      setTasks(newTasks);
     };
 
 
