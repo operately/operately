@@ -18,7 +18,7 @@ import {
 } from "@/models/goals";
 import { PageCache } from "@/routes/PageCache";
 import { useNavigate } from "react-router-dom";
-import { GoalPage, showErrorToast } from "turboui";
+import { GoalPage, showErrorToast, showSuccessToast } from "turboui";
 import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
@@ -139,6 +139,7 @@ function Page() {
     value: (data) => parseParentGoalForTurboUi(paths, data.goal.parentGoal),
     update: (v) => Api.goals.updateParentGoal({ goalId: goal.id!, parentGoalId: v && v.id }),
     onError: () => showErrorToast("Network Error", "Reverted the parent goal to its previous value."),
+    onSuccess: () => showSuccessToast("Parent Goal Updated", "The parent goal has been successfully changed."),
   });
 
   const championSearch = People.usePersonFieldSearch({
@@ -378,10 +379,11 @@ interface usePageFieldProps<T> {
   value: (LoaderResult) => T;
   update: (newValue: T) => Promise<{ success?: boolean | null } | boolean | null | undefined>;
   onError?: (error: any) => void;
+  onSuccess?: () => void;
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
+function usePageField<T>({ value, update, onError, onSuccess, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -414,6 +416,7 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
 
     const successHandler = () => {
       PageCache.invalidate(pageCacheKey(data.goal.id!));
+      onSuccess?.();
     };
 
     const errorHandler = (error: any) => {

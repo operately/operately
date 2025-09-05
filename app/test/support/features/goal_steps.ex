@@ -76,6 +76,12 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.assert_feed_item(ctx.creator, "changed the parent goal")
   end
 
+  step :assert_parent_goal_changed_toast, ctx do
+    ctx
+    |> UI.assert_text("Parent Goal Updated")
+    |> UI.assert_text("The parent goal has been successfully changed.")
+  end
+
   #
   # Removing the parent goal
   #
