@@ -15,7 +15,8 @@ defmodule Operately.Operations.ReactionRemoving do
       where: r.person_id == ^person_id and 
              r.entity_id == ^entity_id and 
              r.entity_type == ^entity_type and 
-             r.emoji == ^emoji
+             r.emoji == ^emoji,
+      limit: 1
     )
     |> Repo.one()
   end

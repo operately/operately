@@ -126,5 +126,44 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
       remaining_reaction = hd(reactions_after)
       assert remaining_reaction.emoji == "❤️"
     end
+
+    test "handles multiple identical reactions from the same user", ctx do
+      # Add the same reaction multiple times directly (simulating the bug scenario)
+      {:ok, _} = Updates.create_reaction(%{
+        person_id: ctx.owner.id,
+        entity_id: ctx.hello_message.id,
+        entity_type: :message,
+        emoji: "😮"
+      })
+
+      {:ok, _} = Updates.create_reaction(%{
+        person_id: ctx.owner.id,
+        entity_id: ctx.hello_message.id,
+        entity_type: :message,
+        emoji: "😮"
+      })
+
+      # Verify both identical reactions exist
+      reactions = Updates.list_reactions(ctx.hello_message.id, :message)
+      assert length(reactions) == 2
+      assert Enum.all?(reactions, fn r -> r.emoji == "😮" and r.person_id == ctx.owner.id end)
+
+      # Remove one of the identical reactions - should not throw error
+      assert {200, res} =
+               mutation(ctx.conn, :remove_reaction, %{
+                 entity_id: Paths.message_id(ctx.hello_message),
+                 entity_type: "message",
+                 emoji: "😮"
+               })
+
+      assert res.success == true
+
+      # Verify only one reaction remains
+      reactions_after = Updates.list_reactions(ctx.hello_message.id, :message)
+      assert length(reactions_after) == 1
+      remaining_reaction = hd(reactions_after)
+      assert remaining_reaction.emoji == "😮"
+      assert remaining_reaction.person_id == ctx.owner.id
+    end
   end
 end
