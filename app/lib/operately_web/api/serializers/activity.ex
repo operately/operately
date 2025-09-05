@@ -266,7 +266,7 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
       old_end_date: Serializer.serialize(content.old_end_date),
       new_end_date: Serializer.serialize(content.new_end_date),
       new_milestones: Serializer.serialize(content.new_milestones),
-      updated_milestones: Serializer.serialize(content.milestone_updates)
+      updated_milestones: Serializer.serialize(content.updated_milestones)
     }
   end
 
