@@ -5,12 +5,12 @@ import { PrimaryButton } from "../../Button";
 import { PieChart } from "../../PieChart";
 import { IconPlus } from "../../icons";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
-import { reorderTasksInList } from "../../TaskBoard/utils/taskReorderingUtils";
 import { MilestonePage } from "..";
 import { calculateMilestoneStats } from "../../TaskBoard/components/MilestoneCard";
 import { TaskFilter } from "../../TaskBoard";
 import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
+import { sortTasks } from "../../TaskBoard/utils/sortTasks";
 
 export function TasksSection({
   tasks,
@@ -53,8 +53,21 @@ export function TasksSection({
   const baseFilteredTasks = applyFilters(tasks, filters || []);
 
   // Separate visible tasks from hidden (completed) tasks
-  const visibleTasks = baseFilteredTasks.filter((task) => task.status === "pending" || task.status === "in_progress");
-  const hiddenTasks = baseFilteredTasks.filter((task) => task.status === "done" || task.status === "canceled");
+  const { visibleTasks, hiddenTasks } = React.useMemo(
+    () => splitTasks(milestone, baseFilteredTasks),
+    [milestone, baseFilteredTasks],
+  );
+
+  const handleTaskReorder = React.useCallback(
+    (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+      if (onTaskReorder) {
+        onTaskReorder(draggedId, dropZoneId, indexInDropZone);
+        return true;
+      }
+      return false;
+    },
+    [onTaskReorder],
+  );
 
   return (
     <div className="space-y-4 pt-6">
@@ -98,27 +111,15 @@ export function TasksSection({
             </div>
           ) : (
             /* Task list with drag and drop */
-            <DragAndDropProvider
-              onDrop={(_, draggedId, index) => {
-                if (onTaskReorder) {
-                  // Reorder only the visible tasks
-                  const reorderedVisibleTasks = reorderTasksInList(visibleTasks, draggedId, index);
-                  // Merge reordered visible tasks with hidden tasks to maintain complete list
-                  const completeReorderedTasks = [...reorderedVisibleTasks, ...hiddenTasks];
-                  onTaskReorder(completeReorderedTasks);
-                  return true;
-                }
-                return false;
-              }}
-            >
+            <DragAndDropProvider onDrop={handleTaskReorder}>
               <TaskList
                 tasks={visibleTasks}
                 hiddenTasks={hiddenTasks}
                 showHiddenTasksToggle={hiddenTasks.length > 0}
                 milestoneId={milestone.id}
-                onTaskAssigneeChange={onTaskAssigneeChange || (() => {})}
-                onTaskDueDateChange={onTaskDueDateChange || (() => {})}
-                onTaskStatusChange={onTaskStatusChange || (() => {})}
+                onTaskAssigneeChange={onTaskAssigneeChange}
+                onTaskDueDateChange={onTaskDueDateChange}
+                onTaskStatusChange={onTaskStatusChange}
                 searchPeople={searchPeople}
               />
             </DragAndDropProvider>
@@ -145,3 +146,12 @@ function calculateCompletionPercentage(stats: {
   // Calculate percentage based only on active tasks
   return (stats.done / activeTasks) * 100;
 }
+
+const splitTasks = (milestone: Types.Milestone, originalTasks: Types.Task[]) => {
+  const visibleTasks = originalTasks.filter((task) => task.status === "pending" || task.status === "in_progress");
+  const sortedVisbleTasks = sortTasks(visibleTasks, milestone);
+
+  const hiddenTasks = originalTasks.filter((task) => task.status === "done" || task.status === "canceled");
+
+  return { visibleTasks: sortedVisbleTasks, hiddenTasks };
+};
