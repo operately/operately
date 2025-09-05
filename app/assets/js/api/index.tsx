@@ -2818,10 +2818,7 @@ export interface AddReactionResult {
 }
 
 export interface RemoveReactionInput {
-  entityId?: Id | null;
-  entityType?: string | null;
-  parentType?: string | null;
-  emoji?: string | null;
+  reactionId?: Id | null;
 }
 
 export interface RemoveReactionResult {

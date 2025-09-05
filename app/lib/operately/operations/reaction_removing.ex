@@ -10,6 +10,13 @@ defmodule Operately.Operations.ReactionRemoving do
     end
   end
 
+  def run_by_id(reaction_id) do
+    case Repo.get(Reaction, reaction_id) do
+      nil -> {:error, :reaction_not_found}
+      reaction -> Repo.delete(reaction)
+    end
+  end
+
   defp get_user_reaction(person_id, entity_id, entity_type, emoji) do
     from(r in Reaction,
       where: r.person_id == ^person_id and 

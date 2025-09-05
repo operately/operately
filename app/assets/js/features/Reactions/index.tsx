@@ -75,10 +75,7 @@ export function useReactionsForm(entity: Reactions.Entity, initial: Reactions.Re
 
     try {
       await removeReaction({
-        entityId: entity.id,
-        entityType: entity.type,
-        parentType: entity.parentType,
-        emoji: emoji,
+        reactionId: id,
       });
     } catch (error) {
       // If removal fails, restore the reaction
@@ -162,7 +159,7 @@ interface ReactionItemProps {
 
 function ReactionItem({ reaction, size, form, isInDeleteMode, onReactionClick, onDeleteClick }: ReactionItemProps) {
   const me = useMe()!;
-  const testId = `reaction-${reaction.reactionType}`;
+  const testId = `reaction-${reaction.emoji}`;
   const isMyReaction = reaction.person.id === me.id;
   
   const className = classNames(
