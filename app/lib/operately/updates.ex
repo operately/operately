@@ -227,8 +227,6 @@ defmodule Operately.Updates do
 
   def get_reaction!(id), do: Repo.get!(Reaction, id)
 
-  def get_reaction(id), do: Repo.get(Reaction, id)
-
   def create_reaction(attrs \\ %{}) do
     %Reaction{}
     |> Reaction.changeset(attrs)

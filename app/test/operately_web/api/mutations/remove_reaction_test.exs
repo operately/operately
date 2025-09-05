@@ -42,7 +42,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
       # Remove the reaction using its ID
       assert {200, res} =
                mutation(ctx.conn, :remove_reaction, %{
-                 reaction_id: reaction_id
+                 reaction_id: Operately.ShortUuid.encode!(reaction_id)
                })
 
       assert res.success == true
@@ -53,13 +53,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
     end
 
     test "returns error when trying to remove non-existent reaction", ctx do
-      # Try to remove a reaction that doesn't exist
-      fake_id = Ecto.UUID.generate()
-
-      assert {500, _} =
-               mutation(ctx.conn, :remove_reaction, %{
-                 reaction_id: fake_id
-               })
+      assert {500, _} = run(ctx, Ecto.UUID.generate())
     end
 
     test "does not remove other user's reactions", ctx do
@@ -76,10 +70,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
         })
 
       # Current user tries to remove the other user's reaction
-      assert {500, _} =
-               mutation(ctx.conn, :remove_reaction, %{
-                 reaction_id: reaction.id
-               })
+      assert {500, _} = run(ctx, reaction.id)
 
       # Verify the other user's reaction is still there
       reactions = Updates.list_reactions(ctx.hello_message.id, :message)
@@ -110,10 +101,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
       assert length(reactions) == 2
 
       # Remove only the thumbs up reaction by its specific ID
-      assert {200, res} =
-               mutation(ctx.conn, :remove_reaction, %{
-                 reaction_id: thumbs_up_id
-               })
+      assert {200, res} = run(ctx, thumbs_up_id)
 
       assert res.success == true
 
@@ -149,10 +137,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
       assert Enum.all?(reactions, fn r -> r.emoji == "😮" and r.person_id == ctx.owner.id end)
 
       # Remove the first reaction specifically by its ID
-      assert {200, res} =
-               mutation(ctx.conn, :remove_reaction, %{
-                 reaction_id: reaction1.id
-               })
+      assert {200, res} = run(ctx, reaction1.id)
 
       assert res.success == true
 
@@ -196,10 +181,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
         })
 
       # Remove the middle reaction (reaction2)
-      assert {200, res} =
-               mutation(ctx.conn, :remove_reaction, %{
-                 reaction_id: reaction2.id
-               })
+      assert {200, res} = run(ctx, reaction2.id)
 
       assert res.success == true
 
@@ -211,5 +193,11 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
       assert first_remaining.id == reaction1.id
       assert second_remaining.id == reaction3.id
     end
+  end
+
+  defp run(ctx, reaction_id) do
+    mutation(ctx.conn, :remove_reaction, %{
+      reaction_id: Operately.ShortUuid.encode!(reaction_id)
+    })
   end
 end
