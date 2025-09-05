@@ -36,9 +36,17 @@ export const NodeView: React.FC<TipTap.NodeViewProps> = (props) => {
 
   return (
     <TipTap.NodeViewWrapper className="inline">
-      <div ref={ref} className="inline mr-0.5 align-sub">
+      <span
+        ref={ref}
+        className="inline-block mr-1 align-[-4px]"
+        style={{
+          height: "1em",
+          lineHeight: "1em",
+          overflow: "visible",
+        }}
+      >
         <Avatar person={person} size={avatarsize} />
-      </div>
+      </span>
 
       {firstName(person)}
     </TipTap.NodeViewWrapper>
