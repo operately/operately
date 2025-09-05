@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import Api from "@/api";
 
 import * as Time from "@/utils/time";
-import * as Companies from "@/models/companies";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
@@ -12,7 +11,6 @@ import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/ac
 
 import { showErrorToast, MilestonePage, CommentSection } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
@@ -34,15 +32,11 @@ type LoaderResult = {
     tasks: Tasks.Task[];
     tasksCount: number;
     activities: Activities.Activity[];
-    company: Companies.Company;
   };
   cacheVersion: number;
 };
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
-  await redirectIfFeatureNotEnabled(params, { feature: "milestone_v2", path: paths.projectMilestonePath(params.id) });
-
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
@@ -63,7 +57,6 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           scopeType: "milestone",
           actions: SUPPORTED_ACTIVITY_TYPES,
         }).then((d) => d.activities!),
-        company: Api.getCompany({ id: params.companyId! }).then((d) => d.company!),
       }),
   });
 }
@@ -79,7 +72,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data } = pageData;
-  const { milestone, tasksCount, activities, company } = data;
+  const { milestone, tasksCount, activities } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -159,7 +152,7 @@ function Page() {
 
     // Project
     projectName,
-    projectLink: paths.projectV2Path(milestone.project.id),
+    projectLink: paths.projectPath(milestone.project.id),
     projectStatus: milestone.project.status,
     updateProjectName: setProjectName,
 
@@ -187,7 +180,6 @@ function Page() {
 
     // Tasks
     tasks,
-    tasksEnabled: Companies.hasFeature(company, "milestone_tasks"),
     onTaskCreate: createTask,
     onTaskReorder: updateTaskMilestone,
     onTaskStatusChange: updateTaskStatus,

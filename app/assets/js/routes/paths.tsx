@@ -148,10 +148,6 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId]);
   }
 
-  projectV2Path(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "v2"]);
-  }
-
   projectCheckInNewPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "check-ins", "new"]);
   }
@@ -198,10 +194,6 @@ export class Paths {
 
   projectMilestonePath(milestoneId: string) {
     return this.createCompanyPath(["milestones", milestoneId]);
-  }
-
-  projectMilestoneV2Path(milestoneId: string) {
-    return this.createCompanyPath(["milestones", milestoneId, "v2"]);
   }
 
   projectContributorsPath(projectId: string) {
@@ -442,10 +434,6 @@ export class Paths {
 
   taskPath(taskId: string) {
     return this.createCompanyPath(["tasks", taskId]);
-  }
-
-  taskV2Path(taskId: string) {
-    return this.createCompanyPath(["tasks", taskId, "v2"]);
   }
 
   //

@@ -297,7 +297,6 @@ export const Default: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskCreate={handleTaskCreate}
@@ -378,7 +377,6 @@ export const ReadOnly: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -499,7 +497,6 @@ export const EmptyTasks: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -607,7 +604,6 @@ export const EmptyProject: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={[]}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -675,7 +671,6 @@ export const EmptyProjectReadOnly: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
@@ -814,7 +809,6 @@ export const PausedProject: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskCreate={handleTaskCreate}
@@ -903,7 +897,6 @@ export const ClosedProject: Story = {
         updateProjectName={async () => true}
         updateDescription={async () => true}
         activityFeed={<div>Activity feed content</div>}
-        tasksEnabled={true}
         tasks={tasks}
         milestones={milestones}
         onTaskStatusChange={() => {}}
