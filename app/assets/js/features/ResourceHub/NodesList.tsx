@@ -3,10 +3,10 @@ import React, { useMemo } from "react";
 import * as Hub from "@/models/resourceHubs";
 
 import { CommentsCountIndicator } from "@/features/Comments";
+import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
 import { DivLink } from "turboui";
-import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { usePaths } from "../../routes/paths";
 import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes, LinkMenu } from "./components";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
@@ -18,7 +18,7 @@ import { findCommentsCount, findPath, NodeType, SortBy, sortNodesWithFoldersFirs
 
 export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
-  const [sortBy, setSortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "updatedAt");
+  const [sortBy, setSortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "name");
 
   const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!, sortBy, "desc"), [props.nodes, sortBy]);
 
