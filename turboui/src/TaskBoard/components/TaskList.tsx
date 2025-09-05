@@ -71,31 +71,33 @@ export function TaskList({
   };
 
   return (
-    <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
-      {/* Regular visible tasks */}
-      {tasks.map((task, index) => (
-        <TaskItem
-          key={task.id}
-          task={{ ...task, index } as TaskWithIndex}
-          milestoneId={milestoneId}
-          itemStyle={itemStyle}
-          onTaskAssigneeChange={onTaskAssigneeChange}
-          onTaskDueDateChange={onTaskDueDateChange}
-          onTaskStatusChange={onTaskStatusChange}
-          searchPeople={searchPeople}
-        />
-      ))}
+    <>
+      <ul ref={ref as React.RefObject<HTMLUListElement>} style={containerStyle}>
+        {/* Regular visible tasks */}
+        {tasks.map((task, index) => (
+          <TaskItem
+            key={task.id}
+            task={{ ...task, index } as TaskWithIndex}
+            milestoneId={milestoneId}
+            itemStyle={itemStyle}
+            onTaskAssigneeChange={onTaskAssigneeChange}
+            onTaskDueDateChange={onTaskDueDateChange}
+            onTaskStatusChange={onTaskStatusChange}
+            searchPeople={searchPeople}
+          />
+        ))}
+      </ul>
 
       {/* Empty state message when no visible tasks but there are hidden tasks */}
       {tasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
-        <li className="py-3 px-4 text-center text-content-subtle text-sm bg-surface-base">
+        <div className="py-3 px-4 text-center text-content-subtle text-sm bg-surface-base">
           Click + to add a task or drag a task here.
-        </li>
+        </div>
       )}
 
       {/* Ghost row for hidden tasks */}
       {showGhostRow && (
-        <li
+        <div
           className="px-4 py-2 text-sm text-content-dimmed hover:text-content-base cursor-pointer hover:bg-surface-accent transition-colors bg-surface-base"
           onClick={handleGhostRowClick}
         >
@@ -109,7 +111,7 @@ export function TaskList({
                 : `Show ${totalHiddenCount} completed task${totalHiddenCount !== 1 ? "s" : ""}`}
             </span>
           </div>
-        </li>
+        </div>
       )}
 
       {/* Hidden tasks that are expanded with animation */}
@@ -125,7 +127,7 @@ export function TaskList({
             <TaskItem
               task={{ ...task, index: tasks.length + index } as TaskWithIndex}
               milestoneId={milestoneId}
-              itemStyle={itemStyle}
+              itemStyle={() => ({})}
               onTaskAssigneeChange={onTaskAssigneeChange}
               onTaskDueDateChange={onTaskDueDateChange}
               onTaskStatusChange={onTaskStatusChange}
@@ -134,7 +136,7 @@ export function TaskList({
             />
           </div>
         ))}
-    </ul>
+    </>
   );
 }
 
