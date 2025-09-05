@@ -2,36 +2,20 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReaction do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.{
-    Activities,
-    Projects,
-    Updates,
-    Goals,
-    Groups,
-    ResourceHubs
-  }
-
-  alias Operately.Goals.Update
-  alias Operately.Messages.Message
-  alias Operately.Projects.Retrospective
-  alias Operately.ResourceHubs.{Document, File, Link}
-  alias Operately.Operations.ReactionRemoving
-  alias Operately.Comments.CommentThread
-
   inputs do
-    field? :reaction_id, :id, null: true
+    field :reaction_id, :id
   end
 
   outputs do
-    field? :success, :boolean, null: true
+    field :success, :boolean
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:reaction, fn ctx -> fetch_reaction(inputs.reaction_id, ctx.me) end)
+    |> run(:reaction, fn -> fetch_reaction(inputs.reaction_id) end)
     |> run(:check_permissions, fn ctx -> check_permissions(ctx.reaction, ctx.me) end)
-    |> run(:operation, fn ctx -> execute(ctx, inputs) end)
+    |> run(:operation, fn ctx -> execute(ctx) end)
     |> run(:serialized, fn _ -> {:ok, %{success: true}} end)
     |> respond()
   end
@@ -48,44 +32,14 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReaction do
     end
   end
 
-  defp fetch_reaction(id, person) do
-    case Updates.get_reaction(id) do
+  defp fetch_reaction(id) do
+    case Operately.Updates.get_reaction(id) do
       nil -> {:error, :not_found}
-      reaction -> 
-        # Verify we have access to the entity this reaction belongs to
-        case get_entity_with_access(reaction, person) do
-          {:ok, _entity} -> {:ok, reaction}
-          {:error, reason} -> {:error, reason}
-        end
-    end
-  end
-
-  defp get_entity_with_access(reaction, person) do
-    type = reaction.entity_type
-    entity_id = reaction.entity_id
-
-    case type do
-      :project_check_in -> Projects.get_check_in_with_access_level(entity_id, person.id)
-      :project_retrospective -> Retrospective.get(person, id: entity_id)
-      :comment_thread -> CommentThread.get(person, id: entity_id, opts: [preload: :activity])
-      :goal_update -> Update.get(person, id: entity_id)
-      :message -> Message.get(person, id: entity_id)
-      :comment -> 
-        # For comments, we need the parent type, but we can get it from the comment
-        comment = Updates.get_comment_with_access_level(entity_id, person.id, nil)
-        case comment do
-          nil -> {:error, :not_found}
-          c -> {:ok, c}
-        end
-      :resource_hub_document -> Document.get(person, id: entity_id)
-      :resource_hub_file -> File.get(person, id: entity_id)
-      :resource_hub_link -> Link.get(person, id: entity_id)
-      _ -> {:error, :invalid_entity_type}
+      reaction -> reaction
     end
   end
 
   defp check_permissions(reaction, me) do
-    # User can only remove their own reactions
     if reaction.person_id == me.id do
       {:ok, :authorized}
     else
@@ -93,13 +47,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReaction do
     end
   end
 
-  defp execute(ctx, inputs) do
-    ReactionRemoving.run_by_id(ctx.reaction.id)
-  end
-
-  defp parse_comment_parent(nil), do: :ok
-
-  defp parse_comment_parent(parent_type) do
-    String.to_existing_atom(parent_type)
+  defp execute(ctx) do
+    Repo.delete(ctx.reaction)
   end
 end

@@ -2,9 +2,6 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
   use OperatelyWeb.TurboCase
 
   import Operately.PeopleFixtures
-  import Operately.GroupsFixtures
-  import Operately.MessagesFixtures
-
   alias Operately.Updates
 
   describe "security" do
@@ -70,12 +67,13 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
       other_user = person_fixture(%{company_id: ctx.company.id})
 
       # Other user adds a reaction (we'll simulate this by creating it directly)
-      {:ok, reaction} = Updates.create_reaction(%{
-        person_id: other_user.id,
-        entity_id: ctx.hello_message.id,
-        entity_type: :message,
-        emoji: "👍"
-      })
+      {:ok, reaction} =
+        Updates.create_reaction(%{
+          person_id: other_user.id,
+          entity_id: ctx.hello_message.id,
+          entity_type: :message,
+          emoji: "👍"
+        })
 
       # Current user tries to remove the other user's reaction
       assert {500, _} =
@@ -129,19 +127,21 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
 
     test "handles multiple identical reactions - removes specific one by ID", ctx do
       # Add the same reaction multiple times directly (simulating the bug scenario)
-      {:ok, reaction1} = Updates.create_reaction(%{
-        person_id: ctx.owner.id,
-        entity_id: ctx.hello_message.id,
-        entity_type: :message,
-        emoji: "😮"
-      })
+      {:ok, reaction1} =
+        Updates.create_reaction(%{
+          person_id: ctx.owner.id,
+          entity_id: ctx.hello_message.id,
+          entity_type: :message,
+          emoji: "😮"
+        })
 
-      {:ok, reaction2} = Updates.create_reaction(%{
-        person_id: ctx.owner.id,
-        entity_id: ctx.hello_message.id,
-        entity_type: :message,
-        emoji: "😮"
-      })
+      {:ok, reaction2} =
+        Updates.create_reaction(%{
+          person_id: ctx.owner.id,
+          entity_id: ctx.hello_message.id,
+          entity_type: :message,
+          emoji: "😮"
+        })
 
       # Verify both identical reactions exist
       reactions = Updates.list_reactions(ctx.hello_message.id, :message)
@@ -170,26 +170,30 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
 
     test "preserves insertion order when removing specific reactions", ctx do
       # Add reactions in a specific order
-      {:ok, reaction1} = Updates.create_reaction(%{
-        person_id: ctx.owner.id,
-        entity_id: ctx.hello_message.id,
-        entity_type: :message,
-        emoji: "👍"
-      })
+      {:ok, reaction1} =
+        Updates.create_reaction(%{
+          person_id: ctx.owner.id,
+          entity_id: ctx.hello_message.id,
+          entity_type: :message,
+          emoji: "👍"
+        })
 
-      {:ok, reaction2} = Updates.create_reaction(%{
-        person_id: ctx.owner.id,
-        entity_id: ctx.hello_message.id,
-        entity_type: :message,
-        emoji: "👍"  # Same emoji
-      })
+      {:ok, reaction2} =
+        Updates.create_reaction(%{
+          person_id: ctx.owner.id,
+          entity_id: ctx.hello_message.id,
+          entity_type: :message,
+          # Same emoji
+          emoji: "👍"
+        })
 
-      {:ok, reaction3} = Updates.create_reaction(%{
-        person_id: ctx.owner.id,
-        entity_id: ctx.hello_message.id,
-        entity_type: :message,
-        emoji: "❤️"
-      })
+      {:ok, reaction3} =
+        Updates.create_reaction(%{
+          person_id: ctx.owner.id,
+          entity_id: ctx.hello_message.id,
+          entity_type: :message,
+          emoji: "❤️"
+        })
 
       # Remove the middle reaction (reaction2)
       assert {200, res} =
