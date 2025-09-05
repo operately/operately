@@ -26,7 +26,7 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
   const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status);
 
   // Set up draggable behavior
-  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: `milestone-${milestoneId}` });
+  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId });
 
   const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
 

@@ -52,12 +52,12 @@ export function TaskList({
 
   // Set up drop zone for this list of tasks
   const { ref } = useDropZone({
-    id: `milestone-${milestoneId}`,
+    id: milestoneId,
     dependencies: [tasksWithIndex],
   });
 
   // Get the animation styles for the container and items
-  const { containerStyle, itemStyle } = useDraggingAnimation(`milestone-${milestoneId}`, tasksWithIndex);
+  const { containerStyle, itemStyle } = useDraggingAnimation(milestoneId, tasksWithIndex);
 
   // Count hidden tasks for the ghost row
   const totalHiddenCount = hiddenTasks.length;

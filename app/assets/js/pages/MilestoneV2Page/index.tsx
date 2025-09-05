@@ -115,11 +115,12 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
   });
 
-  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus } = Tasks.useTasksForTurboUi(
-    data.tasks,
-    milestone.project.id,
-    pageCacheKey(milestone.id),
-  );
+  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus } = Tasks.useTasksForTurboUi({
+    backendTasks: data.tasks,
+    projectId: milestone.project.id,
+    cacheKey: pageCacheKey(milestone.id),
+    milestones: [],
+  });
   const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
