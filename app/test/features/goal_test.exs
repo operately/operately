@@ -61,6 +61,7 @@ defmodule Operately.Features.GoalTest do
   feature "changing the parent goal", ctx do
     ctx
     |> Steps.change_parent_goal()
+    |> Steps.assert_parent_goal_changed_toast()
     |> Steps.assert_parent_goal_changed()
     |> Steps.assert_parent_goal_changed_feed_posted()
   end
