@@ -6,18 +6,21 @@ import { CommentsCountIndicator } from "@/features/Comments";
 import { createTestId } from "@/utils/testid";
 import classNames from "classnames";
 import { DivLink } from "turboui";
+import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 import { usePaths } from "../../routes/paths";
 import { DocumentMenu, FileMenu, FolderMenu, FolderZeroNodes, HubZeroNodes, LinkMenu } from "./components";
 import { useNewFileModalsContext } from "./contexts/NewFileModalsContext";
 import { NodesProps, NodesProvider } from "./contexts/NodesContext";
 import { NodeDescription } from "./NodeDescription";
 import { NodeIcon } from "./NodeIcon";
-import { findCommentsCount, findPath, NodeType, sortNodesWithFoldersFirst } from "./utils";
+import { SortControl } from "./SortControl";
+import { findCommentsCount, findPath, NodeType, SortBy, sortNodesWithFoldersFirst } from "./utils";
 
 export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
+  const [sortBy, setSortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "updatedAt");
 
-  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!), [props.nodes]);
+  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!, sortBy, "desc"), [props.nodes, sortBy]);
 
   if (props.nodes.length < 1) {
     if (filesSelected) return <></>;
@@ -27,7 +30,11 @@ export function NodesList(props: NodesProps) {
 
   return (
     <NodesProvider {...props}>
-      <div className="md:m-6">
+      <div className="flex justify-end mb-4">
+        <SortControl sortBy={sortBy} onSortChange={setSortBy} />
+      </div>
+
+      <div>
         {nodes.map((node, idx) => (
           <NodeItem node={node} testid={createTestId("node", idx.toString())} key={node.id} />
         ))}
@@ -45,7 +52,7 @@ function NodeItem({ node, testid }: NodeItemProps) {
   const paths = usePaths();
   const className = classNames(
     "flex justify-between gap-2 py-4 px-2 items-center",
-    "border-b border-stroke-base first:border-t-0",
+    "border-b border-stroke-base first:border-t",
   );
 
   const path = findPath(paths, node.type as NodeType, node);
