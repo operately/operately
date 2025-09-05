@@ -1,4 +1,5 @@
 import * as SaasAdminPage from "./SaasAdminPage";
+import * as SaasAdminActiveCompaniesPage from "./SaasAdminActiveCompaniesPage";
 import * as SaasAdminCompanyPage from "./SaasAdminCompanyPage";
 
 export default {
@@ -6,6 +7,12 @@ export default {
     name: "SaasAdminPage",
     loader: SaasAdminPage.loader,
     Page: SaasAdminPage.Page,
+  },
+
+  SaasAdminActiveCompaniesPage: {
+    name: "SaasAdminActiveCompaniesPage",
+    loader: SaasAdminActiveCompaniesPage.loader,
+    Page: SaasAdminActiveCompaniesPage.Page,
   },
 
   SaasAdminCompanyPage: {

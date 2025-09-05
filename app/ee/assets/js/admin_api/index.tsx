@@ -160,6 +160,12 @@ export interface GetCompaniesResult {
   companies: Company[];
 }
 
+export interface GetActiveCompaniesInput {}
+
+export interface GetActiveCompaniesResult {
+  companies: Company[];
+}
+
 export interface GetCompanyInput {
   id: CompanyId;
 }
@@ -186,6 +192,10 @@ class ApiNamespaceRoot {
 
   async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
     return this.client.get("/get_companies", input);
+  }
+
+  async getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
+    return this.client.get("/get_active_companies", input);
   }
 
   async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
@@ -246,6 +256,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getCompanies(input);
   }
 
+  getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
+    return this.apiNamespaceRoot.getActiveCompanies(input);
+  }
+
   getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
     return this.apiNamespaceRoot.getCompany(input);
   }
@@ -263,6 +277,9 @@ export async function getActivities(input: GetActivitiesInput): Promise<GetActiv
 export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
   return defaultApiClient.getCompanies(input);
 }
+export async function getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
+  return defaultApiClient.getActiveCompanies(input);
+}
 export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
 }
@@ -276,6 +293,10 @@ export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<
 
 export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
   return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
+}
+
+export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
+  return useQuery<GetActiveCompaniesResult>(() => defaultApiClient.getActiveCompanies(input));
 }
 
 export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
@@ -293,6 +314,8 @@ export default {
   useGetActivities,
   getCompanies,
   useGetCompanies,
+  getActiveCompanies,
+  useGetActiveCompanies,
   getCompany,
   useGetCompany,
   enableFeature,
