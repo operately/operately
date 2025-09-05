@@ -2822,6 +2822,17 @@ export interface AddReactionResult {
   reaction?: Reaction | null;
 }
 
+export interface RemoveReactionInput {
+  entityId?: Id | null;
+  entityType?: string | null;
+  parentType?: string | null;
+  emoji?: string | null;
+}
+
+export interface RemoveReactionResult {
+  success?: boolean | null;
+}
+
 export interface AddSpaceMembersInput {
   spaceId?: Id | null;
   members?: AddMemberInput[] | null;
@@ -4396,6 +4407,10 @@ class ApiNamespaceRoot {
     return this.client.post("/add_reaction", input);
   }
 
+  async removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
+    return this.client.post("/remove_reaction", input);
+  }
+
   async addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
     return this.client.post("/add_space_members", input);
   }
@@ -5368,6 +5383,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.addReaction(input);
   }
 
+  removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
+    return this.apiNamespaceRoot.removeReaction(input);
+  }
+
   addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
     return this.apiNamespaceRoot.addSpaceMembers(input);
   }
@@ -5914,6 +5933,9 @@ export async function addProjectContributors(
 }
 export async function addReaction(input: AddReactionInput): Promise<AddReactionResult> {
   return defaultApiClient.addReaction(input);
+}
+export async function removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
+  return defaultApiClient.removeReaction(input);
 }
 export async function addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
   return defaultApiClient.addSpaceMembers(input);
@@ -6514,6 +6536,10 @@ export function useAddProjectContributors(): UseMutationHookResult<
 
 export function useAddReaction(): UseMutationHookResult<AddReactionInput, AddReactionResult> {
   return useMutation<AddReactionInput, AddReactionResult>((input) => defaultApiClient.addReaction(input));
+}
+
+export function useRemoveReaction(): UseMutationHookResult<RemoveReactionInput, RemoveReactionResult> {
+  return useMutation<RemoveReactionInput, RemoveReactionResult>((input) => defaultApiClient.removeReaction(input));
 }
 
 export function useAddSpaceMembers(): UseMutationHookResult<AddSpaceMembersInput, AddSpaceMembersResult> {
@@ -7212,6 +7238,8 @@ export default {
   useAddProjectContributors,
   addReaction,
   useAddReaction,
+  removeReaction,
+  useRemoveReaction,
   addSpaceMembers,
   useAddSpaceMembers,
   archiveGoal,
