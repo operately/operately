@@ -44,12 +44,13 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompanies do
     has_multiple_goals = (company.goals_count || 0) >= 2
     has_multiple_projects = (company.projects_count || 0) >= 2
 
-    # Must have recent activity (within last 30 days)
+    # Must have recent activity (within last 14 days)
     has_recent_activity = case company.last_activity_at do
       nil -> false
-      last_activity ->
+      last_activity when is_struct(last_activity, DateTime) ->
         days_since_activity = DateTime.diff(DateTime.utc_now(), last_activity, :day)
-        days_since_activity <= 30
+        days_since_activity <= 14
+      _ -> false  # Handle any other unexpected types
     end
 
     # Company is active if it meets all criteria

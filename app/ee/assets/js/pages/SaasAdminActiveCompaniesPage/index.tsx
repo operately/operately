@@ -60,7 +60,7 @@ function Description() {
       <ul className="text-content-accent text-sm mt-2 ml-4 list-disc">
         <li>Have multiple team members (2 or more)</li>
         <li>Have multiple goals and projects (2 or more each)</li>
-        <li>Show recent activity within the last 30 days</li>
+        <li>Show recent activity within the last 14 days</li>
       </ul>
     </div>
   );
