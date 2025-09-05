@@ -266,6 +266,35 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       assert res.message == "Milestone must belong to the same project as the task"
     end
+
+    test "it adds the task ID to the milestone ordering state and returns the updated milestone", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Get the milestone's ordering state before task creation
+      milestone_before = Operately.Projects.get_milestone!(ctx.milestone.id)
+      ordering_state_before = milestone_before.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task for ordering test",
+        assignee_id: nil,
+        due_date: nil
+      })
+
+      # Verify the task was created
+      assert res.task.name == "Task for ordering test"
+
+      # Verify the milestone was returned in the response
+      assert res.updated_milestone.id == Paths.milestone_id(ctx.milestone)
+      assert res.updated_milestone.tasks_ordering_state == [res.task.id]
+
+      # Verify the milestone's ordering state contains the new task ID
+      milestone_after = Operately.Projects.get_milestone!(ctx.milestone.id)
+      ordering_state_after = milestone_after.tasks_ordering_state
+
+      assert ordering_state_after == ordering_state_before ++ [res.task.id]
+    end
   end
 
   describe "update task status" do
@@ -313,6 +342,66 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       after_count = count_activities(ctx.project.id, "task_status_updating")
       assert after_count == before_count + 1
+    end
+
+    test "it removes task from milestone ordering state when status changes to done", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Ensure task is in milestone's ordering state initially
+      ordering_state = Operately.Tasks.OrderingState.add_task(ctx.milestone.tasks_ordering_state, ctx.task)
+      {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_ordering_state: ordering_state})
+
+      assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "done"
+      })
+
+      # Check that task is now in the milestone's ordering state
+      milestone_after = Repo.reload(ctx.milestone)
+      refute Paths.task_id(ctx.task) in milestone_after.tasks_ordering_state
+      refute Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
+    end
+
+    test "it removes task from milestone ordering state when status changes to canceled", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      # Ensure task is in milestone's ordering state initially
+      ordering_state = Operately.Tasks.OrderingState.add_task(ctx.milestone.tasks_ordering_state, ctx.task)
+      {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{tasks_ordering_state: ordering_state})
+
+      assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "canceled"
+      })
+
+      # Check that task is now in the milestone's ordering state
+      milestone_after = Repo.reload(ctx.milestone)
+      refute Paths.task_id(ctx.task) in milestone_after.tasks_ordering_state
+      refute Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
+    end
+
+    test "it adds task from milestone ordering state when status changes from done to in_progress", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      {:ok, _} = Operately.Tasks.update_task(ctx.task, %{status: "done"})
+
+      # Verify task is not in milestone's ordering state
+      milestone = Repo.reload(ctx.milestone)
+      refute Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_status], %{
+        task_id: Paths.task_id(ctx.task),
+        status: "in_progress"
+      })
+
+      # Check that task is added from the milestone's ordering state
+      milestone = Repo.reload(ctx.milestone)
+      assert Paths.task_id(ctx.task) in milestone.tasks_ordering_state
+      assert Paths.task_id(ctx.task) in res.updated_milestone.tasks_ordering_state
     end
   end
 
@@ -495,6 +584,268 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
   describe "update task milestone" do
     test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{})
+    end
+
+    test "it requires a task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        milestones_ordering_state: []
+      })
+      assert res.message == "Missing required fields: task_id"
+    end
+
+    test "it updates a task milestone and ordering states", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      # Moving task from milestone to milestone2, updating ordering for both
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task2)]  # Only task2 remains
+          },
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone2),
+            ordering_state: [Paths.task_id(ctx.task)]  # task moved here
+          }
+        ]
+      })
+
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert updated_task.milestone_id == ctx.milestone2.id
+
+      # Verify ordering states were updated
+      updated_milestone = Operately.Repo.reload(ctx.milestone)
+      updated_milestone2 = Operately.Repo.reload(ctx.milestone2)
+
+      assert updated_milestone.tasks_ordering_state == [Paths.task_id(ctx.task2)]
+      assert updated_milestone2.tasks_ordering_state == [Paths.task_id(ctx.task)]
+    end
+
+    test "it can remove a milestone", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: nil,
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task2)]  # Only task2 remains
+          }
+        ]
+      })
+
+      updated_task = Operately.Repo.reload(ctx.task)
+      refute updated_task.milestone_id
+
+      # Verify ordering state was updated to remove the task
+      updated_milestone = Operately.Repo.reload(ctx.milestone)
+      assert updated_milestone.tasks_ordering_state == [Paths.task_id(ctx.task2)]
+    end
+
+    test "it creates an activity when milestone is updated", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      before_count = count_activities(ctx.project.id, "task_milestone_updating")
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: []
+          },
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone2),
+            ordering_state: [Paths.task_id(ctx.task)]
+          }
+        ]
+      })
+
+      after_count = count_activities(ctx.project.id, "task_milestone_updating")
+      assert after_count == before_count + 1
+    end
+
+    test "it can't update to a milestone from a different project", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project2, :engineering)
+        |> Factory.add_project_milestone(:milestone2, :project2)
+        |> Factory.log_in_person(:creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone2),
+            ordering_state: [Paths.task_id(ctx.task)]
+          }
+        ]
+      })
+
+      assert res.message == "Milestone must belong to the same project as the task"
+    end
+
+    test "it updates only ordering state when milestone doesn't change", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.add_project_task(:task3, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      # Task stays in same milestone, but ordering changes
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task2), Paths.task_id(ctx.task), Paths.task_id(ctx.task3)]  # task moved to middle
+          }
+        ]
+      })
+
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert updated_task.milestone_id == ctx.milestone.id
+
+      # Verify ordering state was updated
+      updated_milestone = Operately.Repo.reload(ctx.milestone)
+      assert updated_milestone.tasks_ordering_state == [Paths.task_id(ctx.task2), Paths.task_id(ctx.task), Paths.task_id(ctx.task3)]
+    end
+
+    test "it updates ordering states for both milestones when task changes milestone", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.add_project_task(:task3, :milestone)
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.add_project_task(:task4, :milestone2)
+        |> Factory.log_in_person(:creator)
+
+      # Task moves from milestone to milestone2, affecting both ordering states
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task2), Paths.task_id(ctx.task3)]  # task removed
+          },
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone2),
+            ordering_state: [Paths.task_id(ctx.task), Paths.task_id(ctx.task4)]  # task added at beginning
+          }
+        ]
+      })
+
+      updated_task = Operately.Repo.reload(ctx.task)
+      assert updated_task.milestone_id == ctx.milestone2.id
+
+      # Verify both milestone ordering states were updated
+      updated_milestone = Operately.Repo.reload(ctx.milestone)
+      updated_milestone2 = Operately.Repo.reload(ctx.milestone2)
+
+      assert updated_milestone.tasks_ordering_state == [Paths.task_id(ctx.task2), Paths.task_id(ctx.task3)]
+      assert updated_milestone2.tasks_ordering_state == [Paths.task_id(ctx.task), Paths.task_id(ctx.task4)]
+    end
+
+    test "it filters out completed and canceled tasks from ordering state", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.add_project_task(:task3, :milestone, status: "done")
+        |> Factory.add_project_task(:task4, :milestone, status: "canceled")
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.log_in_person(:creator)
+
+      # Move task to another milestone and include all tasks in the ordering state
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone2),
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task2), Paths.task_id(ctx.task3), Paths.task_id(ctx.task4)]
+          },
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone2),
+            ordering_state: [Paths.task_id(ctx.task)]
+          }
+        ]
+      })
+
+      # Verify returned updated_milestones in the API response
+      assert length(res.updated_milestones) == 2
+
+      milestone1_response = Enum.find(res.updated_milestones, fn m -> m.id == Paths.milestone_id(ctx.milestone) end)
+      milestone2_response = Enum.find(res.updated_milestones, fn m -> m.id == Paths.milestone_id(ctx.milestone2) end)
+
+      # Check that response milestones have the filtered ordering states
+      assert milestone1_response.tasks_ordering_state == [Paths.task_id(ctx.task2)]
+      assert milestone2_response.tasks_ordering_state == [Paths.task_id(ctx.task)]
+
+      # Verify database state
+      updated_milestone = Operately.Repo.reload(ctx.milestone)
+      updated_milestone2 = Operately.Repo.reload(ctx.milestone2)
+
+      assert updated_milestone.tasks_ordering_state == [Paths.task_id(ctx.task2)]
+      assert updated_milestone2.tasks_ordering_state == [Paths.task_id(ctx.task)]
+    end
+
+    test "it filters out tasks that belong to another milestone", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.add_project_milestone(:milestone2, :project)
+        |> Factory.add_project_task(:task3, :milestone2)
+        |> Factory.log_in_person(:creator)
+
+      # Try to include a task from milestone2 in milestone's ordering state
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone_and_ordering], %{
+        task_id: Paths.task_id(ctx.task),
+        milestone_id: Paths.milestone_id(ctx.milestone),  # Same milestone
+        milestones_ordering_state: [
+          %{
+            milestone_id: Paths.milestone_id(ctx.milestone),
+            ordering_state: [Paths.task_id(ctx.task), Paths.task_id(ctx.task2), Paths.task_id(ctx.task3)]
+          }
+        ]
+      })
+
+      # Verify the updated_milestones in the API response
+      assert length(res.updated_milestones) == 1
+      milestone_response = hd(res.updated_milestones)
+      assert milestone_response.id == Paths.milestone_id(ctx.milestone)
+
+      # Verify the task from the other milestone was filtered out in the response
+      assert milestone_response.tasks_ordering_state == [Paths.task_id(ctx.task), Paths.task_id(ctx.task2)]
+
+      # Verify database state
+      updated_milestone = Operately.Repo.reload(ctx.milestone)
+      assert updated_milestone.tasks_ordering_state == [Paths.task_id(ctx.task), Paths.task_id(ctx.task2)]
+    end
+  end
+
+  describe "update milestone" do
+    test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{})
     end
 
@@ -518,8 +869,10 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         milestone_id: Paths.milestone_id(ctx.milestone2)
       })
 
+      # Verify response
       assert res.task.milestone.id == Paths.milestone_id(ctx.milestone2)
 
+      # Verify database update
       updated_task = Operately.Repo.reload(ctx.task)
       assert updated_task.milestone_id == ctx.milestone2.id
     end
@@ -532,8 +885,10 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
         milestone_id: nil
       })
 
+      # Verify response
       assert res.task.milestone == nil
 
+      # Verify database update
       updated_task = Operately.Repo.reload(ctx.task)
       assert updated_task.milestone_id == nil
     end
@@ -568,27 +923,6 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       })
 
       assert res.message == "Milestone must belong to the same project as the task"
-    end
-
-    test "it can use ordering parameter to place task at specific position", ctx do
-      ctx =
-        ctx
-        |> Factory.add_project_task(:task2, :milestone)
-        |> Factory.add_project_task(:task3, :milestone)
-        |> Factory.add_project_milestone(:milestone2, :project)
-        |> Factory.log_in_person(:creator)
-
-      assert {200, res} = mutation(ctx.conn, [:project_tasks, :update_milestone], %{
-        task_id: Paths.task_id(ctx.task),
-        milestone_id: Paths.milestone_id(ctx.milestone2),
-        index: 0
-      })
-
-      # Verify task was moved to new milestone
-      assert res.task.milestone.id == Paths.milestone_id(ctx.milestone2)
-
-      # Would need to verify ordering is maintained, but this requires checking the milestone's tasks_ordering_state
-      # which would be more complex - just ensuring the mutation itself works is sufficient for this test
     end
   end
 
@@ -812,6 +1146,38 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       after_count = count_activities(ctx.project.id, "task_deleting")
       assert after_count == before_count + 1
+    end
+
+    test "it removes the task from the milestone's ordering state", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      task_id = Paths.task_id(ctx.task)
+
+      # Get the milestone and ensure the task is in its ordering state
+      ordering_state = Operately.Tasks.OrderingState.load(ctx.milestone.tasks_ordering_state)
+      updated_ordering = Operately.Tasks.OrderingState.add_task(ordering_state, ctx.task)
+
+      {:ok, milestone} = Operately.Projects.Milestone.changeset(ctx.milestone, %{
+        tasks_ordering_state: updated_ordering
+      }) |> Operately.Repo.update()
+
+      assert task_id in milestone.tasks_ordering_state
+
+      assert {200, res} = mutation(ctx.conn, [:project_tasks, :delete], %{
+        task_id: task_id
+      })
+
+      # Verify the task is deleted
+      assert res.success == true
+
+      # Verify the milestone was returned in the response
+      assert res.updated_milestone.id == Paths.milestone_id(ctx.milestone)
+
+      # Verify the task is no longer in the milestone's ordering state
+      milestone_after = Repo.reload(ctx.milestone)
+      refute task_id in milestone_after.tasks_ordering_state
+
+      # Verify the response matches what's in the database
+      assert res.updated_milestone.tasks_ordering_state == milestone_after.tasks_ordering_state
     end
   end
 
