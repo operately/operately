@@ -130,6 +130,7 @@ export function TaskList({
               onTaskDueDateChange={onTaskDueDateChange}
               onTaskStatusChange={onTaskStatusChange}
               searchPeople={searchPeople}
+              draggingDisabled
             />
           </div>
         ))}
