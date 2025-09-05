@@ -138,7 +138,6 @@ export function ReactionList({ form, size, canAddReaction }: ReactionListProps) 
           key={index}
           reaction={reaction}
           size={size}
-          form={form}
           isInDeleteMode={deleteMode === reaction.id}
           onReactionClick={handleReactionClick}
           onDeleteClick={handleDeleteClick}
@@ -163,11 +162,9 @@ function ReactionItem({ reaction, size, isInDeleteMode, onReactionClick, onDelet
   const testId = `reaction-${reaction.emoji}`;
   const isMyReaction = reaction.person.id === me.id;
 
-  const className = classNames(
-    "flex items-center transition-all bg-surface-dimmed rounded-full relative",
-    isMyReaction ? "cursor-pointer hover:bg-accent-100" : "",
-    isInDeleteMode ? "bg-accent-100" : "",
-  );
+  const className = classNames("flex items-center transition-all bg-surface-dimmed rounded-full relative", {
+    "cursor-pointer": isMyReaction,
+  });
 
   const handleClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent triggering the outside click handler
@@ -196,11 +193,11 @@ function ReactionItem({ reaction, size, isInDeleteMode, onReactionClick, onDelet
 
       {isInDeleteMode && isMyReaction && (
         <div
-          className="absolute -top-1 -right-1 bg-red-500 hover:bg-red-600 rounded-full p-1 cursor-pointer shadow-sm transition-colors"
+          className="text-red-500 hover:text-red-600 p-1 pr-2 cursor-pointer"
           onClick={handleDeleteClick}
           title="Remove reaction"
         >
-          <IconTrash size={12} className="text-white" />
+          <IconTrash size={size - 8} />
         </div>
       )}
     </div>
