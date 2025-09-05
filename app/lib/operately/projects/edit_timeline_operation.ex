@@ -72,7 +72,7 @@ defmodule Operately.Projects.EditTimelineOperation do
         new_start_date: Timeframe.start_date(changes.project.timeframe),
         old_end_date: Timeframe.end_date(project.timeframe),
         new_end_date: Timeframe.end_date(changes.project.timeframe),
-        milestone_updates: record_activity_updated_milestones(changes, attrs),
+        updated_milestones: record_activity_updated_milestones(changes, attrs),
         new_milestones: record_activity_new_milestones(changes, attrs)
       }
     end)
