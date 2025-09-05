@@ -94,13 +94,6 @@ function Page() {
     validations: [(v) => (v?.trim() === "" ? "Project name cannot be empty" : null)],
   });
 
-  const [title, setTitle] = usePageField(pageData, {
-    value: ({ milestone }) => milestone.title,
-    update: (v) => Api.project_milestones.updateTitle({ milestoneId: milestone.id, title: v }),
-    onError: (e: string) => showErrorToast(e, "Failed to update milestone name."),
-    validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
-  });
-
   const [description, setDescription] = usePageField(pageData, {
     value: ({ milestone }) => milestone.description && JSON.parse(milestone.description),
     update: (v) =>
@@ -115,11 +108,14 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Failed to update milestone due date."),
   });
 
-  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus } = Tasks.useTasksForTurboUi({
+  const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(pageData, milestone);
+
+  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus, updateTaskMilestone } = Tasks.useTasksForTurboUi({
     backendTasks: data.tasks,
     projectId: milestone.project.id,
     cacheKey: pageCacheKey(milestone.id),
-    milestones: [],
+    milestones: milestones,
+    setMilestones: setMilestones,
   });
   const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
@@ -168,7 +164,7 @@ function Page() {
     updateProjectName: setProjectName,
 
     // Milestone data
-    milestone: Milestones.parseMilestoneForTurboUi(paths, milestone),
+    milestone: parsedMilestone,
 
     // Timeline/Comments
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
@@ -193,7 +189,7 @@ function Page() {
     tasks,
     tasksEnabled: Companies.hasFeature(company, "milestone_tasks"),
     onTaskCreate: createTask,
-    onTaskReorder: () => {},
+    onTaskReorder: updateTaskMilestone,
     onTaskStatusChange: updateTaskStatus,
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskDueDateChange: updateTaskDueDate,
@@ -351,4 +347,28 @@ function useStatusField(
   });
 
   return [status, setStatus] as const;
+}
+
+function useMilestones(pageData, milestone: Milestones.Milestone) {
+  const paths = usePaths();
+  const [milestones, setMilestones] = React.useState<MilestonePage.Milestone[]>(
+    Milestones.parseMilestonesForTurboUi(paths, [milestone]),
+  );
+
+  const parsedMilestone = milestones[0]!;
+
+  const [title, setTitle] = usePageField(pageData, {
+    value: ({ milestone }) => milestone.title,
+    update: (v) => Api.project_milestones.updateTitle({ milestoneId: milestone.id, title: v }),
+    onError: (e: string) => showErrorToast(e, "Failed to update milestone name."),
+    validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
+  });
+
+  return { 
+    title,
+    setTitle,
+    parsedMilestone,
+    milestones, 
+    setMilestones, 
+  };
 }
