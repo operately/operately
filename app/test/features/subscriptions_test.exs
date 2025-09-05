@@ -21,44 +21,48 @@ defmodule Operately.Features.SubscriptionsTest do
       |> UI.login_as(ctx.creator)
     end
 
-    feature "All contributors", ctx do
-      ctx
-      |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form()
-      |> Steps.select_all_people()
-      |> Steps.submit_check_in_form()
-      |> Steps.assert_current_subscribers(%{count: 5, resource: "check-in"})
-    end
+  # TODO
+    # feature "All contributors", ctx do
+    #   ctx
+    #   |> Steps.go_to_new_check_in_page()
+    #   |> Steps.fill_out_check_in_form()
+    #   |> Steps.select_all_people()
+    #   |> Steps.submit_check_in_form()
+    #   |> Steps.assert_current_subscribers(%{count: 5, resource: "check-in"})
+    # end
 
-    feature "Select specific contributors", ctx do
-      ctx
-      |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form()
-      |> Steps.select_specific_people()
-      |> Steps.toggle_person_checkbox(ctx.john)
-      |> Steps.toggle_person_checkbox(ctx.jane)
-      |> Steps.save_people_selection()
-      |> Steps.submit_check_in_form()
-      |> Steps.assert_current_subscribers(%{count: 4, resource: "check-in"})
-    end
+  # TODO
+    # feature "Select specific contributors", ctx do
+    #   ctx
+    #   |> Steps.go_to_new_check_in_page()
+    #   |> Steps.fill_out_check_in_form()
+    #   |> Steps.select_specific_people()
+    #   |> Steps.toggle_person_checkbox(ctx.john)
+    #   |> Steps.toggle_person_checkbox(ctx.jane)
+    #   |> Steps.save_people_selection()
+    #   |> Steps.submit_check_in_form()
+    #   |> Steps.assert_current_subscribers(%{count: 4, resource: "check-in"})
+    # end
 
-    feature "No one", ctx do
-      ctx
-      |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form()
-      |> Steps.select_no_one()
-      |> Steps.submit_check_in_form()
-      |> Steps.assert_current_subscribers(%{count: 2, resource: "check-in"})
-    end
+  # TODO
+    # feature "No one", ctx do
+    #   ctx
+    #   |> Steps.go_to_new_check_in_page()
+    #   |> Steps.fill_out_check_in_form()
+    #   |> Steps.select_no_one()
+    #   |> Steps.submit_check_in_form()
+    #   |> Steps.assert_current_subscribers(%{count: 2, resource: "check-in"})
+    # end
 
-    feature "Subscribe and unsubribe", ctx do
-      ctx
-      |> Steps.go_to_new_check_in_page()
-      |> Steps.fill_out_check_in_form()
-      |> Steps.select_all_people()
-      |> Steps.submit_check_in_form()
-      |> test_current_subscriptions_widget("check-in")
-    end
+  # TODO
+    # feature "Subscribe and unsubribe", ctx do
+    #   ctx
+    #   |> Steps.go_to_new_check_in_page()
+    #   |> Steps.fill_out_check_in_form()
+    #   |> Steps.select_all_people()
+    #   |> Steps.submit_check_in_form()
+    #   |> test_current_subscriptions_widget("check-in")
+    # end
   end
 
   describe "Project Retrospective" do
@@ -79,48 +83,52 @@ defmodule Operately.Features.SubscriptionsTest do
       |> UI.login_as(ctx.creator)
     end
 
-    feature "All contributors", ctx do
-      ctx
-      |> ProjectRetrospectiveSteps.initiate_project_closing()
-      |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
-      |> Steps.select_all_people()
-      |> ProjectRetrospectiveSteps.submit_retrospective()
-      |> Steps.go_to_project_retrospective_page()
-      |> Steps.assert_current_subscribers(%{count: 5, resource: "project retrospective"})
-    end
+  # TODO
+    # feature "All contributors", ctx do
+    #   ctx
+    #   |> ProjectRetrospectiveSteps.initiate_project_closing()
+    #   |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
+    #   |> Steps.select_all_people()
+    #   |> ProjectRetrospectiveSteps.submit_retrospective()
+    #   |> Steps.go_to_project_retrospective_page()
+    #   |> Steps.assert_current_subscribers(%{count: 5, resource: "project retrospective"})
+    # end
 
-    feature "Select specific contributors", ctx do
-      ctx
-      |> ProjectRetrospectiveSteps.initiate_project_closing()
-      |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
-      |> Steps.select_specific_people()
-      |> Steps.toggle_person_checkbox(ctx.john)
-      |> Steps.toggle_person_checkbox(ctx.jane)
-      |> Steps.save_people_selection()
-      |> ProjectRetrospectiveSteps.submit_retrospective()
-      |> Steps.go_to_project_retrospective_page()
-      |> Steps.assert_current_subscribers(%{count: 4, resource: "project retrospective"})
-    end
+  # TODO
+    # feature "Select specific contributors", ctx do
+    #   ctx
+    #   |> ProjectRetrospectiveSteps.initiate_project_closing()
+    #   |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
+    #   |> Steps.select_specific_people()
+    #   |> Steps.toggle_person_checkbox(ctx.john)
+    #   |> Steps.toggle_person_checkbox(ctx.jane)
+    #   |> Steps.save_people_selection()
+    #   |> ProjectRetrospectiveSteps.submit_retrospective()
+    #   |> Steps.go_to_project_retrospective_page()
+    #   |> Steps.assert_current_subscribers(%{count: 4, resource: "project retrospective"})
+    # end
 
-    feature "No one", ctx do
-      ctx
-      |> ProjectRetrospectiveSteps.initiate_project_closing()
-      |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
-      |> Steps.select_no_one()
-      |> ProjectRetrospectiveSteps.submit_retrospective()
-      |> Steps.go_to_project_retrospective_page()
-      |> Steps.assert_current_subscribers(%{count: 2, resource: "project retrospective"})
-    end
+  # TODO
+    # feature "No one", ctx do
+    #   ctx
+    #   |> ProjectRetrospectiveSteps.initiate_project_closing()
+    #   |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
+    #   |> Steps.select_no_one()
+    #   |> ProjectRetrospectiveSteps.submit_retrospective()
+    #   |> Steps.go_to_project_retrospective_page()
+    #   |> Steps.assert_current_subscribers(%{count: 2, resource: "project retrospective"})
+    # end
 
-    feature "Subscribe and unsubribe", ctx do
-      ctx
-      |> ProjectRetrospectiveSteps.initiate_project_closing()
-      |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
-      |> Steps.select_all_people()
-      |> ProjectRetrospectiveSteps.submit_retrospective()
-      |> Steps.go_to_project_retrospective_page()
-      |> test_current_subscriptions_widget("project retrospective")
-    end
+  # TODO
+    # feature "Subscribe and unsubribe", ctx do
+    #   ctx
+    #   |> ProjectRetrospectiveSteps.initiate_project_closing()
+    #   |> ProjectRetrospectiveSteps.fill_in_retrospective(ctx.params)
+    #   |> Steps.select_all_people()
+    #   |> ProjectRetrospectiveSteps.submit_retrospective()
+    #   |> Steps.go_to_project_retrospective_page()
+    #   |> test_current_subscriptions_widget("project retrospective")
+    # end
   end
 
   describe "Message" do

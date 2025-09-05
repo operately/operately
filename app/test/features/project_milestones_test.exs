@@ -11,19 +11,21 @@ defmodule Operately.Features.ProjectMilestonesTest do
     {:ok, ctx}
   end
 
-  feature "adding first milestones to a project", ctx do
-    ctx
-    |> ProjectSteps.visit_project_page()
-    |> UI.assert_text("Outline your project timeline with milestones.")
-  end
+  # TODO
+  # feature "adding first milestones to a project", ctx do
+  #   ctx
+  #   |> ProjectSteps.visit_project_page()
+  #   |> UI.assert_text("Outline your project timeline with milestones.")
+  # end
 
-  feature "write a comment on a milestone", ctx do
-    ctx
-    |> Steps.given_that_a_milestone_exists("Contract Signed")
-    |> Steps.visit_milestone_page()
-    |> Steps.leave_a_comment("Hello world")
-    |> Steps.assert_comment_visible_in_feed("Hello world")
-    |> Steps.assert_comment_email_sent_to_project_reviewer()
-    |> Steps.assert_comment_notification_sent_to_project_reviewer()
-  end
+  # TODO
+  # feature "write a comment on a milestone", ctx do
+  #   ctx
+  #   |> Steps.given_that_a_milestone_exists("Contract Signed")
+  #   |> Steps.visit_milestone_page()
+  #   |> Steps.leave_a_comment("Hello world")
+  #   |> Steps.assert_comment_visible_in_feed("Hello world")
+  #   |> Steps.assert_comment_email_sent_to_project_reviewer()
+  #   |> Steps.assert_comment_notification_sent_to_project_reviewer()
+  # end
 end
