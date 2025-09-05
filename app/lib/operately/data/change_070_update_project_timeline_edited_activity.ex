@@ -18,6 +18,7 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivity do
       activity.content
       |> update_milestone_updates()
       |> update_new_milestones()
+      |> rename_milestone_updates_field()
 
     Repo.update_all(
       from(a in Activity, where: a.id == ^activity.id),
@@ -50,6 +51,17 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivity do
         end)
         Map.put(content, "new_milestones", updated_milestones)
       _ -> content
+    end
+  end
+
+  # Rename milestone_updates to updated_milestones for consistency with GraphQL schema
+  defp rename_milestone_updates_field(content) do
+    case content["milestone_updates"] do
+      nil -> content
+      milestone_updates ->
+        content
+        |> Map.put("updated_milestones", milestone_updates)
+        |> Map.delete("milestone_updates")
     end
   end
 

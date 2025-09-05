@@ -10,17 +10,20 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivityTest do
     |> Factory.setup()
   end
 
-  test "updates utc_datetime fields to date fields in milestone_updates", ctx do
+  test "updates utc_datetime fields to date fields in milestone_updates and renames to updated_milestones", ctx do
     activity = create_test_activity_with_milestone_updates(ctx.creator)
 
     Change070UpdateProjectTimelineEditedActivity.run()
 
     updated_activity = Repo.get!(Activity, activity.id)
-    milestone_updates = updated_activity.content["milestone_updates"]
+    
+    # Should have renamed milestone_updates to updated_milestones
+    assert updated_activity.content["milestone_updates"] == nil
+    updated_milestones = updated_activity.content["updated_milestones"]
 
-    assert length(milestone_updates) == 2
+    assert length(updated_milestones) == 2
 
-    [update1, update2] = milestone_updates
+    [update1, update2] = updated_milestones
     assert update1["old_due_date"] == "2023-03-15"
     assert update1["new_due_date"] == "2023-04-15"
     assert update2["old_due_date"] == "2023-05-15"
@@ -42,21 +45,40 @@ defmodule Operately.Data.Change070UpdateProjectTimelineEditedActivityTest do
     assert milestone2["due_date"] == "2023-07-20"
   end
 
-  test "handles nil values correctly in embedded structures", ctx do
+  test "handles nil values correctly in embedded structures and renames milestone_updates", ctx do
     activity = create_test_activity_with_nil_values(ctx.creator)
 
     Change070UpdateProjectTimelineEditedActivity.run()
 
     updated_activity = Repo.get!(Activity, activity.id)
-    milestone_updates = updated_activity.content["milestone_updates"]
+    # Should have renamed milestone_updates to updated_milestones
+    assert updated_activity.content["milestone_updates"] == nil
+    updated_milestones = updated_activity.content["updated_milestones"]
     new_milestones = updated_activity.content["new_milestones"]
 
-    [update] = milestone_updates
+    [update] = updated_milestones
     [milestone] = new_milestones
 
     assert update["old_due_date"] == nil
     assert update["new_due_date"] == "2023-06-01"
     assert milestone["due_date"] == nil
+  end
+
+  test "renames milestone_updates field to updated_milestones", ctx do
+    activity = create_test_activity_with_milestone_updates(ctx.creator)
+
+    # Verify the original field exists before migration
+    assert activity.content["milestone_updates"] != nil
+    assert activity.content["updated_milestones"] == nil
+
+    Change070UpdateProjectTimelineEditedActivity.run()
+
+    updated_activity = Repo.get!(Activity, activity.id)
+    
+    # Verify the field has been renamed
+    assert updated_activity.content["milestone_updates"] == nil
+    assert updated_activity.content["updated_milestones"] != nil
+    assert length(updated_activity.content["updated_milestones"]) == 2
   end
 
   defp create_test_activity_with_milestone_updates(person) do
