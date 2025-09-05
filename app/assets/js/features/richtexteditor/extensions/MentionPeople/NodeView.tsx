@@ -1,9 +1,9 @@
-import * as React from "react";
-import * as TipTap from "@tiptap/react";
 import * as People from "@/models/people";
+import * as TipTap from "@tiptap/react";
+import * as React from "react";
 
-import { Avatar } from "turboui";
 import { usePersonNameAndAvatar } from "@/contexts/CurrentCompanyContext";
+import { Avatar } from "turboui";
 
 //
 // The node view is responsible for rendering the node as a DOM element.
@@ -37,9 +37,17 @@ export function NodeView({ node }: { node: Node }) {
 
   return (
     <TipTap.NodeViewWrapper className="inline">
-      <div ref={ref} className="inline mr-0.5 align-sub">
+      <span
+        ref={ref}
+        className="inline-block mr-1 align-[-4px]"
+        style={{
+          height: "1em",
+          lineHeight: "1em",
+          overflow: "visible",
+        }}
+      >
         <Avatar person={person} size={avatarsize} />
-      </div>
+      </span>
 
       {People.firstName(person)}
     </TipTap.NodeViewWrapper>
@@ -50,5 +58,5 @@ function getFontSize(element: HTMLElement): number {
   const style = window.getComputedStyle(element, null);
   const fontSize = parseFloat(style.getPropertyValue("font-size"));
 
-  return fontSize;
+  return fontSize + 3;
 }
