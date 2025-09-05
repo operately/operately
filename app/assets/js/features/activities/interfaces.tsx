@@ -1,24 +1,24 @@
-import type { Activity } from "@/models/activities";
+import type { Activity, AggregatedActivity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 
 export interface ActivityHandler {
   // Feed items
-  FeedItemContent(props: { activity: Activity; page: any }): JSX.Element | null;
-  FeedItemTitle(props: { activity: Activity; page: any }): JSX.Element | null;
-  feedItemAlignment(activity: Activity): "items-start" | "items-center";
+  FeedItemContent(props: { activity: Activity | AggregatedActivity; page: any }): JSX.Element | null;
+  FeedItemTitle(props: { activity: Activity | AggregatedActivity; page: any }): JSX.Element | null;
+  feedItemAlignment(activity: Activity | AggregatedActivity): "items-start" | "items-center";
 
   // Activity page
-  pagePath(paths: Paths, activity: Activity): string;
-  pageHtmlTitle(activity: Activity): string;
-  PageTitle(props: { activity: Activity }): JSX.Element;
-  PageContent(props: { activity: Activity }): JSX.Element;
-  PageOptions(props: { activity: Activity }): JSX.Element | null;
+  pagePath(paths: Paths, activity: Activity | AggregatedActivity): string;
+  pageHtmlTitle(activity: Activity | AggregatedActivity): string;
+  PageTitle(props: { activity: Activity | AggregatedActivity }): JSX.Element;
+  PageContent(props: { activity: Activity | AggregatedActivity }): JSX.Element;
+  PageOptions(props: { activity: Activity | AggregatedActivity }): JSX.Element | null;
 
   // Notifications
-  NotificationTitle(props: { activity: Activity }): JSX.Element | string;
-  NotificationLocation(props: { activity: Activity }): JSX.Element | string | null;
+  NotificationTitle(props: { activity: Activity | AggregatedActivity }): JSX.Element | string;
+  NotificationLocation(props: { activity: Activity | AggregatedActivity }): JSX.Element | string | null;
 
   // Comments
-  commentCount(activity: Activity): number;
-  hasComments(activity: Activity): boolean;
+  commentCount(activity: Activity | AggregatedActivity): number;
+  hasComments(activity: Activity | AggregatedActivity): boolean;
 }

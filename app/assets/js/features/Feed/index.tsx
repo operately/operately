@@ -9,6 +9,7 @@ import { DivLink } from "turboui";
 import Api from "@/api";
 import FormattedTime from "@/components/FormattedTime";
 import ActivityHandler, { DISPLAYED_IN_FEED } from "@/features/activities";
+import AggregatedActivityHandler from "@/features/activities/AggregatedActivity";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
@@ -90,25 +91,39 @@ function ActivityGroupItems({ group, page }: { group: Activities.ActivityGroup; 
   return (
     <div className="flex-1 flex flex-col gap-4">
       {group.activities.map((activity) => (
-        <ErrorBoundary key={activity.id} fallback={<div>{activity.action}</div>}>
-          <ActivityItem key={activity.id} activity={activity} page={page} />
+        <ErrorBoundary key={getActivityKey(activity)} fallback={<div>{getActivityAction(activity)}</div>}>
+          <ActivityItem key={getActivityKey(activity)} activity={activity} page={page} />
         </ErrorBoundary>
       ))}
     </div>
   );
 }
 
-function ActivityItem({ activity, page }: { activity: Activities.Activity; page: string }) {
+function getActivityKey(activity: Activities.ActivityOrAggregated): string {
+  return (activity as any).type === "aggregated" ? activity.id : activity.id;
+}
+
+function getActivityAction(activity: Activities.ActivityOrAggregated): string {
+  return (activity as any).type === "aggregated" ? activity.action : activity.action;
+}
+
+function isAggregatedActivity(activity: Activities.ActivityOrAggregated): activity is Activities.AggregatedActivity {
+  return (activity as any).type === "aggregated";
+}
+
+function ActivityItem({ activity, page }: { activity: Activities.ActivityOrAggregated; page: string }) {
   const paths = usePaths();
   const author = activity.author!;
   const time = activity.insertedAt!;
-  const title = <ActivityHandler.FeedItemTitle activity={activity} page={page} />;
-  const content = <ActivityHandler.FeedItemContent activity={activity} page={page} />;
-  const alignement = ActivityHandler.feedItemAlignment(activity);
+  
+  const handler = isAggregatedActivity(activity) ? AggregatedActivityHandler : ActivityHandler;
+  const title = handler.FeedItemTitle({ activity: activity as any, page });
+  const content = handler.FeedItemContent({ activity: activity as any, page });
+  const alignment = handler.feedItemAlignment(activity as any);
   const profilePath = paths.profilePath(author.id!);
 
   return (
-    <div className={classNames("flex flex-1 gap-3", alignement)}>
+    <div className={classNames("flex flex-1 gap-3", alignment)}>
       <DivLink to={profilePath}>
         <Avatar person={author!} size="small" />
       </DivLink>
