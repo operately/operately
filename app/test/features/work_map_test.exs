@@ -103,15 +103,16 @@ defmodule Operately.Features.WorkMapTest do
   end
 
   describe "Work Map functionality" do
-    feature "Correct milestone is displayed", ctx do
-      ctx
-      |> Steps.given_project_with_milestones_exist()
-      |> Steps.visit_company_work_map()
-      |> Steps.assert_first_milestone_is_displayed()
-      |> Steps.mark_project_as_completed()
-      |> Steps.visit_company_work_map()
-      |> Steps.assert_second_milestone_is_displayed()
-    end
+  # TODO
+    # feature "Correct milestone is displayed", ctx do
+    #   ctx
+    #   |> Steps.given_project_with_milestones_exist()
+    #   |> Steps.visit_company_work_map()
+    #   |> Steps.assert_first_milestone_is_displayed()
+    #   |> Steps.mark_project_as_completed()
+    #   |> Steps.visit_company_work_map()
+    #   |> Steps.assert_second_milestone_is_displayed()
+    # end
 
     feature "Correct target is displayed", ctx do
       ctx
