@@ -48,14 +48,14 @@ defmodule Operately.Activities.Content.ProjectTimelineEdited do
     field :old_end_date, :date
     field :new_end_date, :date
 
-    embeds_many :milestone_updates, MilestoneUpdate
+    embeds_many :updated_milestones, MilestoneUpdate
     embeds_many :new_milestones, NewMilestones
   end
 
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, [:company_id, :space_id, :project_id, :old_start_date, :old_end_date, :new_start_date, :new_end_date])
-    |> cast_embed(:milestone_updates)
+    |> cast_embed(:updated_milestones)
     |> cast_embed(:new_milestones)
     |> validate_required([:company_id, :space_id, :project_id, :new_start_date])
   end
