@@ -57,7 +57,6 @@ export namespace MilestonePage {
     onDelete?: () => void;
 
     // Tasks for this milestone
-    tasksEnabled?: boolean;
     tasks: Types.Task[];
 
     // Optional callbacks
@@ -195,7 +194,7 @@ export function MilestonePage(props: MilestonePage.Props) {
               canEdit={canEdit}
             />
 
-            {props.tasksEnabled && <TasksSection {...state} />}
+            <TasksSection {...state} />
 
             <TimelineSection {...state} />
           </div>

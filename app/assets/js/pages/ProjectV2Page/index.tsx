@@ -3,7 +3,6 @@ import { PageModule } from "@/routes/types";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 
-import * as Companies from "@/models/companies";
 import * as Goals from "@/models/goals";
 import * as People from "@/models/people";
 import * as Projects from "@/models/projects";
@@ -22,7 +21,6 @@ import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIn
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
-import { redirectIfFeatureNotEnabled } from "@/routes/redirectIfFeatureEnabled";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 
@@ -38,16 +36,12 @@ type LoaderResult = {
     project: Projects.Project;
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
-    company: Companies.Company;
     backendTasks: Tasks.Task[];
   };
   cacheVersion: number;
 };
 
 async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
-  const paths = new Paths({ companyId: params.companyId });
-  await redirectIfFeatureNotEnabled(params, { feature: "project_v2", path: paths.projectPath(params.id) });
-
   return await PageCache.fetch({
     cacheKey: pageCacheKey(params.id),
     refreshCache,
@@ -70,7 +64,6 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         }).then((d) => d.project!),
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
-        company: Api.getCompany({ id: params.companyId! }).then((d) => d.company!),
         backendTasks: Api.project_tasks.list({ projectId: params.id }).then((d) => d.tasks!),
       }),
   });
@@ -78,7 +71,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 
 function Page() {
   const paths = usePaths();
-  const { project, checkIns, discussions, company, backendTasks } = PageCache.useData(loader).data;
+  const { project, checkIns, discussions, backendTasks } = PageCache.useData(loader).data;
   const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -263,7 +256,6 @@ function Page() {
     onTaskAssigneeChange: updateTaskAssignee,
     onTaskStatusChange: updateTaskStatus,
     onTaskMilestoneChange: updateTaskMilestone,
-    tasksEnabled: Companies.hasFeature(company, "project_tasks"),
     milestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
