@@ -1108,6 +1108,11 @@ export interface EditMemberPermissionsInput {
   accessLevel?: number | null;
 }
 
+export interface EditMilestoneOrderingStateInput {
+  milestoneId: Id;
+  orderingState: string[];
+}
+
 export interface EditProjectTimelineMilestoneUpdateInput {
   id: string;
   title: string;
@@ -3780,6 +3785,7 @@ export interface ProjectTasksCreateInput {
 
 export interface ProjectTasksCreateResult {
   task: Task;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectTasksDeleteInput {
@@ -3788,6 +3794,7 @@ export interface ProjectTasksDeleteInput {
 
 export interface ProjectTasksDeleteResult {
   success: boolean;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectTasksUpdateAssigneeInput {
@@ -3820,11 +3827,21 @@ export interface ProjectTasksUpdateDueDateResult {
 export interface ProjectTasksUpdateMilestoneInput {
   taskId: Id;
   milestoneId: Id | null;
-  index?: number;
 }
 
 export interface ProjectTasksUpdateMilestoneResult {
   task: Task;
+}
+
+export interface ProjectTasksUpdateMilestoneAndOrderingInput {
+  taskId: Id;
+  milestoneId: Id | null;
+  milestonesOrderingState: EditMilestoneOrderingStateInput[];
+}
+
+export interface ProjectTasksUpdateMilestoneAndOrderingResult {
+  task: Task;
+  updatedMilestones: Milestone[];
 }
 
 export interface ProjectTasksUpdateNameInput {
@@ -3843,6 +3860,7 @@ export interface ProjectTasksUpdateStatusInput {
 
 export interface ProjectTasksUpdateStatusResult {
   task: Task;
+  updatedMilestone: Milestone | null;
 }
 
 export interface ProjectsCreateMilestoneInput {
@@ -4796,6 +4814,12 @@ class ApiNamespaceProjectTasks {
 
   async updateMilestone(input: ProjectTasksUpdateMilestoneInput): Promise<ProjectTasksUpdateMilestoneResult> {
     return this.client.post("/project_tasks/update_milestone", input);
+  }
+
+  async updateMilestoneAndOrdering(
+    input: ProjectTasksUpdateMilestoneAndOrderingInput,
+  ): Promise<ProjectTasksUpdateMilestoneAndOrderingResult> {
+    return this.client.post("/project_tasks/update_milestone_and_ordering", input);
   }
 
   async updateName(input: ProjectTasksUpdateNameInput): Promise<ProjectTasksUpdateNameResult> {
@@ -7432,6 +7456,13 @@ export default {
     useUpdateDescription: () =>
       useMutation<ProjectTasksUpdateDescriptionInput, ProjectTasksUpdateDescriptionResult>(
         defaultApiClient.apiNamespaceProjectTasks.updateDescription,
+      ),
+
+    updateMilestoneAndOrdering: (input: ProjectTasksUpdateMilestoneAndOrderingInput) =>
+      defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering(input),
+    useUpdateMilestoneAndOrdering: () =>
+      useMutation<ProjectTasksUpdateMilestoneAndOrderingInput, ProjectTasksUpdateMilestoneAndOrderingResult>(
+        defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering,
       ),
 
     updateAssignee: (input: ProjectTasksUpdateAssigneeInput) =>
