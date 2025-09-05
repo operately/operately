@@ -70,7 +70,7 @@ function aggregateConsecutiveActivities(activities: Activity[]): ActivityOrAggre
 
 function isAggregatableActivity(action: string): boolean {
   // Define which activity types can be aggregated
-  return [
+  const aggregatableActions = [
     "resource_hub_document_edited",
     "resource_hub_file_edited", 
     "resource_hub_link_edited",
@@ -79,7 +79,9 @@ function isAggregatableActivity(action: string): boolean {
     "task_name_updating",
     "milestone_title_updating",
     "milestone_description_updating",
-  ].includes(action);
+  ];
+  
+  return aggregatableActions.indexOf(action) !== -1;
 }
 
 function createAggregatedActivity(activities: Activity[]): AggregatedActivity {
