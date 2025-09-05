@@ -5,17 +5,17 @@ import type { DragAndDropContextValue } from "./context";
 import { useDragAndDropContext } from "./context";
 import { DRAG_DISTANCE_INERTIA } from "./constants";
 
-export function useDraggable({ id, zoneId }: { id: string; zoneId: string }) {
+export function useDraggable({ id, zoneId, disabled = false }: { id: string; zoneId: string; disabled?: boolean }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const context = useDragAndDropContext();
 
   React.useEffect(() => {
-    if (!ref.current) return;
+    if (!ref.current || disabled) return;
 
     const handler = new DraggableElement(id, ref.current!, context, zoneId);
     handler.bindEvents();
     return () => handler.unbindEvents();
-  }, [ref, id, zoneId]);
+  }, [ref, id, zoneId, disabled]);
 
   return { ref, isDragging: context.draggedId === id };
 }

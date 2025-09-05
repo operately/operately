@@ -18,41 +18,60 @@ interface TaskItemProps {
   onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
   onTaskStatusChange: (taskId: string, status: string) => void;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
+  draggingDisabled?: boolean;
 }
 
-export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, onTaskAssigneeChange, onTaskStatusChange, searchPeople }: TaskItemProps) {
+export function TaskItem({
+  task,
+  milestoneId,
+  itemStyle,
+  onTaskDueDateChange,
+  onTaskAssigneeChange,
+  onTaskStatusChange,
+  searchPeople,
+  draggingDisabled,
+}: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
   const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status);
 
   // Set up draggable behavior
-  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId });
+  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId, disabled: draggingDisabled });
 
   const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
 
-  const handleAssigneeChange = useCallback((newAssignee: Person | null) => {
-    setCurrentAssignee(newAssignee);
+  const handleAssigneeChange = useCallback(
+    (newAssignee: Person | null) => {
+      setCurrentAssignee(newAssignee);
 
-    if (onTaskAssigneeChange && task.id) {
-      onTaskAssigneeChange(task.id, newAssignee);
-    }
-  }, [task.id, onTaskAssigneeChange]);
+      if (onTaskAssigneeChange && task.id) {
+        onTaskAssigneeChange(task.id, newAssignee);
+      }
+    },
+    [task.id, onTaskAssigneeChange],
+  );
 
-  const handleDueDateChange = useCallback((newDueDate: DateField.ContextualDate | null) => {
-    setCurrentDueDate(newDueDate);
+  const handleDueDateChange = useCallback(
+    (newDueDate: DateField.ContextualDate | null) => {
+      setCurrentDueDate(newDueDate);
 
-    if (onTaskDueDateChange && task.id) {
-      onTaskDueDateChange(task.id, newDueDate);
-    }
-  }, [task.id, onTaskDueDateChange]);
+      if (onTaskDueDateChange && task.id) {
+        onTaskDueDateChange(task.id, newDueDate);
+      }
+    },
+    [task.id, onTaskDueDateChange],
+  );
 
-  const handleStatusChange = useCallback((newStatus: TaskWithIndex["status"]) => {
-    setCurrentStatus(newStatus);
+  const handleStatusChange = useCallback(
+    (newStatus: TaskWithIndex["status"]) => {
+      setCurrentStatus(newStatus);
 
-    if (onTaskStatusChange && task.id) {
-      onTaskStatusChange(task.id, newStatus);
-    }
-  }, [task.id, onTaskStatusChange]);
+      if (onTaskStatusChange && task.id) {
+        onTaskStatusChange(task.id, newStatus);
+      }
+    },
+    [task.id, onTaskStatusChange],
+  );
 
   return (
     <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
@@ -63,7 +82,12 @@ export function TaskItem({ task, milestoneId, itemStyle, onTaskDueDateChange, on
           <div className="flex items-center gap-2 h-6">
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
-              <StatusSelector status={currentStatus} onChange={handleStatusChange} size="md" readonly={!onTaskStatusChange} />
+              <StatusSelector
+                status={currentStatus}
+                onChange={handleStatusChange}
+                size="md"
+                readonly={!onTaskStatusChange}
+              />
             </div>
             {/* Task title with inline meta indicators */}
             <BlackLink
