@@ -1,7 +1,7 @@
 import * as Time from "@/utils/time";
 import * as People from "@/models/people";
 import { Milestone, MilestoneComment } from "@/api";
-import { CommentSection, DateField, TaskBoard } from "turboui";
+import { CommentSection, DateField } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
@@ -19,11 +19,11 @@ export interface ParsedMilestone extends Pick<Milestone, "id" | "title" | "descr
   deadline: DateField.ContextualDate | null;
 }
 
-export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]): TaskBoard.Milestone[] {
+export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
   return milestones.map((m) => parseMilestoneForTurboUi(paths, m));
 }
 
-export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone): TaskBoard.Milestone {
+export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
   return {
     id: milestone.id,
     name: milestone.title,
