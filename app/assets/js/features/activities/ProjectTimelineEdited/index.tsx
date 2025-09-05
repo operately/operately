@@ -84,17 +84,17 @@ function content(activity: Activity): ActivityContentProjectTimelineEdited {
 export default ProjectTimelineEdited;
 
 function NewStartDate({ content }: { content: Content }) {
-  if (!content.startDateChanged) return null;
+  if (!content.startDateChanged || !content.newStartDate) return null;
 
-  const date = <FormattedTime time={content.newStartDate!} format="long-date" />;
+  const date = <FormattedTime time={content.newStartDate} format="long-date" />;
 
   return <div>The start date was set to {date}.</div>;
 }
 
 function NewEndDate({ content }: { content: Content }) {
-  if (!content.dueDateChanged) return null;
+  if (!content.dueDateChanged || !content.newDueDate) return null;
 
-  const date = <FormattedTime time={content.newDueDate!} format="long-date" />;
+  const date = <FormattedTime time={content.newDueDate} format="long-date" />;
 
   return <div>The due date was set to {date}.</div>;
 }
