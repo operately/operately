@@ -1,17 +1,18 @@
-import * as React from "react";
-import { IconMoodPlus, IconX } from "turboui";
+import * as api from "@/api";
 import * as Reactions from "@/models/reactions";
 import * as Popover from "@radix-ui/react-popover";
-import * as api from "@/api";
+import * as React from "react";
+import { IconMoodPlus, IconTrash, IconX } from "turboui";
 
 import classNames from "classnames";
 
-import { Avatar } from "turboui";
 import { useMe } from "@/contexts/CurrentCompanyContext";
+import { Avatar } from "turboui";
 
 interface ReactionsFormState {
   reactions: ReactionListItem[];
   submit: (type: string) => void;
+  remove: (id: string) => void;
 }
 
 interface ReactionListItem {
@@ -23,6 +24,7 @@ interface ReactionListItem {
 export function useReactionsForm(entity: Reactions.Entity, initial: Reactions.Reaction[]): ReactionsFormState {
   const me = useMe()!;
   const [add] = Reactions.useAddReaction();
+  const [removeReaction] = Reactions.useRemoveReaction();
 
   const [reactions, setReactions] = React.useState<ReactionListItem[]>(() => {
     return initial.map((reaction: api.Reaction | Reactions.Reaction) => {
@@ -62,9 +64,31 @@ export function useReactionsForm(entity: Reactions.Entity, initial: Reactions.Re
     }
   };
 
+  const remove = async (id: string) => {
+    // Get the reaction before removing it for potential restoration
+    const reactionToRemove = reactions.find((r) => r.id === id);
+
+    // Optimistically remove the reaction from UI
+    setReactions((prev) => {
+      return prev.filter((r) => r.id !== id);
+    });
+
+    try {
+      await removeReaction({
+        reactionId: id,
+      });
+    } catch (error) {
+      // If removal fails, restore the reaction
+      if (reactionToRemove) {
+        setReactions((prev) => [...prev, reactionToRemove]);
+      }
+    }
+  };
+
   return {
     reactions,
     submit,
+    remove,
   };
 }
 
@@ -75,10 +99,49 @@ interface ReactionListProps {
 }
 
 export function ReactionList({ form, size, canAddReaction }: ReactionListProps) {
+  const [deleteMode, setDeleteMode] = React.useState<string | null>(null);
+
+  const handleReactionClick = (reactionId: string) => {
+    if (deleteMode === reactionId) {
+      setDeleteMode(null); // Hide delete button if clicking the same reaction
+    } else {
+      setDeleteMode(reactionId); // Show delete button for this reaction
+    }
+  };
+
+  const handleDeleteClick = (reactionId: string) => {
+    form.remove(reactionId);
+    setDeleteMode(null); // Hide delete button after removing
+  };
+
+  // Hide delete mode when clicking outside
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // If we're in delete mode and the click is outside reaction elements
+      if (deleteMode && !(event.target as Element)?.closest("[data-reaction-item]")) {
+        setDeleteMode(null);
+      }
+    };
+
+    if (deleteMode) {
+      document.addEventListener("click", handleClickOutside);
+      return () => document.removeEventListener("click", handleClickOutside);
+    } else {
+      return () => {};
+    }
+  }, [deleteMode]);
+
   return (
     <div className="flex items-start gap-2 flex-wrap">
       {form.reactions.map((reaction, index) => (
-        <ReactionItem key={index} reaction={reaction} size={size} />
+        <ReactionItem
+          key={index}
+          reaction={reaction}
+          size={size}
+          isInDeleteMode={deleteMode === reaction.id}
+          onReactionClick={handleReactionClick}
+          onDeleteClick={handleDeleteClick}
+        />
       ))}
 
       {canAddReaction && <AddReaction form={form} size={size} />}
@@ -86,16 +149,57 @@ export function ReactionList({ form, size, canAddReaction }: ReactionListProps) 
   );
 }
 
-function ReactionItem({ reaction, size }) {
-  const testId = `reaction-${reaction.reactionType}`;
-  const className = classNames("flex items-center transition-all bg-surface-dimmed rounded-full");
+interface ReactionItemProps {
+  reaction: ReactionListItem;
+  size: number;
+  isInDeleteMode: boolean;
+  onReactionClick: (reactionId: string) => void;
+  onDeleteClick: (reactionId: string) => void;
+}
+
+function ReactionItem({ reaction, size, isInDeleteMode, onReactionClick, onDeleteClick }: ReactionItemProps) {
+  const me = useMe()!;
+  const testId = `reaction-${reaction.emoji}`;
+  const isMyReaction = reaction.person.id === me.id;
+
+  const className = classNames("flex items-center transition-all bg-surface-dimmed rounded-full relative", {
+    "cursor-pointer": isMyReaction,
+  });
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the outside click handler
+    if (isMyReaction) {
+      onReactionClick(reaction.id);
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onDeleteClick(reaction.id);
+  };
 
   return (
-    <div className={className} data-test-id={testId}>
+    <div
+      className={className}
+      data-test-id={testId}
+      data-reaction-item
+      onClick={handleClick}
+      title={isMyReaction ? (isInDeleteMode ? "" : "Click to remove your reaction") : ""}
+    >
       <Avatar person={reaction.person} size={size} />
       <div style={{ fontSize: size - 4 }} className="pl-1.5 pr-2">
         {reaction.emoji}
       </div>
+
+      {isInDeleteMode && isMyReaction && (
+        <div
+          className="text-red-500 hover:text-red-600 p-1 pr-2 cursor-pointer"
+          onClick={handleDeleteClick}
+          title="Remove reaction"
+        >
+          <IconTrash size={size - 8} />
+        </div>
+      )}
     </div>
   );
 }
