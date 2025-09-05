@@ -62,10 +62,10 @@ export namespace MilestonePage {
 
     // Optional callbacks
     onTaskCreate?: (task: Types.NewTaskPayload) => void;
-    onTaskReorder?: (tasks: Types.Task[]) => void;
-    onTaskAssigneeChange?: (taskId: string, assignee: Person | null) => void;
-    onTaskDueDateChange?: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
-    onTaskStatusChange?: (taskId: string, status: string) => void;
+    onTaskReorder?: (taskId: string, milestoneId: string | null, index: number) => void;
+    onTaskAssigneeChange: (taskId: string, assignee: Person | null) => void;
+    onTaskDueDateChange: (taskId: string, dueDate: DateField.ContextualDate | null) => void;
+    onTaskStatusChange: (taskId: string, status: string) => void;
 
     searchPeople: SearchFn;
 

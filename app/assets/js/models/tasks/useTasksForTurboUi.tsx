@@ -22,7 +22,6 @@ interface Attrs {
   cacheKey: string;
   milestones: TaskBoard.Milestone[];
   setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
-  refresh?: () => Promise<void>;
 }
 
 export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones }: Attrs) {

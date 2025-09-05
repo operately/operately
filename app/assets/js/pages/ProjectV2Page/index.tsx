@@ -78,8 +78,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 
 function Page() {
   const paths = usePaths();
-  const { data, refresh } = PageCache.useData(loader);
-  const { project, checkIns, discussions, company, backendTasks } = data;
+  const { project, checkIns, discussions, company, backendTasks } = PageCache.useData(loader).data;
   const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -158,7 +157,6 @@ function Page() {
       cacheKey: pageCacheKey(project.id),
       milestones,
       setMilestones,
-      refresh,
     });
 
   const parentGoalSearch = useParentGoalSearch(project);
