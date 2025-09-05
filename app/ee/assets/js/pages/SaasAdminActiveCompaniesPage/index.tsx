@@ -12,16 +12,17 @@ interface LoaderData {
 }
 
 export const loader = async () => {
-  return { companies: await AdminApi.getCompanies({}).then((res) => res.companies) };
+  return { companies: await AdminApi.getActiveCompanies({}).then((res) => res.companies) };
 };
 
 export function Page() {
   return (
-    <Pages.Page title={"Admininstration"} testId="saas-admin-page">
+    <Pages.Page title={"Active Organizations"} testId="saas-admin-active-companies-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <Paper.Header title="Companies" />
+          <Paper.Header title="Active Organizations" />
           <Navigation />
+          <Description />
           <CompanyList />
         </Paper.Body>
       </Paper.Root>
@@ -35,13 +36,13 @@ function Navigation() {
       <div className="flex gap-4">
         <DivLink 
           to="/admin" 
-          className="px-4 py-2 text-sm rounded bg-surface-dimmed hover:bg-surface-highlight border-b-2 border-accent-1"
+          className="px-4 py-2 text-sm rounded hover:bg-surface-highlight"
         >
           All Organizations
         </DivLink>
         <DivLink 
           to="/admin/active-organizations" 
-          className="px-4 py-2 text-sm rounded hover:bg-surface-highlight"
+          className="px-4 py-2 text-sm rounded bg-surface-dimmed hover:bg-surface-highlight border-b-2 border-accent-1"
         >
           Active Organizations
         </DivLink>
@@ -50,14 +51,46 @@ function Navigation() {
   );
 }
 
+function Description() {
+  return (
+    <div className="mb-6">
+      <p className="text-content-accent text-sm">
+        These organizations show active engagement with Operately based on multiple criteria:
+      </p>
+      <ul className="text-content-accent text-sm mt-2 ml-4 list-disc">
+        <li>Have multiple team members (2 or more)</li>
+        <li>Have multiple goals and projects (2 or more each)</li>
+        <li>Show recent activity within the last 30 days</li>
+      </ul>
+    </div>
+  );
+}
+
 function CompanyList() {
   const { companies } = Pages.useLoadedData<LoaderData>();
 
+  if (companies.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-content-accent text-lg">No active organizations found</p>
+        <p className="text-content-subtle text-sm mt-2">
+          Organizations need to meet all activity criteria to appear here
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div>
+      <div className="mb-4">
+        <p className="text-sm text-content-accent">
+          Found {companies.length} active organization{companies.length !== 1 ? 's' : ''}
+        </p>
+      </div>
+
       <TableRow header>
         <div>#</div>
-        <div>Company</div>
+        <div>Organization</div>
         <div className="text-right">People</div>
         <div className="text-right">Spaces</div>
         <div className="text-right">Goals</div>
@@ -89,12 +122,6 @@ function CompanyList() {
           </div>
         </TableRow>
       ))}
-
-      {window.appConfig.version && (
-        <div className="flex justify-start mt-6 text-xs">
-          <div className="bg-surface-dimmed px-3 py-1 rounded-full">Version: {window.appConfig.version}</div>
-        </div>
-      )}
     </div>
   );
 }
