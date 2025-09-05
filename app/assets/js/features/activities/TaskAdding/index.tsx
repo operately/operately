@@ -10,7 +10,7 @@ const TaskAdding: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    return paths.taskV2Path(content(activity).task!.id!);
+    return paths.taskPath(content(activity).task!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
