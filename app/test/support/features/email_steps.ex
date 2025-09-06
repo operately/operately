@@ -7,7 +7,7 @@ defmodule Operately.Support.Features.EmailSteps do
     author = find_person(author)
     to = find_person(to)
 
-    subject = "(#{where}) #{Person.short_name(author)} #{action}"
+    subject = "[#{ctx.company.name}] (#{where}) #{Person.short_name(author)} #{action}"
 
     ctx |> UI.assert_email_sent(subject, to: to.email)
   end
@@ -65,7 +65,7 @@ defmodule Operately.Support.Features.EmailSteps do
   end
 
   def assert_space_members_added_sent(ctx, author: author, to: to, title: title) do
-    ctx |> assert_sent(to: to, subject: "(#{title}) #{Person.short_name(author)} added you to the #{title} space")
+    ctx |> assert_sent(to: to, subject: "[#{ctx.company.name}] (#{title}) #{Person.short_name(author)} added you to the #{title} space")
   end
 
   #
