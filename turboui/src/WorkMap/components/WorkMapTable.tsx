@@ -6,6 +6,7 @@ import { SpaceField } from "../../SpaceField";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle, IconPlus } from "../../icons";
 import classNames from "../../utils/classnames";
+import { WorkMapExpandableProvider } from "../context/Expandable";
 import { AddItemModal } from "./AddItemModal";
 import { TableRow } from "./TableRow";
 
@@ -32,47 +33,49 @@ export function WorkMapTable({
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
 
   return (
-    <div className="overflow-x-auto bg-surface-base rounded-b-lg">
-      <table className="min-w-full divide-y divide-surface-outline">
-        <TableHeader tab={tab} columnOptions={columnOptions} />
-        <tbody>
-          {emptyWorkMap ? (
-            <ZeroState
-              addingEnabled={addingEnabled}
-              spaceSearch={spaceSearch!}
-              addItem={addItem!}
-              addItemDefaultSpace={addItemDefaultSpace!}
-            />
-          ) : (
-            <>
-              {items.map((item, idx) => (
-                <TableRow
-                  key={item.id}
-                  item={item}
-                  level={0}
-                  isLast={idx === items.length - 1}
-                  tab={tab}
-                  columnOptions={columnOptions}
-                  showIndentation={showIndentation}
-                  addItem={addItem}
-                  addingEnabled={addingEnabled}
-                  spaceSearch={spaceSearch}
-                />
-              ))}
+    <WorkMapExpandableProvider items={items}>
+      <div className="overflow-x-auto bg-surface-base rounded-b-lg">
+        <table className="min-w-full divide-y divide-surface-outline">
+          <TableHeader tab={tab} columnOptions={columnOptions} />
+          <tbody>
+            {emptyWorkMap ? (
+              <ZeroState
+                addingEnabled={addingEnabled}
+                spaceSearch={spaceSearch!}
+                addItem={addItem!}
+                addItemDefaultSpace={addItemDefaultSpace!}
+              />
+            ) : (
+              <>
+                {items.map((item, idx) => (
+                  <TableRow
+                    key={item.id}
+                    item={item}
+                    level={0}
+                    isLast={idx === items.length - 1}
+                    tab={tab}
+                    columnOptions={columnOptions}
+                    showIndentation={showIndentation}
+                    addItem={addItem}
+                    addingEnabled={addingEnabled}
+                    spaceSearch={spaceSearch}
+                  />
+                ))}
 
-              {addingEnabled && (
-                <AddNewRow
-                  addingEnabled={addingEnabled}
-                  spaceSearch={spaceSearch!}
-                  addItem={addItem!}
-                  addItemDefaultSpace={addItemDefaultSpace!}
-                />
-              )}
-            </>
-          )}
-        </tbody>
-      </table>
-    </div>
+                {addingEnabled && (
+                  <AddNewRow
+                    addingEnabled={addingEnabled}
+                    spaceSearch={spaceSearch!}
+                    addItem={addItem!}
+                    addItemDefaultSpace={addItemDefaultSpace!}
+                  />
+                )}
+              </>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </WorkMapExpandableProvider>
   );
 }
 
