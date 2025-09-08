@@ -1,4 +1,5 @@
-import { setupTestErrorLogger } from "@/utils/errorLogger";
+import { setupTestErrorLogger, setupSentryErrorLogger } from "@/utils/errorLogger";
+import SentryErrorBoundary from "@/components/SentryErrorBoundary";
 setupTestErrorLogger();
 
 import React from "react";
@@ -46,6 +47,9 @@ if (window.appConfig.sentry.enabled) {
     ],
     enableTracing: false,
   });
+
+  // Setup global error handlers to capture unhandled errors
+  setupSentryErrorLogger();
 }
 
 const rootElement: HTMLElement | null = document.getElementById("root");
@@ -53,8 +57,10 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <ToasterBar />
-    <RouterProvider router={routes} />
+    <SentryErrorBoundary>
+      <ToasterBar />
+      <RouterProvider router={routes} />
+    </SentryErrorBoundary>
   </React.StrictMode>
 );
 

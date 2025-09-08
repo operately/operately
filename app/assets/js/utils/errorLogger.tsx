@@ -1,3 +1,5 @@
+import * as Sentry from "@sentry/react";
+
 export function setupTestErrorLogger() {
   if (window.appConfig.environment === "test") {
     window.addEventListener("error", function (e) {
@@ -17,6 +19,44 @@ export function setupTestErrorLogger() {
 
       logStackLines(e);
       logAxiosErrorDetails(e);
+    });
+  }
+}
+
+export function setupSentryErrorLogger() {
+  // Only setup global error handlers when Sentry is enabled and we're not in test environment
+  if (window.appConfig.sentry?.enabled && window.appConfig.environment !== "test") {
+    // Capture unhandled JavaScript errors
+    window.addEventListener("error", function (e) {
+      console.error("Unhandled JavaScript error:", e.error);
+      Sentry.captureException(e.error, {
+        level: "error",
+        tags: {
+          error_type: "javascript_error",
+          source: "global_error_handler"
+        },
+        extra: {
+          filename: e.filename,
+          lineno: e.lineno,
+          colno: e.colno,
+          message: e.message
+        }
+      });
+    });
+
+    // Capture unhandled promise rejections
+    window.addEventListener("unhandledrejection", function (e) {
+      console.error("Unhandled promise rejection:", e.reason);
+      Sentry.captureException(e.reason, {
+        level: "error",
+        tags: {
+          error_type: "unhandled_promise_rejection",
+          source: "global_error_handler"
+        },
+        extra: {
+          promise: e.promise
+        }
+      });
     });
   }
 }
