@@ -190,7 +190,7 @@ function Contributors(props: ProjectPage.State) {
         )}
         {props.canEdit && (
           <div className="mt-3">
-            <SecondaryButton linkTo={props.manageTeamLink} size="xs">
+            <SecondaryButton linkTo={props.manageTeamLink} size="xs" testId="manage-team-button">
               Manage team & access
             </SecondaryButton>
           </div>
