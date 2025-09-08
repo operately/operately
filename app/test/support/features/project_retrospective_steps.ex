@@ -14,8 +14,7 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :initiate_project_closing, ctx do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "close-project")
+    |> UI.click_text("Close project")
   end
 
   step :fill_in_retrospective, ctx, params do

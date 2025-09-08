@@ -243,6 +243,7 @@ function Page() {
     status: project.status,
     state: project.state,
     closedAt: Time.parse(project.closedAt),
+    retrospectiveLink: paths.projectRetrospectivePath(project.id),
 
     canEdit: project.permissions?.canEditName || false,
     manageTeamLink: paths.projectContributorsPath(project.id),
