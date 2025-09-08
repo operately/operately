@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { IconDots, IconChevronRight } from "../icons";
+import * as React from "react";
+import { IconChevronRight, IconDots } from "../icons";
 
-import { TestableElement, createTestId } from "../TestableElement";
 import { DivLink } from "../Link";
+import { TestableElement, createTestId } from "../TestableElement";
 import classNames from "../utils/classnames";
 
-type Size = "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
+type Size = "tiny" | "small" | "medium" | "large" | "xlarge" | "xxlarge" | "xxxlarge";
 
 interface MenuProps extends TestableElement {
   children: React.ReactNode;
@@ -46,9 +46,7 @@ export function Menu(props: MenuProps) {
       <DropdownMenu.Portal>
         <DropdownMenu.Content className={menuContentClass} style={menuContentStyle(props.size)}>
           {props.headerContent && (
-            <div className="px-3 py-2 border-b border-surface-outline">
-              {props.headerContent}
-            </div>
+            <div className="px-3 py-2 border-b border-surface-outline">{props.headerContent}</div>
           )}
           {props.children}
         </DropdownMenu.Content>
@@ -125,6 +123,7 @@ export function MenuActionItem(props: MenuActionItemProps) {
 function menuContentStyle(size?: Size) {
   let width = "16rem";
 
+  if (size === "tiny") width = "12rem";
   if (size === "small") width = "16rem";
   if (size === "medium") width = "20rem";
   if (size === "large") width = "24rem";
