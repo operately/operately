@@ -24,7 +24,12 @@ export function NewDropdown() {
 
       <DropdownSeparator />
 
-      <DropdownLinkItem path={paths.newSpacePath()} icon={IconTent} title="New space" testId="new-dropdown-new-space" />
+      <DropdownLinkItem
+        path={paths.newSpacePath()}
+        icon={IconTent}
+        title="New space"
+        testId="new-dropdown-new-space"
+      />
 
       <DropdownSeparator />
 

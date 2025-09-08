@@ -15,42 +15,39 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone) {
     Milestones.parseMilestoneCommentsForTurboUi(paths, milestone.comments),
   );
 
-  const handleCreateComment = React.useCallback(
-    async (content: any) => {
-      const tempId = `temp-${Date.now()}`;
-      const optimisticComment: Milestones.MilestoneComment = {
-        action: "none",
-        comment: {
-          id: tempId,
-          insertedAt: new Date().toISOString(),
-          content: JSON.stringify({ message: content }),
-          author: me,
-          reactions: [],
-        },
-      };
+  const handleCreateComment = React.useCallback(async (content: any) => {
+    const tempId = `temp-${Date.now()}`;
+    const optimisticComment: Milestones.MilestoneComment = {
+      action: "none",
+      comment: {
+        id: tempId,
+        insertedAt: new Date().toISOString(),
+        content: JSON.stringify({ message: content }),
+        author: me,
+        reactions: [],
+      },
+    };
 
-      setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
+    setComments((prev) => [...prev, Milestones.parseMilestoneCommentForTurboUi(paths, optimisticComment)]);
 
-      const res = await Api.postMilestoneComment({
-        milestoneId: milestone.id!,
-        action: "none",
-        content: JSON.stringify(content),
+    const res = await Api.postMilestoneComment({
+      milestoneId: milestone.id!,
+      action: "none",
+      content: JSON.stringify(content),
+    });
+
+    setComments((prev) => {
+      return prev.map((c) => {
+        if (c.id === tempId) {
+          const comment = { ...res.comment.comment, author: me };
+          return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment });
+        } else {
+          return c;
+        }
       });
-
-      setComments((prev) => {
-        return prev.map((c) => {
-          if (c.id === tempId) {
-            const comment = { ...res.comment.comment, author: me };
-            return Milestones.parseMilestoneCommentForTurboUi(paths, { ...res.comment, comment });
-          } else {
-            return c;
-          }
-        });
-      });
-      PageCache.invalidate(pageCacheKey(milestone.id));
-    },
-    [paths, me, milestone.id],
-  );
+   });
+    PageCache.invalidate(pageCacheKey(milestone.id));
+  }, [paths, me, milestone.id]);
 
   return { comments, setComments, handleCreateComment };
 }

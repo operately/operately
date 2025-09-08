@@ -4,6 +4,7 @@ import type { ActivityContentProjectCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
+
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectCreated: ActivityHandler = {

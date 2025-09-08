@@ -29,8 +29,8 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     const { project, milestone, milestoneName, hasDescription } = content(activity);
     const title = milestone ? milestoneLink(milestone, milestoneName) : `"${milestoneName}"`;
 
-    const message = hasDescription
-      ? ["updated milestone", title, "description"]
+    const message = hasDescription 
+      ? ["updated milestone", title, "description"] 
       : ["removed description from milestone", title];
 
     if (page === "project") {

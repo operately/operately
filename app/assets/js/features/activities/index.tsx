@@ -263,9 +263,9 @@ import GoalTargetDeleting from "./GoalTargetDeleting";
 import GoalTargetUpdating from "./GoalTargetUpdating";
 import ProjectMilestoneCreation from "./ProjectMilestoneCreation";
 import ProjectMilestoneUpdating from "./ProjectMilestoneUpdating";
-import GoalCheckAdding from "./GoalCheckAdding";
-import GoalCheckRemoving from "./GoalCheckRemoving";
-import GoalCheckToggled from "./GoalCheckToggled";
+import GoalCheckAdding from './GoalCheckAdding';
+import GoalCheckRemoving from './GoalCheckRemoving';
+import GoalCheckToggled from './GoalCheckToggled';
 
 function handler(activity: Activity) {
   return match(activity.action)

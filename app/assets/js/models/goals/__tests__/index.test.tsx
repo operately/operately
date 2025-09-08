@@ -77,7 +77,7 @@ describe("targetProgressPercentage", () => {
   describe("equal targets (from == to)", () => {
     const makeTarget = (from: number, to: number, value: number): Target => ({
       from,
-      to,
+      to, 
       value,
     });
 

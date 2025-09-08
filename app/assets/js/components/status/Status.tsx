@@ -54,11 +54,23 @@ function StatusDescription({ status, reviewer }: { status: StatusOptions; review
 
   switch (status) {
     case "on_track":
-      return <>Progressing as planned. No blockers.</>;
+      return (
+        <>
+          Progressing as planned. No blockers.
+        </>
+      );
     case "caution":
-      return <>Emerging risks or delays. {reviewerName || "The reviewer"} should be aware.</>;
+      return (
+        <>
+          Emerging risks or delays. {reviewerName || "The reviewer"} should be aware.
+        </>
+      );
     case "off_track":
-      return <>Significant problems affecting success. {reviewerName || "The reviewer"}’s help is needed.</>;
+      return (
+        <>
+          Significant problems affecting success. {reviewerName || "The reviewer"}’s help is needed.
+        </>
+      );
     case "pending":
       return <>Work hasn't started yet.</>;
 

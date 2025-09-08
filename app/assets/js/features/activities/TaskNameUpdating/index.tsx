@@ -40,7 +40,11 @@ const TaskNameUpdating: ActivityHandler = {
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
     const { oldName } = content(activity);
 
-    return <>Previously, the task was named "{oldName}".</>;
+    return (
+      <>
+        Previously, the task was named "{oldName}".
+      </>
+    );
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

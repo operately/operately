@@ -58,8 +58,10 @@ function AllCompleted() {
 function CompletionPieChart({ done, total }) {
   return (
     <div className="flex items-center gap-2">
-      <PieChart size={16} slices={[{ percentage: (done / total) * 100, color: "var(--color-accent-1)" }]} />
-
+      <PieChart size={16} slices={[
+        { percentage: (done / total) * 100, color: "var(--color-accent-1)" },
+      ]} />
+      
       <span className="font-medium">
         {done}/{total} milestones completed
       </span>

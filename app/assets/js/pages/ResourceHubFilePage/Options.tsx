@@ -42,7 +42,9 @@ function DownloadAction() {
 
   const [downloadFile] = useDownloadFile(file.blob.url, file.name);
 
-  return <PageOptions.Action icon={IconDownload} title="Download" onClick={downloadFile} testId="download-file-link" />;
+  return (
+    <PageOptions.Action icon={IconDownload} title="Download" onClick={downloadFile} testId="download-file-link" />
+  );
 }
 
 function DeleteAction({ onClick }: { onClick: () => void }) {

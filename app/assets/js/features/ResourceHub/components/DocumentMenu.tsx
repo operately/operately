@@ -42,9 +42,7 @@ export function DocumentMenu({ document }: Props) {
         {permissions.canCreateDocument && <CopyResourceMenuItem resource={document} showModal={toggleCopyForm} />}
         {permissions.canEditParentFolder && <MoveResourceMenuItem resource={document} showModal={toggleMoveForm} />}
         {permissions.canView && <ExportMarkdownMenuItem document={document} />}
-        {permissions.canDeleteDocument && (
-          <DeleteDocumentMenuItem document={document} showConfirmModal={toggleDeleteConfirmModal} />
-        )}
+        {permissions.canDeleteDocument && <DeleteDocumentMenuItem document={document} showConfirmModal={toggleDeleteConfirmModal} />}
       </Menu>
 
       <MoveResourceModal resource={document} resourceType="document" isOpen={showMoveForm} hideModal={toggleMoveForm} />
@@ -66,13 +64,7 @@ function EditDocumentMenuItem({ document }: Props) {
   );
 }
 
-function DeleteDocumentMenuItem({
-  document,
-  showConfirmModal,
-}: {
-  document: Hub.ResourceHubDocument;
-  showConfirmModal: () => void;
-}) {
+function DeleteDocumentMenuItem({ document, showConfirmModal }: { document: Hub.ResourceHubDocument; showConfirmModal: () => void }) {
   const deleteId = createTestId("delete", document.id!);
 
   return (
@@ -82,15 +74,7 @@ function DeleteDocumentMenuItem({
   );
 }
 
-function DeleteDocumentModal({
-  document,
-  isOpen,
-  hideModal,
-}: {
-  document: Hub.ResourceHubDocument;
-  isOpen: boolean;
-  hideModal: () => void;
-}) {
+function DeleteDocumentModal({ document, isOpen, hideModal }: { document: Hub.ResourceHubDocument; isOpen: boolean; hideModal: () => void }) {
   const { refetch } = useNodesContext();
   const [remove] = Hub.useDeleteResourceHubDocument();
 
@@ -109,9 +93,7 @@ function DeleteDocumentModal({
   return (
     <Modal isOpen={isOpen} hideModal={hideModal}>
       <Forms.Form form={form}>
-        <p>
-          Are you sure you want to delete the document "<b>{document.name}</b>"?
-        </p>
+        <p>Are you sure you want to delete the document "<b>{document.name}</b>"?</p>
         <Forms.Submit saveText="Delete" cancelText="Cancel" />
       </Forms.Form>
     </Modal>

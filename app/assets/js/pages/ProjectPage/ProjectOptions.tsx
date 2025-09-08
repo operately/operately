@@ -2,14 +2,7 @@ import * as React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Projects from "@/models/projects";
-import {
-  IconPlayerPlayFilled,
-  IconEdit,
-  IconPlayerPauseFilled,
-  IconExchange,
-  IconReplace,
-  IconCircleCheck,
-} from "turboui";
+import { IconPlayerPlayFilled, IconEdit, IconPlayerPauseFilled, IconExchange, IconReplace, IconCircleCheck } from "turboui";
 
 import { usePaths } from "@/routes/paths";
 export function ProjectOptions({ project }) {

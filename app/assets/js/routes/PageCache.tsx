@@ -38,10 +38,7 @@ export const PageCache = {
     return { data, cacheVersion: timestamp };
   },
 
-  useData: function <T>(
-    loader: PageLoaderFn<T>,
-    opts: { refreshCache?: boolean } = {},
-  ): T & { refresh?: () => Promise<void> } {
+  useData: function <T>(loader: PageLoaderFn<T>, opts: { refreshCache?: boolean } = {}): T & { refresh?: () => Promise<void> } {
     const params = useParams();
     const loadedData = useLoadedData<T>();
 

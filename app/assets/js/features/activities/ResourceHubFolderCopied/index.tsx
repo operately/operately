@@ -5,6 +5,7 @@ import type { ActivityContentResourceHubFolderCopied } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
+
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, folderLink, spaceLink } from "../feedItemLinks";
 

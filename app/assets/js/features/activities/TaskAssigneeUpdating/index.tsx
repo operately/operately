@@ -30,9 +30,7 @@ const TaskAssigneeUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, task, newAssignee, oldAssignee } = content(activity);
-    const assigneeText = newAssignee
-      ? `assigned to ${newAssignee.fullName}`
-      : `unassigned ${oldAssignee.fullName} from`;
+    const assigneeText = newAssignee ? `assigned to ${newAssignee.fullName}` : `unassigned ${oldAssignee.fullName} from`;
     const message = `${assigneeText} task`;
     const taskName = task ? taskLink(task) : "a task";
 

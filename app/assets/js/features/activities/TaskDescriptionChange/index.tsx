@@ -49,10 +49,11 @@ const TaskDescriptionChange: ActivityHandler = {
     const data = content(activity);
 
     if (!data.task?.description) return null;
-
-    const description =
-      typeof data.task.description === "string" ? JSON.parse(data.task.description) : data.task.description;
-
+    
+    const description = typeof data.task.description === "string" 
+      ? JSON.parse(data.task.description) 
+      : data.task.description;
+    
     return <Summary jsonContent={description} characterCount={200} />;
   },
 

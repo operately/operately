@@ -2,10 +2,10 @@
 const createMockIcon = (name) => {
   const component = (props) => {
     return {
-      type: "svg",
+      type: 'svg',
       props: {
         ...props,
-        "data-testid": `mock-icon-${name}`,
+        'data-testid': `mock-icon-${name}`,
       },
       key: null,
       ref: null,
@@ -19,8 +19,8 @@ const createMockIcon = (name) => {
 module.exports = new Proxy(
   {},
   {
-    get: function (target, prop) {
+    get: function(target, prop) {
       return createMockIcon(prop);
-    },
-  },
+    }
+  }
 );

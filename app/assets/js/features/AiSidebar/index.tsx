@@ -96,13 +96,13 @@ function useAvailableActions(conversationContext: Conversations.ContextAttachmen
 
   return React.useMemo(() => {
     const allActions = window.appConfig.aiActions.filter((a) => a.context === conversationContext?.type);
-
+    
     // Filter out experimental actions if the experimental AI feature is not enabled
     return allActions.filter((action) => {
       if (!action.experimental) return true;
-
+      
       if (!company?.enabledExperimentalFeatures) return false;
-
+      
       return company.enabledExperimentalFeatures.includes("experimental-ai");
     });
   }, [conversationContext?.type, company?.enabledExperimentalFeatures]);

@@ -27,7 +27,7 @@ const TaskDeleting: ActivityHandler = {
   },
 
   FeedItemTitle(props: { activity: Activity; page: string }) {
-    const { taskName, project } = content(props.activity);
+    const { taskName, project }  = content(props.activity);
 
     if (props.page === "project") {
       return feedTitle(props.activity, `deleted task "${taskName}"`);
