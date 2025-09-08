@@ -15,7 +15,7 @@ export namespace StatusBanner {
 export function StatusBanner({ state, closedAt, reopenLink, retrospectiveLink }: StatusBanner.Props) {
   if (state === "paused") {
     return (
-      <div className="bg-callout-warning-bg border-y my-2 border-surface-outline">
+      <div data-test-id="paused-status-banner" className="bg-callout-warning-bg border-y my-2 border-surface-outline">
         <div className="flex items-center justify-center max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-3">
             <IconPlayerPauseFilled className="w-5 h-5 text-content-accent" />
@@ -43,7 +43,7 @@ export function StatusBanner({ state, closedAt, reopenLink, retrospectiveLink }:
     };
 
     return (
-      <div className="bg-callout-info-bg border-y my-2 border-surface-outline">
+      <div data-test-id="closed-status-banner" className="bg-callout-info-bg border-y my-2 border-surface-outline">
         <div className="flex items-center justify-center max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center gap-3 text-callout-info-content">
             <IconArchive className="w-5 h-5" />

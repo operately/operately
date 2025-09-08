@@ -7,13 +7,16 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
 
   step :go_to_project_retrospective_page, ctx do
     ctx
-    |> UI.click(testid: "project-retrospective-link")
+    |> UI.find(UI.query(testid: "closed-status-banner"), fn el ->
+      el
+      |> UI.click_text("retrospective")
+    end)
   end
 
   step :go_to_new_check_in_page, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "check-in-now")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "check-ins"))
+    |> UI.click(testid: "check-in-button")
   end
 
   step :fill_out_check_in_form, ctx do
