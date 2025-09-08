@@ -16,6 +16,12 @@ defmodule Operately.Features.AssignmentsEmailTest do
     OperatelyEmail.Emails.AssignmentsEmail.send(champion_with_account)
 
     email = UI.Emails.last_sent_email()
+    
+    # Verify the email subject includes the company name
+    company_name = ctx.company.name
+    expected_subject = "Operately(#{company_name}): Your assignments for today"
+    assert email.subject == expected_subject
+    
     link = UI.Emails.find_link(email, "Check-In")
 
     ctx
