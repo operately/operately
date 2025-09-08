@@ -25,7 +25,7 @@ export function Discussions(props: ProjectPage.State) {
         )}
       </div>
 
-      <div className="mt-8">
+      <div className="mt-8" data-test-id="project-discussions-section">
         {isZeroState && <DiscussionsZeroState />}
         {!isZeroState && <DiscussionsList props={props} />}
       </div>

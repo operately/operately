@@ -25,7 +25,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   end
 
   step :visit_project_page, ctx do
-    ctx |> UI.visit(OperatelyWeb.Paths.project_path(ctx.company, ctx.project))
+    ctx |> UI.visit(OperatelyWeb.Paths.project_path(ctx.company, ctx.project, tab: "discussions"))
   end
 
   step :visit_discussion_page, ctx do
@@ -56,7 +56,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
   end
 
   step :click_new_discussion, ctx do
-    ctx |> UI.click(testid: "add-discussions-button")
+    ctx |> UI.click(testid: "start-discussion")
   end
 
   step :fill_in_discussion_title, ctx, title do
@@ -102,7 +102,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :assert_new_discussion_feed_posted, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.creator,
       title: "posted New Discussion"
@@ -169,7 +169,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
 
   step :assert_comment_feed_posted, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(%{
       author: ctx.creator,
       title: "posted Existing Discussion"
