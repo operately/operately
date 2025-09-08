@@ -2,7 +2,6 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
   use Operately.DataCase
 
   alias OperatelyEE.AdminApi.Queries.GetActiveCompanies
-  alias Operately.Activities
   
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -226,11 +225,12 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
 
   defp create_activity_at_date(company, date) do
     # Create an activity with specific date and company_id in content
-    Activities.create_activity(%{
+    # Use Ecto.Repo.insert! to create the activity directly in the database
+    Operately.Repo.insert!(%Operately.Activities.Activity{
       action: "goal_created",
       content: %{
         "company_id" => to_string(company.id),
-        "goal_id" => UUID.uuid4()
+        "goal_id" => Ecto.UUID.generate()
       },
       inserted_at: date,
       updated_at: date

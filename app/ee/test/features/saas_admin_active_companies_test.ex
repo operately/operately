@@ -2,7 +2,6 @@ defmodule OperatelyEE.Features.SaasAdminActiveCompaniesTest do
   use Operately.FeatureCase
   
   alias Operately.Support.Features.UI
-  alias Operately.Activities
   
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
@@ -125,7 +124,7 @@ defmodule OperatelyEE.Features.SaasAdminActiveCompaniesTest do
   step :assert_active_tab_highlighted, ctx do
     # The active tab should have specific styling indicating it's selected
     ctx
-    |> UI.assert_has("a[href='/admin/active-organizations']")
+    |> UI.assert_has(Query.css("a[href='/admin/active-organizations']"))
   end
 
   step :assert_description_text_present, ctx do
@@ -159,12 +158,12 @@ defmodule OperatelyEE.Features.SaasAdminActiveCompaniesTest do
 
   step :assert_on_all_organizations_page, ctx do
     ctx
-    |> UI.assert_path("/admin")
+    |> UI.assert_page("/admin")
   end
 
   step :assert_on_active_organizations_page, ctx do
     ctx
-    |> UI.assert_path("/admin/active-organizations")
+    |> UI.assert_page("/admin/active-organizations")
   end
 
   step :click_active_organizations_tab, ctx do
@@ -288,11 +287,13 @@ defmodule OperatelyEE.Features.SaasAdminActiveCompaniesTest do
   end
 
   defp create_activity_at_date(company, date) do
-    Activities.create_activity(%{
+    # Create an activity with specific date and company_id in content
+    # Use Ecto.Repo.insert! to create the activity directly in the database
+    Operately.Repo.insert!(%Operately.Activities.Activity{
       action: "goal_created",
       content: %{
         "company_id" => to_string(company.id),
-        "goal_id" => UUID.uuid4()
+        "goal_id" => Ecto.UUID.generate()
       },
       inserted_at: date,
       updated_at: date
