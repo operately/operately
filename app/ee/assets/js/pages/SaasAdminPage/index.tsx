@@ -1,36 +1,144 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
+import * as React from "react";
 
-import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
-import { DivLink, AvatarList } from "turboui";
-
-interface LoaderData {
-  companies: AdminApi.Company[];
-}
+import classNames from "classnames";
+import {
+  AvatarList,
+  DivLink,
+  IconBuilding,
+  IconBuildingCommunity,
+  IconInfoCircle,
+  Tabs,
+  Tooltip,
+  useTabs,
+} from "turboui";
 
 export const loader = async () => {
-  return { companies: await AdminApi.getCompanies({}).then((res) => res.companies) };
+  return {};
 };
 
 export function Page() {
+  const tabs = useTabs("active", [
+    { id: "active", label: "Active Companies", icon: <IconBuildingCommunity size={16} /> },
+    { id: "all", label: "All Companies", icon: <IconBuilding size={16} /> },
+  ]);
+
   return (
-    <Pages.Page title={"Admininstration"} testId="saas-admin-page">
+    <Pages.Page title={"Administration"} testId="saas-admin-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <Paper.Header title="Companies" />
-          <CompanyList />
+          <PageHeader activeTab={tabs.active} />
+          <div className="-mx-4 -mb-px">
+            <Tabs tabs={tabs} />
+          </div>
+          <CompanyListContainer activeTab={tabs.active} />
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
   );
 }
 
-function CompanyList() {
-  const { companies } = Pages.useLoadedData<LoaderData>();
+function PageHeader({ activeTab }: { activeTab: string }) {
+  if (activeTab === "active") {
+    return <HeaderWithInfo />;
+  }
 
+  return <Paper.Header title="All Companies" />;
+}
+
+function HeaderWithInfo() {
+  const tooltipContent = (
+    <div className="max-w-xs">
+      <div className="font-bold text-sm mb-2">Active Company Criteria</div>
+      <ul className="text-xs space-y-1">
+        <li>• Have multiple team members (2 or more)</li>
+        <li>• Have multiple goals and projects (2 or more each)</li>
+        <li>• Show recent activity within the last 14 days</li>
+      </ul>
+    </div>
+  );
+
+  return (
+    <div className="mb-6">
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl font-bold">Active Companies</h1>
+        <Tooltip content={tooltipContent} testId="active-companies-info">
+          <IconInfoCircle size={16} className="text-content-dimmed hover:text-content-accent cursor-help" />
+        </Tooltip>
+      </div>
+    </div>
+  );
+}
+
+function CompanyListContainer({ activeTab }: { activeTab: string }) {
+  if (activeTab === "active") {
+    return <ActiveCompanyList />;
+  } else {
+    return <AllCompanyList />;
+  }
+}
+
+function AllCompanyList() {
+  const { data: companiesData, loading, error } = AdminApi.useGetCompanies({});
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-content-accent">Loading companies...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500">Error loading companies: {error.message}</p>
+      </div>
+    );
+  }
+
+  const companies = companiesData?.companies || [];
+
+  return <CompanyTable companies={companies} />;
+}
+
+function ActiveCompanyList() {
+  const { data: companiesData, loading, error } = AdminApi.useGetActiveCompanies({});
+
+  if (loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-content-accent">Loading active companies...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500">Error loading active companies: {error.message}</p>
+      </div>
+    );
+  }
+
+  const companies = companiesData?.companies || [];
+
+  if (companies.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-content-accent text-lg">No active companies found</p>
+        <p className="text-content-subtle text-sm mt-2">Companies need to meet all activity criteria to appear here</p>
+      </div>
+    );
+  }
+
+  return <CompanyTable companies={companies} />;
+}
+
+function CompanyTable({ companies }: { companies: AdminApi.Company[] }) {
   return (
     <div>
       <TableRow header>
@@ -83,7 +191,7 @@ function TableRow({ header, children, linkTo }: { header?: boolean; children: Re
     "border-b border-stroke-base": !header,
     "font-bold text-xs uppercase": header,
     "text-sm": !header,
-    "-mx-12 px-12": true,
+    "-mx-4 px-4": true,
     "bg-surface-dimmed": header,
     "hover:bg-surface-highlight": !header,
     "cursor-pointer": !header,

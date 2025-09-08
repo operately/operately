@@ -1,5 +1,5 @@
-import * as SaasAdminPage from "./SaasAdminPage";
 import * as SaasAdminCompanyPage from "./SaasAdminCompanyPage";
+import * as SaasAdminPage from "./SaasAdminPage";
 
 export default {
   SaasAdminPage: {

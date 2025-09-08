@@ -106,6 +106,15 @@ function findFeatureTests() {
     .filter((f) => f.includes("test/features"))
     .forEach((file) => groupManager.addFile(file));
 
+  // Find feature tests in EE
+  if (fs.existsSync("app/ee/test")) {
+    fs.readdirSync("app/ee/test", { recursive: true })
+      .map((f) => path.join("app/ee/test", f))
+      .filter((f) => f.endsWith("_test.exs"))
+      .filter((f) => f.includes("test/features"))
+      .forEach((file) => groupManager.addFile(file));
+  }
+
   return groupManager.getFilesFromGroup(index);
 }
 
