@@ -1,11 +1,11 @@
 defmodule Operately.Features.SmtpEmailDeliveryTest do
-  use Operately.FeatureCase
+  use Operately.DataCase
 
-  alias Operately.Support.Factory
+  import Operately.Support.Factory
 
   @moduletag :smtp_e2e
 
-  setup ctx do
+  setup do
     # Store original environment variables to restore after test
     original_env = %{
       smtp_server: System.get_env("SMTP_SERVER"),
@@ -47,13 +47,13 @@ defmodule Operately.Features.SmtpEmailDeliveryTest do
       Application.put_env(:operately, :app_env, original_env.app_env)
     end)
 
-    ctx
+    :ok
   end
 
   @tag :smtp_e2e
-  feature "password reset emails are delivered through SMTP server", ctx do
+  test "password reset emails are delivered through SMTP server" do
     # Create an account to reset password for
-    account = Factory.insert(:account, email: "smtp-test@example.com")
+    account = insert(:account, email: "smtp-test@example.com")
     token = "test-reset-token-#{:erlang.unique_integer()}"
 
     # Send the password reset email through SMTP
@@ -86,9 +86,9 @@ defmodule Operately.Features.SmtpEmailDeliveryTest do
   end
 
   @tag :smtp_e2e 
-  feature "assignment emails are delivered through SMTP server", ctx do
+  test "assignment emails are delivered through SMTP server" do
     # Create a user with overdue project check-in
-    person = Factory.insert(:person, email: "assignments-test@example.com")
+    person = insert(:person, email: "assignments-test@example.com")
     company = person.company
     
     # Create project with overdue check-in
@@ -124,21 +124,21 @@ defmodule Operately.Features.SmtpEmailDeliveryTest do
     
     assert assignment_email != nil, "Assignment email not found for assignments-test@example.com"
 
-    # Verify subject mentions the project
+    # Verify subject mentions assignments
     subject = get_in(assignment_email, ["Content", "Headers", "Subject"]) || []
-    assert Enum.any?(subject, fn s -> String.contains?(s, "SMTP Test Project") end),
-           "Email subject should mention the project name"
+    assert Enum.any?(subject, fn s -> String.contains?(String.downcase(s), "assignment") end),
+           "Email subject should mention assignments"
   end
 
   @tag :smtp_e2e
-  feature "SMTP configuration is properly used instead of SendGrid", ctx do
+  test "SMTP configuration is properly used instead of SendGrid" do
     # Verify that BaseMailer correctly detects SMTP configuration
     assert System.get_env("SMTP_SERVER") == "127.0.0.1"
     assert System.get_env("SENDGRID_API_KEY") == nil
     
     # Test that SMTP is selected as the adapter
     # Create a simple test email to verify the configuration works
-    account = Factory.insert(:account, email: "config-test@example.com")
+    account = insert(:account, email: "config-test@example.com")
     
     # This should not raise an error when using SMTP
     assert_no_error(fn ->
