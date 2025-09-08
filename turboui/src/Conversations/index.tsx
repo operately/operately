@@ -4,7 +4,16 @@ import { BounceLoader } from "react-spinners";
 
 import type { AvatarPerson } from "../Avatar";
 import { Avatar } from "../Avatar";
-import { IconArrowRight, IconHistory, IconPaperclip, IconPlus, IconRobotFace, IconX } from "../icons";
+import {
+  IconArrowRight,
+  IconCheck,
+  IconCopy,
+  IconHistory,
+  IconPaperclip,
+  IconPlus,
+  IconRobotFace,
+  IconX,
+} from "../icons";
 import { TextField } from "../TextField";
 import { StatusBadge } from "../StatusBadge";
 
@@ -118,6 +127,37 @@ export namespace Conversations {
      */
     maxWidth?: number;
   }
+}
+
+// Small, unobtrusive copy button for AI messages
+function CopyButton({ text }: { text: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopied(true);
+      // Reset after 2 seconds
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy text: ", err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleCopy}
+      className="absolute top-2 right-2 p-1 rounded hover:bg-surface-dimmed transition-colors opacity-60 hover:opacity-100"
+      title={copied ? "Copied!" : "Copy message"}
+      aria-label={copied ? "Copied!" : "Copy message"}
+    >
+      {copied ? (
+        <IconCheck size={14} className="text-green-600" />
+      ) : (
+        <IconCopy size={14} className="text-content-dimmed" />
+      )}
+    </button>
+  );
 }
 
 export function Conversations({
@@ -445,11 +485,7 @@ export function Conversations({
                 <div className="flex items-center justify-between">
                   <span>{action.label}</span>
                   {action.experimental && (
-                    <StatusBadge 
-                      status="pending" 
-                      customLabel="Experimental"
-                      className="ml-2 text-xs"
-                    />
+                    <StatusBadge status="pending" customLabel="Experimental" className="ml-2 text-xs" />
                   )}
                 </div>
               </button>
@@ -519,7 +555,7 @@ export function Conversations({
 
                   <div className={`max-w-[75%] space-y-2`}>
                     <div
-                      className={`rounded-lg px-3 py-2 ${
+                      className={`rounded-lg px-3 py-2 relative ${
                         message.sender === "user"
                           ? "bg-callout-info-content text-callout-info-bg shadow-sm"
                           : "bg-surface-highlight text-content-base"
@@ -533,6 +569,9 @@ export function Conversations({
                       >
                         {formatTime(message.timestamp)}
                       </div>
+
+                      {/* Copy button for AI messages */}
+                      {message.sender === "ai" && <CopyButton text={message.content} />}
                     </div>
 
                     {/* Message Actions */}
