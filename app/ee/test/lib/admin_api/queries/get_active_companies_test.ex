@@ -2,191 +2,188 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
   use Operately.DataCase
 
   alias OperatelyEE.AdminApi.Queries.GetActiveCompanies
-  
-  import Operately.CompaniesFixtures
-  import Operately.PeopleFixtures
-  import Operately.GroupsFixtures
-  import Operately.GoalsFixtures
-  import Operately.ProjectsFixtures
+  alias Operately.Support.Factory
+
+  setup ctx do
+    ctx
+  end
+
 
   describe "GetActiveCompanies.call/2" do
     test "returns empty list when no companies exist" do
       assert {:ok, %{companies: []}} = GetActiveCompanies.call(nil, %{})
     end
 
-    test "returns empty list when no companies meet activity criteria" do
-      # Create a company that doesn't meet the criteria
-      _company = company_fixture()
-      
+    test "returns empty list when no companies meet activity criteria", ctx do
+      Factory.setup(ctx)
+
       # Only has 1 member (the creator), no goals, no projects, no recent activity
       assert {:ok, %{companies: []}} = GetActiveCompanies.call(nil, %{})
     end
 
-    test "returns companies that meet all activity criteria" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add multiple members (≥ 2)
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      
-      # Add multiple goals (≥ 2) 
-      _goal1 = goal_fixture(member1, %{group_id: group.id})
-      _goal2 = goal_fixture(member2, %{group_id: group.id})
-      
-      # Add multiple projects (≥ 2)
-      _project1 = project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      _project2 = project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
-      
+    test "returns companies that meet all activity criteria", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
       # Add recent activity (within 14 days)
-      create_recent_activity(company)
-      
+      create_recent_activity(ctx.company)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
-      
+
       assert length(result.companies) == 1
-      assert Enum.any?(result.companies, &(&1.name == company.name))
-      
-      active_company = Enum.find(result.companies, &(&1.name == company.name))
+      assert Enum.any?(result.companies, &(&1.name == ctx.company.name))
+
+      active_company = Enum.find(result.companies, &(&1.name == ctx.company.name))
       assert active_company.people_count >= 2
       assert active_company.goals_count >= 2
       assert active_company.projects_count >= 2
       assert active_company.last_activity_at != nil
     end
 
-    test "excludes companies with insufficient members" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Only has 1 member (the creator) 
-      # Add goals and projects
-      member = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member, %{group_id: group.id})
-      goal_fixture(member, %{group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member.id, group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member.id, group_id: group.id})
-      
+    test "excludes companies with insufficient members", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_goal(:goal1, :space)
+        |> Factory.add_goal(:goal2, :space)
+        |> Factory.add_project(:project1, :space)
+        |> Factory.add_project(:project2, :space)
+
+      # Only has 1 member (the creator)
       # Add recent activity
-      create_recent_activity(company)
-      
+      create_recent_activity(ctx.company)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert result.companies == []
     end
 
-    test "excludes companies with insufficient goals" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add members and projects but only 1 goal
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member1, %{group_id: group.id})  # Only 1 goal
-      project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
-      
+    test "excludes companies with insufficient goals", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)  # Only 1 goal
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
       # Add recent activity
-      create_recent_activity(company)
-      
+      create_recent_activity(ctx.company)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert result.companies == []
     end
 
-    test "excludes companies with insufficient projects" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add members and goals but only 1 project
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member1, %{group_id: group.id})
-      goal_fixture(member2, %{group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})  # Only 1 project
-      
+    test "excludes companies with insufficient projects", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)  # Only 1 project
+
       # Add recent activity
-      create_recent_activity(company)
-      
+      create_recent_activity(ctx.company)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert result.companies == []
     end
 
-    test "excludes companies without recent activity" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add members, goals, and projects
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member1, %{group_id: group.id})
-      goal_fixture(member2, %{group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
-      
-      # No recent activity or activity older than 14 days
-      create_old_activity(company)
-      
+    test "excludes companies without recent activity", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
+      # No recent activity
+      delete_all_activities(ctx.company)
+      create_old_activity(ctx.company)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert result.companies == []
     end
 
-    test "excludes companies with activity exactly 15 days old" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add members, goals, and projects
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member1, %{group_id: group.id})
-      goal_fixture(member2, %{group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
-      
+    test "excludes companies with activity exactly 15 days old", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
+      delete_all_activities(ctx.company)
+
       # Add activity exactly 15 days old (should be excluded)
       activity_date = DateTime.add(DateTime.utc_now(), -15, :day)
-      create_activity_at_date(company, activity_date)
-      
+      create_activity_at_date(ctx.company, activity_date)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert result.companies == []
     end
 
-    test "includes companies with activity exactly 14 days old" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add members, goals, and projects
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member1, %{group_id: group.id})
-      goal_fixture(member2, %{group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
-      
+    test "includes companies with activity exactly 14 days old", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
       # Add activity exactly 14 days old (should be included)
       activity_date = DateTime.add(DateTime.utc_now(), -14, :day)
-      create_activity_at_date(company, activity_date)
-      
+      create_activity_at_date(ctx.company, activity_date)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
       assert length(result.companies) == 1
     end
 
-    test "serializes company data correctly" do
-      company = company_fixture()
-      group = group_fixture(company.company_owner, %{company_id: company.id})
-      
-      # Add members, goals, and projects
-      member1 = person_fixture_with_account(%{company_id: company.id})
-      member2 = person_fixture_with_account(%{company_id: company.id})
-      goal_fixture(member1, %{group_id: group.id})
-      goal_fixture(member2, %{group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
-      
+    test "serializes company data correctly", ctx do
+      ctx =
+        ctx
+        |> Factory.setup()
+        |> Factory.add_space(:space)
+        |> Factory.add_company_member(:member1)
+        |> Factory.add_company_member(:member2)
+        |> Factory.add_goal(:goal1, :space, creator: :member1)
+        |> Factory.add_goal(:goal2, :space, creator: :member2)
+        |> Factory.add_project(:project1, :space, creator: :member1)
+        |> Factory.add_project(:project2, :space, creator: :member2)
+
       # Add recent activity
-      create_recent_activity(company)
-      
+      create_recent_activity(ctx.company)
+
       {:ok, result} = GetActiveCompanies.call(nil, %{})
-      
+
       assert length(result.companies) == 1
       company_data = hd(result.companies)
-      
+
       # Verify required fields are present
       assert Map.has_key?(company_data, :id)
       assert Map.has_key?(company_data, :name)
@@ -197,7 +194,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
       assert Map.has_key?(company_data, :owners)
       assert Map.has_key?(company_data, :last_activity_at)
       assert Map.has_key?(company_data, :inserted_at)
-      
+
       # Verify data types and values
       assert is_binary(company_data.id)
       assert is_binary(company_data.name)
@@ -232,8 +229,12 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
         "company_id" => to_string(company.id),
         "goal_id" => Ecto.UUID.generate()
       },
-      inserted_at: date,
-      updated_at: date
+      inserted_at: date |> DateTime.to_naive() |> NaiveDateTime.truncate(:second),
+      updated_at: date |> DateTime.to_naive() |> NaiveDateTime.truncate(:second)
     })
+  end
+
+  defp delete_all_activities(company) do
+    Operately.Repo.delete_all(Operately.Activities.Activity, where: [company_id: company.id])
   end
 end
