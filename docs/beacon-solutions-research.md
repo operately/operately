@@ -537,6 +537,362 @@ Mastodon implements federated analytics that respect the decentralized nature of
 - Estimated handling: 1M+ requests/day
 ```
 
+## PostHog as a Beacon Solution
+
+### Overview of PostHog for Telemetry
+
+PostHog is a comprehensive product analytics platform that offers both cloud-hosted and self-hosted options. It's designed for product analytics but can be effectively adapted for beacon/telemetry collection from self-hosted installations.
+
+**Key PostHog Capabilities:**
+- Event tracking and analytics
+- Feature flags and A/B testing
+- Session recordings and heatmaps
+- Self-hosted option available
+- Privacy-focused design with GDPR compliance
+- Real-time and batch data processing
+
+### PostHog Implementation Analysis
+
+#### Technical Approach
+PostHog can serve as a beacon solution through its event tracking capabilities:
+
+```javascript
+// Simple beacon implementation with PostHog
+posthog.capture('installation_heartbeat', {
+  installation_id: 'uuid-v4',
+  version: '1.0.0',
+  platform: 'linux',
+  user_count_range: '1-10',
+  features_enabled: ['sso', 'notifications'],
+  deployment_type: 'docker'
+})
+```
+
+**Elixir Implementation:**
+```elixir
+defmodule Operately.Telemetry.PostHogBeacon do
+  @moduledoc """
+  PostHog-based beacon implementation for installation analytics
+  """
+  
+  @posthog_api_key Application.compile_env(:operately, :posthog_api_key)
+  @posthog_host Application.compile_env(:operately, :posthog_host, "https://app.posthog.com")
+  
+  def send_heartbeat do
+    data = %{
+      event: "installation_heartbeat",
+      distinct_id: installation_id(),
+      properties: %{
+        version: Application.spec(:operately, :vsn),
+        platform: platform_info(),
+        user_count_range: user_count_range(),
+        deployment_type: deployment_type(),
+        features_enabled: enabled_features(),
+        timestamp: DateTime.utc_now()
+      }
+    }
+    
+    HTTPoison.post("#{@posthog_host}/capture/", 
+      Jason.encode!(data),
+      [
+        {"Content-Type", "application/json"},
+        {"Authorization", "Bearer #{@posthog_api_key}"}
+      ]
+    )
+  end
+end
+```
+
+#### Data Collection Capabilities
+
+**Basic Telemetry Events:**
+```json
+{
+  "event": "installation_heartbeat",
+  "distinct_id": "installation-uuid",
+  "properties": {
+    "version": "1.0.0",
+    "platform": "linux",
+    "deployment_type": "docker",
+    "user_count_range": "1-10",
+    "features_enabled": ["sso", "ai_features"],
+    "uptime_days": 30,
+    "database_type": "postgresql"
+  }
+}
+```
+
+**Advanced Analytics Events:**
+```json
+{
+  "event": "feature_usage",
+  "distinct_id": "installation-uuid", 
+  "properties": {
+    "feature": "goal_creation",
+    "usage_count_range": "10-50",
+    "user_count_range": "5-10"
+  }
+}
+```
+
+### Proxy/Router Architecture Considerations
+
+#### Recommended Architecture: Beacon Router
+Instead of connecting directly to PostHog, implementing a router/proxy layer provides significant advantages:
+
+```
+Operately Installation → Beacon Router → PostHog/Analytics Backend
+```
+
+**Benefits of Router Approach:**
+1. **Vendor Independence**: Easy switching between analytics providers
+2. **Data Transformation**: Consistent data format regardless of backend
+3. **Privacy Controls**: Additional anonymization and filtering
+4. **Cost Optimization**: Data aggregation before forwarding
+5. **Reliability**: Retry logic and graceful degradation
+6. **Compliance**: Additional privacy controls and data governance
+
+#### Router Implementation
+```elixir
+defmodule Operately.Telemetry.BeaconRouter do
+  @moduledoc """
+  Router for beacon data that can forward to multiple analytics backends
+  """
+  
+  @backends [
+    {Operately.Telemetry.Backends.PostHog, %{enabled: true}},
+    {Operately.Telemetry.Backends.Internal, %{enabled: true}},
+    {Operately.Telemetry.Backends.Mixpanel, %{enabled: false}}
+  ]
+  
+  def send_beacon(data) do
+    processed_data = process_data(data)
+    
+    @backends
+    |> Enum.filter(fn {_backend, config} -> config.enabled end)
+    |> Enum.each(fn {backend, _config} -> 
+      Task.async(fn -> backend.send(processed_data) end)
+    end)
+  end
+  
+  defp process_data(data) do
+    data
+    |> anonymize_sensitive_fields()
+    |> add_privacy_controls()
+    |> validate_data_format()
+  end
+end
+```
+
+### Cost Analysis: PostHog Implementation
+
+#### PostHog Cloud Pricing (as of 2024)
+- **Free Tier**: 1M events/month, basic features
+- **Growth Plan**: $0.00031 per event after 1M (roughly $310 for 1M additional events)
+- **Enterprise**: Custom pricing, typically $2000+/month
+
+#### Self-Hosted PostHog Costs
+- **Infrastructure**: $100-500/month (depending on scale)
+- **Maintenance**: 10-20 hours/month (~$1000-2000/month if outsourced)
+- **Total**: $1100-2500/month for self-hosted option
+
+#### Beacon-Specific Cost Estimates
+
+**Scenario 1: 10,000 installations, daily heartbeats**
+- Events per month: 10,000 × 30 = 300,000
+- PostHog Cloud cost: Free tier covers this
+- Router infrastructure: $50-100/month
+- **Total: $50-100/month**
+
+**Scenario 2: 100,000 installations, daily heartbeats**
+- Events per month: 100,000 × 30 = 3M
+- PostHog Cloud cost: $620/month (2M events over free tier)
+- Router infrastructure: $200-400/month
+- **Total: $820-1020/month**
+
+**Scenario 3: Self-hosted for privacy**
+- PostHog self-hosted: $1100-2500/month
+- Router infrastructure: $100-300/month
+- **Total: $1200-2800/month**
+
+### Short-term vs Long-term Impact Analysis
+
+#### Short-term Impacts (0-6 months)
+
+**Advantages:**
+- **Fast Implementation**: PostHog has excellent documentation and SDKs
+- **Rich Analytics**: Out-of-the-box dashboards and analytics
+- **Privacy Controls**: GDPR-compliant data handling
+- **Feature Flags**: Can use for gradual rollouts and A/B testing
+- **Low Maintenance**: Managed service reduces operational overhead
+
+**Disadvantages:**
+- **Vendor Lock-in**: Direct integration creates dependency
+- **Cost Uncertainty**: Pricing scales with usage
+- **Overkill**: Many features not needed for simple beacon use case
+- **Data Export**: Limited data portability options
+
+#### Long-term Impacts (6 months - 2+ years)
+
+**Advantages:**
+- **Ecosystem Growth**: PostHog adds features that could be valuable
+- **Advanced Analytics**: Cohort analysis, funnels, retention analysis
+- **Integration Capabilities**: Connects with other tools (Slack, email, etc.)
+- **Community**: Active open-source community and development
+
+**Disadvantages:**
+- **Cost Scaling**: Exponential cost growth with installation base
+- **Complexity Creep**: Feature bloat may impact performance
+- **Migration Costs**: Difficult to move away if deeply integrated
+- **Data Ownership**: Less control over data processing and storage
+
+### Recommendation: Hybrid Approach with Router
+
+#### Phase 1: Router + PostHog Cloud (Immediate - 6 months)
+```elixir
+# config/config.exs
+config :operately, :beacon,
+  router_enabled: true,
+  backends: [
+    {Operately.Telemetry.Backends.PostHog, %{
+      enabled: true,
+      api_key: {:system, "POSTHOG_API_KEY"},
+      host: {:system, "POSTHOG_HOST", "https://app.posthog.com"}
+    }},
+    {Operately.Telemetry.Backends.Internal, %{
+      enabled: true,
+      storage: :local_db
+    }}
+  ]
+```
+
+**Benefits:**
+- Quick implementation with PostHog's rich features
+- Internal storage as backup and for custom analytics
+- Router provides flexibility for future changes
+- Low initial costs with PostHog free tier
+
+#### Phase 2: Optimize and Scale (6-18 months)
+- Monitor costs and usage patterns
+- Implement data aggregation in router to reduce PostHog events
+- Add custom analytics dashboards using internal data
+- Consider self-hosted PostHog if data sensitivity is a concern
+
+#### Phase 3: Platform Independence (18+ months)
+- Evaluate alternative backends (Mixpanel, Amplitude, custom solution)
+- Migrate gradually using router architecture
+- Maintain PostHog for specific use cases if beneficial
+- Full control over data processing and costs
+
+### Implementation Setup Guide
+
+#### 1. PostHog Account Setup
+```bash
+# Sign up for PostHog Cloud account
+# Or deploy self-hosted PostHog
+docker run -d \
+  --name posthog \
+  -p 8000:8000 \
+  -e SECRET_KEY=your-secret-key \
+  -e DATABASE_URL=postgres://... \
+  posthog/posthog:latest
+```
+
+#### 2. Router Service Implementation
+```elixir
+# Mix dependency
+{:httpoison, "~> 1.8"},
+{:jason, "~> 1.4"}
+
+# Router configuration
+defmodule Operately.Telemetry.Config do
+  def backends do
+    Application.get_env(:operately, :beacon, [])[:backends] || []
+  end
+  
+  def beacon_enabled? do
+    System.get_env("OPERATELY_BEACON_ENABLED", "true") == "true"
+  end
+end
+```
+
+#### 3. PostHog Backend Implementation
+```elixir
+defmodule Operately.Telemetry.Backends.PostHog do
+  @behaviour Operately.Telemetry.Backend
+  
+  def send(data) do
+    config = get_config()
+    
+    payload = %{
+      api_key: config.api_key,
+      event: data.event,
+      distinct_id: data.installation_id,
+      properties: data.properties,
+      timestamp: data.timestamp
+    }
+    
+    HTTPoison.post(
+      "#{config.host}/capture/",
+      Jason.encode!(payload),
+      [{"Content-Type", "application/json"}],
+      timeout: 10_000
+    )
+  end
+  
+  defp get_config do
+    Application.get_env(:operately, :posthog, %{})
+  end
+end
+```
+
+#### 4. Privacy and Compliance Configuration
+```elixir
+# Privacy-first data processing
+defmodule Operately.Telemetry.Privacy do
+  def anonymize_beacon_data(data) do
+    data
+    |> remove_identifying_fields()
+    |> convert_to_ranges()
+    |> add_privacy_flags()
+  end
+  
+  defp remove_identifying_fields(data) do
+    # Remove any fields that could identify specific users or organizations
+    Map.drop(data, [:hostname, :user_emails, :company_name])
+  end
+  
+  defp convert_to_ranges(data) do
+    # Convert exact counts to ranges for privacy
+    %{data | 
+      user_count: user_count_range(data.user_count),
+      project_count: project_count_range(data.project_count)
+    }
+  end
+end
+```
+
+### Summary: PostHog Implementation Strategy
+
+**Recommended Approach:**
+1. **Implement Router Architecture**: Provides flexibility and vendor independence
+2. **Start with PostHog Cloud**: Leverages their infrastructure and expertise
+3. **Maintain Internal Analytics**: Keep control over core metrics
+4. **Plan for Migration**: Router enables easy switching if needed
+
+**Cost Projection:**
+- **Year 1**: $600-1,500 (router + PostHog cloud)
+- **Year 2**: $1,200-3,000 (scaling costs)
+- **Year 3+**: $2,000-5,000 (potential migration to self-hosted or alternative)
+
+**Key Success Factors:**
+- Privacy-first implementation with clear opt-out
+- Gradual data collection expansion based on actual needs
+- Regular cost and value assessment
+- Community transparency about data collection practices
+
+This approach provides the benefits of PostHog's sophisticated analytics platform while maintaining flexibility for future architectural decisions and keeping costs manageable as the user base grows.
+
 ## Technical Implementation Recommendations
 
 ### Recommended Architecture for Operately
