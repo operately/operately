@@ -18,6 +18,7 @@ services:
     depends_on:
       - db
       - s3mock
+      - mailhog
     environment:
       - DB_HOST=db
       - DB_USERNAME=postgres

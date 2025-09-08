@@ -16,18 +16,22 @@ defmodule OperatelyEmail.Mailers.BaseMailer do
   end
 
   defp test_config do
-    [adapter: Swoosh.Adapters.Test]
+    if System.get_env("E2E_EMAIL_TEST") do
+      smtp_config()
+    else
+      [adapter: Swoosh.Adapters.Test]
+    end
   end
 
   defp prod_config do
     cond do
       System.get_env("SENDGRID_API_KEY", "") != "" -> prod_sendgrid_config()
-      System.get_env("SMTP_SERVER", "") != "" -> prod_smtp_config()
+      System.get_env("SMTP_SERVER", "") != "" -> smtp_config()
       true -> raise "No valid email configuration found"
     end
   end
 
-  defp prod_smtp_config() do
+  defp smtp_config() do
     [
       adapter: Swoosh.Adapters.SMTP,
       relay: System.get_env("SMTP_SERVER"),
