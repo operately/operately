@@ -12,6 +12,7 @@ export { LinkIcon } from "./LinkIcon";
 export * from "./Navigation";
 export { NodeDescription } from "./NodeDescription";
 export { NodesList } from "./NodesList";
+export { SortControl } from "./SortControl";
 export * from "./utils";
 
 export type LinkOptions =
