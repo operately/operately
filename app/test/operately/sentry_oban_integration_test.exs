@@ -134,6 +134,8 @@ defmodule Operately.SentryObanIntegrationTest do
         
         # The application should start normally without Sentry
         # This test validates that our conditional logic works
+        # Note: Frontend error handling also respects the same Sentry configuration
+        # through window.appConfig.sentry.enabled
       end
     end
   end
