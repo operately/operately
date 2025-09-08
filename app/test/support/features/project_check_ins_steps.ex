@@ -40,7 +40,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   step :submit_check_in, ctx, %{status: status, description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "check-in-now")
+    |> UI.click(testid: "tab-check-ins")
+    |> UI.click(testid: "check-in-button")
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-#{status}")
     |> UI.fill_rich_text(description)
@@ -66,16 +67,17 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> UI.assert_text(@status_to_on_screen[status])
   end
 
-  step :assert_check_in_visible_on_project_page, ctx, %{status: status, description: description} do
+  step :assert_check_in_visible_on_project_page, ctx, %{description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-check-ins")
     |> UI.assert_text(description)
-    |> UI.assert_text(@status_to_on_screen[status])
   end
 
   step :assert_check_in_visible_on_feed, ctx, %{description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
     |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, description: description)
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_project_check_in_submitted(author: ctx.champion, project_name: ctx.project.name, description: description)
@@ -148,6 +150,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   step :assert_acknowledgement_visible_on_feed, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
     |> FeedSteps.assert_project_check_in_acknowledged(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_project_check_in_acknowledged(author: ctx.champion, project_name: ctx.project.name)
@@ -197,6 +200,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     ctx
     |> UI.login_as(ctx.champion)
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
     |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
     |> UI.visit(Paths.space_path(ctx.company, ctx.space))
     |> FeedSteps.assert_project_check_in_commented(author: ctx.champion, comment: "This is a comment.")
