@@ -20,7 +20,8 @@ export function NodesList(props: NodesProps) {
   const { filesSelected } = useNewFileModalsContext();
   const [sortBy, setSortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "name");
 
-  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!, sortBy, "desc"), [props.nodes, sortBy]);
+  const sortOrder = sortBy === "name" ? "asc" : "desc";
+  const nodes = useMemo(() => sortNodesWithFoldersFirst(props.nodes!, sortBy, sortOrder), [props.nodes, sortBy, sortOrder]);
 
   if (props.nodes.length < 1) {
     if (filesSelected) return <></>;
