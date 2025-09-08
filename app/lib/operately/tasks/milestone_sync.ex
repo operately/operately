@@ -151,6 +151,7 @@ defmodule Operately.Tasks.MilestoneSync do
   defp task_should_be_in_ordering?(%{status: status}) when status in ["done", "canceled"], do: false
   defp task_should_be_in_ordering?(_task), do: true
 
+  defp with_milestone_lock(nil, _callback), do: {:ok, nil}
   defp with_milestone_lock(milestone_id, callback) do
     query = from(m in Milestone, where: m.id == ^milestone_id, lock: "FOR UPDATE")
 
