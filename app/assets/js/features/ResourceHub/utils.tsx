@@ -37,8 +37,12 @@ export function sortNodesWithFoldersFirst(nodes: ResourceHubNode[], sortBy: Sort
     }
   });
 
+  // Always sort folders by name (ascending), regardless of the sort criteria
+  const folderSortFn = createSortFunction("name", "asc");
+  folders.sort(folderSortFn);
+  
+  // Sort other items by the specified criteria
   const sortFn = createSortFunction(sortBy, sortOrder);
-  folders.sort(sortFn);
   others.sort(sortFn);
 
   return [...folders, ...others];
