@@ -175,23 +175,19 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     UI.assert_text(ctx, error)
   end
 
-  step :assert_no_reviewer_calluout_showing, ctx do
-    ctx |> UI.assert_has(testid: "no-reviewer-callout")
-  end
-
-  step :assert_review_placeholder_showing, ctx do
-    ctx |> UI.assert_has(testid: "reviewer-placeholder")
+  step :assert_review_field_showing, ctx do
+    ctx |> UI.assert_has(testid: "reviewer-field")
   end
 
   step :follow_add_reviewer_link_and_add_reviewer, ctx do
     ctx
-    |> UI.click(testid: "add-reviewer")
-    |> UI.select_person_in(id: "person", name: ctx.reviewer.full_name)
-    |> UI.click(testid: "submit")
+    |> UI.click(testid: "reviewer-field")
+    |> UI.click(testid: UI.testid(["reviewer-field-search-result", ctx.reviewer.full_name]))
   end
 
   step :assert_project_has_reviewer, ctx, fields do
     ctx
+    |> UI.click(testid: "manage-team-button")
     |> UI.assert_has(testid: "project-contributors-page")
     |> UI.assert_text(ctx.reviewer.full_name)
     |> then(fn ctx ->
@@ -258,7 +254,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     creator = creator || ctx.champion
 
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, project))
+    |> UI.visit(Paths.project_path(ctx.company, project, tab: "activity"))
     |> FeedSteps.assert_project_created(author: creator)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_created(author: creator, project_name: project.name)
