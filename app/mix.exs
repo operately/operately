@@ -41,7 +41,6 @@ defmodule Operately.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_view, "~> 2.0"},
       {:phoenix_live_view, "~> 0.20.17"},
-      {:swoosh, "~> 1.17"},
       {:finch, "~> 0.19"},
       {:telemetry_metrics, "~> 1.0"},
       {:telemetry_poller, "~> 1.1"},
@@ -60,6 +59,8 @@ defmodule Operately.MixProject do
       {:telemetry_metrics_statsd, "~> 0.7.0"},
       {:yaml_elixir, "~> 2.11"},
       {:sentry, "~> 10.0"},
+      {:swoosh, "~> 1.17"},
+      {:gen_smtp, "~> 1.1"},
 
       # llm
       {:langchain, "0.4.0-rc.0"},

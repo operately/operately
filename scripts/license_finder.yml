@@ -399,3 +399,9 @@
     :why: Its MIT
     :versions: []
     :when: 2025-09-04 20:06:49.717913000 Z
+- - :approve
+  - gen_smtp
+  - :who: Igor Sarcevic
+    :why: Its MIT
+    :versions: []
+    :when: 2025-09-08 12:41:19.878304000 Z
