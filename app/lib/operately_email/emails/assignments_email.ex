@@ -18,7 +18,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
       |> new()
       |> from("Operately")
       |> to(person)
-      |> subject("Your assignments for today")
+      |> subject("Operately(#{company.name}): Your assignments for today")
       |> assign(:company, company)
       |> assign(:assignments, assignments)
       |> render("assignments")
