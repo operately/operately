@@ -28,6 +28,17 @@ function asRichText(content: string): any {
   };
 }
 
+// Date helpers for dynamic, credible timelines
+function addDays(date: Date, days: number): Date {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+function daysAgo(days: number): Date {
+  return addDays(new Date(), -days);
+}
+
 const people = genPeople(5);
 
 const meta: Meta<typeof ProjectPage> = {
@@ -85,7 +96,7 @@ const mockSearchPeople = async ({ query }: { query: string }) => {
   await new Promise((resolve) => setTimeout(resolve, 300)); // Simulate API delay
   return mockPeople
     .filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()))
-    .map(person => ({
+    .map((person) => ({
       ...person,
       profileLink: "#", // Add required profileLink property
       title: "Team Member", // Add required title property
@@ -102,14 +113,14 @@ const mockParentGoalSearch = async ({ query }: { query: string }): Promise<Proje
   return goals.filter((goal) => goal.name.toLowerCase().includes(query.toLowerCase()));
 };
 
-// Mock check-ins data
+// Mock check-ins data (weekly cadence; last within 6 days)
 const mockCheckIns: ProjectPage.CheckIn[] = [
   {
     id: "checkin-1",
-    author: people[0]!,
-    date: new Date(2025, 3, 17), // Apr 17th, 2025
+    author: people[4]!,
+    date: daysAgo(2),
     content: asRichText(
-      "Project kickoff meeting completed successfully! The team is aligned on deliverables and timeline. UI wireframes are in progress and backend architecture is being finalized.",
+      "Project kickoff complete and scope confirmed. Team aligned on goals and short, iterative milestones. Initial prototypes are validated with 5 users; no blockers.",
     ),
     link: "/projects/1/check-ins/1",
     commentCount: 5,
@@ -118,9 +129,9 @@ const mockCheckIns: ProjectPage.CheckIn[] = [
   {
     id: "checkin-2",
     author: people[1]!,
-    date: new Date(2025, 3, 10), // Apr 10th, 2025
+    date: daysAgo(9),
     content: asRichText(
-      "First sprint review completed. Made good progress on the authentication module and user interface components. Some minor delays in API integration, but we're adjusting the timeline accordingly.",
+      "First sprint wrapped. Navigation and auth flows landed; minor delays on analytics due to vendor API changes. Risk mitigated by simplifying scope.",
     ),
     link: "/projects/1/check-ins/2",
     commentCount: 2,
@@ -129,9 +140,9 @@ const mockCheckIns: ProjectPage.CheckIn[] = [
   {
     id: "checkin-3",
     author: people[2]!,
-    date: new Date(2025, 3, 3), // Apr 3rd, 2025
+    date: daysAgo(16),
     content: asRichText(
-      "Database schema finalized and development environment is set up. All team members have access to the repositories and development tools. Ready to start implementation phase next week.",
+      "Environment ready and baseline design tokens shipped. Team has access to repos and CI. Kicked off weekly usability sessions.",
     ),
     link: "/projects/1/check-ins/3",
     commentCount: 8,
@@ -179,13 +190,13 @@ const mockDiscussions: ProjectPage.Discussion[] = [
 const mockResources: ResourceManager.Resource[] = [
   {
     id: "resource-1",
-    name: "Tasks Spreadsheet",
+    name: "Sprint Planning Spreadsheet",
     url: "https://docs.google.com/spreadsheets/d/1234567890",
   },
   {
     id: "resource-2",
-    name: "Issue description",
-    url: "https://github.com/company/repo/issues/123",
+    name: "Project Brief",
+    url: "https://company.notion.site/project-brief",
   },
   {
     id: "resource-3",
@@ -197,7 +208,37 @@ const mockResources: ResourceManager.Resource[] = [
 export const Default: Story = {
   render: () => {
     const [tasks, setTasks] = useState([...mockTasks]);
-    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>(Object.values(mockMilestones));
+    // Use dynamic, short-horizon milestones to encourage manageable scopes
+    const [milestones, setMilestones] = useState<TaskBoardTypes.Milestone[]>([
+      {
+        id: "m1",
+        name: "Kickoff Complete",
+        dueDate: createContextualDate(daysAgo(7), "day"),
+        hasDescription: true,
+        hasComments: true,
+        commentCount: 2,
+        status: "done",
+        link: "#",
+      },
+      {
+        id: "m2",
+        name: "Usability Test Round 1",
+        dueDate: createContextualDate(addDays(new Date(), 7), "day"),
+        hasDescription: true,
+        hasComments: false,
+        status: "pending",
+        link: "#",
+      },
+      {
+        id: "m3",
+        name: "Beta Release",
+        dueDate: createContextualDate(addDays(new Date(), 21), "day"),
+        hasDescription: false,
+        hasComments: false,
+        status: "pending",
+        link: "#",
+      },
+    ]);
     const [filters, setFilters] = useState<TaskBoardTypes.FilterCondition[]>([]);
     const [parentGoal, setParentGoal] = useState<ProjectPage.ParentGoal | null>({
       id: "1",
@@ -205,21 +246,24 @@ export const Default: Story = {
       link: "/goals/1",
     });
     const [reviewer, setReviewer] = useState<ProjectPage.Person | null>(people[2] || null);
-    const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() => {
-      const startDate = new Date(2025, 2, 15); // March 15, 2025
-      return createContextualDate(startDate, "day");
-    });
-    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() => {
-      const oneMonthFromToday = new Date();
-      oneMonthFromToday.setMonth(oneMonthFromToday.getMonth() + 1);
-      return createContextualDate(oneMonthFromToday, "day");
-    });
+    const [startedAt, setStartedAt] = useState<DateField.ContextualDate | null>(() =>
+      createContextualDate(daysAgo(7), "day"),
+    );
+    const [dueAt, setDueAt] = useState<DateField.ContextualDate | null>(() =>
+      createContextualDate(addDays(new Date(), 21), "day"),
+    );
     const [resources, setResources] = useState<ResourceManager.Resource[]>([...mockResources]);
     const [space, setSpace] = useState(defaultSpace);
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", link: "#", ...newTaskData };
+      const newTask = {
+        id: taskId,
+        status: "pending" as TaskBoardTypes.Status,
+        description: "",
+        link: "#",
+        ...newTaskData,
+      };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -282,11 +326,15 @@ export const Default: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="Mobile App Redesign"
-        description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
+        description={
+          asRichText(
+            "Our current mobile app has inconsistent navigation and dated UI patterns, lowering engagement and hurting task completion on key flows. Let's ship an incremental redesign that improves time-to-task, increases activation on first session, and raises weekly retention for target cohorts. Success is measured by +15% task completion on onboarding and +10% weekly active users for the beta cohort.",
+          ) as any
+        }
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
-        champion={people[0] || null}
+        champion={people[4] || null}
         setChampion={() => {}}
         reviewer={reviewer}
         setReviewer={setReviewer}
@@ -302,13 +350,13 @@ export const Default: Story = {
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
-          console.log('Task assignee updated:', taskId, assignee);
+          console.log("Task assignee updated:", taskId, assignee);
         }}
         onTaskDueDateChange={(taskId, dueDate) => {
-          console.log('Task due date updated:', taskId, dueDate);
+          console.log("Task due date updated:", taskId, dueDate);
         }}
         onTaskStatusChange={(taskId, status) => {
-          console.log('Task status updated:', taskId, status);
+          console.log("Task status updated:", taskId, status);
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
@@ -440,7 +488,13 @@ export const EmptyTasks: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", link: "#", ...newTaskData };
+      const newTask = {
+        id: taskId,
+        status: "pending" as TaskBoardTypes.Status,
+        description: "",
+        link: "#",
+        ...newTaskData,
+      };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -735,7 +789,13 @@ export const PausedProject: Story = {
 
     const handleTaskCreate = (newTaskData: TaskBoardTypes.NewTaskPayload) => {
       const taskId = `task-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-      const newTask = { id: taskId, status: "pending" as TaskBoardTypes.Status, description: "", link: "#", ...newTaskData };
+      const newTask = {
+        id: taskId,
+        status: "pending" as TaskBoardTypes.Status,
+        description: "",
+        link: "#",
+        ...newTaskData,
+      };
       console.log("Task created:", newTask);
       setTasks([...tasks, newTask]);
     };
@@ -814,13 +874,13 @@ export const PausedProject: Story = {
         onTaskCreate={handleTaskCreate}
         onMilestoneCreate={handleMilestoneCreate}
         onTaskAssigneeChange={(taskId, assignee) => {
-          console.log('Task assignee updated:', taskId, assignee);
+          console.log("Task assignee updated:", taskId, assignee);
         }}
         onTaskDueDateChange={(taskId, dueDate) => {
-          console.log('Task due date updated:', taskId, dueDate);
+          console.log("Task due date updated:", taskId, dueDate);
         }}
         onTaskStatusChange={(taskId, status) => {
-          console.log('Task status updated:', taskId, status);
+          console.log("Task status updated:", taskId, status);
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
