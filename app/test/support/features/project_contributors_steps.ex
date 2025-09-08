@@ -14,7 +14,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   defdelegate create_project(ctx, attrs), to: ProjectSteps
 
   step :visit_project_contributors_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "manage-team-button")
     |> UI.assert_has(testid: "project-contributors-page")
@@ -48,7 +48,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
     |> UI.click(testid: "manage-team-button")
     |> UI.click(testid: "add-contributors-button")
-    
+
     ctx = Enum.reduce(Enum.with_index(people), ctx, fn {person, index}, ctx ->
       UI.find(ctx, UI.query(testid: "contributor-#{index}"), fn ctx ->
         ctx
@@ -89,8 +89,9 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :assert_contributors_added_feed_item_exists, ctx, contribs do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
     |> UI.assert_feed_item(ctx.champion, "added new contributors to the project")
-  
+
     Enum.map(contribs, fn c ->
       ctx
       |> UI.assert_text(List.first(String.split(c.name, " ")))
@@ -109,6 +110,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "tab-activity")
     |> UI.assert_feed_item(ctx.champion, "removed #{name} from the project")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.assert_feed_item(ctx.champion, "removed #{name} from the #{ctx.project.name} project")
@@ -186,7 +188,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     ctx
   end
 
-  step :assert_reviewer_removed, ctx do 
+  step :assert_reviewer_removed, ctx do
     contributors = Operately.Projects.list_project_contributors(ctx.project)
     refute Enum.find(contributors, fn c -> c.role == "reviewer" end)
 
@@ -243,7 +245,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
   step :assert_reviewer_converted_to_contributor_feed_item_exists, ctx do
     name = Person.first_name(ctx.reviewer)
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
@@ -255,7 +257,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
     name = Person.first_name(ctx.champion)
 
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.assert_feed_item(ctx.champion, "reassigned #{name} as a contributor on the #{ctx.project.name} project")
@@ -316,7 +318,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :assert_new_champion_chosen_feed_item_exists, ctx, name: name do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.assert_feed_item(ctx.champion, "set #{name} as the new champion on the #{ctx.project.name} project")
@@ -355,7 +357,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
 
   step :assert_new_reviewer_chosen_feed_item_exists, ctx, name: name do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer")
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.assert_feed_item(ctx.champion, "set #{name} as the new reviewer on the #{ctx.project.name} project")
