@@ -200,7 +200,7 @@ defmodule Operately.Companies.Company do
         group_by: fragment("?->> ?", a.content, "company_id"),
         select: {fragment("?->>?", a.content, "company_id"), max(a.inserted_at)}
 
-    load_aggregate(companies, query, :last_activity_at, nil)
+    load_aggregate_with_string_keys(companies, query, :last_activity_at, nil)
   end
 
   def load_last_activity_event(company) do
@@ -213,6 +213,18 @@ defmodule Operately.Companies.Company do
     Enum.map(companies, fn company ->
       case Enum.find(results, fn {id, _} -> id == company.id end) do
         {_, count} -> Map.put(company, key, count)
+        nil -> Map.put(company, key, default)
+      end
+    end)
+  end
+
+  defp load_aggregate_with_string_keys(companies, query, key, default) do
+    results = Operately.Repo.all(query)
+
+    Enum.map(companies, fn company ->
+      company_id_string = to_string(company.id)
+      case Enum.find(results, fn {id, _} -> id == company_id_string end) do
+        {_, value} -> Map.put(company, key, value)
         nil -> Map.put(company, key, default)
       end
     end)
