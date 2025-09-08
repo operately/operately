@@ -81,6 +81,7 @@ export function useState(props: PersonField.Props): PersonField.State {
   const [dialogMode, setDialogMode] = React.useState<"menu" | "search">("menu");
 
   const [searchQuery, setSearchQuery] = React.useState("");
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = React.useState("");
   const [searchResults, setSearchResults] = React.useState<PersonField.Person[]>([]);
 
   const readonly = props.readonly ?? false;
@@ -91,6 +92,17 @@ export function useState(props: PersonField.Props): PersonField.State {
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
   const extraDialogMenuOptions = props.extraDialogMenuOptions ?? [];
 
+  // Debounce search query to prevent excessive API calls
+  React.useEffect(() => {
+    const timerId = setTimeout(() => {
+      setDebouncedSearchQuery(searchQuery);
+    }, 300);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [searchQuery]);
+
   React.useEffect(() => {
     if (!isOpen) {
       setIsOpen(false);
@@ -100,9 +112,11 @@ export function useState(props: PersonField.Props): PersonField.State {
   }, [isOpen, props.person]);
 
   React.useEffect(() => {
+    if (!isOpen) return;
+
     let active = true;
 
-    props.searchPeople({ query: searchQuery }).then((people: PersonField.Person[]) => {
+    props.searchPeople({ query: debouncedSearchQuery }).then((people: PersonField.Person[]) => {
       if (active) {
         setSearchResults(people);
       }
@@ -111,7 +125,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     return () => {
       active = false;
     };
-  }, [searchQuery, props.searchPeople]);
+  }, [isOpen, debouncedSearchQuery, props.searchPeople]);
 
   const setIsOpen = (open: boolean) => {
     if (readonly) {
