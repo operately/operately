@@ -213,6 +213,90 @@ After making code changes, ALWAYS:
 
 ## Common Development Tasks
 
+### Writing Tests - Use Test Factories (CRITICAL)
+
+**🚨 CRITICAL: ALWAYS use test factories instead of fixtures 🚨**
+
+The repository provides a comprehensive test factory system (`Operately.Support.Factory`) that MUST be used instead of direct fixture usage. Factories maintain relationships between test entities and provide consistent test setup.
+
+**✅ CORRECT: Test Factory Pattern**
+```elixir
+defmodule MyTest do
+  use Operately.DataCase, async: true
+  alias Operately.Support.Factory
+
+  setup do
+    Factory.setup(%{})  # Creates account, company, and creator
+  end
+
+  test "feature with related entities", ctx do
+    ctx
+    |> Factory.add_space(:marketing)
+    |> Factory.add_project(:website, :marketing)
+    |> Factory.add_company_member(:john)
+    |> Factory.add_project_contributor(:john_contrib, :website)
+
+    # All entities are properly related and accessible
+    assert ctx.website.space_id == ctx.marketing.id
+    assert ctx.john.company_id == ctx.company.id
+  end
+end
+```
+
+**❌ INCORRECT: Direct Fixture Usage (DO NOT USE)**
+```elixir
+# NEVER use this pattern - requires manual relationship setup
+company = company_fixture()
+person = person_fixture(%{company_id: company.id})
+space = group_fixture(person, %{company_id: company.id})
+project = project_fixture(%{group_id: space.id, creator_id: person.id})
+```
+
+**Factory Benefits:**
+- **Automatic Relationships**: Entities are properly connected without manual setup
+- **Context Management**: All created entities accessible via `ctx.testid`
+- **Readable Tests**: Declarative syntax clearly shows test intent
+- **Consistent Setup**: `Factory.setup/1` provides standard test environment
+- **Easy Refactoring**: Changes to factory methods update all dependent tests
+
+**Key Factory Methods:**
+```elixir
+# Basic setup (ALWAYS call this first)
+Factory.setup(%{})
+
+# Companies and people
+Factory.add_company_member(ctx, :john)
+Factory.add_company_admin(ctx, :admin)
+Factory.add_company_agent(ctx, :ai_agent)
+
+# Spaces and projects
+Factory.add_space(ctx, :marketing)
+Factory.add_project(ctx, :website, :marketing)
+Factory.add_project_contributor(ctx, :contributor, :website)
+
+# Goals and updates
+Factory.add_goal(ctx, :q1_goal, :marketing)
+Factory.add_goal_update(ctx, :update1, :q1_goal, :john)
+
+# Messages and resources
+Factory.add_messages_board(ctx, :announcements, :marketing)
+Factory.add_resource_hub(ctx, :docs, :marketing, :creator)
+```
+
+**Feature Test Pattern (End-to-End):**
+```elixir
+feature "complete workflow", ctx do
+  ctx
+  |> Factory.setup()
+  |> Factory.log_in_person(:creator)
+  |> Factory.add_space(:product)
+  |> Steps.when_i_create_project_in_space(:product)
+  |> Steps.then_project_appears_correctly()
+end
+```
+
+**NEVER use fixture methods directly** - always go through the Factory system for consistent, maintainable tests.
+
 ### Working with Dependencies
 ```bash
 # Elixir dependencies
