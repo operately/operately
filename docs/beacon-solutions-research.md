@@ -652,37 +652,334 @@ Operately Installation → Beacon Router → PostHog/Analytics Backend
 5. **Reliability**: Retry logic and graceful degradation
 6. **Compliance**: Additional privacy controls and data governance
 
-#### Router Implementation
-```elixir
-defmodule Operately.Telemetry.BeaconRouter do
-  @moduledoc """
-  Router for beacon data that can forward to multiple analytics backends
-  """
-  
-  @backends [
-    {Operately.Telemetry.Backends.PostHog, %{enabled: true}},
-    {Operately.Telemetry.Backends.Internal, %{enabled: true}},
-    {Operately.Telemetry.Backends.Mixpanel, %{enabled: false}}
-  ]
-  
-  def send_beacon(data) do
-    processed_data = process_data(data)
+#### Router Implementation Options
+
+Instead of building a custom server, you can leverage existing infrastructure tools that are battle-tested and require minimal maintenance:
+
+##### Option 1: Nginx with Lua Scripts (Recommended)
+
+Nginx with the `lua-resty-http` module can act as a sophisticated proxy that transforms and routes beacon data:
+
+```nginx
+# /etc/nginx/conf.d/beacon-router.conf
+server {
+    listen 80;
+    server_name beacon.operately.com;
     
-    @backends
-    |> Enum.filter(fn {_backend, config} -> config.enabled end)
-    |> Enum.each(fn {backend, _config} -> 
-      Task.async(fn -> backend.send(processed_data) end)
-    end)
-  end
-  
-  defp process_data(data) do
-    data
-    |> anonymize_sensitive_fields()
-    |> add_privacy_controls()
-    |> validate_data_format()
-  end
-end
+    location /beacon {
+        access_by_lua_block {
+            -- Load required modules
+            local http = require "resty.http"
+            local cjson = require "cjson"
+            
+            -- Read the request body
+            ngx.req.read_body()
+            local body = ngx.req.get_body_data()
+            
+            if not body then
+                ngx.status = 400
+                ngx.say("No body")
+                return
+            end
+            
+            -- Parse and transform data
+            local beacon_data = cjson.decode(body)
+            local processed_data = {
+                event = "installation_heartbeat",
+                distinct_id = beacon_data.installation_id,
+                properties = {
+                    version = beacon_data.version,
+                    platform = beacon_data.platform,
+                    user_count_range = beacon_data.user_count_range,
+                    timestamp = ngx.time()
+                }
+            }
+            
+            -- Send to PostHog
+            local httpc = http.new()
+            httpc:request_uri("https://app.posthog.com/capture/", {
+                method = "POST",
+                body = cjson.encode(processed_data),
+                headers = {
+                    ["Content-Type"] = "application/json",
+                    ["Authorization"] = "Bearer " .. os.getenv("POSTHOG_API_KEY")
+                }
+            })
+            
+            -- Send to internal analytics (optional)
+            httpc:request_uri("https://analytics.operately.com/beacon", {
+                method = "POST",
+                body = body,
+                headers = {
+                    ["Content-Type"] = "application/json",
+                    ["X-Internal-Key"] = os.getenv("INTERNAL_API_KEY")
+                }
+            })
+            
+            ngx.status = 200
+            ngx.say("OK")
+        }
+    }
+}
 ```
+
+**Deployment with Docker:**
+```dockerfile
+FROM openresty/openresty:alpine
+COPY beacon-router.conf /etc/nginx/conf.d/
+ENV POSTHOG_API_KEY=your_key_here
+ENV INTERNAL_API_KEY=your_internal_key
+EXPOSE 80
+```
+
+##### Option 2: Kong API Gateway
+
+Kong provides a plugin-based architecture perfect for beacon routing:
+
+```bash
+# Install Kong plugin for request transformation
+kong plugins install request-transformer-advanced
+
+# Configure the service
+curl -X POST http://localhost:8001/services \
+  --data name=beacon-router \
+  --data url=http://app.posthog.com
+
+# Configure the route
+curl -X POST http://localhost:8001/services/beacon-router/routes \
+  --data paths[]=/beacon \
+  --data methods[]=POST
+
+# Add request transformation
+curl -X POST http://localhost:8001/services/beacon-router/plugins \
+  --data name=request-transformer-advanced \
+  --data config.add.headers[]=Authorization:Bearer\ $POSTHOG_API_KEY \
+  --data config.replace.uri=/capture/
+```
+
+**Kong Lua Plugin for Multi-Backend Routing:**
+```lua
+-- kong/plugins/beacon-router/handler.lua
+local BasePlugin = require "kong.plugins.base_plugin"
+local http = require "resty.http"
+local cjson = require "cjson"
+
+local BeaconRouterHandler = BasePlugin:extend()
+
+function BeaconRouterHandler:access(conf)
+  BeaconRouterHandler.super.access(self)
+  
+  -- Read and parse request
+  local body = kong.request.get_raw_body()
+  local beacon_data = cjson.decode(body)
+  
+  -- Transform for PostHog
+  local posthog_data = {
+    event = "installation_heartbeat",
+    distinct_id = beacon_data.installation_id,
+    properties = beacon_data
+  }
+  
+  -- Send to multiple backends asynchronously
+  ngx.timer.at(0, function()
+    local httpc = http.new()
+    
+    -- PostHog
+    httpc:request_uri("https://app.posthog.com/capture/", {
+      method = "POST",
+      body = cjson.encode(posthog_data),
+      headers = {
+        ["Content-Type"] = "application/json",
+        ["Authorization"] = "Bearer " .. conf.posthog_api_key
+      }
+    })
+    
+    -- Internal analytics
+    httpc:request_uri(conf.internal_endpoint, {
+      method = "POST",
+      body = body,
+      headers = {
+        ["Content-Type"] = "application/json",
+        ["X-API-Key"] = conf.internal_api_key
+      }
+    })
+  end)
+  
+  kong.response.exit(200, "OK")
+end
+
+return BeaconRouterHandler
+```
+
+##### Option 3: HAProxy with HTTP Processing
+
+HAProxy can route requests and perform basic transformations:
+
+```haproxy
+# /etc/haproxy/haproxy.cfg
+global
+    lua-load /etc/haproxy/beacon-transform.lua
+
+frontend beacon_frontend
+    bind *:80
+    default_backend beacon_processors
+
+backend beacon_processors
+    http-request lua.process_beacon
+    
+    # Primary backend: PostHog
+    server posthog app.posthog.com:443 ssl verify none
+    
+    # Backup processing: retry logic
+    option httpchk POST /health
+    
+backend internal_analytics
+    server internal analytics.operately.com:443 ssl verify none
+```
+
+```lua
+-- /etc/haproxy/beacon-transform.lua
+core.register_action("process_beacon", {"http-req"}, function(txn)
+    local body = txn.req:dup()
+    
+    if body then
+        -- Transform data for PostHog format
+        local json = core.json
+        local beacon_data = json.decode(body)
+        
+        if beacon_data then
+            local posthog_data = {
+                event = "installation_heartbeat",
+                distinct_id = beacon_data.installation_id,
+                properties = beacon_data
+            }
+            
+            -- Set transformed body
+            txn.req:set_body(json.encode(posthog_data))
+            
+            -- Add PostHog headers
+            txn.req:set_header("Authorization", "Bearer " .. os.getenv("POSTHOG_API_KEY"))
+        end
+    end
+end)
+```
+
+##### Option 4: Cloud-Native Solutions
+
+**AWS API Gateway + Lambda:**
+```javascript
+// Lambda function for beacon processing
+exports.handler = async (event) => {
+    const beaconData = JSON.parse(event.body);
+    
+    // Transform for PostHog
+    const posthogData = {
+        event: 'installation_heartbeat',
+        distinct_id: beaconData.installation_id,
+        properties: beaconData
+    };
+    
+    // Send to PostHog
+    await fetch('https://app.posthog.com/capture/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${process.env.POSTHOG_API_KEY}`
+        },
+        body: JSON.stringify(posthogData)
+    });
+    
+    // Send to internal storage
+    await fetch(process.env.INTERNAL_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: event.body
+    });
+    
+    return { statusCode: 200, body: 'OK' };
+};
+```
+
+**Cloudflare Workers:**
+```javascript
+addEventListener('fetch', event => {
+  event.respondWith(handleRequest(event.request))
+})
+
+async function handleRequest(request) {
+  if (request.method !== 'POST') {
+    return new Response('Method not allowed', { status: 405 })
+  }
+  
+  const beaconData = await request.json()
+  
+  // Transform for PostHog
+  const posthogPayload = {
+    event: 'installation_heartbeat',
+    distinct_id: beaconData.installation_id,
+    properties: beaconData
+  }
+  
+  // Send to PostHog
+  const posthogResponse = fetch('https://app.posthog.com/capture/', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${POSTHOG_API_KEY}`
+    },
+    body: JSON.stringify(posthogPayload)
+  })
+  
+  // Send to internal endpoint
+  const internalResponse = fetch(INTERNAL_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(beaconData)
+  })
+  
+  await Promise.all([posthogResponse, internalResponse])
+  
+  return new Response('OK', { status: 200 })
+}
+```
+
+##### Comparison of Router Options
+
+| Solution | Setup Complexity | Maintenance | Cost | Flexibility | Recommended For |
+|----------|------------------|-------------|------|-------------|-----------------|
+| **Nginx + Lua** | Medium | Low | $20-50/month | High | Most scenarios |
+| **Kong Gateway** | Medium | Low | $50-200/month | Very High | Complex routing needs |
+| **HAProxy** | Medium | Low | $20-50/month | Medium | High traffic scenarios |
+| **AWS API Gateway** | Low | Very Low | $3.50/1M requests | Medium | AWS-native stacks |
+| **Cloudflare Workers** | Low | Very Low | $0.50/1M requests | Medium | Global distribution |
+
+##### Recommended Approach: Nginx + Lua
+
+For most implementations, **Nginx with Lua scripts** provides the best balance of:
+- **Simplicity**: Well-documented, widely used
+- **Performance**: Handle thousands of requests/second
+- **Flexibility**: Easy to modify routing logic
+- **Cost**: Minimal infrastructure requirements
+- **Reliability**: Battle-tested in production environments
+
+**Deployment Example:**
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  beacon-router:
+    image: openresty/openresty:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+    restart: unless-stopped
+```
+
+This approach eliminates the need for custom server development while providing all the benefits of the router pattern: vendor independence, data transformation, multi-backend routing, and easy maintenance.
 
 ### Cost Analysis: PostHog Implementation
 
@@ -696,24 +993,30 @@ end
 - **Maintenance**: 10-20 hours/month (~$1000-2000/month if outsourced)
 - **Total**: $1100-2500/month for self-hosted option
 
-#### Beacon-Specific Cost Estimates
+#### Beacon-Specific Cost Estimates (With Infrastructure Router)
 
 **Scenario 1: 10,000 installations, daily heartbeats**
 - Events per month: 10,000 × 30 = 300,000
 - PostHog Cloud cost: Free tier covers this
-- Router infrastructure: $50-100/month
-- **Total: $50-100/month**
+- Router infrastructure (Nginx): $25-50/month
+- **Total: $25-50/month**
 
-**Scenario 2: 100,000 installations, daily heartbeats**
+**Scenario 2: 100,000 installations, daily heartbeats**  
 - Events per month: 100,000 × 30 = 3M
 - PostHog Cloud cost: $620/month (2M events over free tier)
-- Router infrastructure: $200-400/month
-- **Total: $820-1020/month**
+- Router infrastructure (Nginx): $50-100/month
+- **Total: $670-720/month**
 
-**Scenario 3: Self-hosted for privacy**
-- PostHog self-hosted: $1100-2500/month
-- Router infrastructure: $100-300/month
-- **Total: $1200-2800/month**
+**Scenario 3: Cloud-native router (AWS)**
+- PostHog Cloud cost: $620/month (same as above)
+- API Gateway: $10.50/month (3M requests)
+- Lambda compute: $5-15/month
+- **Total: $635-650/month**
+
+**Scenario 4: Self-hosted for privacy**
+- PostHog self-hosted: $200-500/month (smaller scale possible)
+- Router infrastructure: $25-75/month
+- **Total: $225-575/month** (significantly lower than custom implementation)
 
 ### Short-term vs Long-term Impact Analysis
 
@@ -798,50 +1101,91 @@ docker run -d \
   posthog/posthog:latest
 ```
 
-#### 2. Router Service Implementation
-```elixir
-# Mix dependency
-{:httpoison, "~> 1.8"},
-{:jason, "~> 1.4"}
+#### 2. Router Setup (Choose One Option)
 
-# Router configuration
-defmodule Operately.Telemetry.Config do
-  def backends do
-    Application.get_env(:operately, :beacon, [])[:backends] || []
-  end
-  
-  def beacon_enabled? do
-    System.get_env("OPERATELY_BEACON_ENABLED", "true") == "true"
-  end
-end
+**Option A: Nginx + Lua Router (Recommended)**
+```bash
+# Deploy with Docker Compose
+version: '3.8'
+services:
+  beacon-router:
+    image: openresty/openresty:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./beacon-router.conf:/etc/nginx/conf.d/default.conf
+    environment:
+      - POSTHOG_API_KEY=${POSTHOG_API_KEY}
+      - INTERNAL_API_KEY=${INTERNAL_API_KEY}
+    restart: unless-stopped
+
+# Infrastructure cost: $20-50/month
+# Maintenance: Minimal (configuration-based)
 ```
 
-#### 3. PostHog Backend Implementation
+**Option B: Cloud-Native (AWS API Gateway + Lambda)**
+```bash
+# Deploy using AWS CLI or Terraform
+aws apigateway create-rest-api --name beacon-router
+aws lambda create-function --function-name beacon-processor
+# Cost: $3.50 per 1M requests + Lambda compute
+```
+
+**Option C: Kong API Gateway**
+```bash
+# For more complex routing requirements
+docker run -d --name kong-gateway \
+  -e KONG_DATABASE=off \
+  -e KONG_DECLARATIVE_CONFIG=/kong/declarative/kong.yml \
+  -p 8000:8000 kong:latest
+# Cost: $50-200/month depending on features used
+```
+
+#### 3. Operately Beacon Client Implementation
 ```elixir
-defmodule Operately.Telemetry.Backends.PostHog do
-  @behaviour Operately.Telemetry.Backend
+defmodule Operately.Telemetry.BeaconClient do
+  @moduledoc """
+  Simple beacon client that sends data to router endpoint
+  """
   
-  def send(data) do
-    config = get_config()
-    
-    payload = %{
-      api_key: config.api_key,
-      event: data.event,
-      distinct_id: data.installation_id,
-      properties: data.properties,
-      timestamp: data.timestamp
+  @beacon_endpoint Application.compile_env(:operately, :beacon_endpoint, "https://beacon.operately.com/beacon")
+  
+  def send_heartbeat do
+    data = %{
+      installation_id: installation_id(),
+      version: Application.spec(:operately, :vsn),
+      platform: platform_info(),
+      user_count_range: user_count_range(),
+      deployment_type: deployment_type(),
+      features_enabled: enabled_features(),
+      timestamp: DateTime.utc_now()
     }
     
+    # Send to router - router handles PostHog forwarding
     HTTPoison.post(
-      "#{config.host}/capture/",
-      Jason.encode!(payload),
-      [{"Content-Type", "application/json"}],
-      timeout: 10_000
+      @beacon_endpoint,
+      Jason.encode!(data),
+      [
+        {"Content-Type", "application/json"},
+        {"User-Agent", "Operately/#{Application.spec(:operately, :vsn)}"}
+      ],
+      timeout: 10_000,
+      recv_timeout: 5_000
     )
+    |> case do
+      {:ok, %{status_code: 200}} -> 
+        Logger.debug("Beacon sent successfully")
+        :ok
+      {:error, reason} -> 
+        Logger.debug("Beacon failed: #{inspect(reason)}")
+        :error
+    end
   end
   
-  defp get_config do
-    Application.get_env(:operately, :posthog, %{})
+  defp installation_id do
+    # Generate or retrieve stable installation UUID
+    Application.get_env(:operately, :installation_id) || 
+      generate_installation_id()
   end
 end
 ```
@@ -875,23 +1219,30 @@ end
 ### Summary: PostHog Implementation Strategy
 
 **Recommended Approach:**
-1. **Implement Router Architecture**: Provides flexibility and vendor independence
-2. **Start with PostHog Cloud**: Leverages their infrastructure and expertise
-3. **Maintain Internal Analytics**: Keep control over core metrics
-4. **Plan for Migration**: Router enables easy switching if needed
+1. **Deploy Infrastructure Router**: Use Nginx + Lua or cloud-native API Gateway
+2. **Start with PostHog Cloud**: Leverages their infrastructure and expertise  
+3. **Maintain Internal Analytics**: Keep control over core metrics via router
+4. **Plan for Migration**: Router enables easy switching without code changes
 
-**Cost Projection:**
-- **Year 1**: $600-1,500 (router + PostHog cloud)
-- **Year 2**: $1,200-3,000 (scaling costs)
-- **Year 3+**: $2,000-5,000 (potential migration to self-hosted or alternative)
+**Infrastructure-Based Benefits:**
+- **No Custom Code**: Use battle-tested proxy/gateway solutions
+- **Easy Maintenance**: Configuration-driven rather than code-driven
+- **Lower Costs**: Standard infrastructure pricing, no custom server development
+- **High Reliability**: Proven tools with excellent uptime
+- **Vendor Independence**: Easy switching between analytics providers
 
-**Key Success Factors:**
-- Privacy-first implementation with clear opt-out
-- Gradual data collection expansion based on actual needs
-- Regular cost and value assessment
-- Community transparency about data collection practices
+**Cost Projection (Infrastructure Router):**
+- **Year 1**: $300-750 (router + PostHog cloud) 
+- **Year 2**: $600-1,200 (scaling costs)
+- **Year 3+**: $800-1,500 (optimized infrastructure)
 
-This approach provides the benefits of PostHog's sophisticated analytics platform while maintaining flexibility for future architectural decisions and keeping costs manageable as the user base grows.
+**Deployment Options Ranking:**
+1. **Nginx + Lua**: Best for most use cases (recommended)
+2. **Cloud API Gateway**: Best for AWS/GCP native stacks
+3. **Kong Gateway**: Best for complex routing requirements
+4. **Cloudflare Workers**: Best for global distribution needs
+
+This infrastructure-based approach provides all the benefits of the router pattern while leveraging existing, proven technologies instead of developing custom server components.
 
 ## Technical Implementation Recommendations
 
