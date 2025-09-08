@@ -6,7 +6,7 @@ import * as Time from "@/utils/time";
 import { Paths } from "@/routes/paths";
 export type NodeType = "document" | "folder" | "file" | "link";
 export type SortBy = "name" | "insertedAt" | "updatedAt";
-export type SortOrder = "asc" | "desc";
+type SortOrder = "asc" | "desc";
 
 export function findPath(paths: Paths, nodeType: NodeType, node: ResourceHubNode) {
   switch (nodeType) {

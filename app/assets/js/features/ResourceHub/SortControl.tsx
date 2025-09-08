@@ -2,7 +2,7 @@ import React from "react";
 import { IconCheck, IconChevronDown, Menu, MenuActionItem } from "turboui";
 import { SortBy } from "./utils";
 
-export interface SortControlProps {
+interface SortControlProps {
   sortBy: SortBy;
   onSortChange: (sortBy: SortBy) => void;
 }
