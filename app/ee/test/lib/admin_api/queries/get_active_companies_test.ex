@@ -16,7 +16,7 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
 
     test "returns empty list when no companies meet activity criteria" do
       # Create a company that doesn't meet the criteria
-      company = company_fixture()
+      _company = company_fixture()
       
       # Only has 1 member (the creator), no goals, no projects, no recent activity
       assert {:ok, %{companies: []}} = GetActiveCompanies.call(nil, %{})
@@ -31,12 +31,12 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompaniesTest do
       member2 = person_fixture_with_account(%{company_id: company.id})
       
       # Add multiple goals (≥ 2) 
-      goal1 = goal_fixture(member1, %{group_id: group.id})
-      goal2 = goal_fixture(member2, %{group_id: group.id})
+      _goal1 = goal_fixture(member1, %{group_id: group.id})
+      _goal2 = goal_fixture(member2, %{group_id: group.id})
       
       # Add multiple projects (≥ 2)
-      project1 = project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
-      project2 = project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
+      _project1 = project_fixture(%{company_id: company.id, creator_id: member1.id, group_id: group.id})
+      _project2 = project_fixture(%{company_id: company.id, creator_id: member2.id, group_id: group.id})
       
       # Add recent activity (within 14 days)
       create_recent_activity(company)

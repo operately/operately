@@ -208,7 +208,7 @@ defmodule OperatelyEE.Features.SaasAdminActiveCompaniesTest do
 
   step :create_inactive_company, ctx, name do
     # Create a company that doesn't meet criteria
-    company = company_fixture(%{company_name: name})
+    _company = company_fixture(%{company_name: name})
     # Only has 1 member (the creator), no goals, no projects, no recent activity
     ctx
   end

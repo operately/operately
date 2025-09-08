@@ -218,7 +218,7 @@ defmodule Operately.Companies.Company do
     end)
   end
 
-  defp load_aggregate_with_string_keys(companies, query, key, default \\ 0) do
+  defp load_aggregate_with_string_keys(companies, query, key, default) do
     results = Operately.Repo.all(query)
 
     Enum.map(companies, fn company ->
