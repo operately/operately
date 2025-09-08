@@ -1,7 +1,8 @@
 defmodule Operately.Features.SmtpEmailDeliveryTest do
   use Operately.DataCase
 
-  import Operately.Support.Factory
+  import Operately.PeopleFixtures
+  import Operately.CompaniesFixtures
 
   @moduletag :smtp_e2e
 
@@ -53,7 +54,7 @@ defmodule Operately.Features.SmtpEmailDeliveryTest do
   @tag :smtp_e2e
   test "password reset emails are delivered through SMTP server" do
     # Create an account to reset password for
-    account = insert(:account, email: "smtp-test@example.com")
+    account = account_fixture(%{email: "smtp-test@example.com"})
     token = "test-reset-token-#{:erlang.unique_integer()}"
 
     # Send the password reset email through SMTP
@@ -88,8 +89,8 @@ defmodule Operately.Features.SmtpEmailDeliveryTest do
   @tag :smtp_e2e 
   test "assignment emails are delivered through SMTP server" do
     # Create a user with overdue project check-in
-    person = insert(:person, email: "assignments-test@example.com")
-    company = person.company
+    company = company_fixture()
+    person = person_fixture_with_account(%{company_id: company.id, email: "assignments-test@example.com"})
     
     # Create project with overdue check-in
     one_hour_ago = DateTime.utc_now() |> DateTime.add(-1, :hour)
@@ -138,7 +139,7 @@ defmodule Operately.Features.SmtpEmailDeliveryTest do
     
     # Test that SMTP is selected as the adapter
     # Create a simple test email to verify the configuration works
-    account = insert(:account, email: "config-test@example.com")
+    account = account_fixture(%{email: "config-test@example.com"})
     
     # This should not raise an error when using SMTP
     assert_no_error(fn ->
