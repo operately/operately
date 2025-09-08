@@ -9,7 +9,7 @@ describe("Timeframes", () => {
     return {
       dateType: "day" as ContextualDateType,
       date,
-      value
+      value,
     };
   };
 
@@ -17,7 +17,7 @@ describe("Timeframes", () => {
   const createTimeframe = (start: [number, number, number], end: [number, number, number]): Timeframe => {
     return {
       contextualStartDate: createContextualDate(start[0], start[1], start[2]),
-      contextualEndDate: createContextualDate(end[0], end[1], end[2])
+      contextualEndDate: createContextualDate(end[0], end[1], end[2]),
     };
   };
 
@@ -25,7 +25,7 @@ describe("Timeframes", () => {
     it("returns a formatted string with start and end values", () => {
       const timeframe: Partial<Timeframe> = {
         contextualStartDate: { dateType: "day" as ContextualDateType, value: "Jan 1, 2021", date: "2021-01-01" },
-        contextualEndDate: { dateType: "day" as ContextualDateType, value: "Dec 31, 2021", date: "2021-12-31" }
+        contextualEndDate: { dateType: "day" as ContextualDateType, value: "Dec 31, 2021", date: "2021-12-31" },
       };
 
       expect(Timeframes.getTimeframeRange(timeframe as Timeframe)).toBe("Jan 1, 2021 - Dec 31, 2021");
@@ -36,7 +36,7 @@ describe("Timeframes", () => {
       expect(Timeframes.getTimeframeRange(timeframe)).toBe("undefined - undefined");
 
       const partialTimeframe = {
-        contextualStartDate: { dateType: "day" as ContextualDateType, value: "Jan 1, 2021", date: "2021-01-01" }
+        contextualStartDate: { dateType: "day" as ContextualDateType, value: "Jan 1, 2021", date: "2021-01-01" },
       } as unknown as Timeframe;
       expect(Timeframes.getTimeframeRange(partialTimeframe)).toBe("Jan 1, 2021 - undefined");
     });
@@ -54,7 +54,7 @@ describe("Timeframes", () => {
       expect(Timeframes.dayCount(emptyTimeframe)).toBe(0);
 
       const partialTimeframe = {
-        contextualStartDate: createContextualDate(2021, 0, 1)
+        contextualStartDate: createContextualDate(2021, 0, 1),
       } as unknown as Timeframe;
       expect(Timeframes.dayCount(partialTimeframe)).toBe(0);
     });
@@ -65,7 +65,7 @@ describe("Timeframes", () => {
     const w = createTimeframe([2021, 2, 1], [2021, 5, 1]);
 
     // Various test cases with different overlaps
-    const a = createTimeframe([2021, 1, 1], [2021, 6, 1]);  // Feb 1 - July 1 (surrounds)
+    const a = createTimeframe([2021, 1, 1], [2021, 6, 1]); // Feb 1 - July 1 (surrounds)
     const b = createTimeframe([2021, 0, 1], [2021, 1, 15]); // Jan 1 - Feb 15 (ends before)
     const c = createTimeframe([2021, 1, 1], [2021, 3, 15]); // Feb 1 - Apr 15 (overlaps start)
     const d = createTimeframe([2021, 3, 1], [2021, 4, 15]); // Apr 1 - May 15 (contained within)
@@ -136,28 +136,28 @@ describe("Timeframes", () => {
     it("returns -1 when first timeframe is longer", () => {
       const longer = createTimeframe([2021, 0, 1], [2021, 11, 31]);
       const shorter = createTimeframe([2021, 0, 1], [2021, 6, 30]);
-      
+
       expect(Timeframes.compareDuration(longer, shorter)).toBe(-1);
     });
 
     it("returns 1 when second timeframe is longer", () => {
       const shorter = createTimeframe([2021, 0, 1], [2021, 6, 30]);
       const longer = createTimeframe([2021, 0, 1], [2021, 11, 31]);
-      
+
       expect(Timeframes.compareDuration(shorter, longer)).toBe(1);
     });
 
     it("returns 0 when timeframes are equal duration", () => {
       const timeframe1 = createTimeframe([2021, 0, 1], [2021, 11, 31]);
       const timeframe2 = createTimeframe([2022, 0, 1], [2022, 11, 31]);
-      
+
       expect(Timeframes.compareDuration(timeframe1, timeframe2)).toBe(0);
     });
 
     it("handles missing dates", () => {
       const timeframe1 = createTimeframe([2021, 0, 1], [2021, 11, 31]);
       const timeframe2 = {} as Timeframe;
-      
+
       expect(Timeframes.compareDuration(timeframe1, timeframe2)).toBe(0);
     });
   });

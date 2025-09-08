@@ -114,11 +114,7 @@ function PersonCard({ node, chart }: { node: OrgChartNode; chart: OrgChart }) {
           }}
         >
           {node.totalReports}
-          {chart.expanded.includes(person.id!) ? (
-            <IconChevronUp size={14} />
-          ) : (
-            <IconChevronDown size={14} />
-          )}
+          {chart.expanded.includes(person.id!) ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
         </div>
       </div>
     </div>

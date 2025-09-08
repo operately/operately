@@ -191,7 +191,7 @@ function useTitleAndDeadlineState(milestone: Milestones.Milestone): TitleAndDead
     await post({
       milestoneId: milestone.id,
       title: title,
-      deadline: serializeContextualDate(date)
+      deadline: serializeContextualDate(date),
     });
 
     setState("show");

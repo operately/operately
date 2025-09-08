@@ -4,7 +4,6 @@ import type { ActivityContentProjectContributorRemoved } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectContributorRemoved: ActivityHandler = {

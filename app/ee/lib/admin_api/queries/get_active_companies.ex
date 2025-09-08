@@ -45,16 +45,20 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompanies do
     has_multiple_projects = (company.projects_count || 0) >= 2
 
     # Must have recent activity (within last 14 days)
-    has_recent_activity = case company.last_activity_at do
-      nil -> false
-      last_activity when is_struct(last_activity, DateTime) ->
-        days_since_activity = DateTime.diff(DateTime.utc_now(), last_activity, :day)
-        days_since_activity <= 14
-      _ -> false  # Handle any other unexpected types
-    end
+    last_activity_at = normalize_last_activity_at(company)
+    days_since_activity = DateTime.diff(DateTime.utc_now(), last_activity_at, :day)
+    has_recent_activity = days_since_activity <= 14
 
     # Company is active if it meets all criteria
     has_multiple_members && has_multiple_goals && has_multiple_projects && has_recent_activity
+  end
+
+  defp normalize_last_activity_at(company) do
+    case company.last_activity_at do
+      %DateTime{} = dt -> dt
+      %NaiveDateTime{} = ndt -> DateTime.from_naive!(ndt, "Etc/UTC")
+      nil -> DateTime.utc_now()
+    end
   end
 
   defp serialize(companies) do

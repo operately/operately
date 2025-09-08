@@ -4,7 +4,6 @@ import * as People from "@/models/people";
 import React from "react";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectKeyResourceAdded: ActivityHandler = {

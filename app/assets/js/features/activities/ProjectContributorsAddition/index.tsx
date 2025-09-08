@@ -5,7 +5,6 @@ import type { ActivityContentProjectContributorsAddition } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { Avatar } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
 

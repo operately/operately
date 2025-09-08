@@ -4,7 +4,6 @@ import type { ActivityContentGoalArchived } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { feedTitle, goalLink } from "../feedItemLinks";
 
 const GoalArchived: ActivityHandler = {

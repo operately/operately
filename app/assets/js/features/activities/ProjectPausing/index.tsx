@@ -3,7 +3,6 @@ import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 import type { ActivityHandler } from "../interfaces";
 
-
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 const ProjectPausing: ActivityHandler = {

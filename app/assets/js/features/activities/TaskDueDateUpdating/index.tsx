@@ -43,13 +43,17 @@ const TaskDueDateUpdating: ActivityHandler = {
     } else {
       taskElement = "a task";
     }
-    
-    const projectElement = project ? ` in ${projectLink(project)}` : '';
-    
+
+    const projectElement = project ? ` in ${projectLink(project)}` : "";
+
     if (newDueDate) {
       // When showing a date, need to include the DateField component after the message
-      const dateField = <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon /></span>;
-      
+      const dateField = (
+        <span style={{ display: "inline-flex" }}>
+          <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />
+        </span>
+      );
+
       if (props.page === "project") {
         return feedTitle(props.activity, message, dateField, " on", taskElement);
       } else {
@@ -70,7 +74,12 @@ const TaskDueDateUpdating: ActivityHandler = {
 
     if (oldDueDate) {
       return (
-        <span>Previously the due date was <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon /></span></span>
+        <span>
+          Previously the due date was{" "}
+          <span style={{ display: "inline-flex" }}>
+            <DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon />
+          </span>
+        </span>
       );
     } else {
       return <>Previously had no due date</>;
@@ -92,10 +101,15 @@ const TaskDueDateUpdating: ActivityHandler = {
   NotificationTitle(props: { activity: Activity }) {
     const { task, taskName, newDueDate } = content(props.activity);
     const name = taskName || task?.name || "a task";
-    
+
     if (newDueDate) {
       return (
-        <span>Updated due date for {name} to <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon /></span></span>
+        <span>
+          Updated due date for {name} to{" "}
+          <span style={{ display: "inline-flex" }}>
+            <DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon />
+          </span>
+        </span>
       );
     } else {
       return <span>Cleared due date for {name}</span>;

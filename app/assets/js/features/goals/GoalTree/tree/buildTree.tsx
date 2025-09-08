@@ -7,7 +7,7 @@ import { GoalNode } from "./goalNode";
 import { Node } from "./node";
 import { ProjectNode } from "./projectNode";
 
-export type SortColumn = "name" | "space" |  "progress" | "lastCheckIn" | "champion";
+export type SortColumn = "name" | "space" | "progress" | "lastCheckIn" | "champion";
 export type SortDirection = "asc" | "desc";
 
 export interface TreeOptions {
@@ -190,12 +190,7 @@ class TreeFilter {
   }
 
   private isNodeVisible(node: Node): boolean {
-    return (
-      this.spaceFilter(node) &&
-      this.personFilter(node) &&
-      this.statusFilter(node) &&
-      this.myRoleFilter(node)
-    );
+    return this.spaceFilter(node) && this.personFilter(node) && this.statusFilter(node) && this.myRoleFilter(node);
   }
 
   private spaceFilter(node: Node): boolean {

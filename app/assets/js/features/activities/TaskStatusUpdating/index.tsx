@@ -46,8 +46,22 @@ const TaskStatusUpdating: ActivityHandler = {
     return (
       <>
         Previously, the task was{" "}
-        <StatusSelector status={oldStatus as StatusSelector.Status} size="xs" onChange={() => {}} readonly showFullBadge />. Now it's{" "}
-        <StatusSelector status={newStatus as StatusSelector.Status} size="xs" onChange={() => {}} readonly showFullBadge />.
+        <StatusSelector
+          status={oldStatus as StatusSelector.Status}
+          size="xs"
+          onChange={() => {}}
+          readonly
+          showFullBadge
+        />
+        . Now it's{" "}
+        <StatusSelector
+          status={newStatus as StatusSelector.Status}
+          size="xs"
+          onChange={() => {}}
+          readonly
+          showFullBadge
+        />
+        .
       </>
     );
   },

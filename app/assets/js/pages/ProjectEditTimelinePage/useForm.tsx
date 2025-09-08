@@ -60,7 +60,7 @@ export function useForm(project: Projects.Project): FormState {
 
   const submit = async () => {
     if (!startTime) {
-      setErrors(prev => [...prev, "startTime"]);
+      setErrors((prev) => [...prev, "startTime"]);
       return;
     }
 

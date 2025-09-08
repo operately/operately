@@ -38,7 +38,7 @@ export function targetProgressPercentage(target: Target, clamped: boolean = true
     // Ascending target: progress = (current - start) / (end - start) * 100
     percentage = ((value - from) / (to - from)) * 100;
   } else {
-    // Descending target: progress = (start - current) / (start - end) * 100  
+    // Descending target: progress = (start - current) / (start - end) * 100
     percentage = ((from - value) / (from - to)) * 100;
   }
 

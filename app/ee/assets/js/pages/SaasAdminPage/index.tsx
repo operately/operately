@@ -1,11 +1,11 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
+import * as React from "react";
 
-import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
-import { DivLink, AvatarList } from "turboui";
+import classNames from "classnames";
+import { AvatarList, DivLink } from "turboui";
 
 interface LoaderData {
   companies: AdminApi.Company[];
@@ -20,7 +20,7 @@ export function Page() {
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <Paper.Header title="Companies" />
+          <Paper.Header title="All Organizations" />
           <Navigation />
           <CompanyList />
         </Paper.Body>
@@ -33,16 +33,13 @@ function Navigation() {
   return (
     <div className="mb-6">
       <div className="flex gap-4">
-        <DivLink 
-          to="/admin" 
+        <DivLink
+          to="/admin"
           className="px-4 py-2 text-sm rounded bg-surface-dimmed hover:bg-surface-highlight border-b-2 border-accent-1"
         >
           All Organizations
         </DivLink>
-        <DivLink 
-          to="/admin/active-organizations" 
-          className="px-4 py-2 text-sm rounded hover:bg-surface-highlight"
-        >
+        <DivLink to="/admin/active-organizations" className="px-4 py-2 text-sm rounded hover:bg-surface-highlight">
           Active Organizations
         </DivLink>
       </div>

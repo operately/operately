@@ -1,11 +1,11 @@
-import * as React from "react";
-import * as Paper from "@/components/PaperContainer";
 import * as Pages from "@/components/Pages";
+import * as Paper from "@/components/PaperContainer";
 import * as AdminApi from "@/ee/admin_api";
+import * as React from "react";
 
-import classNames from "classnames";
 import FormattedTime from "@/components/FormattedTime";
-import { DivLink, AvatarList } from "turboui";
+import classNames from "classnames";
+import { AvatarList, DivLink, IconInfoCircle, Tooltip } from "turboui";
 
 interface LoaderData {
   companies: AdminApi.Company[];
@@ -20,9 +20,8 @@ export function Page() {
     <Pages.Page title={"Active Organizations"} testId="saas-admin-active-companies-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <Paper.Header title="Active Organizations" />
+          <HeaderWithInfo />
           <Navigation />
-          <Description />
           <CompanyList />
         </Paper.Body>
       </Paper.Root>
@@ -32,16 +31,13 @@ export function Page() {
 
 function Navigation() {
   return (
-    <div className="mb-6">
+    <div className="mb-6 -mx-12">
       <div className="flex gap-4">
-        <DivLink 
-          to="/admin" 
-          className="px-4 py-2 text-sm rounded hover:bg-surface-highlight"
-        >
+        <DivLink to="/admin" className="px-4 py-2 text-sm rounded hover:bg-surface-highlight">
           All Organizations
         </DivLink>
-        <DivLink 
-          to="/admin/active-organizations" 
+        <DivLink
+          to="/admin/active-organizations"
           className="px-4 py-2 text-sm rounded bg-surface-dimmed hover:bg-surface-highlight border-b-2 border-accent-1"
         >
           Active Organizations
@@ -51,17 +47,26 @@ function Navigation() {
   );
 }
 
-function Description() {
+function HeaderWithInfo() {
+  const tooltipContent = (
+    <div className="max-w-xs">
+      <div className="font-bold text-sm mb-2">Active Organization Criteria</div>
+      <ul className="text-xs space-y-1">
+        <li>• Have multiple team members (2 or more)</li>
+        <li>• Have multiple goals and projects (2 or more each)</li>
+        <li>• Show recent activity within the last 14 days</li>
+      </ul>
+    </div>
+  );
+
   return (
     <div className="mb-6">
-      <p className="text-content-accent text-sm">
-        These organizations show active engagement with Operately based on multiple criteria:
-      </p>
-      <ul className="text-content-accent text-sm mt-2 ml-4 list-disc">
-        <li>Have multiple team members (2 or more)</li>
-        <li>Have multiple goals and projects (2 or more each)</li>
-        <li>Show recent activity within the last 14 days</li>
-      </ul>
+      <div className="flex items-center gap-2">
+        <h1 className="text-2xl font-bold">Active Organizations</h1>
+        <Tooltip content={tooltipContent} testId="active-organizations-info">
+          <IconInfoCircle size={16} className="text-content-dimmed hover:text-content-accent cursor-help" />
+        </Tooltip>
+      </div>
     </div>
   );
 }
@@ -82,12 +87,6 @@ function CompanyList() {
 
   return (
     <div>
-      <div className="mb-4">
-        <p className="text-sm text-content-accent">
-          Found {companies.length} active organization{companies.length !== 1 ? 's' : ''}
-        </p>
-      </div>
-
       <TableRow header>
         <div>#</div>
         <div>Organization</div>
