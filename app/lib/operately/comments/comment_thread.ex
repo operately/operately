@@ -52,7 +52,14 @@ defmodule Operately.Comments.CommentThread do
 
   def set_potential_subscribers(thread = %__MODULE__{}) do
     project = Operately.Repo.preload(thread.project, contributors: :person)
-    subs = Notifications.Subscriber.from_project_contributor(project.contributors)
+    thread = Operately.Repo.preload(thread, :access_context)
+
+    thread = Map.put(thread, :project, project)
+
+    subs =
+      thread
+      |> Notifications.SubscribersLoader.preload_subscriptions()
+      |> Notifications.Subscriber.from_project_child()
 
     Map.put(thread, :potential_subscribers, subs)
   end
