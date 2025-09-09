@@ -4,7 +4,7 @@ import * as People from "@/models/people";
 import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { DivLink, Link, IconBuildingEstate, IconSparkles } from "turboui";
+import { DivLink, IconBuildingEstate, IconSparkles, Link } from "turboui";
 
 import { Paths } from "@/routes/paths";
 import { PageModule } from "@/routes/types";
@@ -109,8 +109,8 @@ function AddCompanyCard() {
     <DivLink to={Paths.newCompanyPath()} className={className} testId="add-company-card">
       <div className="font-bold sm:text-lg">+ Create organization</div>
       <div className="text-xs sm:text-sm font-medium">Start fresh with a new company account</div>
-      <div className="flex justify-end mt-3">
-        <IconSparkles size={32} className="text-white-1" strokeWidth={1} />
+      <div className="absolute bottom-2 right-2">
+        <IconSparkles size={24} className="text-white-1" strokeWidth={1.5} />
       </div>
     </DivLink>
   );
