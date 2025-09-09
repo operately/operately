@@ -23,8 +23,41 @@ echo -e "1. What domain will you be using to run Operately? ${LBLUE}e.g. operate
 read -p "   Domain: " DOMAIN
 
 echo -e ""
-echo -e "2. What is your Sendgrid API token? ${LBLUE}docs: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys${CLEAR}"
-read -p "   Token: " SENDGRID_TOKEN
+echo -e "2. How would you like to configure email delivery?"
+echo -e "   ${LBLUE}1)${CLEAR} SendGrid - Use SendGrid service for email delivery"
+echo -e "   ${LBLUE}2)${CLEAR} SMTP - Use your own SMTP server"
+echo -e "   ${LBLUE}3)${CLEAR} I'll set it up later"
+read -p "   Choose an option (1-3): " EMAIL_OPTION
+
+case $EMAIL_OPTION in
+    1)
+        echo -e ""
+        echo -e "   What is your SendGrid API token? ${LBLUE}docs: https://www.twilio.com/docs/sendgrid/ui/account-and-settings/api-keys${CLEAR}"
+        read -p "   Token: " SENDGRID_TOKEN
+        ;;
+    2)
+        echo -e ""
+        echo -e "   Please provide your SMTP server details:"
+        read -p "   SMTP Server: " SMTP_SERVER
+        read -p "   SMTP Port (default 587): " SMTP_PORT
+        SMTP_PORT=${SMTP_PORT:-587}
+        read -p "   SMTP Username: " SMTP_USERNAME
+        read -p "   SMTP Password: " SMTP_PASSWORD
+        read -p "   Use SSL? (y/n, default n): " SMTP_SSL_YN
+        case $SMTP_SSL_YN in
+            y|yes|Y) SMTP_SSL="true" ;;
+            *) SMTP_SSL="false" ;;
+        esac
+        ;;
+    3)
+        echo -e ""
+        echo -e "   ${LBLUE}Note:${CLEAR} You can configure email delivery later by setting the appropriate environment variables."
+        ;;
+    *)
+        echo "Invalid option. Please choose 1, 2, or 3."
+        exit 1
+        ;;
+esac
 
 echo -e ""
 echo -e "3. Do you want Operately to issue and auto-renew a Let's Encrypt SSL certificate?"
@@ -48,7 +81,19 @@ case $MANAGE_CERTS_YN in
                 echo -e "- Operately will be accessible from: ${LBLUE}http://${DOMAIN}${CLEAR}"
                 ;;
 esac
-echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid".
+
+case $EMAIL_OPTION in
+    1)
+        echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SendGrid"
+        ;;
+    2)
+        echo -e "- Operately emails will be sent from: ${LBLUE}notifications@${DOMAIN}${CLEAR} via SMTP (${SMTP_SERVER}:${SMTP_PORT})"
+        ;;
+    3)
+        echo -e "- Email delivery will be configured later (emails will not be sent until configured)"
+        ;;
+esac
+
 echo -e "- The installation script will pull the Docker images for running Operately"
 echo -e "- A PostgreSQL database will be created for Operately as a Docker container"
 echo -e ""
@@ -84,7 +129,6 @@ DB_USERNAME="operately"
 POSTGRES_USER="operately"
 POSTGRES_PASSWORD=$(openssl rand -hex 32)
 DATABASE_URL="ecto://${DB_USERNAME}:${POSTGRES_PASSWORD}@db/operately"
-SENDGRID_API_KEY=$SENDGRID_TOKEN
 NOTIFICATION_EMAIL="notifications@${DOMAIN}"
 ALLOW_LOGIN_WITH_EMAIL="yes"
 
@@ -100,9 +144,30 @@ echo "DB_USERNAME=\"${DB_USERNAME}\"" >> operately.env
 echo "POSTGRES_USER=\"${POSTGRES_USER}\"" >> operately.env
 echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> operately.env
 echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
-echo "SENDGRID_API_KEY=\"${SENDGRID_API_KEY}\"" >> operately.env
 echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
 echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\"" >> operately.env
+
+# Write email configuration based on user choice
+case $EMAIL_OPTION in
+    1)
+        # SendGrid configuration
+        echo "SENDGRID_API_KEY=\"${SENDGRID_TOKEN}\"" >> operately.env
+        ;;
+    2)
+        # SMTP configuration
+        echo "SMTP_SERVER=\"${SMTP_SERVER}\"" >> operately.env
+        echo "SMTP_PORT=\"${SMTP_PORT}\"" >> operately.env
+        echo "SMTP_USERNAME=\"${SMTP_USERNAME}\"" >> operately.env
+        echo "SMTP_PASSWORD=\"${SMTP_PASSWORD}\"" >> operately.env
+        echo "SMTP_SSL=\"${SMTP_SSL}\"" >> operately.env
+        ;;
+    3)
+        # No email configuration - add a comment for future reference
+        echo "# Email configuration not set - configure later by adding:" >> operately.env
+        echo "# For SendGrid: SENDGRID_API_KEY=\"your_api_key\"" >> operately.env
+        echo "# For SMTP: SMTP_SERVER, SMTP_PORT, SMTP_USERNAME, SMTP_PASSWORD, SMTP_SSL" >> operately.env
+        ;;
+esac
 
 # Pulling and building docker images --------------------------------------------------
 
