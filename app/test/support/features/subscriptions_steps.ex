@@ -31,6 +31,27 @@ defmodule Operately.Support.Features.SubscriptionsSteps do
     |> UI.click(testid: "submit")
   end
 
+  step :visit_project_discussions_page, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "discussions"))
+  end
+
+  step :start_add_project_discussion, ctx do
+    ctx
+    |> UI.click(testid: "start-discussion")
+  end
+
+  step :fill_out_discussion, ctx do
+    ctx
+    |> UI.fill(testid: "discussion-title", with: "Title")
+    |> UI.fill_rich_text("Some content")
+  end
+
+  step :save_project_discussion, ctx do
+    ctx
+    |> UI.click(testid: "post-discussion")
+  end
+
   #
   # Messages
   #
