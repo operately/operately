@@ -120,6 +120,7 @@ function AddResourceModal({
 
         <div className="space-y-4">
           <Textfield
+            id="resource-url"
             type="url"
             label="URL"
             value={url}
@@ -129,6 +130,7 @@ function AddResourceModal({
             error={error.includes("url") ? "URL is required" : undefined}
           />
           <Textfield
+            id="resource-title"
             label="Title"
             value={name}
             onChange={(e) => setName(e.target.value)}
