@@ -147,6 +147,7 @@ interface ResourceStatus {
   caution: number;
   off_track: number;
   pending: number;
+  paused: number;
   total: number;
 }
 
@@ -164,6 +165,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
   const cautionPercentage = (status.caution / status.total) * 100;
   const issuePercentage = (status.off_track / status.total) * 100;
   const pendingPercentage = (status.pending / status.total) * 100;
+  const pausedPercentage = (status.paused / status.total) * 100;
 
   return (
     <div className="font-bold flex items-center gap-2 text-sm mb-2">
@@ -174,6 +176,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
           { percentage: cautionPercentage, color: "rgb(250, 204, 21)" },
           { percentage: issuePercentage, color: "rgb(239, 68, 68)" },
           { percentage: pendingPercentage, color: "rgb(107, 114, 128)" },
+          { percentage: pausedPercentage, color: "rgb(156, 163, 175)" },
         ]}
       />
       {status.on_track}/{status.total} {props.type} on track

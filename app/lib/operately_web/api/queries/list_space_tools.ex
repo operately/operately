@@ -49,8 +49,7 @@ defmodule OperatelyWeb.Api.Queries.ListSpaceTools do
     projects =
       from(p in Project,
         as: :project,
-        preload: [last_check_in: :author, milestones: :project],
-        where: p.status == "active"
+        preload: [last_check_in: :author, milestones: :project]
       )
       |> Project.scope_space(space_id)
       |> Filters.filter_by_view_access(me.id)

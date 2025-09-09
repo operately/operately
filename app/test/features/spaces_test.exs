@@ -41,6 +41,15 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_space_name_mission_and_privacy_indicator()
   end
 
+  feature "viewing space home with paused projects", ctx do
+    ctx
+    |> Steps.given_a_space_with_active_and_paused_projects()
+    |> Steps.visit_space()
+    |> Steps.assert_goals_and_projects_box_shows_correct_counts()
+    |> Steps.assert_paused_projects_are_listed()
+    |> Steps.assert_pie_chart_includes_paused_projects()
+  end
+
   feature "joining a space", ctx do
     group = group_fixture(ctx.creator, %{name: "Marketing", company_permissions: Binding.view_access()})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})

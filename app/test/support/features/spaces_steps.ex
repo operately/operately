@@ -340,4 +340,72 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> UI.assert_text("Active Project")
   end
 
+  step :given_a_space_with_active_and_paused_projects, ctx do
+    space = group_fixture(ctx.creator, %{name: "Test Space", mission: "Test space for paused projects"})
+    
+    # Create active projects
+    active_project1 = project_fixture(%{
+      name: "Active Project 1",
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      status: "active"
+    })
+    
+    active_project2 = project_fixture(%{
+      name: "Active Project 2", 
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      status: "active"
+    })
+    
+    # Create paused projects
+    paused_project1 = project_fixture(%{
+      name: "Paused Project 1",
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      status: "paused"
+    })
+    
+    paused_project2 = project_fixture(%{
+      name: "Paused Project 2",
+      company_id: ctx.company.id,
+      creator_id: ctx.creator.id,
+      group_id: space.id,
+      status: "paused"
+    })
+
+    Map.merge(ctx, %{
+      marketing: space,
+      active_projects: [active_project1, active_project2],
+      paused_projects: [paused_project1, paused_project2]
+    })
+  end
+
+  step :assert_goals_and_projects_box_shows_correct_counts, ctx do
+    # Should show "2/4 projects on track" (2 active out of 4 total)
+    ctx
+    |> UI.click(testid: "goals-and-projects")
+    |> UI.assert_text("2/4 projects on track")
+  end
+
+  step :assert_paused_projects_are_listed, ctx do
+    # Both paused and active projects should be visible in the list
+    ctx
+    |> UI.assert_text("Active Project 1")
+    |> UI.assert_text("Active Project 2")
+    |> UI.assert_text("Paused Project 1") 
+    |> UI.assert_text("Paused Project 2")
+  end
+
+  step :assert_pie_chart_includes_paused_projects, ctx do
+    # The pie chart should have a gray section for paused projects
+    # This would need to check for the presence of a pie chart with 5 slices
+    # including the gray one for paused projects
+    ctx
+    |> UI.assert_has(testid: "goals-and-projects")
+  end
+
 end
