@@ -75,7 +75,7 @@ export function TaskItem({
 
   return (
     <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
-      <div className="flex items-center px-4 py-2.5 group bg-surface-base hover:bg-surface-highlight">
+      <div className="flex items-center px-4 py-2.5 group group/due-date bg-surface-base hover:bg-surface-highlight">
         {/* Left side: Status and task info */}
         <div className="flex-1 flex items-center gap-2 min-w-0">
           {/* Status icon and title wrapper for alignment */}
@@ -118,7 +118,7 @@ export function TaskItem({
         {/* Right side: Due date and assignee */}
         <div className="flex items-center gap-3 flex-shrink-0 ml-4">
           {/* Due date */}
-          <div className="flex items-center group/due-date">
+          <div className="flex items-center">
             {/* Show DateField when there's a date OR on hover when no date */}
             {currentDueDate || !onTaskDueDateChange ? (
               <DateField
