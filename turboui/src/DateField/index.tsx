@@ -308,7 +308,7 @@ function DatePickerContent(props: DatePickerContentProps) {
   } = props;
 
   return (
-    <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg shadow-lg dark:border dark:border-surface-outline">
+    <div className="max-w-md min-w-[300px] p-6 bg-surface-base rounded-lg border border-stroke-base">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-semibold flex items-center gap-2">
           <IconCalendarEvent size={19} />
