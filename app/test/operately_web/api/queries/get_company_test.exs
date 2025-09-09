@@ -1,6 +1,11 @@
 defmodule OperatelyWeb.Api.Queries.GetCompanyTest do
   use OperatelyWeb.TurboCase
 
+  test "invalid company id", ctx do
+    assert {400, res} = query(ctx.conn, :get_company, %{id: "invalid"})
+    assert res.message == "Invalid id format"
+  end
+
   describe "security" do
     test "it requires authentication", ctx do
       {:ok, id} = Operately.Companies.ShortId.generate() |> Operately.Companies.ShortId.encode()

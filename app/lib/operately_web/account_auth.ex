@@ -102,10 +102,15 @@ defmodule OperatelyWeb.AccountAuth do
     case get_req_header(conn, "x-company-id") do
       [company_id] ->
         id = OperatelyWeb.Api.Helpers.id_without_comments(company_id)
-        {:ok, id} = Operately.Companies.ShortId.decode(id)
 
-        company = Operately.Companies.get_company!(id)
-        assign(conn, :current_company, company)
+        case Operately.Companies.ShortId.decode(id) do
+          {:ok, id} ->
+            company = Operately.Companies.get_company!(id)
+            assign(conn, :current_company, company)
+
+          {:error, _} ->
+            conn
+        end
 
       _ ->
         conn

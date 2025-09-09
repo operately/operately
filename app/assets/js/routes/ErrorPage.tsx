@@ -1,18 +1,17 @@
+import NotFoundPage from "@/pages/NotFoundPage";
 import * as React from "react";
 
 import { captureException } from "@sentry/react";
 import { AxiosError } from "axios";
-import { useRouteError } from "react-router-dom";
+import { useRouteError, useRouteLoaderData } from "react-router-dom";
 import { GhostButton } from "turboui";
 
-import { useHomePath } from "@/hooks/useHomePath";
-import { ContextAwareNotFoundPage } from "@/components/ContextAwareNotFoundPage";
-
+import { usePaths } from "@/routes/paths";
 export default function ErrorPage() {
   const error = useRouteError() as AxiosError | null;
 
   if (error && error["status"] === 404) {
-    return <ContextAwareNotFoundPage />;
+    return <NotFoundPage.Page />;
   } else {
     return <ServerErrorPage />;
   }
@@ -20,7 +19,7 @@ export default function ErrorPage() {
 
 function ServerErrorPage() {
   const error = useRouteError() as AxiosError | null;
-  const homePath = useHomePath();
+  const data = useRouteLoaderData("companyRoot") as { company: { id: string | null } };
 
   React.useEffect(() => {
     console.error(error);
@@ -36,14 +35,31 @@ function ServerErrorPage() {
         <div className="text-3xl font-bold mt-4">Oops! Something went wrong.</div>
         <div className="text-lg font-medium my-4">An unexpected error has occurred.</div>
 
-        <div className="flex w-full justify-center mt-4">
-          <GhostButton linkTo={homePath} testId="back-to-lobby">
-            Go back to Home
-          </GhostButton>
-        </div>
-
+        {data && data.company ? <LinkToHome /> : <LinkToLobby />}
         <StackTrace />
       </div>
+    </div>
+  );
+}
+
+function LinkToHome() {
+  const paths = usePaths();
+
+  return (
+    <div className="flex w-full justify-center mt-4">
+      <GhostButton linkTo={paths.homePath()} testId="back-to-lobby">
+        Go back to Home
+      </GhostButton>
+    </div>
+  );
+}
+
+function LinkToLobby() {
+  return (
+    <div className="flex w-full justify-center mt-4">
+      <GhostButton linkTo={"/"} testId="back-to-lobby">
+        Go back to Lobby
+      </GhostButton>
     </div>
   );
 }
