@@ -422,20 +422,22 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_description_absent, ctx do
     ctx
-    |> UI.assert_text("Describe your project to provide context and clarity.")
-    |> UI.assert_text("Write project description")
+    |> UI.assert_text("Add a project description...")
   end
 
   step :submit_project_description, ctx, description: description do
     ctx
-    |> UI.click(testid: "write-project-description-link")
+    |> UI.click_text("Add a project description...")
     |> UI.fill_rich_text(description)
-    |> UI.click(testid: "save")
-    |> UI.assert_has(testid: "project-page")
+    |> UI.click_button("Save")
   end
 
   step :expand_project_description, ctx do
-    ctx |> UI.click(testid: "expand-project-description") |> UI.sleep(300)
+    ctx
+    |> UI.find(UI.query(testid: "description-section"), fn el ->
+      UI.click_text(el, "Expand")
+      |> UI.sleep(300)
+    end)
   end
 
   step :assert_project_description_present, ctx, description: description do
@@ -453,10 +455,13 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :edit_project_description, ctx, description: description do
     ctx
-    |> UI.click(testid: "edit-project-description-link")
-    |> UI.fill_rich_text(description)
-    |> UI.click(testid: "save")
-    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> UI.find(UI.query(testid: "description-section"), fn el ->
+      el
+      |> UI.click_button("Edit")
+      |> UI.fill_rich_text(description)
+      |> UI.click_button("Save")
+      |> UI.sleep(200)
+    end)
   end
 
   step :add_link_as_key_resource, ctx do
