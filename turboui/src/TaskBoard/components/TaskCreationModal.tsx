@@ -144,25 +144,29 @@ export function TaskCreationModal({
 
         <div>
           <label className="block text-sm font-medium text-content-base mb-1">Milestone</label>
-          <MilestoneField
-            milestone={milestone ? { ...milestone, title: milestone.name } : null}
-            setMilestone={(newMilestone) => {
-              if (newMilestone) {
-                // Convert MilestoneField.Milestone to TaskBoard.Milestone
-                const convertedMilestone: Types.Milestone = {
-                  ...newMilestone,
-                  name: newMilestone.name || newMilestone.title || "",
-                  status: "pending",
-                };
-                setMilestone(convertedMilestone);
-              } else {
-                setMilestone(null);
-              }
-            }}
-            searchMilestones={searchMilestones || defaultSearchMilestones}
-            emptyStateMessage="Select milestone"
-            readonly={milestoneReadOnly}
-          />
+          <div className="min-w-0 overflow-hidden w-full">
+            <div className="w-full">
+              <MilestoneField
+                milestone={milestone ? { ...milestone, title: milestone.name } : null}
+                setMilestone={(newMilestone) => {
+                  if (newMilestone) {
+                    // Convert MilestoneField.Milestone to TaskBoard.Milestone
+                    const convertedMilestone: Types.Milestone = {
+                      ...newMilestone,
+                      name: newMilestone.name || newMilestone.title || "",
+                      status: "pending",
+                    };
+                    setMilestone(convertedMilestone);
+                  } else {
+                    setMilestone(null);
+                  }
+                }}
+                searchMilestones={searchMilestones || defaultSearchMilestones}
+                emptyStateMessage="Select milestone"
+                readonly={milestoneReadOnly}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center mt-8">
