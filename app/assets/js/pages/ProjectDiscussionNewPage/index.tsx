@@ -7,7 +7,7 @@ import * as React from "react";
 import { PageModule } from "@/routes/types";
 import { DimmedLink, PrimaryButton } from "turboui";
 import { FormTitleInput } from "../../components/FormTitleInput";
-import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "../../features/Subscriptions";
+import { SubscribersSelector, useSubscriptions } from "../../features/Subscriptions";
 import { usePaths } from "../../routes/paths";
 import { assertPresent } from "../../utils/assertions";
 import { useForm } from "./useForm";
@@ -82,7 +82,9 @@ function Form() {
         <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
       </div>
 
-      <Subscribers project={project} subscriptionsState={subscriptionsState} />
+      <div className="my-10">
+        <SubscribersSelector state={subscriptionsState} projectName={project.name} />
+      </div>
 
       <div className="flex items-center gap-4 mt-4">
         <PrimaryButton testId="post-discussion" onClick={form.submit} loading={form.submitting}>
@@ -92,21 +94,5 @@ function Form() {
         <DimmedLink to={paths.projectPath(project.id!)}>Cancel</DimmedLink>
       </div>
     </>
-  );
-}
-
-function Subscribers({
-  project,
-  subscriptionsState,
-}: {
-  project: Projects.Project;
-  subscriptionsState: SubscriptionsState;
-}) {
-  assertPresent(project.space, "space must be present in project");
-
-  return (
-    <div className="my-10">
-      <SubscribersSelector state={subscriptionsState} spaceName={project.space.name} />
-    </div>
   );
 }
