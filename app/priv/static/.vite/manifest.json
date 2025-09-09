@@ -1,15 +1,15 @@
 {
-  "_vendor-BzFRNHi2.js": {
-    "file": "assets/vendor-BzFRNHi2.js",
+  "_vendor-DiIig3U2.js": {
+    "file": "assets/vendor-DiIig3U2.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-C-aQEBlG.js",
+    "file": "assets/app-B7psE8Us.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-BzFRNHi2.js"
+      "_vendor-DiIig3U2.js"
     ]
   }
 }

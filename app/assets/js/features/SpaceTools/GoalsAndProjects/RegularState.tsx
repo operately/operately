@@ -118,7 +118,14 @@ function ProjectItem({ project }: { project: Project }) {
   const { done } = splitByStatus(project.milestones);
 
   const percentage = total === 0 ? 0 : (done.length / total) * 100;
-  const color = statusColor(project.lastCheckIn?.status ?? "on_track");
+
+  const color = React.useMemo(() => {
+    if (project.state === "paused") {
+      return statusColor(project.state);
+    } else {
+      return statusColor(project.lastCheckIn?.status ?? "on_track");
+    }
+  }, [project.state, project.lastCheckIn]);
 
   return (
     <div className="flex gap-2 items-center">
