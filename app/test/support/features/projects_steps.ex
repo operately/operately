@@ -461,11 +461,10 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :add_link_as_key_resource, ctx do
     ctx
-    |> UI.click(testid: "add-resources-link")
-    |> UI.click(testid: "add-resource-github-repository")
-    |> UI.fill(label: "Name", with: "Code Repository")
+    |> UI.click_button("Add resource")
+    |> UI.fill(label: "Title", with: "Code Repository")
     |> UI.fill(label: "URL", with: "https://github.com/operately/operately")
-    |> UI.click(testid: "save")
+    |> UI.click_button("Save")
   end
 
   step :assert_new_key_resource_visible, ctx do
@@ -475,7 +474,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_key_resource_added_visible_on_feed, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_key_resource_added(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_key_resource_added(author: ctx.champion, project_name: ctx.project.name)
@@ -503,20 +502,23 @@ defmodule Operately.Support.Features.ProjectSteps do
     })
   end
 
-  step :delete_key_resource, ctx do
+  step :delete_key_resource, ctx, name: name do
     ctx
-    |> UI.click(testid: "edit-resources-link")
-    |> UI.click(testid: "remove-resource-website")
+    |> UI.click(testid: UI.testid(["edit", name]))
+    |> UI.click_button("Delete")
+    |> UI.find(UI.query(testid: "confirm-resource-deletion"), fn el ->
+      UI.click_button(el, "Delete")
+    end)
   end
 
-  step :assert_key_resource_deleted, ctx do
+  step :assert_key_resource_deleted, ctx, name: name do
     ctx
-    |> UI.refute_text("Website", attempts: [50, 100, 200, 500])
+    |> UI.refute_text(name, attempts: [50, 100, 200, 500])
   end
 
   step :assert_project_key_resource_deleted_visible_on_feed, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
