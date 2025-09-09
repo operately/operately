@@ -53,7 +53,7 @@ function OverviewSection(props: ProjectPage.State) {
   });
 
   return (
-    <div>
+    <div data-test-id="description-section">
       <ProjectDescription state={descriptionState} canEdit={props.canEdit} />
     </div>
   );
