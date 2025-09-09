@@ -6,6 +6,7 @@ import { showInfoToast } from "../Toasts";
 import { ConfirmDialog } from "../ConfirmDialog";
 import { Textfield } from "../forms/Textfield";
 import Modal from "../Modal";
+import { createTestId } from "../TestableElement";
 
 export interface ResourceLinkProps {
   resource: ResourceManager.Resource;
@@ -22,6 +23,8 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const testId = createTestId("edit", resource.name);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -104,7 +107,7 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
         {canEdit ? (
           <>
             {/* On hover, external link icon transforms into separator + dots */}
-            <div className="flex items-center">
+            <div className="flex items-center" data-test-id={testId}>
               <IconExternalLink
                 size={12}
                 className="flex-shrink-0 text-link-base mr-3 group-hover:opacity-0 transition-opacity"
@@ -181,6 +184,7 @@ export function ResourceLink({ resource, onEdit, onRemove, canEdit }: ResourceLi
         cancelText="Cancel"
         variant="danger"
         icon={IconTrash}
+        testId="confirm-resource-deletion"
       />
     </div>
   );
@@ -234,6 +238,7 @@ function EditResourceModal({
 
         <div className="space-y-4">
           <Textfield
+            id="edit-resource-url"
             label="URL"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
@@ -243,6 +248,7 @@ function EditResourceModal({
             error={error.includes("url") ? "URL is required" : undefined}
           />
           <Textfield
+            id="edit-resource-title"
             label="Title"
             value={name}
             onChange={(e) => setName(e.target.value)}
