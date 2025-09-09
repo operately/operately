@@ -10,7 +10,16 @@ export async function companyLoader({ params }): Promise<{ company: Companies.Co
   Api.default.setHeaders({ "x-company-id": params.companyId });
   Socket.setHeaders({ "x-company-id": params.companyId });
 
-  const company = await Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
-
-  return { company };
+  try {
+    const company = await Companies.getCompany({ id: params.companyId }).then((d) => d.company!);
+    return { company };
+  } catch (error) {
+    // If the company ID is invalid, the API will return a 400 message, but for the rest of the application, we can treat it as 404.
+    if (error["status"] === 400) {
+      error["status"] = 404;
+      throw error;
+    } else {
+      throw error;
+    }
+  }
 }
