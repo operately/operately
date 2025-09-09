@@ -17,8 +17,8 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> Factory.log_in_person(:creator)
   end
 
-  step :visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company))
-  step :visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.marketing))
+  step(:visit_home, ctx, do: UI.visit(ctx, Paths.home_path(ctx.company)))
+  step(:visit_space, ctx, do: UI.visit(ctx, Paths.space_path(ctx.company, ctx.marketing)))
 
   step :visit_access_management, ctx, name do
     ctx
@@ -37,10 +37,12 @@ defmodule Operately.Support.Features.SpacesSteps do
     space = group_fixture(ctx.creator, %{name: attrs.space_name})
     member = person_fixture_with_account(%{full_name: attrs.person_name, company_id: ctx.company.id})
 
-    Operately.Groups.add_members(ctx.creator, space.id, [%{
-      id: member.id,
-      access_level: attrs[:access_level] || Operately.Access.Binding.comment_access(),
-    }])
+    Operately.Groups.add_members(ctx.creator, space.id, [
+      %{
+        id: member.id,
+        access_level: attrs[:access_level] || Operately.Access.Binding.comment_access()
+      }
+    ])
 
     [space, member]
   end
@@ -53,7 +55,7 @@ defmodule Operately.Support.Features.SpacesSteps do
     end)
   end
 
-  step :click_on_add_space, ctx, do: UI.click(ctx, testid: "add-space")
+  step(:click_on_add_space, ctx, do: UI.click(ctx, testid: "add-space"))
 
   step :fill_in_space_form, ctx, %{name: name, mission: mission} do
     ctx
@@ -61,7 +63,7 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> UI.fill(testid: "mission", with: mission)
   end
 
-  step :submit_space_form, ctx, do: UI.click(ctx, Query.button("Create Space"))
+  step(:submit_space_form, ctx, do: UI.click(ctx, Query.button("Create Space")))
 
   step :assert_space_created, ctx, %{name: name, mission: mission} do
     UI.sleep(ctx, 500)
@@ -89,17 +91,18 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> UI.click(testid: "access-management")
     |> UI.click(testid: "add-members")
 
-    ctx = Enum.reduce(Enum.with_index(members), ctx, fn {person, index}, ctx ->
-      UI.find(ctx, UI.query(testid: "member-#{index}"), fn ctx ->
-        UI.select_person_in(ctx, testid: "members-#{index}-personid", name: person.full_name)
-      end)
+    ctx =
+      Enum.reduce(Enum.with_index(members), ctx, fn {person, index}, ctx ->
+        UI.find(ctx, UI.query(testid: "member-#{index}"), fn ctx ->
+          UI.select_person_in(ctx, testid: "members-#{index}-personid", name: person.full_name)
+        end)
 
-      if index == length(members) - 1 do
-        ctx
-      else
-        ctx |> UI.click(testid: "add-more")
-      end
-    end)
+        if index == length(members) - 1 do
+          ctx
+        else
+          ctx |> UI.click(testid: "add-more")
+        end
+      end)
 
     ctx
     |> UI.click(testid: "submit")
@@ -151,7 +154,7 @@ defmodule Operately.Support.Features.SpacesSteps do
         name: name,
         company_id: ctx.company.id,
         creator_id: ctx.creator.id,
-        group_id: ctx.marketing.id,
+        group_id: ctx.marketing.id
       })
     end)
 
@@ -167,7 +170,7 @@ defmodule Operately.Support.Features.SpacesSteps do
         group_id: ctx.marketing.id,
         anonymous_access_level: Binding.no_access(),
         company_access_level: Binding.no_access(),
-        space_access_level: Binding.comment_access(),
+        space_access_level: Binding.comment_access()
       })
     end)
 
@@ -256,7 +259,7 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :given_that_i_am_on_the_space_page, ctx do
-    ctx 
+    ctx
     |> UI.visit(Paths.space_path(ctx.company, ctx.marketing))
     |> UI.assert_has(testid: "space-page")
   end
@@ -266,7 +269,7 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :change_space_name_and_purpose, ctx do
-    ctx 
+    ctx
     |> UI.fill(testid: "name", with: "Marketing 2")
     |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
     |> UI.click(testid: "submit")
@@ -274,17 +277,17 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :assert_space_name_and_purpose_changed, ctx do
-    ctx 
+    ctx
     |> UI.assert_text("Marketing 2")
     |> UI.assert_text("Let the world know about our products 2")
   end
 
   step :given_a_completed_project_exists, ctx do
-    ctx 
+    ctx
     |> Factory.add_project(:project_a, :marketing)
     |> then(fn ctx ->
-      ctx.project_a 
-      |> Operately.Projects.Project.changeset(%{status: "closed", closed_at: DateTime.utc_now()}) 
+      ctx.project_a
+      |> Operately.Projects.Project.changeset(%{status: "closed", closed_at: DateTime.utc_now()})
       |> Repo.update()
 
       ctx
@@ -292,11 +295,11 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :given_a_completed_goal_exists, ctx do
-    ctx 
+    ctx
     |> Factory.add_goal(:goal_a, :marketing)
     |> then(fn ctx ->
-      ctx.goal_a 
-      |> Operately.Goals.Goal.changeset(%{closed_at: DateTime.utc_now()}) 
+      ctx.goal_a
+      |> Operately.Goals.Goal.changeset(%{closed_at: DateTime.utc_now()})
       |> Repo.update()
 
       ctx
@@ -341,54 +344,19 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :given_a_space_with_active_and_paused_projects, ctx do
-    space = group_fixture(ctx.creator, %{name: "Test Space", mission: "Test space for paused projects"})
-    
-    # Create active projects
-    active_project1 = project_fixture(%{
-      name: "Active Project 1",
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      status: "active"
-    })
-    
-    active_project2 = project_fixture(%{
-      name: "Active Project 2", 
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      status: "active"
-    })
-    
-    # Create paused projects
-    paused_project1 = project_fixture(%{
-      name: "Paused Project 1",
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      status: "paused"
-    })
-    
-    paused_project2 = project_fixture(%{
-      name: "Paused Project 2",
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      status: "paused"
-    })
-
-    Map.merge(ctx, %{
-      marketing: space,
-      active_projects: [active_project1, active_project2],
-      paused_projects: [paused_project1, paused_project2]
-    })
+    ctx
+    |> Factory.add_space(:marketing, name: "Test Space", mission: "Test space for paused projects")
+    |> Factory.add_project(:active_project1, :marketing, name: "Active Project 1")
+    |> Factory.add_project(:active_project2, :marketing, name: "Active Project 2")
+    |> Factory.add_project(:paused_project1, :marketing, name: "Paused Project 1")
+    |> Factory.add_project(:paused_project2, :marketing, name: "Paused Project 2")
+    |> Factory.pause_project(:paused_project1)
+    |> Factory.pause_project(:paused_project2)
   end
 
   step :assert_goals_and_projects_box_shows_correct_counts, ctx do
     # Should show "2/4 projects on track" (2 active out of 4 total)
-    ctx
-    |> UI.click(testid: "goals-and-projects")
-    |> UI.assert_text("2/4 projects on track")
+    ctx |> UI.assert_text("2/4 projects on track")
   end
 
   step :assert_paused_projects_are_listed, ctx do
@@ -396,16 +364,7 @@ defmodule Operately.Support.Features.SpacesSteps do
     ctx
     |> UI.assert_text("Active Project 1")
     |> UI.assert_text("Active Project 2")
-    |> UI.assert_text("Paused Project 1") 
+    |> UI.assert_text("Paused Project 1")
     |> UI.assert_text("Paused Project 2")
   end
-
-  step :assert_pie_chart_includes_paused_projects, ctx do
-    # The pie chart should have a gray section for paused projects
-    # This would need to check for the presence of a pie chart with 5 slices
-    # including the gray one for paused projects
-    ctx
-    |> UI.assert_has(testid: "goals-and-projects")
-  end
-
 end

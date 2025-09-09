@@ -6,29 +6,18 @@ const COLORS = {
 };
 
 export function statusColor(status: string): string {
-  if (status === "on_track") {
-    return COLORS.green;
+  switch (status) {
+    case "on_track":
+      return COLORS.green;
+    case "caution":
+      return COLORS.yellow;
+    case "off_track":
+      return COLORS.red;
+    case "paused":
+    case "outdated":
+    case "pending":
+      return COLORS.gray;
+    default:
+      throw new Error(`Unknown status: ${status}`);
   }
-
-  if (status === "caution") {
-    return COLORS.yellow;
-  }
-
-  if (status === "off_track") {
-    return COLORS.red;
-  }
-
-  if (status === "paused") {
-    return COLORS.gray;
-  }
-
-  if (status === "outdated") {
-    return COLORS.gray;
-  }
-
-  if (status === "pending") {
-    return COLORS.gray;
-  }
-
-  throw new Error(`Unknown status: ${status}`);
 }

@@ -6,13 +6,13 @@ import { Space } from "@/models/spaces";
 
 import { splitByStatus } from "@/models/milestones";
 
-import { PieChart } from "turboui";
 import { ProgressBar } from "@/components/charts";
 import { assertPresent } from "@/utils/assertions";
+import { PieChart } from "turboui";
 
-import { Title } from "../components";
-import { calculateStatus } from "../utils";
 import { statusColor } from "@/components/status/colors";
+import { Title } from "../components";
+import { calculateGoalStatuses, calculateProjectStatuses } from "../utils";
 
 interface Props {
   title: string;
@@ -155,9 +155,9 @@ function Header(props: GoalsHeader | ProjectsHeader) {
   const status: ResourceStatus = React.useMemo(() => {
     switch (props.type) {
       case "goals":
-        return calculateStatus(props.goals);
+        return calculateGoalStatuses(props.goals);
       case "projects":
-        return calculateStatus(props.projects);
+        return calculateProjectStatuses(props.projects);
     }
   }, []);
 

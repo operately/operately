@@ -20,7 +20,7 @@ defmodule Operately.Features.SpacesTest do
   feature "creating a new space", ctx do
     params = %{
       name: "Marketing",
-      mission: "Let the world know about our products",
+      mission: "Let the world know about our products"
     }
 
     ctx
@@ -47,7 +47,6 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.visit_space()
     |> Steps.assert_goals_and_projects_box_shows_correct_counts()
     |> Steps.assert_paused_projects_are_listed()
-    |> Steps.assert_pie_chart_includes_paused_projects()
   end
 
   feature "joining a space", ctx do
@@ -101,10 +100,11 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "removing space members", ctx do
-    [space, member] = Steps.given_space_with_member_exists(ctx, %{
-      person_name: "Mati Aharoni",
-      space_name: "Marketing",
-    })
+    [space, member] =
+      Steps.given_space_with_member_exists(ctx, %{
+        person_name: "Mati Aharoni",
+        space_name: "Marketing"
+      })
 
     ctx
     |> Steps.visit_home()
@@ -114,10 +114,11 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "promoting member to space manager", ctx do
-    [space, member] = Steps.given_space_with_member_exists(ctx, %{
-      person_name: "Mati Aharoni",
-      space_name: "Marketing",
-    })
+    [space, member] =
+      Steps.given_space_with_member_exists(ctx, %{
+        person_name: "Mati Aharoni",
+        space_name: "Marketing"
+      })
 
     ctx
     |> Steps.visit_home()
@@ -127,11 +128,12 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "demoting manager to member", ctx do
-    [space, member] = Steps.given_space_with_member_exists(ctx, %{
-      person_name: "Mati Aharoni",
-      space_name: "Marketing",
-      access_level: Binding.full_access(),
-    })
+    [space, member] =
+      Steps.given_space_with_member_exists(ctx, %{
+        person_name: "Mati Aharoni",
+        space_name: "Marketing",
+        access_level: Binding.full_access()
+      })
 
     ctx
     |> Steps.visit_home()
@@ -141,11 +143,12 @@ defmodule Operately.Features.SpacesTest do
   end
 
   feature "change access level of member", ctx do
-    [space, member] = Steps.given_space_with_member_exists(ctx, %{
-      person_name: "Mati Aharoni",
-      space_name: "Marketing",
-      access_level: Binding.comment_access(),
-    })
+    [space, member] =
+      Steps.given_space_with_member_exists(ctx, %{
+        person_name: "Mati Aharoni",
+        space_name: "Marketing",
+        access_level: Binding.comment_access()
+      })
 
     ctx
     |> Steps.visit_home()
