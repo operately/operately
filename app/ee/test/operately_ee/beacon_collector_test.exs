@@ -73,6 +73,21 @@ defmodule OperatelyEE.BeaconCollectorTest do
       assert {:ok, @valid_beacon_data} = result
     end
 
+    test "handles atom keys from Elixir data" do
+      atom_data = %{
+        version: "0.1.0",
+        operating_system: "linux", 
+        timestamp: "2024-01-01T00:00:00Z"
+      }
+      
+      result = BeaconCollector.validate_beacon_data(atom_data)
+      
+      assert {:ok, normalized_data} = result
+      assert normalized_data["version"] == "0.1.0"
+      assert normalized_data["operating_system"] == "linux"
+      assert normalized_data["timestamp"] == "2024-01-01T00:00:00Z"
+    end
+
     test "identifies missing version field" do
       data = Map.delete(@valid_beacon_data, "version")
       

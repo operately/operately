@@ -64,11 +64,16 @@ defmodule Operately.Beacon.Cron do
   end
 
   defp beacon_enabled? do
-    case System.get_env("OPERATELY_BEACON_ENABLED", "true") do
-      "false" -> false
-      "no" -> false
-      "0" -> false
-      _ -> true
+    # Check application config first, then fall back to environment variable
+    case Application.get_env(:operately, :beacon_enabled, true) do
+      false -> false
+      _ -> 
+        case System.get_env("OPERATELY_BEACON_ENABLED", "true") do
+          "false" -> false
+          "no" -> false
+          "0" -> false
+          _ -> true
+        end
     end
   end
 

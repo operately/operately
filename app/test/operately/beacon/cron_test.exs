@@ -68,6 +68,22 @@ defmodule Operately.Beacon.CronTest do
         end
       end
     end
+
+    test "does not send beacon when disabled via application config" do
+      with_mock Application, [:passthrough], get_env: fn 
+        :operately, :beacon_enabled, true -> false
+        app, key, default -> Application.get_env(app, key, default)
+      end do
+        with_mock Finch, [:passthrough], request: fn _request, _finch, _opts ->
+          {:ok, %Finch.Response{status: 200, body: "", headers: []}}
+        end do
+          result = Operately.Beacon.Cron.perform(nil)
+          
+          assert result == :ok
+          refute called(Finch.request(:_, :_, :_))
+        end
+      end
+    end
   end
 
   describe "send_beacon/0" do

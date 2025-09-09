@@ -57,15 +57,27 @@ defmodule OperatelyEE.BeaconCollector do
   - timestamp: ISO8601 timestamp
   """
   def validate_beacon_data(data) do
+    # Handle both atom and string keys from JSON
+    normalized_data = normalize_keys(data)
     required_fields = ["version", "operating_system", "timestamp"]
     
-    missing_fields = Enum.filter(required_fields, &(not Map.has_key?(data, &1)))
+    missing_fields = Enum.filter(required_fields, &(not Map.has_key?(normalized_data, &1)))
     
     if Enum.empty?(missing_fields) do
-      {:ok, data}
+      {:ok, normalized_data}
     else
       {:error, {:missing_fields, missing_fields}}
     end
+  end
+
+  # Convert atom keys to string keys for consistent handling
+  defp normalize_keys(data) when is_map(data) do
+    data
+    |> Enum.map(fn
+      {key, value} when is_atom(key) -> {Atom.to_string(key), value}
+      {key, value} -> {key, value}
+    end)
+    |> Map.new()
   end
 
   @doc """

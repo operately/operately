@@ -32,6 +32,23 @@ The beacon collects only minimal, anonymous information:
 
 ## Configuration
 
+### Understanding Beacon Operation
+
+The beacon sends a simple JSON payload once daily:
+
+```json
+{
+  "version": "0.1.0",
+  "operating_system": "linux",
+  "timestamp": "2024-01-01T02:00:00Z"
+}
+```
+
+This data helps the Operately team understand:
+- How many self-hosted installations are active
+- Which versions are in use (for security updates and support)
+- Platform distribution (for development priorities)
+
 ### Disabling the Beacon
 
 To disable the beacon in your self-hosted installation, set the environment variable:
@@ -209,6 +226,28 @@ You can manually test the beacon functionality:
 ```elixir
 # In an IEx console
 Operately.Beacon.Cron.send_beacon()
+```
+
+To verify beacon is properly configured:
+
+```bash
+# Check if beacon is enabled (default: true)
+echo $OPERATELY_BEACON_ENABLED
+
+# Test beacon data collection
+docker exec operately-app-1 iex -S mix -e "
+  data = %{
+    version: Application.spec(:operately, :vsn) |> to_string(),
+    operating_system: case :os.type() do
+      {:unix, :linux} -> \"linux\"
+      {:unix, :darwin} -> \"macos\"
+      {:win32, _} -> \"windows\"
+      {family, name} -> \"#{family}_#{name}\"
+    end,
+    timestamp: DateTime.utc_now() |> DateTime.to_iso8601()
+  }
+  IO.inspect(data, label: \"Beacon Data\")
+"
 ```
 
 ## Compliance and Legal
