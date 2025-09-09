@@ -159,7 +159,7 @@ export function MilestoneCard({
             searchPeople={searchPeople}
           />
         ) : (
-          <EmptyMilestoneDropZone milestoneId={milestone.id} onTaskCreation={() => setIsTaskModalOpen(true)} />
+          <EmptyMilestoneDropZone milestoneId={milestone.id} />
         )}
       </li>
 
