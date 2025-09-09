@@ -6,13 +6,13 @@ import { Space } from "@/models/spaces";
 
 import { splitByStatus } from "@/models/milestones";
 
-import { PieChart } from "turboui";
 import { ProgressBar } from "@/components/charts";
 import { assertPresent } from "@/utils/assertions";
+import { PieChart } from "turboui";
 
-import { Title } from "../components";
-import { calculateStatus } from "../utils";
 import { statusColor } from "@/components/status/colors";
+import { Title } from "../components";
+import { calculateGoalStatuses, calculateProjectStatuses } from "../utils";
 
 interface Props {
   title: string;
@@ -118,7 +118,14 @@ function ProjectItem({ project }: { project: Project }) {
   const { done } = splitByStatus(project.milestones);
 
   const percentage = total === 0 ? 0 : (done.length / total) * 100;
-  const color = statusColor(project.lastCheckIn?.status ?? "on_track");
+
+  const color = React.useMemo(() => {
+    if (project.state === "paused") {
+      return statusColor(project.state);
+    } else {
+      return statusColor(project.lastCheckIn?.status ?? "on_track");
+    }
+  }, [project.state, project.lastCheckIn]);
 
   return (
     <div className="flex gap-2 items-center">
@@ -147,6 +154,7 @@ interface ResourceStatus {
   caution: number;
   off_track: number;
   pending: number;
+  paused: number;
   total: number;
 }
 
@@ -154,9 +162,9 @@ function Header(props: GoalsHeader | ProjectsHeader) {
   const status: ResourceStatus = React.useMemo(() => {
     switch (props.type) {
       case "goals":
-        return calculateStatus(props.goals);
+        return calculateGoalStatuses(props.goals);
       case "projects":
-        return calculateStatus(props.projects);
+        return calculateProjectStatuses(props.projects);
     }
   }, []);
 
@@ -164,6 +172,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
   const cautionPercentage = (status.caution / status.total) * 100;
   const issuePercentage = (status.off_track / status.total) * 100;
   const pendingPercentage = (status.pending / status.total) * 100;
+  const pausedPercentage = (status.paused / status.total) * 100;
 
   return (
     <div className="font-bold flex items-center gap-2 text-sm mb-2">
@@ -174,6 +183,7 @@ function Header(props: GoalsHeader | ProjectsHeader) {
           { percentage: cautionPercentage, color: "rgb(250, 204, 21)" },
           { percentage: issuePercentage, color: "rgb(239, 68, 68)" },
           { percentage: pendingPercentage, color: "rgb(107, 114, 128)" },
+          { percentage: pausedPercentage, color: "rgb(156, 163, 175)" },
         ]}
       />
       {status.on_track}/{status.total} {props.type} on track
