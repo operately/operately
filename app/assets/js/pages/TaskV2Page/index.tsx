@@ -64,7 +64,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
 }
 
 export function pageCacheKey(id: string): string {
-  return `v6-TaskV2Page.task-${id}`;
+  return `v7-TaskV2Page.task-${id}`;
 }
 
 export default { name: "TaskV2Page", loader, Page } as PageModule;
