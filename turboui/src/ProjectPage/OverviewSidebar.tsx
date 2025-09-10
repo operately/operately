@@ -266,15 +266,15 @@ function Actions(props: ProjectPage.State) {
   }
 
   return (
-    <SidebarSection title="Actions">
+    <SidebarSection title="Actions" testId="actions-section">
       <ActionList actions={visibleActions} />
     </SidebarSection>
   );
 }
 
-function SidebarSection({ title, children }: { title: string | React.ReactNode; children: React.ReactNode }) {
+function SidebarSection({ title, children, testId }: { title: string | React.ReactNode; children: React.ReactNode; testId?: string }) {
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden" data-test-id={testId}>
       <div className="font-bold text-sm mb-1.5">
         <div className="truncate">{title}</div>
       </div>
