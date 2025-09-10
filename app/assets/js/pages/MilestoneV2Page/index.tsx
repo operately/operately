@@ -74,7 +74,7 @@ function Page() {
   const navigate = useNavigate();
 
   const pageData = PageCache.useData(loader);
-  const { data } = pageData;
+  const { data, refresh } = pageData;
   const { milestone, childrenCount, activities } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
@@ -112,6 +112,7 @@ function Page() {
     cacheKey: pageCacheKey(milestone.id),
     milestones: milestones,
     setMilestones: setMilestones,
+    refresh,
   });
   const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
