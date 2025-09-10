@@ -125,7 +125,7 @@ function Page() {
 
     if (milestone.project) {
       PageCache.invalidate(projectPageCacheKey(milestone.project.id));
-      navigate(paths.projectPath(milestone.project.id));
+      navigate(paths.projectPath(milestone.project.id, "tasks"));
     } else {
       navigate(paths.homePath());
     }
