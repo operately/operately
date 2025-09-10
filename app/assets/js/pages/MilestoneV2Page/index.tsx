@@ -123,7 +123,7 @@ function Page() {
 
     if (milestone.project) {
       PageCache.invalidate(projectPageCacheKey(milestone.project.id));
-      navigate(paths.projectPath(milestone.project.id) + "?tab=tasks");
+      navigate(paths.projectPath(milestone.project.id));
     } else {
       navigate(paths.homePath());
     }
