@@ -329,6 +329,7 @@ export const Default: Story = {
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
         }}
         description={
           asRichText(
@@ -417,6 +418,7 @@ export const ReadOnly: Story = {
         childrenCount={{
            tasksCount: mockTasks.length,
            discussionsCount: mockDiscussions.length,
+           checkInsCount: mockCheckIns.length,
          }}
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
@@ -547,6 +549,7 @@ export const EmptyTasks: Story = {
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
         }}
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
@@ -660,6 +663,7 @@ export const EmptyProject: Story = {
         childrenCount={{
           tasksCount: 0,
           discussionsCount: 0,
+          checkInsCount: 0,
         }}
         description={undefined}
         space={space}
@@ -731,6 +735,7 @@ export const EmptyProjectReadOnly: Story = {
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
         }}
         description=""
         space={space}
@@ -877,6 +882,7 @@ export const PausedProject: Story = {
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
         }}
         description="<p>This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.</p>"
         space={space}
@@ -968,6 +974,7 @@ export const ClosedProject: Story = {
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
         }}
         description="<p>We're going towards turning the work maps on for everyone and removing legacy UI.</p><p>Milestones (will add after bug is fixed):</p><ul><li>No bugs / papercuts in current work maps</li><li>My work</li><li>Profile pages that show work maps in new layout</li><li>New home section</li></ul>"
         space={space}

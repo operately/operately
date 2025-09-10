@@ -178,6 +178,7 @@ export const Default: Story = {
         childrenCount={{
           tasksCount: tasks.length,
           discussionsCount: 2,
+          checkInsCount: 1,
         }}
         space={{
           id: "1",
@@ -287,6 +288,7 @@ export const EmptyMilestone: Story = {
         childrenCount={{
           tasksCount: 0,
           discussionsCount: 0,
+          checkInsCount: 0,
         }}
         space={{
           id: "1",

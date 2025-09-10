@@ -37,10 +37,7 @@ type LoaderResult = {
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
     backendTasks: Tasks.Task[];
-    childrenCount: {
-      tasksCount: number,
-      discussionsCount: number,
-    }
+    childrenCount: Projects.ProjectChildrenCount;
   };
   cacheVersion: number;
 };
@@ -69,7 +66,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.project_tasks.list({ projectId: params.id }).then((d) => d.tasks!),
-        childrenCount: Api.projects.countChildren({ id: params.id }),
+        childrenCount: Api.projects.countChildren({ id: params.id }).then((d) => d.childrenCount),
       }),
   });
 }

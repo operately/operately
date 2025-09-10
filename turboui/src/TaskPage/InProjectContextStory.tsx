@@ -137,6 +137,7 @@ export function InProjectContextStory() {
               childrenCount={{
                 tasksCount: 8,
                 discussionsCount: 3,
+                checkInsCount: 2,
               }}
               space={{
                 id: "space-123",
