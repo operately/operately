@@ -3,6 +3,7 @@ import Api from "@/api";
 
 import { useNavigate } from "react-router-dom";
 import * as Tasks from "@/models/tasks";
+import * as Projects from "@/models/projects";
 import * as People from "@/models/people";
 import * as Activities from "@/models/activities";
 import * as Comments from "@/models/comments";
@@ -26,10 +27,7 @@ import { useComments } from "./useComments";
 type LoaderResult = {
   data: {
     task: Tasks.Task;
-    childrenCount: {
-      tasksCount: number;
-      discussionsCount: number;
-    };
+    childrenCount: Projects.ProjectChildrenCount;
     activities: Activities.Activity[];
     comments: Comments.Comment[];
   };
@@ -51,7 +49,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSpace: true,
           includePermissions: true,
         }).then((d) => d.task!),
-        childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }),
+        childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }).then((d) => d.childrenCount),
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "task",
@@ -226,7 +224,11 @@ function Page() {
 }
 
 interface usePageFieldProps<T> {
-  value: (data: { task: Tasks.Task; childrenCount: { tasksCount: number; discussionsCount: number }; activities: Activities.Activity[] }) => T;
+  value: (data: {
+    task: Tasks.Task;
+    childrenCount: { tasksCount: number; discussionsCount: number };
+    activities: Activities.Activity[];
+  }) => T;
   update: (newValue: T) => Promise<any>;
   onError?: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];

@@ -9,6 +9,7 @@ export namespace ProjectPageLayout {
   export interface ChildrenCount {
     tasksCount: number;
     discussionsCount: number;
+    checkInsCount: number;
   }
 
   export interface Space {

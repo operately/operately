@@ -190,7 +190,7 @@ export function ProjectPage(props: ProjectPage.Props) {
       icon: <IconListCheck size={14} />,
       count: state.childrenCount.tasksCount,
     },
-    { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
+    { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} />, count: state.childrenCount.checkInsCount },
     {
       id: "discussions",
       label: "Discussions",

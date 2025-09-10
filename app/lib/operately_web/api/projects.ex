@@ -380,8 +380,7 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     outputs do
-      field :discussions_count, :integer, null: false
-      field :tasks_count, :integer, null: false
+      field :children_count, :project_children_count, null: false
     end
 
     def call(conn, inputs) do
@@ -391,11 +390,15 @@ defmodule OperatelyWeb.Api.Projects do
       |> check_permissions(inputs)
       |> Steps.count_discussions()
       |> Steps.count_open_tasks()
+      |> Steps.count_check_ins()
       |> Steps.commit()
       |> Steps.respond(fn changes ->
         %{
-          discussions_count: changes.discussions_count,
-          tasks_count: changes.open_tasks_count
+          children_count: %{
+            discussions_count: changes.discussions_count,
+            tasks_count: changes.open_tasks_count,
+            check_ins_count: changes.check_ins_count
+          },
         }
       end)
     end
@@ -536,6 +539,16 @@ defmodule OperatelyWeb.Api.Projects do
 
         count = Repo.one(query)
         {:ok, count || 0}
+      end)
+    end
+
+    def count_check_ins(multi) do
+      Ecto.Multi.run(multi, :check_ins_count, fn _repo, %{project: project} ->
+        count =
+          from(c in Operately.Projects.CheckIn, where: c.project_id == ^project.id)
+          |> Repo.aggregate(:count)
+
+        {:ok, count}
       end)
     end
 

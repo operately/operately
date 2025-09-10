@@ -8,6 +8,7 @@ export type Milestone = api.Milestone;
 export type ProjectRetrospective = api.ProjectRetrospective;
 export type Discussion = api.CommentThread;
 export type Resource = api.ProjectKeyResource;
+export type ProjectChildrenCount = api.ProjectChildrenCount;
 
 export {
   getProject,

@@ -371,8 +371,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         id: Paths.project_id(ctx.project)
       })
 
-      assert res.discussions_count == 2
-      assert res.tasks_count == 2
+      assert res.children_count.discussions_count == 2
+      assert res.children_count.tasks_count == 2
+      assert res.children_count.check_ins_count == 0
     end
 
     test "it returns 0 counts when project has no children", ctx do
@@ -382,8 +383,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         id: Paths.project_id(ctx.project)
       })
 
-      assert res.discussions_count == 0
-      assert res.tasks_count == 0
+      assert res.children_count.discussions_count == 0
+      assert res.children_count.tasks_count == 0
+      assert res.children_count.check_ins_count == 0
     end
 
     test "it finds project by task_id when use_task_id is true", ctx do
@@ -391,6 +393,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         ctx
         |> Factory.add_project_discussion(:discussion1, :project)
         |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.add_project_check_in(:check_in1, :project, :creator)
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
@@ -398,8 +401,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         use_task_id: true
       })
 
-      assert res.discussions_count == 1
-      assert res.tasks_count == 1
+      assert res.children_count.discussions_count == 1
+      assert res.children_count.tasks_count == 1
+      assert res.children_count.check_ins_count == 1
     end
 
     test "it finds project by milestone_id when use_milestone_id is true", ctx do
@@ -407,6 +411,7 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         ctx
         |> Factory.add_project_discussion(:discussion1, :project)
         |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.add_project_check_in(:check_in1, :project, :creator)
         |> Factory.log_in_person(:creator)
 
       assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
@@ -414,8 +419,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         use_milestone_id: true
       })
 
-      assert res.discussions_count == 1
-      assert res.tasks_count == 1
+      assert res.children_count.discussions_count == 1
+      assert res.children_count.tasks_count == 1
+      assert res.children_count.check_ins_count == 1
     end
 
     test "it returns 404 when task does not exist with use_task_id", ctx do
@@ -454,7 +460,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       })
 
       # Should only count todo and in_progress tasks (2 tasks)
-      assert res.tasks_count == 2
+      assert res.children_count.tasks_count == 2
+      assert res.children_count.discussions_count == 0
+      assert res.children_count.check_ins_count == 0
     end
    end
 
