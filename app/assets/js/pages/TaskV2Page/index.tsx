@@ -145,7 +145,7 @@ function Page() {
 
       if (task.project) {
         PageCache.invalidate(projectPageCacheKey(task.project.id));
-        navigate(paths.projectPath(task.project.id) + "?tab=tasks");
+        navigate(paths.projectPath(task.project.id, "tasks"));
       } else {
         navigate(paths.homePath());
       }
