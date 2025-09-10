@@ -43,8 +43,9 @@ export namespace TaskPage {
     projectName: string;
     projectLink: string;
     workmapLink: string;
-    tasksCount?: number;
     projectStatus: string;
+
+    childrenCount: ProjectPageLayout.ChildrenCount;
 
     space: Space;
 
@@ -134,17 +135,28 @@ export function TaskPage(props: TaskPage.Props) {
         id: "tasks",
         label: "Tasks",
         icon: <IconListCheck size={14} />,
-        count: state.tasksCount,
+        count: state.childrenCount.tasksCount,
       },
       { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
-      { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
+      {
+        id: "discussions",
+        label: "Discussions",
+        icon: <IconMessages size={14} />,
+        count: state.childrenCount.discussionsCount,
+      },
       { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
     ],
     { urlPath: state.projectLink },
   );
 
   return (
-    <ProjectPageLayout {...state} title={[state.projectName]} testId="project-page" tabs={tabs} status={state.projectStatus}>
+    <ProjectPageLayout
+      {...state}
+      title={[state.projectName]}
+      testId="project-page"
+      tabs={tabs}
+      status={state.projectStatus}
+    >
       <div className="px-4 py-4 flex-1 overflow-scroll">
         <PageHeader {...state} />
         <div className="flex-1 overflow-auto">

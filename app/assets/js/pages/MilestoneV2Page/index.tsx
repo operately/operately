@@ -30,7 +30,10 @@ type LoaderResult = {
   data: {
     milestone: Milestones.Milestone;
     tasks: Tasks.Task[];
-    tasksCount: number;
+    childrenCount: {
+      tasksCount: number;
+      discussionsCount: number;
+    };
     activities: Activities.Activity[];
   };
   cacheVersion: number;
@@ -51,7 +54,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeComments: true,
         }).then((d) => d.milestone),
         tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
-        tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useMilestoneId: true }).then((d) => d.count!),
+        childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }),
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "milestone",
@@ -71,8 +74,8 @@ function Page() {
   const navigate = useNavigate();
 
   const pageData = PageCache.useData(loader);
-  const { data } = pageData;
-  const { milestone, tasksCount, activities } = data;
+  const { data, refresh } = pageData;
+  const { milestone, childrenCount, activities } = data;
 
   assertPresent(milestone.project, "Milestone must have a project");
   assertPresent(milestone.space, "Milestone must have a space");
@@ -109,6 +112,7 @@ function Page() {
     cacheKey: pageCacheKey(milestone.id),
     milestones: milestones,
     setMilestones: setMilestones,
+    refresh,
   });
   const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
@@ -143,8 +147,8 @@ function Page() {
 
   const props: MilestonePage.Props = {
     workmapLink,
-    tasksCount,
     space: parseSpaceForTurboUI(paths, milestone.space),
+    childrenCount,
 
     canEdit: Boolean(milestone.permissions.canEditTimeline),
 

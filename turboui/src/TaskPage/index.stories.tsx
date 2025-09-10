@@ -60,6 +60,11 @@ function Component(props: Partial<TaskPage.Props>) {
       link: "#"
     },
 
+    childrenCount: {
+      tasksCount: 5,
+      discussionsCount: 3,
+    },
+
     closedAt: null,
     updateProjectName: async (name: string) => {
       console.log("Updating project name:", name);

@@ -146,6 +146,12 @@ export interface Person {
   avatarUrl?: string;
 }
 
+export interface GetActiveCompaniesInput {}
+
+export interface GetActiveCompaniesResult {
+  companies: Company[];
+}
+
 export interface GetActivitiesInput {
   companyId: CompanyId;
 }
@@ -157,12 +163,6 @@ export interface GetActivitiesResult {
 export interface GetCompaniesInput {}
 
 export interface GetCompaniesResult {
-  companies: Company[];
-}
-
-export interface GetActiveCompaniesInput {}
-
-export interface GetActiveCompaniesResult {
   companies: Company[];
 }
 
@@ -186,16 +186,16 @@ export interface EnableFeatureResult {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
+  async getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
+    return this.client.get("/get_active_companies", input);
+  }
+
   async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
     return this.client.get("/get_activities", input);
   }
 
   async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
     return this.client.get("/get_companies", input);
-  }
-
-  async getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-    return this.client.get("/get_active_companies", input);
   }
 
   async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
@@ -248,16 +248,16 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
+  getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
+    return this.apiNamespaceRoot.getActiveCompanies(input);
+  }
+
   getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
     return this.apiNamespaceRoot.getActivities(input);
   }
 
   getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
     return this.apiNamespaceRoot.getCompanies(input);
-  }
-
-  getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-    return this.apiNamespaceRoot.getActiveCompanies(input);
   }
 
   getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
@@ -271,14 +271,14 @@ export class ApiClient {
 
 const defaultApiClient = new ApiClient();
 
+export async function getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
+  return defaultApiClient.getActiveCompanies(input);
+}
 export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
   return defaultApiClient.getActivities(input);
 }
 export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
   return defaultApiClient.getCompanies(input);
-}
-export async function getActiveCompanies(input: GetActiveCompaniesInput): Promise<GetActiveCompaniesResult> {
-  return defaultApiClient.getActiveCompanies(input);
 }
 export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
   return defaultApiClient.getCompany(input);
@@ -287,16 +287,16 @@ export async function enableFeature(input: EnableFeatureInput): Promise<EnableFe
   return defaultApiClient.enableFeature(input);
 }
 
+export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
+  return useQuery<GetActiveCompaniesResult>(() => defaultApiClient.getActiveCompanies(input));
+}
+
 export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
   return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input));
 }
 
 export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
   return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
-}
-
-export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
-  return useQuery<GetActiveCompaniesResult>(() => defaultApiClient.getActiveCompanies(input));
 }
 
 export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
@@ -310,12 +310,12 @@ export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, En
 export default {
   default: defaultApiClient,
 
+  getActiveCompanies,
+  useGetActiveCompanies,
   getActivities,
   useGetActivities,
   getCompanies,
   useGetCompanies,
-  getActiveCompanies,
-  useGetActiveCompanies,
   getCompany,
   useGetCompany,
   enableFeature,

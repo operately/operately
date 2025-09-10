@@ -72,6 +72,7 @@ defmodule OperatelyWeb.Api do
     query(:parent_goal_search, OperatelyWeb.Api.Projects.ParentGoalSearch)
     query(:get_milestones, OperatelyWeb.Api.Projects.GetMilestones)
     query(:get_contributors, OperatelyWeb.Api.Projects.GetContributors)
+    query(:count_children, OperatelyWeb.Api.Projects.CountChildren)
 
     mutation(:update_due_date, OperatelyWeb.Api.Projects.UpdateDueDate)
     mutation(:update_start_date, OperatelyWeb.Api.Projects.UpdateStartDate)
@@ -94,7 +95,6 @@ defmodule OperatelyWeb.Api do
 
   namespace(:project_tasks) do
     query(:list, OperatelyWeb.Api.ProjectTasks.List)
-    query(:get_open_task_count, OperatelyWeb.Api.ProjectTasks.GetOpenTaskCount)
 
     mutation(:create, OperatelyWeb.Api.ProjectTasks.Create)
     mutation(:delete, OperatelyWeb.Api.ProjectTasks.Delete)
@@ -112,6 +112,7 @@ defmodule OperatelyWeb.Api do
 
     query(:get, ProjectDiscussions.Get)
     query(:list, ProjectDiscussions.List)
+
     mutation(:create, ProjectDiscussions.Create)
     mutation(:edit, ProjectDiscussions.Edit)
   end

@@ -175,6 +175,10 @@ export const Default: Story = {
         projectName="Demo Project"
         projectLink="#"
         workmapLink="#"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: 2,
+        }}
         space={{
           id: "1",
           name: "Product",
@@ -280,6 +284,10 @@ export const EmptyMilestone: Story = {
         milestone={milestone}
         tasks={[]}
         workmapLink="#"
+        childrenCount={{
+          tasksCount: 0,
+          discussionsCount: 0,
+        }}
         space={{
           id: "1",
           name: "Product",

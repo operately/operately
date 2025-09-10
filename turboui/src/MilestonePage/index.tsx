@@ -35,7 +35,8 @@ export namespace MilestonePage {
       name: string;
       link: string;
     };
-    tasksCount?: number;
+
+    childrenCount: ProjectPageLayout.ChildrenCount;
 
     // Project
     projectName: string;
@@ -119,7 +120,7 @@ export function MilestonePage(props: MilestonePage.Props) {
   const state = useMilestonePageState(props);
   const {
     milestone,
-    tasksCount,
+    childrenCount,
     onTaskCreate,
     title,
     onMilestoneTitleChange,
@@ -153,10 +154,15 @@ export function MilestonePage(props: MilestonePage.Props) {
         id: "tasks",
         label: "Tasks",
         icon: <IconListCheck size={14} />,
-        count: tasksCount,
+        count: childrenCount.tasksCount,
       },
       { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
-      { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
+      {
+        id: "discussions",
+        label: "Discussions",
+        icon: <IconMessages size={14} />,
+        count: childrenCount.discussionsCount,
+      },
       { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
     ],
     { urlPath: projectLink },
