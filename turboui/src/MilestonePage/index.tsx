@@ -156,7 +156,7 @@ export function MilestonePage(props: MilestonePage.Props) {
         icon: <IconListCheck size={14} />,
         count: childrenCount.tasksCount,
       },
-      { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
+      { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} />, count: childrenCount.checkInsCount },
       {
         id: "discussions",
         label: "Discussions",

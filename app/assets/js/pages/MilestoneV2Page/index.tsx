@@ -6,6 +6,7 @@ import * as Time from "@/utils/time";
 import * as People from "@/models/people";
 import * as Milestones from "@/models/milestones";
 import * as Tasks from "@/models/tasks";
+import * as Projects from "@/models/projects";
 import * as Activities from "@/models/activities";
 import { parseActivitiesForTurboUi, SUPPORTED_ACTIVITY_TYPES } from "@/models/activities/feed";
 
@@ -30,10 +31,7 @@ type LoaderResult = {
   data: {
     milestone: Milestones.Milestone;
     tasks: Tasks.Task[];
-    childrenCount: {
-      tasksCount: number;
-      discussionsCount: number;
-    };
+    childrenCount: Projects.ProjectChildrenCount;
     activities: Activities.Activity[];
   };
   cacheVersion: number;
@@ -54,7 +52,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeComments: true,
         }).then((d) => d.milestone),
         tasks: Api.project_milestones.listTasks({ milestoneId: params.id }).then((d) => d.tasks),
-        childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }),
+        childrenCount: Api.projects.countChildren({ id: params.id, useMilestoneId: true }).then((d) => d.childrenCount),
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "milestone",

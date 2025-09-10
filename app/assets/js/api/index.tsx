@@ -1386,6 +1386,12 @@ export interface ProjectCheckIn {
   commentsCount?: number | null;
 }
 
+export interface ProjectChildrenCount {
+  tasksCount: number;
+  discussionsCount: number;
+  checkInsCount: number;
+}
+
 export interface ProjectContributor {
   id: string;
   responsibility: string | null;
@@ -2638,8 +2644,7 @@ export interface ProjectsCountChildrenInput {
 }
 
 export interface ProjectsCountChildrenResult {
-  discussionsCount: number;
-  tasksCount: number;
+  childrenCount: ProjectChildrenCount;
 }
 
 export interface ProjectsGetContributorsInput {

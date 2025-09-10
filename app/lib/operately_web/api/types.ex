@@ -407,6 +407,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :notifications, list_of(:notification), null: true
   end
 
+  object :project_children_count do
+    field :tasks_count, :integer
+    field :discussions_count, :integer
+    field :check_ins_count, :integer
+  end
+
   object :project_retrospective do
     field :id, :string
     field :author, :person
