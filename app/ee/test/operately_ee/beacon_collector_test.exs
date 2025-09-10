@@ -131,7 +131,7 @@ defmodule OperatelyEE.BeaconCollectorTest do
           # Validate the request to PostHog
           assert %Finch.Request{
             method: "POST",
-            url: "https://app.posthog.com/capture/"
+            uri: "https://app.posthog.com/capture/"
           } = request
           
           # Validate the JSON body structure
@@ -179,7 +179,7 @@ defmodule OperatelyEE.BeaconCollectorTest do
       with_mock System, [:passthrough], get_env: fn "POSTHOG_API_KEY" -> "test_api_key" end do
         with_mock Finch, [:passthrough], request: fn request, _finch, _opts ->
           data = Jason.decode!(request.body)
-          distinct_id = data["distinct_id"]
+          _distinct_id = data["distinct_id"]
           
           {:ok, %Finch.Response{status: 200, body: "success", headers: []}}
         end do
