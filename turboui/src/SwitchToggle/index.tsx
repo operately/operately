@@ -1,15 +1,9 @@
-import * as Switch from "@radix-ui/react-switch";
 import React from "react";
 
-export namespace SwitchToggle {
-  export type Props = {
-    label: string;
-    value: boolean;
-    setValue: (value: boolean) => void;
-  };
-}
+import * as Switch from "@radix-ui/react-switch";
+import { TestableElement } from "../TestableElement";
 
-export function SwitchToggle({ label, value, setValue }: SwitchToggle.Props) {
+export function SwitchToggle({ label, value, setValue, testId }: SwitchToggle.Props) {
   return (
     <div className="flex items-center">
       <Switch.Root
@@ -21,9 +15,17 @@ export function SwitchToggle({ label, value, setValue }: SwitchToggle.Props) {
       >
         <Switch.Thumb className="block w-5 h-5 bg-brand-2 border border-stroke-base rounded-full shadow-md transform transition-all duration-200 translate-x-0.5 will-change-transform data-[state=checked]:translate-x-[22px]" />
       </Switch.Root>
-      <label className="ml-3 text-sm text-content-base cursor-pointer" onClick={() => setValue(!value)}>
+      <label data-test-id={testId} className="ml-3 text-sm text-content-base cursor-pointer" onClick={() => setValue(!value)}>
         {label}
       </label>
     </div>
   );
+}
+
+export namespace SwitchToggle {
+  export interface Props extends TestableElement {
+    label: string;
+    value: boolean;
+    setValue: (value: boolean) => void;
+  };
 }

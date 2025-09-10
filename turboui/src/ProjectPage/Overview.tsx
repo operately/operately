@@ -126,10 +126,7 @@ function ProjectDescriptionContent({ state }: { state: ProjectDescriptionState }
 
   return (
     <div className="mt-2">
-      <RichContent
-        content={displayedDescription}
-        mentionedPersonLookup={state.mentionedPersonLookup}
-      />
+      <RichContent content={displayedDescription} mentionedPersonLookup={state.mentionedPersonLookup} />
 
       {length > 200 && (
         <button
@@ -315,7 +312,7 @@ function TimelineSection(props: ProjectPage.State) {
   const completionPercentage = totalMilestones > 0 ? (completedCount / totalMilestones) * 100 : 0;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" data-test-id="timeline-section">
       {/* Header with inline completion stats */}
       <div className="flex items-center gap-2">
         <SectionHeader title="Milestones" />
@@ -356,7 +353,11 @@ function TimelineSection(props: ProjectPage.State) {
           </CollapsibleSection>
         )}
 
-        <EmptyState canEdit={props.canEdit} setShowAddForm={setShowAddForm} display={validMilestones.length === 0 && !showAddForm} />
+        <EmptyState
+          canEdit={props.canEdit}
+          setShowAddForm={setShowAddForm}
+          display={validMilestones.length === 0 && !showAddForm}
+        />
 
         <AddMilestoneForm
           showAddForm={showAddForm}
@@ -485,7 +486,10 @@ function AddMilestoneForm({
   if (!showAddForm) return null;
 
   return (
-    <div className="bg-surface-dimmed rounded-lg p-4 border-2 border-dashed border-stroke-base">
+    <div
+      data-test-id="add-milestone-form"
+      className="bg-surface-dimmed rounded-lg p-4 border-2 border-dashed border-stroke-base"
+    >
       <div className="space-y-3">
         <input
           type="text"
@@ -495,10 +499,11 @@ function AddMilestoneForm({
           className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-surface-base"
           autoFocus
           onKeyDown={handleInputKeyDown}
+          data-test-id="milestone-name-input"
         />
-        <DateField date={newMilestoneDueDate} onDateSelect={setNewMilestoneDueDate} placeholder="Set target date" />
+        <DateField date={newMilestoneDueDate} onDateSelect={setNewMilestoneDueDate} placeholder="Set target date" testId="new-milestone-due-date" />
         <div className="flex items-center gap-4 justify-between">
-          <SwitchToggle value={addMore} setValue={setAddMore} label="Create more" />
+          <SwitchToggle testId="add-more-switch" value={addMore} setValue={setAddMore} label="Create more" />
           <div className="flex-1"></div>
           <div className="flex gap-2">
             <SecondaryButton size="sm" onClick={() => setShowAddForm(false)}>
