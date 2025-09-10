@@ -5,6 +5,7 @@ import { IconFlag, IconFlagFilled } from "../icons";
 import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import classNames from "../utils/classnames";
+import { createTestId } from "../TestableElement";
 
 interface MilestoneItemProps {
   milestone: TaskBoardTypes.Milestone;
@@ -17,6 +18,12 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(milestone.name);
   const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate || null);
+
+  const milestoneTestId = createTestId("milestone", milestone.name);
+  const editBtnTestId = createTestId("edit-btn", milestone.name);
+  const editFormTestId = createTestId("edit-form", milestone.name);
+  const nameTestId = createTestId("edit-title", milestone.name);
+  const dateTestId = createTestId("edit-due-date", milestone.name);
 
   const handleSave = () => {
     onUpdate?.(milestone.id, {
@@ -36,7 +43,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
 
   if (isEditing) {
     return (
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-3" data-test-id={editFormTestId}>
         {/* Timeline flag icon as marker */}
         <div className="flex flex-col items-center mt-1">
           {isCompleted ? (
@@ -60,8 +67,9 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
                 onChange={(e) => setEditName(e.target.value)}
                 className="w-full px-3 py-2 border border-stroke-base rounded-md focus:ring-2 focus:ring-accent-base focus:border-accent-base bg-surface-base"
                 autoFocus
+                data-test-id={nameTestId}
               />
-              <DateField date={editDueDate} onDateSelect={setEditDueDate} placeholder="Due date (optional)" />
+              <DateField date={editDueDate} onDateSelect={setEditDueDate} placeholder="Due date (optional)" testId={dateTestId} />
               <div className="flex gap-2">
                 <Button size="sm" onClick={handleSave} disabled={!editName.trim()}>
                   Save
@@ -78,7 +86,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
   }
 
   return (
-    <div className="flex items-start gap-3 group">
+    <div className="flex items-start gap-3 group" data-test-id={milestoneTestId}>
       {/* Timeline flag icon as marker */}
       <div className="flex flex-col items-center mt-1">
         {isCompleted ? (
@@ -108,7 +116,7 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
             </Link>
             {canEdit && (
               <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <SecondaryButton size="xxs" onClick={() => setIsEditing(true)}>
+                <SecondaryButton testId={editBtnTestId} size="xxs" onClick={() => setIsEditing(true)}>
                   Edit
                 </SecondaryButton>
               </div>
