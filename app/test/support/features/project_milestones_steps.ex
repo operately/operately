@@ -23,6 +23,69 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     UI.visit(ctx, path)
   end
 
+  step :visit_project_page, ctx do
+    UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :reload_project_page, ctx do
+    UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :add_first_milestone, ctx, name: name do
+     ctx
+    |> UI.click_button("Add your first milestone")
+    |> UI.fill(testid: "milestone-name-input", with: name)
+    |> UI.find(UI.query(testid: "add-milestone-form"), fn el ->
+      UI.click_button(el, "Add milestone")
+    end)
+  end
+
+  step :add_milestone, ctx, name: name do
+    ctx
+    |> UI.click_button("Add milestone")
+    |> UI.fill(testid: "milestone-name-input", with: name)
+    |> UI.find(UI.query(testid: "add-milestone-form"), fn el ->
+      UI.click_button(el, "Add milestone")
+    end)
+  end
+
+  step :add_milestone, ctx, name: name, due_date: due_date do
+    ctx
+    |> UI.click_button("Add milestone")
+    |> UI.fill(testid: "milestone-name-input", with: name)
+    |> UI.select_day_in_date_field(testid: "new-milestone-due-date", date: due_date)
+    |> UI.find(UI.query(testid: "add-milestone-form"), fn el ->
+      UI.click_button(el, "Add milestone")
+    end)
+  end
+
+  step :add_multiple_milestones, ctx, names: names do
+    ctx
+    |> UI.click_button("Add milestone")
+    |> UI.click(testid: "add-more-switch")
+    |> UI.find(UI.query(testid: "add-milestone-form"), fn el ->
+      Enum.reduce(names, el, fn name, el ->
+        el
+        |> UI.fill(testid: "milestone-name-input", with: name)
+        |> UI.click_button("Add milestone")
+      end)
+    end)
+    |> UI.click_button("Cancel")
+  end
+
+  step :edit_milestone, ctx, name: name, new_name: new_name, new_due_date: due_date do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      el
+      |> UI.hover(testid: UI.testid(["milestone", name]))
+      |> UI.click_button("Edit")
+    end)
+    |> UI.fill(testid: UI.testid(["edit-title", name]), with: new_name)
+    |> UI.select_day_in_date_field(testid: UI.testid(["edit-due-date", name]), date: due_date)
+    |> UI.click_button("Save")
+    |> UI.refute_has(testid: UI.testid(["edit-form", name]))
+  end
+
   step :leave_a_comment, ctx, comment do
     ctx
     |> UI.click(testid: "add-comment")
@@ -67,5 +130,38 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       author: ctx.champion,
       action: "commented on #{ctx.milestone.title}"
     })
+  end
+
+  step :assert_project_milestones_zero_state, ctx do
+    ctx
+    |> UI.assert_text("No milestones yet")
+    |> UI.assert_text("Add milestones to track key deliverables and deadlines")
+  end
+
+  step :assert_add_milestone_form_closed, ctx do
+    UI.refute_has(ctx, testid: "add-milestone-form")
+  end
+
+  step :assert_milestone_created, ctx, name: name do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      UI.assert_text(el, name)
+    end)
+  end
+
+  step :assert_milestone_created, ctx, name: name, due_date: due_date do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      UI.assert_text(el, name)
+      UI.assert_text(el, due_date)
+    end)
+  end
+
+  step :assert_milestone_updated, ctx, name: name, due_date: due_date do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      UI.assert_text(el, name)
+      UI.assert_text(el, due_date)
+    end)
   end
 end
