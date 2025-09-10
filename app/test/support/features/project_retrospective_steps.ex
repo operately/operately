@@ -14,7 +14,9 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
   step :initiate_project_closing, ctx do
     ctx
     |> ProjectSteps.visit_project_page()
-    |> UI.click_text("Close project")
+    |> UI.find(UI.query(testid: "actions-section"), fn el ->
+      UI.click_text(el, "Close project")
+    end)
   end
 
   step :fill_in_retrospective, ctx, params do
@@ -42,9 +44,13 @@ defmodule Operately.Support.Features.ProjectRetrospectiveSteps do
 
   step :assert_project_retrospective_posted, ctx, params do
     ctx
+    |> UI.click(testid: "tab-activity")
     |> FeedSteps.assert_project_retrospective_posted(author: params["author"])
-    |> UI.assert_text("This project was closed on")
-    |> UI.click(testid: "project-retrospective-link")
+    |> UI.find(UI.query(testid: "closed-status-banner"), fn el ->
+      el
+      |> UI.assert_text("This project was closed on")
+      |> UI.click_text("retrospective")
+    end)
     |> UI.assert_text(params["author"].full_name)
     |> UI.assert_text(params["notes"])
   end
