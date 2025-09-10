@@ -338,6 +338,126 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "count children" do
+    test "it requires authentication", ctx do
+      assert {401, _} = query(ctx.conn, [:projects, :count_children], %{})
+    end
+
+    test "it requires an id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = query(ctx.conn, [:projects, :count_children], %{})
+      assert res.message == "Missing required fields: id"
+    end
+
+    test "it returns 404 if the project does not exist", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, _} = query(ctx.conn, [:projects, :count_children], %{
+        id: Ecto.UUID.generate()
+      })
+    end
+
+    test "it returns counts for project by default", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_discussion(:discussion1, :project)
+        |> Factory.add_project_discussion(:discussion2, :project)
+        |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.add_project_task(:task2, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.project_id(ctx.project)
+      })
+
+      assert res.discussions_count == 2
+      assert res.tasks_count == 2
+    end
+
+    test "it returns 0 counts when project has no children", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.project_id(ctx.project)
+      })
+
+      assert res.discussions_count == 0
+      assert res.tasks_count == 0
+    end
+
+    test "it finds project by task_id when use_task_id is true", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_discussion(:discussion1, :project)
+        |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.task_id(ctx.task1),
+        use_task_id: true
+      })
+
+      assert res.discussions_count == 1
+      assert res.tasks_count == 1
+    end
+
+    test "it finds project by milestone_id when use_milestone_id is true", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_discussion(:discussion1, :project)
+        |> Factory.add_project_task(:task1, :milestone)
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.milestone_id(ctx.milestone),
+        use_milestone_id: true
+      })
+
+      assert res.discussions_count == 1
+      assert res.tasks_count == 1
+    end
+
+    test "it returns 404 when task does not exist with use_task_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Ecto.UUID.generate(),
+        use_task_id: true
+      })
+
+      assert res.message == "Task not found"
+    end
+
+    test "it returns 404 when milestone does not exist with use_milestone_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {404, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Ecto.UUID.generate(),
+        use_milestone_id: true
+      })
+
+      assert res.message == "Milestone not found"
+    end
+
+    test "it excludes done and canceled tasks from count", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project_task(:task1, :milestone, status: "todo")
+        |> Factory.add_project_task(:task2, :milestone, status: "done")
+        |> Factory.add_project_task(:task3, :milestone, status: "canceled")
+        |> Factory.add_project_task(:task4, :milestone, status: "in_progress")
+        |> Factory.log_in_person(:creator)
+
+      assert {200, res} = query(ctx.conn, [:projects, :count_children], %{
+        id: Paths.project_id(ctx.project)
+      })
+
+      # Should only count todo and in_progress tasks (2 tasks)
+      assert res.tasks_count == 2
+    end
+   end
+
   describe "update due date" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :update_due_date], %{})

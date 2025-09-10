@@ -6,6 +6,11 @@ import { PageHeader } from "./PageHeader";
 import { BadgeStatus } from "../StatusBadge/types";
 
 export namespace ProjectPageLayout {
+  export interface ChildrenCount {
+    tasksCount: number;
+    discussionsCount: number;
+  }
+
   export interface Space {
     id: string;
     name: string;

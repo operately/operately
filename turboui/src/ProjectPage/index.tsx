@@ -4,7 +4,6 @@ import { ProjectPageLayout } from "../ProjectPageLayout";
 
 import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
 
-import { useCountOpenTasks } from "../TaskBoard/hooks";
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
@@ -80,6 +79,8 @@ export namespace ProjectPage {
     description?: string;
     newCheckInLink: string;
     newDiscussionLink: string;
+
+    childrenCount: ProjectPageLayout.ChildrenCount;
 
     space: Space;
     setSpace: (space: Space) => void;
@@ -180,7 +181,6 @@ function useProjectPageState(props: ProjectPage.Props): ProjectPage.State {
 
 export function ProjectPage(props: ProjectPage.Props) {
   const state = useProjectPageState(props);
-  const openTasksCount = useCountOpenTasks(props.milestones, props.tasks);
 
   const tabs = useTabs("overview", [
     { id: "overview", label: "Overview", icon: <IconClipboardText size={14} /> },
@@ -188,10 +188,15 @@ export function ProjectPage(props: ProjectPage.Props) {
       id: "tasks",
       label: "Tasks",
       icon: <IconListCheck size={14} />,
-      count: openTasksCount,
+      count: state.childrenCount.tasksCount,
     },
     { id: "check-ins", label: "Check-ins", icon: <IconMessage size={14} /> },
-    { id: "discussions", label: "Discussions", icon: <IconMessages size={14} /> },
+    {
+      id: "discussions",
+      label: "Discussions",
+      icon: <IconMessages size={14} />,
+      count: state.childrenCount.discussionsCount,
+    },
     { id: "activity", label: "Activity", icon: <IconLogs size={14} /> },
   ]);
 

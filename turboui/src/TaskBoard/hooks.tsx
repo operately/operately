@@ -4,35 +4,6 @@ import { includesId } from "../utils/ids";
 import { applyFilters } from "./utils/taskFilterUtils";
 
 /**
- * Hook that counts open tasks in the task board
- * Open tasks are defined as:
- * - Not having 'done' or 'canceled' status
- * - Not belonging to a 'done' milestone
- */
-export function useCountOpenTasks(milestones: Milestone[], tasks: Task[]) {
-  const count = useMemo(() => {
-    const milestoneStatusMap = new Map<string, string>();
-    milestones.forEach((milestone) => {
-      milestoneStatusMap.set(milestone.id, milestone.status);
-    });
-
-    return tasks.filter((task) => {
-      const isTaskOpen = task.status !== "done" && task.status !== "canceled";
-
-      // Check if task belongs to a milestone and if that milestone is not 'done'
-      const isMilestoneOpen =
-        !task.milestone ||
-        !milestoneStatusMap.has(task.milestone.id) ||
-        milestoneStatusMap.get(task.milestone.id) !== "done";
-
-      return isTaskOpen && isMilestoneOpen;
-    }).length;
-  }, [milestones, tasks]);
-
-  return count;
-}
-
-/**
  * Hook that filters tasks based on filters and milestone status
  * If no filters are applied, tasks with 'done' or 'canceled' status are hidden by default
  * Also tracks hidden tasks grouped by milestone

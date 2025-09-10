@@ -37,6 +37,10 @@ type LoaderResult = {
     checkIns: ProjectCheckIn[];
     discussions: Projects.Discussion[];
     backendTasks: Tasks.Task[];
+    childrenCount: {
+      tasksCount: number,
+      discussionsCount: number,
+    }
   };
   cacheVersion: number;
 };
@@ -65,13 +69,14 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
         backendTasks: Api.project_tasks.list({ projectId: params.id }).then((d) => d.tasks!),
+        childrenCount: Api.projects.countChildren({ id: params.id }),
       }),
   });
 }
 
 function Page() {
   const paths = usePaths();
-  const { project, checkIns, discussions, backendTasks } = PageCache.useData(loader).data;
+  const { project, checkIns, discussions, backendTasks, childrenCount } = PageCache.useData(loader).data;
   const navigate = useNavigate();
 
   const mentionedPersonLookup = useMentionedPersonLookupFn();
@@ -199,6 +204,8 @@ function Page() {
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
+
+    childrenCount,
 
     projectName: projectName as string,
     updateProjectName: (name: string) => {

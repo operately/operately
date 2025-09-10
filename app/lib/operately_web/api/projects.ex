@@ -370,6 +370,53 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule CountChildren do
+    use TurboConnect.Query
+
+    inputs do
+      field :id, :id, null: false
+      field? :use_task_id, :boolean, null: false
+      field? :use_milestone_id, :boolean, null: false
+    end
+
+    outputs do
+      field :discussions_count, :integer, null: false
+      field :tasks_count, :integer, null: false
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> find_project(inputs)
+      |> check_permissions(inputs)
+      |> Steps.count_discussions()
+      |> Steps.count_open_tasks()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{
+          discussions_count: changes.discussions_count,
+          tasks_count: changes.open_tasks_count
+        }
+      end)
+    end
+
+    defp find_project(multi, inputs) do
+      cond do
+        Map.get(inputs, :use_task_id, false) -> Steps.find_project_by_task(multi, inputs.id)
+        Map.get(inputs, :use_milestone_id, false) -> Steps.find_project_by_milestone(multi, inputs.id)
+        true -> Steps.find_project(multi, inputs.id)
+      end
+    end
+
+    defp check_permissions(multi, inputs) do
+      cond do
+        Map.get(inputs, :use_task_id, false) -> Steps.check_task_permissions(multi, :can_view)
+        Map.get(inputs, :use_milestone_id, false) -> Steps.check_milestone_permissions(multi, :can_view)
+        true -> Steps.check_permissions(multi, :can_view)
+      end
+    end
+  end
+
   defmodule SharedMultiSteps do
     require Logger
     import Ecto.Query, only: [from: 2]
@@ -390,6 +437,30 @@ defmodule OperatelyWeb.Api.Projects do
           {:ok, project} -> {:ok, project}
           {:error, _} -> {:error, {:not_found, "Project not found"}}
         end
+      end)
+    end
+
+    def find_project_by_task(multi, task_id) do
+      Ecto.Multi.run(multi, :task, fn _repo, %{me: me} ->
+        case Operately.Tasks.Task.get(me, id: task_id, opts: [preload: [:project]]) do
+          {:ok, task} -> {:ok, task}
+          {:error, _} -> {:error, {:not_found, "Task not found"}}
+        end
+      end)
+      |> Ecto.Multi.run(:project, fn _repo, %{task: task} ->
+        {:ok, task.project}
+      end)
+    end
+
+    def find_project_by_milestone(multi, milestone_id) do
+      Ecto.Multi.run(multi, :milestone, fn _repo, %{me: me} ->
+        case Operately.Projects.Milestone.get(me, id: milestone_id, opts: [preload: [:project]]) do
+          {:ok, milestone} -> {:ok, milestone}
+          {:error, _} -> {:error, {:not_found, "Milestone not found"}}
+        end
+      end)
+      |> Ecto.Multi.run(:project, fn _repo, %{milestone: milestone} ->
+        {:ok, milestone.project}
       end)
     end
 
@@ -422,6 +493,49 @@ defmodule OperatelyWeb.Api.Projects do
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project} ->
         Operately.Projects.Permissions.check(project.request_info.access_level, permission)
+      end)
+    end
+
+    def check_task_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{task: task} ->
+        Operately.Projects.Permissions.check(task.request_info.access_level, permission)
+      end)
+    end
+
+    def check_milestone_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
+        Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
+      end)
+    end
+
+    def count_discussions(multi) do
+      Ecto.Multi.run(multi, :discussions_count, fn _repo, %{project: project} ->
+        count =
+          from(ct in Operately.Comments.CommentThread,
+            where: ct.parent_type == :project and ct.parent_id == ^project.id
+          )
+          |> Repo.aggregate(:count)
+
+        {:ok, count}
+      end)
+    end
+
+    def count_open_tasks(multi) do
+      Ecto.Multi.run(multi, :open_tasks_count, fn _repo, %{project: project} ->
+        # This query counts tasks where:
+        # 1. The task belongs to the specified project
+        # 2. The task status is not 'done' and not 'canceled'
+        # 3. Either the task has no milestone OR its milestone status is not 'done'
+        query = from(t in Operately.Tasks.Task,
+          left_join: m in Operately.Projects.Milestone, on: t.milestone_id == m.id,
+          where: t.project_id == ^project.id and
+            t.status not in ["done", "canceled"] and
+            (is_nil(t.milestone_id) or m.status != :done),
+          select: count(t.id)
+        )
+
+        count = Repo.one(query)
+        {:ok, count || 0}
       end)
     end
 
