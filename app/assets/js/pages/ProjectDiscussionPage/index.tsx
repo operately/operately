@@ -104,7 +104,7 @@ function Nav() {
     <Paper.Navigation
       items={[
         { to: paths.spacePath(discussion.space!.id!), label: discussion.space!.name! },
-        { to: paths.projectPath(discussion.project!.id!), label: discussion.project!.name! },
+        { to: paths.projectPath(discussion.project!.id!, "discussions"), label: discussion.project!.name! },
       ]}
     />
   );

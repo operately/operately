@@ -144,7 +144,11 @@ export class Paths {
     return this.createCompanyPath(["spaces", spaceId, "discussions", "new"]);
   }
 
-  projectPath(projectId: string) {
+  projectPath(projectId: string, tab?: "overview" | "tasks" | "check-ins" | "discussions" | "activity") {
+    if (tab) {
+      return this.createCompanyPath(["projects", projectId]) + `?tab=${tab}`;
+    }
+
     return this.createCompanyPath(["projects", projectId]);
   }
 
@@ -177,7 +181,7 @@ export class Paths {
   }
 
   projectCheckInsPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "check-ins"]);
+    return this.createCompanyPath(["projects", projectId]) + "?tab=check-ins";
   }
 
   projectRetrospectivePath(projectId: string) {
