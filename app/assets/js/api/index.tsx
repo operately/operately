@@ -2623,22 +2623,23 @@ export interface ProjectMilestonesListTasksResult {
   tasks: Task[];
 }
 
-export interface ProjectTasksGetOpenTaskCountInput {
-  id: Id;
-  useTaskId?: boolean;
-  useMilestoneId?: boolean;
-}
-
-export interface ProjectTasksGetOpenTaskCountResult {
-  count: number;
-}
-
 export interface ProjectTasksListInput {
   projectId: Id;
 }
 
 export interface ProjectTasksListResult {
   tasks: Task[] | null;
+}
+
+export interface ProjectsCountChildrenInput {
+  id: Id;
+  useTaskId?: boolean;
+  useMilestoneId?: boolean;
+}
+
+export interface ProjectsCountChildrenResult {
+  discussionsCount: number;
+  tasksCount: number;
 }
 
 export interface ProjectsGetContributorsInput {
@@ -2820,14 +2821,6 @@ export interface AddReactionInput {
 
 export interface AddReactionResult {
   reaction?: Reaction | null;
-}
-
-export interface RemoveReactionInput {
-  reactionId?: Id | null;
-}
-
-export interface RemoveReactionResult {
-  success?: boolean | null;
 }
 
 export interface AddSpaceMembersInput {
@@ -4026,6 +4019,14 @@ export interface RemoveProjectMilestoneResult {
   milestone?: Milestone | null;
 }
 
+export interface RemoveReactionInput {
+  reactionId: Id;
+}
+
+export interface RemoveReactionResult {
+  success: boolean;
+}
+
 export interface RenameResourceHubFolderInput {
   folderId?: Id | null;
   newName?: string | null;
@@ -4404,10 +4405,6 @@ class ApiNamespaceRoot {
     return this.client.post("/add_reaction", input);
   }
 
-  async removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
-    return this.client.post("/remove_reaction", input);
-  }
-
   async addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
     return this.client.post("/add_space_members", input);
   }
@@ -4702,6 +4699,10 @@ class ApiNamespaceRoot {
     return this.client.post("/remove_project_milestone", input);
   }
 
+  async removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
+    return this.client.post("/remove_reaction", input);
+  }
+
   async renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
     return this.client.post("/rename_resource_hub_folder", input);
   }
@@ -4796,10 +4797,6 @@ class ApiNamespaceProjectDiscussions {
 class ApiNamespaceProjectTasks {
   constructor(private client: ApiClient) {}
 
-  async getOpenTaskCount(input: ProjectTasksGetOpenTaskCountInput): Promise<ProjectTasksGetOpenTaskCountResult> {
-    return this.client.get("/project_tasks/get_open_task_count", input);
-  }
-
   async list(input: ProjectTasksListInput): Promise<ProjectTasksListResult> {
     return this.client.get("/project_tasks/list", input);
   }
@@ -4871,6 +4868,10 @@ class ApiNamespaceProjectMilestones {
 
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
+
+  async countChildren(input: ProjectsCountChildrenInput): Promise<ProjectsCountChildrenResult> {
+    return this.client.get("/projects/count_children", input);
+  }
 
   async getContributors(input: ProjectsGetContributorsInput): Promise<ProjectsGetContributorsResult> {
     return this.client.get("/projects/get_contributors", input);
@@ -5380,10 +5381,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.addReaction(input);
   }
 
-  removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
-    return this.apiNamespaceRoot.removeReaction(input);
-  }
-
   addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
     return this.apiNamespaceRoot.addSpaceMembers(input);
   }
@@ -5676,6 +5673,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.removeProjectMilestone(input);
   }
 
+  removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
+    return this.apiNamespaceRoot.removeReaction(input);
+  }
+
   renameResourceHubFolder(input: RenameResourceHubFolderInput): Promise<RenameResourceHubFolderResult> {
     return this.apiNamespaceRoot.renameResourceHubFolder(input);
   }
@@ -5930,9 +5931,6 @@ export async function addProjectContributors(
 }
 export async function addReaction(input: AddReactionInput): Promise<AddReactionResult> {
   return defaultApiClient.addReaction(input);
-}
-export async function removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
-  return defaultApiClient.removeReaction(input);
 }
 export async function addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
   return defaultApiClient.addSpaceMembers(input);
@@ -6189,6 +6187,9 @@ export async function removeProjectMilestone(
   input: RemoveProjectMilestoneInput,
 ): Promise<RemoveProjectMilestoneResult> {
   return defaultApiClient.removeProjectMilestone(input);
+}
+export async function removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
+  return defaultApiClient.removeReaction(input);
 }
 export async function renameResourceHubFolder(
   input: RenameResourceHubFolderInput,
@@ -6533,10 +6534,6 @@ export function useAddProjectContributors(): UseMutationHookResult<
 
 export function useAddReaction(): UseMutationHookResult<AddReactionInput, AddReactionResult> {
   return useMutation<AddReactionInput, AddReactionResult>((input) => defaultApiClient.addReaction(input));
-}
-
-export function useRemoveReaction(): UseMutationHookResult<RemoveReactionInput, RemoveReactionResult> {
-  return useMutation<RemoveReactionInput, RemoveReactionResult>((input) => defaultApiClient.removeReaction(input));
 }
 
 export function useAddSpaceMembers(): UseMutationHookResult<AddSpaceMembersInput, AddSpaceMembersResult> {
@@ -7014,6 +7011,10 @@ export function useRemoveProjectMilestone(): UseMutationHookResult<
   );
 }
 
+export function useRemoveReaction(): UseMutationHookResult<RemoveReactionInput, RemoveReactionResult> {
+  return useMutation<RemoveReactionInput, RemoveReactionResult>((input) => defaultApiClient.removeReaction(input));
+}
+
 export function useRenameResourceHubFolder(): UseMutationHookResult<
   RenameResourceHubFolderInput,
   RenameResourceHubFolderResult
@@ -7235,8 +7236,6 @@ export default {
   useAddProjectContributors,
   addReaction,
   useAddReaction,
-  removeReaction,
-  useRemoveReaction,
   addSpaceMembers,
   useAddSpaceMembers,
   archiveGoal,
@@ -7381,6 +7380,8 @@ export default {
   useRemoveProjectContributor,
   removeProjectMilestone,
   useRemoveProjectMilestone,
+  removeReaction,
+  useRemoveReaction,
   renameResourceHubFolder,
   useRenameResourceHubFolder,
   reopenGoal,
@@ -7441,13 +7442,6 @@ export default {
   },
 
   project_tasks: {
-    getOpenTaskCount: (input: ProjectTasksGetOpenTaskCountInput) =>
-      defaultApiClient.apiNamespaceProjectTasks.getOpenTaskCount(input),
-    useGetOpenTaskCount: (input: ProjectTasksGetOpenTaskCountInput) =>
-      useQuery<ProjectTasksGetOpenTaskCountResult>(() =>
-        defaultApiClient.apiNamespaceProjectTasks.getOpenTaskCount(input),
-      ),
-
     list: (input: ProjectTasksListInput) => defaultApiClient.apiNamespaceProjectTasks.list(input),
     useList: (input: ProjectTasksListInput) =>
       useQuery<ProjectTasksListResult>(() => defaultApiClient.apiNamespaceProjectTasks.list(input)),
@@ -7544,6 +7538,10 @@ export default {
   },
 
   projects: {
+    countChildren: (input: ProjectsCountChildrenInput) => defaultApiClient.apiNamespaceProjects.countChildren(input),
+    useCountChildren: (input: ProjectsCountChildrenInput) =>
+      useQuery<ProjectsCountChildrenResult>(() => defaultApiClient.apiNamespaceProjects.countChildren(input)),
+
     getContributors: (input: ProjectsGetContributorsInput) =>
       defaultApiClient.apiNamespaceProjects.getContributors(input),
     useGetContributors: (input: ProjectsGetContributorsInput) =>

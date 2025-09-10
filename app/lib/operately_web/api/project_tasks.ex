@@ -29,48 +29,6 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     end
   end
 
-  defmodule GetOpenTaskCount do
-    use TurboConnect.Query
-
-    inputs do
-      field :id, :id, null: false
-      field? :use_task_id, :boolean, null: false
-      field? :use_milestone_id, :boolean, null: false
-    end
-
-    outputs do
-      field :count, :integer, null: false
-    end
-
-    def call(conn, inputs) do
-      conn
-      |> Steps.start_transaction()
-      |> find_project(inputs)
-      |> check_permissions(inputs)
-      |> Steps.count_open_tasks()
-      |> Steps.commit()
-      |> Steps.respond(fn changes ->
-        %{count: changes.open_tasks_count}
-      end)
-    end
-
-    defp find_project(multi, inputs) do
-      cond do
-        Map.get(inputs, :use_task_id, false) -> Steps.find_project_by_task(multi, inputs.id)
-        Map.get(inputs, :use_milestone_id, false) -> Steps.find_project_by_milestone(multi, inputs.id)
-        true -> Steps.find_project(multi, inputs.id)
-      end
-    end
-
-    defp check_permissions(multi, inputs) do
-      cond do
-        Map.get(inputs, :use_task_id, false) -> Steps.check_task_permissions(multi, :can_view)
-        Map.get(inputs, :use_milestone_id, false) -> Steps.check_milestone_permissions(multi, :can_view)
-        true -> Steps.check_permissions(multi, :can_view)
-      end
-    end
-  end
-
   defmodule UpdateStatus do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -517,25 +475,6 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           |> Repo.all()
 
         {:ok, tasks}
-      end)
-    end
-
-    def count_open_tasks(multi) do
-      Ecto.Multi.run(multi, :open_tasks_count, fn repo, %{project: project} ->
-        # This query counts tasks where:
-        # 1. The task belongs to the specified project
-        # 2. The task status is not 'done' and not 'canceled'
-        # 3. Either the task has no milestone OR its milestone status is not 'done'
-        query = from(t in Operately.Tasks.Task,
-          left_join: m in Operately.Projects.Milestone, on: t.milestone_id == m.id,
-          where: t.project_id == ^project.id and
-            t.status not in ["done", "canceled"] and
-            (is_nil(t.milestone_id) or m.status != :done),
-          select: count(t.id)
-        )
-
-        count = repo.one(query)
-        {:ok, count || 0}
       end)
     end
 

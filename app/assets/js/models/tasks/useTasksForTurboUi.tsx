@@ -22,9 +22,10 @@ interface Attrs {
   cacheKey: string;
   milestones: TaskBoard.Milestone[];
   setMilestones?: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
+  refresh?: () => Promise<void>;
 }
 
-export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones }: Attrs) {
+export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, milestones, setMilestones, refresh }: Attrs) {
   const paths = usePaths();
   const [tasks, setTasks] = React.useState(Tasks.parseTasksForTurboUi(paths, backendTasks));
 
@@ -76,6 +77,14 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
       return newMilestones;
     });
   }, [setMilestones]);
+
+  const invalidateAndRefresh = React.useCallback(async () => {
+    PageCache.invalidate(cacheKey);
+
+    if (refresh) {
+      await refresh();
+    }
+  }, [cacheKey, refresh]);
 
   const createTask = async (task: TaskBoard.NewTaskPayload) => {
     const snapshot = createSnapshot();
@@ -135,7 +144,8 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
         }));
       }
 
-      PageCache.invalidate(cacheKey);
+      await invalidateAndRefresh();
+
       return { success: true };
 
     } catch (e) {
@@ -150,7 +160,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     return Api.project_tasks
       .updateDueDate({ taskId, dueDate: serializeContextualDate(dueDate) })
       .then(() => {
-        PageCache.invalidate(cacheKey);
+        invalidateAndRefresh();
 
         setTasks((prev) =>
           prev.map((t) => {
@@ -175,7 +185,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
     return Api.project_tasks
       .updateAssignee({ taskId, assigneeId: assignee?.id || null })
       .then(() => {
-        PageCache.invalidate(cacheKey);
+        invalidateAndRefresh();
 
         setTasks((prev) =>
           prev.map((t) => {
@@ -215,7 +225,8 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       updateMilestonesFromServer(response.updatedMilestone, null);
 
-      PageCache.invalidate(cacheKey);
+      await invalidateAndRefresh();
+
       return { success: true };
 
     } catch (e) {
@@ -284,7 +295,8 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       updateMilestonesFromServer(null, res.updatedMilestones);
 
-      PageCache.invalidate(cacheKey);
+      await invalidateAndRefresh();
+
       return { success: true };
 
     } catch (e) {
@@ -326,9 +338,9 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       updateMilestonesFromServer(response.updatedMilestone, null);
 
-      PageCache.invalidate(cacheKey);
-      return { success: true };
+      await invalidateAndRefresh();
 
+      return { success: true };
     } catch (e) {
       console.error("Failed to delete task", e);
       showErrorToast("Error", "Failed to delete task");

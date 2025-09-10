@@ -26,7 +26,10 @@ import { useComments } from "./useComments";
 type LoaderResult = {
   data: {
     task: Tasks.Task;
-    tasksCount: number;
+    childrenCount: {
+      tasksCount: number;
+      discussionsCount: number;
+    };
     activities: Activities.Activity[];
     comments: Comments.Comment[];
   };
@@ -48,7 +51,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includeSpace: true,
           includePermissions: true,
         }).then((d) => d.task!),
-        tasksCount: Api.project_tasks.getOpenTaskCount({ id: params.id, useTaskId: true }).then((d) => d.count!),
+        childrenCount: Api.projects.countChildren({ id: params.id, useTaskId: true }),
         activities: Api.getActivities({
           scopeId: params.id,
           scopeType: "task",
@@ -75,7 +78,7 @@ function Page() {
 
   const pageData = PageCache.useData(loader);
   const { data, refresh: refreshPageData } = pageData;
-  const { task, tasksCount, activities } = data;
+  const { task, childrenCount, activities } = data;
 
   assertPresent(task.project, "Task must have a project");
   assertPresent(task.space, "Task must have a space");
@@ -171,8 +174,8 @@ function Page() {
     projectLink: paths.projectPath(task.project.id),
     projectStatus: task.project.status,
     workmapLink,
-    tasksCount,
     space: parseSpaceForTurboUI(paths, task.space),
+    childrenCount,
 
     canEdit: Boolean(task.permissions.canEditTimeline),
 
@@ -223,7 +226,7 @@ function Page() {
 }
 
 interface usePageFieldProps<T> {
-  value: (data: { task: Tasks.Task; tasksCount: number; activities: Activities.Activity[] }) => T;
+  value: (data: { task: Tasks.Task; childrenCount: { tasksCount: number; discussionsCount: number }; activities: Activities.Activity[] }) => T;
   update: (newValue: T) => Promise<any>;
   onError?: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];

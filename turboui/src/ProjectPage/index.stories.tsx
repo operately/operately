@@ -326,6 +326,10 @@ export const Default: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="Mobile App Redesign"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+        }}
         description={
           asRichText(
             "Our current mobile app has inconsistent navigation and dated UI patterns, lowering engagement and hurting task completion on key flows. Let's ship an incremental redesign that improves time-to-task, increases activation on first session, and raises weekly retention for target cohorts. Success is measured by +15% task completion on onboarding and +10% weekly active users for the beta cohort.",
@@ -410,6 +414,10 @@ export const ReadOnly: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="Mobile App Redesign"
+        childrenCount={{
+           tasksCount: mockTasks.length,
+           discussionsCount: mockDiscussions.length,
+         }}
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
         setSpace={setSpace}
@@ -536,6 +544,10 @@ export const EmptyTasks: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="Mobile App Redesign"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+        }}
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
         setSpace={setSpace}
@@ -645,6 +657,10 @@ export const EmptyProject: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="New Project"
+        childrenCount={{
+          tasksCount: 0,
+          discussionsCount: 0,
+        }}
         description={undefined}
         space={space}
         setSpace={setSpace}
@@ -712,6 +728,10 @@ export const EmptyProjectReadOnly: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="Mobile App Redesign"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+        }}
         description=""
         space={space}
         setSpace={setSpace}
@@ -854,6 +874,10 @@ export const PausedProject: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="AI Chatbot Prototype"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+        }}
         description="<p>This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.</p>"
         space={space}
         setSpace={setSpace}
@@ -941,6 +965,10 @@ export const ClosedProject: Story = {
         reopenLink="#"
         pauseLink="#"
         projectName="Work Map GA"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: mockDiscussions.length,
+        }}
         description="<p>We're going towards turning the work maps on for everyone and removing legacy UI.</p><p>Milestones (will add after bug is fixed):</p><ul><li>No bugs / papercuts in current work maps</li><li>My work</li><li>Profile pages that show work maps in new layout</li><li>New home section</li></ul>"
         space={space}
         setSpace={setSpace}

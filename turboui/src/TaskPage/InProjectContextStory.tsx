@@ -134,6 +134,10 @@ export function InProjectContextStory() {
               projectStatus="on_track"
               projectLink="#"
               workmapLink="#"
+              childrenCount={{
+                tasksCount: 8,
+                discussionsCount: 3,
+              }}
               space={{
                 id: "space-123",
                 name: "Product",
