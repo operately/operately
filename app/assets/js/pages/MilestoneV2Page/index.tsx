@@ -62,7 +62,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 }
 
-export function pageCacheKey(id: string): string {
+function pageCacheKey(id: string): string {
   return `v12-MilestoneV2Page.task-${id}`;
 }
 
@@ -112,7 +112,9 @@ function Page() {
     setMilestones: setMilestones,
     refresh,
   });
-  const { comments, setComments, handleCreateComment } = useComments(paths, milestone);
+  const { comments, setComments, handleCreateComment } = useComments(paths, milestone, () => {
+    PageCache.invalidate(pageCacheKey(milestone.id));
+  });
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
 
   const timelineItems = React.useMemo(
@@ -325,6 +327,11 @@ function useStatusField(
         content: null,
         action: v === "done" ? "complete" : "reopen",
       });
+
+      PageCache.invalidate(pageCacheKey(milestone.id));
+      if (milestone.project?.id) {
+        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
+      }
 
       setComments((prev) =>
         prev.map((c) => {
