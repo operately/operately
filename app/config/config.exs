@@ -69,7 +69,8 @@ config :operately, Oban,
     {Oban.Plugins.Cron,
      crontab: [
        {"0 8 * * *", OperatelyEmail.Assignments.Cron},
-       {"0 8 * * *", Operately.AI.Cron}
+       {"0 8 * * *", Operately.AI.Cron},
+       {"0 2 * * *", Operately.Beacon.Cron}
      ]}
   ],
   queues: [
