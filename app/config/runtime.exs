@@ -29,9 +29,9 @@ config :operately, :js_sentry_enabled, System.get_env("OPERATELY_JS_SENTRY_ENABL
 config :operately, :js_sentry_dsn, System.get_env("OPERATELY_JS_SENTRY_DSN")
 config :operately, :storage_type, System.get_env("OPERATELY_STORAGE_TYPE", "local")
 
-# Beacon configuration for self-hosted installations
-# OPERATELY_BEACON_ENABLED - Enable/disable anonymized beacon (default: true)
-config :operately, :beacon_enabled, System.get_env("OPERATELY_BEACON_ENABLED", "true") not in ["false", "no", "0"]
+config :operately, :beacon_enabled, System.get_env("OPERATELY_BEACON_ENABLED", "false") == "true"
+config :operately, :beacon_collector_enabled, System.get_env("OPERATELY_BEACON_COLLECTOR_ENABLED", "false") == "true"
+config :operately, :posthog_api_key, System.get_env("POSTHOG_API_KEY")
 
 # Sentry configuration for backend error reporting
 # SENTRY_DSN - DSN URL for streaming backend errors (including background jobs) to Sentry

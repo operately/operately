@@ -76,6 +76,10 @@ defmodule OperatelyWeb.Router do
     forward "/v2", OperatelyWeb.Api
   end
 
+  scope "/analytics/beacons" do
+    forward "/", OperatelyEE.BeaconCollector
+  end
+
   if Application.compile_env(:operately, :dev_routes) do
     scope "/" do
       pipe_through :browser
