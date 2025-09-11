@@ -5,12 +5,10 @@ import * as Tasks from "@/models/tasks";
 import * as Comments from "@/models/comments";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { PageCache } from "@/routes/PageCache";
 import { showErrorToast } from "turboui";
 import { compareIds } from "@/routes/paths";
-import { pageCacheKey } from ".";
 
-export function useComments(task: Tasks.Task, initialComments: Comments.Comment[]) {
+export function useComments(task: Tasks.Task, initialComments: Comments.Comment[], invalidateCache: () => void) {
   const currentUser = useMe();
   const [comments, setComments] = React.useState(initialComments);
 
@@ -43,7 +41,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
           setComments((prev) =>
             prev.map((c) => (c.id === randomId ? { ...c, id: res.comment.id, insertedAt: res.comment.insertedAt } : c)),
           );
-          PageCache.invalidate(pageCacheKey(task.id));
+          invalidateCache();
         }
       } catch (error) {
         setComments((prev) => prev.filter((c) => c.id !== randomId));
@@ -68,7 +66,7 @@ export function useComments(task: Tasks.Task, initialComments: Comments.Comment[
 
         await Api.editComment({ commentId, parentType: "project_task", content: JSON.stringify(content) });
 
-        PageCache.invalidate(pageCacheKey(task.id));
+        invalidateCache();
       } catch (error) {
         setComments((prev) => prev.map((c) => (compareIds(c.id, commentId) ? { ...c, content: comment?.content } : c)));
         showErrorToast("Error", "Failed to edit comment.");

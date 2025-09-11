@@ -5,10 +5,8 @@ import * as Milestones from "@/models/milestones";
 
 import { Paths } from "@/routes/paths";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { PageCache } from "@/routes/PageCache";
-import { pageCacheKey } from ".";
 
-export function useComments(paths: Paths, milestone: Milestones.Milestone) {
+export function useComments(paths: Paths, milestone: Milestones.Milestone, invalidateCache: () => void) {
   const me = useMe()!;
 
   const [comments, setComments] = React.useState(
@@ -46,7 +44,7 @@ export function useComments(paths: Paths, milestone: Milestones.Milestone) {
         }
       });
    });
-    PageCache.invalidate(pageCacheKey(milestone.id));
+    invalidateCache();
   }, [paths, me, milestone.id]);
 
   return { comments, setComments, handleCreateComment };

@@ -63,7 +63,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
   });
 }
 
-export function pageCacheKey(id: string): string {
+function pageCacheKey(id: string): string {
   return `v7-TaskV2Page.task-${id}`;
 }
 
@@ -135,7 +135,9 @@ function Page() {
     refreshPageData,
   });
 
-  const { comments, handleAddComment, handleEditComment } = useComments(task, data.comments);
+  const { comments, handleAddComment, handleEditComment } = useComments(task, data.comments, () => {
+    PageCache.invalidate(pageCacheKey(task.id));
+  });
 
   const timelineItems = useMemo(() => prepareTimelineItems(paths, activities, comments), [paths, activities, comments]);
 
