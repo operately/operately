@@ -95,7 +95,7 @@ export function TaskBoard({
   );
 
   return (
-    <div className="flex flex-col flex-1 bg-surface-base rounded-lg overflow-hidden">
+    <div className="flex flex-col flex-1 bg-surface-base rounded-lg overflow-hidden" data-test-id="tasks-board">
       <TaskCreationModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
