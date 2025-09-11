@@ -124,6 +124,7 @@ case $MANAGE_CERTS_YN in
 esac
 OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -base64 32)
 SECRET_KEY_BASE=$(openssl rand -hex 32)
+OPERATELY_INSTALLATION_ID=$(openssl rand -hex 16)
 
 DB_USERNAME="operately"
 POSTGRES_USER="operately"
@@ -131,9 +132,11 @@ POSTGRES_PASSWORD=$(openssl rand -hex 32)
 DATABASE_URL="ecto://${DB_USERNAME}:${POSTGRES_PASSWORD}@db/operately"
 NOTIFICATION_EMAIL="notifications@${DOMAIN}"
 ALLOW_LOGIN_WITH_EMAIL="yes"
+OPERATELY_BEACON_ENABLED="true"
 
 echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
 echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"${OPERATELY_BLOB_TOKEN_SECRET_KEY}\"" >> operately.env
+echo "OPERATELY_INSTALLATION_ID=\"${OPERATELY_INSTALLATION_ID}\"" >> operately.env
 echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
 echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\"" >> operately.env
 echo "CERT_EMAILS=\"${CERT_EMAILS}\"" >> operately.env
@@ -146,6 +149,7 @@ echo "POSTGRES_PASSWORD=\"${POSTGRES_PASSWORD}\"" >> operately.env
 echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
 echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
 echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\"" >> operately.env
+echo "OPERATELY_BEACON_ENABLED=\"${OPERATELY_BEACON_ENABLED}\"" >> operately.env
 
 # Write email configuration based on user choice
 case $EMAIL_OPTION in
