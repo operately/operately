@@ -11,4 +11,8 @@ defmodule Operately do
     # This is replaced by the build script when building the release
     "dev-version"
   end
+
+  def installation_id do
+    System.get_env("OPERATELY_INSTALLATION_ID") || "unknown"
+  end
 end
