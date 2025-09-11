@@ -70,7 +70,7 @@ export function TasksSection({
   );
 
   return (
-    <div className="space-y-4 pt-6">
+    <div className="space-y-4 pt-6" data-test-id="tasks-section">
       {/* Task header container - visually groups all task-related controls */}
       <div className="bg-surface-dimmed rounded-lg border border-surface-outline">
         {/* Header bar with title, pie chart, and primary action */}

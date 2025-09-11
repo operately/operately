@@ -15,6 +15,7 @@ export function Header({ title, canEdit, status, onMilestoneTitleChange }: Props
   return (
     <div
       className="sticky top-0 bg-surface-base z-10 ml-4 my-6 space-y-2 transition-all duration-200"
+      data-test-id="milestone-header"
     >
       {/* Title line: flag icon + milestone name + status badge */}
       <div className="flex items-center gap-2">
@@ -25,6 +26,7 @@ export function Header({ title, canEdit, status, onMilestoneTitleChange }: Props
           onChange={onMilestoneTitleChange}
           readonly={!canEdit}
           trimBeforeSave
+          testId="milestone-name-input"
         />
         <StatusBadge
           status={status === "done" ? "completed" : "in_progress"}

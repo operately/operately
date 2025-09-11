@@ -106,7 +106,7 @@ export function TaskCreationModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create Task" size="medium">
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" data-test-id="add-task-form">
         <TextField
           variant="form-field"
           label="Task title"
@@ -125,7 +125,7 @@ export function TaskCreationModal({
               date={dueDate}
               onDateSelect={setDueDate}
               placeholder="Set due date"
-              testId="due-date"
+              testId="task-due-date"
               calendarOnly
             />
           </div>
@@ -170,7 +170,7 @@ export function TaskCreationModal({
         </div>
 
         <div className="flex items-center mt-8">
-          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" />
+          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" testId="add-more-switch" />
           <div className="flex-1"></div>
           <div className="flex space-x-3">
             <SecondaryButton onClick={onClose} type="button">
