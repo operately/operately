@@ -35,12 +35,27 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
   end
 
+  step :visit_tasks_tab_on_project_page, ctx do
+    UI.visit(ctx, Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
+  end
+
   step :reload_project_page, ctx do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
   end
 
   step :reload_milestone_page, ctx do
     UI.visit(ctx, Paths.project_milestone_path(ctx.company, ctx.milestone))
+  end
+
+  step :navigate_to_milestone, ctx, name: name do
+    ctx
+    |> UI.find(UI.query(testid: "tasks-board"), fn el ->
+      UI.click_text(el, name)
+    end)
+  end
+
+  step :navigate_to_tasks_board, ctx do
+    UI.click(ctx, testid: "tab-tasks")
   end
 
   step :add_first_milestone, ctx, name: name do
@@ -213,6 +228,17 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       UI.assert_text(el, name)
       UI.assert_text(el, due_date)
     end)
+  end
+
+  step :assert_milestone_visible_in_tasks_board, ctx, name: name do
+    ctx
+    |> UI.find(UI.query(testid: "tasks-board"), fn el ->
+      UI.assert_text(el, name)
+    end)
+  end
+
+  step :refute_milestone_visible_in_tasks_board, ctx, name: name do
+    UI.refute_text(ctx, name)
   end
 
   step :assert_milestone_updated, ctx, name: name, due_date: due_date do
