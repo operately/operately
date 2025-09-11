@@ -88,6 +88,7 @@ DATABASE_URL="ecto://${DB_USERNAME}:${POSTGRES_PASSWORD}@db/operately"
 SENDGRID_API_KEY=$SENDGRID_TOKEN
 NOTIFICATION_EMAIL="notifications@${DOMAIN}"
 ALLOW_LOGIN_WITH_EMAIL="yes"
+OPERATELY_BEACON_ENABLED="true"
 
 echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
 echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"${OPERATELY_BLOB_TOKEN_SECRET_KEY}\"" >> operately.env
@@ -105,6 +106,7 @@ echo "DATABASE_URL=\"${DATABASE_URL}\"" >> operately.env
 echo "SENDGRID_API_KEY=\"${SENDGRID_API_KEY}\"" >> operately.env
 echo "NOTIFICATION_EMAIL=\"${NOTIFICATION_EMAIL}\"" >> operately.env
 echo "ALLOW_LOGIN_WITH_EMAIL=\"${ALLOW_LOGIN_WITH_EMAIL}\"" >> operately.env
+echo "OPERATELY_BEACON_ENABLED=\"${OPERATELY_BEACON_ENABLED}\"" >> operately.env
 
 # Pulling and building docker images --------------------------------------------------
 
