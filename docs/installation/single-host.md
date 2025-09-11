@@ -45,8 +45,10 @@ and Docker Compose, follow the instructions for your operating system:
 Operately supports multiple email delivery methods. You can choose from:
 
 1. **SendGrid** - A cloud-based email service. You'll need to [create a SendGrid account](https://sendgrid.com/docs/ui/account-and-settings/api-keys/) and get an API key.
-2. **SMTP** - Use your own SMTP server or a third-party service like Gmail, Outlook, or any other SMTP provider.
+2. **SMTP** - Use your own SMTP server or a third-party service like Gmail, Outlook, AWS SES, Mailgun, or any other SMTP provider.
 3. **Configure later** - Skip email configuration during installation and set it up later.
+
+For detailed SMTP configuration instructions including popular providers like AWS SES, Gmail, Outlook, and development tools like MailHog, see the [SMTP Configuration Guide](../smtp-configuration.md).
 
 You can choose your preferred option during the installation process.
 

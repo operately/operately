@@ -2,3 +2,4 @@
 
 - [Development Environment](dev-env.md)
 - [Demo data](demo-data.md)
+- [SMTP Configuration](smtp-configuration.md)
