@@ -116,10 +116,10 @@ defmodule Operately.Features.ProjectMilestonesTest do
       ctx
       |> Steps.visit_milestone_page()
       |> Steps.mark_milestone_as_completed()
-      |> Steps.assert_milestone_status("completed")
+      |> Steps.assert_milestone_status("Completed")
       |> Steps.assert_activity_added_to_feed("completed the milestone")
       |> Steps.reload_milestone_page()
-      |> Steps.assert_milestone_status("completed")
+      |> Steps.assert_milestone_status("Completed")
       |> Steps.assert_activity_added_to_feed("completed the milestone")
     end
 

@@ -35,6 +35,14 @@ const getStatusProperties = (status: BadgeStatus) => {
         borderColor: "border-emerald-200",
         label: "Achieved",
       };
+    case "completed":
+      return {
+        bgColor: "bg-callout-success-bg",
+        textColor: "text-callout-success-content",
+        dotColor: "bg-callout-success-content",
+        borderColor: "border-emerald-200",
+        label: "Completed",
+      };
     case "paused":
       return {
         bgColor: "bg-gray-100 dark:bg-gray-700",
