@@ -10,6 +10,7 @@ import { MilestonePage } from "..";
 
 export function MilestoneSidebar({
   milestone,
+  status,
   onDueDateChange,
   onStatusChange,
   createdBy,
@@ -21,9 +22,9 @@ export function MilestoneSidebar({
 }: MilestonePage.State) {
   return (
     <div className="sm:col-span-4 hidden sm:block sm:pl-8">
-      <div className="space-y-6 mt-4">
+      <div className="space-y-6 mt-4" data-test-id="sidebar">
         <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
-        <SidebarStatus milestone={milestone} onStatusChange={onStatusChange} canEdit={canEdit} />
+        <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={canEdit} />
         {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
         <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
         <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
@@ -32,9 +33,9 @@ export function MilestoneSidebar({
   );
 }
 
-function SidebarSection({ title, children }: { title: string | React.ReactNode; children: React.ReactNode }) {
+function SidebarSection({ title, children, testId }: { title: string | React.ReactNode; children: React.ReactNode; testId?: string }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-test-id={testId}>
       <div className="font-bold text-sm">{title}</div>
       {children}
     </div>
@@ -62,21 +63,22 @@ function SidebarDueDate({
         readonly={!canEdit}
         showOverdueWarning={true}
         placeholder="Set due date"
+        testId="milestone-due-date"
       />
     </SidebarSection>
   );
 }
 
 function SidebarStatus({
-  milestone,
+  status,
   onStatusChange,
   canEdit,
 }: {
-  milestone: Types.Milestone;
+  status: Types.Status;
   onStatusChange: (status: Types.Status) => void;
   canEdit: boolean;
 }) {
-  const isCompleted = milestone.status === "done";
+  const isCompleted = status === "done";
 
   const handleStatusToggle = () => {
     // Toggle the completion status (stored as any property for demo)
@@ -93,7 +95,7 @@ function SidebarStatus({
   }
 
   return (
-    <SidebarSection title="Milestone status">
+    <SidebarSection title="Milestone status" testId="sidebar-status">
       <div className="space-y-2">
         <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
         {isCompleted ? (

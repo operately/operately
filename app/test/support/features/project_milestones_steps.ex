@@ -18,6 +18,14 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     Map.put(ctx, :milestone, milestone)
   end
 
+  step :given_that_milestone_is_completed, ctx do
+    {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{
+      status: :done
+    })
+
+    Map.put(ctx, :milestone, milestone)
+  end
+
   step :visit_milestone_page, ctx do
     path = Paths.project_milestone_path(ctx.company, ctx.milestone)
     UI.visit(ctx, path)
@@ -29,6 +37,10 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :reload_project_page, ctx do
     UI.visit(ctx, Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :reload_milestone_page, ctx do
+    UI.visit(ctx, Paths.project_milestone_path(ctx.company, ctx.milestone))
   end
 
   step :add_first_milestone, ctx, name: name do
@@ -86,6 +98,48 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.refute_has(testid: UI.testid(["edit-form", name]))
   end
 
+  step :edit_milestone_due_date, ctx, due_date do
+    UI.select_day_in_date_field(ctx, testid: "milestone-due-date", date: due_date)
+  end
+
+  step :mark_milestone_as_completed, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "sidebar-status"), fn el ->
+      UI.click_button(el, "Mark complete")
+    end)
+    |> UI.sleep(300)
+  end
+
+  step :reopen_milestone, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "sidebar-status"), fn el ->
+      UI.click_button(el, "Reopen")
+    end)
+    |> UI.sleep(300)
+  end
+
+  step :add_task, ctx, name: name, due_date: due_date do
+    ctx
+    |> UI.click_button("Add Task")
+    |> UI.fill(placeholder: "Enter task title", with: name)
+    |> UI.select_day_in_date_field(testid: "task-due-date", date: due_date)
+    |> UI.click_button("Create task")
+  end
+
+  step :add_multiple_tasks, ctx, names: names do
+    ctx
+    |> UI.click_button("Add Task")
+    |> UI.click(testid: "add-more-switch")
+    |> UI.find(UI.query(testid: "add-task-form"), fn el ->
+      Enum.reduce(names, el, fn name, el ->
+        el
+        |> UI.fill(placeholder: "Enter task title", with: name)
+        |> UI.click_button("Create task")
+      end)
+    end)
+    |> UI.click_button("Cancel")
+  end
+
   step :leave_a_comment, ctx, comment do
     ctx
     |> UI.click(testid: "add-comment")
@@ -93,6 +147,10 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.click(testid: "post-comment")
     |> UI.sleep(300)
   end
+
+  #
+  # Assertions
+  #
 
   step :assert_comment_visible_in_feed, ctx, comment do
     ctx
@@ -162,6 +220,61 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.find(UI.query(testid: "timeline-section"), fn el ->
       UI.assert_text(el, name)
       UI.assert_text(el, due_date)
+    end)
+  end
+
+  step :assert_milestone_status, ctx, status do
+    ctx
+    |> UI.find(UI.query(testid: "milestone-header"), fn el ->
+      UI.assert_text(el, status)
+    end)
+  end
+
+  step :assert_empty_description, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "description-section-empty"), fn el ->
+      UI.assert_text(el, "Add details about this milestone...")
+    end)
+  end
+
+  step :assert_milestone_timeline_empty, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      el
+      |> UI.assert_text("No activity yet")
+      |> UI.assert_text("Comments and task updates will appear here")
+    end)
+  end
+
+  step :assert_milestone_due_date, ctx, formatted_date do
+    ctx
+    |> UI.find(UI.query(testid: "sidebar"), fn el ->
+      UI.assert_text(el, formatted_date)
+    end)
+  end
+
+  step :assert_task_created, ctx, name: name do
+    ctx
+    |> UI.find(UI.query(testid: "tasks-section"), fn el ->
+      UI.assert_text(el, name)
+    end)
+  end
+
+  step :assert_task_created, ctx, name: name, due_date: due_date do
+    ctx
+    |> UI.find(UI.query(testid: "tasks-section"), fn el ->
+      UI.assert_text(el, name)
+      UI.assert_text(el, due_date)
+    end)
+  end
+
+  step :assert_add_task_form_closed, ctx do
+    UI.refute_has(ctx, testid: "add-task-form")
+  end
+
+  step :assert_activity_added_to_feed, ctx, description do
+    UI.find(ctx, UI.query(testid: "timeline-section"), fn el ->
+      UI.assert_text(el, description)
     end)
   end
 end

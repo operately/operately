@@ -235,7 +235,7 @@ function MainContainer({ children }: { children: React.ReactNode }) {
 
 function TimelineSection(props: MilestonePage.State) {
   return (
-    <div className="pt-8">
+    <div className="pt-8" data-test-id="timeline-section">
       <h3 className="font-bold mb-4">Comments & Activity</h3>
       <Timeline
         items={props.timelineItems}
