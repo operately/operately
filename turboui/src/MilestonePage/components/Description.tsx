@@ -30,7 +30,7 @@ export function MilestoneDescription({
 
   if (descriptionState.mode === "zero") {
     return (
-      <div>
+      <div data-test-id="description-section-empty">
         <button
           onClick={descriptionState.startEdit}
           className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
@@ -48,7 +48,7 @@ export function MilestoneDescription({
   );
 
   return (
-    <div>
+    <div data-test-id="description-section">
       <SectionHeader title="Notes" buttons={editButton} showButtons={canEdit && descriptionState.mode !== "edit"} />
 
       {descriptionState.mode === "view" && <MilestoneDescriptionContent state={descriptionState} />}
