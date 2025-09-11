@@ -79,6 +79,7 @@ case $MANAGE_CERTS_YN in
 esac
 OPERATELY_BLOB_TOKEN_SECRET_KEY=$(openssl rand -base64 32)
 SECRET_KEY_BASE=$(openssl rand -hex 32)
+OPERATELY_INSTALLATION_ID=$(openssl rand -hex 16)
 
 DB_USERNAME="operately"
 POSTGRES_USER="operately"
@@ -90,6 +91,7 @@ ALLOW_LOGIN_WITH_EMAIL="yes"
 
 echo "OPERATELY_HOST=\"${DOMAIN}\"" >> operately.env
 echo "OPERATELY_BLOB_TOKEN_SECRET_KEY=\"${OPERATELY_BLOB_TOKEN_SECRET_KEY}\"" >> operately.env
+echo "OPERATELY_INSTALLATION_ID=\"${OPERATELY_INSTALLATION_ID}\"" >> operately.env
 echo "CERT_DOMAIN=\"${CERT_DOMAIN}\"" >> operately.env
 echo "CERT_AUTO_RENEW=\"${CERT_AUTO_RENEW}\"" >> operately.env
 echo "CERT_EMAILS=\"${CERT_EMAILS}\"" >> operately.env
