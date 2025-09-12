@@ -22,7 +22,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
-import { banner } from "../ProjectPage/Banner";
+import { banner } from "./Banner";
 import { useLoadedData, useRefresh } from "./loader";
 
 import { usePaths } from "@/routes/paths";
