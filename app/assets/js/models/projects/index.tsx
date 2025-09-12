@@ -46,14 +46,6 @@ export function isMilestoneOverdue(milestone: Pick<Milestone, "status" | "timefr
   return !Time.isToday(day) && Time.isPast(day);
 }
 
-export function isPausable(project: Project) {
-  return project.state === "active";
-}
-
-export function isResumable(project: Project) {
-  return project.state === "paused";
-}
-
 export function useContributorSearchFn(project: Project) {
   return async (query: string) => {
     const res = await api.searchProjectContributorCandidates({

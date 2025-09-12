@@ -49,7 +49,6 @@ import ProfileEditPage from "./ProfileEditPage";
 import ProfilePage from "./ProfilePage";
 import ProjectAddPage from "./ProjectAddPage";
 import ProjectAddResourcePage from "./ProjectAddResourcePage";
-import ProjectArchivationPage from "./ProjectArchivationPage";
 import ProjectAsMarkdownPage from "./ProjectAsMarkdownPage";
 import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
 import ProjectCheckInNewPage from "./ProjectCheckInNewPage";
@@ -69,10 +68,8 @@ import ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
 import ProjectEditResourcePage from "./ProjectEditResourcePage";
 import ProjectEditResourcesPage from "./ProjectEditResourcesPage";
 import ProjectEditTimelinePage from "./ProjectEditTimelinePage";
-import ProjectMilestonePage from "./ProjectMilestonePage";
 import ProjectMilestonesPage from "./ProjectMilestonesPage";
 import ProjectMovePage from "./ProjectMovePage";
-import ProjectPage from "./ProjectPage";
 import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
@@ -102,7 +99,6 @@ import SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import SpaceEditPage from "./SpaceEditPage";
 import SpacePage from "./SpacePage";
 import SpaceWorkMapPage from "./SpaceWorkMapPage";
-import TaskPage from "./TaskPage";
 import TaskV2Page from "./TaskV2Page";
 
 //
@@ -156,7 +152,6 @@ export default {
   ProfilePage,
   ProjectAddPage,
   ProjectAddResourcePage,
-  ProjectArchivationPage,
   ProjectAsMarkdownPage,
   ProjectCheckInEditPage,
   ProjectCheckInNewPage,
@@ -176,10 +171,8 @@ export default {
   ProjectEditResourcePage,
   ProjectEditResourcesPage,
   ProjectEditTimelinePage,
-  ProjectMilestonePage,
   ProjectMilestonesPage,
   ProjectMovePage,
-  ProjectPage,
   ProjectPausePage,
   ProjectResumePage,
   ProjectRetrospectiveEditPage,
@@ -209,6 +202,5 @@ export default {
   SpaceEditPage,
   SpacePage,
   SpaceWorkMapPage,
-  TaskPage,
   TaskV2Page,
 };

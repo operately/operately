@@ -1,19 +1,13 @@
-import * as Projects from "@/models/projects";
 import { IconQuestionMark } from "turboui";
 import * as React from "react";
 
-import { Tooltip } from "@/components/Tooltip";
 import { ProjectContributor } from "@/models/projects";
-import { DivLink } from "turboui";
 
 import { useColorMode } from "@/contexts/ThemeContext";
-import { TestableElement } from "@/utils/testid";
 import classNames from "classnames";
 import { Avatar } from "turboui";
 
-import { usePaths } from "@/routes/paths";
 type Size = "xs" | "md" | "base" | "lg";
-const DefaultSize: Size = "base";
 
 interface ContributorAvatarProps {
   contributor: ProjectContributor;
@@ -33,59 +27,6 @@ function borderClass(role: string) {
     "border-sky-500": role === "reviewer",
     "border-surface-outline": role !== "champion" && role !== "reviewer",
   });
-}
-
-export function ChampionPlaceholder({ project, size }: { project: Projects.Project; size?: Size }) {
-  return (
-    <Placeholder
-      project={project}
-      tooltipTitle="No champion assigned"
-      tooltipText="Assign a champion to lead the project and make sure it stays on track."
-      testId="champion-placeholder"
-      size={size || DefaultSize}
-    />
-  );
-}
-
-export function ReviewerPlaceholder({ project, size }: { project: Projects.Project; size?: Size }) {
-  return (
-    <Placeholder
-      project={project}
-      tooltipTitle="No reviewer assigned"
-      tooltipText="Assign a reviewer to get feedback and keep things moving smoothly."
-      testId="reviewer-placeholder"
-      size={size || DefaultSize}
-    />
-  );
-}
-
-interface PlaceholderProps extends TestableElement {
-  project: Projects.Project;
-  tooltipTitle: string;
-  tooltipText: string;
-  size: Size;
-}
-
-function Placeholder(props: PlaceholderProps) {
-  const paths = usePaths();
-  const tooltipContent = (
-    <div className="w-64">
-      <p className="font-bold mb-1">{props.tooltipTitle}</p>
-      <p className="text-sm">{props.tooltipText}</p>
-    </div>
-  );
-
-  const path = paths.projectContributorsPath(props.project.id!);
-
-  return (
-    <Tooltip content={tooltipContent}>
-      <div>
-        <DivLink to={path} testId={props.testId}>
-          <PlaceholderAvatar size={props.size} />
-        </DivLink>
-      </div>
-    </Tooltip>
-  );
 }
 
 const DIMENSIONS: Record<Size, { circle: number; icon: number }> = {
