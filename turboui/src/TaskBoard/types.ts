@@ -40,6 +40,7 @@ export interface Milestone {
   status: "pending" | "done";
   link?: string;
   tasksOrderingState?: string[];
+  completedAt?: Date | null;
 }
 
 export interface NewMilestonePayload extends Omit<Milestone, "id"> {}

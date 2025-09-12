@@ -346,3 +346,212 @@ export const EmptyMilestone: Story = {
     );
   },
 };
+
+/**
+ * Completed milestone with all tasks finished
+ */
+export const CompletedMilestone: Story = {
+  render: () => {
+    // Create a completed milestone
+    const [milestone, setMilestone] = useState<Types.Milestone>({
+      id: "milestone-completed",
+      name: "Q1 Feature Release",
+      dueDate: createContextualDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), "day"), // 5 days ago
+      hasDescription: true,
+      hasComments: true,
+      commentCount: 8,
+      status: "done", // Milestone is completed
+      link: "#",
+      completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
+    });
+
+    // Create completed tasks for the milestone
+    const [tasks] = useState<Types.Task[]>([
+      {
+        id: "task-completed-1",
+        title: "Implement OAuth integration",
+        status: "done",
+        link: "#",
+        milestone: milestone,
+        assignees: [mockPeople[0]!],
+        hasComments: true,
+        commentCount: 5,
+        description: null,
+        dueDate: createContextualDate(new Date(Date.now() - 8 * 24 * 60 * 60 * 1000), "day"), // 8 days ago
+      },
+      {
+        id: "task-completed-2",
+        title: "Redesign dashboard UI",
+        status: "done",
+        link: "#",
+        milestone: milestone,
+        assignees: [mockPeople[1]!, mockPeople[2]!],
+        hasDescription: true,
+        description: null,
+        dueDate: createContextualDate(new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), "day"), // 7 days ago
+      },
+      {
+        id: "task-completed-3",
+        title: "Fix performance issues in data loading",
+        status: "done",
+        link: "#",
+        milestone: milestone,
+        assignees: [mockPeople[0]!],
+        description: null,
+        dueDate: createContextualDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), "day"), // 6 days ago
+      },
+      {
+        id: "task-completed-4",
+        title: "Update API documentation",
+        status: "done",
+        link: "#",
+        milestone: milestone,
+        assignees: [mockPeople[2]!],
+        hasDescription: true,
+        hasComments: true,
+        commentCount: 2,
+        description: null,
+        dueDate: createContextualDate(new Date(Date.now() - 6 * 24 * 60 * 60 * 1000), "day"), // 6 days ago
+      },
+      {
+        id: "task-completed-5",
+        title: "Deploy to production",
+        status: "done",
+        link: "#",
+        milestone: milestone,
+        assignees: [mockPeople[1]!],
+        description: null,
+        dueDate: createContextualDate(new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), "day"), // 5 days ago
+      },
+    ]);
+
+    const [isSubscribed, setIsSubscribed] = useState(false);
+
+    // Create timeline items showing the completion process
+    const completedMilestoneTimeline = [
+      {
+        type: "milestone-activity" as const,
+        value: {
+          id: "activity-creation",
+          author: mockPeople[0]!, 
+          insertedAt: new Date(Date.now() - 21 * 24 * 60 * 60 * 1000).toISOString(), // 21 days ago
+          content: "created the milestone",
+          type: "project_milestone_creation" as const,
+        },
+      },
+      {
+        type: "task-activity" as const,
+        value: {
+          id: "activity-task-completion",
+          type: "task_status_updating" as const,
+          author: mockPeople[0]!,
+          insertedAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(), // 8 days ago
+          fromStatus: "in_progress" as const,
+          toStatus: "done" as const,
+          taskName: "Implement OAuth integration",
+          page: "milestone" as const,
+        },
+      },
+      {
+        type: "task-activity" as const,
+        value: {
+          id: "activity-task-completion-2",
+          type: "task_status_updating" as const,
+          author: mockPeople[1]!,
+          insertedAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days ago
+          fromStatus: "in_progress" as const,
+          toStatus: "done" as const,
+          taskName: "Redesign dashboard UI",
+          page: "milestone" as const,
+        },
+      },
+      {
+        type: "milestone-activity" as const,
+        value: {
+          id: "activity-completion",
+          author: mockPeople[1]!,
+          insertedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days ago
+          content: "marked the milestone as complete",
+          type: "milestone-completed" as const,
+        },
+      },
+    ];
+
+    // Handler for due date changes (should be disabled for completed milestones)
+    const handleDueDateChange = (dueDate: DateField.ContextualDate | null) => {
+      console.log("Due date change attempted on completed milestone:", { dueDate });
+      // In a real app, you might want to prevent changes to completed milestones
+    };
+
+    // Handler for milestone name changes (should be disabled for completed milestones)
+    const handleMilestoneNameChange = async (newName: string) => {
+      console.log("Name change attempted on completed milestone:", newName);
+      // In a real app, you might want to prevent changes to completed milestones
+      return false; // Return false to indicate the change was not allowed
+    };
+
+    return (
+      <MilestonePage
+        projectName="Product Development"
+        projectLink="#"
+        workmapLink="#"
+        childrenCount={{
+          tasksCount: tasks.length,
+          discussionsCount: 3,
+          checkInsCount: 2,
+        }}
+        space={{
+          id: "1",
+          name: "Engineering",
+          link: "#",
+        }}
+        updateProjectName={() => Promise.resolve(true)}
+        milestone={milestone}
+        tasks={tasks}
+        onTaskCreate={(taskData) => console.log("Task creation attempted on completed milestone:", taskData)}
+        onTaskReorder={(taskId, milestoneId, index) => console.log("Task reorder attempted:", { taskId, milestoneId, index })}
+        status={milestone.status}
+        onStatusChange={(status) => {
+          console.log("Milestone status change:", status);
+          setMilestone(prev => ({ ...prev, status: status as "pending" | "done" }));
+        }}
+        dueDate={milestone.dueDate || null}
+        onDueDateChange={handleDueDateChange}
+        onTaskAssigneeChange={(taskId, assignee) => console.log("Task assignee change attempted:", taskId, assignee)}
+        onTaskDueDateChange={(taskId, dueDate) => console.log("Task due date change attempted:", taskId, dueDate)}
+        onTaskStatusChange={(taskId, status) => console.log("Task status change attempted:", taskId, status)}
+        onMilestoneTitleChange={handleMilestoneNameChange}
+        title={milestone.name}
+        searchPeople={async ({ query }) => {
+          const people = await mockSearchPeople({ query });
+          return people.map(person => ({ ...person, profileLink: "#" }));
+        }}
+        filters={[]}
+        onFiltersChange={(filters) => console.log("Filters changed:", filters)}
+        timelineItems={completedMilestoneTimeline}
+        currentUser={mockPeople[0]!}
+        canComment={true}
+        onAddComment={(comment) => console.log("Add comment:", comment)}
+        onEditComment={(commentId, content) => console.log("Edit comment:", { commentId, content })}
+        createdBy={mockPeople[0] || null}
+        createdAt={new Date(Date.now() - 21 * 24 * 60 * 60 * 1000)} // 21 days ago
+        isSubscribed={isSubscribed}
+        onSubscriptionToggle={(subscribed) => {
+          console.log("Subscription toggled:", subscribed);
+          setIsSubscribed(subscribed);
+        }}
+        onDelete={() => console.log("Milestone delete attempted")}
+        canEdit={true}
+        description={mockDescription}
+        onDescriptionChange={async (newDescription) => {
+          console.log("Description change attempted on completed milestone:", newDescription);
+          return true;
+        }}
+        mentionedPersonLookup={async (id) => {
+          const person = mockPeople.find(p => p.id === id);
+          return person ? { ...person, profileLink: "#", title: "" } : null;
+        }}
+      />
+    );
+  },
+};
