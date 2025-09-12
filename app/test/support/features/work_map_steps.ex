@@ -115,8 +115,11 @@ defmodule Operately.Support.Features.WorkMapSteps do
   step :mark_project_as_completed, ctx do
     ctx
     |> UI.visit(Paths.project_milestone_path(ctx.company, ctx.milestone1))
-    |> UI.click(testid: "complete-milestone")
-    |> UI.assert_has(testid: "reopen-milestone")
+    |> UI.click_button("Mark complete")
+    |> UI.find(UI.query(testid: "milestone-header"), fn el ->
+      el
+      |> UI.assert_text("Completed")
+    end)
   end
 
   step :mark_target_as_completed, ctx do
