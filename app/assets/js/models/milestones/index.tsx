@@ -1,4 +1,5 @@
 import * as People from "@/models/people";
+import * as Time from "@/utils/time";
 import { Milestone, MilestoneComment } from "@/api";
 import { CommentSection } from "turboui";
 import { Paths } from "@/routes/paths";
@@ -25,6 +26,7 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     dueDate: parseContextualDate(milestone.timeframe?.contextualEndDate),
     link: paths.projectMilestonePath(milestone.id),
     tasksOrderingState: milestone.tasksOrderingState ?? [],
+    completedAt: Time.parseDate(milestone.completedAt),
   };
 }
 
