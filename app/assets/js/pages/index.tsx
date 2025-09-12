@@ -39,7 +39,7 @@ import HomePage from "./HomePage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
 import LoginPage from "./LoginPage";
-import MilestoneV2Page from "./MilestoneV2Page";
+import MilestonePage from "./MilestonePage";
 import NewCompanyPage from "./NewCompanyPage";
 import NotFoundPage from "./NotFoundPage";
 import NotificationsPage from "./NotificationsPage";
@@ -61,11 +61,11 @@ import ProjectDiscussionEditPage from "./ProjectDiscussionEditPage";
 import ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import ProjectDiscussionPage from "./ProjectDiscussionPage";
 import ProjectEditAccessLevelsPage from "./ProjectEditAccessLevelsPage";
+import ProjectPage from "./ProjectPage";
 import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
 import ProjectRetrospectivePage from "./ProjectRetrospectivePage";
-import ProjectV2Page from "./ProjectV2Page";
 import ResetPasswordPage from "./ResetPasswordPage";
 import ResourceHubDocumentPage from "./ResourceHubDocumentPage";
 import ResourceHubDraftsPage from "./ResourceHubDraftsPage";
@@ -90,7 +90,7 @@ import SpaceEditGeneralAccessPage from "./SpaceEditGeneralAccessPage";
 import SpaceEditPage from "./SpaceEditPage";
 import SpacePage from "./SpacePage";
 import SpaceWorkMapPage from "./SpaceWorkMapPage";
-import TaskV2Page from "./TaskV2Page";
+import TaskPage from "./TaskPage";
 
 //
 // We are explocily exporting the pages here to avoid false positives
@@ -133,7 +133,7 @@ export default {
   JoinPage,
   LobbyPage,
   LoginPage,
-  MilestoneV2Page,
+  MilestonePage,
   NewCompanyPage,
   NotFoundPage,
   NotificationsPage,
@@ -155,11 +155,11 @@ export default {
   ProjectDiscussionNewPage,
   ProjectDiscussionPage,
   ProjectEditAccessLevelsPage,
+  ProjectPage,
   ProjectPausePage,
   ProjectResumePage,
   ProjectRetrospectiveEditPage,
   ProjectRetrospectivePage,
-  ProjectV2Page,
   ResetPasswordPage,
   ResourceHubDocumentPage,
   ResourceHubDraftsPage,
@@ -184,5 +184,5 @@ export default {
   SpaceEditPage,
   SpacePage,
   SpaceWorkMapPage,
-  TaskV2Page,
+  TaskPage,
 };
