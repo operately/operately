@@ -118,7 +118,7 @@ export function createAppRoutes() {
         pageRoute("links/:id", pages.ResourceHubLinkPage),
         pageRoute("links/:id/edit", pages.ResourceHubEditLinkPage),
 
-        pageRoute("tasks/:id", pages.TaskV2Page),
+        pageRoute("tasks/:id", pages.TaskPage),
 
         pageRoute("discussions/:id", pages.DiscussionPage),
         pageRoute("discussions/:id/edit", pages.DiscussionEditPage),
@@ -152,7 +152,7 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/contributors", pages.ProjectContributorsPage),
         pageRoute("projects/:projectID/contributors/add", pages.ProjectContributorsAddPage),
         pageRoute("projects/:projectID/discussions/new", pages.ProjectDiscussionNewPage),
-        pageRoute("projects/:id", pages.ProjectV2Page),
+        pageRoute("projects/:id", pages.ProjectPage),
         pageRoute("projects/:id/md", pages.ProjectAsMarkdownPage),
 
         pageRoute("project-check-ins/:id", pages.ProjectCheckInPage),
@@ -161,7 +161,7 @@ export function createAppRoutes() {
         pageRoute("project-discussions/:id", pages.ProjectDiscussionPage),
         pageRoute("project-discussions/:id/edit", pages.ProjectDiscussionEditPage),
 
-        pageRoute("milestones/:id", pages.MilestoneV2Page),
+        pageRoute("milestones/:id", pages.MilestonePage),
 
         pageRoute("*", pages.NotFoundPage),
       ],
