@@ -51,6 +51,9 @@ function SidebarDueDate({
   onDueDateChange?: (dueDate: DateField.ContextualDate | null) => void;
   canEdit: boolean;
 }) {
+  // Don't show overdue warning if milestone is completed
+  const showOverdueWarning = milestone.status !== "done";
+  
   return (
     <SidebarSection title="Due Date">
       <DateField
@@ -61,7 +64,7 @@ function SidebarDueDate({
           }
         }}
         readonly={!canEdit}
-        showOverdueWarning={true}
+        showOverdueWarning={showOverdueWarning}
         placeholder="Set due date"
         testId="milestone-due-date"
       />
