@@ -5,7 +5,7 @@ import { TextField } from "../TextField";
 
 export function PageHeader(props: TaskPage.State) {
   return (
-    <div className="mt-4 px-4">
+    <div className="mt-4">
       <div className="flex-1">
         <div className="flex items-center gap-3">
           <TextField

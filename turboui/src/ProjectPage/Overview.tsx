@@ -19,7 +19,7 @@ import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 export function Overview(props: ProjectPage.State) {
   return (
     <div className="flex-1 overflow-auto">
-      <div className="px-4 py-6">
+      <div className="p-4 max-w-6xl mx-auto my-6">
         <div className="sm:grid sm:grid-cols-12 gap-8">
           <LeftColumn {...props} />
           <OverviewSidebar {...props} />
