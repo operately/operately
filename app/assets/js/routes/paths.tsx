@@ -192,10 +192,6 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId, "retrospective", "edit"]);
   }
 
-  projectMilestonesPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "milestones"]);
-  }
-
   projectMilestonePath(milestoneId: string) {
     return this.createCompanyPath(["milestones", milestoneId]);
   }
@@ -212,20 +208,8 @@ export class Paths {
     return this.createCompanyPath(["project-contribs", contributorId, "edit"]) + encodeUrlParams(params);
   }
 
-  editProjectGoalPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "goal"]);
-  }
-
-  editProjectNamePath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "name"]);
-  }
-
   editProjectAccessLevelsPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "edit", "permissions"]);
-  }
-
-  moveProjectPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "move"]);
   }
 
   pauseProjectPath(projectId: string) {
@@ -364,10 +348,6 @@ export class Paths {
     return this.createCompanyPath(["goals", "new"]) + "?parentGoalId=" + parentGoalId;
   }
 
-  goalNewPathV2({ parentGoalId }: { parentGoalId?: string }) {
-    return this.createCompanyPath(["goals", "new", "v2"]) + (parentGoalId ? "?parentGoalId=" + parentGoalId : "");
-  }
-
   goalCheckInNewPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "check-ins", "new"]);
   }
@@ -408,28 +388,8 @@ export class Paths {
     }
   }
 
-  projectEditTimelinePath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "timeline"]);
-  }
-
-  projectEditDescriptionPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "description"]);
-  }
-
-  projectEditResourcesPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "edit", "resources"]);
-  }
-
-  projectEditResourcePath(resourceId: string) {
-    return this.createCompanyPath(["project-resources", resourceId, "edit"]);
-  }
-
   projectEditPermissionsPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "edit", "permissions"]);
-  }
-
-  projectNewResourcePath(projectId: string, { resourceType }: { resourceType: string }) {
-    return this.createCompanyPath(["projects", projectId, "resources", "new"]) + "?resourceType=" + resourceType;
   }
 
   projectClosePath(projectId: string) {

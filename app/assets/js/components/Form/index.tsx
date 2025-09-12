@@ -4,7 +4,7 @@ import classname from "classnames";
 
 type Ref = HTMLFormElement;
 
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { PrimaryButton } from "turboui";
 
 export * from "./radio";
 
@@ -42,10 +42,6 @@ export const Form = React.forwardRef<Ref, Props>((props, ref) => {
   );
 });
 
-export function SubmitArea({ children }) {
-  return <div className="flex gap-2 mt-4">{children}</div>;
-}
-
 export function SubmitButton({ children, testId, ...props }: { children: React.ReactNode; testId?: string }) {
   const { loading } = React.useContext(Context);
 
@@ -54,12 +50,6 @@ export function SubmitButton({ children, testId, ...props }: { children: React.R
       {children}
     </PrimaryButton>
   );
-}
-
-export function CancelButton({ children }) {
-  const { onCancel } = React.useContext(Context);
-
-  return <SecondaryButton onClick={onCancel}>{children}</SecondaryButton>;
 }
 
 export function TextInput({ label, value, onChange, placeholder = "", error, ...props }) {

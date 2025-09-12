@@ -1,16 +1,8 @@
 import { match } from "ts-pattern";
 
 export { PermissionLevels } from "./PermissionLevels";
-export { PrivacyIndicator } from "./PrivacyIndicator";
 
 import { PermissionLevels } from "./PermissionLevels";
-
-export enum PermissionOptions {
-  PUBLIC = "public",
-  INTERNAL = "internal",
-  CONFIDENTIAL = "confidential",
-  SECRET = "secret",
-}
 
 export const VIEW_ACCESS = {
   value: PermissionLevels.VIEW_ACCESS,
