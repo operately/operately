@@ -68,14 +68,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     Map.merge(ctx, %{company: company, champion: champion, project: project, reviewer: reviewer, group: group})
   end
 
-  def add_milestone(ctx, attrs) do
-    attrs = %{project_id: ctx.project.id} |> Map.merge(attrs)
-
-    {:ok, _} = Operately.Projects.create_milestone(attrs)
-
-    ctx
-  end
-
   def login(ctx) do
     case ctx[:login_as] do
       :champion ->
@@ -127,6 +119,10 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click(testid: "acknowledge-update")
   end
 
+  step :visit_project_page, ctx do
+    ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+  end
+
   step :choose_new_goal, ctx, goal_name: goal_name do
     ctx
     |> UI.click_text("Set parent goal")
@@ -171,15 +167,6 @@ defmodule Operately.Support.Features.ProjectSteps do
       to: ctx.reviewer,
       author: ctx.champion,
       action: "connected the project to the #{goal_name} goal"
-    })
-  end
-
-  step :assert_goal_connected_notification_sent_to_reviewer, ctx, goal_name: goal_name do
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
-      action: "connected the #{ctx.project.name} project to the #{goal_name} goal"
     })
   end
 
@@ -248,52 +235,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   #
-  # Navigation between project pages
-  #
-
-  step :visit_project_page, ctx do
-    ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-  end
-
-  step :visit_close_project_page, ctx do
-    ctx
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "close-project")
-  end
-
-  def visit_project_milestones_page(ctx, milestone_name) do
-    {:ok, milestone} = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
-
-    ctx |> UI.visit(Paths.project_milestone_path(ctx.company, milestone))
-  end
-
-  def follow_last_check_in(ctx) do
-    ctx |> UI.click(testid: "last-check-in-link")
-  end
-
-  #
   # Assertions
   #
-
-  def assert_email_sent_to_all_contributors(ctx, subject: subject, except: except) do
-    contributors = Operately.Projects.list_project_contributors(ctx.project)
-
-    Enum.each(contributors, fn contributor ->
-      email = Operately.People.get_person!(contributor.person_id).email
-
-      unless Enum.member?(except, email) do
-        UI.assert_email_sent(ctx, subject, to: email)
-      end
-    end)
-
-    Enum.each(except, fn email ->
-      UI.refute_email_sent(ctx, subject, to: email)
-    end)
-  end
-
-  def assert_discussion_exists(ctx, title: title) do
-    ctx |> UI.assert_text(title)
-  end
 
   step :pause_project, ctx do
     ctx
