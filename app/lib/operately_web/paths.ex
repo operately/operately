@@ -121,6 +121,14 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "projects", project_id(project)]) <> "?tab=#{tab}"
   end
 
+  def pause_project_path(company = %Company{}, project = %Project{}) do
+    create_path([company_id(company), "projects", project_id(project), "pause"])
+  end
+
+  def resume_project_path(company = %Company{}, project = %Project{}) do
+    create_path([company_id(company), "projects", project_id(project), "resume"])
+  end
+
   def project_discussion_path(company = %Company{}, discussion) do
     create_path([company_id(company), "project-discussions", comment_thread_id(discussion)])
   end
