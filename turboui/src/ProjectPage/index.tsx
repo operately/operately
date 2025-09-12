@@ -235,7 +235,7 @@ export function ProjectPage(props: ProjectPage.Props) {
 
 function Activity(props: ProjectPage.State) {
   return (
-    <div className="p-4 max-w-5xl mx-auto my-6">
+    <div className="p-4 max-w-6xl mx-auto my-6">
       <div className="font-bold text-lg mb-4">Activity</div>
       {props.activityFeed}
     </div>

@@ -227,7 +227,7 @@ function MainContainer({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex-1 overflow-scroll">
       <div className="flex-1 overflow-auto">
-        <div className="px-4 py-2">{children}</div>
+        <div className="p-4 max-w-6xl mx-auto">{children}</div>
       </div>
     </div>
   );
