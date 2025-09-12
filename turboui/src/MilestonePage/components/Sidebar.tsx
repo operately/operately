@@ -4,7 +4,7 @@ import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
 import { NotificationToggle } from "../../NotificationToggle";
-import { IconCalendar, IconCheck, IconLink, IconTrash } from "../../icons";
+import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
 
@@ -25,6 +25,9 @@ export function MilestoneSidebar({
       <div className="space-y-6 mt-4" data-test-id="sidebar">
         <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
         <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={canEdit} />
+        {milestone.completedAt && milestone.status === "done" && (
+          <SidebarCompletedOn completedAt={milestone.completedAt} />
+        )}
         {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
         <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
         <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
@@ -51,6 +54,9 @@ function SidebarDueDate({
   onDueDateChange?: (dueDate: DateField.ContextualDate | null) => void;
   canEdit: boolean;
 }) {
+  // Don't show overdue warning if milestone is completed
+  const showOverdueWarning = milestone.status !== "done";
+  
   return (
     <SidebarSection title="Due Date">
       <DateField
@@ -61,7 +67,7 @@ function SidebarDueDate({
           }
         }}
         readonly={!canEdit}
-        showOverdueWarning={true}
+        showOverdueWarning={showOverdueWarning}
         placeholder="Set due date"
         testId="milestone-due-date"
       />
@@ -89,7 +95,19 @@ function SidebarStatus({
   if (!canEdit) {
     return (
       <SidebarSection title="Milestone status">
-        <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
+        <div className="flex items-center gap-2 text-sm">
+          {isCompleted ? (
+            <>
+              <IconFlagFilled size={16} className="text-accent-1" />
+              <span className="text-accent-1 font-medium">Completed</span>
+            </>
+          ) : (
+            <>
+              <IconFlag size={16} className="text-content-dimmed" />
+              <span className="text-content-base">Active</span>
+            </>
+          )}
+        </div>
       </SidebarSection>
     );
   }
@@ -97,7 +115,19 @@ function SidebarStatus({
   return (
     <SidebarSection title="Milestone status" testId="sidebar-status">
       <div className="space-y-2">
-        <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
+        <div className="flex items-center gap-2 text-sm">
+          {isCompleted ? (
+            <>
+              <IconFlagFilled size={16} className="text-accent-1" />
+              <span className="text-accent-1 font-medium">Completed</span>
+            </>
+          ) : (
+            <>
+              <IconFlag size={16} className="text-content-dimmed" />
+              <span className="text-content-base">Active</span>
+            </>
+          )}
+        </div>
         {isCompleted ? (
           <SecondaryButton size="xs" onClick={handleStatusToggle}>
             Reopen
@@ -107,6 +137,17 @@ function SidebarStatus({
             Mark complete
           </GhostButton>
         )}
+      </div>
+    </SidebarSection>
+  );
+}
+
+function SidebarCompletedOn({ completedAt }: { completedAt: Date }) {
+  return (
+    <SidebarSection title="Completed on">
+      <div className="flex items-center gap-1.5 text-sm">
+        <IconCircleCheckFilled size={16} className="text-accent-1" />
+        <FormattedTime time={completedAt} format="short-date" />
       </div>
     </SidebarSection>
   );
