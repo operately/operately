@@ -4,7 +4,7 @@ import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
 import { NotificationToggle } from "../../NotificationToggle";
-import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag } from "../../icons";
+import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
 
@@ -25,6 +25,9 @@ export function MilestoneSidebar({
       <div className="space-y-6 mt-4" data-test-id="sidebar">
         <SidebarDueDate milestone={milestone} onDueDateChange={onDueDateChange} canEdit={canEdit} />
         <SidebarStatus status={status} onStatusChange={onStatusChange} canEdit={canEdit} />
+        {milestone.completedAt && milestone.status === "done" && (
+          <SidebarCompletedOn completedAt={milestone.completedAt} />
+        )}
         {createdBy && <SidebarCreatedBy createdBy={createdBy} createdAt={createdAt} />}
         <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
         <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
@@ -134,6 +137,17 @@ function SidebarStatus({
             Mark complete
           </GhostButton>
         )}
+      </div>
+    </SidebarSection>
+  );
+}
+
+function SidebarCompletedOn({ completedAt }: { completedAt: Date }) {
+  return (
+    <SidebarSection title="Completed on">
+      <div className="flex items-center gap-1.5 text-sm">
+        <IconCircleCheckFilled size={16} className="text-accent-1" />
+        <FormattedTime time={completedAt} format="short-date" />
       </div>
     </SidebarSection>
   );

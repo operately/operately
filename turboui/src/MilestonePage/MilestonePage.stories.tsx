@@ -362,6 +362,7 @@ export const CompletedMilestone: Story = {
       commentCount: 8,
       status: "done", // Milestone is completed
       link: "#",
+      completedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000), // 5 days ago
     });
 
     // Create completed tasks for the milestone
