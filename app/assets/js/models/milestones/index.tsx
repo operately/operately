@@ -67,10 +67,6 @@ export function parseMilestoneCommentForTurboUi(paths: Paths, comment: Milestone
   }
 }
 
-export function filterPending(milestones: Milestone[]) {
-  return milestones.filter((m) => m.status === "pending");
-}
-
 export function splitByStatus(milestones: Milestone[]) {
   return {
     pending: milestones.filter((m) => m.status === "pending"),
@@ -106,24 +102,4 @@ export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) 
       return d1 - d2;
     }
   });
-}
-
-export function daysOverdue(milestone: Milestone) {
-  const deadline = +(milestone.timeframe?.contextualEndDate?.date || 0);
-  const now = +Time.today();
-
-  return Math.ceil((now - deadline) / (1000 * 60 * 60 * 24));
-}
-
-export function isOverdue(milestone: Milestone) {
-  if (!milestone.timeframe?.contextualEndDate?.date) return false;
-
-  const deadline = +milestone.timeframe.contextualEndDate.date;
-  const now = +Time.today();
-
-  return !isDone(milestone) && deadline < now;
-}
-
-function isDone(milestone: Milestone) {
-  return milestone.status === "done";
 }

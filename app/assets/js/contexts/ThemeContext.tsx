@@ -68,10 +68,6 @@ export function useColorMode() {
   return useContext().colorMode;
 }
 
-export function useIsDarkMode() {
-  return useContext().colorMode === "dark";
-}
-
 export function useTheme() {
   return useContext().theme;
 }

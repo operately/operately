@@ -17,7 +17,7 @@ import * as Blobs from "@/models/blobs";
 import { EditorContext } from "./EditorContext";
 import { useLinkEditFormClose } from "./LinkEditForm";
 
-export type Editor = TipTap.Editor;
+type Editor = TipTap.Editor;
 export { LinkEditForm } from "./LinkEditForm";
 export { EditorContext } from "./EditorContext";
 
