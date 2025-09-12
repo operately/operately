@@ -5,6 +5,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.FeedSteps
+  alias Operately.People.Person
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -128,34 +129,37 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :choose_new_goal, ctx, goal_name: goal_name do
     ctx
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "connect-project-to-goal-link")
-    |> UI.assert_text(goal_name)
-    |> UI.click(testid: "goal-#{String.downcase(goal_name) |> String.replace(" ", "-")}")
+    |> UI.click_text("Set parent goal")
+    |> UI.click(testid: UI.testid(["parent-goal-field", goal_name]))
+    |> UI.sleep(300)
+  end
 
-    project = Operately.Projects.get_project!(ctx.project.id)
-    project = Operately.Repo.preload(project, :goal)
+  step :change_champion, ctx, name: name do
+    ctx
+    |> UI.click(testid: "champion-field")
+    |> UI.click(testid: "champion-field-assign-another")
+    |> UI.click(testid: UI.testid(["champion-field-search-result", name]))
+    |> UI.sleep(300)
+  end
 
-    Map.put(ctx, :project, project)
+  step :remove_champion, ctx do
+    ctx
+    |> UI.click(testid: "champion-field")
+    |> UI.click(testid: "champion-field-clear-assignment")
+    |> UI.sleep(300)
   end
 
   step :assert_goal_connected, ctx, goal_name: goal_name do
     ctx
-    |> UI.assert_text(goal_name, testid: "project-goal-link")
-
-    project = Operately.Projects.get_project!(ctx.project.id)
-    project = Operately.Repo.preload(project, :goal)
-
-    assert project.goal.name == goal_name
-
-    ctx
+    |> UI.assert_text(goal_name, testid: "parent-goal-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text(goal_name, testid: "parent-goal-field")
   end
 
   step :assert_goal_link_on_project_page, ctx, goal_name: goal_name do
     ctx
-    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text(goal_name)
-    |> UI.click(testid: "project-goal-link")
+    |> UI.click(testid: "parent-goal-field")
+    |> UI.click(testid: "parent-goal-field-view-goal")
     |> UI.assert_page(Paths.goal_path(ctx.company, ctx.goal))
     |> UI.assert_text(goal_name)
   end
@@ -189,9 +193,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :disconnect_goal, ctx do
     ctx
     |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "connect-project-to-goal-link")
-    |> UI.click(testid: "disconnect-goal")
+    |> UI.click(testid: "parent-goal-field")
+    |> UI.click(testid: "parent-goal-field-clear")
   end
 
   step :assert_goal_link_not_on_project_page, ctx do
@@ -226,9 +229,10 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :move_project_to_new_space, ctx do
     ctx
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "move-project-link")
-    |> UI.click(testid: "space-#{Paths.space_id(ctx.new_space)}")
+    |> UI.click_text("Move to another space")
+    |> UI.click(testid: "space-field")
+    |> UI.click(testid: "space-field-search-result-new-space")
+    |> UI.click_button("Move")
   end
 
   step :assert_project_moved_notification_sent, ctx do
@@ -239,7 +243,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_moved_feed_item_exists, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: ctx.new_space)
   end
 
@@ -293,15 +297,16 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :pause_project, ctx do
     ctx
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "pause-project-link")
-    |> UI.click(testid: "pause-project-button")
+    |> UI.click_text("Pause project")
+    |> UI.assert_page(Paths.pause_project_path(ctx.company, ctx.project))
+    |> UI.click_button("Pause project")
   end
 
   step :assert_project_paused, ctx do
     ctx
-    |> UI.assert_text("Paused")
-    |> UI.assert_has(testid: "project-paused-banner")
+    |> UI.find(UI.query(testid: "paused-status-banner"), fn el ->
+      UI.assert_text(el, "This project is paused")
+    end)
   end
 
   step :assert_pause_notification_sent_to_reviewer, ctx do
@@ -326,7 +331,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_pause_visible_on_feed, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el |> FeedSteps.assert_project_paused(author: ctx.champion)
     end)
@@ -342,13 +347,15 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :resume_project, ctx do
     ctx
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "resume-project-link")
-    |> UI.click(testid: "resume-project-button")
+    |> UI.click_text("Resume project")
+    |> UI.assert_page(Paths.resume_project_path(ctx.company, ctx.project))
+    |> UI.click_button("Resume project")
   end
 
   step :assert_project_active, ctx do
-    ctx |> UI.assert_text("On Track")
+    ctx
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+    |> UI.refute_has(testid: "paused-status-banner")
   end
 
   step :assert_resume_notification_sent_to_reviewer, ctx do
@@ -373,7 +380,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_resumed_visible_on_feed, ctx do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_resumed(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_resumed(author: ctx.champion, project_name: ctx.project.name)
@@ -383,11 +390,8 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :rename_project, ctx, new_name: new_name do
     ctx
-    |> UI.click(testid: "project-options-button")
-    |> UI.click(testid: "edit-project-name-button")
-    |> UI.fill(testid: "project-name-input", with: new_name)
-    |> UI.click(testid: "save")
-    |> UI.assert_has(testid: "project-page")
+    |> UI.fill_text_field(testid: "project-name-field", with: new_name)
+    |> UI.sleep(300)
   end
 
   step :assert_project_renamed, ctx, new_name: new_name do
@@ -400,7 +404,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     project = Repo.reload(ctx.project)
 
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_renamed(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_renamed(author: ctx.champion, project_name: project.name)
@@ -410,7 +414,7 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_goal_connection_visible_on_feed, ctx, goal_name: goal_name do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
@@ -442,6 +446,34 @@ defmodule Operately.Support.Features.ProjectSteps do
 
   step :assert_project_description_present, ctx, description: description do
     ctx |> UI.assert_text(description)
+  end
+
+  step :assert_champion_changed, ctx, name: name do
+    ctx
+    |> UI.assert_text(name, testid: "champion-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text(name, testid: "champion-field")
+  end
+
+  step :assert_champion_changed_feed_posted, ctx, champion: champion do
+    title = "assigned #{Person.short_name((champion))} as the champion"
+    title_long = "assigned #{Person.short_name((champion))} as the champion on #{ctx.project.name}"
+
+    assert_feed(ctx, title, title_long)
+  end
+
+  step :assert_champion_removed, ctx do
+    ctx
+    |> UI.assert_text("Set champion", testid: "champion-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("Set champion", testid: "champion-field")
+  end
+
+  step :assert_champion_removed_feed_posted, ctx do
+    title = "removed the champion"
+    title_long = "removed the champion on #{ctx.project.name}"
+
+    assert_feed(ctx, title, title_long)
   end
 
   step :given_project_has_description, ctx, description: description do
@@ -569,5 +601,74 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.creator, "renamed")
+  end
+
+  #
+  # Changing the reviewer
+  #
+
+  step :given_project_with_reviewer_exists, ctx do
+    ctx
+    |> Factory.add_space_member(:curr_reviewer, :product)
+    |> Factory.add_project(:project, :product, name: "Project alpha", reviewer: :curr_reviewer)
+  end
+
+  step :change_reviewer, ctx, name: name do
+    ctx
+    |> UI.click(testid: "reviewer-field")
+    |> UI.click(testid: "reviewer-field-assign-another")
+    |> UI.click(testid: UI.testid(["reviewer-field-search-result", name]))
+    |> UI.sleep(300)
+  end
+
+  step :remove_reviewer, ctx do
+    ctx
+    |> UI.click(testid: "reviewer-field")
+    |> UI.click(testid: "reviewer-field-clear-assignment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_reviewer_changed, ctx, name: name do
+    ctx
+    |> UI.assert_text(name, testid: "reviewer-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text(name, testid: "reviewer-field")
+  end
+
+  step :assert_reviewer_removed, ctx do
+    ctx
+    |> UI.assert_text("Set reviewer", testid: "reviewer-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("Set reviewer", testid: "reviewer-field")
+  end
+
+  step :assert_reviewer_changed_feed_posted, ctx, reviewer: reviewer do
+    title = "assigned #{Person.short_name(reviewer)} as the reviewer"
+    title_long = "assigned #{Person.short_name(reviewer)} as the reviewer on #{ctx.project.name}"
+
+    assert_feed(ctx, title, title_long)
+  end
+
+  step :assert_reviewer_removed_feed_posted, ctx do
+    title = "removed the reviewer"
+    title_long = "removed the reviewer on #{ctx.project.name}"
+
+    assert_feed(ctx, title, title_long)
+  end
+
+  defp assert_feed(ctx, title, long_tile) do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: title})
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.product))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
+    end)
   end
 end
