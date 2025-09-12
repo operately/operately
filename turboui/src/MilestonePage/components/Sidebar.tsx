@@ -4,7 +4,7 @@ import { DateField } from "../../DateField";
 import { AvatarWithName } from "../../Avatar";
 import { GhostButton, SecondaryButton } from "../../Button";
 import { NotificationToggle } from "../../NotificationToggle";
-import { IconCalendar, IconCheck, IconLink, IconTrash } from "../../icons";
+import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag } from "../../icons";
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
 
@@ -89,7 +89,19 @@ function SidebarStatus({
   if (!canEdit) {
     return (
       <SidebarSection title="Milestone status">
-        <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
+        <div className="flex items-center gap-2 text-sm">
+          {isCompleted ? (
+            <>
+              <IconFlagFilled size={16} className="text-accent-1" />
+              <span className="text-accent-1 font-medium">Completed</span>
+            </>
+          ) : (
+            <>
+              <IconFlag size={16} className="text-content-dimmed" />
+              <span className="text-content-base">Active</span>
+            </>
+          )}
+        </div>
       </SidebarSection>
     );
   }
@@ -97,7 +109,19 @@ function SidebarStatus({
   return (
     <SidebarSection title="Milestone status" testId="sidebar-status">
       <div className="space-y-2">
-        <div className="text-sm text-content-base">{isCompleted ? "Completed" : "Active"}</div>
+        <div className="flex items-center gap-2 text-sm">
+          {isCompleted ? (
+            <>
+              <IconFlagFilled size={16} className="text-accent-1" />
+              <span className="text-accent-1 font-medium">Completed</span>
+            </>
+          ) : (
+            <>
+              <IconFlag size={16} className="text-content-dimmed" />
+              <span className="text-content-base">Active</span>
+            </>
+          )}
+        </div>
         {isCompleted ? (
           <SecondaryButton size="xs" onClick={handleStatusToggle}>
             Reopen
