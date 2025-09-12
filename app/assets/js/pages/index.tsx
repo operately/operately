@@ -48,7 +48,6 @@ import PeoplePage from "./PeoplePage";
 import ProfileEditPage from "./ProfileEditPage";
 import ProfilePage from "./ProfilePage";
 import ProjectAddPage from "./ProjectAddPage";
-import ProjectAddResourcePage from "./ProjectAddResourcePage";
 import ProjectAsMarkdownPage from "./ProjectAsMarkdownPage";
 import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
 import ProjectCheckInNewPage from "./ProjectCheckInNewPage";
@@ -62,14 +61,6 @@ import ProjectDiscussionEditPage from "./ProjectDiscussionEditPage";
 import ProjectDiscussionNewPage from "./ProjectDiscussionNewPage";
 import ProjectDiscussionPage from "./ProjectDiscussionPage";
 import ProjectEditAccessLevelsPage from "./ProjectEditAccessLevelsPage";
-import ProjectEditDescriptionPage from "./ProjectEditDescriptionPage";
-import ProjectEditGoalPage from "./ProjectEditGoalPage";
-import ProjectEditProjectNamePage from "./ProjectEditProjectNamePage";
-import ProjectEditResourcePage from "./ProjectEditResourcePage";
-import ProjectEditResourcesPage from "./ProjectEditResourcesPage";
-import ProjectEditTimelinePage from "./ProjectEditTimelinePage";
-import ProjectMilestonesPage from "./ProjectMilestonesPage";
-import ProjectMovePage from "./ProjectMovePage";
 import ProjectPausePage from "./ProjectPausePage";
 import ProjectResumePage from "./ProjectResumePage";
 import ProjectRetrospectiveEditPage from "./ProjectRetrospectiveEditPage";
@@ -151,7 +142,6 @@ export default {
   ProfileEditPage,
   ProfilePage,
   ProjectAddPage,
-  ProjectAddResourcePage,
   ProjectAsMarkdownPage,
   ProjectCheckInEditPage,
   ProjectCheckInNewPage,
@@ -165,14 +155,6 @@ export default {
   ProjectDiscussionNewPage,
   ProjectDiscussionPage,
   ProjectEditAccessLevelsPage,
-  ProjectEditDescriptionPage,
-  ProjectEditGoalPage,
-  ProjectEditProjectNamePage,
-  ProjectEditResourcePage,
-  ProjectEditResourcesPage,
-  ProjectEditTimelinePage,
-  ProjectMilestonesPage,
-  ProjectMovePage,
   ProjectPausePage,
   ProjectResumePage,
   ProjectRetrospectiveEditPage,

@@ -164,14 +164,6 @@ export function relativeDay(date: Date) {
   return `${days} days ago`;
 }
 
-export function dateChanged(old: Date | null | undefined, current: Date | null | undefined): boolean {
-  if (!old && !current) return false;
-  if (!old && current) return true;
-  if (old && !current) return true;
-
-  return !isSameDay(old!, current!);
-}
-
 export function durationHumanized(a: Date, b: Date, suffix?: string): string {
   const days = daysBetween(a, b);
   if (days === 0) return "Last day";

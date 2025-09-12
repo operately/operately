@@ -1,7 +1,6 @@
-import * as Time from "@/utils/time";
 import * as People from "@/models/people";
 import { Milestone, MilestoneComment } from "@/api";
-import { CommentSection, DateField } from "turboui";
+import { CommentSection } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
@@ -13,11 +12,6 @@ export {
   useUpdateMilestoneDescription,
   usePostMilestoneComment,
 } from "@/api";
-
-export interface ParsedMilestone extends Pick<Milestone, "id" | "title" | "description"> {
-  deletable: boolean;
-  deadline: DateField.ContextualDate | null;
-}
 
 export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
   return milestones.map((m) => parseMilestoneForTurboUi(paths, m));
@@ -72,34 +66,4 @@ export function splitByStatus(milestones: Milestone[]) {
     pending: milestones.filter((m) => m.status === "pending"),
     done: milestones.filter((m) => m.status === "done"),
   };
-}
-
-export function sortByDeadline(milestones: Milestone[], { reverse = false } = {}) {
-  let result: Milestone[] = [];
-
-  return result.concat(milestones.map((m: Milestone) => m!)).sort((m1, m2) => {
-    const d1 = m1.timeframe?.contextualEndDate?.date ? +m1.timeframe.contextualEndDate.date : Number.MAX_SAFE_INTEGER;
-    const d2 = m2.timeframe?.contextualEndDate?.date ? +m2.timeframe.contextualEndDate.date : Number.MAX_SAFE_INTEGER;
-
-    if (reverse) {
-      return d2 - d1;
-    } else {
-      return d1 - d2;
-    }
-  });
-}
-
-export function sortByDoneAt(milestones: Milestone[], { reverse = false } = {}) {
-  let result: Milestone[] = [];
-
-  return result.concat(milestones).sort((m1, m2) => {
-    let d1 = +Time.parse(m1.completedAt)!;
-    let d2 = +Time.parse(m2.completedAt)!;
-
-    if (reverse) {
-      return d2 - d1;
-    } else {
-      return d1 - d2;
-    }
-  });
 }
