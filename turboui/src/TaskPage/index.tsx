@@ -162,14 +162,12 @@ export function TaskPage(props: TaskPage.Props) {
       tabs={tabs}
       status={state.projectStatus}
     >
-      <div className="px-4 py-4 flex-1 overflow-scroll">
-        <PageHeader {...state} />
-        <div className="flex-1 overflow-auto">
-          <div className="px-4 py-6">
-            <div className="sm:grid sm:grid-cols-12">
-              <Overview {...state} />
-              <Sidebar {...state} />
-            </div>
+      <div className="flex-1 overflow-scroll">
+        <div className="p-4 max-w-6xl mx-auto">
+          <PageHeader {...state} />
+          <div className="sm:grid sm:grid-cols-12 mt-6">
+            <Overview {...state} />
+            <Sidebar {...state} />
           </div>
         </div>
       </div>
