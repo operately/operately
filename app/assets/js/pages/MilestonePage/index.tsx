@@ -19,7 +19,7 @@ import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
 import { parseContextualDate, serializeContextualDate } from "@/models/contextualDates";
-import { projectPageCacheKey } from "../ProjectV2Page";
+import { projectPageCacheKey } from "../ProjectPage";
 import { useComments } from "./useComments";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 

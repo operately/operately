@@ -19,7 +19,7 @@ import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
-import { projectPageCacheKey } from "../ProjectV2Page";
+import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { useComments } from "./useComments";
