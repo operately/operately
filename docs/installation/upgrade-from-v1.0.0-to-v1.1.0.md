@@ -1,7 +1,7 @@
-## Update Steps for Operately from version v0.4.0 to v1.0.0
+## Update Steps for Operately from version v1.0.0 to v1.1.0
 
 This guide walks you through updating a self-hosted installation of Operately,
-from version v0.4.0 to v1.0.0.
+from version v1.0.0 to v1.1.0.
 
 Before starting, log in to the server running Operately, and navigate to the
 directory where operately is running. By default this location is `~/operately`.
@@ -18,10 +18,10 @@ Edit the `docker-compose.yml` file and update the Operately version:
 
 ```
 # From this:
-image: operately/operately:v0.4.0 
+image: operately/operately:v1.0.0
 
 # To this:
-image: operately/operately:v1.0.0
+image: operately/operately:v1.1.0
 ```
 
 ### Run database migrations
