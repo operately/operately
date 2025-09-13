@@ -23,7 +23,7 @@ defmodule Operately.Beacon.CronTest do
             installation_id: Operately.installation_id()
           })
 
-        assert_called(Finch.build(:post, "http://app.operately.com/analytics/beacons", expected_headers, expected_body))
+        assert_called(Finch.build(:post, "https://app.operately.com/analytics/beacons", expected_headers, expected_body))
         assert_called(Finch.request(:_, Operately.Finch, receive_timeout: 5_000))
       end
     end
