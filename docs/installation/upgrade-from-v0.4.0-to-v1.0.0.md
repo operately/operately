@@ -21,7 +21,7 @@ Edit the `docker-compose.yml` file and update the Operately version:
 image: operately/operately:v0.4.0 
 
 # To this:
-image: operately/operately:v1.0.0
+image: operately/operately:v0.1.0
 ```
 
 ### Run database migrations
