@@ -51,11 +51,20 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
 
-  const { editor, uploading } = TipTapEditor.useEditor({
+  // Generate localStorage key based on mode and context
+  const localStorageKey = React.useMemo(() => {
+    if (mode === "edit" && discussion?.id) {
+      return `discussion-edit-${discussion.id}`;
+    }
+    return `discussion-new-${space?.id || 'unknown'}`;
+  }, [mode, discussion?.id, space?.id]);
+
+  const { editor, uploading, clearSavedContent } = TipTapEditor.useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
     mentionSearchScope: { type: "space", id: space ? space.id! : discussion!.space!.id! },
+    localStorageKey,
   });
 
   const validate = () => {
@@ -73,10 +82,10 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
     return true;
   };
 
-  const [postMessage, postMessageSubmitting] = usePostMessage({ space, title, editor, subscriptionsState, validate });
-  const [postAsDraft, postAsDraftSubmitting] = usePostAsDraft({ space, title, editor, subscriptionsState, validate });
-  const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate });
-  const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate });
+  const [postMessage, postMessageSubmitting] = usePostMessage({ space, title, editor, subscriptionsState, validate, clearSavedContent });
+  const [postAsDraft, postAsDraftSubmitting] = usePostAsDraft({ space, title, editor, subscriptionsState, validate, clearSavedContent });
+  const [saveChanges, saveChangesSubmitting] = useSaveChanges({ discussion, title, editor, validate, clearSavedContent });
+  const [publishDraft, publishDraftSubmitting] = usePublishDraft({ discussion, title, editor, validate, clearSavedContent });
 
   const cancelPath = mode === "edit" ? paths.discussionPath(discussion?.id!) : paths.spaceDiscussionsPath(space.id!);
 
@@ -104,7 +113,7 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   };
 }
 
-function usePostMessage({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+function usePostMessage({ space, title, editor, subscriptionsState, validate, clearSavedContent }): [() => Promise<boolean>, boolean] {
   const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
@@ -116,26 +125,31 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(true);
 
-    const res = await post({
-      spaceId: space.id,
-      title: title,
-      postAsDraft: false,
-      body: JSON.stringify(editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
-      subscriberIds: subscriptionsState.currentSubscribersList,
-    });
+    try {
+      const res = await post({
+        spaceId: space.id,
+        title: title,
+        postAsDraft: false,
+        body: JSON.stringify(editor.getJSON()),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
+      });
 
-    setSubmitting(false);
+      clearSavedContent(); // Clear localStorage on successful submit
+      setSubmitting(false);
+      navigate(paths.discussionPath(res.discussion.id));
 
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
+      return true;
+    } catch (error) {
+      setSubmitting(false);
+      throw error;
+    }
   };
 
   return [postMessage, submitting];
 }
 
-function usePostAsDraft({ space, title, editor, subscriptionsState, validate }): [() => Promise<boolean>, boolean] {
+function usePostAsDraft({ space, title, editor, subscriptionsState, validate, clearSavedContent }): [() => Promise<boolean>, boolean] {
   const paths = usePaths();
   const navigate = useNavigate();
   const [post] = Discussions.usePostDiscussion();
@@ -147,26 +161,31 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
 
     setSubmitting(true);
 
-    const res = await post({
-      spaceId: space.id,
-      title: title,
-      postAsDraft: true,
-      body: JSON.stringify(editor.getJSON()),
-      sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
-      subscriberIds: subscriptionsState.currentSubscribersList,
-    });
+    try {
+      const res = await post({
+        spaceId: space.id,
+        title: title,
+        postAsDraft: true,
+        body: JSON.stringify(editor.getJSON()),
+        sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
+        subscriberIds: subscriptionsState.currentSubscribersList,
+      });
 
-    setSubmitting(false);
+      clearSavedContent(); // Clear localStorage on successful submit
+      setSubmitting(false);
+      navigate(paths.discussionPath(res.discussion.id));
 
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
+      return true;
+    } catch (error) {
+      setSubmitting(false);
+      throw error;
+    }
   };
 
   return [postMessage, submitting];
 }
 
-function useSaveChanges({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+function useSaveChanges({ discussion, title, editor, validate, clearSavedContent }): [() => Promise<boolean>, boolean] {
   const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
@@ -177,23 +196,28 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
 
     setSubmitting(true);
 
-    const res = await edit({
-      id: discussion!.id,
-      title: title,
-      body: JSON.stringify(editor.getJSON()),
-    });
+    try {
+      const res = await edit({
+        id: discussion!.id,
+        title: title,
+        body: JSON.stringify(editor.getJSON()),
+      });
 
-    setSubmitting(false);
+      clearSavedContent(); // Clear localStorage on successful submit
+      setSubmitting(false);
+      navigate(paths.discussionPath(res.discussion.id));
 
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
+      return true;
+    } catch (error) {
+      setSubmitting(false);
+      throw error;
+    }
   };
 
   return [saveChanges, submitting];
 }
 
-function usePublishDraft({ discussion, title, editor, validate }): [() => Promise<boolean>, boolean] {
+function usePublishDraft({ discussion, title, editor, validate, clearSavedContent }): [() => Promise<boolean>, boolean] {
   const paths = usePaths();
   const navigate = useNavigate();
   const [edit] = Discussions.useEditDiscussion();
@@ -204,18 +228,23 @@ function usePublishDraft({ discussion, title, editor, validate }): [() => Promis
 
     setSubmitting(true);
 
-    const res = await edit({
-      id: discussion!.id,
-      title: title,
-      body: JSON.stringify(editor.getJSON()),
-      state: "published",
-    });
+    try {
+      const res = await edit({
+        id: discussion!.id,
+        title: title,
+        body: JSON.stringify(editor.getJSON()),
+        state: "published",
+      });
 
-    setSubmitting(false);
+      clearSavedContent(); // Clear localStorage on successful submit
+      setSubmitting(false);
+      navigate(paths.discussionPath(res.discussion.id));
 
-    navigate(paths.discussionPath(res.discussion.id));
-
-    return true;
+      return true;
+    } catch (error) {
+      setSubmitting(false);
+      throw error;
+    }
   };
 
   return [saveChanges, submitting];
