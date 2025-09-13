@@ -99,6 +99,35 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
       assert_response(res, check_in)
       assert acknowledge_activity_count() == 1
     end
+
+    test "no duplicate notifications are created for the same acknowledgment", ctx do
+      check_in = create_project_and_check_ins(ctx, reviewer_id: ctx.person.id)
+      check_in = Repo.preload(check_in, :project)
+      
+      # Champion should receive notification when check-in is acknowledged
+      champion_notifications_before = Operately.Notifications.list_notifications()
+      |> Enum.filter(&(&1.person_id == check_in.project.champion_id))
+      |> length()
+
+      assert {200, _res} = request(ctx.conn, check_in)
+      
+      champion_notifications_after = Operately.Notifications.list_notifications()
+      |> Enum.filter(&(&1.person_id == check_in.project.champion_id))
+      |> length()
+
+      # Should have exactly one more notification
+      assert champion_notifications_after == champion_notifications_before + 1
+
+      # Trying to acknowledge again should not create additional notifications
+      assert {200, _res} = request(ctx.conn, check_in)
+      
+      champion_notifications_final = Operately.Notifications.list_notifications()
+      |> Enum.filter(&(&1.person_id == check_in.project.champion_id))
+      |> length()
+
+      # Should still have the same number of notifications
+      assert champion_notifications_final == champion_notifications_after
+    end
   end
 
   #

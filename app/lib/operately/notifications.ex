@@ -72,44 +72,7 @@ defmodule Operately.Notifications do
   end
 
   def bulk_create(notifications) do
-    alias Ecto.Multi
-    alias Operately.Notifications.EmailWorker
-
-    now = NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
-
-    notifications = Enum.map(notifications, fn notification ->
-      Map.merge(notification, %{inserted_at: now, updated_at: now})
-    end)
-
-    Multi.new()
-    |> Multi.run(:notifications, fn repo, _ ->
-      {_, notifications} = repo.insert_all(Notification, notifications, returning: [:id, :should_send_email, :person_id])
-      {:ok, notifications}
-    end)
-    |> Multi.merge(fn %{notifications: notifications} ->
-      Enum.reduce(notifications, Ecto.Multi.new(), fn notification, multi ->
-        if notification.should_send_email do
-          Ecto.Multi.run(multi, "email_#{notification.id}", fn _repo, _ ->
-            EmailWorker.new(%{notification_id: notification.id}) |> Oban.insert()
-          end)
-        else
-          multi
-        end
-      end)
-    end)
-    |> Repo.transaction()
-    |> case do
-      {:ok, %{notifications: notifications}} ->
-        unique_person_ids = Enum.uniq(Enum.map(notifications, &(&1.person_id)))
-
-        Enum.each(unique_person_ids, fn person_id ->
-          OperatelyWeb.ApiSocket.broadcast!("api:unread_notifications_count:#{person_id}")
-        end)
-
-        {:ok, notifications}
-      {:error, _} ->
-        {:error, :failed_to_create_notifications}
-    end
+    Operately.Notifications.BulkCreate.bulk_create(notifications)
   end
 
   def unread_notifications_count(person) do
