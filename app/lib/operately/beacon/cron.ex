@@ -3,7 +3,7 @@ defmodule Operately.Beacon.Cron do
 
   require Logger
 
-  @beacon_url "http://app.operately.com/analytics/beacons"
+  @beacon_url "https://app.operately.com/analytics/beacons"
 
   @impl Oban.Worker
   def perform(_) do
