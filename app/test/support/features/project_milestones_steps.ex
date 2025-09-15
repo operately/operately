@@ -133,24 +133,21 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.sleep(300)
   end
 
-  step :add_task, ctx, name: name, due_date: due_date do
+  step :add_task, ctx, name: name do
     ctx
-    |> UI.click_button("Add Task")
-    |> UI.fill(placeholder: "Enter task title", with: name)
-    |> UI.select_day_in_date_field(testid: "task-due-date", date: due_date)
-    |> UI.click_button("Create task")
+    |> UI.click(testid: "tasks-section-add-task")
+    |> UI.fill(placeholder: "Write the name of a task and press Return", with: name)
+    |> UI.press_enter()
+    |> UI.click_button("Cancel")
   end
 
   step :add_multiple_tasks, ctx, names: names do
-    ctx
-    |> UI.click_button("Add Task")
-    |> UI.click(testid: "add-more-switch")
-    |> UI.find(UI.query(testid: "add-task-form"), fn el ->
-      Enum.reduce(names, el, fn name, el ->
-        el
-        |> UI.fill(placeholder: "Enter task title", with: name)
-        |> UI.click_button("Create task")
-      end)
+    ctx = UI.click(ctx, testid: "tasks-section-add-task")
+
+    Enum.reduce(names, ctx, fn name, ctx ->
+      ctx
+      |> UI.fill(placeholder: "Write the name of a task and press Return", with: name)
+      |> UI.press_enter()
     end)
     |> UI.click_button("Cancel")
   end
@@ -286,16 +283,10 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
   end
 
-  step :assert_task_created, ctx, name: name, due_date: due_date do
-    ctx
-    |> UI.find(UI.query(testid: "tasks-section"), fn el ->
-      UI.assert_text(el, name)
-      UI.assert_text(el, due_date)
-    end)
-  end
-
   step :assert_add_task_form_closed, ctx do
-    UI.refute_has(ctx, testid: "add-task-form")
+    ctx
+    |> UI.refute_has(testid: "inline-task-creator-milestonepage")
+    |> UI.refute_has(testid: "inline-task-creator-milestonepage-empty")
   end
 
   step :assert_activity_added_to_feed, ctx, description do
