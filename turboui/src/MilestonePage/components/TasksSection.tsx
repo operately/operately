@@ -1,7 +1,7 @@
 import React from "react";
 
 import * as Types from "../../TaskBoard/types";
-import { PrimaryButton } from "../../Button";
+import { SecondaryButton } from "../../Button";
 import { PieChart } from "../../PieChart";
 import { IconPlus } from "../../icons";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
@@ -11,6 +11,8 @@ import { TaskFilter } from "../../TaskBoard";
 import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
 import { sortTasks } from "../../TaskBoard/utils/sortTasks";
+import { InlineTaskCreator, InlineTaskCreatorHandle } from "../../TaskBoard/components/InlineTaskCreator";
+import hotkeys from "hotkeys-js";
 
 export function TasksSection({
   tasks,
@@ -18,12 +20,16 @@ export function TasksSection({
   onFiltersChange,
   onTaskReorder,
   milestone,
+  onTaskCreate,
   onTaskAssigneeChange,
   onTaskDueDateChange,
   onTaskStatusChange,
   searchPeople,
   setIsTaskModalOpen,
 }: MilestonePage.State) {
+  const [creatorOpen, setCreatorOpen] = React.useState(false);
+  const creatorRef = React.useRef<InlineTaskCreatorHandle | null>(null);
+  const isHoveredRef = React.useRef(false);
   const stats = calculateMilestoneStats(tasks);
   const completionPercentage = calculateCompletionPercentage(stats);
 
@@ -69,8 +75,32 @@ export function TasksSection({
     [onTaskReorder],
   );
 
+  // Hotkey: 'c' focuses the inline creator when hovering the section
+  React.useEffect(() => {
+    const handler = (evt: KeyboardEvent) => {
+      const target = evt.target as HTMLElement | null;
+      const tag = target?.tagName;
+      const isEditable = !!target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT");
+      if (isEditable) return;
+      if (!isHoveredRef.current) return;
+      evt.preventDefault();
+      // @ts-ignore
+      if (typeof evt.stopImmediatePropagation === "function") evt.stopImmediatePropagation();
+      else evt.stopPropagation();
+      setCreatorOpen(true);
+      setTimeout(() => creatorRef.current?.focus(), 0);
+    };
+    hotkeys("c", handler);
+    return () => hotkeys.unbind("c", handler);
+  }, []);
+
   return (
-    <div className="space-y-4 pt-6" data-test-id="tasks-section">
+    <div
+      className="space-y-4 pt-6"
+      data-test-id="tasks-section"
+      onMouseEnter={() => (isHoveredRef.current = true)}
+      onMouseLeave={() => (isHoveredRef.current = false)}
+    >
       {/* Task header container - visually groups all task-related controls */}
       <div className="bg-surface-dimmed rounded-lg border border-surface-outline">
         {/* Header bar with title, pie chart, and primary action */}
@@ -89,9 +119,17 @@ export function TasksSection({
             </div>
             <h2 className="font-bold">Tasks</h2>
           </div>
-          <PrimaryButton size="xs" icon={IconPlus} onClick={() => setIsTaskModalOpen(true)}>
-            Add Task
-          </PrimaryButton>
+          <SecondaryButton
+            size="xs"
+            icon={IconPlus}
+            onClick={() => {
+              setCreatorOpen(true);
+              setTimeout(() => creatorRef.current?.focus(), 0);
+            }}
+            testId="tasks-section-add-task"
+          >
+            <span className="sr-only">Add task</span>
+          </SecondaryButton>
         </div>
 
         {/* Filter controls */}
@@ -105,9 +143,30 @@ export function TasksSection({
         {/* Task list content */}
         <div className="bg-surface-base rounded-b-lg overflow-hidden">
           {visibleTasks.length === 0 && hiddenTasks.length === 0 ? (
-            /* Empty state */
-            <div className="px-4 py-8 text-center text-content-subtle">
-              <p className="text-sm">No tasks yet. Click "Add Task" to get started.</p>
+            /* Empty state with inline creation */
+            <div className="px-4 py-6">
+              {creatorOpen ? (
+                <>
+                  <InlineTaskCreator
+                    ref={creatorRef}
+                    milestone={milestone}
+                    onCreate={(t) => {
+                      onTaskCreate?.({ ...t, milestone });
+                    }}
+                    onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                    onCancel={() => setCreatorOpen(false)}
+                    autoFocus
+                    testId="inline-task-creator-milestonepage-empty"
+                  />
+                  <div className="px-0 pt-2 text-center text-content-subtle text-xs">
+                    Press Enter to add. You can also drag tasks here.
+                  </div>
+                </>
+              ) : (
+                <div className="text-center text-content-subtle text-sm">
+                  Click + or press c to add a task, or drag a task here.
+                </div>
+              )}
             </div>
           ) : (
             /* Task list with drag and drop */
@@ -121,6 +180,19 @@ export function TasksSection({
                 onTaskDueDateChange={onTaskDueDateChange}
                 onTaskStatusChange={onTaskStatusChange}
                 searchPeople={searchPeople}
+                inlineCreateRow={
+                  creatorOpen ? (
+                    <InlineTaskCreator
+                      ref={creatorRef}
+                      milestone={milestone}
+                      onCreate={(t) => onTaskCreate?.({ ...t, milestone })}
+                      onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                      onCancel={() => setCreatorOpen(false)}
+                      autoFocus
+                      testId="inline-task-creator-milestonepage"
+                    />
+                  ) : undefined
+                }
               />
             </DragAndDropProvider>
           )}
