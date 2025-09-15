@@ -79,7 +79,7 @@ export function TaskItem({
         {/* Left side: Status and task info */}
         <div className="flex-1 flex items-center gap-2 min-w-0">
           {/* Status icon and title wrapper for alignment */}
-          <div className="flex items-center gap-2 h-6">
+          <div className="flex items-center gap-1.5 h-6">
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
               <StatusSelector
