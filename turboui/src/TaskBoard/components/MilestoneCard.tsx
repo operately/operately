@@ -1,5 +1,5 @@
 import { IconFileText, IconMessageCircle, IconPlus } from "../../icons";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
@@ -8,6 +8,9 @@ import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import TaskCreationModal from "./TaskCreationModal";
 import { TaskList } from "./TaskList";
 import { sortTasks } from "../utils/sortTasks";
+import { InlineTaskCreator, InlineTaskCreatorHandle } from "./InlineTaskCreator";
+import hotkeys from "hotkeys-js";
+import { SecondaryButton } from "../../Button";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -53,6 +56,9 @@ export function MilestoneCard({
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const [creatorOpen, setCreatorOpen] = useState(false);
+  const creatorRef = useRef<InlineTaskCreatorHandle | null>(null);
+  const isHoveredRef = useRef(false);
 
   const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
@@ -68,9 +74,33 @@ export function MilestoneCard({
     }
   };
 
+  // Hotkey: 'c' focuses the inline creator
+  useEffect(() => {
+    const handler = (evt: KeyboardEvent) => {
+      const target = evt.target as HTMLElement | null;
+      const tag = target?.tagName;
+      const isEditable =
+        !!target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT");
+      if (isEditable) return;
+      if (!isHoveredRef.current) return;
+      evt.preventDefault();
+      // @ts-ignore
+      if (typeof evt.stopImmediatePropagation === "function") evt.stopImmediatePropagation();
+      else evt.stopPropagation();
+      setCreatorOpen(true);
+      // Next tick to ensure input is mounted
+      setTimeout(() => creatorRef.current?.focus(), 0);
+    };
+
+    hotkeys("c", handler);
+    return () => hotkeys.unbind("c", handler);
+  }, []);
+
+  // Do not auto-open on empty milestones; rely on explicit triggers
+
   return (
     <>
-      <li>
+      <li onMouseEnter={() => (isHoveredRef.current = true)} onMouseLeave={() => (isHoveredRef.current = false)}>
         {/* Milestone header */}
         <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
           <div className="flex items-center gap-2">
@@ -141,9 +171,18 @@ export function MilestoneCard({
               </div>
             </div>
           </div>
-          <button className="text-content-dimmed hover:text-content-base" onClick={() => setIsTaskModalOpen(true)}>
-            <IconPlus size={16} />
-          </button>
+          <SecondaryButton
+            size="xs"
+            icon={IconPlus}
+            onClick={() => {
+              setCreatorOpen(true);
+              setTimeout(() => creatorRef.current?.focus(), 0);
+            }}
+            testId="milestone-add-task"
+          >
+            {/* icon-only for reduced repetition; keep accessible label */}
+            <span className="sr-only">Add task</span>
+          </SecondaryButton>
         </div>
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
@@ -157,9 +196,43 @@ export function MilestoneCard({
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
             searchPeople={searchPeople}
+            inlineCreateRow={
+              creatorOpen ? (
+                <InlineTaskCreator
+                  ref={creatorRef}
+                  milestone={milestone}
+                  onCreate={handleCreateTask}
+                  onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                  onCancel={() => setCreatorOpen(false)}
+                  autoFocus
+                  testId="inline-task-creator"
+                />
+              ) : undefined
+            }
           />
         ) : (
-          <EmptyMilestoneDropZone milestoneId={milestone.id} />
+          <EmptyMilestoneDropZone milestoneId={milestone.id}>
+            {creatorOpen ? (
+              <>
+                <InlineTaskCreator
+                  ref={creatorRef}
+                  milestone={milestone}
+                  onCreate={handleCreateTask}
+                  onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                  onCancel={() => setCreatorOpen(false)}
+                  autoFocus
+                  testId="inline-task-creator-empty"
+                />
+                <div className="px-4 pb-3 text-center text-content-subtle text-xs">
+                  Press Enter to add. You can also drag tasks here.
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-content-subtle text-sm">
+                Click + or press 'c' to add a task, or drag a task here.
+              </div>
+            )}
+          </EmptyMilestoneDropZone>
         )}
       </li>
 
