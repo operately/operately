@@ -10,7 +10,7 @@ export function calculateProjectStatuses(resources: Project[]) {
     } else if (resource.isOutdated) {
       result.pending++;
     } else if (!resource.lastCheckIn) {
-      result.on_track++;
+      result.pending++;
     } else {
       result[resource.lastCheckIn.status!]++;
     }
@@ -28,7 +28,7 @@ export function calculateGoalStatuses(resources: Goal[]) {
     if (resource.isOutdated) {
       result.pending++;
     } else if (!resource.lastCheckIn) {
-      result.on_track++;
+      result.pending++;
     } else {
       result[resource.lastCheckIn.status!]++;
     }

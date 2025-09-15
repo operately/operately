@@ -75,7 +75,7 @@ function GoalItem({ goal }: { goal: Goal }) {
 
   const status = useMemo(() => {
     if (goal.isOutdated) return "outdated";
-    if (!goal.lastCheckIn) return "on_track";
+    if (!goal.lastCheckIn) return "pending";
 
     return goal.lastCheckIn.status!;
   }, [goal.isOutdated, goal.lastCheckIn]);
@@ -123,7 +123,7 @@ function ProjectItem({ project }: { project: Project }) {
     if (project.state === "paused") {
       return statusColor(project.state);
     } else {
-      return statusColor(project.lastCheckIn?.status ?? "on_track");
+      return statusColor(project.lastCheckIn?.status ?? "pending");
     }
   }, [project.state, project.lastCheckIn]);
 
