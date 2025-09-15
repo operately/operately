@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useMemo } from "react";
-import { PrimaryButton } from "../../Button";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
 import * as Types from "../types";
@@ -10,6 +10,8 @@ import { TaskList } from "./TaskList";
 import { MilestoneCard } from "./MilestoneCard";
 import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
+import { InlineTaskCreator, InlineTaskCreatorHandle } from "./InlineTaskCreator";
+import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -41,6 +43,13 @@ export function TaskBoard({
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
+  const {
+    open: noMilestoneCreatorOpen,
+    openCreator: openNoMilestoneCreator,
+    closeCreator: closeNoMilestoneCreator,
+    creatorRef: noMilestoneCreatorRef,
+    hoverBind: noMilestoneHoverBind,
+  } = useInlineTaskCreator();
 
   // Keep internal tasks in sync with external tasks
   useEffect(() => {
@@ -66,6 +75,8 @@ export function TaskBoard({
     () => internalTasks.some((task) => !task.milestone && !task._isHelperTask),
     [internalTasks],
   );
+
+  // Hotkey handled by useInlineTaskCreator
 
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
@@ -153,7 +164,7 @@ export function TaskBoard({
 
               {/* Tasks with no milestone */}
               {hasTasksWithoutMilestone && (
-                <li>
+                <li {...noMilestoneHoverBind}>
                   {/* No milestone header */}
                   <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
                     <div className="flex items-center gap-2">
@@ -161,15 +172,14 @@ export function TaskBoard({
                       <span className="text-sm font-semibold text-content-base">No milestone</span>
                       {/* No indicators for 'No milestone' header */}
                     </div>
-                    <button
-                      className="text-content-subtle hover:text-content-base"
-                      onClick={() => {
-                        setActiveTaskMilestoneId("no-milestone");
-                        setIsTaskModalOpen(true);
-                      }}
+                    <SecondaryButton
+                      size="xs"
+                      icon={IconPlus}
+                      onClick={openNoMilestoneCreator}
+                      testId="no-milestone-add-task"
                     >
-                      <IconPlus size={16} />
-                    </button>
+                      <span className="sr-only">Add task</span>
+                    </SecondaryButton>
                   </div>
 
                   {/* Tasks with no milestone */}
@@ -182,6 +192,22 @@ export function TaskBoard({
                     onTaskDueDateChange={onTaskDueDateChange}
                     onTaskStatusChange={onTaskStatusChange}
                     searchPeople={searchPeople}
+                    inlineCreateRow={
+                      noMilestoneCreatorOpen ? (
+                        <InlineTaskCreator
+                          ref={noMilestoneCreatorRef}
+                          milestone={null}
+                          onCreate={onTaskCreate}
+                          onRequestAdvanced={() => {
+                            setActiveTaskMilestoneId("no-milestone");
+                            setIsTaskModalOpen(true);
+                          }}
+                          onCancel={closeNoMilestoneCreator}
+                          autoFocus
+                          testId="inline-task-creator-no-milestone"
+                        />
+                      ) : undefined
+                    }
                   />
                 </li>
               )}

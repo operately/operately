@@ -1,5 +1,5 @@
 import { IconFileText, IconMessageCircle, IconPlus } from "../../icons";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DateField } from "../../DateField";
 import { BlackLink } from "../../Link";
 import { PieChart } from "../../PieChart";
@@ -8,6 +8,9 @@ import { EmptyMilestoneDropZone } from "./EmptyMilestoneDropZone";
 import TaskCreationModal from "./TaskCreationModal";
 import { TaskList } from "./TaskList";
 import { sortTasks } from "../utils/sortTasks";
+import { InlineTaskCreator } from "./InlineTaskCreator";
+import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
+import { SecondaryButton } from "../../Button";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -53,6 +56,7 @@ export function MilestoneCard({
   // Generate default stats if not provided
   const milestoneStats = stats || calculateMilestoneStats(sortedTasks);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
+  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
 
   const handleCreateTask = (newTask: Types.NewTaskPayload) => {
     if (onTaskCreate) {
@@ -68,9 +72,11 @@ export function MilestoneCard({
     }
   };
 
+  // Do not auto-open on empty milestones; rely on explicit triggers
+
   return (
     <>
-      <li>
+      <li {...hoverBind}>
         {/* Milestone header */}
         <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
           <div className="flex items-center gap-2">
@@ -141,9 +147,15 @@ export function MilestoneCard({
               </div>
             </div>
           </div>
-          <button className="text-content-dimmed hover:text-content-base" onClick={() => setIsTaskModalOpen(true)}>
-            <IconPlus size={16} />
-          </button>
+          <SecondaryButton
+            size="xs"
+            icon={IconPlus}
+            onClick={openCreator}
+            testId="milestone-add-task"
+          >
+            {/* icon-only for reduced repetition; keep accessible label */}
+            <span className="sr-only">Add task</span>
+          </SecondaryButton>
         </div>
 
         {/* Tasks in this milestone - show empty state when no tasks at all */}
@@ -157,9 +169,43 @@ export function MilestoneCard({
             onTaskDueDateChange={onTaskDueDateChange}
             onTaskStatusChange={onTaskStatusChange}
             searchPeople={searchPeople}
+            inlineCreateRow={
+              creatorOpen ? (
+                <InlineTaskCreator
+                  ref={creatorRef}
+                  milestone={milestone}
+                  onCreate={handleCreateTask}
+                  onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                  onCancel={closeCreator}
+                  autoFocus
+                  testId="inline-task-creator"
+                />
+              ) : undefined
+            }
           />
         ) : (
-          <EmptyMilestoneDropZone milestoneId={milestone.id} />
+          <EmptyMilestoneDropZone milestoneId={milestone.id}>
+            {creatorOpen ? (
+              <>
+                <InlineTaskCreator
+                  ref={creatorRef}
+                  milestone={milestone}
+                  onCreate={handleCreateTask}
+                  onRequestAdvanced={() => setIsTaskModalOpen(true)}
+                  onCancel={closeCreator}
+                  autoFocus
+                  testId="inline-task-creator-empty"
+                />
+                <div className="px-4 pb-3 text-center text-content-subtle text-xs">
+                  Press Enter to add. You can also drag tasks here.
+                </div>
+              </>
+            ) : (
+              <div className="text-center text-content-subtle text-sm">
+                Click + or press 'c' to add a task, or drag a task here.
+              </div>
+            )}
+          </EmptyMilestoneDropZone>
         )}
       </li>
 
