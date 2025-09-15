@@ -41,9 +41,13 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
       if (!isHoveredRef.current) return;
 
       evt.preventDefault();
-      // @ts-ignore - optional API
-      if (typeof evt.stopImmediatePropagation === "function") evt.stopImmediatePropagation();
-      else evt.stopPropagation();
+      // Stop other handlers from also reacting to this key
+      try {
+        // KeyboardEvent extends Event and supports stopImmediatePropagation in modern browsers
+        (evt as Event).stopImmediatePropagation();
+      } catch {
+        evt.stopPropagation();
+      }
 
       openCreator();
     };
@@ -54,4 +58,3 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
 
   return { open, openCreator, closeCreator, focusCreator, creatorRef, hoverBind } as const;
 }
-
