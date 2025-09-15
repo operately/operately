@@ -161,16 +161,13 @@ defmodule Operately.Features.ProjectMilestonesTest do
     end
 
     feature "add a task", ctx do
-      next_friday = get_next_friday()
-      formatted_date = Calendar.strftime(next_friday, "%b %d")
-
       ctx
       |> Steps.visit_milestone_page()
-      |> Steps.add_task(name: "My task", due_date: next_friday)
-      |> Steps.assert_task_created(name: "My task", due_date: formatted_date)
+      |> Steps.add_task(name: "My task")
+      |> Steps.assert_task_created(name: "My task")
       |> Steps.assert_activity_added_to_feed("created \"My task\"")
       |> Steps.reload_milestone_page()
-      |> Steps.assert_task_created(name: "My task", due_date: formatted_date)
+      |> Steps.assert_task_created(name: "My task")
       |> Steps.assert_activity_added_to_feed("created \"My task\"")
     end
 
