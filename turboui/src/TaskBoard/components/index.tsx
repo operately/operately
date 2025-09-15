@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useState, useCallback, useEffect, useMemo } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import { DragAndDropProvider } from "../../utils/DragAndDrop";
 import { reorderTasks } from "../utils/taskReorderingUtils";
@@ -10,8 +10,8 @@ import { TaskList } from "./TaskList";
 import { MilestoneCard } from "./MilestoneCard";
 import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
-import { InlineTaskCreator, InlineTaskCreatorHandle } from "./InlineTaskCreator";
-import hotkeys from "hotkeys-js";
+import { InlineTaskCreator } from "./InlineTaskCreator";
+import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -43,9 +43,13 @@ export function TaskBoard({
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
-  const [noMilestoneCreatorOpen, setNoMilestoneCreatorOpen] = useState(false);
-  const noMilestoneCreatorRef = useRef<InlineTaskCreatorHandle | null>(null);
-  const noMilestoneHoveredRef = useRef(false);
+  const {
+    open: noMilestoneCreatorOpen,
+    openCreator: openNoMilestoneCreator,
+    closeCreator: closeNoMilestoneCreator,
+    creatorRef: noMilestoneCreatorRef,
+    hoverBind: noMilestoneHoverBind,
+  } = useInlineTaskCreator();
 
   // Keep internal tasks in sync with external tasks
   useEffect(() => {
@@ -72,24 +76,7 @@ export function TaskBoard({
     [internalTasks],
   );
 
-  // Bind 'c' for the No milestone section when it's hovered
-  useEffect(() => {
-    const handler = (evt: KeyboardEvent) => {
-      const target = evt.target as HTMLElement | null;
-      const tag = target?.tagName;
-      const isEditable = !!target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT");
-      if (isEditable) return;
-      if (!noMilestoneHoveredRef.current) return;
-      evt.preventDefault();
-      // @ts-ignore
-      if (typeof evt.stopImmediatePropagation === "function") evt.stopImmediatePropagation();
-      else evt.stopPropagation();
-      setNoMilestoneCreatorOpen(true);
-      setTimeout(() => noMilestoneCreatorRef.current?.focus(), 0);
-    };
-    hotkeys("c", handler);
-    return () => hotkeys.unbind("c", handler);
-  }, []);
+  // Hotkey handled by useInlineTaskCreator
 
   const handleTaskReorder = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
@@ -177,10 +164,7 @@ export function TaskBoard({
 
               {/* Tasks with no milestone */}
               {hasTasksWithoutMilestone && (
-                <li
-                  onMouseEnter={() => (noMilestoneHoveredRef.current = true)}
-                  onMouseLeave={() => (noMilestoneHoveredRef.current = false)}
-                >
+                <li {...noMilestoneHoverBind}>
                   {/* No milestone header */}
                   <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
                     <div className="flex items-center gap-2">
@@ -191,10 +175,7 @@ export function TaskBoard({
                     <SecondaryButton
                       size="xs"
                       icon={IconPlus}
-                      onClick={() => {
-                        setNoMilestoneCreatorOpen(true);
-                        setTimeout(() => noMilestoneCreatorRef.current?.focus(), 0);
-                      }}
+                      onClick={openNoMilestoneCreator}
                       testId="no-milestone-add-task"
                     >
                       <span className="sr-only">Add task</span>
@@ -221,7 +202,7 @@ export function TaskBoard({
                             setActiveTaskMilestoneId("no-milestone");
                             setIsTaskModalOpen(true);
                           }}
-                          onCancel={() => setNoMilestoneCreatorOpen(false)}
+                          onCancel={closeNoMilestoneCreator}
                           autoFocus
                           testId="inline-task-creator-no-milestone"
                         />

@@ -11,8 +11,8 @@ import { TaskFilter } from "../../TaskBoard";
 import { FilterBadges } from "../../TaskBoard/components/TaskFilter";
 import TaskList from "../../TaskBoard/components/TaskList";
 import { sortTasks } from "../../TaskBoard/utils/sortTasks";
-import { InlineTaskCreator, InlineTaskCreatorHandle } from "../../TaskBoard/components/InlineTaskCreator";
-import hotkeys from "hotkeys-js";
+import { InlineTaskCreator } from "../../TaskBoard/components/InlineTaskCreator";
+import { useInlineTaskCreator } from "../../TaskBoard/hooks/useInlineTaskCreator";
 
 export function TasksSection({
   tasks,
@@ -27,9 +27,7 @@ export function TasksSection({
   searchPeople,
   setIsTaskModalOpen,
 }: MilestonePage.State) {
-  const [creatorOpen, setCreatorOpen] = React.useState(false);
-  const creatorRef = React.useRef<InlineTaskCreatorHandle | null>(null);
-  const isHoveredRef = React.useRef(false);
+  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
   const stats = calculateMilestoneStats(tasks);
   const completionPercentage = calculateCompletionPercentage(stats);
 
@@ -75,32 +73,10 @@ export function TasksSection({
     [onTaskReorder],
   );
 
-  // Hotkey: 'c' focuses the inline creator when hovering the section
-  React.useEffect(() => {
-    const handler = (evt: KeyboardEvent) => {
-      const target = evt.target as HTMLElement | null;
-      const tag = target?.tagName;
-      const isEditable = !!target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT");
-      if (isEditable) return;
-      if (!isHoveredRef.current) return;
-      evt.preventDefault();
-      // @ts-ignore
-      if (typeof evt.stopImmediatePropagation === "function") evt.stopImmediatePropagation();
-      else evt.stopPropagation();
-      setCreatorOpen(true);
-      setTimeout(() => creatorRef.current?.focus(), 0);
-    };
-    hotkeys("c", handler);
-    return () => hotkeys.unbind("c", handler);
-  }, []);
+  // Hotkey handled by useInlineTaskCreator
 
   return (
-    <div
-      className="space-y-4 pt-6"
-      data-test-id="tasks-section"
-      onMouseEnter={() => (isHoveredRef.current = true)}
-      onMouseLeave={() => (isHoveredRef.current = false)}
-    >
+    <div className="space-y-4 pt-6" data-test-id="tasks-section" {...hoverBind}>
       {/* Task header container - visually groups all task-related controls */}
       <div className="bg-surface-dimmed rounded-lg border border-surface-outline">
         {/* Header bar with title, pie chart, and primary action */}
@@ -122,10 +98,7 @@ export function TasksSection({
           <SecondaryButton
             size="xs"
             icon={IconPlus}
-            onClick={() => {
-              setCreatorOpen(true);
-              setTimeout(() => creatorRef.current?.focus(), 0);
-            }}
+            onClick={openCreator}
             testId="tasks-section-add-task"
           >
             <span className="sr-only">Add task</span>
@@ -154,7 +127,7 @@ export function TasksSection({
                       onTaskCreate?.({ ...t, milestone });
                     }}
                     onRequestAdvanced={() => setIsTaskModalOpen(true)}
-                    onCancel={() => setCreatorOpen(false)}
+                    onCancel={closeCreator}
                     autoFocus
                     testId="inline-task-creator-milestonepage-empty"
                   />
@@ -187,7 +160,7 @@ export function TasksSection({
                       milestone={milestone}
                       onCreate={(t) => onTaskCreate?.({ ...t, milestone })}
                       onRequestAdvanced={() => setIsTaskModalOpen(true)}
-                      onCancel={() => setCreatorOpen(false)}
+                      onCancel={closeCreator}
                       autoFocus
                       testId="inline-task-creator-milestonepage"
                     />
