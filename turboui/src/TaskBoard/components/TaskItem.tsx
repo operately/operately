@@ -33,7 +33,7 @@ export function TaskItem({
 }: TaskItemProps) {
   const [currentAssignee, setCurrentAssignee] = useState<Person | null>(task.assignees?.[0] || null);
   const [currentDueDate, setCurrentDueDate] = useState<DateField.ContextualDate | null>(task.dueDate || null);
-  const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status);
+  const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status || "pending");
 
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId, disabled: draggingDisabled });
@@ -83,7 +83,7 @@ export function TaskItem({
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
               <StatusSelector
-                status={currentStatus}
+                status={currentStatus || "pending"}
                 onChange={handleStatusChange}
                 size="md"
                 readonly={!onTaskStatusChange}

@@ -89,11 +89,18 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
 
   let children = props.children;
   if (props.icon) {
-    children = (
+    const c = props.children as any;
+    const isSrOnly =
+      !!c && typeof c === "object" && "props" in c && typeof c.props?.className === "string" && c.props.className.includes("sr-only");
+    const hasVisibleLabel = !!c && !isSrOnly;
+
+    children = hasVisibleLabel ? (
       <div className="-ml-1 flex items-center gap-1">
         <props.icon size={iconSize} />
         {props.children}
       </div>
+    ) : (
+      <props.icon size={iconSize} />
     );
   }
 
