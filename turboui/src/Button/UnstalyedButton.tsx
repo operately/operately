@@ -70,6 +70,24 @@ function UnstyledLinkButton(props: UnstyledButtonProps) {
   );
 }
 
+// if no text then it's an icon-only button and we need different padding rules
+function hasVisibleTextLabel(children: React.ReactNode): boolean {
+  const nodes = React.Children.toArray(children);
+  if (nodes.length === 0) return false;
+
+  for (const node of nodes) {
+    if (typeof node === "string" && node.trim() !== "") return true;
+    if (typeof node === "number") return true;
+    if (React.isValidElement(node)) {
+      const cls = (node.props as { className?: string } | undefined)?.className;
+      const isScreenReaderOnly = typeof cls === "string" && cls.includes("sr-only");
+      if (!isScreenReaderOnly) return true;
+    }
+  }
+
+  return false;
+}
+
 function UnstyledActionButton(props: UnstyledButtonProps) {
   const handleClick = (e: any) => {
     if (props.loading) return;
@@ -89,12 +107,8 @@ function UnstyledActionButton(props: UnstyledButtonProps) {
 
   let children = props.children;
   if (props.icon) {
-    const c = props.children as any;
-    const isSrOnly =
-      !!c && typeof c === "object" && "props" in c && typeof c.props?.className === "string" && c.props.className.includes("sr-only");
-    const hasVisibleLabel = !!c && !isSrOnly;
-
-    children = hasVisibleLabel ? (
+    const hasLabel = hasVisibleTextLabel(props.children);
+    children = hasLabel ? (
       <div className="-ml-1 flex items-center gap-1">
         <props.icon size={iconSize} />
         {props.children}
