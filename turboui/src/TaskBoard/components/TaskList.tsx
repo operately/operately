@@ -18,6 +18,8 @@ export interface TaskListProps {
   searchPeople?: (params: { query: string }) => Promise<Types.Person[]>;
   /** Whether to show the hidden tasks toggle (ghost row) */
   showHiddenTasksToggle?: boolean;
+  /** Optional inline row to render below active tasks (e.g., inline creator) */
+  inlineCreateRow?: React.ReactNode;
 }
 
 /**
@@ -34,6 +36,7 @@ export function TaskList({
   onTaskDueDateChange,
   onTaskStatusChange,
   searchPeople,
+  inlineCreateRow,
 }: TaskListProps) {
   const [hiddenTasksExpanded, setHiddenTasksExpanded] = useState(false);
 
@@ -88,10 +91,13 @@ export function TaskList({
         ))}
       </ul>
 
+      {/* Inline create row (e.g., add task) */}
+      {inlineCreateRow}
+
       {/* Empty state message when no visible tasks but there are hidden tasks */}
       {tasks.length === 0 && totalHiddenCount > 0 && showHiddenTasksToggle && (
         <div className="py-3 px-4 text-center text-content-subtle text-sm bg-surface-base">
-          Click + to add a task or drag a task here.
+          Click + or press c to add a task, or drag a task here.
         </div>
       )}
 
