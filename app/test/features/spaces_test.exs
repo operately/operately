@@ -49,6 +49,13 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_paused_projects_are_listed()
   end
 
+  feature "pending projects and goals are not counted as on track", ctx do
+    ctx
+    |> Steps.given_a_space_with_pending_projects_and_goals()
+    |> Steps.visit_space()
+    |> Steps.assert_pending_projects_and_goals_counted_correctly()
+  end
+
   feature "joining a space", ctx do
     group = group_fixture(ctx.creator, %{name: "Marketing", company_permissions: Binding.view_access()})
     person = person_fixture_with_account(%{full_name: "Mati Aharoni", company_id: ctx.company.id})
