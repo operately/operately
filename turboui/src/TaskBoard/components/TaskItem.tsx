@@ -134,6 +134,7 @@ export function TaskItem({
                 readonly={!onTaskDueDateChange}
                 size="small"
                 calendarOnly
+                testId="task-due-date"
               />
             ) : (
               /* Empty state that appears on hover */
@@ -148,6 +149,7 @@ export function TaskItem({
                   readonly={false}
                   size="small"
                   calendarOnly
+                  testId="task-due-date"
                 />
               </div>
             )}
