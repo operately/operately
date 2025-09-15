@@ -47,7 +47,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     link: "#",
   },
   completedMilestone1: {
-    id: "5",
+    id: "4",
     name: "Initial Research Phase",
     dueDate: createContextualDate("2025-03-15", "day"),
     hasDescription: true,
@@ -57,7 +57,7 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     link: "#",
   },
   completedMilestone2: {
-    id: "6",
+    id: "5",
     name: "Design System Foundation",
     dueDate: createContextualDate("2025-04-30", "day"),
     hasDescription: true,
@@ -66,13 +66,22 @@ export const mockMilestones: Record<string, Types.Milestone> = {
     link: "#",
   },
   emptyMilestone: {
-    id: "4",
+    id: "6",
     name: "Empty Milestone",
     dueDate: undefined,
     hasDescription: false,
     hasComments: false,
     status: "pending",
     link: "#",
+  },
+  minimalMilestone: {
+    id: "7",
+    name: "Minimal Milestone",
+    link: "#",
+    dueDate: undefined,
+    hasDescription: false,
+    hasComments: false,
+    status: "pending",
   },
 };
 
@@ -299,6 +308,19 @@ export const mockTasks: Types.Task[] = [
     dueDate: createContextualDate("2025-08-15", "day"),
     points: 3,
     hasDescription: true,
+    hasComments: false,
+  },
+  {
+    id: "task-18",
+    title: "This task demonstrates a minimal milestone",
+    status: "pending",
+    description: null,
+    link: "#",
+    assignees: [],
+    milestone: mockMilestones.minimalMilestone!,
+    dueDate: null,
+    points: 0,
+    hasDescription: false,
     hasComments: false,
   },
 ];

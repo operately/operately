@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import * as Types from "../types";
 import { TaskBoard } from "../components";
 import { mockTasks, mockMilestones } from "../tests/mockData";
@@ -31,17 +31,6 @@ const meta: Meta<typeof TaskBoard> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Create a minimal milestone for testing different UI states
-const standaloneTestMilestone: Types.Milestone = {
-  id: "milestone-minimal",
-  name: "Minimal Milestone",
-  link: "#",
-  dueDate: undefined, // Using undefined instead of null to match the type definition
-  hasDescription: false,
-  hasComments: false,
-  status: "pending",
-};
-
 /**
  * Default table view of the TaskBoard with working task creation and milestone creation
  */
@@ -66,25 +55,8 @@ export const Default: Story = {
     const [tasks, setTasks] = useState([...mockTasks]);
     const [milestones, setMilestones] = useState<Types.Milestone[]>([
       ...Object.values(mockMilestones),
-      standaloneTestMilestone,
     ]);
     const [filters, setFilters] = useState<Types.FilterCondition[]>([]);
-
-    // Add a task with the standalone milestone for demonstration
-    useEffect(() => {
-      const taskWithStandaloneMilestone = {
-        id: "task-minimal-milestone",
-        title: "This task demonstrates a minimal milestone",
-        status: "pending" as Types.Status,
-        link: "#",
-        milestone: standaloneTestMilestone,
-        description: null,
-        dueDate: null,
-      };
-
-      // Update tasks array with our new task
-      setTasks((prev) => [...prev, taskWithStandaloneMilestone]);
-    }, []);
 
     const handleTaskCreate = (newTaskData) => {
       // Generate a fake UUID for the new task
@@ -121,30 +93,10 @@ export const Default: Story = {
       setMilestones((prev) => [...prev, newMilestone]);
     };
 
-    const handleMilestoneUpdate = (milestoneId: string, updates: Types.UpdateMilestonePayload) => {
-      console.log(`Updating milestone ${milestoneId}:`, updates);
-
-      // Update the milestone in the milestones array
-      const updatedMilestones = milestones.map((milestone) =>
-        milestone.id === milestoneId ? { ...milestone, ...updates } : milestone,
+    const handleTaskStatusChange = (taskId: string, status: Types.Status) => {
+      setTasks((prevTasks) =>
+        prevTasks.map((task) => (task.id === taskId ? { ...task, status } : task))
       );
-      setMilestones(updatedMilestones);
-
-      // Update all tasks that have this milestone
-      const updatedTasks = tasks.map((task) => {
-        if (task.milestone?.id === milestoneId) {
-          return {
-            ...task,
-            milestone: {
-              ...task.milestone,
-              ...updates,
-            },
-          };
-        }
-        return task;
-      });
-
-      setTasks(updatedTasks);
     };
 
     return (
@@ -159,10 +111,7 @@ export const Default: Story = {
         onTaskDueDateChange={(taskId, dueDate) => {
           console.log('Task due date updated:', taskId, dueDate);
         }}
-        onTaskStatusChange={(taskId, status) => {
-          console.log('Task status updated:', taskId, status);
-        }}
-        onMilestoneUpdate={handleMilestoneUpdate}
+        onTaskStatusChange={handleTaskStatusChange}
         searchPeople={mockSearchPeople}
         filters={filters}
         onFiltersChange={setFilters}
