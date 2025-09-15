@@ -40,7 +40,7 @@ function TextClasses({ size }: { size: AvatarSize }): string {
     }
 
     if ((size as number) <= 24) {
-      return "text-[11px] font-bold";
+      return "text-[10px] font-bold";
     }
 
     if ((size as number) <= 40) {
@@ -102,7 +102,7 @@ function BackupAvatar({ person, size, className }: AvatarProps): JSX.Element {
   return (
     <div title={person.fullName ?? ""} className={around} style={style}>
       <div className={inner}>
-        <div className="flex items-center justify-center h-full">{initials(person.fullName)}</div>
+        <div className="flex items-center justify-center h-full whitespace-nowrap">{initials(person.fullName)}</div>
       </div>
     </div>
   );
