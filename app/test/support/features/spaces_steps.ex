@@ -355,8 +355,9 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :assert_goals_and_projects_box_shows_correct_counts, ctx do
-    # Should show "2/4 projects on track" (2 active out of 4 total)
-    ctx |> UI.assert_text("2/4 projects on track")
+    # Should show "0/4 projects on track" (0 with check-ins out of 4 total)
+    # because active projects without check-ins are pending, not on track
+    ctx |> UI.assert_text("0/4 projects on track")
   end
 
   step :assert_paused_projects_are_listed, ctx do
@@ -366,5 +367,27 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> UI.assert_text("Active Project 2")
     |> UI.assert_text("Paused Project 1")
     |> UI.assert_text("Paused Project 2")
+  end
+
+  step :given_a_space_with_pending_projects_and_goals, ctx do
+    ctx
+    |> Factory.add_space(:marketing, name: "Test Space", mission: "Test space for pending projects")
+    |> Factory.add_project(:pending_project1, :marketing, name: "Pending Project 1")
+    |> Factory.add_project(:pending_project2, :marketing, name: "Pending Project 2")
+    |> Factory.add_project(:on_track_project, :marketing, name: "On Track Project")
+    |> Factory.add_goal(:pending_goal1, :marketing, name: "Pending Goal 1")
+    |> Factory.add_goal(:pending_goal2, :marketing, name: "Pending Goal 2")
+    |> Factory.add_goal(:on_track_goal, :marketing, name: "On Track Goal")
+    # Add check-ins to make some projects/goals "on track"
+    |> Factory.add_project_check_in(:on_track_check_in_project, :on_track_project, :creator, status: "on_track")
+    |> Factory.add_goal_update(:on_track_update_goal, :on_track_goal, :creator, status: "on_track")
+  end
+
+  step :assert_pending_projects_and_goals_counted_correctly, ctx do
+    # Should show "1/3 projects on track" (1 with check-in out of 3 total)
+    # and "1/3 goals on track" (1 with update out of 3 total)
+    ctx 
+    |> UI.assert_text("1/3 projects on track")
+    |> UI.assert_text("1/3 goals on track")
   end
 end
