@@ -1,11 +1,11 @@
 import React from "react";
 
-import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
-import { IconTrash, IconPdf, IconFileZip, IconFileFilled } from "turboui";
+import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
+import { IconFileFilled, IconFileZip, IconPdf, IconTrash } from "turboui";
 
-import { LoadingProgressBar } from "@/components/LoadingProgressBar";
 import { ImageModal } from "@/components/ImageModal";
+import { LoadingProgressBar } from "@/components/LoadingProgressBar";
 
 //
 // This is view component for the blob node for the TipTap editor.
@@ -108,7 +108,7 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
       title={node.attrs.title}
       className={classnames({
         "group-hover:border-stroke-base transition-colors": view.editable,
-        "cursor-pointer": !view.editable,
+        "cursor-zoom-in": !view.editable,
       })}
       data-drag-handle
       onClick={handleImageClick}
