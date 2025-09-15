@@ -16,7 +16,7 @@
   <%= row do %>
     <ul style="list-style-type: disc; margin: 0; padding-left: 20px;">
       <%= for target <- @targets do %>
-        <li style="margin-bottom: 8px;"><%= target.name %> - <%= Operately.Goals.Target.format_value(target) %></li>
+        <li><%= target.name %> - <%= Operately.Goals.Target.format_value(target) %></li>
       <% end %>
     </ul>
   <% end %>
@@ -30,7 +30,7 @@
   <%= row do %>
     <ul style="list-style-type: none; margin: 0; padding-left: 0px;">
       <%= for check <- @checks do %>
-        <li style="margin-bottom: 8px;">
+        <li>
           <span style="font-family: monospace;"><%= if check.completed, do: "[✓]", else: "[ ]" %></span> <%= check.name %>
         </li>
       <% end %>
