@@ -135,22 +135,19 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :add_task, ctx, name: name, due_date: due_date do
     ctx
-    |> UI.click_button("Add Task")
-    |> UI.fill(placeholder: "Enter task title", with: name)
+    |> UI.click(testid: "tasks-section-add-task")
+    |> UI.fill(testid: "inline-task-creator-milestonepage", with: name)
+    |> UI.press_enter()
     |> UI.select_day_in_date_field(testid: "task-due-date", date: due_date)
-    |> UI.click_button("Create task")
   end
 
   step :add_multiple_tasks, ctx, names: names do
-    ctx
-    |> UI.click_button("Add Task")
-    |> UI.click(testid: "add-more-switch")
-    |> UI.find(UI.query(testid: "add-task-form"), fn el ->
-      Enum.reduce(names, el, fn name, el ->
-        el
-        |> UI.fill(placeholder: "Enter task title", with: name)
-        |> UI.click_button("Create task")
-      end)
+    ctx = UI.click(ctx, testid: "tasks-section-add-task")
+
+    Enum.reduce(names, ctx, fn name, ctx ->
+      ctx
+      |> UI.fill(testid: "inline-task-creator-milestonepage", with: name)
+      |> UI.press_enter()
     end)
     |> UI.click_button("Cancel")
   end
@@ -295,7 +292,9 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :assert_add_task_form_closed, ctx do
-    UI.refute_has(ctx, testid: "add-task-form")
+    ctx
+    |> UI.refute_has(testid: "inline-task-creator-milestonepage")
+    |> UI.refute_has(testid: "inline-task-creator-milestonepage-empty")
   end
 
   step :assert_activity_added_to_feed, ctx, description do

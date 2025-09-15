@@ -140,6 +140,12 @@ make turboui.build && make turboui.test
 - **Typography consistency**: Match header sizes and styles across similar sections throughout the application
 - **Use standard components**: Always use design system components (Link variants, Button variants) instead of custom implementations
 
+### Keyboard Shortcuts
+
+- Use hotkeys-js library
+- Keep shortcuts lightweight and scoped; do not interfere with text inputs.
+- Always provide a clickable alternative.
+
 ### Pattern Recognition and Component Reuse
 
 **When implementing similar functionality:**
@@ -154,6 +160,13 @@ make turboui.build && make turboui.test
 - **Match exactly first, customize second**: Get the implementation identical to the reference, then make specific adjustments if needed
 - **Note component hierarchy**: How headers, buttons, and content are structured and positioned in reference implementations
 - **Identify reusable pieces**: Extract shared utilities, hooks, or helper functions that should be reused rather than rebuilt
+
+### Coding Practices
+
+- Avoid `@ts-ignore`. Prefer proper typing, narrow with type guards, or use `@ts-expect-error` sparingly with a clear comment explaining why.
+- Avoid `as any`. Use precise types, React utilities (`Children.toArray`, `isValidElement`), and safe fallbacks instead of broad casts.
+- Use descriptive, self-explanatory names. Eg., prefer `isScreenReaderOnly` over `isSrOnly`, `openInlineCreator` over `open` when scope is ambiguous.
+- Provide sane defaults to prevent crashes when data is incomplete.
 
 ### Interactive Design
 
