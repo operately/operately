@@ -92,7 +92,7 @@ export function TaskItem({
             {/* Task title with inline meta indicators */}
             <BlackLink
               to={task.link}
-              className="text-sm hover:text-link-hover transition-colors truncate h-6 flex items-center relative top-[-1px]"
+              className="text-sm font-medium hover:text-link-hover transition-colors truncate h-6 flex items-center relative top-[-1px]"
               underline="hover"
             >
               {task.title}
@@ -101,16 +101,19 @@ export function TaskItem({
 
           {/* Description indicator */}
           {task.hasDescription && (
-            <span className="text-content-subtle flex-shrink-0">
+            <span className="text-content-dimmed flex-shrink-0" title="Has description">
               <IconFileText size={14} />
             </span>
           )}
 
           {/* Comments indicator */}
           {task.hasComments && (
-            <span className="text-content-subtle flex items-center flex-shrink-0">
+            <span
+              className="text-content-dimmed flex items-center flex-shrink-0"
+              title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
+            >
               <IconMessageCircle size={14} />
-              {task.commentCount && <span className="ml-0.5 text-xs text-content-subtle">{task.commentCount}</span>}
+              <span className="ml-0.5 text-xs text-content-dimmed">{task.commentCount}</span>
             </span>
           )}
         </div>
