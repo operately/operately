@@ -179,8 +179,8 @@ function Trigger({ state }: { state: PersonField.State }) {
     );
   } else {
     return (
-      <Popover.Trigger 
-        className={calcTriggerClass(state)} 
+      <Popover.Trigger
+        className={calcTriggerClass(state)}
         data-test-id={state.testId}
         onKeyDown={(e) => {
           if (e.key === "Enter" && !state.readonly) {
@@ -197,7 +197,7 @@ function Trigger({ state }: { state: PersonField.State }) {
 
 function calcTriggerClass(state: PersonField.State) {
   const hasClickableProfile = state.readonly && state.person && state.person.profileLink;
-  
+
   if (state.avatarOnly) {
     return classNames({
       "flex items-center justify-center": true,
@@ -209,7 +209,8 @@ function calcTriggerClass(state: PersonField.State) {
   } else {
     return classNames({
       "flex items-center gap-2 truncate text-left": true,
-      "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
+      "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded":
+        !state.readonly,
       "cursor-pointer": !state.readonly || hasClickableProfile,
       "cursor-default": state.readonly && !hasClickableProfile,
       "bg-surface-dimmed": state.isOpen,
@@ -264,9 +265,7 @@ function TriggerText({ state }: { state: PersonField.State }) {
   if (state.person) {
     return (
       <div className="-mt-0.5 truncate">
-        <div className={(state.size === "small" ? "text-xs" : "text-sm") + " font-medium"}>
-          {state.person.fullName}
-        </div>
+        <div className={(state.size === "small" ? "text-xs" : "text-sm") + " font-medium"}>{state.person.fullName}</div>
         {state.showTitle && state.person.title && <div className="text-xs truncate">{state.person.title}</div>}
       </div>
     );
@@ -322,12 +321,12 @@ function DialogMenu({ state }: { state: PersonField.State }) {
       linkTo?: string;
       onClick?: () => void;
     }> = [];
-    
+
     if (state.person?.profileLink) {
       options.push({
         testId: `${state.testId}-view-profile`,
         icon: IconExternalLink,
-        label: "See profile",
+        label: "View profile",
         linkTo: state.person.profileLink,
       });
     }
@@ -399,7 +398,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
         if (selectedOption?.onClick) {
           selectedOption.onClick();
         } else if (selectedOption?.linkTo) {
-          window.open(selectedOption.linkTo, '_blank');
+          window.location.assign(selectedOption.linkTo);
           state.setIsOpen(false);
         }
         break;
@@ -426,7 +425,7 @@ function DialogMenu({ state }: { state: PersonField.State }) {
             if (option.onClick) {
               option.onClick();
             } else if (option.linkTo) {
-              window.open(option.linkTo, '_blank');
+              window.location.assign(option.linkTo);
               state.setIsOpen(false);
             }
           }}
@@ -441,7 +440,6 @@ function DialogMenu({ state }: { state: PersonField.State }) {
     </div>
   );
 }
-
 
 function DialogSearch({ state }: { state: PersonField.State }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
