@@ -73,6 +73,40 @@ defmodule Operately.MD.ProjectTest do
     assert rendered =~ ctx.milestone.title
   end
 
+  test "it includes completion timestamp for completed milestones", ctx do
+    ctx = Factory.add_project_milestone(ctx, :milestone, :project)
+    ctx = Factory.close_project_milestone(ctx, :milestone)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    # Check that the milestone is rendered
+    assert rendered =~ "## Milestones"
+    assert rendered =~ ctx.milestone.title
+    assert rendered =~ "Status: done"
+
+    # Check that completion timestamp is included
+    assert rendered =~ "Completed:"
+
+    # Check that the actual completion date is rendered
+    milestone = Operately.Repo.reload(ctx.milestone)
+    expected_date = milestone.completed_at |> Operately.Time.as_date() |> Date.to_iso8601()
+    assert rendered =~ expected_date
+  end
+
+  test "it does not include completion timestamp for pending milestones", ctx do
+    ctx = Factory.add_project_milestone(ctx, :milestone, :project)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    # Check that the milestone is rendered
+    assert rendered =~ "## Milestones"
+    assert rendered =~ ctx.milestone.title
+    assert rendered =~ "Status: pending"
+
+    # Check that completion timestamp is not included for pending milestones
+    refute rendered =~ "Completed:"
+  end
+
   test "it renders parent goal when project is linked to a goal", ctx do
     ctx = Factory.add_goal(ctx, :goal, :marketing, name: "Marketing Goal")
     ctx = Factory.add_project(ctx, :project_with_goal, :marketing, goal: :goal)

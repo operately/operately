@@ -91,9 +91,17 @@ defmodule Operately.MD.Project do
 
     #{milestones |> Enum.sort_by(& &1.inserted_at) |> Enum.map_join("\n", fn milestone -> """
       - #{milestone.title} (Status: #{milestone.status})
-        Due: #{render_milestone_due(milestone)}
+        Due: #{render_milestone_due(milestone)}#{render_milestone_completion(milestone)}
       """ end)}
     """
+  end
+
+  defp render_milestone_completion(milestone) do
+    if milestone.status == :done && milestone.completed_at do
+      "\n        Completed: #{render_date(milestone.completed_at)}"
+    else
+      ""
+    end
   end
 
   defp render_milestone_due(milestone) do
