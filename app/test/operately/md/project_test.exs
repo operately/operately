@@ -1,11 +1,33 @@
 defmodule Operately.MD.ProjectTest do
   use Operately.DataCase
 
+  alias Operately.Repo
+
   setup ctx do
     ctx
     |> Factory.setup()
     |> Factory.add_space(:marketing)
     |> Factory.add_project(:project, :marketing)
+  end
+
+  test "renders timeline editing activities with timestamps", ctx do
+    # Create timeline editing activity using Repo.insert like other tests
+    {:ok, _timeline_activity} =
+      Repo.insert(%Operately.Activities.Activity{
+        action: "project_timeline_edited",
+        author_id: ctx.creator.id,
+        content: %{
+          "project_id" => ctx.project.id,
+          "company_id" => ctx.company.id,
+          "space_id" => ctx.marketing.id
+        },
+        inserted_at: ~N[2024-01-15 14:30:00]
+      })
+
+    result = Operately.MD.Project.render(ctx.project)
+
+    assert result =~ "## Timeline Changes"
+    assert result =~ "Timeline edited by #{ctx.creator.full_name} on 2024-01-15"
   end
 
   test "it renders discussions in the markdown", ctx do
