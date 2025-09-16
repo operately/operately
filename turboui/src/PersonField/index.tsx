@@ -53,6 +53,7 @@ export namespace PersonField {
 
     readonly: boolean;
     avatarSize: number;
+    size: "small" | "normal";
     showTitle: boolean;
     avatarOnly: boolean;
     emptyStateMessage: string;
@@ -89,6 +90,7 @@ export function useState(props: PersonField.Props): PersonField.State {
   const resolvedBySize = props.size === "small" ? 24 : 32; // default normal = 32
   const avatarSize = props.avatarSize ?? resolvedBySize;
   const showTitle = props.showTitle ?? true;
+  const size = props.size ?? "normal";
   const avatarOnly = props.avatarOnly ?? false;
   const emptyStateMessage = props.emptyStateMessage ?? "Select person";
   const emptyStateReadOnlyMessage = props.emptyStateReadOnlyMessage ?? "Not assigned";
@@ -147,6 +149,7 @@ export function useState(props: PersonField.Props): PersonField.State {
     setDialogMode,
     readonly,
     avatarSize,
+    size,
     showTitle,
     avatarOnly,
     emptyStateMessage,
@@ -220,10 +223,14 @@ function TriggerIcon({ state }: { state: PersonField.State }) {
       <Avatar
         person={state.person!}
         size={state.avatarSize}
-        className={classNames({
-          "transition-all duration-200": state.avatarOnly && !state.readonly,
-          "hover:scale-105 hover:shadow-md": state.avatarOnly && !state.readonly,
-        })}
+        className={classNames(
+          {
+            "transition-all duration-200": state.avatarOnly && !state.readonly,
+            "hover:scale-105 hover:shadow-md": state.avatarOnly && !state.readonly,
+          },
+          // Slight vertical nudge for small size to align with text
+          !state.avatarOnly && state.size === "small" ? "-mt-px" : undefined,
+        )}
       />
     );
   } else {
@@ -231,11 +238,15 @@ function TriggerIcon({ state }: { state: PersonField.State }) {
 
     return (
       <div
-        className={classNames({
-          "border border-content-subtle border-dashed rounded-full flex items-center justify-center": true,
-          "hover:border-content-accent transition-all duration-200": state.avatarOnly && !state.readonly,
-          "hover:scale-105": state.avatarOnly && !state.readonly,
-        })}
+        className={classNames(
+          {
+            "border border-content-subtle border-dashed rounded-full flex items-center justify-center": true,
+            "hover:border-content-accent transition-all duration-200": state.avatarOnly && !state.readonly,
+            "hover:scale-105": state.avatarOnly && !state.readonly,
+          },
+          // Match avatar nudge in empty state
+          !state.avatarOnly && state.size === "small" ? "-mt-px" : undefined,
+        )}
         style={{
           width: state.avatarSize,
           height: state.avatarSize,
@@ -253,14 +264,16 @@ function TriggerText({ state }: { state: PersonField.State }) {
   if (state.person) {
     return (
       <div className="-mt-0.5 truncate">
-        <div className="text-sm font-medium">{state.person.fullName}</div>
+        <div className={(state.size === "small" ? "text-xs" : "text-sm") + " font-medium"}>
+          {state.person.fullName}
+        </div>
         {state.showTitle && state.person.title && <div className="text-xs truncate">{state.person.title}</div>}
       </div>
     );
   } else {
     return (
       <div className="truncate">
-        <div className="text-sm font-medium text-content-dimmed">
+        <div className={(state.size === "small" ? "text-xs" : "text-sm") + " font-medium text-content-dimmed"}>
           {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
         </div>
       </div>
