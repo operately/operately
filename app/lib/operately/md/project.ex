@@ -1,4 +1,9 @@
 defmodule Operately.MD.Project do
+  import Ecto.Query
+
+  alias Operately.Activities
+  alias Operately.Repo
+
   def render(project) do
     project =
       Operately.Repo.preload(project, [
@@ -11,6 +16,7 @@ defmodule Operately.MD.Project do
         [contributors: [:person]]
       ])
 
+    check_ins_with_comments = load_check_ins_with_comments(project.check_ins)
     discussions = Operately.Projects.Project.list_discussions(project.id)
 
     """
@@ -21,8 +27,9 @@ defmodule Operately.MD.Project do
     #{render_people(project)}
     #{render_timeframe(project)}
     #{render_milestones(project.milestones)}
-    #{render_check_ins(project.check_ins)}
+    #{render_check_ins(check_ins_with_comments)}
     #{render_discussions(discussions)}
+    #{render_timeline_activities(project)}
     #{render_retrospective(project.retrospective)}
     """
     |> compact_empty_lines()
@@ -90,9 +97,44 @@ defmodule Operately.MD.Project do
 
     #{milestones |> Enum.sort_by(& &1.inserted_at) |> Enum.map_join("\n", fn milestone -> """
       - #{milestone.title} (Status: #{milestone.status})
-        Due: #{render_milestone_due(milestone)}
+        Due: #{render_milestone_due(milestone)}#{render_milestone_completion(milestone)}
       """ end)}
     """
+  end
+
+  defp render_milestone_completion(milestone) do
+    if milestone.status == :done && milestone.completed_at do
+      "\n        Completed: #{render_date(milestone.completed_at)}"
+    else
+      ""
+    end
+  end
+
+  def render_timeline_activities(project) do
+    timeline_activities = load_timeline_activities(project)
+
+    if Enum.empty?(timeline_activities) do
+      ""
+    else
+      content = Enum.map(timeline_activities, &render_timeline_activity/1)
+
+      "## Timeline Changes\n\n" <> Enum.join(content, "\n") <> "\n\n"
+    end
+  end
+
+  defp load_timeline_activities(project) do
+    Activities.list_activities("project", project.id, ["project_timeline_edited"])
+    |> Enum.map(fn activity ->
+      Repo.preload(activity, [:author])
+    end)
+    |> Enum.sort_by(& &1.inserted_at, DateTime)
+  end
+
+  defp render_timeline_activity(activity) do
+    author_name = activity.author.full_name
+    formatted_date = render_date(activity.inserted_at)
+
+    "- Timeline edited by #{author_name} on #{formatted_date}"
   end
 
   defp render_milestone_due(milestone) do
@@ -125,6 +167,28 @@ defmodule Operately.MD.Project do
     #{render_person("Author", check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.description)}
+
+    #{render_check_in_comments(check_in.comments || [])}
+    """
+  end
+
+  defp render_check_in_comments([]) do
+    ""
+  end
+
+  defp render_check_in_comments(comments) do
+    """
+    #### Comments
+
+    #{Enum.map_join(comments, "\n\n", &render_check_in_comment/1)}
+    """
+  end
+
+  defp render_check_in_comment(comment) do
+    """
+    **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}:
+
+    #{Operately.MD.RichText.render(comment.content["message"])}
     """
   end
 
@@ -202,8 +266,27 @@ defmodule Operately.MD.Project do
     ### #{discussion.title}
 
     #{render_person("Author", discussion.author)}
+    Posted on: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
     """
+  end
+
+  defp load_check_ins_with_comments(check_ins) do
+    Enum.map(check_ins, fn check_in ->
+      comments = load_comments_for_check_in(check_in.id)
+      Map.put(check_in, :comments, comments)
+    end)
+  end
+
+  defp load_comments_for_check_in(check_in_id) do
+    import Ecto.Query
+
+    from(c in Operately.Updates.Comment,
+      where: c.entity_id == ^check_in_id and c.entity_type == :project_check_in,
+      order_by: [asc: c.inserted_at],
+      preload: [:author]
+    )
+    |> Operately.Repo.all()
   end
 end
