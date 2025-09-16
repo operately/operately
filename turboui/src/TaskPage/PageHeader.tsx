@@ -7,17 +7,17 @@ export function PageHeader(props: TaskPage.State) {
   return (
     <div className="mt-4">
       <div className="flex-1">
-        <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-3">
+        <div className="flex flex-col gap-2 md:block">
           <TextField
-            className="font-semibold leading-tight text-xl sm:text-2xl md:text-3xl break-words min-w-0"
+            className="inline align-baseline font-semibold leading-tight text-xl sm:text-2xl md:text-3xl break-words min-w-0"
             text={props.name}
             onChange={props.onNameChange}
             readonly={!props.canEdit}
             trimBeforeSave
           />
 
-          {/* Show status next to title on md+; on mobile it's shown in the mobile sidebar row */}
-          <div className="hidden md:block">
+          {/* On md+, place status inline right after the title */}
+          <span className="hidden md:inline align-baseline ml-2">
             <StatusSelector
               status={props.status}
               onChange={props.onStatusChange}
@@ -25,7 +25,7 @@ export function PageHeader(props: TaskPage.State) {
               readonly={!props.canEdit}
               showFullBadge={true}
             />
-          </div>
+          </span>
         </div>
       </div>
     </div>
