@@ -41,6 +41,7 @@ export interface Milestone {
   link?: string;
   tasksOrderingState?: string[];
   completedAt?: Date | null;
+  insertedAt?: string | null;
 }
 
 export interface NewMilestonePayload extends Omit<Milestone, "id"> {}
