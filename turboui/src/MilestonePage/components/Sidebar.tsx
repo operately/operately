@@ -7,6 +7,7 @@ import { NotificationToggle } from "../../NotificationToggle";
 import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag, IconCircleCheckFilled } from "../../icons";
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
+import { SidebarSection } from "../../SidebarSection";
 
 export function MilestoneSidebar({
   milestone,
@@ -32,15 +33,6 @@ export function MilestoneSidebar({
         <SidebarNotifications isSubscribed={isSubscribed} onSubscriptionToggle={onSubscriptionToggle} />
         <SidebarActions onDelete={openDeleteModal} canEdit={canEdit} />
       </div>
-    </div>
-  );
-}
-
-function SidebarSection({ title, children, testId }: { title: string | React.ReactNode; children: React.ReactNode; testId?: string }) {
-  return (
-    <div className="space-y-2" data-test-id={testId}>
-      <div className="font-bold text-sm">{title}</div>
-      {children}
     </div>
   );
 }

@@ -14,6 +14,7 @@ import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
 import { Summary } from "../RichContent";
 import { StatusBadge } from "../StatusBadge";
+import { SidebarSection } from "../SidebarSection";
 import { Tooltip } from "../Tooltip";
 import { durationHumanized, isOverdue } from "../utils/time";
 
@@ -264,15 +265,6 @@ function OverdueWarning(props: GoalPage.State) {
   return (
     <div className="mt-2">
       <WarningCallout message={`Overdue by ${duration}.`} />
-    </div>
-  );
-}
-
-function SidebarSection({ title, children }: { title: string | React.ReactNode; children: React.ReactNode }) {
-  return (
-    <div className="">
-      <div className="font-bold text-sm mb-1.5">{title}</div>
-      {children}
     </div>
   );
 }

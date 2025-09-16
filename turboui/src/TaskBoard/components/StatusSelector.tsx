@@ -79,12 +79,12 @@ function StatusButton({
     // Special styling for "done" and "canceled" status to make them more prominent
     status === "done"
       ? readonly
-        ? "border-green-200 bg-green-50 cursor-default"
-        : "border-green-200 bg-green-50 hover:bg-green-100 cursor-pointer"
+        ? "border-emerald-200 dark:border-emerald-800 bg-callout-success-bg cursor-default"
+        : "border-emerald-200 dark:border-emerald-800 bg-callout-success-bg hover:bg-emerald-50 dark:hover:bg-emerald-900/30 cursor-pointer"
       : status === "canceled"
       ? readonly
-        ? "border-red-200 bg-red-50 cursor-default"
-        : "border-red-200 bg-red-50 hover:bg-red-100 cursor-pointer"
+        ? "border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 cursor-default"
+        : "border-gray-200 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
       : readonly
       ? "border-surface-outline bg-surface-base cursor-default"
       : "border-surface-outline bg-surface-base hover:bg-surface-accent cursor-pointer",

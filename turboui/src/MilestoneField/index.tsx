@@ -234,7 +234,7 @@ function DialogMenu({ state }: { state: State }) {
     if (state.milestone?.link) {
       options.push({
         icon: IconExternalLink,
-        label: "See milestone",
+        label: "View milestone",
         linkTo: state.milestone.link,
       });
     }
@@ -313,7 +313,7 @@ function DialogMenu({ state }: { state: State }) {
         if (selectedOption?.onClick) {
           selectedOption.onClick();
         } else if (selectedOption?.linkTo) {
-          window.open(selectedOption.linkTo, "_blank");
+          window.location.assign(selectedOption.linkTo);
           state.setIsOpen(false);
         }
         break;
@@ -341,7 +341,7 @@ function DialogMenu({ state }: { state: State }) {
             if (option.onClick) {
               option.onClick();
             } else if (option.linkTo) {
-              window.open(option.linkTo, "_blank");
+              window.location.assign(option.linkTo);
               state.setIsOpen(false);
             }
           }}
