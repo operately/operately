@@ -31,6 +31,39 @@ defmodule Operately.MD.ProjectTest do
     assert rendered =~ expected_date
   end
 
+  test "it includes comments on check-ins with timestamps", ctx do
+    ctx = Factory.add_project_check_in(ctx, :check_in, :project, :creator)
+    ctx = Factory.preload(ctx, :check_in, :project)
+    ctx = Factory.add_comment(ctx, :comment, :check_in)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    # Check that the check-in is rendered
+    assert rendered =~ "## Check-ins"
+
+    # Check that comments section is included
+    assert rendered =~ "#### Comments"
+
+    # Check that the comment author and timestamp are included
+    assert rendered =~ ctx.creator.full_name
+
+    # Check that the comment timestamp is rendered
+    expected_date = ctx.comment.inserted_at |> Operately.Time.as_date() |> Date.to_iso8601()
+    assert rendered =~ expected_date
+  end
+
+  test "it renders check-ins without comments correctly", ctx do
+    ctx = Factory.add_project_check_in(ctx, :check_in, :project, :creator)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    # Check that the check-in is rendered
+    assert rendered =~ "## Check-ins"
+
+    # Check that no comments section is included when there are no comments
+    refute rendered =~ "#### Comments"
+  end
+
   test "it renders milestones in the markdown", ctx do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
 

@@ -11,6 +11,7 @@ defmodule Operately.MD.Project do
         [contributors: [:person]]
       ])
 
+    check_ins_with_comments = load_check_ins_with_comments(project.check_ins)
     discussions = Operately.Projects.Project.list_discussions(project.id)
 
     """
@@ -21,7 +22,7 @@ defmodule Operately.MD.Project do
     #{render_people(project)}
     #{render_timeframe(project)}
     #{render_milestones(project.milestones)}
-    #{render_check_ins(project.check_ins)}
+    #{render_check_ins(check_ins_with_comments)}
     #{render_discussions(discussions)}
     #{render_retrospective(project.retrospective)}
     """
@@ -125,6 +126,28 @@ defmodule Operately.MD.Project do
     #{render_person("Author", check_in.author)}
 
     #{Operately.MD.RichText.render(check_in.description)}
+
+    #{render_check_in_comments(check_in.comments || [])}
+    """
+  end
+
+  defp render_check_in_comments([]) do
+    ""
+  end
+
+  defp render_check_in_comments(comments) do
+    """
+    #### Comments
+
+    #{Enum.map_join(comments, "\n\n", &render_check_in_comment/1)}
+    """
+  end
+
+  defp render_check_in_comment(comment) do
+    """
+    **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}:
+
+    #{Operately.MD.RichText.render(comment.content["message"])}
     """
   end
 
@@ -206,5 +229,23 @@ defmodule Operately.MD.Project do
 
     #{Operately.MD.RichText.render(discussion.message)}
     """
+  end
+
+  defp load_check_ins_with_comments(check_ins) do
+    Enum.map(check_ins, fn check_in ->
+      comments = load_comments_for_check_in(check_in.id)
+      Map.put(check_in, :comments, comments)
+    end)
+  end
+
+  defp load_comments_for_check_in(check_in_id) do
+    import Ecto.Query
+
+    from(c in Operately.Updates.Comment,
+      where: c.entity_id == ^check_in_id and c.entity_type == :project_check_in,
+      order_by: [asc: c.inserted_at],
+      preload: [:author]
+    )
+    |> Operately.Repo.all()
   end
 end
