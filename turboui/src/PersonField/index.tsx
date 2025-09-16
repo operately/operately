@@ -30,6 +30,7 @@ export namespace PersonField {
 
     isOpen?: boolean;
     avatarSize?: number;
+    size?: "small" | "normal"; // convenience alias mapped to avatarSize
     readonly?: boolean;
     showTitle?: boolean;
     avatarOnly?: boolean;
@@ -85,7 +86,8 @@ export function useState(props: PersonField.Props): PersonField.State {
   const [searchResults, setSearchResults] = React.useState<PersonField.Person[]>([]);
 
   const readonly = props.readonly ?? false;
-  const avatarSize = props.avatarSize ?? 32;
+  const resolvedBySize = props.size === "small" ? 24 : 32; // default normal = 32
+  const avatarSize = props.avatarSize ?? resolvedBySize;
   const showTitle = props.showTitle ?? true;
   const avatarOnly = props.avatarOnly ?? false;
   const emptyStateMessage = props.emptyStateMessage ?? "Select person";

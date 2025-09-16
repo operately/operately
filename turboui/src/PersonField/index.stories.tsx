@@ -24,6 +24,7 @@ const meta: Meta<typeof PersonField> = {
   argTypes: {
     person: { control: "object" },
     avatarSize: { control: "number" },
+    size: { control: { type: "select" }, options: ["small", "normal"] },
     readonly: { control: "boolean" },
     showTitle: { control: "boolean" },
   },
@@ -69,6 +70,11 @@ export const AllStates: Story = {
               <div>
                 <Label>Empty State Custom Message</Label>
                 <Component person={null} emptyStateMessage="Set champion" searchPeople={searchPeople} />
+              </div>
+
+              <div>
+                <Label>Compact (size="small")</Label>
+                <Component person={person} size="small" showTitle={false} searchPeople={searchPeople} />
               </div>
 
               <div>

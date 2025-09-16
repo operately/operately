@@ -92,7 +92,7 @@ export function DateField({
   // If calendarOnly is true, we only show the calendar and only "day" is accepted
   const [dateType, setDateType] = useState<DateField.DateType>(calendarOnly ? "day" : (date?.dateType || "day"));
 
-  const { useSidePositioning, triggerRef } = usePopoverPositioning({ open });
+  const { useSidePositioning, triggerRef, side } = usePopoverPositioning({ open });
 
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
@@ -160,13 +160,12 @@ export function DateField({
       <Popover.Portal>
         <Popover.Content
           className="z-50 animate-fadeIn max-h-[80vh] overflow-y-auto"
-          sideOffset={5}
+          sideOffset={6}
           align={useSidePositioning ? "center" : "start"}
-          collisionPadding={50}
+          collisionPadding={8}
           avoidCollisions={true}
-          side={useSidePositioning ? "right" : "bottom"}
+          side={side}
           sticky="always"
-          collisionBoundary={typeof document !== "undefined" ? [document.body] : undefined}
         >
           <DatePickerContent
             dateType={dateType}
