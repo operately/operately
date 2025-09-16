@@ -9,6 +9,7 @@ import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
+import { StatusSelector } from "../TaskBoard/components/StatusSelector";
 
 export function Sidebar(props: TaskPage.State) {
   return (
@@ -23,11 +24,33 @@ export function Sidebar(props: TaskPage.State) {
   );
 }
 
+// Compact, mobile-only subset of sidebar content
+export function MobileSidebar(props: TaskPage.State) {
+  return (
+    <div className="sm:hidden block mt-4">
+      <div className="grid grid-cols-[auto_auto_1fr] gap-4 items-start">
+        <div>
+          <StatusMobile {...props} />
+        </div>
+        <div>
+          <DueDateMobile {...props} />
+        </div>
+        <div>
+          <AssigneeMobile {...props} />
+        </div>
+      </div>
+      <div className="mt-4">
+        <Milestone {...props} />
+      </div>
+    </div>
+  );
+}
+
 function DueDate(props: TaskPage.State) {
   const isCompleted = props.status === "done" || props.status === "canceled";
 
   return (
-    <SidebarSection title="Due Date">
+    <SidebarSection title="Due date">
       <DateField
         date={props.dueDate ?? null}
         onDateSelect={props.onDueDateChange}
@@ -56,6 +79,55 @@ function Assignees(props: TaskPage.State) {
   );
 }
 
+function DueDateMobile(props: TaskPage.State) {
+  const isCompleted = props.status === "done" || props.status === "canceled";
+
+  return (
+    <SidebarSection title="Due date">
+      <DateField
+        date={props.dueDate ?? null}
+        onDateSelect={props.onDueDateChange}
+        readonly={!props.canEdit}
+        showOverdueWarning={!isCompleted}
+        placeholder="Set due date"
+        calendarOnly
+        size="small"
+      />
+    </SidebarSection>
+  );
+}
+
+function AssigneeMobile(props: TaskPage.State) {
+  return (
+    <SidebarSection title="Assignee">
+      <PersonField
+        person={props.assignee}
+        setPerson={props.onAssigneeChange}
+        readonly={!props.canEdit}
+        searchPeople={props.searchPeople || (async () => [])}
+        emptyStateMessage="Assign task"
+        emptyStateReadOnlyMessage="No assignee"
+        size="small"
+        showTitle={false}
+      />
+    </SidebarSection>
+  );
+}
+
+function StatusMobile(props: TaskPage.State) {
+  return (
+    <SidebarSection title="Status">
+      <StatusSelector
+        status={props.status}
+        onChange={props.onStatusChange}
+        size="sm"
+        readonly={!props.canEdit}
+        showFullBadge={true}
+      />
+    </SidebarSection>
+  );
+}
+
 function Milestone(props: TaskPage.State) {
   return (
     <SidebarSection title="Milestone">
@@ -75,12 +147,7 @@ function CreatedBy(props: TaskPage.State) {
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">
-        <AvatarWithName
-          person={props.createdBy}
-          size={"tiny"}
-          nameFormat="short"
-          link={props.createdBy.profileLink}
-        />
+        <AvatarWithName person={props.createdBy} size={"tiny"} nameFormat="short" link={props.createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
           <FormattedTime time={props.createdAt} format="short-date" />
@@ -106,8 +173,8 @@ function Subscription(props: TaskPage.State) {
 
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-2">
-      <div className="font-bold text-sm">{title}</div>
+    <div className="space-y-1 sm:space-y-2">
+      <div className="font-medium text-xs sm:font-semibold sm:text-sm">{title}</div>
       {children}
     </div>
   );

@@ -11,7 +11,7 @@ import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages }
 
 import { PageHeader } from "./PageHeader";
 import { Overview } from "./Overview";
-import { Sidebar } from "./Sidebar";
+import { Sidebar, MobileSidebar } from "./Sidebar";
 import { DeleteModal } from "./DeleteModal";
 
 export namespace TaskPage {
@@ -162,9 +162,10 @@ export function TaskPage(props: TaskPage.Props) {
       tabs={tabs}
       status={state.projectStatus}
     >
-      <div className="flex-1 overflow-scroll">
+      <div className="flex-1 overflow-auto">
         <div className="p-4 max-w-6xl mx-auto">
           <PageHeader {...state} />
+          <MobileSidebar {...state} />
           <div className="sm:grid sm:grid-cols-12 mt-6">
             <Overview {...state} />
             <Sidebar {...state} />
