@@ -28,15 +28,15 @@ export function Sidebar(props: TaskPage.State) {
 export function MobileSidebar(props: TaskPage.State) {
   return (
     <div className="sm:hidden block mt-4">
-      <div className="grid grid-cols-3 gap-4 items-start">
+      <div className="grid grid-cols-[auto_auto_1fr] gap-4 items-start">
         <div>
           <StatusMobile {...props} />
         </div>
         <div>
-          <DueDate {...props} />
+          <DueDateMobile {...props} />
         </div>
         <div>
-          <Assignees {...props} />
+          <AssigneeMobile {...props} />
         </div>
       </div>
       <div className="mt-4">
@@ -50,7 +50,7 @@ function DueDate(props: TaskPage.State) {
   const isCompleted = props.status === "done" || props.status === "canceled";
 
   return (
-    <SidebarSection title="Due Date">
+    <SidebarSection title="Due date">
       <DateField
         date={props.dueDate ?? null}
         onDateSelect={props.onDueDateChange}
@@ -74,6 +74,41 @@ function Assignees(props: TaskPage.State) {
         searchPeople={props.searchPeople || (async () => [])}
         emptyStateMessage="Assign task"
         emptyStateReadOnlyMessage="No assignee"
+      />
+    </SidebarSection>
+  );
+}
+
+function DueDateMobile(props: TaskPage.State) {
+  const isCompleted = props.status === "done" || props.status === "canceled";
+
+  return (
+    <SidebarSection title="Due date">
+      <DateField
+        date={props.dueDate ?? null}
+        onDateSelect={props.onDueDateChange}
+        readonly={!props.canEdit}
+        showOverdueWarning={!isCompleted}
+        placeholder="Set due date"
+        calendarOnly
+        size="small"
+      />
+    </SidebarSection>
+  );
+}
+
+function AssigneeMobile(props: TaskPage.State) {
+  return (
+    <SidebarSection title="Assignee">
+      <PersonField
+        person={props.assignee}
+        setPerson={props.onAssigneeChange}
+        readonly={!props.canEdit}
+        searchPeople={props.searchPeople || (async () => [])}
+        emptyStateMessage="Assign task"
+        emptyStateReadOnlyMessage="No assignee"
+        size="small"
+        showTitle={false}
       />
     </SidebarSection>
   );
@@ -138,7 +173,7 @@ function Subscription(props: TaskPage.State) {
 
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-2">
+    <div className="space-y-1 sm:space-y-2">
       <div className="font-medium text-xs sm:font-semibold sm:text-sm">{title}</div>
       {children}
     </div>
