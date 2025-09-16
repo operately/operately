@@ -10,6 +10,7 @@ import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
 import { StatusSelector } from "../TaskBoard/components/StatusSelector";
+import { SidebarSection } from "../SidebarSection";
 
 export function Sidebar(props: TaskPage.State) {
   return (
@@ -168,15 +169,6 @@ function Subscription(props: TaskPage.State) {
     <SidebarSection title="Notifications">
       <NotificationToggle isSubscribed={props.isSubscribed} onToggle={handleToggle} entityType="task" />
     </SidebarSection>
-  );
-}
-
-function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div className="space-y-1 sm:space-y-2">
-      <div className="font-medium text-xs sm:font-semibold sm:text-sm">{title}</div>
-      {children}
-    </div>
   );
 }
 

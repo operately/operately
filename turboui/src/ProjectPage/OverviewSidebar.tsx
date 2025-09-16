@@ -16,6 +16,7 @@ import { LastCheckIn } from "../LastCheckIn";
 import { NotificationToggle } from "../NotificationToggle";
 import { PersonField } from "../PersonField";
 import { Tooltip } from "../Tooltip";
+import { SidebarSection } from "../SidebarSection";
 import { ProjectPage } from ".";
 
 export function OverviewSidebar(props: ProjectPage.State) {
@@ -272,13 +273,4 @@ function Actions(props: ProjectPage.State) {
   );
 }
 
-function SidebarSection({ title, children, testId }: { title: string | React.ReactNode; children: React.ReactNode; testId?: string }) {
-  return (
-    <div className="overflow-hidden" data-test-id={testId}>
-      <div className="font-bold text-sm mb-1.5">
-        <div className="truncate">{title}</div>
-      </div>
-      <div className="overflow-hidden">{children}</div>
-    </div>
-  );
-}
+// Uses shared SidebarSection; callers can pass className/testId as needed
