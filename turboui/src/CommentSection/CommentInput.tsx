@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Avatar, AvatarWithName } from "../Avatar";
+import { Avatar } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { CommentInputProps, Person } from "./types";
 import { Editor, useEditor } from "../RichEditor";
@@ -48,7 +48,7 @@ function CommentInputInactive({ currentUser, onClick }: CommentInputInactiveProp
       className="py-4 sm:py-6 not-first:border-t border-stroke-base cursor-pointer flex items-center gap-3"
       onClick={onClick}
     >
-      <AvatarWithName person={currentUser} size="normal" nameFormat="short" link={currentUser.profileLink} />
+      <Avatar person={currentUser} size="normal" />
       <span className="text-content-dimmed ml-2">Write a comment here...</span>
     </div>
   );

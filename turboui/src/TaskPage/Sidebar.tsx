@@ -9,6 +9,7 @@ import FormattedTime from "../FormattedTime";
 import { MilestoneField } from "../MilestoneField";
 import { PersonField } from "../PersonField";
 import { durationHumanized, isOverdue } from "../utils/time";
+import { StatusSelector } from "../TaskBoard/components/StatusSelector";
 
 export function Sidebar(props: TaskPage.State) {
   return (
@@ -19,6 +20,28 @@ export function Sidebar(props: TaskPage.State) {
       <CreatedBy {...props} />
       <Subscription {...props} />
       <Actions {...props} />
+    </div>
+  );
+}
+
+// Compact, mobile-only subset of sidebar content
+export function MobileSidebar(props: TaskPage.State) {
+  return (
+    <div className="sm:hidden block mt-4">
+      <div className="grid grid-cols-3 gap-4 items-start">
+        <div>
+          <StatusMobile {...props} />
+        </div>
+        <div>
+          <DueDate {...props} />
+        </div>
+        <div>
+          <Assignees {...props} />
+        </div>
+      </div>
+      <div className="mt-4">
+        <Milestone {...props} />
+      </div>
     </div>
   );
 }
@@ -56,6 +79,20 @@ function Assignees(props: TaskPage.State) {
   );
 }
 
+function StatusMobile(props: TaskPage.State) {
+  return (
+    <SidebarSection title="Status">
+      <StatusSelector
+        status={props.status}
+        onChange={props.onStatusChange}
+        size="sm"
+        readonly={!props.canEdit}
+        showFullBadge={true}
+      />
+    </SidebarSection>
+  );
+}
+
 function Milestone(props: TaskPage.State) {
   return (
     <SidebarSection title="Milestone">
@@ -75,12 +112,7 @@ function CreatedBy(props: TaskPage.State) {
   return (
     <SidebarSection title="Created">
       <div className="space-y-2 text-sm">
-        <AvatarWithName
-          person={props.createdBy}
-          size={"tiny"}
-          nameFormat="short"
-          link={props.createdBy.profileLink}
-        />
+        <AvatarWithName person={props.createdBy} size={"tiny"} nameFormat="short" link={props.createdBy.profileLink} />
         <div className="flex items-center gap-1.5 ml-1 text-content-dimmed text-xs">
           <IconCalendar size={14} />
           <FormattedTime time={props.createdAt} format="short-date" />
@@ -107,7 +139,7 @@ function Subscription(props: TaskPage.State) {
 function SidebarSection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="space-y-2">
-      <div className="font-bold text-sm">{title}</div>
+      <div className="font-medium text-xs sm:font-semibold sm:text-sm">{title}</div>
       {children}
     </div>
   );
