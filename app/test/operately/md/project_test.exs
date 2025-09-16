@@ -18,6 +18,19 @@ defmodule Operately.MD.ProjectTest do
     assert rendered =~ ctx.creator.full_name
   end
 
+  test "it includes timestamps for discussion messages", ctx do
+    ctx = Factory.add_project_discussion(ctx, :discussion, :project)
+
+    rendered = Operately.MD.Project.render(ctx.project)
+
+    # Check that timestamp is included in the discussions section
+    assert rendered =~ "Posted on:"
+
+    # Check that the actual date is rendered (using the render_date format)
+    expected_date = ctx.discussion.inserted_at |> Operately.Time.as_date() |> Date.to_iso8601()
+    assert rendered =~ expected_date
+  end
+
   test "it renders milestones in the markdown", ctx do
     ctx = Factory.add_project_milestone(ctx, :milestone, :project)
 

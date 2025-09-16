@@ -202,6 +202,7 @@ defmodule Operately.MD.Project do
     ### #{discussion.title}
 
     #{render_person("Author", discussion.author)}
+    Posted on: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
     """
