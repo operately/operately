@@ -1,9 +1,4 @@
 defmodule Operately.MD.Project do
-  import Ecto.Query
-
-  alias Operately.Activities
-  alias Operately.Repo
-
   def render(project) do
     project =
       Operately.Repo.preload(project, [
@@ -29,7 +24,6 @@ defmodule Operately.MD.Project do
     #{render_milestones(project.milestones)}
     #{render_check_ins(check_ins_with_comments)}
     #{render_discussions(discussions)}
-    #{render_timeline_activities(project)}
     #{render_retrospective(project.retrospective)}
     """
     |> compact_empty_lines()
@@ -104,37 +98,10 @@ defmodule Operately.MD.Project do
 
   defp render_milestone_completion(milestone) do
     if milestone.status == :done && milestone.completed_at do
-      "\n        Completed: #{render_date(milestone.completed_at)}"
+      "\n  Completed: #{render_date(milestone.completed_at)}"
     else
       ""
     end
-  end
-
-  def render_timeline_activities(project) do
-    timeline_activities = load_timeline_activities(project)
-
-    if Enum.empty?(timeline_activities) do
-      ""
-    else
-      content = Enum.map(timeline_activities, &render_timeline_activity/1)
-
-      "## Timeline Changes\n\n" <> Enum.join(content, "\n") <> "\n\n"
-    end
-  end
-
-  defp load_timeline_activities(project) do
-    Activities.list_activities("project", project.id, ["project_timeline_edited"])
-    |> Enum.map(fn activity ->
-      Repo.preload(activity, [:author])
-    end)
-    |> Enum.sort_by(& &1.inserted_at, DateTime)
-  end
-
-  defp render_timeline_activity(activity) do
-    author_name = activity.author.full_name
-    formatted_date = render_date(activity.inserted_at)
-
-    "- Timeline edited by #{author_name} on #{formatted_date}"
   end
 
   defp render_milestone_due(milestone) do
@@ -164,7 +131,7 @@ defmodule Operately.MD.Project do
     """
     ### Check-in on #{render_date(check_in.inserted_at)}
 
-    #{render_person("Author", check_in.author)}
+    Author: #{check_in.author.full_name}
 
     #{Operately.MD.RichText.render(check_in.description)}
 
@@ -208,23 +175,8 @@ defmodule Operately.MD.Project do
     """
     ## Contributors
 
-    #{Enum.map(project.contributors, fn contributor -> render_person(contributor.role, contributor.person) end) |> Enum.join("\n")}
+    #{Enum.map(project.contributors, fn contributor -> "#{contributor.role}: #{contributor.person.full_name} (#{contributor.person.title})" end) |> Enum.join("\n")}
     """
-  end
-
-  defp render_person(role, person) do
-    case person do
-      %Ecto.Association.NotLoaded{} ->
-        "#{role}: Not Loaded"
-
-      nil ->
-        "#{role}: Not Assigned"
-
-      _ ->
-        full_name = Map.get(person, :full_name, "Unknown")
-        title = Map.get(person, :title, "Unknown")
-        "#{role}: #{full_name} (#{title})"
-    end
   end
 
   defp render_timeframe(project) do
@@ -265,7 +217,7 @@ defmodule Operately.MD.Project do
     """
     ### #{discussion.title}
 
-    #{render_person("Author", discussion.author)}
+    Author: #{discussion.author.full_name}
     Posted on: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
