@@ -121,7 +121,8 @@ function findFeatureTests() {
 function runTests(testFiles) {
   try {
     const files = testFiles.map((file) => path.relative("app", file));
-    const command = `cd app && MIX_ENV=test mix tests_with_retries ${files.join(" ")}`;
+    const filesArg = files.join(" ");
+    const command = `make test.mix.with.retries FILES="${filesArg}"`;
 
     execSync(command, { stdio: "inherit" });
   } catch (error) {
