@@ -221,7 +221,9 @@ defmodule OperatelyWeb.Api.GoalChecks do
 
     def toggle_check(multi) do
       Ecto.Multi.update(multi, :updated_check, fn %{check: check} ->
-        Operately.Goals.Check.changeset(check, %{completed: !check.completed})
+        new_completed = !check.completed
+        completed_at = if new_completed, do: DateTime.utc_now(), else: nil
+        Operately.Goals.Check.changeset(check, %{completed: new_completed, completed_at: completed_at})
       end)
     end
 

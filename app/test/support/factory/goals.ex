@@ -114,6 +114,7 @@ defmodule Operately.Support.Factory.Goals do
     goal = Map.fetch!(ctx, goal_name)
     name = Keyword.get(opts, :name, "Some check")
     completed = Keyword.get(opts, :completed, false)
+    completed_at = if completed, do: Keyword.get(opts, :completed_at, DateTime.utc_now()), else: nil
     creator = Keyword.get(opts, :creator, :creator)
 
     check_count =
@@ -129,6 +130,7 @@ defmodule Operately.Support.Factory.Goals do
           creator_id: ctx[creator].id,
           name: name,
           completed: completed,
+          completed_at: completed_at,
           index: check_count + 1
         })
       )
