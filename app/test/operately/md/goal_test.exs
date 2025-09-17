@@ -56,6 +56,21 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "- [x] Checklist Item 2"
   end
 
+  test "it includes completion timestamp for completed checklist items", ctx do
+    completed_at = ~U[2023-12-15 10:30:00Z]
+    ctx = Factory.add_goal_check(ctx, :check1, :goal, name: "Pending Item", completed: false)
+    ctx = Factory.add_goal_check(ctx, :check2, :goal, name: "Completed Item", completed: true, completed_at: completed_at)
+
+    rendered = Operately.MD.Goal.render(ctx.goal)
+
+    assert rendered =~ "## Checklist"
+    assert rendered =~ "- [ ] Pending Item"
+    assert rendered =~ "- [x] Completed Item (Completed: 2023-12-15)"
+
+    # Ensure the pending item doesn't have a completion timestamp
+    refute rendered =~ "Pending Item (Completed:"
+  end
+
   test "it renders discussions", ctx do
     message = Operately.Support.RichText.rich_text("This is a discussion about the goal.")
     ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: message)
