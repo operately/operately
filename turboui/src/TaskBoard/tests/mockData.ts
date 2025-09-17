@@ -86,6 +86,11 @@ export const mockMilestones: Record<string, Types.Milestone> = {
 };
 
 // Mock tasks
+const longTitleOne =
+  "Coordinate cross-functional launch strategy across marketing, sales, support, and product to keep messaging aligned through release";
+const longTitleTwo =
+  "Document post-launch follow-up plan covering customer outreach, success enablement, analytics tracking, and executive reporting milestones";
+
 export const mockTasks: Types.Task[] = [
   {
     id: "task-1",
@@ -321,6 +326,33 @@ export const mockTasks: Types.Task[] = [
     dueDate: null,
     points: 0,
     hasDescription: false,
+    hasComments: false,
+  },
+  {
+    id: "task-10",
+    title: longTitleOne,
+    status: "in_progress",
+    description: "Weekly syncs ensure every team stays on track",
+    link: "#",
+    assignees: [mockPeople.jane!],
+    milestone: mockMilestones.productLaunch!,
+    dueDate: createContextualDate("2025-07-05", "day"),
+    points: 8,
+    hasDescription: true,
+    hasComments: true,
+    commentCount: 4,
+  },
+  {
+    id: "task-11",
+    title: longTitleTwo,
+    status: "pending",
+    description: "Outline responsibilities for each team once the launch ships",
+    link: "#",
+    assignees: [mockPeople.emily!],
+    milestone: mockMilestones.marketExpansion!,
+    dueDate: createContextualDate("2025-07-20", "day"),
+    points: 5,
+    hasDescription: true,
     hasComments: false,
   },
 ];

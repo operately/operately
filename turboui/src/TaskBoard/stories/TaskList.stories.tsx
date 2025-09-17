@@ -106,6 +106,11 @@ const mockSearchPeople = async ({ query }: { query: string }): Promise<Types.Per
   return mockPeople.filter((person) => person.fullName.toLowerCase().includes(query.toLowerCase()));
 };
 
+const longTitleOne =
+  "Coordinate cross-functional launch strategy across marketing, sales, support, and product to keep messaging aligned through release";
+const longTitleTwo =
+  "Document post-launch follow-up plan covering customer outreach, success enablement, analytics tracking, and executive reporting milestones";
+
 /**
  * Basic TaskList with multiple tasks
  */
@@ -139,6 +144,20 @@ export const MultipleTasksList: Story = {
         title: "Optimize database queries",
         status: "done" as Types.Status,
         hasDescription: true,
+      },
+      {
+        id: "task-5",
+        title: longTitleOne,
+        status: "pending" as Types.Status,
+        hasComments: true,
+        commentCount: 5,
+      },
+      {
+        id: "task-6",
+        title: longTitleTwo,
+        status: "in_progress" as Types.Status,
+        hasDescription: true,
+        hasComments: false,
       },
     ],
     milestoneId,
