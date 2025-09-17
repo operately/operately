@@ -5,10 +5,11 @@ import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { IconCircleX, IconExternalLink, IconFlag, IconPlus, IconSearch } from "../icons";
 import classNames from "../utils/classnames";
+import { createTestId, TestableElement } from "../TestableElement";
 
 export interface Milestone {
   id: string;
-  name?: string;
+  name: string;
   title?: string;
   dueDate?: DateField.ContextualDate | null;
   status?: string;
@@ -26,7 +27,7 @@ interface DialogMenuOptionProps {
   onClick?: () => void;
 }
 
-export interface MilestoneFieldProps {
+export interface MilestoneFieldProps extends TestableElement {
   milestone: Milestone | null;
   setMilestone: (milestone: Milestone | null) => void;
 
@@ -58,6 +59,8 @@ export interface State {
   setSearchQuery: (query: string) => void;
   searchResults: Milestone[];
   onCreateNew?: (title?: string) => void;
+
+  testId: string;
 }
 
 export function MilestoneField(props: MilestoneFieldProps) {
@@ -128,6 +131,8 @@ export function useState(props: MilestoneFieldProps): State {
     setSearchQuery,
     searchResults,
     onCreateNew: props.onCreateNew,
+
+    testId: props.testId || "milestone-field",
   };
 }
 
@@ -152,7 +157,7 @@ function Trigger({ state }: { state: State }) {
           }
         }}
       >
-        <div className="flex items-start gap-1.5 min-w-0">
+        <div className="flex items-start gap-1.5 min-w-0" data-test-id={state.testId}>
           <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
           <div className="truncate min-w-0">
             <div className="text-sm font-medium truncate">
@@ -178,7 +183,7 @@ function Trigger({ state }: { state: State }) {
           }
         }}
       >
-        <div className="flex items-center gap-1.5 min-w-0">
+        <div className="flex items-center gap-1.5 min-w-0" data-test-id={state.testId}>
           <div className="truncate min-w-0">
             <div className="text-sm font-medium text-content-dimmed">
               {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
@@ -238,6 +243,7 @@ function DialogMenu({ state }: { state: State }) {
         icon: IconExternalLink,
         label: "View milestone",
         linkTo: state.milestone.link,
+        testId: createTestId(state.testId, "view-milestone"),
       });
     }
 
@@ -246,6 +252,7 @@ function DialogMenu({ state }: { state: State }) {
         icon: IconExternalLink,
         label: "View in project",
         linkTo: state.milestone.projectLink,
+        testId: createTestId(state.testId, "view-in-project"),
       });
     }
 
@@ -256,6 +263,7 @@ function DialogMenu({ state }: { state: State }) {
         state.setSearchQuery(""); // Clear any previous search
         state.setDialogMode("search");
       },
+      testId: createTestId(state.testId, "change-milestone"),
     });
 
     state.extraDialogMenuOptions.forEach((option, index) => {
@@ -279,6 +287,7 @@ function DialogMenu({ state }: { state: State }) {
         state.setIsOpen(false);
       },
       danger: false,
+      testId: createTestId(state.testId, "clear-milestone"),
     });
 
     return options;
@@ -348,6 +357,7 @@ function DialogMenu({ state }: { state: State }) {
             }
           }}
           onMouseEnter={() => setSelectedIndex(index)}
+          data-test-id={option.testId}
         >
           <div
             className={classNames("flex items-center text-sm gap-2", {
@@ -367,6 +377,7 @@ function DialogMenu({ state }: { state: State }) {
 function DialogSearch({ state }: { state: State }) {
   const [selectedIndex, setSelectedIndex] = React.useState(0);
   const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
+
 
   // Reset selected index when search results change
   React.useEffect(() => {
@@ -448,6 +459,7 @@ function DialogSearch({ state }: { state: State }) {
               state.setIsOpen(false);
             }}
             onMouseEnter={() => setSelectedIndex(index)}
+            data-test-id={createTestId(state.testId, "search-result", milestone.name)}
           >
             <div className="flex items-start gap-1.5 truncate">
               <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />

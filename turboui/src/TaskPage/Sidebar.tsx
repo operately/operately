@@ -14,7 +14,7 @@ import { SidebarSection } from "../SidebarSection";
 
 export function Sidebar(props: TaskPage.State) {
   return (
-    <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
+    <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8" data-test-id="task-sidebar"> 
       <DueDate {...props} />
       <Assignees {...props} />
       <Milestone {...props} />
@@ -58,6 +58,7 @@ function DueDate(props: TaskPage.State) {
         readonly={!props.canEdit}
         showOverdueWarning={!isCompleted}
         placeholder="Set due date"
+        testId="task-due-date"
         calendarOnly
       />
       <OverdueWarning {...props} />
@@ -75,6 +76,7 @@ function Assignees(props: TaskPage.State) {
         searchPeople={props.searchPeople || (async () => [])}
         emptyStateMessage="Assign task"
         emptyStateReadOnlyMessage="No assignee"
+        testId="assignee"
       />
     </SidebarSection>
   );

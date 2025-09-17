@@ -16,7 +16,7 @@ function ActivitySection(props: TaskPage.State) {
   // Use timeline data if provided, otherwise show placeholder
   if (props.timelineItems && props.currentUser) {
     return (
-      <div>
+      <div data-test-id="task-activity-section">
         <h3 className="font-bold mb-4">Comments & Activity</h3>
         <Timeline
           items={props.timelineItems}

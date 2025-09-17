@@ -161,6 +161,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "milestones", milestone_id(milestone)])
   end
 
+  def project_task_path(company = %Company{}, task) do
+    create_path([company_id(company), "tasks", task_id(task)])
+  end
+
   def company_admin_path(company = %Company{}) do
     create_path([company_id(company), "admin"])
   end

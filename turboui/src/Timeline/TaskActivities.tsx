@@ -173,7 +173,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
       if (activity.toDueDate && !activity.fromDueDate) {
         return (
           <span className="text-content-dimmed flex items-center gap-1">
-            set due date for {taskName} to{" "}
+            set the due date for {taskName} to{" "}
             <span className="font-medium text-content-dimmed">
               <DateField date={activity.toDueDate} readonly hideCalendarIcon />
             </span>
@@ -184,7 +184,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
       } else if (activity.toDueDate && activity.fromDueDate) {
         return (
           <span className="text-content-dimmed flex items-center gap-1">
-            changed due date of {taskName} from{" "}
+            changed the due date of {taskName} from{" "}
             <span className="font-medium text-content-dimmed">
               <DateField date={activity.fromDueDate} readonly hideCalendarIcon />
             </span>{" "}
@@ -209,7 +209,7 @@ function ActivityText({ activity }: { activity: TaskActivity }) {
     case "task_name_updating":
       return (
         <span className="text-content-dimmed">
-          changed title of {activity.page === "task" ? "this task" : "a task"} from{" "}
+          changed the title of {activity.page === "task" ? "this task" : "a task"} from{" "}
           <span className="font-medium text-content-dimmed">"{activity.fromTitle}"</span> to{" "}
           <span className="font-medium text-content-dimmed">"{activity.toTitle}"</span>
         </span>
