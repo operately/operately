@@ -20,7 +20,7 @@ defmodule Operately.MD.Project do
     #{render_overview_info(project)}
     #{render_description(project)}
     #{render_people(project)}
-    #{render_timeframe(project)}
+    #{Operately.MD.Project.Timeframe.render(project)}
     #{render_milestones(project.milestones)}
     #{render_check_ins(check_ins_with_comments)}
     #{render_discussions(discussions)}
@@ -178,20 +178,6 @@ defmodule Operately.MD.Project do
     #{Enum.map(project.contributors, fn contributor -> "#{contributor.role}: #{contributor.person.full_name} (#{contributor.person.title})" end) |> Enum.join("\n")}
     """
   end
-
-  defp render_timeframe(project) do
-    tf = project.timeframe
-
-    """
-    ## Timeframe
-
-    Start Date: #{render_contextual_date(tf && tf.contextual_start_date)}
-    Due Date: #{render_contextual_date(tf && tf.contextual_end_date)}
-    """
-  end
-
-  defp render_contextual_date(nil), do: "Not Set"
-  defp render_contextual_date(date), do: date.value
 
   defp compact_empty_lines(text) do
     text |> String.replace(~r/\n{3,}/, "\n\n")
