@@ -46,6 +46,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       assert check.goal_id == ctx.goal.id
       assert check.creator_id == ctx.creator.id
       assert check.completed == false
+      assert check.completed_at == nil
       assert check.index == 1
     end
 
@@ -357,8 +358,9 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
     test "it toggles check from false to true", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      # Ensure check is initially false
+      # Ensure check is initially false and completed_at is nil
       assert ctx.check.completed == false
+      assert ctx.check.completed_at == nil
 
       inputs = %{
         goal_id: Paths.goal_id(ctx.goal),
@@ -370,13 +372,16 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       check = Repo.get(Operately.Goals.Check, ctx.check.id)
       assert check.completed == true
+      assert check.completed_at != nil
+      assert DateTime.diff(check.completed_at, DateTime.utc_now(), :second) < 5
     end
 
     test "it toggles check from true to false", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      # Set check to completed first
-      {:ok, updated_check} = Operately.Repo.update(Operately.Goals.Check.changeset(ctx.check, %{completed: true}))
+      # Set check to completed first with a completed_at timestamp
+      completed_at = DateTime.utc_now()
+      {:ok, updated_check} = Operately.Repo.update(Operately.Goals.Check.changeset(ctx.check, %{completed: true, completed_at: completed_at}))
       ctx = Map.put(ctx, :check, updated_check)
 
       inputs = %{
@@ -389,6 +394,7 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
 
       check = Repo.get(Operately.Goals.Check, ctx.check.id)
       assert check.completed == false
+      assert check.completed_at == nil
     end
 
     test "it requires edit permission on the goal", ctx do

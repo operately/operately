@@ -8,6 +8,7 @@ defmodule Operately.Goals.Check do
 
     field(:name, :string)
     field(:completed, :boolean, default: false)
+    field(:completed_at, :utc_datetime)
     field(:index, :integer)
 
     timestamps()
@@ -19,7 +20,7 @@ defmodule Operately.Goals.Check do
 
   def changeset(target, attrs) do
     target
-    |> cast(attrs, [:goal_id, :creator_id, :name, :completed, :index])
+    |> cast(attrs, [:goal_id, :creator_id, :name, :completed, :completed_at, :index])
     |> validate_required([:name, :goal_id, :creator_id, :index])
   end
 end
