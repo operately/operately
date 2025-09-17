@@ -22,8 +22,6 @@ export function launchConfetti(options?: ConfettiOptions) {
       });
     })
     .catch((error) => {
-      if (process.env.NODE_ENV !== "production") {
-        console.error("Failed to load confetti", error);
-      }
+      console.error("Failed to load confetti", error);
     });
 }
