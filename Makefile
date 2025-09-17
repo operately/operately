@@ -171,7 +171,7 @@ test: test.init
 	@if [[ "$(FILE)" == assets/js* ]]; then \
 		$(MAKE) test.npm FILE=$(FILE); \
 	elif [[ "$(FILE)" == test/* ]] || [[ "$(FILE)" == ee/test/* ]]; then \
-		$(MAKE) test.mix FILE=$(FILE); \
+		./devenv bash -c "cd app && mix test $(FILE)"; \
 	else \
 		$(MAKE) test.all; \
 	fi
@@ -186,13 +186,10 @@ test.all: test.init
 	$(MAKE) test.mix && $(MAKE) test.npm
 
 test.mix: test.init
-	./devenv bash -c "cd app && mix tests_with_retries $(FILE)"
-
-test.mix.with.retries: test.init
-	./devenv bash -c "cd app && mix tests_with_retries $(FILES)"
+	./devenv bash -c "cd app && mix test $(FILE)"
 
 test.ee:
-	./devenv bash -c "cd app && mix tests_with_retries ee/test/**/*_test.exs"
+	./devenv bash -c "cd app && mix test ee/test/**/*_test.exs"
 
 test.mix.unit: test.init
 	./devenv bash -c "./scripts/run_unit_tests.js"

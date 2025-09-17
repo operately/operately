@@ -15,8 +15,7 @@ function findUnitTests() {
 
 function runTests(testFiles) {
   try {
-    const filesArg = testFiles.join(" ");
-    const command = `make test.mix.with.retries FILES="${filesArg}"`;
+    const command = `cd app && MIX_ENV=test mix tests_with_retries ${testFiles.join(" ")}`;
 
     execSync(command, { stdio: "inherit" });
   } catch (error) {
