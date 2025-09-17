@@ -17,7 +17,7 @@ defmodule Operately.MD.ProjectTest do
         action: "project_timeline_edited",
         author_id: ctx.creator.id,
         content: %{
-          "project_id" => ctx.project.id,
+          "project_id" => to_string(ctx.project.id),
           "company_id" => ctx.company.id,
           "space_id" => ctx.marketing.id
         },
@@ -26,8 +26,8 @@ defmodule Operately.MD.ProjectTest do
 
     result = Operately.MD.Project.render(ctx.project)
 
-    assert result =~ "## Timeline Changes"
-    assert result =~ "Timeline edited by #{ctx.creator.full_name} on 2024-01-15"
+    assert result =~ "### Timeframe History"
+    assert result =~ "**2024-01-15** - #{ctx.creator.full_name} updated the project timeline"
   end
 
   test "it renders discussions in the markdown", ctx do
