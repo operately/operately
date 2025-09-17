@@ -4,14 +4,25 @@ import { InlineTaskCreatorHandle } from "../components/InlineTaskCreator";
 
 export interface UseInlineTaskCreatorOptions {
   hotkey?: string; // default: 'c'
+  requireHover?: boolean; // default: true
 }
 
 export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) {
-  const { hotkey = "c" } = options;
+  const { hotkey = "c", requireHover = true } = options;
 
   const [open, setOpen] = React.useState(false);
   const creatorRef = React.useRef<InlineTaskCreatorHandle | null>(null);
   const isHoveredRef = React.useRef(false);
+  const requireHoverRef = React.useRef(requireHover);
+
+  React.useEffect(() => {
+    requireHoverRef.current = requireHover;
+    if (requireHover) {
+      isHoveredRef.current = false;
+    } else {
+      isHoveredRef.current = true;
+    }
+  }, [requireHover]);
 
   const focusCreator = React.useCallback(() => {
     creatorRef.current?.focus();
@@ -24,13 +35,17 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
 
   const closeCreator = React.useCallback(() => setOpen(false), []);
 
-  const hoverBind = React.useMemo(
-    () => ({
-      onMouseEnter: () => (isHoveredRef.current = true),
-      onMouseLeave: () => (isHoveredRef.current = false),
-    }),
-    [],
-  );
+  const hoverBind = React.useMemo(() => {
+    const enter = () => {
+      isHoveredRef.current = true;
+    };
+
+    const leave = () => {
+      isHoveredRef.current = requireHoverRef.current ? false : true;
+    };
+
+    return { onMouseEnter: enter, onMouseLeave: leave };
+  }, []);
 
   React.useEffect(() => {
     const handler = (evt: KeyboardEvent) => {
@@ -38,7 +53,7 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
       const tag = target?.tagName;
       const isEditable = !!target && (target.isContentEditable || tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT");
       if (isEditable) return;
-      if (!isHoveredRef.current) return;
+      if (requireHoverRef.current && !isHoveredRef.current) return;
 
       evt.preventDefault();
       // Stop other handlers from also reacting to this key
@@ -54,7 +69,7 @@ export function useInlineTaskCreator(options: UseInlineTaskCreatorOptions = {}) 
 
     hotkeys(hotkey, handler);
     return () => hotkeys.unbind(hotkey, handler);
-  }, [hotkey, openCreator]);
+  }, [hotkey, openCreator, requireHover]);
 
   return { open, openCreator, closeCreator, focusCreator, creatorRef, hoverBind } as const;
 }

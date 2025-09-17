@@ -27,7 +27,9 @@ export function TasksSection({
   searchPeople,
   setIsTaskModalOpen,
 }: MilestonePage.State) {
-  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator();
+  const { open: creatorOpen, openCreator, closeCreator, creatorRef, hoverBind } = useInlineTaskCreator({
+    requireHover: false,
+  });
   const stats = calculateMilestoneStats(tasks);
   const completionPercentage = calculateCompletionPercentage(stats);
 

@@ -136,7 +136,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   step :add_task, ctx, name: name do
     ctx
     |> UI.click(testid: "tasks-section-add-task")
-    |> UI.fill(placeholder: "Write the name of a task and press Return", with: name)
+    |> UI.fill(placeholder: "Add a task...", with: name)
     |> UI.press_enter()
     |> UI.click_button("Cancel")
   end
@@ -146,7 +146,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
     Enum.reduce(names, ctx, fn name, ctx ->
       ctx
-      |> UI.fill(placeholder: "Write the name of a task and press Return", with: name)
+      |> UI.fill(placeholder: "Add a task...", with: name)
       |> UI.press_enter()
     end)
     |> UI.click_button("Cancel")
