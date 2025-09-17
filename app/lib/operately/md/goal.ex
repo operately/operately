@@ -13,7 +13,7 @@ defmodule Operately.MD.Goal do
     #{render_targets(goal.targets)}
     #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
-    #{render_check_ins(goal.updates)}
+    #{Operately.MD.Goal.CheckIns.render(goal.updates)}
     #{Operately.MD.Goal.Discussions.render(discussions)}
     #{render_retrospective(goal.retrospective)}
     """
@@ -105,32 +105,6 @@ defmodule Operately.MD.Goal do
 
   defp calculate_target_progress(_), do: 0.0
 
-  defp render_check_ins(check_ins) do
-    if check_ins == [] do
-      """
-      ## Check-ins
-
-      _No check-ins yet._
-      """
-    else
-      """
-      ## Check-ins
-
-      #{Enum.map_join(check_ins, "\n\n", &render_check_in/1)}
-      """
-    end
-  end
-
-  defp render_check_in(check_in) do
-    """
-    ### Check-in on #{render_date(check_in.inserted_at)}
-
-    #{render_person("Author", check_in.author)}
-
-    #{Operately.MD.RichText.render(check_in.message)}
-    """
-  end
-
   defp render_retrospective(retrospective) do
     if retrospective do
       """
@@ -147,9 +121,21 @@ defmodule Operately.MD.Goal do
     """
     ## People Involved
 
-    #{render_person("Champion", goal.champion)}
-    #{render_person("Reviewer", goal.reviewer)}
     """
+    |> then(fn msg ->
+      if goal.champion do
+        msg <> "\n" <> "Champion: #{goal.champion.full_name} (#{goal.champion.title})"
+      else
+        msg <> "\n" <> "Champion: Not Assigned"
+      end
+    end)
+    |> then(fn msg ->
+      if goal.reviewer do
+        msg <> "\n" <> "Reviewer: #{goal.reviewer.full_name} (#{goal.reviewer.title})"
+      else
+        msg <> "\n" <> "Reviewer: Not Assigned"
+      end
+    end)
   end
 
   defp render_timeframe(goal) do
@@ -163,14 +149,6 @@ defmodule Operately.MD.Goal do
 
   defp render_contextual_date(nil), do: "Not Set"
   defp render_contextual_date(date), do: date.value
-
-  defp render_person(role, person) do
-    if person do
-      "#{role}: #{person.full_name} (#{person.title})"
-    else
-      "#{role}: Not Assigned"
-    end
-  end
 
   defp render_projects([]), do: ""
 
