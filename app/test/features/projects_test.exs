@@ -1,7 +1,7 @@
 defmodule Operately.Features.ProjectsTest do
   use Operately.FeatureCase
 
-  describe "old project page" do
+  describe "project page" do
     alias Operately.Support.Features.ProjectSteps, as: Steps
 
     setup ctx do

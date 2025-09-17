@@ -14,6 +14,7 @@ export function PageHeader(props: TaskPage.State) {
             onChange={props.onNameChange}
             readonly={!props.canEdit}
             trimBeforeSave
+            testId="task-name"
           />
 
           {/* On md+, place status inline right after the title */}
