@@ -25,6 +25,7 @@ import { Header } from "./components/Header";
 import { TasksSection } from "./components/TasksSection";
 import { SidebarSection } from "../SidebarSection";
 import { GhostButton, SecondaryButton } from "../Button";
+import { launchConfetti } from "../utils/confetti";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -244,7 +245,12 @@ function MobileMeta(props: MilestonePage.State) {
   const handleStatusToggle = () => {
     if (!canEdit) return;
 
-    onStatusChange(isCompleted ? "pending" : "done");
+    const nextStatus = isCompleted ? "pending" : "done";
+    if (nextStatus === "done") {
+      launchConfetti();
+    }
+
+    onStatusChange(nextStatus);
   };
 
   return (
