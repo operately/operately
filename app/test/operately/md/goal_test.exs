@@ -84,4 +84,18 @@ defmodule Operately.MD.GoalTest do
     assert rendered =~ "### Comment by #{ctx.creator.full_name} on #{Operately.Time.as_date(ctx.comment.inserted_at) |> Date.to_iso8601()}"
     assert rendered =~ "#{ctx.creator.full_name}: 👍"
   end
+
+  test "it renders check-in comments with timestamps in the markdown", ctx do
+    ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
+    ctx = Factory.preload(ctx, :update, :goal)
+    ctx = Factory.add_comment(ctx, :comment, :update)
+
+    rendered = Operately.MD.Goal.render(ctx.goal)
+
+    expected_date = Operately.Time.as_date(ctx.comment.inserted_at) |> Date.to_iso8601()
+
+    assert rendered =~ "## Check-ins"
+    assert rendered =~ "#### Comments"
+    assert rendered =~ "**#{ctx.creator.full_name}** on #{expected_date}:"
+  end
 end
