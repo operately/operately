@@ -133,7 +133,7 @@ export function useState(props: MilestoneFieldProps): State {
 
 function Trigger({ state }: { state: State }) {
   const triggerClass = classNames({
-    "flex items-center gap-2 truncate text-left": true,
+    "flex items-center gap-2 truncate text-left w-full": true,
     "focus:outline-none focus:ring-2 focus:ring-primary-base hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded":
       !state.readonly,
     "cursor-pointer": !state.readonly,
@@ -152,10 +152,12 @@ function Trigger({ state }: { state: State }) {
           }
         }}
       >
-        <div className="flex items-start gap-1.5">
+        <div className="flex items-start gap-1.5 min-w-0">
           <IconFlag size={18} className="text-blue-500 shrink-0 mt-0.5" />
-          <div className="truncate">
-            <div className="text-sm font-medium">{state.milestone.name || state.milestone.title}</div>
+          <div className="truncate min-w-0">
+            <div className="text-sm font-medium truncate">
+              {state.milestone.name || state.milestone.title}
+            </div>
             {state.milestone.dueDate?.date && (
               <div className="text-xs text-content-dimmed">
                 Due <FormattedTime time={state.milestone.dueDate.date} format="short-date" />
@@ -176,8 +178,8 @@ function Trigger({ state }: { state: State }) {
           }
         }}
       >
-        <div className="flex items-center gap-1.5">
-          <div className="truncate">
+        <div className="flex items-center gap-1.5 min-w-0">
+          <div className="truncate min-w-0">
             <div className="text-sm font-medium text-content-dimmed">
               {state.readonly ? state.emptyStateReadOnlyMessage : state.emptyStateMessage}
             </div>
