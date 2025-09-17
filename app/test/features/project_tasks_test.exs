@@ -1,137 +1,202 @@
 defmodule Operately.Features.ProjectTasksTest do
   use Operately.FeatureCase
 
-  import Operately.PeopleFixtures
-  import Operately.ProjectsFixtures
-
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.ProjectTasksSteps, as: Steps
 
   setup ctx do
-    ctx = ProjectSteps.create_project(ctx, name: "Test Project")
-    ctx = ProjectSteps.login(ctx)
-
-    milestone = milestone_fixture(%{project_id: ctx.project.id, title: "The Milestone"})
-
-    {:ok, Map.merge(ctx, %{milestone: milestone})}
+    ctx
+    |> ProjectSteps.create_project(name: "Test Project")
+    |> Factory.add_project_milestone(:milestone, :project)
+    |>  ProjectSteps.login()
   end
 
-  # TODO
-  # @tag login_as: :champion
-  # feature "create task", ctx do
-  #   attrs1 = %{
-  #     title: "Task 1",
-  #     description: "Some description",
-  #     assignees: [ctx.champion.full_name],
-  #     test_id: "todo_0",
-  #   }
+  @tag login_as: :champion
+  feature "create task from milestone page", ctx do
+    ctx
+    |> Steps.visit_milestone_page()
+    |> Steps.add_task_from_milestone_page("Task 1")
+    |> Steps.assert_task_added("Task 1")
+  end
 
-  #   ctx
-  #   |> Steps.visit_milestone_page()
-  #   |> Steps.add_task(attrs1)
-  #   |> Steps.assert_task_added(attrs1)
-  # end
+  @tag login_as: :champion
+  feature "create task from tasks board", ctx do
+    next_friday = get_next_friday()
+    formatted_date = Calendar.strftime(next_friday, "%b %d")
 
-  # @tag login_as: :champion
-  # feature "create task without assignee", ctx do
-  #   attrs = %{
-  #     title: "My task",
-  #     description: "Some description",
-  #     test_id: "todo_0",
-  #   }
+    attrs = %{
+      name: "Task 1",
+      assignee: ctx.champion.full_name,
+      due_date: next_friday,
+      milestone: ctx.milestone.title,
+    }
 
-  #   ctx
-  #   |> Steps.visit_milestone_page()
-  #   |> Steps.add_task(attrs)
-  #   |> Steps.assert_task_added(attrs)
-  # end
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_assignee(attrs.assignee)
+    |> Steps.assert_task_due_date(formatted_date)
+    |> Steps.assert_task_milestone(attrs.milestone)
+  end
 
-  # TODO
-  # @tag login_as: :champion
-  # feature "create task with several assignees", ctx do
-  #   person = person_fixture_with_account(%{company_id: ctx.company.id})
-  #   attrs = %{
-  #     title: "My task",
-  #     description: "Some description",
-  #     assignees: [
-  #       ctx.champion.full_name,
-  #       ctx.reviewer.full_name,
-  #       person.full_name,
-  #     ],
-  #     test_id: "todo_0",
-  #   }
+  @tag login_as: :champion
+  feature "create task without assignee", ctx do
+    attrs = %{
+      name: "My task",
+      assignee: nil,
+      due_date: get_next_friday(),
+      milestone: ctx.milestone.title,
+    }
 
-  #   ctx
-  #   |> Steps.visit_milestone_page()
-  #   |> Steps.add_task(attrs)
-  #   |> Steps.assert_task_added(attrs)
-  # end
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_no_assignee()
+  end
 
-  # TODO
-  # @tag login_as: :champion
-  # feature "edit task name and description", ctx do
-  #   attrs = %{
-  #     title: "My task",
-  #     description: "Some description",
-  #     test_id: "todo_0",
-  #   }
-  #   name = "new name"
-  #   description = "new description"
+  @tag login_as: :champion
+  feature "create task without milestone", ctx do
+    attrs = %{
+      name: "My task",
+      assignee: ctx.champion.full_name,
+      due_date: get_next_friday(),
+      milestone: nil,
+    }
 
-  #   ctx
-  #   |> Steps.visit_milestone_page()
-  #   |> Steps.add_task(attrs)
-  #   |> Steps.assert_task_added(attrs)
-  #   |> Steps.click_on_task(attrs)
-  #   |> UI.refute_text(name)
-  #   |> Steps.edit_task_name(name)
-  #   |> UI.assert_text(name)
-  #   |> UI.refute_text(description)
-  #   |> Steps.edit_task_description(description)
-  #   |> UI.assert_text(description)
-  # end
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_no_milestone()
+  end
 
-  # TODO
-  # @tag login_as: :champion
-  # feature "edit task assignees", ctx do
-  #   attrs = %{
-  #     title: "My task",
-  #     description: "Some description",
-  #     test_id: "todo_0",
-  #   }
-  #   assignees = [ ctx.champion.full_name, ctx.reviewer.full_name ]
+  @tag login_as: :champion
+  feature "create task without due date", ctx do
+    attrs = %{
+      name: "My task",
+      assignee: ctx.champion.full_name,
+      due_date: nil,
+      milestone: ctx.milestone.title,
+    }
 
-  #   ctx
-  #   |> Steps.visit_milestone_page()
-  #   |> Steps.add_task(attrs)
-  #   |> Steps.assert_task_added(attrs)
-  #   |> Steps.click_on_task(attrs)
-  #   |> Steps.assert_no_assignee()
-  #   |> Steps.edit_task_assignees(assignees)
-  #   |> Steps.assert_assignees(assignees)
-  # end
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_no_due_date()
+  end
 
-  # TODO
-  # @tag login_as: :champion
-  # feature "remove task assignees", ctx do
-  #   assignees = [ ctx.champion.full_name, ctx.reviewer.full_name ]
-  #   attrs = %{
-  #     title: "My task",
-  #     description: "Some description",
-  #     assignees: assignees,
-  #     test_id: "todo_0",
-  #   }
+  @tag login_as: :champion
+  feature "edit task name", ctx do
+    new_name = "New task name"
+    feed_title = "changed the title of this task from \"some name\" to \"#{new_name}\""
 
-  #   ctx
-  #   |> Steps.visit_milestone_page()
-  #   |> Steps.add_task(attrs)
-  #   |> Steps.assert_task_added(attrs)
-  #   |> Steps.click_on_task(attrs)
-  #   |> Steps.assert_assignees(assignees)
-  #   |> Steps.remove_assignee(ctx.champion.full_name)
-  #   |> Steps.assert_assignees([ctx.reviewer.full_name])
-  #   |> Steps.assert_no_specific_assignee(ctx.champion.full_name)
-  #   |> Steps.remove_assignee(ctx.reviewer.full_name)
-  #   |> Steps.assert_no_assignee()
-  # end
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.refute_task_name(new_name)
+    |> Steps.edit_task_name(new_name)
+    |> Steps.assert_task_name(new_name)
+    |> Steps.reload_task_page()
+    |> Steps.assert_task_name(new_name)
+    |> Steps.assert_change_in_feed(feed_title)
+  end
+
+  @tag login_as: :champion
+  feature "edit task description", ctx do
+    new_description = "New task description"
+
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.refute_task_description(new_description)
+    |> Steps.edit_task_description(new_description)
+    |> Steps.assert_task_description(new_description)
+    |> Steps.assert_change_in_feed("updated the description")
+    |> Steps.reload_task_page()
+    |> Steps.assert_task_description(new_description)
+    |> Steps.assert_change_in_feed("updated the description")
+  end
+
+  @tag login_as: :champion
+  feature "edit task assignee", ctx do
+    feed_title = "assigned this task to #{Operately.People.Person.short_name(ctx.champion)}"
+
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.assert_no_assignee()
+    |> Steps.edit_task_assignee(ctx.champion.full_name)
+    |> Steps.assert_assignee(ctx.champion.full_name)
+    |> Steps.assert_change_in_feed(feed_title)
+    |> Steps.reload_task_page()
+    |> Steps.assert_assignee(ctx.champion.full_name)
+    |> Steps.assert_change_in_feed(feed_title)
+  end
+
+  @tag login_as: :champion
+  feature "edit task due date", ctx do
+    next_friday = get_next_friday()
+    formatted_date = Calendar.strftime(next_friday, "%b %d")
+    feed_title = "changed the due date of this task from"
+
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_due_date(next_friday)
+    |> Steps.assert_task_due_date(formatted_date)
+    |> Steps.assert_change_in_feed(feed_title)
+    |> Steps.reload_task_page()
+    |> Steps.assert_task_due_date(formatted_date)
+    |> Steps.assert_change_in_feed(feed_title)
+  end
+
+  @tag login_as: :champion
+  feature "edit task milestone", ctx do
+    ctx =
+      ctx
+      |> Steps.given_task_exists()
+      |> Steps.given_another_milestone_exists()
+
+    feed_title = "attached this task to milestone #{ctx.another_milestone.title}"
+
+    ctx
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_milestone(ctx.another_milestone.title)
+    |> Steps.assert_task_milestone(ctx.another_milestone.title)
+    |> Steps.assert_change_in_feed(feed_title)
+    |> Steps.reload_task_page()
+    |> Steps.assert_task_milestone(ctx.another_milestone.title)
+    |> Steps.assert_change_in_feed(feed_title)
+  end
+
+  @tag login_as: :champion
+  feature "post comment to task", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.post_comment("This is a comment")
+    |> Steps.assert_comment("This is a comment")
+    |> Steps.reload_task_page()
+    |> Steps.assert_comment("This is a comment")
+  end
+
+  #
+  # Helpers
+  #
+
+  defp get_next_friday do
+    Date.utc_today()
+    |> Date.add(((5 - Date.day_of_week(Date.utc_today())) + 7) |> rem(7) |> Kernel.+(7))
+  end
 end
