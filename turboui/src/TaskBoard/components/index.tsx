@@ -323,7 +323,15 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
       if (dateA && !dateB) return -1;
       if (!dateA && dateB) return 1;
 
-      // If neither has a due date, sort by milestone ID for consistency
+      // If neither has a due date, sort by creation time (insertedAt, oldest first)
+      const insertedAtA = a.milestone.insertedAt;
+      const insertedAtB = b.milestone.insertedAt;
+
+      if (insertedAtA && insertedAtB) {
+        return new Date(insertedAtA).getTime() - new Date(insertedAtB).getTime();
+      }
+
+      // Fallback to milestone ID for consistency if insertedAt is not available
       return a.milestone.id.localeCompare(b.milestone.id);
     });
 };
