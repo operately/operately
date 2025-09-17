@@ -121,9 +121,21 @@ defmodule Operately.MD.Goal do
     """
     ## People Involved
 
-    #{render_person("Champion", goal.champion)}
-    #{render_person("Reviewer", goal.reviewer)}
     """
+    |> then(fn msg ->
+      if goal.champion do
+        msg <> "\n" <> "Champion: #{goal.champion.full_name} (#{goal.champion.title})"
+      else
+        msg <> "\n" <> "Champion: Not Assigned"
+      end
+    end)
+    |> then(fn msg ->
+      if goal.reviewer do
+        msg <> "\n" <> "Reviewer: #{goal.reviewer.full_name} (#{goal.reviewer.title})"
+      else
+        msg <> "\n" <> "Reviewer: Not Assigned"
+      end
+    end)
   end
 
   defp render_timeframe(goal) do
@@ -137,14 +149,6 @@ defmodule Operately.MD.Goal do
 
   defp render_contextual_date(nil), do: "Not Set"
   defp render_contextual_date(date), do: date.value
-
-  defp render_person(role, person) do
-    if person do
-      "#{role}: #{person.full_name} (#{person.title})"
-    else
-      "#{role}: Not Assigned"
-    end
-  end
 
   defp render_projects([]), do: ""
 

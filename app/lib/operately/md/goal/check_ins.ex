@@ -21,7 +21,7 @@ defmodule Operately.MD.Goal.CheckIns do
     """
     ### Check-in on #{render_date(check_in.inserted_at)}
 
-    #{render_person("Author", check_in.author)}
+    Author: #{check_in.author.full_name}
 
     #{Operately.MD.RichText.render(check_in.message)}
 
@@ -69,13 +69,5 @@ defmodule Operately.MD.Goal.CheckIns do
 
   defp render_date(date) do
     Operately.Time.as_date(date) |> Date.to_iso8601()
-  end
-
-  defp render_person(role, person) do
-    if person do
-      "#{role}: #{person.full_name} (#{person.title})"
-    else
-      "#{role}: Not Assigned"
-    end
   end
 end

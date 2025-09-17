@@ -21,7 +21,7 @@ defmodule Operately.MD.Goal.Discussions do
     """
     ### #{discussion.title}
 
-    #{render_person("Author", discussion.author)}
+    Author: #{discussion.author.full_name}
     Posted on: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
@@ -30,14 +30,6 @@ defmodule Operately.MD.Goal.Discussions do
 
     #{render_comments(discussion.comments)}
     """
-  end
-
-  defp render_person(role, person) do
-    if person do
-      "#{role}: #{person.full_name} (#{person.title})"
-    else
-      "#{role}: Not Assigned"
-    end
   end
 
   defp render_date(date) do
