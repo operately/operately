@@ -156,6 +156,11 @@ const sampleMilestone: Types.Milestone = {
   status: "pending",
 };
 
+const longTitleOne =
+  "Coordinate cross-functional launch strategy across marketing, sales, support, and product to keep messaging aligned through release";
+const longTitleTwo =
+  "Document post-launch follow-up plan covering customer outreach, success enablement, analytics tracking, and executive reporting milestones";
+
 // Sample tasks for this milestone
 const sampleTasks: Types.Task[] = [
   {
@@ -204,6 +209,27 @@ const sampleTasks: Types.Task[] = [
     milestone: sampleMilestone,
     dueDate: null,
     hasComments: false,
+  },
+  {
+    id: "task-5",
+    title: longTitleOne,
+    status: "in_progress" as Types.Status,
+    description: null,
+    milestone: sampleMilestone,
+    link: "#",
+    dueDate: createContextualDate(new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), "day"),
+    hasComments: true,
+    commentCount: 6,
+  },
+  {
+    id: "task-6",
+    title: longTitleTwo,
+    status: "pending" as Types.Status,
+    description: "Ensure every team knows their responsibilities after release",
+    milestone: sampleMilestone,
+    link: "#",
+    dueDate: null,
+    hasDescription: true,
   },
 ];
 

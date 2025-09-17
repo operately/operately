@@ -78,8 +78,8 @@ export function MilestoneCard({
     <>
       <li {...hoverBind}>
         {/* Milestone header */}
-        <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
-          <div className="flex items-center gap-2">
+        <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+          <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* Progress pie chart */}
             <PieChart
               size={16}
@@ -92,14 +92,15 @@ export function MilestoneCard({
             />
             <BlackLink
               to={milestone.link || ""}
-              className="text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
+              className="flex-1 min-w-0 truncate text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
               underline="hover"
+              title={milestone.name}
             >
               {milestone.name}
             </BlackLink>
 
             {/* Milestone indicators */}
-            <div className="flex items-center gap-1 ml-1">
+            <div className="flex items-center gap-1 ml-1 flex-shrink-0">
               {/* Description indicator */}
               {milestone.hasDescription && (
                 <span className="text-content-dimmed flex items-center">

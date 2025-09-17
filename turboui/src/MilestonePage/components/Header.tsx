@@ -26,7 +26,7 @@ export function Header({ title, canEdit, status, onMilestoneTitleChange }: Props
           <IconFlag size={20} className="text-blue-500" />
         )}
         <TextField
-          className="font-semibold leading-tight text-xl sm:text-2xl md:text-3xl break-words min-w-0"
+          className="font-semibold leading-tight text-xl sm:text-2xl break-words min-w-0"
           text={title}
           onChange={onMilestoneTitleChange}
           readonly={!canEdit}

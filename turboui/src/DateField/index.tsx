@@ -39,6 +39,8 @@ export namespace DateField {
     size?: "std" | "small" | "lg";
     error?: boolean;
     calendarOnly?: boolean;
+    ariaLabel?: string;
+    className?: string;
   }
 
   export type DateType = "day" | "month" | "quarter" | "year";
@@ -84,6 +86,8 @@ export function DateField({
   maxDateLimit,
   error = false,
   calendarOnly = false,
+  ariaLabel,
+  className = "",
 }: DateField.Props) {
   const [open, setOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
@@ -149,11 +153,13 @@ export function DateField({
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
             variant={variant}
-            hideCalendarIcon={hideCalendarIcon}
-            testId={testId}
-            size={size}
-            error={error}
-          />
+          hideCalendarIcon={hideCalendarIcon}
+          testId={testId}
+          size={size}
+          error={error}
+          ariaLabel={ariaLabel}
+          className={className}
+        />
         </div>
       </Popover.Trigger>
 
@@ -198,6 +204,8 @@ interface DatePickerTriggerProps extends TestableElement {
   hideCalendarIcon: boolean;
   size: "std" | "small" | "lg";
   error: boolean;
+  ariaLabel?: string;
+  className?: string;
 }
 
 function DatePickerTrigger({
@@ -211,6 +219,8 @@ function DatePickerTrigger({
   size,
   testId,
   error,
+  ariaLabel,
+  className = "",
 }: DatePickerTriggerProps) {
   let displayText = selectedDate ? getDateWithoutCurrentYear(selectedDate) : label;
   const isDateOverdue = selectedDate?.date && isOverdue(selectedDate.date);
@@ -240,6 +250,7 @@ function DatePickerTrigger({
     "inline-block focus:outline-none focus:ring-2 focus:ring-primary-base",
     variant === "inline" ? `rounded-lg px-1.5 py-1 -mx-1.5 -my-1 ${error ? "border border-red-500" : ""}` : fieldSize,
     !readonly ? "hover:bg-surface-dimmed" : "",
+    className,
   );
 
   const handleClick = (e: React.MouseEvent) => {
@@ -254,6 +265,7 @@ function DatePickerTrigger({
       onClick={handleClick}
       disabled={readonly}
       aria-readonly={readonly}
+      aria-label={ariaLabel}
       data-test-id={testId}
     >
       <span className={elemClass}>

@@ -74,12 +74,15 @@ export function TaskItem({
   );
 
   return (
-    <li ref={ref as React.RefObject<HTMLLIElement>} style={itemStyle(task.id)} className={itemClasses}>
-      <div className="flex items-center px-4 py-2.5 group group/due-date bg-surface-base hover:bg-surface-highlight">
+    <li
+      ref={ref as React.RefObject<HTMLLIElement>}
+      style={itemStyle(task.id)}
+      className={classNames("group/task-row", itemClasses)}
+    >
+      <div className="flex items-center px-4 py-2.5 bg-surface-base hover:bg-surface-highlight">
         {/* Left side: Status and task info */}
         <div className="flex-1 flex items-center gap-2 min-w-0">
-          {/* Status icon and title wrapper for alignment */}
-          <div className="flex items-center gap-1.5 h-6">
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
             {/* Status icon */}
             <div className="flex-shrink-0 flex items-center h-6">
               <StatusSelector
@@ -89,73 +92,82 @@ export function TaskItem({
                 readonly={!onTaskStatusChange}
               />
             </div>
+
             {/* Task title with inline meta indicators */}
-            <BlackLink
-              to={task.link}
-              className="text-sm font-medium hover:text-link-hover transition-colors truncate h-6 flex items-center relative top-[-1px]"
-              underline="hover"
-            >
-              {task.title}
-            </BlackLink>
+            <div className="flex items-center gap-1.5 flex-1 min-w-0">
+              <BlackLink
+                to={task.link}
+                className="flex-1 min-w-0 max-w-full text-sm font-medium hover:text-link-hover transition-colors"
+                underline="hover"
+                title={task.title}
+              >
+                <span className="inline-flex items-center gap-1.5 truncate max-w-full h-6 relative top-[-1px]">
+                  <span className="truncate">{task.title}</span>
+
+                  {task.hasDescription && (
+                    <span className="text-content-dimmed flex-shrink-0" title="Has description">
+                      <IconFileText size={14} />
+                    </span>
+                  )}
+
+                  {task.hasComments && (
+                    <span
+                      className="text-content-dimmed flex items-center flex-shrink-0"
+                      title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
+                    >
+                      <IconMessageCircle size={14} />
+                      <span className="ml-0.5 text-xs text-content-dimmed">{task.commentCount}</span>
+                    </span>
+                  )}
+                </span>
+              </BlackLink>
+            </div>
           </div>
-
-          {/* Description indicator */}
-          {task.hasDescription && (
-            <span className="text-content-dimmed flex-shrink-0" title="Has description">
-              <IconFileText size={14} />
-            </span>
-          )}
-
-          {/* Comments indicator */}
-          {task.hasComments && (
-            <span
-              className="text-content-dimmed flex items-center flex-shrink-0"
-              title={`${task.commentCount} comment${task.commentCount === 1 ? "" : "s"}`}
-            >
-              <IconMessageCircle size={14} />
-              <span className="ml-0.5 text-xs text-content-dimmed">{task.commentCount}</span>
-            </span>
-          )}
         </div>
 
-        {/* Right side: Due date and assignee */}
-        <div className="flex items-center gap-3 flex-shrink-0 ml-4">
-          {/* Due date */}
-          <div className="flex items-center">
-            {/* Show DateField when there's a date OR on hover when no date */}
-            {currentDueDate || !onTaskDueDateChange ? (
-              <DateField
-                date={currentDueDate}
-                onDateSelect={handleDueDateChange}
-                variant="inline"
-                hideCalendarIcon={true}
-                showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
-                placeholder="Set due date"
-                readonly={!onTaskDueDateChange}
-                size="small"
-                calendarOnly
-                testId="task-due-date"
-              />
-            ) : (
-              /* Empty state that appears on hover */
-              <div className="opacity-0 group-hover/due-date:opacity-100 transition-opacity">
-                <DateField
-                  date={null}
-                  onDateSelect={handleDueDateChange}
-                  variant="inline"
-                  hideCalendarIcon={true}
-                  showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
-                  placeholder="Set due date"
-                  readonly={false}
-                  size="small"
-                  calendarOnly
-                  testId="task-due-date"
-                />
-              </div>
-            )}
+        <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0 ml-3 sm:ml-4">
+          <div className="sm:hidden flex items-center">
+            <DateField
+              date={currentDueDate}
+              onDateSelect={handleDueDateChange}
+              variant="inline"
+              hideCalendarIcon={!!currentDueDate}
+              showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
+              placeholder={currentDueDate ? "Set due date" : ""}
+              readonly={!onTaskDueDateChange}
+              size={currentDueDate ? "small" : "lg"}
+              calendarOnly
+              testId="task-due-date-mobile"
+              ariaLabel="Set due date"
+              className={
+                currentDueDate
+                  ? ""
+                  : "text-content-subtle [&>span]:text-content-subtle [&>span_svg]:text-content-subtle"
+              }
+            />
           </div>
 
-          {/* Assignee */}
+          <div className="hidden sm:flex">
+            <DateField
+              date={currentDueDate}
+              onDateSelect={handleDueDateChange}
+              variant="inline"
+              hideCalendarIcon={true}
+              showOverdueWarning={task.status !== "done" && task.status !== "canceled"}
+              placeholder={currentDueDate ? "" : "Set due date"}
+              readonly={!onTaskDueDateChange}
+              size="small"
+              calendarOnly
+              testId="task-due-date"
+              ariaLabel="Set due date"
+              className={
+                currentDueDate
+                  ? ""
+                  : "[&>span]:text-transparent group-hover/task-row:[&>span]:text-content-dimmed group-focus-within/task-row:[&>span]:text-content-dimmed"
+              }
+            />
+          </div>
+
           <div className="flex items-center flex-shrink-0 w-6 h-6">
             <PersonField
               person={currentAssignee}
