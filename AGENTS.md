@@ -11,6 +11,9 @@
 - Run server: `make dev.server` (Phoenix at http://localhost:4000).
 - One-shot tests: `make test` (Elixir + Jest). Targeted: `make test FILE=app/test/some_test.exs` or `make test FILE=assets/js/path.spec.ts`.
 - Separate suites: `make test.mix` (Elixir), `make test.npm` (Jest), `make test.dialyzer` (types), `make test.tsc.lint` (TS checks).
+- Unit tests: `make test.mix.unit` (Elixir unit tests with retry logic).
+- Feature tests: `make test.mix.features` (Elixir feature tests with parallel splitting).
+- Enterprise tests: `make test.ee` (Enterprise edition tests with retry logic).
 - UI lib: `make turboui.build`, `make turboui.test`, `make turboui.storybook`.
 - For component workflow, see `turboui/AGENTS.md`.
 - Docker image: `make docker.build` (see `Dockerfile.prod`).
@@ -22,7 +25,7 @@
 - TurboUI component architecture and patterns: `turboui/AGENTS.md`.
 
 ## Testing Guidelines
-- Elixir: ExUnit for unit/integration; Wallaby for feature tests. Run with `make test.mix` or `mix test` inside `app/`.
+- Elixir: ExUnit for unit/integration; Wallaby for feature tests. **ALWAYS use `make test.mix` or other make targets, NEVER call `mix test` directly.**
 - Frontend: Jest in `app/` and `turboui/`. Run with `make test.npm` or `npm test` in the respective package.
 - CI emits JUnit/XML to `app/testreports/`. Prefer deterministic, isolated tests.
 
