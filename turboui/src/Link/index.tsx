@@ -13,6 +13,7 @@ interface Props {
   style?: React.CSSProperties;
   onMouseOver?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
   onMouseOut?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  title?: string;
 }
 
 interface LinkProps extends Props {

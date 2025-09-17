@@ -3,7 +3,16 @@ import { DateField } from "../DateField";
 import TaskCreationModal from "../TaskBoard/components/TaskCreationModal";
 import * as Types from "../TaskBoard/types";
 import { Timeline } from "../Timeline";
-import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages } from "../icons";
+import {
+  IconCheck,
+  IconClipboardText,
+  IconFlag,
+  IconFlagFilled,
+  IconListCheck,
+  IconLogs,
+  IconMessage,
+  IconMessages,
+} from "../icons";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
 import { MilestoneDescription } from "./components/Description";
@@ -14,6 +23,8 @@ import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { TimelineItem } from "../Timeline/types";
 import { Header } from "./components/Header";
 import { TasksSection } from "./components/TasksSection";
+import { SidebarSection } from "../SidebarSection";
+import { GhostButton, SecondaryButton } from "../Button";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -189,6 +200,8 @@ export function MilestonePage(props: MilestonePage.Props) {
       <MainContainer>
         <Header title={title} canEdit={canEdit} status={status} onMilestoneTitleChange={onMilestoneTitleChange} />
 
+        <MobileMeta {...state} />
+
         <div className="sm:grid sm:grid-cols-12">
           {/* Main content - left column (8 columns) */}
           <div className="sm:col-span-8 sm:px-4 space-y-4">
@@ -220,6 +233,65 @@ export function MilestonePage(props: MilestonePage.Props) {
       />
       <DeleteModal {...state} />
     </ProjectPageLayout>
+  );
+}
+
+function MobileMeta(props: MilestonePage.State) {
+  const { status, onStatusChange, canEdit = true, dueDate, onDueDateChange, milestone } = props;
+  const isCompleted = status === "done";
+  const showOverdueWarning = !isCompleted;
+
+  const handleStatusToggle = () => {
+    if (!canEdit) return;
+
+    onStatusChange(isCompleted ? "pending" : "done");
+  };
+
+  return (
+    <div className="sm:hidden mt-4 mb-6" data-test-id="milestone-mobile-meta">
+      <div className="flex flex-wrap gap-4">
+        <SidebarSection title="Due date" className="flex-1 min-w-[160px]">
+          <DateField
+            date={dueDate ?? milestone.dueDate ?? null}
+            onDateSelect={onDueDateChange}
+            readonly={!canEdit}
+            showOverdueWarning={showOverdueWarning}
+            placeholder="Set due date"
+            size="small"
+          />
+        </SidebarSection>
+
+        <SidebarSection title="Milestone status" className="flex-1 min-w-[160px]">
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <div className="flex items-center gap-2">
+              {isCompleted ? (
+                <>
+                  <IconFlagFilled size={16} className="text-accent-1" />
+                  <span className="font-medium text-accent-1">Completed</span>
+                </>
+              ) : (
+                <>
+                  <IconFlag size={16} className="text-content-dimmed" />
+                  <span className="text-content-base">Active</span>
+                </>
+              )}
+            </div>
+
+            {canEdit && (
+              isCompleted ? (
+                <SecondaryButton size="xs" onClick={handleStatusToggle}>
+                  Reopen
+                </SecondaryButton>
+              ) : (
+                <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
+                  Mark complete
+                </GhostButton>
+              )
+            )}
+          </div>
+        </SidebarSection>
+      </div>
+    </div>
   );
 }
 
