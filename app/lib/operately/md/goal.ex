@@ -3,9 +3,6 @@ defmodule Operately.MD.Goal do
     goal = Operately.Repo.preload(goal, updates: [:author], targets: [], checks: [], group: [], parent_goal: [], projects: [], champion: [], reviewer: [])
     discussions = Operately.Goals.Discussion.list(goal.id)
 
-    # Load check-ins with comments
-    check_ins_with_comments = load_check_ins_with_comments(goal.updates)
-
     """
     # #{goal.name}
 
@@ -16,7 +13,7 @@ defmodule Operately.MD.Goal do
     #{render_targets(goal.targets)}
     #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
-    #{render_check_ins(check_ins_with_comments)}
+    #{Operately.MD.Goal.CheckIns.render(goal.updates)}
     #{Operately.MD.Goal.Discussions.render(discussions)}
     #{render_retrospective(goal.retrospective)}
     """
@@ -108,34 +105,6 @@ defmodule Operately.MD.Goal do
 
   defp calculate_target_progress(_), do: 0.0
 
-  defp render_check_ins(check_ins) do
-    if check_ins == [] do
-      """
-      ## Check-ins
-
-      _No check-ins yet._
-      """
-    else
-      """
-      ## Check-ins
-
-      #{Enum.map_join(check_ins, "\n\n", &render_check_in/1)}
-      """
-    end
-  end
-
-  defp render_check_in(check_in) do
-    """
-    ### Check-in on #{render_date(check_in.inserted_at)}
-
-    #{render_person("Author", check_in.author)}
-
-    #{Operately.MD.RichText.render(check_in.message)}
-
-    #{render_check_in_comments(check_in.comments || [])}
-    """
-  end
-
   defp render_retrospective(retrospective) do
     if retrospective do
       """
@@ -185,44 +154,6 @@ defmodule Operately.MD.Goal do
 
     #{Enum.map_join(projects, "\n", fn project -> "- #{project.name} (ID: #{project.id})" end)}
     """
-  end
-
-  defp render_check_in_comments([]) do
-    ""
-  end
-
-  defp render_check_in_comments(comments) do
-    """
-    #### Comments
-
-    #{Enum.map_join(comments, "\n\n", &render_check_in_comment/1)}
-    """
-  end
-
-  defp render_check_in_comment(comment) do
-    """
-    **#{comment.author.full_name}** on #{render_date(comment.inserted_at)}:
-
-    #{Operately.MD.RichText.render(comment.content["message"])}
-    """
-  end
-
-  defp load_check_ins_with_comments(check_ins) do
-    Enum.map(check_ins, fn check_in ->
-      comments = load_comments_for_check_in(check_in.id)
-      Map.put(check_in, :comments, comments)
-    end)
-  end
-
-  defp load_comments_for_check_in(check_in_id) do
-    import Ecto.Query
-
-    from(c in Operately.Updates.Comment,
-      where: c.entity_id == ^check_in_id and c.entity_type == :goal_update,
-      order_by: [asc: c.inserted_at],
-      preload: [:author]
-    )
-    |> Operately.Repo.all()
   end
 
   defp compact_empty_lines(text) do
