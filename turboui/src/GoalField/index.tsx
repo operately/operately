@@ -119,7 +119,7 @@ export function useGoalFieldState(p: GoalField.Props): GoalField.State {
 
 function Trigger({ state }: { state: GoalField.State }) {
   const triggerClass = classNames({
-    "flex items-center gap-2 truncate text-left": true,
+    "flex items-start gap-2 text-left min-w-0 w-full": true,
     "focus:outline-none hover:bg-surface-dimmed px-1.5 py-1 -my-1 -mx-1.5 rounded": !state.readonly,
     "cursor-pointer": !state.readonly || (state.readonly && state.goal),
     "cursor-default": state.readonly && !state.goal,
@@ -130,7 +130,9 @@ function Trigger({ state }: { state: GoalField.State }) {
     const goalContent = (
       <>
         <IconGoal size={state.iconSize} />
-        <div className="text-sm font-medium">{state.goal.name}</div>
+        <div className="text-sm font-medium whitespace-normal break-words flex-1 min-w-0">
+          {state.goal.name}
+        </div>
       </>
     );
 
