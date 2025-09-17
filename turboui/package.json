@@ -55,6 +55,7 @@
     "ts-pattern": "^5.0.8"
   },
   "dependencies": {
+    "canvas-confetti": "^1.9.3",
     "@radix-ui/react-switch": "^1.2.5",
     "@tabler/icons-react": "^3.14.0",
     "@tiptap/core": "^2.3.0",
