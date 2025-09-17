@@ -4,6 +4,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Goals.Check do
       id: OperatelyWeb.Paths.goal_check_id(check),
       name: check.name,
       completed: check.completed,
+      completed_at: OperatelyWeb.Api.Serializer.serialize(check.completed_at),
       index: check.index,
       inserted_at: OperatelyWeb.Api.Serializer.serialize(check.inserted_at),
       updated_at: OperatelyWeb.Api.Serializer.serialize(check.updated_at)
