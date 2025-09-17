@@ -9,7 +9,7 @@ defmodule Operately.MD.Goal do
     #{render_overview_info(goal)}
     #{render_description(goal)}
     #{render_people(goal)}
-    #{render_timeframe(goal)}
+    #{Operately.MD.Goal.Timeframe.render(goal)}
     #{render_targets(goal.targets)}
     #{Operately.MD.Goal.Checklist.render(goal)}
     #{render_projects(goal.projects)}
@@ -136,19 +136,8 @@ defmodule Operately.MD.Goal do
         msg <> "\n" <> "Reviewer: Not Assigned"
       end
     end)
+    |> then(fn msg -> msg <> "\n" end)
   end
-
-  defp render_timeframe(goal) do
-    """
-    ## Timeframe
-
-    Start Date: #{render_contextual_date(goal.timeframe.contextual_start_date)}
-    Due Date: #{render_contextual_date(goal.timeframe.contextual_end_date)}
-    """
-  end
-
-  defp render_contextual_date(nil), do: "Not Set"
-  defp render_contextual_date(date), do: date.value
 
   defp render_projects([]), do: ""
 
