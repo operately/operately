@@ -20,4 +20,8 @@ defmodule Operately.Goals.Update.Target do
     |> cast(attrs, __schema__(:fields))
     |> validate_required(__schema__(:fields))
   end
+
+  def format_value(target) do
+    Operately.Goals.Target.format_value(%Operately.Goals.Target{value: target.value, unit: target.unit})
+  end
 end
