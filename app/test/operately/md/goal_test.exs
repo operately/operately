@@ -36,11 +36,13 @@ defmodule Operately.MD.GoalTest do
     ctx = Factory.add_goal_discussion(ctx, :discussion, :goal, title: "Discussion Title", message: Operately.Support.RichText.rich_text("This is a discussion about the goal."))
 
     rendered = Operately.MD.Goal.render(ctx.goal)
+    expected_date = Operately.Time.as_date(ctx.discussion.inserted_at) |> Date.to_iso8601()
 
     assert rendered =~ "## Discussions"
     assert rendered =~ "Discussion Title"
+    assert rendered =~ "Posted on: #{expected_date}"
+    assert rendered =~ "Author: #{ctx.creator.full_name}"
     assert rendered =~ "This is a discussion about the goal."
-    assert rendered =~ ctx.creator.full_name
   end
 
   test "it renders the checklist in the markdown", ctx do

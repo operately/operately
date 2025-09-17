@@ -22,7 +22,7 @@ defmodule Operately.MD.Goal.Discussions do
     ### #{discussion.title}
 
     #{render_person("Author", discussion.author)}
-    #{render_date(discussion)}
+    Posted on: #{render_date(discussion.inserted_at)}
 
     #{Operately.MD.RichText.render(discussion.message)}
 
@@ -40,8 +40,8 @@ defmodule Operately.MD.Goal.Discussions do
     end
   end
 
-  defp render_date(discussion) do
-    "Published on: #{discussion.inserted_at |> Operately.Time.as_date() |> Date.to_iso8601()}"
+  defp render_date(date) do
+    Operately.Time.as_date(date) |> Date.to_iso8601()
   end
 
   defp render_comments(comments) do
@@ -86,6 +86,10 @@ defmodule Operately.MD.Goal.Discussions do
         ]
       )
 
-    activity.comment_thread
+    # Merge the loaded data with the existing discussion struct
+    %{discussion | author: activity.comment_thread.author || discussion.author}
+    |> Map.put(:reactions, activity.comment_thread.reactions || [])
+    |> Map.put(:comments, activity.comment_thread.comments || [])
+    |> Map.put(:message, activity.comment_thread.message || discussion.content)
   end
 end
