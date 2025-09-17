@@ -87,6 +87,105 @@ defmodule Operately.MD.Goal.CheckInsTest do
       assert result =~ "- User Acquisition"
     end
 
+    test "renders check-in with targets showing value differences", ctx do
+      ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
+      
+      # Create update targets with previous values to show diffs
+      update_targets = [
+        %Operately.Goals.Update.Target{
+          id: "target-1",
+          name: "Revenue Growth",
+          value: 850_000.0,
+          previous_value: 750_000.0,
+          unit: "USD",
+          from: 0.0,
+          to: 1_000_000.0,
+          index: 0
+        },
+        %Operately.Goals.Update.Target{
+          id: "target-2", 
+          name: "User Acquisition",
+          value: 8200.0,
+          previous_value: 8500.0,
+          unit: "users",
+          from: 0.0,
+          to: 10000.0,
+          index: 1
+        },
+        %Operately.Goals.Update.Target{
+          id: "target-3",
+          name: "Conversion Rate",
+          value: 5.25,
+          previous_value: 5.25,
+          unit: "%",
+          from: 0.0,
+          to: 10.0,
+          index: 2
+        }
+      ]
+
+      # Preload the author and add the update targets
+      update = Operately.Repo.preload(ctx.update, [:author])
+      update_with_targets = Map.put(update, :targets, update_targets)
+
+      result = CheckIns.render([update_with_targets])
+
+      assert result =~ "#### Targets"
+      assert result =~ "- Revenue Growth - 850000 USD (+100000)"
+      assert result =~ "- User Acquisition - 8200 users (-300)"
+      assert result =~ "- Conversion Rate - 5.25%"
+      refute result =~ "Conversion Rate - 5.25% (+0)"
+    end
+
+    test "renders check-in with targets handling decimal formatting", ctx do
+      ctx = Factory.add_goal_update(ctx, :update, :goal, :creator)
+      
+      # Test various decimal scenarios
+      update_targets = [
+        %Operately.Goals.Update.Target{
+          id: "target-1",
+          name: "Percentage A",
+          value: 15.5,
+          previous_value: 12.75,
+          unit: "%",
+          from: 0.0,
+          to: 20.0,
+          index: 0
+        },
+        %Operately.Goals.Update.Target{
+          id: "target-2", 
+          name: "Percentage B",
+          value: 10.0,
+          previous_value: 8.5,
+          unit: "%",
+          from: 0.0,
+          to: 15.0,
+          index: 1
+        },
+        %Operately.Goals.Update.Target{
+          id: "target-3",
+          name: "Large Number",
+          value: 1500000.0,
+          previous_value: 1450000.0,
+          unit: "USD",
+          from: 0.0,
+          to: 2000000.0,
+          index: 2
+        }
+      ]
+
+      # Preload the author and add the update targets
+      update = Operately.Repo.preload(ctx.update, [:author])
+      update_with_targets = Map.put(update, :targets, update_targets)
+
+      result = CheckIns.render([update_with_targets])
+
+      assert result =~ "#### Targets"
+      assert result =~ "- Percentage A - 15.5% (+2.75)"
+      assert result =~ "- Percentage B - 10% (+1.5)"
+      assert result =~ "- Large Number - 1500000 USD (+50000)"
+    end
+
     test "renders check-in with checklist", ctx do
       ctx =
         ctx
