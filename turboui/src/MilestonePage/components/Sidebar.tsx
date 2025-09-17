@@ -8,6 +8,7 @@ import { IconCalendar, IconCheck, IconLink, IconTrash, IconFlagFilled, IconFlag,
 import FormattedTime from "../../FormattedTime";
 import { MilestonePage } from "..";
 import { SidebarSection } from "../../SidebarSection";
+import { launchConfetti } from "../../utils/confetti";
 
 export function MilestoneSidebar({
   milestone,
@@ -81,6 +82,9 @@ function SidebarStatus({
   const handleStatusToggle = () => {
     // Toggle the completion status (stored as any property for demo)
     const newStatus = isCompleted ? "pending" : "done";
+    if (newStatus === "done") {
+      launchConfetti();
+    }
     onStatusChange(newStatus);
   };
 
