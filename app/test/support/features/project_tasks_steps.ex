@@ -70,7 +70,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :add_task_from_milestone_page, ctx, title do
     ctx
     |> UI.click(testid: "tasks-section-add-task")
-    |> UI.fill(placeholder: "Write the name of a task and press Return", with: title)
+    |> UI.fill(placeholder: "Add a task...", with: title)
     |> UI.press_enter()
     |> UI.sleep(500)
   end
