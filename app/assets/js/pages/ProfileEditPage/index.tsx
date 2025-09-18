@@ -22,7 +22,11 @@ interface LoaderResult {
 
 async function loader({ request, params }): Promise<LoaderResult> {
   return {
-    person: await People.getPerson({ id: params.id, includeManager: true }).then((d) => d.person!),
+    person: await People.getPerson({ 
+      id: params.id, 
+      includeManager: true,
+      includePermissions: true 
+    }).then((d) => d.person!),
     from: Pages.getSearchParam(request, "from") as FromLocation,
   };
 }
@@ -129,9 +133,18 @@ function ProfileForm({ person }: { person: People.Person }) {
 }
 
 function BigAvatar({ person }: { person: People.Person }) {
-  return (
-    <AvatarUploader person={person} />
-  );
+  // Check if user has permission to edit profile
+  const canEdit = person.permissions?.canEditProfile ?? false;
+  
+  if (canEdit) {
+    return <AvatarUploader person={person} />;
+  } else {
+    return (
+      <section className="flex flex-col w-full justify-center items-center text-center my-8">
+        <Avatar person={person} size="xxlarge" />
+      </section>
+    );
+  }
 }
 
 function AvatarUploader({ person }: { person: People.Person }) {
@@ -148,9 +161,10 @@ function AvatarUploader({ person }: { person: People.Person }) {
 
     setError(null);
 
-    // Validate file type
-    if (!file.type.startsWith('image/')) {
-      setError('Please select an image file');
+    // Validate file type - accept common image formats
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setError('Please select a valid image file (JPEG, PNG, GIF, or WebP)');
       return;
     }
 
