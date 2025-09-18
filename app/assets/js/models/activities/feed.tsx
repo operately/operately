@@ -210,6 +210,11 @@ function parseTaskMilestoneUpdatingActivity(
     return null;
   }
 
+  // If both milestones are null (deleted), we cannot display this activity
+  if (!content.newMilestone && !content.oldMilestone) {
+    return null;
+  }
+
   return {
     id: activity.id,
     type: "task_milestone_updating",
