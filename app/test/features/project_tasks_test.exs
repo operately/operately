@@ -8,7 +8,7 @@ defmodule Operately.Features.ProjectTasksTest do
     ctx
     |> ProjectSteps.create_project(name: "Test Project")
     |> Factory.add_project_milestone(:milestone, :project)
-    |>  ProjectSteps.login()
+    |> ProjectSteps.login()
   end
 
   @tag login_as: :champion
@@ -28,7 +28,7 @@ defmodule Operately.Features.ProjectTasksTest do
       name: "Task 1",
       assignee: ctx.champion.full_name,
       due_date: next_friday,
-      milestone: ctx.milestone.title,
+      milestone: ctx.milestone.title
     }
 
     ctx
@@ -48,7 +48,7 @@ defmodule Operately.Features.ProjectTasksTest do
       name: "My task",
       assignee: nil,
       due_date: get_next_friday(),
-      milestone: ctx.milestone.title,
+      milestone: ctx.milestone.title
     }
 
     ctx
@@ -66,7 +66,7 @@ defmodule Operately.Features.ProjectTasksTest do
       name: "My task",
       assignee: ctx.champion.full_name,
       due_date: get_next_friday(),
-      milestone: nil,
+      milestone: nil
     }
 
     ctx
@@ -84,7 +84,7 @@ defmodule Operately.Features.ProjectTasksTest do
       name: "My task",
       assignee: ctx.champion.full_name,
       due_date: nil,
-      milestone: ctx.milestone.title,
+      milestone: ctx.milestone.title
     }
 
     ctx
@@ -191,12 +191,21 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_comment("This is a comment")
   end
 
+  @tag login_as: :champion
+  feature "task page activity feed handles deleted milestone gracefully", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_feed_references_a_deleted_milestone()
+    |> Steps.visit_task_page()
+    |> Steps.assert_page_loads_without_errors()
+  end
+
   #
   # Helpers
   #
 
   defp get_next_friday do
     Date.utc_today()
-    |> Date.add(((5 - Date.day_of_week(Date.utc_today())) + 7) |> rem(7) |> Kernel.+(7))
+    |> Date.add((5 - Date.day_of_week(Date.utc_today()) + 7) |> rem(7) |> Kernel.+(7))
   end
 end
