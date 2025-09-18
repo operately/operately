@@ -1310,6 +1310,7 @@ export interface Person {
   fullName: string;
   title: string;
   avatarUrl: string | null;
+  avatarBlobId: string | null;
   email: string;
   timezone?: string | null;
   sendDailySummary?: boolean | null;
@@ -4120,6 +4121,7 @@ export interface UpdateProfileInput {
   timezone?: string | null;
   managerId?: string | null;
   theme?: string | null;
+  avatarBlobId?: string | null;
 }
 
 export interface UpdateProfileResult {
