@@ -108,6 +108,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.click(testid: UI.testid(["milestone-field-search-result", name]))
   end
 
+  step :remove_task_milestone, ctx do
+    ctx
+    |> UI.click(testid: "milestone-field")
+    |> UI.click(testid: "milestone-field-clear-milestone")
+  end
+
   step :post_comment, ctx, comment do
     ctx
     |> UI.find(UI.query(testid: "task-activity-section"), fn el ->
@@ -205,11 +211,45 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     end)
   end
 
+  step :given_task_feed_references_a_deleted_milestone, ctx do
+    # Create another milestone and attach the task to it to create an activity
+    ctx = ctx |> Factory.add_project_milestone(:another_milestone, :project)
+
+    # Create an activity that references the milestone by directly inserting the activity
+    # This simulates the scenario where a task was moved to a milestone that later gets deleted
+    activity_attrs = %{
+      company_id: ctx.company.id,
+      space_id: ctx.group.id,
+      project_id: ctx.project.id,
+      task_id: ctx.task.id,
+      old_milestone_id: nil,
+      new_milestone_id: ctx.another_milestone.id
+    }
+
+    {:ok, _activity} =
+      Ecto.Multi.new()
+      |> Operately.Activities.insert_sync(ctx.champion.id, :task_milestone_updating, fn _changes -> activity_attrs end)
+      |> Operately.Repo.transaction()
+
+    # Delete the milestone to simulate the scenario where activity references a deleted milestone
+    Operately.Repo.delete!(ctx.another_milestone)
+
+    ctx
+  end
+
+  step :assert_page_loads_without_errors, ctx do
+    # Check that the page loads successfully without any errors
+    # This could verify no error messages are displayed and key elements are present
+    ctx
+    |> UI.assert_has(testid: "task-name")
+  end
+
   #
   # Helpers
   #
 
   defp if_present(ctx, nil, _func), do: ctx
+
   defp if_present(ctx, _property, func) do
     func.(ctx)
   end

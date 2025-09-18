@@ -1,27 +1,27 @@
 import {
   Activity,
-  ActivityContentTaskNameUpdating,
+  ActivityContentTaskAdding,
   ActivityContentTaskAssigneeUpdating,
+  ActivityContentTaskDescriptionChange,
   ActivityContentTaskDueDateUpdating,
   ActivityContentTaskMilestoneUpdating,
+  ActivityContentTaskNameUpdating,
   ActivityContentTaskStatusUpdating,
-  ActivityContentTaskDescriptionChange,
-  ActivityContentTaskAdding,
 } from "@/api";
+import { compareIds, Paths } from "@/routes/paths";
 import {
-  TaskCreationActivity,
-  TaskTitleActivity,
-  TaskDescriptionActivity,
+  MilestoneActivity,
   TaskAssignmentActivity,
+  TaskCreationActivity,
+  TaskDescriptionActivity,
   TaskDueDateActivity,
   TaskMilestoneActivity,
   TaskStatusChangeActivity,
-  MilestoneActivity,
+  TaskTitleActivity,
 } from "turboui";
-import { parsePersonForTurboUi } from "../people";
-import { compareIds, Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 import { parseMilestoneForTurboUi } from "../milestones";
+import { parsePersonForTurboUi } from "../people";
 import { parseTaskStatus } from "../tasks";
 
 export const SUPPORTED_ACTIVITY_TYPES = [
