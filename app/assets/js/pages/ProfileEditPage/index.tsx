@@ -137,6 +137,7 @@ function BigAvatar({ person }: { person: People.Person }) {
 function AvatarUploader({ person }: { person: People.Person }) {
   const [uploading, setUploading] = React.useState(false);
   const [tempAvatarUrl, setTempAvatarUrl] = React.useState<string | null>(null);
+  const [error, setError] = React.useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const currentAvatarUrl = tempAvatarUrl || person.avatarUrl;
@@ -145,21 +146,27 @@ function AvatarUploader({ person }: { person: People.Person }) {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    setError(null);
+
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      alert('Please select an image file');
+      setError('Please select an image file');
       return;
     }
 
     // Validate file size (5MB limit)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
-      alert('Image must be smaller than 5MB');
+      setError('Image must be smaller than 5MB');
       return;
     }
 
     setUploading(true);
     try {
+      // Create a temporary preview URL for immediate feedback
+      const objectUrl = URL.createObjectURL(file);
+      setTempAvatarUrl(objectUrl);
+
       // Upload the file
       const result = await uploadFile(file, () => {});
       
@@ -169,26 +176,50 @@ function AvatarUploader({ person }: { person: People.Person }) {
         avatarBlobId: result.id,
       });
 
-      // Set temporary URL for immediate visual feedback
-      const objectUrl = URL.createObjectURL(file);
-      setTempAvatarUrl(objectUrl);
-      
-      // Clean up object URL after a short delay
+      // Show success briefly, then clear temp URL to show the real blob URL
       setTimeout(() => {
         URL.revokeObjectURL(objectUrl);
         setTempAvatarUrl(null);
-      }, 2000);
+        // Refresh the page to show the updated avatar from server
+        window.location.reload();
+      }, 1000);
 
     } catch (error) {
       console.error('Failed to upload avatar:', error);
-      alert('Failed to upload avatar. Please try again.');
+      setError('Failed to upload avatar. Please try again.');
+      // Clean up temp URL on error
+      if (tempAvatarUrl) {
+        URL.revokeObjectURL(tempAvatarUrl);
+        setTempAvatarUrl(null);
+      }
     } finally {
       setUploading(false);
     }
   };
 
   const handleClick = () => {
-    fileInputRef.current?.click();
+    if (!uploading) {
+      fileInputRef.current?.click();
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!person.avatarBlobId) return;
+
+    setUploading(true);
+    try {
+      await People.updateProfile({
+        id: person.id,
+        avatarBlobId: null,
+      });
+      // Refresh to show the change
+      window.location.reload();
+    } catch (error) {
+      console.error('Failed to remove avatar:', error);
+      setError('Failed to remove avatar. Please try again.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -203,6 +234,7 @@ function AvatarUploader({ person }: { person: People.Person }) {
           )}
         </div>
       </div>
+      
       <input
         ref={fileInputRef}
         type="file"
@@ -211,9 +243,24 @@ function AvatarUploader({ person }: { person: People.Person }) {
         className="hidden"
         disabled={uploading}
       />
-      <p className="text-sm text-gray-500 mt-2">
-        Click to change your profile photo
-      </p>
+      
+      <div className="mt-2 text-center">
+        <p className="text-sm text-gray-500">
+          Click to change your profile photo
+        </p>
+        {person.avatarBlobId && (
+          <button
+            onClick={handleRemoveAvatar}
+            disabled={uploading}
+            className="text-sm text-red-600 hover:text-red-800 mt-1 disabled:opacity-50"
+          >
+            Remove current photo
+          </button>
+        )}
+        {error && (
+          <p className="text-sm text-red-600 mt-1">{error}</p>
+        )}
+      </div>
     </section>
   );
 }
