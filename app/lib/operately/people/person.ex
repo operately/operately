@@ -114,6 +114,23 @@ defmodule Operately.People.Person do
     Operately.Repo.get_by!(__MODULE__, field_values)
   end
 
+  def avatar_url(person = %__MODULE__{}) do
+    cond do
+      person.avatar_blob_id != nil ->
+        try do
+          blob = Operately.Blobs.get_blob!(person.avatar_blob_id)
+          case Operately.Blobs.get_signed_get_url(blob, "inline") do
+            {:ok, url} -> url
+            _ -> person.avatar_url
+          end
+        rescue
+          _ -> person.avatar_url
+        end
+      true ->
+        person.avatar_url
+    end
+  end
+
   def load_permissions(person = %__MODULE__{}) do
     perms = Operately.People.Permissions.calculate(person.request_info.access_level)
     Map.put(person, :permissions, perms)

@@ -3,6 +3,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as People from "@/models/people";
 import * as React from "react";
 
+import { uploadFile } from "@/models/blobs";
 import { useNavigate } from "react-router-dom";
 import { Timezones } from "./timezones";
 
@@ -129,8 +130,90 @@ function ProfileForm({ person }: { person: People.Person }) {
 
 function BigAvatar({ person }: { person: People.Person }) {
   return (
+    <AvatarUploader person={person} />
+  );
+}
+
+function AvatarUploader({ person }: { person: People.Person }) {
+  const [uploading, setUploading] = React.useState(false);
+  const [tempAvatarUrl, setTempAvatarUrl] = React.useState<string | null>(null);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const currentAvatarUrl = tempAvatarUrl || person.avatarUrl;
+
+  const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Please select an image file');
+      return;
+    }
+
+    // Validate file size (5MB limit)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert('Image must be smaller than 5MB');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      // Upload the file
+      const result = await uploadFile(file, () => {});
+      
+      // Update the profile with the new blob ID
+      await People.updateProfile({
+        id: person.id,
+        avatarBlobId: result.id,
+      });
+
+      // Set temporary URL for immediate visual feedback
+      const objectUrl = URL.createObjectURL(file);
+      setTempAvatarUrl(objectUrl);
+      
+      // Clean up object URL after a short delay
+      setTimeout(() => {
+        URL.revokeObjectURL(objectUrl);
+        setTempAvatarUrl(null);
+      }, 2000);
+
+    } catch (error) {
+      console.error('Failed to upload avatar:', error);
+      alert('Failed to upload avatar. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
     <section className="flex flex-col w-full justify-center items-center text-center my-8">
-      <Avatar person={person} size="xxlarge" />
+      <div className="relative group cursor-pointer" onClick={handleClick}>
+        <Avatar person={{ ...person, avatarUrl: currentAvatarUrl }} size="xxlarge" />
+        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-full">
+          {uploading ? (
+            <div className="text-white text-sm">Uploading...</div>
+          ) : (
+            <div className="text-white text-sm">Change Photo</div>
+          )}
+        </div>
+      </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileSelect}
+        className="hidden"
+        disabled={uploading}
+      />
+      <p className="text-sm text-gray-500 mt-2">
+        Click to change your profile photo
+      </p>
     </section>
   );
 }
