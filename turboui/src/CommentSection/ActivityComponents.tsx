@@ -73,18 +73,15 @@ export function MilestoneCreatedActivity({ activity }: ActivityProps) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-1.5">
-          <div className="font-medium text-content-dimmed shrink-0">
-            {activity.author.profileLink ? (
-              <a 
-                href={activity.author.profileLink}
-                className="text-content-dimmed hover:text-content-accent hover:underline"
-              >
-                {activity.author.fullName.split(' ')[0]}
-              </a>
-            ) : (
-              activity.author.fullName.split(' ')[0]
-            )}
-          </div>
+          <AvatarWithName
+            person={activity.author}
+            size="tiny"
+            textSize="small"
+            nameFormat="short"
+            link={activity.author.profileLink}
+            className="text-content-dimmed font-medium"
+            showAvatar={false}
+          />
           <span className="min-w-0">{activity.content || "created the milestone"}</span>
         </div>
       </div>
@@ -107,18 +104,15 @@ export function MilestoneDescriptionActivity({ activity }: ActivityProps) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-1.5">
-          <div className="font-medium text-content-dimmed shrink-0">
-            {activity.author.profileLink ? (
-              <a 
-                href={activity.author.profileLink}
-                className="text-content-dimmed hover:text-content-accent hover:underline"
-              >
-                {activity.author.fullName.split(' ')[0]}
-              </a>
-            ) : (
-              activity.author.fullName.split(' ')[0]
-            )}
-          </div>
+          <AvatarWithName
+            person={activity.author}
+            size="tiny"
+            textSize="small"
+            nameFormat="short"
+            link={activity.author.profileLink}
+            className="text-content-dimmed font-medium"
+            showAvatar={false}
+          />
           <span className="min-w-0">{activity.content || "added a description"}</span>
         </div>
       </div>
@@ -141,18 +135,15 @@ export function MilestoneUpdateActivity({ activity }: ActivityProps) {
 
       <div className="flex-1 min-w-0">
         <div className="flex items-baseline gap-1.5">
-          <div className="font-medium text-content-dimmed shrink-0">
-            {activity.author.profileLink ? (
-              <a 
-                href={activity.author.profileLink}
-                className="text-content-dimmed hover:text-content-accent hover:underline"
-              >
-                {activity.author.fullName.split(' ')[0]}
-              </a>
-            ) : (
-              activity.author.fullName.split(' ')[0]
-            )}
-          </div>
+          <AvatarWithName
+            person={activity.author}
+            size="tiny"
+            textSize="small"
+            nameFormat="short"
+            link={activity.author.profileLink}
+            className="text-content-dimmed font-medium"
+            showAvatar={false}
+          />
           <span className="min-w-0">{activity.content || "updated the milestone"}</span>
         </div>
       </div>
@@ -191,4 +182,3 @@ export function AcknowledgmentActivity({ person, ackAt }: AcknowledgmentProps) {
     </div>
   );
 }
-
