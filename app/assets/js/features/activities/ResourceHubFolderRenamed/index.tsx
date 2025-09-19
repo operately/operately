@@ -66,7 +66,7 @@ const ResourceHubFolderRenamed: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " renamed a folder: " + content(activity).folder!.name!;
+    return "Renamed a folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation(_props: { activity: Activity }) {
