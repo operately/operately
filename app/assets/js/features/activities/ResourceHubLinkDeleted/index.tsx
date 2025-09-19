@@ -56,7 +56,7 @@ const ResourceHubLinkDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a link: " + content(activity).link!.name!;
+    return "Deleted a link: " + content(activity).link!.name!;
   },
 
   NotificationLocation(_props: { activity: Activity }) {

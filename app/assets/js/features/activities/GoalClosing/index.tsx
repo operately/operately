@@ -88,7 +88,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " closed the goal";
+    return "Closed the goal";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
