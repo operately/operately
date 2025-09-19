@@ -8,16 +8,24 @@ export const resumeStdinPlugin = {
   },
 };
 
-// Tracking resource consumpition per JS module
+// Tracking resource consumption per JS module - optimized for performance
 export const moduleAnalyzerPlugin = {
   name: "module-analyzer",
   generateBundle(options, bundle) {
+    // Only run analysis if explicitly requested or in verbose mode
+    if (!process.env.VITE_ANALYZE_MODULES && process.env.NODE_ENV !== "production") {
+      return;
+    }
+
     console.log("\n=== MODULE ANALYSIS ===");
     const moduleMap = new Map();
+    let totalModules = 0;
 
-    Object.values(bundle).forEach((chunk) => {
-      if (chunk.type === "chunk") {
-        Object.keys(chunk.modules || {}).forEach((moduleId) => {
+    // Use more efficient iteration
+    for (const chunk of Object.values(bundle)) {
+      if (chunk.type === "chunk" && chunk.modules) {
+        for (const moduleId of Object.keys(chunk.modules)) {
+          totalModules++;
           let packageName;
           if (moduleId.includes("node_modules/")) {
             const parts = moduleId.split("node_modules/")[1].split("/");
@@ -27,21 +35,20 @@ export const moduleAnalyzerPlugin = {
             packageName = "app-source";
           }
           moduleMap.set(packageName, (moduleMap.get(packageName) || 0) + 1);
-        });
+        }
       }
-    });
+    }
 
+    // Show top 10 instead of 20 for faster output
     const sortedModules = Array.from(moduleMap.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 20);
+      .slice(0, 10);
 
-    let totalModules = 0;
     sortedModules.forEach(([packageName, count]) => {
-      console.log(`${packageName.padEnd(60)} ${count.toString().padStart(4)} modules`);
-      totalModules += count;
+      console.log(`${packageName.padEnd(50)} ${count.toString().padStart(4)} modules`);
     });
 
-    console.log(`${"TOTAL".padEnd(40)} ${totalModules.toString().padStart(4)} modules`);
+    console.log(`${"TOTAL".padEnd(30)} ${totalModules.toString().padStart(4)} modules`);
     console.log("========================\n");
   },
 };

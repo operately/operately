@@ -4,12 +4,16 @@
     "lib": ["ESNext", "dom"], // specifies which default set of type definitions to use ("DOM", "ES6", etc)
     "outDir": "lib", // .js (as well as .d.ts, .js.map, etc.) files will be emitted into this directory.,
     "removeComments": true, // Strips all comments from TypeScript files when converting into JavaScript- you rarely read compiled code so this saves space
-    "target": "ES6", // Target environment. Most modern browsers support ES6, but you may want to set it to newer or older. (defaults to ES3)
+    "target": "ES2022", // Updated to match Vite target for better performance and consistency
 
     // Module resolution
     "baseUrl": "./", // Lets you set a base directory to resolve non-absolute module names.
     "esModuleInterop": true, // fixes some issues TS originally had with the ES6 spec where TypeScript treats CommonJS/AMD/UMD modules similar to ES6 module
     "moduleResolution": "node", // Pretty much always node for modern JS. Other option is "classic"
+
+    // Performance optimizations
+    "incremental": true, // Enable incremental compilation for faster builds
+    "skipLibCheck": true, // Skip type checking of declaration files for better performance
 
     // Source Map
     "sourceMap": true, // enables the use of source maps for debuggers and error reporting etc

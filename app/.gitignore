@@ -52,3 +52,6 @@ testreports
 
 locals3root/
 *.DS_Store
+
+# TypeScript incremental build files
+tsconfig.tsbuildinfo
