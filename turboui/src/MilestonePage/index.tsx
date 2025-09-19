@@ -303,7 +303,7 @@ function MobileMeta(props: MilestonePage.State) {
 
 function MainContainer({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex-1 overflow-scroll">
+    <div className="flex-1 overflow-auto">
       <div className="flex-1 overflow-auto">
         <div className="p-4 max-w-6xl mx-auto">{children}</div>
       </div>

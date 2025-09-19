@@ -45,7 +45,7 @@ function Page() {
         <DimmedLink to={state.companyAiAgentsPath}>AI Agents</DimmedLink>
       </div>
 
-      <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-scroll">
+      <div className="p-4 flex-1 grid grid-cols-2 gap-8 overflow-auto">
         <div>
           <AgentHeader state={state} />
           <AgentDefinition state={state} />
