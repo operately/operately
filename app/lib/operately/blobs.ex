@@ -107,9 +107,33 @@ defmodule Operately.Blobs do
 
     port = if port == nil, do: "", else: ":#{port}"
     url = "#{scheme}://#{host}#{port}/#{bucket}/#{path}"
-    time = NaiveDateTime.utc_now() |> NaiveDateTime.to_erl()
+    time = cache_friendly_time() |> NaiveDateTime.to_erl()
     config = %{access_key_id: access_key_id, secret_access_key: secret_access_key, region: region}
 
     ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, query_params, nil, headers)
+  end
+
+  # Rounds the current time up to the next 2-hour boundary for cache-friendly URLs
+  # This ensures URLs remain the same within 2-hour windows while staying valid
+  defp cache_friendly_time do
+    now = DateTime.utc_now()
+    current_hour = now.hour
+    
+    # Calculate the next 2-hour boundary
+    next_boundary_hour = case rem(current_hour, 2) do
+      0 -> current_hour + 2  # If on even hour, next boundary is 2 hours later
+      1 -> current_hour + 1  # If on odd hour, next boundary is 1 hour later
+    end
+    
+    # Handle day rollover
+    {next_day, next_hour} = if next_boundary_hour >= 24 do
+      {DateTime.add(now, 1, :day), next_boundary_hour - 24}
+    else
+      {now, next_boundary_hour}
+    end
+    
+    # Create the rounded time at the next 2-hour boundary
+    %{next_day | hour: next_hour, minute: 0, second: 0, microsecond: {0, 0}}
+    |> DateTime.to_naive()
   end
 end

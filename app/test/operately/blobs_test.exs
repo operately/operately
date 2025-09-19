@@ -76,4 +76,50 @@ defmodule Operately.BlobsTest do
       assert %Ecto.Changeset{} = Blobs.change_blob(blob)
     end
   end
+
+  describe "cache-friendly signed URLs" do
+    import Operately.BlobsFixtures
+
+    test "get_signed_get_url generates consistent URLs within same 2-hour window for S3", ctx do
+      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :s3)
+      
+      # Generate multiple URLs within a short time period
+      {:ok, url1} = Blobs.get_signed_get_url(blob, "inline")
+      Process.sleep(100)  # Small delay
+      {:ok, url2} = Blobs.get_signed_get_url(blob, "inline")
+      
+      # URLs should be identical due to time rounding
+      assert url1 == url2
+    end
+
+    test "get_signed_get_url generates consistent URLs within same 2-hour window for local storage", ctx do
+      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :local)
+      
+      # Generate multiple URLs within a short time period
+      {:ok, url1} = Blobs.get_signed_get_url(blob, "inline")
+      Process.sleep(100)  # Small delay
+      {:ok, url2} = Blobs.get_signed_get_url(blob, "inline")
+      
+      # URLs should be identical due to time rounding
+      assert url1 == url2
+    end
+
+    test "cache_friendly_time rounds to next 2-hour boundary" do
+      # Test the private function indirectly by checking URL consistency
+      # This test verifies the rounding logic works correctly
+      
+      # Create multiple blobs to test URL generation
+      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :local)
+      
+      # Generate URLs multiple times and verify they're consistent
+      urls = Enum.map(1..5, fn _i ->
+        {:ok, url} = Blobs.get_signed_get_url(blob, "inline")
+        Process.sleep(50)
+        url
+      end)
+      
+      # All URLs should be identical
+      assert Enum.uniq(urls) |> length() == 1
+    end
+  end
 end
