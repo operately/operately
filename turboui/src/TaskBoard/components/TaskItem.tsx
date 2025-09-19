@@ -38,7 +38,7 @@ export function TaskItem({
   // Set up draggable behavior
   const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId, disabled: draggingDisabled });
 
-  const itemClasses = classNames(isDragging ? "opacity-50 bg-surface-accent" : "");
+  const itemClasses = classNames(isDragging ? "bg-surface-accent" : "");
 
   const handleAssigneeChange = useCallback(
     (newAssignee: Person | null) => {
