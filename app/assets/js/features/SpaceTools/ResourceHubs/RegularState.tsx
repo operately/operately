@@ -2,11 +2,12 @@ import React, { useMemo } from "react";
 import classNames from "classnames";
 import { ResourceHub, ResourceHubNode } from "@/models/resourceHubs";
 import { Title } from "../components";
-import { NodeType } from "@/features/ResourceHub";
+import { NodeType, SortBy } from "@/features/ResourceHub";
 import { NodeIcon } from "@/features/ResourceHub/NodeIcon";
 import { NodeDescription } from "@/features/ResourceHub";
 import { CommentsCountIndicator } from "@/features/Comments";
 import { findCommentsCount, sortNodesWithFoldersFirst } from "@/features/ResourceHub/utils";
+import { useStateWithLocalStorage } from "@/hooks/useStateWithLocalStorage";
 
 interface Props {
   resourceHub: ResourceHub;
@@ -25,7 +26,10 @@ export function RegularState(props: Props) {
 }
 
 function NodesList({ nodes }: { nodes: ResourceHubNode[] }) {
-  const sortedNodes = useMemo(() => sortNodesWithFoldersFirst(nodes), [nodes]);
+  const [sortBy] = useStateWithLocalStorage<SortBy>("resourceHub", "sortBy", "name");
+  
+  const sortOrder = sortBy === "name" ? "asc" : "desc";
+  const sortedNodes = useMemo(() => sortNodesWithFoldersFirst(nodes, sortBy, sortOrder), [nodes, sortBy, sortOrder]);
 
   return (
     <div>
