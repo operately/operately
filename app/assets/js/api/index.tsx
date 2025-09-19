@@ -1581,6 +1581,8 @@ export interface ResourceHubNode {
   id?: string | null;
   name?: string | null;
   type?: string | null;
+  insertedAt?: string | null;
+  updatedAt?: string | null;
   folder?: ResourceHubFolder | null;
   document?: ResourceHubDocument | null;
   file?: ResourceHubFile | null;

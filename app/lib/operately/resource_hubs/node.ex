@@ -27,7 +27,7 @@ defmodule Operately.ResourceHubs.Node do
 
   def changeset(node, attrs) do
     node
-    |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type])
+    |> cast(attrs, [:resource_hub_id, :parent_folder_id, :name, :type, :updated_at])
     |> validate_required([:resource_hub_id, :name, :type])
   end
 
@@ -48,14 +48,15 @@ defmodule Operately.ResourceHubs.Node do
   end
 
   def load_comments_count(nodes) when is_list(nodes) do
-    ids = Enum.reduce(nodes, [], fn n, acc ->
-      cond do
-        n.type == :document -> [n.document.id | acc]
-        n.type == :file -> [n.file.id | acc]
-        n.type == :link -> [n.link.id | acc]
-        true -> acc
-      end
-    end)
+    ids =
+      Enum.reduce(nodes, [], fn n, acc ->
+        cond do
+          n.type == :document -> [n.document.id | acc]
+          n.type == :file -> [n.file.id | acc]
+          n.type == :link -> [n.link.id | acc]
+          true -> acc
+        end
+      end)
 
     counts =
       from(c in Operately.Updates.Comment,

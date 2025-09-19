@@ -83,6 +83,9 @@ defmodule OperatelyWeb.Api.Queries.ListResourceHubNodesTest do
       assert length(res.nodes) == 5
       assert length(res.draft_nodes) == 1
 
+      assert Enum.all?(res.nodes, &(is_binary(&1.inserted_at) and is_binary(&1.updated_at)))
+      assert Enum.all?(res.draft_nodes, &(is_binary(&1.inserted_at) and is_binary(&1.updated_at)))
+
       assert hd(res.draft_nodes).document.id == Paths.document_id(ctx.document1)
       assert Enum.find(res.nodes, &(&1[:document] && &1.document.id == Paths.document_id(ctx.document2)))
       assert Enum.find(res.nodes, &(&1[:link] && &1.link.id == Paths.link_id(ctx.link1)))
