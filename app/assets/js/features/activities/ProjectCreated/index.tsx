@@ -55,7 +55,7 @@ const ProjectCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " started the " + content(activity).project!.name! + " project";
+    return "Started the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

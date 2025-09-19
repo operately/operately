@@ -71,7 +71,7 @@ const GoalCheckIn: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " submitted a check-in for " + content(activity).goal!.name!;
+    return "Submitted a check-in for " + content(activity).goal!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

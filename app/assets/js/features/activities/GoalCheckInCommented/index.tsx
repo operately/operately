@@ -71,7 +71,7 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the goal check-in";
+    return "Re: goal check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

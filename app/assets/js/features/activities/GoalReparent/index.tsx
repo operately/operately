@@ -82,7 +82,7 @@ const GoalReparent: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " changed the parent goal of " + content(activity).goal!.name!;
+    return "Changed the parent goal of " + content(activity).goal!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
