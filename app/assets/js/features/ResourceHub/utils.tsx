@@ -69,6 +69,7 @@ function createSortFunction(sortBy: SortBy, sortOrder: SortOrder) {
 }
 
 function getInsertedAt(node: ResourceHubNode): string | null {
+  if (node.insertedAt) return node.insertedAt;
   if (node.document?.insertedAt) return node.document.insertedAt;
   if (node.file?.insertedAt) return node.file.insertedAt;
   if (node.link?.insertedAt) return node.link.insertedAt;
@@ -76,11 +77,9 @@ function getInsertedAt(node: ResourceHubNode): string | null {
 }
 
 function getUpdatedAt(node: ResourceHubNode): string | null {
+  if (node.updatedAt) return node.updatedAt;
   if (node.document?.updatedAt) return node.document.updatedAt;
-  // Files and links don't have updatedAt, fall back to insertedAt
-  if (node.file?.insertedAt) return node.file.insertedAt;
-  if (node.link?.insertedAt) return node.link.insertedAt;
-  return null;
+  return getInsertedAt(node);
 }
 
 function compareDates(dateA: string | null, dateB: string | null): number {

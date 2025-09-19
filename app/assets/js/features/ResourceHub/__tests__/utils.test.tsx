@@ -6,6 +6,8 @@ const mockNodes = [
     id: "1",
     name: "Document A",
     type: "document",
+    insertedAt: "2024-01-01T10:00:00Z",
+    updatedAt: "2024-01-15T14:00:00Z",
     document: {
       insertedAt: "2024-01-01T10:00:00Z",
       updatedAt: "2024-01-15T14:00:00Z"
@@ -14,12 +16,16 @@ const mockNodes = [
   {
     id: "2", 
     name: "Folder Z",
-    type: "folder"
+    type: "folder",
+    insertedAt: "2024-01-03T08:00:00Z",
+    updatedAt: "2024-01-03T08:00:00Z"
   },
   {
     id: "3",
     name: "Document B", 
     type: "document",
+    insertedAt: "2024-01-02T10:00:00Z",
+    updatedAt: "2024-01-10T14:00:00Z",
     document: {
       insertedAt: "2024-01-02T10:00:00Z",
       updatedAt: "2024-01-10T14:00:00Z"
@@ -29,6 +35,8 @@ const mockNodes = [
     id: "4",
     name: "File X",
     type: "file",
+    insertedAt: "2024-01-05T10:00:00Z",
+    updatedAt: "2024-01-05T10:00:00Z",
     file: {
       insertedAt: "2024-01-05T10:00:00Z"
     }
@@ -36,7 +44,9 @@ const mockNodes = [
   {
     id: "5",
     name: "Folder A",
-    type: "folder"
+    type: "folder",
+    insertedAt: "2024-01-04T08:00:00Z",
+    updatedAt: "2024-01-04T08:00:00Z"
   }
 ] as any[];
 
