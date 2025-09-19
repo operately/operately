@@ -61,7 +61,7 @@ const ProjectClosed: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " closed this project and submitted a retrospective";
+    return "Closed this project and submitted a retrospective";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
