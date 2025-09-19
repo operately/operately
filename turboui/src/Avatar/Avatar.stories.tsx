@@ -219,6 +219,15 @@ const AvatarWithNameBlock = ({ title, size }: { title: string; size: AvatarProps
           />
         </div>
       ))}
+
+      <div>
+        <h3 className="text-sm font-medium mb-1">Without avatar (text only)</h3>
+        <p className="text-xs text-content-dimmed mb-2">
+          Set <code>showAvatar</code> to <code>false</code> to reuse the component when only the formatted name/link is
+          needed.
+        </p>
+        <AvatarWithName person={EXAMPLE_PEOPLE[0]!} size={size} nameFormat="short" showAvatar={false} />
+      </div>
     </div>
   </div>
 );

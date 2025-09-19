@@ -10,15 +10,25 @@ interface Props extends AvatarProps {
   link?: string;
   title?: string;
   textSize?: AvatarSizeString;
+  showAvatar?: boolean;
 }
 
-export function AvatarWithName({ person, size, className, nameFormat = "full", link, title, textSize }: Props) {
+export function AvatarWithName({
+  person,
+  size,
+  className,
+  nameFormat = "full",
+  link,
+  title,
+  textSize,
+  showAvatar = true,
+}: Props) {
   const name = formattedName(person.fullName!, nameFormat);
   const textClassName = classNames(resolveTextSize(size, textSize), className);
 
   return (
-    <div className="flex items-center gap-1.5">
-      <Avatar person={person} size={size} />
+    <div className={classNames("flex items-center", showAvatar ? "gap-1.5" : "gap-0")}>
+      {showAvatar && <Avatar person={person} size={size} />}
       <div className="flex flex-col">
         {link ? (
           <BlackLink to={link} className={textClassName} underline="hover">
