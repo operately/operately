@@ -25,7 +25,11 @@ export function findPath(paths: Paths, nodeType: NodeType, node: ResourceHubNode
   }
 }
 
-export function sortNodesWithFoldersFirst(nodes: ResourceHubNode[], sortBy: SortBy = "name", sortOrder: SortOrder = "desc") {
+export function sortNodesWithFoldersFirst(
+  nodes: ResourceHubNode[],
+  sortBy: SortBy = "name",
+  sortOrder: SortOrder = "desc",
+) {
   const folders: ResourceHubNode[] = [];
   const others: ResourceHubNode[] = [];
 
@@ -40,7 +44,7 @@ export function sortNodesWithFoldersFirst(nodes: ResourceHubNode[], sortBy: Sort
   // Always sort folders by name (ascending), regardless of the sort criteria
   const folderSortFn = createSortFunction("name", "asc");
   folders.sort(folderSortFn);
-  
+
   // Sort other items by the specified criteria
   const sortFn = createSortFunction(sortBy, sortOrder);
   others.sort(sortFn);
@@ -69,17 +73,11 @@ function createSortFunction(sortBy: SortBy, sortOrder: SortOrder) {
 }
 
 function getInsertedAt(node: ResourceHubNode): string | null {
-  if (node.insertedAt) return node.insertedAt;
-  if (node.document?.insertedAt) return node.document.insertedAt;
-  if (node.file?.insertedAt) return node.file.insertedAt;
-  if (node.link?.insertedAt) return node.link.insertedAt;
-  return null;
+  return node.insertedAt!;
 }
 
 function getUpdatedAt(node: ResourceHubNode): string | null {
-  if (node.updatedAt) return node.updatedAt;
-  if (node.document?.updatedAt) return node.document.updatedAt;
-  return getInsertedAt(node);
+  return node.updatedAt!;
 }
 
 function compareDates(dateA: string | null, dateB: string | null): number {

@@ -6,12 +6,17 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
 
   def run(author, link, attrs) do
     Multi.new()
-    |> Multi.update(:link, Link.changeset(link, %{
-      url: attrs.url,
-      type: attrs.type,
-      description: attrs.description,
-    }))
-    |> Multi.update(:node, Node.changeset(link.node, %{name: attrs.name}))
+    |> Multi.update(
+      :link,
+      Link.changeset(link, %{
+        url: attrs.url,
+        type: attrs.type,
+        description: attrs.description
+      })
+    )
+    |> Multi.update(:node, fn changes ->
+      Node.changeset(link.node, %{name: attrs.name, updated_at: changes.link.updated_at})
+    end)
     |> Multi.run(:link_with_node, fn _, changes ->
       link = Map.put(changes.link, :node, changes.node)
       {:ok, link}
@@ -26,12 +31,12 @@ defmodule Operately.Operations.ResourceHubLinkEditing do
         previous_link: %{
           name: link.node.name,
           type: Atom.to_string(link.type),
-          url: link.url,
+          url: link.url
         },
         updated_link: %{
           name: attrs.name,
           type: attrs.type,
-          url: attrs.url,
+          url: attrs.url
         }
       }
     end)

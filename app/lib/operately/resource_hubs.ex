@@ -95,7 +95,7 @@ defmodule Operately.ResourceHubs do
     |> Repo.all()
   end
 
- def create_file(attrs \\ %{}) do
+  def create_file(attrs \\ %{}) do
     %File{}
     |> File.changeset(attrs)
     |> Repo.insert()
