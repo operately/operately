@@ -1042,6 +1042,8 @@ defmodule OperatelyWeb.Api.Types do
     field? :id, :string, null: true
     field? :name, :string, null: true
     field? :type, :string, null: true
+    field? :inserted_at, :string, null: true
+    field? :updated_at, :string, null: true
     field? :folder, :resource_hub_folder, null: true
     field? :document, :resource_hub_document, null: true
     field? :file, :resource_hub_file, null: true
