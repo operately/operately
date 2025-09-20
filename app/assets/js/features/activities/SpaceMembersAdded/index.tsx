@@ -53,7 +53,7 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " added you to the " + content(activity).space?.name + " space";
+    return "Added you to the " + content(activity).space?.name + " space";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

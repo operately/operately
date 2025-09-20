@@ -72,7 +72,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " submitted a check-in";
+    return "Submitted a check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

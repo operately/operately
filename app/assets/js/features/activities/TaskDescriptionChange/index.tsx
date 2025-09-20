@@ -70,7 +70,7 @@ const TaskDescriptionChange: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " updated the description of: " + content(activity).task!.name;
+    return "Updated the description of: " + content(activity).task!.name;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

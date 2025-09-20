@@ -111,7 +111,7 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " edited the goal's timeframe";
+    return "Edited the goal's timeframe";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
