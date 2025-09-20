@@ -202,7 +202,7 @@ export function GoalPage(props: GoalPage.Props) {
         <PageHeader {...state} />
         <Tabs tabs={tabs} />
 
-        <div className="flex-1 overflow-scroll">
+        <div className="flex-1 overflow-auto">
           {tabs.active === "overview" && <Overview {...state} />}
           {tabs.active === "check-ins" && <CheckIns {...state} />}
           {tabs.active === "discussions" && <Discussions {...state} />}
