@@ -34,19 +34,19 @@ defmodule OperatelyLocalMediaStorage.Plug do
   # Utils
   #
 
-  defp put_cache_headers(conn) do
-    conn
-    |> Plug.Conn.put_resp_header("cache-control", "public, max-age=31536000, immutable")
+  def put_cache_headers(conn) do
+    conn |> Plug.Conn.put_resp_header("cache-control", "public, max-age=31536000, immutable")
   end
 
   def verify_token(conn, _) do
     path = conn.params["path"] |> List.first()
     token = conn.query_params["token"] || conn.body_params["token"]
 
-    operation = case conn.method do
-      "GET" -> "get"
-      "PUT" -> "upload"
-    end
+    operation =
+      case conn.method do
+        "GET" -> "get"
+        "PUT" -> "upload"
+      end
 
     case Operately.Blobs.Tokens.validate(operation, path, token) do
       :ok -> conn
