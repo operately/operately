@@ -15,7 +15,7 @@ defmodule Operately.BlobsFixtures do
         status: :pending,
         storage_type: :local,
         size: 1024,
-        content_type: "application/pdf"
+        content_type: "application/pdf",
       })
       |> Operately.Blobs.create_blob()
 
