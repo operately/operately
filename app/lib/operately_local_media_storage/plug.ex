@@ -12,7 +12,9 @@ defmodule OperatelyLocalMediaStorage.Plug do
     json_decoder: Jason
 
   get "*path" do
-    send_file(conn, 200, "/media/#{path}")
+    conn
+    |> put_cache_headers()
+    |> send_file(200, "/media/#{path}")
   end
 
   put "*path" do
@@ -31,6 +33,11 @@ defmodule OperatelyLocalMediaStorage.Plug do
   #
   # Utils
   #
+
+  defp put_cache_headers(conn) do
+    conn
+    |> Plug.Conn.put_resp_header("cache-control", "public, max-age=31536000, immutable")
+  end
 
   def verify_token(conn, _) do
     path = conn.params["path"] |> List.first()
