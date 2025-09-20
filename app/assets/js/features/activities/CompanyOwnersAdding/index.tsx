@@ -51,7 +51,7 @@ const CompanyOwnersAdding: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " promoted you to an account owner";
+    return "Promoted you to an account owner";
   },
 
   NotificationLocation(_props: { activity: Activity }) {

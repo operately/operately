@@ -69,7 +69,7 @@ const ProjectMilestoneCommented: ActivityHandler = {
     const action = content(activity).commentAction!;
     const title = content(activity).milestone!.title!;
 
-    return People.firstName(activity.author!) + " " + didWhat(action) + " " + title;
+    return didWhat(action) + " " + title;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

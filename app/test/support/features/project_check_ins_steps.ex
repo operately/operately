@@ -101,7 +101,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "submitted a check-in"
+      action: "Submitted a check-in"
     })
   end
 
@@ -142,7 +142,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       where: ctx.project.name,
       to: ctx.champion,
-      action: "acknowledged your check-in",
+      action: "Acknowledged check-in",
       author: ctx.reviewer
     })
   end
@@ -181,7 +181,7 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       where: ctx.project.name,
-      action: "commented on the project check-in",
+      action: "Re: project check-in",
       author: ctx.reviewer
     })
   end

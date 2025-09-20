@@ -63,7 +63,7 @@ const ProjectChampionUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    return People.firstName(props.activity.author!) + " assigned you as the champion";
+    return "Assigned you as the champion";
   },
 
   NotificationLocation(props: { activity: Activity }) {

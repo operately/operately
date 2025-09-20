@@ -66,7 +66,7 @@ const GoalEditing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " " + shortDesc(content(activity));
+    return shortDesc(content(activity));
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

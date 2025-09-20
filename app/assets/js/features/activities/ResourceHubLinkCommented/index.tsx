@@ -69,7 +69,7 @@ const ResourceHubLinkCommented: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.link?.name, "link.name must be present in activity");
 
-    return People.firstName(activity.author!) + " commented on: " + data.link.name;
+    return "Re: " + data.link.name;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

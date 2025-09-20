@@ -52,7 +52,7 @@ const ProjectPausing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " paused the " + content(activity).project!.name! + " project";
+    return "Paused the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

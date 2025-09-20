@@ -58,14 +58,13 @@ const ResourceHubDocumentCreating: ActivityHandler = {
 
     if (copiedDocument) {
       return (
-        People.firstName(activity.author!) +
-        " created a copy of " +
+        "Created a copy of " +
         copiedDocument.name +
         " and named it " +
         document.name
       );
     } else {
-      return People.firstName(activity.author!) + " added: " + document.name!;
+      return "Added: " + document.name!;
     }
   },
 

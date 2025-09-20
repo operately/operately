@@ -307,7 +307,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> Factory.log_in_person(:other_owner)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.owner,
-      action: "has revoked your account owner status"
+      action: "Revoked your account owner status"
     })
   end
 
@@ -322,7 +322,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     })
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.owner,
-      action: "promoted you to an account owner"
+      action: "Promoted you to an account owner"
     })
   end
 
@@ -384,7 +384,7 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
     |> Factory.log_in_person(:suspended)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.admin,
-      action: "has restored your account"
+      action: "Restored your account"
     })
   end
 

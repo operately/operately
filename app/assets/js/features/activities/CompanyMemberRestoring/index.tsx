@@ -50,7 +50,7 @@ const CompanyMemberRestoring: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " has restored your account";
+    return "Restored your account";
   },
 
   NotificationLocation(_props: { activity: Activity }) {

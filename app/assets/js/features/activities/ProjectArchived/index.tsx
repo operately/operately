@@ -53,7 +53,7 @@ const ProjectArchived: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " archived the " + content(activity).project!.name! + " project";
+    return "Archived the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

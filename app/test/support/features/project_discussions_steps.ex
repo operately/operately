@@ -114,7 +114,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> login_as_reviewer()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "posted: New Discussion"
+      action: "Posted: New Discussion"
     })
   end
 
@@ -153,7 +153,7 @@ defmodule Operately.Support.Features.ProjectDiscussionSteps do
     |> login_as_reviewer()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "commented on Existing Discussion"
+      action: "Re: Existing Discussion"
     })
   end
 

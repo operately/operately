@@ -47,7 +47,7 @@ const CompanyAdminRemoved: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " has revoked your admin privileges";
+    return "Revoked your admin privileges";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

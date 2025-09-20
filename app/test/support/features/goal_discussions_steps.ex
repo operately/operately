@@ -85,7 +85,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "posted: #{last_comment_thread().title}"
+      action: "Posted: #{last_comment_thread().title}"
     })
   end
 
@@ -155,7 +155,7 @@ defmodule Operately.Support.Features.GoalDiscussionsSteps do
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "commented on #{last_comment_thread().title}"
+      action: "Re: #{last_comment_thread().title}"
     })
   end
 

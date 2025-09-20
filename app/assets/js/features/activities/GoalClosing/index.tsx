@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import { ActivityContentGoalClosing } from "@/api";
@@ -87,8 +86,8 @@ const GoalClosing: ActivityHandler = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " closed the goal";
+  NotificationTitle(_: { activity: Activity }) {
+    return "Closed the goal";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

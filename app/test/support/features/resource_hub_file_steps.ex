@@ -123,7 +123,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "commented on: #{ctx.file.node.name}",
+      action: "Re: #{ctx.file.node.name}",
     })
   end
 
@@ -133,7 +133,7 @@ defmodule Operately.Support.Features.ResourceHubFileSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "deleted a file: Some File",
+      action: "Deleted a file: Some File",
     })
   end
 

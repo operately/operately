@@ -65,8 +65,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     return (
-      People.firstName(activity.author!) +
-      " deleted a key resource from the " +
+      "Deleted a key resource from the " +
       content(activity).project!.name! +
       " project"
     );

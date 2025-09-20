@@ -292,7 +292,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "added a link: #{link_name}",
+      action: "Added a link: #{link_name}",
     })
   end
 
@@ -302,7 +302,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "edited a link: #{link_name}",
+      action: "Edited a link: #{link_name}",
     })
   end
 
@@ -312,7 +312,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "deleted a link: Link",
+      action: "Deleted a link: Link",
     })
   end
 
@@ -322,7 +322,7 @@ defmodule Operately.Support.Features.ResourceHubLinkSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "commented on: #{link_title}",
+      action: "Re: #{link_title}",
     })
   end
 

@@ -57,7 +57,7 @@ const ResourceHubDocumentEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " edited the document";
+    return "Edited the document";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

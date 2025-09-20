@@ -58,7 +58,7 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a folder: " + content(activity).folder!.name!;
+    return "Deleted a folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

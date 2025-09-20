@@ -58,7 +58,7 @@ const ResourceHubLinkCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added a link: " + content(activity).link?.name;
+    return "Added a link: " + content(activity).link?.name;
   },
 
   NotificationLocation(_props: { activity: Activity }) {

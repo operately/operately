@@ -65,8 +65,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     return (
-      People.firstName(activity.author!) +
-      " added a key resource to the " +
+      "Added a key resource to the " +
       content(activity).project!.name! +
       " project"
     );

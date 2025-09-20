@@ -47,7 +47,7 @@ const CompanyAdminAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " granted you admin privileges";
+    return "Granted you admin privileges";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -62,7 +62,7 @@ const ResourceHubFileDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a file: " + content(activity).file!.name!;
+    return "Deleted a file: " + content(activity).file!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

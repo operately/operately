@@ -66,7 +66,7 @@ const ProjectContributorsAddition: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added you as a contributor";
+    return "Added you as a contributor";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
