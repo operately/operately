@@ -1,9 +1,10 @@
 import React from "react";
 
-import { NodeViewWrapper, NodeViewContent } from "@tiptap/react";
-import { IconTrash, IconPdf, IconFileZip, IconFileFilled } from "turboui";
+import { NodeViewContent, NodeViewWrapper } from "@tiptap/react";
 import classnames from "classnames";
+import { IconFileFilled, IconFileZip, IconPdf, IconTrash } from "turboui";
 
+import { ImageModal } from "@/components/ImageModal";
 import { LoadingProgressBar } from "@/components/LoadingProgressBar";
 
 //
@@ -77,6 +78,8 @@ function VideoView({ node, deleteNode, view, updateAttributes }) {
 }
 
 function ImageView({ node, deleteNode, updateAttributes, view }) {
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
   const disableEnter = (e: React.KeyboardEvent<HTMLSpanElement>) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -91,6 +94,13 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
     });
   };
 
+  const handleImageClick = (e: React.MouseEvent) => {
+    if (!view.editable) {
+      e.preventDefault();
+      setIsModalOpen(true);
+    }
+  };
+
   const image = (
     <img
       src={node.attrs.src}
@@ -98,68 +108,73 @@ function ImageView({ node, deleteNode, updateAttributes, view }) {
       title={node.attrs.title}
       className={classnames({
         "group-hover:border-stroke-base transition-colors": view.editable,
-        "cursor-pointer": !view.editable,
+        "cursor-zoom-in": !view.editable,
       })}
       data-drag-handle
+      onClick={handleImageClick}
     />
   );
 
-  const imgNode = view.editable ? (
-    image
-  ) : (
-    <a href={node.attrs.src} target="_blank">
-      {image}
-    </a>
-  );
+  const imgNode = view.editable ? image : image;
 
   return (
-    <NodeViewWrapper className="blob-container blob-image relative group">
-      <div className="flex items-center justify-center">{imgNode}</div>
+    <>
+      <NodeViewWrapper className="blob-container blob-image relative group">
+        <div className="flex items-center justify-center">{imgNode}</div>
 
-      <div className="footer flex items-center gap-1 justify-center">
-        <NodeViewContent
-          className="title outline-none"
-          contentEditable={view.editable}
-          suppressContentEditableWarning={true}
-          onKeyDown={disableEnter}
-          onBlur={updateTitle}
-        >
-          {node.attrs.alt}
-        </NodeViewContent>
-        {!view.editable && (
-          <>
-            <div className="text-content-dimmed text-sm">•</div>
-            <a
-              className="text-content-dimmed text-sm underline cursor-pointer"
-              title={node.attrs.title}
-              href={downloadableUrl(node.attrs.src)}
-            >
-              Download
-            </a>
-          </>
-        )}
-        {!view.editable && (
-          <>
-            <div className="text-content-dimmed text-sm">•</div>
-            <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
-              View
-            </a>
-          </>
-        )}
-      </div>
-
-      {view.editable && node.attrs.status === "uploading" && (
-        <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
-          <LoadingProgressBar progress={node.attrs.progress} barClassName="w-32" />
+        <div className="footer flex items-center gap-1 justify-center">
+          <NodeViewContent
+            className="title outline-none"
+            contentEditable={view.editable}
+            suppressContentEditableWarning={true}
+            onKeyDown={disableEnter}
+            onBlur={updateTitle}
+          >
+            {node.attrs.alt}
+          </NodeViewContent>
+          {!view.editable && (
+            <>
+              <div className="text-content-dimmed text-sm">•</div>
+              <a
+                className="text-content-dimmed text-sm underline cursor-pointer"
+                title={node.attrs.title}
+                href={downloadableUrl(node.attrs.src)}
+              >
+                Download
+              </a>
+            </>
+          )}
+          {!view.editable && (
+            <>
+              <div className="text-content-dimmed text-sm">•</div>
+              <a className="text-content-dimmed text-sm underline cursor-pointer" href={node.attrs.src} target="_blank">
+                View original
+              </a>
+            </>
+          )}
         </div>
-      )}
 
-      {view.editable && (
-        <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
-          <IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
-        </div>
-      )}
-    </NodeViewWrapper>
+        {view.editable && node.attrs.status === "uploading" && (
+          <div className="top-1/2 left-1/2 absolute transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+            <LoadingProgressBar progress={node.attrs.progress} barClassName="w-32" />
+          </div>
+        )}
+
+        {view.editable && (
+          <div className="absolute top-2 right-2 p-2 hover:scale-105 bg-red-400 rounded-full group-hover:opacity-100 opacity-0 cursor-pointer transition-opacity">
+            <IconTrash onClick={deleteNode} size={16} className="text-content-accent" />
+          </div>
+        )}
+      </NodeViewWrapper>
+
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        imageSrc={node.attrs.src}
+        imageTitle={node.attrs.title}
+        imageAlt={node.attrs.alt}
+      />
+    </>
   );
 }
 
