@@ -72,7 +72,7 @@ const ProjectMoved: ActivityHandler = {
     const oldSpace = content(activity).oldSpace!.name;
     const newSpace = content(activity).newSpace!.name;
 
-    return People.firstName(activity.author!) + " moved the project from " + oldSpace + " to " + newSpace;
+    return "Moved the project from " + oldSpace + " to " + newSpace;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

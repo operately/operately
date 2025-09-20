@@ -72,7 +72,7 @@ const ResourceHubFolderCopied: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " made a copy of a folder: " + content(activity).folder!.name!;
+    return "Made a copy of a folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

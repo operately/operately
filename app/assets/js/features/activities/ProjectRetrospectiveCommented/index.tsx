@@ -66,7 +66,7 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the project retrospective";
+    return "Re: project retrospective";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

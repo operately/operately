@@ -60,7 +60,7 @@ const ResourceHubFileEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " edited a file: " + content(activity).file!.name!;
+    return "Edited a file: " + content(activity).file!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

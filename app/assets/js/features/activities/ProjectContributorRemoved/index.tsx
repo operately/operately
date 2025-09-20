@@ -56,7 +56,7 @@ const ProjectContributorRemoved: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " removed you from the project";
+    return "Removed you from the project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
