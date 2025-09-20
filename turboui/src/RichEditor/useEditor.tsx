@@ -9,6 +9,7 @@ import Blob, { isUploadInProgress } from "./Blob";
 import FakeTextSelection from "./extensions/FakeTextSelection";
 import Highlight from "./extensions/Highlight";
 import MentionPeople, { SearchFn } from "./extensions/MentionPeople";
+import { useEditorLocalStorage } from "./useEditorLocalStorage";
 
 export interface Person {
   id: string;
@@ -45,6 +46,11 @@ interface UseEditorProps {
   mentionedPersonLookup?: MentionedPersonLookupFn;
   peopleSearch?: SearchFn;
   uploadFile?: UploadFileFn;
+
+  // localStorage options
+  localStorageKey?: string;
+  enableLocalStorage?: boolean;
+  userId?: string;
 }
 
 export interface EditorState {
@@ -60,12 +66,15 @@ export interface EditorState {
   setContent: (content: any) => void;
   setFocused: (focused: boolean) => void;
   getJson: () => any;
+  clearSavedContent: () => void;
+  hasSavedContent: boolean;
 }
 
 const DEFAULT_EDITOR_PROPS: Partial<UseEditorProps> = {
   editable: true,
   autoFocus: false,
   tabindex: "",
+  enableLocalStorage: true,
 };
 
 export function useEditor(props: UseEditorProps): EditorState {
@@ -80,16 +89,37 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [linkEditActive, setLinkEditActive] = React.useState(false);
   const [submittable, setSubmittable] = React.useState(true);
   const [focused, setFocused] = React.useState(false);
-  const [empty, setEmpty] = React.useState(props.content === undefined || props.content === "");
+  const [empty, setEmpty] = React.useState(true);
   const [uploading, setUploading] = React.useState(false);
 
   const mentionPeople = React.useMemo(() => {
     return MentionPeople.configure(props.peopleSearch);
   }, []);
 
+  // localStorage integration
+  const localStorage = useEditorLocalStorage({
+    storageKey: props.localStorageKey,
+    enabled: props.enableLocalStorage,
+    userId: props.userId,
+  });
+
+  // Determine initial content: prioritize provided content, then saved content
+  const initialContent = React.useMemo(() => {
+    if (props.content) {
+      return props.content;
+    }
+    if (localStorage.isEnabled) {
+      const savedContent = localStorage.getSavedContent();
+      if (savedContent) {
+        return savedContent;
+      }
+    }
+    return "";
+  }, [props.content, localStorage]);
+
   const editor = TipTap.useEditor({
     editable: props.editable,
-    content: props.content,
+    content: initialContent,
     autofocus: props.autoFocus,
     injectCSS: false,
     editorProps: {
@@ -142,7 +172,13 @@ export function useEditor(props: UseEditorProps): EditorState {
       setUploading(isUploading);
       setSubmittable(!isUploading);
 
-      setEmpty(editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0);
+      const isEmpty = editor.state.doc.childCount === 1 && editor.state.doc.firstChild?.childCount === 0;
+      setEmpty(isEmpty);
+
+      // Auto-save to localStorage on content changes
+      if (localStorage.isEnabled && !isEmpty) {
+        localStorage.saveContent(editor.getJSON());
+      }
     },
   });
 
@@ -180,5 +216,7 @@ export function useEditor(props: UseEditorProps): EditorState {
     setContent,
     setFocused,
     getJson,
+    clearSavedContent: localStorage.clearSavedContent,
+    hasSavedContent: localStorage.hasSavedContent(),
   };
 }
