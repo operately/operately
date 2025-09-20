@@ -70,6 +70,28 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
       person = Operately.People.get_person!(ctx.company_member.id)
       assert person.theme == "light"
     end
+
+    test "admin can update someone else's avatar", ctx do
+      promote_me_to_admin(ctx)
+
+      # Create a test blob
+      {:ok, blob} = Operately.Blobs.create_blob(%{
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        status: :uploaded,
+        filename: "avatar.jpg",
+        size: 1024,
+        content_type: "image/jpeg"
+      })
+
+      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{
+        id: Paths.person_id(ctx.company_member), 
+        avatar_blob_id: blob.id
+      })
+
+      person = Operately.People.get_person!(ctx.company_member.id)
+      assert person.avatar_blob_id == blob.id
+    end
   end
 
   describe "updating my own profile" do
@@ -111,6 +133,56 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfileTest do
       assert person.full_name == "John Doe"
       assert person.title == ctx.person.title
       assert person.timezone == ctx.person.timezone
+    end
+
+    test "update avatar blob ID", ctx do
+      # Create a test blob
+      {:ok, blob} = Operately.Blobs.create_blob(%{
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        status: :uploaded,
+        filename: "avatar.jpg",
+        size: 1024,
+        content_type: "image/jpeg"
+      })
+
+      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{
+        id: Paths.person_id(ctx.person), 
+        avatar_blob_id: blob.id
+      })
+
+      person = Operately.People.get_person!(ctx.person.id)
+      assert person.avatar_blob_id == blob.id
+
+      # Test that avatar_url function returns blob URL when blob ID is set
+      avatar_url = Operately.People.Person.avatar_url(person)
+      assert String.contains?(avatar_url, blob.id)
+    end
+
+    test "clear avatar blob ID", ctx do
+      # First set a blob ID
+      {:ok, blob} = Operately.Blobs.create_blob(%{
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        status: :uploaded,
+        filename: "avatar.jpg",
+        size: 1024,
+        content_type: "image/jpeg"
+      })
+
+      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{
+        id: Paths.person_id(ctx.person), 
+        avatar_blob_id: blob.id
+      })
+
+      # Then clear it
+      assert {200, %{person: %{}}} = mutation(ctx.conn, :update_profile, %{
+        id: Paths.person_id(ctx.person), 
+        avatar_blob_id: nil
+      })
+
+      person = Operately.People.get_person!(ctx.person.id)
+      assert person.avatar_blob_id == nil
     end
   end
 

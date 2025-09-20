@@ -4,7 +4,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
       email: data.email,
-      avatar_url: data.avatar_url,
+      avatar_url: Operately.People.Person.avatar_url(data),
+      avatar_blob_id: data.avatar_blob_id,
       title: data.title,
       access_level: find_access_level(bindings)
     }
@@ -15,7 +16,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
       email: data.email,
-      avatar_url: data.avatar_url,
+      avatar_url: Operately.People.Person.avatar_url(data),
+      avatar_blob_id: data.avatar_blob_id,
       title: data.title,
       has_open_invitation: data.has_open_invitation
     }
@@ -32,7 +34,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.People.Person do
       id: OperatelyWeb.Paths.person_id(data),
       full_name: data.full_name,
       email: data.email,
-      avatar_url: data.avatar_url,
+      avatar_url: Operately.People.Person.avatar_url(data),
+      avatar_blob_id: data.avatar_blob_id,
       title: data.title,
       suspended: data.suspended,
       timezone: data.timezone,

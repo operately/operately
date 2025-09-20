@@ -2,8 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme]
-  @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id]
+  @updatable_fields_for_oneself [:full_name, :title, :timezone, :manager_id, :theme, :avatar_blob_id]
+  @updatable_fields_for_others [:full_name, :title, :timezone, :manager_id, :avatar_blob_id]
 
   inputs do
     field? :id, :string, null: true
@@ -12,6 +12,7 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
     field? :timezone, :string, null: true
     field? :manager_id, :string, null: true
     field? :theme, :string, null: true
+    field? :avatar_blob_id, :string, null: true
   end
 
   outputs do
@@ -42,8 +43,9 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProfile do
 
   defp decode_inputs(inputs) do
     with {:ok, id} <- decode_id(inputs[:id]),
-         {:ok, manager_id} <- decode_id(inputs[:manager_id], :allow_nil) do
-      {:ok, Map.merge(inputs, %{id: id, manager_id: manager_id})}
+         {:ok, manager_id} <- decode_id(inputs[:manager_id], :allow_nil),
+         {:ok, avatar_blob_id} <- decode_id(inputs[:avatar_blob_id], :allow_nil) do
+      {:ok, Map.merge(inputs, %{id: id, manager_id: manager_id, avatar_blob_id: avatar_blob_id})}
     end
   end
 
