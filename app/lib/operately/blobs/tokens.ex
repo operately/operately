@@ -31,7 +31,7 @@ defmodule Operately.Blobs.Tokens do
     token = Jason.encode!(%{
       path: path, 
       operation: :get,
-      expires_at: expires_at_timestamp(1, :hour)
+      expires_at: cache_friendly_expires_at_timestamp(1, :hour)
     }) 
 
     case Encryption.encrypt_raw(token) do
@@ -75,6 +75,34 @@ defmodule Operately.Blobs.Tokens do
 
   defp expires_at_timestamp(amount, unit) do
     DateTime.utc_now() |> DateTime.add(amount, unit) |> DateTime.to_unix()
+  end
+
+  # Creates cache-friendly expiration timestamps by rounding to next 2-hour boundary
+  # and then adding the specified amount/unit for consistent token generation
+  defp cache_friendly_expires_at_timestamp(amount, unit) do
+    cache_friendly_time() |> DateTime.add(amount, unit) |> DateTime.to_unix()
+  end
+
+  # Rounds the current time up to the next 2-hour boundary for cache-friendly tokens
+  defp cache_friendly_time do
+    now = DateTime.utc_now()
+    current_hour = now.hour
+    
+    # Calculate the next 2-hour boundary
+    next_boundary_hour = case rem(current_hour, 2) do
+      0 -> current_hour + 2  # If on even hour, next boundary is 2 hours later
+      1 -> current_hour + 1  # If on odd hour, next boundary is 1 hour later
+    end
+    
+    # Handle day rollover
+    {next_day, next_hour} = if next_boundary_hour >= 24 do
+      {DateTime.add(now, 1, :day), next_boundary_hour - 24}
+    else
+      {now, next_boundary_hour}
+    end
+    
+    # Create the rounded time at the next 2-hour boundary
+    %{next_day | hour: next_hour, minute: 0, second: 0, microsecond: {0, 0}}
   end
 
 end
