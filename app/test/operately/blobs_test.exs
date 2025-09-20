@@ -32,12 +32,12 @@ defmodule Operately.BlobsTest do
 
     test "create_blob/1 with valid data creates a blob", ctx do
       valid_attrs = %{
-        filename: "some filename", 
-        status: :pending, 
-        company_id: ctx.company.id, 
-        author_id: ctx.person.id, 
-        storage_type: :local, 
-        size: 1024, 
+        filename: "some filename",
+        status: :pending,
+        company_id: ctx.company.id,
+        author_id: ctx.person.id,
+        storage_type: :local,
+        size: 1024,
         content_type: "application/pdf"
       }
 
@@ -77,49 +77,61 @@ defmodule Operately.BlobsTest do
     end
   end
 
-  describe "cache-friendly signed URLs" do
+  describe "cache-friendly S3 signed URLs" do
     import Operately.BlobsFixtures
 
+    setup do
+      System.put_env("OPERATELY_STORAGE_S3_HOST", "localhost")
+      System.put_env("OPERATELY_STORAGE_S3_SCHEME", "http")
+      System.put_env("OPERATELY_STORAGE_S3_PORT", "9000")
+      System.put_env("OPERATELY_STORAGE_S3_BUCKET", "test-bucket")
+      System.put_env("OPERATELY_STORAGE_S3_REGION", "us-east-1")
+      System.put_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID", "test-access-key")
+      System.put_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY", "test-secret-key")
+
+      on_exit(fn ->
+        System.delete_env("OPERATELY_STORAGE_S3_HOST")
+        System.delete_env("OPERATELY_STORAGE_S3_SCHEME")
+        System.delete_env("OPERATELY_STORAGE_S3_PORT")
+        System.delete_env("OPERATELY_STORAGE_S3_BUCKET")
+        System.delete_env("OPERATELY_STORAGE_S3_REGION")
+        System.delete_env("OPERATELY_STORAGE_S3_ACCESS_KEY_ID")
+        System.delete_env("OPERATELY_STORAGE_S3_SECRET_ACCESS_KEY")
+      end)
+
+      :ok
+    end
+
     test "get_signed_get_url generates consistent URLs within same 2-hour window for S3", ctx do
-      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :s3)
-      
+      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id)
+      blob = Map.put(blob, :storage_type, :s3)
+
       # Generate multiple URLs within a short time period
       {:ok, url1} = Blobs.get_signed_get_url(blob, "inline")
-      Process.sleep(100)  # Small delay
+      # Small delay
+      Process.sleep(1000)
       {:ok, url2} = Blobs.get_signed_get_url(blob, "inline")
-      
+
       # URLs should be identical due to time rounding
       assert url1 == url2
     end
+  end
+
+  describe "cache-friendly local signed URLs" do
+    import Operately.BlobsFixtures
 
     test "get_signed_get_url generates consistent URLs within same 2-hour window for local storage", ctx do
-      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :local)
-      
+      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id)
+      blob = Map.put(blob, :storage_type, :local)
+
       # Generate multiple URLs within a short time period
       {:ok, url1} = Blobs.get_signed_get_url(blob, "inline")
-      Process.sleep(100)  # Small delay
+      # Small delay
+      Process.sleep(1000)
       {:ok, url2} = Blobs.get_signed_get_url(blob, "inline")
-      
+
       # URLs should be identical due to time rounding
       assert url1 == url2
-    end
-
-    test "cache_friendly_time rounds to next 2-hour boundary" do
-      # Test the private function indirectly by checking URL consistency
-      # This test verifies the rounding logic works correctly
-      
-      # Create multiple blobs to test URL generation
-      blob = blob_fixture(company_id: ctx.company.id, author_id: ctx.person.id, storage_type: :local)
-      
-      # Generate URLs multiple times and verify they're consistent
-      urls = Enum.map(1..5, fn _i ->
-        {:ok, url} = Blobs.get_signed_get_url(blob, "inline")
-        Process.sleep(50)
-        url
-      end)
-      
-      # All URLs should be identical
-      assert Enum.uniq(urls) |> length() == 1
     end
   end
 end
