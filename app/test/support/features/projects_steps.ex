@@ -217,7 +217,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "disconnected the #{ctx.project.name} project from the Improve support first response time goal"
+      action: "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
     })
   end
 
@@ -270,7 +270,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "paused the #{ctx.project.name} project"
+      action: "Paused the #{ctx.project.name} project"
     })
   end
 
@@ -319,7 +319,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "resumed the #{ctx.project.name} project"
+      action: "Resumed the #{ctx.project.name} project"
     })
   end
 
@@ -480,7 +480,7 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "added a key resource to the #{ctx.project.name} project"
+      action: "Added a key resource to the #{ctx.project.name} project"
     })
   end
 
