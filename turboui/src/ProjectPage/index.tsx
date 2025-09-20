@@ -202,7 +202,7 @@ export function ProjectPage(props: ProjectPage.Props) {
 
   return (
     <ProjectPageLayout title={[state.projectName]} testId="project-page" tabs={tabs} {...state}>
-      <div className="flex-1 overflow-scroll">
+      <div className="flex-1 overflow-auto">
         {tabs.active === "overview" && <Overview {...state} />}
         {tabs.active === "tasks" && (
           <div className="flex-1 flex flex-col overflow-hidden pt-1">

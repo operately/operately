@@ -56,7 +56,7 @@ function NavigateBack({ viewModel }: { viewModel: ViewModel }) {
 
 function NodeList({ viewModel }: { viewModel: ViewModel }) {
   return (
-    <div className="h-[240px] overflow-scroll">
+    <div className="h-[240px] overflow-auto">
       {viewModel.nodes?.map((node, index) => (
         <NodeItem viewModel={viewModel} node={node} key={node.id} index={index} />
       ))}

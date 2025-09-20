@@ -7,7 +7,7 @@ export function CheckIns(props: ProjectPage.State) {
   const showCheckInButton = props.canEdit && props.state !== "closed";
 
   return (
-    <div className="p-4 max-w-3xl mx-auto my-6 overflow-scroll">
+    <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
       <div className="flex items-center gap-2 justify-between">
         <div>
           <h2 className="font-bold text-lg">Check-Ins</h2>
