@@ -1,9 +1,9 @@
 defmodule Operately.Blobs.Tokens do
-  alias Operately.Blobs.Encryption
+  alias Operately.Blobs.Signing
 
   def validate(operation, path, token) do
-    with {:ok, decoded} <- Encryption.decrypt_raw(token),
-         {:ok, decoded} <- Jason.decode(decoded),
+    with {:ok, payload} <- Signing.verify(token),
+         {:ok, decoded} <- Jason.decode(payload),
          {:ok, _} <- validate_operation(operation, decoded),
          {:ok, _} <- validate_path(path, decoded),
          {:ok, _} <- validate_expiration(decoded) do
@@ -21,8 +21,8 @@ defmodule Operately.Blobs.Tokens do
         expires_at: expires_at_timestamp(1, :hour)
       })
 
-    case Encryption.encrypt_raw(token) do
-      {:ok, encrypted} -> encrypted
+    case Signing.sign(token) do
+      {:ok, signed} -> signed
       _ -> {:error, :invalid_token}
     end
   end
@@ -31,13 +31,8 @@ defmodule Operately.Blobs.Tokens do
     expires_at = cache_friendly_expires_at_timestamp(1, :hour)
     token = Jason.encode!(%{path: path, operation: :get, expires_at: expires_at})
 
-    IO.inspect(path)
-    IO.inspect(:get)
-    IO.inspect(expires_at)
-    IO.inspect(token)
-
-    case Encryption.encrypt_raw(token) do
-      {:ok, encrypted} -> encrypted
+    case Signing.sign(token) do
+      {:ok, signed} -> signed
       _ -> {:error, :invalid_token}
     end
   end
