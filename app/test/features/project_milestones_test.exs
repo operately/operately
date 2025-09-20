@@ -56,7 +56,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "add milestone with due date", ctx do
       next_friday = get_next_friday()
-      formatted_date = Calendar.strftime(next_friday, "%b %d")
+      formatted_date = format_date_for_frontend(next_friday)
 
       ctx
       |> Steps.visit_project_page()
@@ -69,7 +69,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "edit a milestone from project timeline", ctx do
       next_friday = get_next_friday()
-      formatted_date = Calendar.strftime(next_friday, "%b %d")
+      formatted_date = format_date_for_frontend(next_friday)
 
       ctx
       |> Steps.given_that_a_milestone_exists("My milestone")
@@ -88,7 +88,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "assert newly created milestone page", ctx do
       due_date = get_milestone_due_date(ctx.milestone)
-      formatted_date = Calendar.strftime(due_date, "%b %d")
+      formatted_date = format_date_for_frontend(due_date)
 
       ctx
       |> Steps.visit_milestone_page()
@@ -100,7 +100,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
     feature "edit milestone due date", ctx do
       next_friday = get_next_friday()
-      formatted_date = Calendar.strftime(next_friday, "%b %d")
+      formatted_date = format_date_for_frontend(next_friday)
 
       ctx
       |> Steps.visit_milestone_page()
@@ -195,5 +195,13 @@ defmodule Operately.Features.ProjectMilestonesTest do
 
   defp get_milestone_due_date(milestone) do
     Operately.ContextualDates.Timeframe.end_date(milestone.timeframe)
+  end
+
+  # Format date to match frontend JavaScript formatting (non-zero-padded days)
+  # Frontend uses day: "numeric" which produces "Oct 3" instead of "Oct 03"
+  defp format_date_for_frontend(date) do
+    month = Calendar.strftime(date, "%b")
+    day = date.day
+    "#{month} #{day}"
   end
 end

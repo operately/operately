@@ -22,7 +22,7 @@ defmodule Operately.Features.ProjectTasksTest do
   @tag login_as: :champion
   feature "create task from tasks board", ctx do
     next_friday = get_next_friday()
-    formatted_date = Calendar.strftime(next_friday, "%b %d")
+    formatted_date = format_date_for_frontend(next_friday)
 
     attrs = %{
       name: "Task 1",
@@ -147,7 +147,7 @@ defmodule Operately.Features.ProjectTasksTest do
   @tag login_as: :champion
   feature "edit task due date", ctx do
     next_friday = get_next_friday()
-    formatted_date = Calendar.strftime(next_friday, "%b %d")
+    formatted_date = format_date_for_frontend(next_friday)
     feed_title = "changed the due date of this task from"
 
     ctx
@@ -207,5 +207,13 @@ defmodule Operately.Features.ProjectTasksTest do
   defp get_next_friday do
     Date.utc_today()
     |> Date.add((5 - Date.day_of_week(Date.utc_today()) + 7) |> rem(7) |> Kernel.+(7))
+  end
+
+  # Format date to match frontend JavaScript formatting (non-zero-padded days)
+  # Frontend uses day: "numeric" which produces "Oct 3" instead of "Oct 03"
+  defp format_date_for_frontend(date) do
+    month = Calendar.strftime(date, "%b")
+    day = date.day
+    "#{month} #{day}"
   end
 end
