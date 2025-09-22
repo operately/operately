@@ -10,8 +10,7 @@ export function Timeline({
   commentParentType,
   onAddComment,
   onEditComment,
-  mentionedPersonLookup,
-  peopleSearch,
+  richTextHandlers,
   filters,
 }: TimelineProps) {
   const filteredItems = useMemo(() => {
@@ -70,8 +69,7 @@ export function Timeline({
             canComment={canComment}
             commentParentType={commentParentType}
             onEditComment={onEditComment}
-            mentionedPersonLookup={mentionedPersonLookup}
-            peopleSearch={peopleSearch}
+            richTextHandlers={richTextHandlers}
           />
         ))
       )}
@@ -80,8 +78,7 @@ export function Timeline({
         <CommentInput
           form={mockForm}
           currentUser={currentUser}
-          mentionedPersonLookup={mentionedPersonLookup}
-          peopleSearch={peopleSearch}
+          richTextHandlers={richTextHandlers}
         />
       )}
     </div>

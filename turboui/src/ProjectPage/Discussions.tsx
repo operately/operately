@@ -40,7 +40,7 @@ function DiscussionsList({ props }: { props: ProjectPage.Props }) {
         <DiscussionCard
           key={discussion.id}
           discussion={discussion}
-          mentionedPersonLookup={props.mentionedPersonLookup}
+          mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
         />
       ))}
     </div>
