@@ -47,7 +47,9 @@ defmodule Operately.Blobs do
     case blob.storage_type do
       :s3 ->
         query_params = disposition_query_params(disposition, blob.filename)
-        presigned_s3_url(:get, path, 3600, [], query_params)
+        # Use 3 hours (10800 seconds) expiration to ensure URLs remain valid
+        # throughout the 2-hour cache-friendly rounding window
+        presigned_s3_url(:get, path, 10800, [], query_params)
 
       :local ->
         host = OperatelyWeb.Endpoint.url()
@@ -88,7 +90,9 @@ defmodule Operately.Blobs do
 
     case blob.storage_type do
       :s3 ->
-        presigned_s3_url(:put, path, 3600, headers, [])
+        # Use 3 hours (10800 seconds) expiration to ensure URLs remain valid
+        # throughout the 2-hour cache-friendly rounding window
+        presigned_s3_url(:put, path, 10800, headers, [])
 
       :local ->
         host = OperatelyWeb.Endpoint.url()
@@ -118,31 +122,32 @@ defmodule Operately.Blobs do
     ExAws.Auth.presigned_url(method, url, :s3, time, config, expires_in, query_params, nil, headers)
   end
 
-  # Rounds the current time up to the next 2-hour boundary for cache-friendly URLs
-  # This ensures URLs remain the same within 2-hour windows while staying valid
+  # Rounds the current time DOWN to the last 2-hour boundary for cache-friendly URLs
+  # This ensures URLs remain the same within 2-hour windows, improving cacheability
+  #
+  # Based on: https://advancedweb.hu/cacheable-s3-signed-urls/
+  #
+  # The idea is to "travel back in time" so that URLs created within the same 2-hour
+  # window are identical, allowing browsers and CDNs to cache them effectively.
+  # For example:
+  # - Request at 11:05 -> rounded down to 10:00
+  # - Request at 11:59 -> rounded down to 10:00
+  # - Request at 12:05 -> rounded down to 12:00
   defp cache_friendly_time do
     now = DateTime.utc_now()
     current_hour = now.hour
 
-    # Calculate the next 2-hour boundary
-    next_boundary_hour =
+    # Calculate the last 2-hour boundary by rounding DOWN
+    last_boundary_hour =
       case rem(current_hour, 2) do
-        # If on even hour, next boundary is 2 hours later
-        0 -> current_hour + 2
-        # If on odd hour, next boundary is 1 hour later
-        1 -> current_hour + 1
+        # If on even hour (0, 2, 4, etc.), use current hour as boundary
+        0 -> current_hour
+        # If on odd hour (1, 3, 5, etc.), round down to previous even hour
+        1 -> current_hour - 1
       end
 
-    # Handle day rollover
-    {next_day, next_hour} =
-      if next_boundary_hour >= 24 do
-        {DateTime.add(now, 1, :day), next_boundary_hour - 24}
-      else
-        {now, next_boundary_hour}
-      end
-
-    # Create the rounded time at the next 2-hour boundary
-    %{next_day | hour: next_hour, minute: 0, second: 0, microsecond: {0, 0}}
+    # Create the rounded time at the last 2-hour boundary
+    %{now | hour: last_boundary_hour, minute: 0, second: 0, microsecond: {0, 0}}
     |> DateTime.to_naive()
   end
 end
