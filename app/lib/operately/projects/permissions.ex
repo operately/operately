@@ -65,6 +65,15 @@ defmodule Operately.Projects.Permissions do
     }
   end
 
+  def calculate(nil, check_in, user_id) when is_binary(user_id) do
+    # When access_level is nil, use minimal permissions
+    base_permissions = calculate(Binding.no_access())
+
+    %{base_permissions |
+      can_acknowledge_check_in: can_acknowledge_check_in(check_in, user_id)
+    }
+  end
+
   def calculate(access_level, check_in, user_id) when is_integer(access_level) and is_binary(user_id) do
     base_permissions = calculate(access_level)
 
