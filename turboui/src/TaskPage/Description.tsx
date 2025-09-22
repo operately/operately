@@ -3,7 +3,7 @@ import { TaskPage } from ".";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import RichContent, { countCharacters, shortenContent } from "../RichContent";
 import { isContentEmpty } from "../RichContent/isContentEmpty";
-import { Editor, useEditor } from "../RichEditor";
+import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: TaskPage.Props) {
@@ -95,7 +95,7 @@ interface State {
   setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
   setDescription: React.Dispatch<React.SetStateAction<string | null>>;
   editor: ReturnType<typeof useEditor>;
-  mentionedPersonLookup: TaskPage.Props["mentionedPersonLookup"];
+  mentionedPersonLookup: MentionedPersonLookupFn;
   startEdit: () => void;
   save: () => void;
   cancel: () => void;
@@ -115,8 +115,7 @@ function useDescriptionState(props: TaskPage.Props): State {
     content: props.description,
     editable: true,
     placeholder: "Describe the task...",
-    mentionedPersonLookup: props.mentionedPersonLookup,
-    peopleSearch: props.mentionedPeopleSearch,
+    handlers: props.richDescriptionHandlers,
   });
 
   const save = React.useCallback(async () => {
@@ -153,7 +152,7 @@ function useDescriptionState(props: TaskPage.Props): State {
     description,
     mode,
     editor,
-    mentionedPersonLookup: props.mentionedPersonLookup,
+    mentionedPersonLookup: props.richDescriptionHandlers.mentionedPersonLookup,
     startEdit,
     setMode,
     setDescription,

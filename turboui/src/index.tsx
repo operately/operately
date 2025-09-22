@@ -44,7 +44,9 @@ export { TaskPage } from "./TaskPage";
 export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
+
 export { RichContent };
+export type { RichEditorHandlers } from "./RichEditor/useEditor";
 
 export { createDropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";
 export { createPasteFilePlugin } from "./RichEditor/Blob/PasteFilePlugin";

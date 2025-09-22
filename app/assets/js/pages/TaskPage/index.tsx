@@ -21,8 +21,9 @@ import { assertPresent } from "@/utils/assertions";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
-import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useComments } from "./useComments";
+import { useRichEditorHandlers } from "@/features/richtexteditor";
 
 type LoaderResult = {
   data: {
@@ -160,15 +161,9 @@ function Page() {
     projectId: task.project.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
-  const mentionedPeopleSearch = People.useMentionedPersonSearch({
-    scope: { type: "project", id: task.project.id },
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
-  });
   const searchMilestones = useMilestonesSearch(task.project.id);
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: task.project.id } });
 
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
-
-  // Prepare TaskPage props
   const props: TaskPage.Props = {
     projectName,
     projectLink: paths.projectPath(task.project.id),
@@ -217,9 +212,7 @@ function Page() {
     isSubscribed: false,
     onSubscriptionToggle: () => {},
 
-    // Placeholder for person lookup functionality
-    mentionedPeopleSearch,
-    mentionedPersonLookup,
+    richDescriptionHandlers: richEditorHandlers,
   };
 
   return <TaskPage key={task.id!} {...props} />;

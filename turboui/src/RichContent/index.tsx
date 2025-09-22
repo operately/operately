@@ -5,14 +5,16 @@ import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
 interface RichContentProps {
   content: any;
   className?: string;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
+  mentionedPersonLookup: MentionedPersonLookupFn;
 }
 
 export default function RichContent({ content, className, mentionedPersonLookup }: RichContentProps): JSX.Element {
   const editor = useEditor({
     content: content,
     editable: false,
-    mentionedPersonLookup,
+    handlers: {
+      mentionedPersonLookup,
+    }
   });
 
   React.useEffect(() => {
