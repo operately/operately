@@ -69,7 +69,7 @@ const ProjectTimelineEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " changed the project timeline";
+    return "Changed the project timeline";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

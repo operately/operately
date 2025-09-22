@@ -62,7 +62,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on: " + content(activity).document!.name!;
+    return "Re: " + content(activity).document!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
