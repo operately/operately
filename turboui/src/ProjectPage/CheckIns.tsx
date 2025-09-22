@@ -25,7 +25,7 @@ export function CheckIns(props: ProjectPage.State) {
 
       <div className="mt-8">
         {props.checkIns.map((checkIn) => (
-          <CheckInCard key={checkIn.id} checkIn={checkIn} mentionedPersonLookup={props.mentionedPersonLookup} />
+          <CheckInCard key={checkIn.id} checkIn={checkIn} mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup} />
         ))}
       </div>
     </div>

@@ -138,7 +138,7 @@ export namespace ProjectPage {
     checkIns: CheckIn[];
     discussions: Discussion[];
 
-    richDescriptionHandlers: RichEditorHandlers;
+    richTextHandlers: RichEditorHandlers;
 
     // Resource management
     resources: ResourceManager.Resource[];

@@ -268,7 +268,7 @@ function Page() {
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     searchPeople: assigneeSearch,
 
-    richDescriptionHandlers: richEditorHandlers,
+    richTextHandlers: richEditorHandlers,
 
     resources,
     onResourceAdd: createResource,

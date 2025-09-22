@@ -64,6 +64,7 @@ export interface CommentSectionProps {
   form: CommentFormState;
   commentParentType: string;
   canComment: boolean;
+  richTextHandlers: RichEditorHandlers;
 }
 
 export interface CommentItemProps {

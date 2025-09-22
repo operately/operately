@@ -48,7 +48,7 @@ function OverviewSection(props: ProjectPage.State) {
     description: props.description,
     onDescriptionChange: props.updateDescription,
     canEdit: props.canEdit,
-    richDescriptionHandlers: props.richDescriptionHandlers,
+    richDescriptionHandlers: props.richTextHandlers,
   });
 
   return (

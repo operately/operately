@@ -40,7 +40,7 @@ function DiscussionsList({ props }: { props: GoalPage.State }) {
         <DiscussionCard
           key={discussion.id}
           discussion={discussion}
-          mentionedPersonLookup={props.mentionedPersonLookup}
+          mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
         />
       ))}
     </div>
