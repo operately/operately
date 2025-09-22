@@ -9,6 +9,7 @@ import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { ProjectPage } from "./index";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 // Helper function to create rich text content for check-ins
 function asRichText(content: string): any {
@@ -365,10 +366,9 @@ export const Default: Story = {
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
+        richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
-        mentionedPersonLookup={async () => null}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -444,10 +444,9 @@ export const ReadOnly: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
+        richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
-        mentionedPersonLookup={async () => null}
         parentGoal={{
           id: "2",
           name: "Increase Product Adoption",
@@ -575,10 +574,9 @@ export const EmptyTasks: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
+        richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
-        mentionedPersonLookup={async () => null}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -687,10 +685,9 @@ export const EmptyProject: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
+        richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
-        mentionedPersonLookup={async () => null}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -759,10 +756,9 @@ export const EmptyProjectReadOnly: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
+        richTextHandlers={createMockRichEditorHandlers()}
         filters={[]}
         onFiltersChange={() => {}}
-        mentionedPersonLookup={async () => null}
         parentGoal={null}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
@@ -914,10 +910,9 @@ export const PausedProject: Story = {
         }}
         onMilestoneUpdate={handleMilestoneUpdate}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
+        richTextHandlers={createMockRichEditorHandlers()}
         filters={filters}
         onFiltersChange={setFilters}
-        mentionedPersonLookup={async () => null}
         parentGoal={parentGoal}
         setParentGoal={setParentGoal}
         parentGoalSearch={mockParentGoalSearch}
@@ -1001,10 +996,9 @@ export const ClosedProject: Story = {
         onTaskDueDateChange={() => {}}
         onMilestoneUpdate={() => {}}
         searchPeople={mockSearchPeople}
-        mentionedPersonSearch={mockSearchPeople}
         filters={[]}
         onFiltersChange={() => {}}
-        mentionedPersonLookup={async () => null}
+        richTextHandlers={createMockRichEditorHandlers()}
         parentGoal={parentGoal}
         setParentGoal={() => {}}
         parentGoalSearch={mockParentGoalSearch}
