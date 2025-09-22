@@ -80,10 +80,16 @@ defmodule Operately.Projects.Permissions do
     # Similar logic to Goals: 
     # - If champion posts check-in, reviewer can acknowledge
     # - If reviewer posts check-in, champion can acknowledge  
+    # - Users cannot acknowledge their own check-ins
     # - Otherwise, only reviewer can acknowledge (existing behavior)
     cond do
+      # Prevent self-acknowledgement
+      check_in.author_id == user_id -> false
+      # Champion posted, reviewer can acknowledge
       check_in.author_id == get_champion_id(project) && get_reviewer_id(project) == user_id -> true
+      # Reviewer posted, champion can acknowledge
       check_in.author_id == get_reviewer_id(project) && get_champion_id(project) == user_id -> true
+      # For all other cases, only reviewer can acknowledge
       true -> user_id == get_reviewer_id(project)
     end
   end
