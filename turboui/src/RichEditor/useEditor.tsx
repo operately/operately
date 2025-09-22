@@ -31,6 +31,12 @@ interface OnBlurData {
 export type UploadFileFn = (file: File, onProgress: (progress: number) => void) => Promise<{ id: string; url: string }>;
 export type MentionedPersonLookupFn = (id: string) => Promise<Person | null>;
 
+export interface RichEditorHandlers {
+  mentionedPersonLookup: MentionedPersonLookupFn;
+  peopleSearch?: SearchFn;
+  uploadFile?: UploadFileFn;
+}
+
 interface UseEditorProps {
   placeholder?: string;
   content?: any;
@@ -42,9 +48,7 @@ interface UseEditorProps {
   autoFocus?: boolean;
   tabindex?: string;
 
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: SearchFn;
-  uploadFile?: UploadFileFn;
+  handlers: RichEditorHandlers;
 }
 
 export interface EditorState {
@@ -72,7 +76,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   props = { ...DEFAULT_EDITOR_PROPS, ...props };
 
   if (props.editable) {
-    if (!props.peopleSearch) {
+    if (!props.handlers.peopleSearch) {
       throw new Error("peopleSearch function is required when editable is true");
     }
   }
@@ -84,7 +88,7 @@ export function useEditor(props: UseEditorProps): EditorState {
   const [uploading, setUploading] = React.useState(false);
 
   const mentionPeople = React.useMemo(() => {
-    return MentionPeople.configure(props.peopleSearch);
+    return MentionPeople.configure(props.handlers.peopleSearch);
   }, []);
 
   const editor = TipTap.useEditor({
@@ -110,7 +114,10 @@ export function useEditor(props: UseEditorProps): EditorState {
         },
         dropcursor: false,
       }),
-      Blob.configure({ uploadFile: props.uploadFile }),
+      Blob.configure({
+        uploadFile: props.handlers.uploadFile,
+        editable: props.editable,
+      }),
       Link.extend({ inclusive: false }).configure({ openOnClick: false }),
       Placeholder.configure({ placeholder: props.placeholder }),
       mentionPeople,
@@ -175,8 +182,8 @@ export function useEditor(props: UseEditorProps): EditorState {
     uploading,
     linkEditActive,
     setLinkEditActive,
-    mentionedPersonLookup: props.mentionedPersonLookup,
-    uploadFile: props.uploadFile!,
+    mentionedPersonLookup: props.handlers.mentionedPersonLookup,
+    uploadFile: props.handlers.uploadFile!,
     setContent,
     setFocused,
     getJson,
