@@ -5,6 +5,7 @@ import * as Types from "../TaskBoard/types";
 import { mockPeople, createMockTimelineItems, mockDescription, mockSearchPeople } from "./mockData";
 import { DateField } from "../DateField";
 import { createContextualDate } from "../DateField/mockData";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 /**
  * MilestonePage displays a standalone page for a single milestone and its tasks.
@@ -255,10 +256,7 @@ export const Default: Story = {
           console.log("Description changed:", newDescription);
           return true;
         }}
-        mentionedPersonLookup={async (id) => {
-          const person = mockPeople.find(p => p.id === id);
-          return person ? { ...person, profileLink: "#", title: "" } : null;
-        }}
+        richTextHandlers={createMockRichEditorHandlers()}
       />
     );
   },
@@ -367,10 +365,7 @@ export const EmptyMilestone: Story = {
           console.log("Description changed:", newDescription);
           return true;
         }}
-        mentionedPersonLookup={async (id) => {
-          const person = mockPeople.find(p => p.id === id);
-          return person ? { ...person, profileLink: "#", title: "" } : null;
-        }}
+        richTextHandlers={createMockRichEditorHandlers()}
       />
     );
   },
@@ -576,10 +571,7 @@ export const CompletedMilestone: Story = {
           console.log("Description change attempted on completed milestone:", newDescription);
           return true;
         }}
-        mentionedPersonLookup={async (id) => {
-          const person = mockPeople.find(p => p.id === id);
-          return person ? { ...person, profileLink: "#", title: "" } : null;
-        }}
+        richTextHandlers={createMockRichEditorHandlers()}
       />
     );
   },

@@ -8,8 +8,6 @@ import {
   mockMilestones,
   searchTaskPeople,
   searchMilestones,
-  searchRichEditorPeople,
-  mockMentionedPersonLookup,
   asRichText,
   asRichTextWithList,
   createActiveTaskTimeline,
@@ -20,6 +18,7 @@ import {
   currentUser,
 } from "./mockData";
 import { createContextualDate } from "../DateField/mockData";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 const meta: Meta<typeof TaskPage> = {
   title: "Pages/TaskPage",
@@ -139,8 +138,7 @@ function Component(props: Partial<TaskPage.Props>) {
     // Search
     searchPeople: searchTaskPeople,
     searchMilestones: searchMilestones,
-    mentionedPeopleSearch: searchRichEditorPeople,
-    mentionedPersonLookup: mockMentionedPersonLookup,
+    richTextHandlers: createMockRichEditorHandlers(),
 
     // Permissions
     canEdit: true,

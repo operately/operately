@@ -115,8 +115,7 @@ function useDescriptionState(props: GoalPage.State): State {
     content: props.description,
     editable: true,
     placeholder: "Describe the goal...",
-    mentionedPersonLookup: props.mentionedPersonLookup,
-    peopleSearch: props.peopleSearch,
+    handlers: props.richTextHandlers,
   });
 
   const save = React.useCallback(() => {
@@ -155,6 +154,6 @@ function useDescriptionState(props: GoalPage.State): State {
     setDescription,
     save,
     cancel,
-    mentionedPersonLookup: props.mentionedPersonLookup,
+    mentionedPersonLookup: props.richTextHandlers.mentionedPersonLookup,
   };
 }

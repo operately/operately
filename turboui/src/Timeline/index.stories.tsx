@@ -4,6 +4,7 @@ import { Timeline } from "./Timeline";
 import { TimelineProps, TimelineItem, TaskActivity } from "./types";
 import { Person } from "../CommentSection/types";
 import { Page } from "../Page";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 const meta: Meta<typeof Timeline> = {
   title: "Components/Timeline",
@@ -156,6 +157,7 @@ const createMockProps = (items: TimelineItem[]): TimelineProps => ({
   onEditComment: (id: string, content: any) => {
     console.log("Edit comment:", id, content);
   },
+  richTextHandlers:  createMockRichEditorHandlers(),
 });
 
 export const Default: Story = {

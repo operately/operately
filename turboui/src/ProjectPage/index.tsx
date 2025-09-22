@@ -7,7 +7,6 @@ import { IconClipboardText, IconListCheck, IconLogs, IconMessage, IconMessages }
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { ResourceManager } from "../ResourceManager";
-import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { useTabs } from "../Tabs";
@@ -17,6 +16,7 @@ import { CheckIns } from "./CheckIns";
 import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export namespace ProjectPage {
   export interface Space {
@@ -138,8 +138,7 @@ export namespace ProjectPage {
     checkIns: CheckIn[];
     discussions: Discussion[];
 
-    mentionedPersonLookup: MentionedPersonLookupFn;
-    mentionedPersonSearch: SearchFn;
+    richTextHandlers: RichEditorHandlers;
 
     // Resource management
     resources: ResourceManager.Resource[];

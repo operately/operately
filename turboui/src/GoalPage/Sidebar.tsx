@@ -209,7 +209,7 @@ function LastCheckInSection(props: GoalPage.State) {
 
   return (
     <SidebarSection title="Last Check-In">
-      <LastCheckIn checkIns={props.checkIns} state={props.state} mentionedPersonLookup={props.mentionedPersonLookup} />
+      <LastCheckIn checkIns={props.checkIns} state={props.state} mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup} />
     </SidebarSection>
   );
 }
@@ -241,7 +241,7 @@ function Retrospective(props: GoalPage.State) {
       <DivLink to={retro.link} className={className}>
         <div className="flex items-center font-semibold">Goal Retrospective</div>
 
-        <Summary content={retro.content} characterCount={130} mentionedPersonLookup={props.mentionedPersonLookup} />
+        <Summary content={retro.content} characterCount={130} mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup} />
 
         <div className="mt-1.5 flex items-center justify-between">
           <div className="flex items-center gap-1.5">
