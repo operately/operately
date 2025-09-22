@@ -6,10 +6,10 @@ defmodule OperatelyWeb.BlobController do
     disposition = Map.get(params, "disposition", "inline")
 
     cond do
-      id == nil -> 
+      id == nil ->
         conn |> put_status(400) |> text("Missing id")
 
-      !Operately.Blobs.is_valid_disposition?(disposition) -> 
+      !Operately.Blobs.SignedUrls.is_valid_disposition?(disposition) ->
         conn |> put_status(400) |> text("Invalid disposition")
 
       true ->
@@ -19,5 +19,4 @@ defmodule OperatelyWeb.BlobController do
         conn |> redirect(external: url)
     end
   end
-
 end
