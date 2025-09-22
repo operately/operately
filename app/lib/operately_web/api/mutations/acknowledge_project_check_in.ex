@@ -2,8 +2,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  import Ecto.Query, only: [from: 1, from: 2]
-  import Operately.Access.Filters, only: [forbidden_or_not_found: 3]
+  alias Operately.Projects.CheckIn
+  alias Operately.Projects.Permissions
 
   inputs do
     field? :id, :string, null: true
@@ -14,32 +14,34 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
   end
 
   def call(conn, inputs) do
-    {:ok, id} = decode_id(inputs.id)
-    person = me(conn)
+    Action.new()
+    |> run(:id, fn -> decode_id(inputs.id) end)
+    |> run(:me, fn -> find_me(conn) end)
+    |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: ctx.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, ctx.check_in, ctx.me.id, :can_acknowledge_check_in) end)
+    |> run(:check_already_acknowledged, fn ctx -> check_already_acknowledged(ctx.check_in) end)
+    |> run(:operation, fn ctx -> Operately.Operations.ProjectCheckInAcknowledgement.run(ctx.me, ctx.check_in) end)
+    |> run(:serialized, fn ctx -> {:ok, %{check_in: Serializer.serialize(ctx.operation, level: :essential)}} end)
+    |> respond()
+  end
 
-    check_in = load_check_in(person.id, id)
-
-    cond do
-      check_in == nil ->
-        from(c in Operately.Projects.CheckIn)
-        |> forbidden_or_not_found(person.id, join_parent: :project)
-
-      check_in.acknowledged_at != nil ->
-        {:ok, %{check_in: Serializer.serialize(check_in, level: :essential)}}
-
-      check_in.acknowledged_by_id == nil ->
-        {:ok, check_in} = Operately.Operations.ProjectCheckInAcknowledgement.run(person, check_in)
-        {:ok, %{check_in: Serializer.serialize(check_in, level: :essential)}}
+  defp respond(result) do
+    case result do
+      {:ok, ctx} -> {:ok, ctx.serialized}
+      {:error, :id, _} -> {:error, :bad_request}
+      {:error, :check_in, _} -> {:error, :not_found}
+      {:error, :check_permissions, _} -> {:error, :forbidden}
+      {:error, :check_already_acknowledged, _} -> {:error, :bad_request}
+      {:error, :operation, _} -> {:error, :internal_server_error}
+      _ -> {:error, :internal_server_error}
     end
   end
 
-  defp load_check_in(person_id, check_in_id) do
-    from(check_in in Operately.Projects.CheckIn,
-      join: project in assoc(check_in, :project),
-      join: reviewer in assoc(project, :reviewer_contributor),
-      preload: [project: project],
-      where: check_in.id == ^check_in_id and reviewer.person_id == ^person_id
-    )
-    |> Repo.one()
+  defp check_already_acknowledged(check_in) do
+    if check_in.acknowledged_at do
+      {:error, :already_acknowledged}
+    else
+      {:ok, :can_acknowledge}
+    end
   end
 end

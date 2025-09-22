@@ -77,4 +77,27 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.edit_check_in(new_values)
     |> Steps.assert_check_in_submitted(new_values)
   end
+
+  feature "champion can acknowledge check-ins posted by reviewer", ctx do
+    values = %{status: "on_track", description: "Check-in posted by reviewer."}
+
+    ctx
+    |> Steps.log_in_as_reviewer()
+    |> Steps.submit_check_in(values)
+    |> Steps.log_in_as_champion()
+    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.acknowledge_check_in()
+    |> Steps.assert_check_in_acknowledged(values)
+  end
+
+  feature "reviewer can acknowledge check-ins posted by champion", ctx do
+    values = %{status: "caution", description: "Check-in posted by champion."}
+
+    ctx
+    |> Steps.submit_check_in(values)  # Champion submits (default login)
+    |> Steps.log_in_as_reviewer()
+    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.acknowledge_check_in()
+    |> Steps.assert_check_in_acknowledged(values)
+  end
 end
