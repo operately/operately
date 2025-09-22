@@ -14,7 +14,7 @@ import classNames from "../utils/classnames";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -48,8 +48,7 @@ function OverviewSection(props: ProjectPage.State) {
     description: props.description,
     onDescriptionChange: props.updateDescription,
     canEdit: props.canEdit,
-    mentionedPersonLookup: props.mentionedPersonLookup,
-    mentionedPersonSearch: props.mentionedPersonSearch,
+    richDescriptionHandlers: props.richDescriptionHandlers,
   });
 
   return (
@@ -188,14 +187,12 @@ function useProjectDescriptionState({
   description: initialDescription,
   onDescriptionChange,
   canEdit,
-  mentionedPersonLookup,
-  mentionedPersonSearch,
+  richDescriptionHandlers,
 }: {
   description?: string;
   onDescriptionChange?: (newDescription: any) => Promise<boolean>;
   canEdit: boolean;
-  mentionedPersonLookup: MentionedPersonLookupFn;
-  mentionedPersonSearch: SearchFn;
+  richDescriptionHandlers: RichEditorHandlers;
 }): ProjectDescriptionState {
   const initialMode = isDescriptionEmpty(initialDescription) ? "zero" : "view";
 
@@ -210,8 +207,7 @@ function useProjectDescriptionState({
     content: initialDescription,
     editable: canEdit,
     placeholder: "Add a project description...",
-    mentionedPersonLookup: mentionedPersonLookup,
-    peopleSearch: mentionedPersonSearch,
+    handlers: richDescriptionHandlers,
   });
 
   const save = useCallback(async () => {
@@ -254,7 +250,7 @@ function useProjectDescriptionState({
     setDescription,
     save,
     cancel,
-    mentionedPersonLookup,
+    mentionedPersonLookup: richDescriptionHandlers.mentionedPersonLookup,
   };
 }
 
