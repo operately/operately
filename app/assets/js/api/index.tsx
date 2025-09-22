@@ -2725,7 +2725,7 @@ export interface AcknowledgeGoalProgressUpdateResult {
 }
 
 export interface AcknowledgeProjectCheckInInput {
-  id?: string | null;
+  id: Id;
 }
 
 export interface AcknowledgeProjectCheckInResult {
