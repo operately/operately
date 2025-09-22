@@ -212,7 +212,7 @@ function Page() {
     isSubscribed: false,
     onSubscriptionToggle: () => {},
 
-    richDescriptionHandlers: richEditorHandlers,
+    richTextHandlers: richEditorHandlers,
   };
 
   return <TaskPage key={task.id!} {...props} />;

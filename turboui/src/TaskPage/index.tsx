@@ -86,7 +86,7 @@ export namespace TaskPage {
 
     // Search functionality for assignees
     searchPeople: SearchFn;
-    richDescriptionHandlers: RichEditorHandlers;
+    richTextHandlers: RichEditorHandlers;
 
     // Permissions
     canEdit: boolean;

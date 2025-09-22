@@ -13,7 +13,6 @@ export function Overview(props: TaskPage.State) {
 }
 
 function ActivitySection(props: TaskPage.State) {
-  // Use timeline data if provided, otherwise show placeholder
   if (props.timelineItems && props.currentUser) {
     return (
       <div data-test-id="task-activity-section">
@@ -25,8 +24,7 @@ function ActivitySection(props: TaskPage.State) {
           commentParentType="task"
           onAddComment={props.onAddComment}
           onEditComment={props.onEditComment}
-          mentionedPersonLookup={props.mentionedPersonLookup}
-          peopleSearch={props.mentionedPeopleSearch}
+          richTextHandlers={props.richTextHandlers}
           filters={props.timelineFilters}
         />
       </div>

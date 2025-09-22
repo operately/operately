@@ -18,8 +18,7 @@ interface CommentInputInactiveProps {
 export function CommentInput({
   form,
   currentUser,
-  mentionedPersonLookup,
-  peopleSearch,
+  richTextHandlers,
 }: CommentInputProps & { currentUser: Person }) {
   const [active, setActive] = useState(false);
 
@@ -33,8 +32,7 @@ export function CommentInput({
         currentUser={currentUser}
         onBlur={handleDeactivate}
         onPost={handleDeactivate}
-        mentionedPersonLookup={mentionedPersonLookup}
-        peopleSearch={peopleSearch}
+        richTextHandlers={richTextHandlers}
       />
     );
   }
@@ -59,8 +57,7 @@ function CommentInputActive({
   currentUser,
   onBlur,
   onPost,
-  mentionedPersonLookup,
-  peopleSearch,
+  richTextHandlers,
 }: CommentInputActiveProps) {
   const [uploading] = useState(false);
 
@@ -68,8 +65,7 @@ function CommentInputActive({
     content: "",
     editable: true,
     placeholder: "Write a comment here...",
-    mentionedPersonLookup: mentionedPersonLookup || (async () => null),
-    peopleSearch: peopleSearch || (async () => []),
+    handlers: richTextHandlers,
   });
 
   const handlePost = async () => {

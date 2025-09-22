@@ -18,7 +18,6 @@ import { useTabs } from "../Tabs";
 import { MilestoneDescription } from "./components/Description";
 import { MilestoneSidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
-import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { TimelineItem } from "../Timeline/types";
 import { Header } from "./components/Header";
@@ -26,6 +25,7 @@ import { TasksSection } from "./components/TasksSection";
 import { SidebarSection } from "../SidebarSection";
 import { GhostButton, SecondaryButton } from "../Button";
 import { launchConfetti } from "../utils/confetti";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -100,8 +100,7 @@ export namespace MilestonePage {
     canEdit?: boolean;
 
     // Rich editor support for description
-    mentionedPersonLookup?: MentionedPersonLookupFn;
-    mentionedPeopleSearch?: SearchFn;
+    richDescriptionHandlers: RichEditorHandlers;
   }
 
   export interface State extends Props {
@@ -141,7 +140,7 @@ export function MilestonePage(props: MilestonePage.Props) {
     canEdit = true,
     description,
     onDescriptionChange,
-    mentionedPersonLookup,
+    richDescriptionHandlers,
     projectName,
     projectLink,
     projectStatus = "active",
@@ -209,8 +208,7 @@ export function MilestonePage(props: MilestonePage.Props) {
             <MilestoneDescription
               description={description}
               onDescriptionChange={onDescriptionChange}
-              mentionedPersonLookup={mentionedPersonLookup}
-              peopleSearch={state.mentionedPeopleSearch}
+              richDescriptionHandlers={richDescriptionHandlers}
               canEdit={canEdit}
             />
 

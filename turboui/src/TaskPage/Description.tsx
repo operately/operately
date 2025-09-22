@@ -115,7 +115,7 @@ function useDescriptionState(props: TaskPage.Props): State {
     content: props.description,
     editable: true,
     placeholder: "Describe the task...",
-    handlers: props.richDescriptionHandlers,
+    handlers: props.richTextHandlers,
   });
 
   const save = React.useCallback(async () => {
@@ -152,7 +152,7 @@ function useDescriptionState(props: TaskPage.Props): State {
     description,
     mode,
     editor,
-    mentionedPersonLookup: props.richDescriptionHandlers.mentionedPersonLookup,
+    mentionedPersonLookup: props.richTextHandlers.mentionedPersonLookup,
     startEdit,
     setMode,
     setDescription,

@@ -9,7 +9,7 @@ import { CommentItemProps } from "./types";
 import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
 import { PrimaryButton, SecondaryButton } from "../Button";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 // Function to shorten name for display
 function shortName(name: string | undefined): string {
@@ -39,9 +39,8 @@ export function CommentItem({
   comment,
   canComment,
   currentUserId,
-  mentionedPersonLookup,
-  peopleSearch,
   form,
+  richTextHandlers,
 }: CommentItemProps & { currentUserId?: string }) {
   const [isEditing, setIsEditing] = useState(false);
   const parsedContent = JSON.parse(comment.content)["message"];
@@ -95,13 +94,12 @@ export function CommentItem({
             content={parsedContent}
             onSave={handleSaveEdit}
             onCancel={() => setIsEditing(false)}
-            mentionedPersonLookup={mentionedPersonLookup}
-            peopleSearch={peopleSearch}
+            richTextHandlers={richTextHandlers}
           />
         ) : (
           <CommentViewMode
             content={parsedContent}
-            mentionedPersonLookup={mentionedPersonLookup}
+            mentionedPersonLookup={richTextHandlers.mentionedPersonLookup}
             reactions={comment.reactions}
             canComment={canComment}
           />
@@ -113,7 +111,7 @@ export function CommentItem({
 
 interface CommentViewModeProps {
   content: any;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
+  mentionedPersonLookup: MentionedPersonLookupFn;
   reactions: any[];
   canComment: boolean;
 }
@@ -133,17 +131,15 @@ interface CommentEditModeProps {
   content: any;
   onSave: (content: any) => void;
   onCancel: () => void;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: SearchFn;
+  richTextHandlers: RichEditorHandlers;
 }
 
-function CommentEditMode({ content, onSave, onCancel, mentionedPersonLookup, peopleSearch }: CommentEditModeProps) {
+function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: CommentEditModeProps) {
   const editor = useEditor({
     content: content,
     editable: true,
     placeholder: "Edit your comment...",
-    mentionedPersonLookup: mentionedPersonLookup,
-    peopleSearch: peopleSearch,
+    handlers: richTextHandlers,
   });
 
   const handleSave = () => {

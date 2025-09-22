@@ -17,8 +17,7 @@ export function TimelineItem({
   canComment,
   commentParentType,
   onEditComment,
-  mentionedPersonLookup,
-  peopleSearch,
+  richTextHandlers,
 }: TimelineItemProps) {
   switch (item.type) {
     case "comment":
@@ -34,8 +33,7 @@ export function TimelineItem({
           commentParentType={commentParentType}
           canComment={canComment}
           currentUserId={currentUser.id}
-          mentionedPersonLookup={mentionedPersonLookup}
-          peopleSearch={peopleSearch}
+          richTextHandlers={richTextHandlers}
         />
       );
 
