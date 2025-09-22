@@ -1,5 +1,4 @@
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
-import { MentionedPersonLookupFn } from "../RichEditor";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export interface Person {
   id: string;
@@ -73,16 +72,14 @@ export interface CommentItemProps {
   commentParentType: string;
   canComment: boolean;
   onEdit?: () => void;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: SearchFn;
+  richTextHandlers: RichEditorHandlers;
 }
 
 export interface CommentInputProps {
   form: CommentFormState;
   onSubmit?: () => void;
   onCancel?: () => void;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: SearchFn;
+  richTextHandlers: RichEditorHandlers;
 }
 
 export interface ActivityProps {

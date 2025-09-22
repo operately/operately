@@ -1,7 +1,7 @@
 import React from "react";
 import { Status } from "../TaskBoard/types";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
-import { MentionedPersonLookupFn } from "../RichEditor/useEditor";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 import { TimelineItem, TimelineFilters } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { DateField } from "../DateField";
@@ -86,8 +86,7 @@ export namespace TaskPage {
 
     // Search functionality for assignees
     searchPeople: SearchFn;
-    mentionedPersonLookup: MentionedPersonLookupFn;
-    mentionedPeopleSearch: SearchFn;
+    richTextHandlers: RichEditorHandlers;
 
     // Permissions
     canEdit: boolean;
