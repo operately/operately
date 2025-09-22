@@ -191,7 +191,7 @@ function Page() {
     createdAt: Time.parseDate(milestone.insertedAt)!,
 
     // Rich text editor support
-    richDescriptionHandlers: richEditorHandlers,
+    richTextHandlers: richEditorHandlers,
   };
 
   return <MilestonePage key={milestone.id!} {...props} />;

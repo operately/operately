@@ -99,8 +99,8 @@ export namespace MilestonePage {
     onSubscriptionToggle?: (subscribed: boolean) => void;
     canEdit?: boolean;
 
-    // Rich editor support for description
-    richDescriptionHandlers: RichEditorHandlers;
+    // Rich editor support for description and comments
+    richTextHandlers: RichEditorHandlers;
   }
 
   export interface State extends Props {
@@ -140,7 +140,7 @@ export function MilestonePage(props: MilestonePage.Props) {
     canEdit = true,
     description,
     onDescriptionChange,
-    richDescriptionHandlers,
+    richTextHandlers,
     projectName,
     projectLink,
     projectStatus = "active",
@@ -208,7 +208,7 @@ export function MilestonePage(props: MilestonePage.Props) {
             <MilestoneDescription
               description={description}
               onDescriptionChange={onDescriptionChange}
-              richDescriptionHandlers={richDescriptionHandlers}
+              richDescriptionHandlers={richTextHandlers}
               canEdit={canEdit}
             />
 
@@ -320,6 +320,7 @@ function TimelineSection(props: MilestonePage.State) {
         commentParentType="milestone"
         onAddComment={props.onAddComment}
         onEditComment={props.onEditComment}
+        richTextHandlers={props.richTextHandlers}
       />
     </div>
   );
