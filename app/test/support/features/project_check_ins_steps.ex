@@ -37,6 +37,11 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     ctx |> UI.login_as(ctx.creator)
   end
 
+  step :log_in_as_reviewer, ctx do
+    person = Operately.People.get_person!(ctx.reviewer.person_id)
+    ctx |> UI.login_as(person)
+  end
+
   step :submit_check_in, ctx, %{status: status, description: description} do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
