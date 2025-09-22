@@ -19,7 +19,6 @@ import {
 import { PageCache } from "@/routes/PageCache";
 import { useNavigate } from "react-router-dom";
 import { GoalPage, showErrorToast, showSuccessToast } from "turboui";
-import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
@@ -28,6 +27,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { useChecklists } from "./useChecklists";
+import { useRichEditorHandlers } from "@/features/richtexteditor";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
@@ -76,8 +76,6 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
-
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   assertPresent(goal.space);
   assertPresent(goal.privacy);
@@ -157,6 +155,8 @@ function Page() {
   const parentGoalSearch = useParentGoalSearch(goal);
   const spaceSearch = useSpaceSearch();
 
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
+
   const checklists = useChecklists({ goalId: goal.id!, initialChecklist: goal.checklist! });
 
   const deleteGoal = async () => {
@@ -219,8 +219,8 @@ function Page() {
     discussions: prepareDiscussions(paths, discussions),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
-    mentionedPersonLookup,
-    peopleSearch,
+
+    richTextHandlers: richEditorHandlers,
 
     addTarget: function (inputs): Promise<{ id: string; success: boolean }> {
       return Api.goals
@@ -370,10 +370,6 @@ function prepareTargets(targets: Target[] | null | undefined): GoalPage.Props["t
     };
   });
 }
-
-const peopleSearch = async () => {
-  return [];
-};
 
 interface usePageFieldProps<T> {
   value: (LoaderResult) => T;

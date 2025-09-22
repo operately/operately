@@ -1,29 +1,26 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import * as Types from "../../TaskBoard/types";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import RichContent, { countCharacters, isContentEmpty, shortenContent } from "../../RichContent";
 import { Editor, MentionedPersonLookupFn, useEditor } from "../../RichEditor";
+import { RichEditorHandlers } from "../../RichEditor/useEditor";
 
 interface Props {
   description?: any;
   onDescriptionChange?: (newDescription: any) => Promise<boolean>;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
+  richDescriptionHandlers: RichEditorHandlers;
   canEdit: boolean;
 }
 
 export function MilestoneDescription({
   description,
   onDescriptionChange,
-  mentionedPersonLookup,
-  peopleSearch,
   canEdit,
+  richDescriptionHandlers,
 }: Props) {
   const descriptionState = useMilestoneDescriptionState({
     description,
     onDescriptionChange,
-    mentionedPersonLookup,
-    peopleSearch,
+    richDescriptionHandlers,
   });
 
   if (descriptionState.mode === "zero" && !canEdit) return null;
@@ -152,13 +149,11 @@ interface MilestoneDescriptionState {
 function useMilestoneDescriptionState({
   description: initialDescription,
   onDescriptionChange,
-  mentionedPersonLookup,
-  peopleSearch,
+  richDescriptionHandlers,
 }: {
   description?: any;
   onDescriptionChange?: (newDescription: any) => Promise<boolean>;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: (params: { query: string }) => Promise<Types.Person[]>;
+  richDescriptionHandlers: RichEditorHandlers,
 }): MilestoneDescriptionState {
   const initialMode = isContentEmpty(initialDescription) ? "zero" : "view";
 
@@ -169,39 +164,11 @@ function useMilestoneDescriptionState({
     setDescription(initialDescription || null);
   }, [initialDescription]);
 
-  // Convert TaskBoard Person to RichEditor Person format
-  const editorMentionLookup = async (id: string) => {
-    const person = await mentionedPersonLookup?.(id);
-    if (!person) return null;
-
-    return {
-      id: person.id,
-      fullName: person.fullName,
-      avatarUrl: person.avatarUrl,
-      title: "", // TaskBoard Person doesn't have title
-      profileLink: `/people/${person.id}`, // Generate profile link
-    };
-  };
-
-  // Convert TaskBoard peopleSearch to RichEditor format
-  const editorPeopleSearch = async (params: { query: string }) => {
-    if (!peopleSearch) return [];
-    const people = await peopleSearch(params);
-    return people.map((person) => ({
-      id: person.id,
-      fullName: person.fullName,
-      avatarUrl: person.avatarUrl,
-      title: "", // TaskBoard Person doesn't have title
-      profileLink: `/people/${person.id}`, // Generate profile link
-    }));
-  };
-
   const editor = useEditor({
     content: initialDescription,
     editable: true,
     placeholder: "Describe the milestone...",
-    mentionedPersonLookup: editorMentionLookup,
-    peopleSearch: editorPeopleSearch,
+    handlers: richDescriptionHandlers,
   });
 
   const save = useCallback(async () => {
@@ -239,7 +206,7 @@ function useMilestoneDescriptionState({
     description,
     mode,
     editor,
-    mentionedPersonLookup,
+    mentionedPersonLookup: richDescriptionHandlers.mentionedPersonLookup,
     startEdit,
     setMode,
     setDescription,

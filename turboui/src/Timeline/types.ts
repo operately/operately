@@ -1,8 +1,7 @@
 import { DateField } from "../DateField";
 import { Person, Comment, MilestoneActivity } from "../CommentSection/types";
 import { Status } from "../TaskBoard/types";
-import { MentionedPersonLookupFn } from "../RichEditor";
-import { SearchFn } from "../RichEditor/extensions/MentionPeople";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export type ActivityPageContext = "task" | "milestone";
 
@@ -147,9 +146,8 @@ export interface TimelineProps {
   commentParentType: string;
   onAddComment?: (content: any) => void;
   onEditComment?: (id: string, content: any) => void;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: SearchFn;
   filters?: TimelineFilters;
+  richTextHandlers: RichEditorHandlers;
 }
 
 export interface TimelineFilters {
@@ -168,8 +166,7 @@ export interface TimelineItemProps {
   canComment: boolean;
   commentParentType: string;
   onEditComment?: (id: string, content: any) => void;
-  mentionedPersonLookup?: MentionedPersonLookupFn;
-  peopleSearch?: SearchFn;
+  richTextHandlers: RichEditorHandlers;
 }
 
 // Activity component props

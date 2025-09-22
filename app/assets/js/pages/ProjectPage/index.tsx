@@ -12,7 +12,6 @@ import * as Time from "@/utils/time";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageCache } from "@/routes/PageCache";
 import { ProjectPage, showErrorToast } from "turboui";
-import { useMentionedPersonLookupFn } from "../../contexts/CurrentCompanyContext";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
@@ -23,6 +22,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
+import { useRichEditorHandlers } from "@/features/richtexteditor";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -76,8 +76,6 @@ function Page() {
   const { data, refresh } = PageCache.useData(loader);
   const { project, checkIns, discussions, backendTasks, childrenCount } = data;
   const navigate = useNavigate();
-
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   useAiSidebar({
     conversationContext: {
@@ -159,10 +157,7 @@ function Page() {
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
 
-  const mentionedPersonSearch = People.usePersonFieldSearch({
-    scope: { type: "project", id: project.id },
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
-  });
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
 
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
@@ -273,8 +268,7 @@ function Page() {
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
     searchPeople: assigneeSearch,
 
-    mentionedPersonLookup,
-    mentionedPersonSearch,
+    richTextHandlers: richEditorHandlers,
 
     resources,
     onResourceAdd: createResource,

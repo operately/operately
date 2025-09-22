@@ -5,6 +5,7 @@ import { Avatar } from "../Avatar";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { MilestoneCompletedActivity, MilestoneReopenedActivity, AcknowledgmentActivity } from "./ActivityComponents";
 import * as types from "./types";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export namespace CommentSection {
   export type Comment = types.Comment;
@@ -17,6 +18,7 @@ export function CommentSection({
   commentParentType,
   canComment,
   currentUser,
+  richTextHandlers,
 }: types.CommentSectionProps & { currentUser: types.Person }) {
   return (
     <div className="flex flex-col">
@@ -30,6 +32,7 @@ export function CommentSection({
               commentParentType={commentParentType}
               canComment={canComment}
               currentUser={currentUser}
+              richTextHandlers={richTextHandlers}
             />
           );
         } else if (item.type === "milestone-completed") {
@@ -42,7 +45,7 @@ export function CommentSection({
         return null;
       })}
 
-      {canComment && <CommentInput form={form} currentUser={currentUser} />}
+      {canComment && <CommentInput form={form} currentUser={currentUser} richTextHandlers={richTextHandlers} />}
     </div>
   );
 }
@@ -53,12 +56,14 @@ function CommentWrapper({
   commentParentType,
   canComment,
   currentUser,
+  richTextHandlers,
 }: {
   comment: types.Comment;
   form: types.CommentSectionProps["form"];
   commentParentType: string;
   canComment: boolean;
   currentUser: types.Person;
+  richTextHandlers: RichEditorHandlers;
 }) {
   const [editing, setEditing] = useState(false);
 
@@ -84,6 +89,7 @@ function CommentWrapper({
       canComment={canComment}
       currentUserId={currentUser.id}
       onEdit={handleEdit}
+      richTextHandlers={richTextHandlers}
     />
   );
 }

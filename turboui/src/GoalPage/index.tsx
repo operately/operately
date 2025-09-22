@@ -9,7 +9,6 @@ import { IconClipboardText, IconLogs, IconMessage, IconMessages } from "../icons
 import { DateField } from "../DateField";
 import { MoveModal } from "../Modal/MoveModal";
 import { PrivacyField } from "../PrivacyField";
-import { MentionedPersonLookupFn } from "../RichEditor";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
 import { BadgeStatus } from "../StatusBadge/types";
 import { Tabs, useTabs } from "../Tabs";
@@ -19,6 +18,7 @@ import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
+import { RichEditorHandlers } from "../RichEditor/useEditor";
 
 export namespace GoalPage {
   export interface Space {
@@ -129,8 +129,6 @@ export namespace GoalPage {
 
     neglectedGoal: boolean;
 
-    mentionedPersonLookup: MentionedPersonLookupFn;
-    peopleSearch: SearchFn;
     championSearch: SearchFn;
     reviewerSearch: SearchFn;
 
@@ -154,6 +152,9 @@ export namespace GoalPage {
 
     deleteModalOpen?: boolean;
     moveModealOpen?: boolean;
+
+    // Rich text support
+    richTextHandlers: RichEditorHandlers;
   }
 
   export interface State extends Props {

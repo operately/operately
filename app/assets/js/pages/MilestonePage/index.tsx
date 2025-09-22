@@ -14,7 +14,7 @@ import { showErrorToast, MilestonePage, CommentSection } from "turboui";
 import { Paths, usePaths } from "@/routes/paths";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
-import { useMe, useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 import { assertPresent } from "@/utils/assertions";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { PageModule } from "@/routes/types";
@@ -22,6 +22,7 @@ import { parseContextualDate, serializeContextualDate } from "@/models/contextua
 import { projectPageCacheKey } from "../ProjectPage";
 import { useComments } from "./useComments";
 import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
+import { useRichEditorHandlers } from "@/features/richtexteditor";
 
 export default { name: "MilestoneV2Page", loader, Page } as PageModule;
 
@@ -133,12 +134,7 @@ function Page() {
     }
   }, [milestone.id]);
 
-  const mentionedPeopleSearch = People.useMentionedPersonSearch({
-    scope: { type: "project", id: milestone.project.id },
-    transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
-  });
-
-  const mentionedPersonLookup = useMentionedPersonLookupFn();
+  const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: milestone.project.id } });
 
   const assigneeSearch = usePersonFieldContributorsSearch({
     projectId: milestone.project.id,
@@ -195,8 +191,7 @@ function Page() {
     createdAt: Time.parseDate(milestone.insertedAt)!,
 
     // Rich text editor support
-    mentionedPersonLookup,
-    mentionedPeopleSearch,
+    richTextHandlers: richEditorHandlers,
   };
 
   return <MilestonePage key={milestone.id!} {...props} />;

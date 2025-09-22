@@ -9,6 +9,7 @@ import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
@@ -146,8 +147,6 @@ function Component(props: Partial<GoalPage.Props>) {
       startDate={startDate}
       setStartDate={setStartDate}
       canEdit={props.canEdit ?? true}
-      mentionedPersonLookup={async (_id: string) => null}
-      peopleSearch={searchPeopleFn}
       championSearch={searchPeopleFn}
       reviewerSearch={searchPeopleFn}
       activityFeed={<div></div>}
@@ -159,6 +158,7 @@ function Component(props: Partial<GoalPage.Props>) {
       updateTargetIndex={async (_id, _index) => true}
       {...checklistHandlers}
       deleteGoal={deleteGoal}
+      richTextHandlers={createMockRichEditorHandlers()}
     />
   );
 }

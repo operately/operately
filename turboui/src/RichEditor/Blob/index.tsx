@@ -24,6 +24,7 @@ export function isUploadInProgress(doc: any) {
 
 interface BlobOptions {
   uploadFile?: UploadFileFn;
+  editable?: boolean;
 }
 
 const BlobExtension = Node.create<BlobOptions>({
@@ -73,7 +74,11 @@ const BlobExtension = Node.create<BlobOptions>({
   },
 
   addProseMirrorPlugins() {
-    const uploadFile = this.options.uploadFile;
+    const { uploadFile, editable } = this.options;
+
+    if (!editable) {
+      return [PasteHtmlImagesPlugin];
+    }
 
     if (!uploadFile) {
       console.warn("BlobExtension: uploadFile function not provided. File upload functionality will be disabled.");

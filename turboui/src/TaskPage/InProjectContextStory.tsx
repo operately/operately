@@ -17,10 +17,10 @@ import {
   mockMilestones,
   mockTaskPeople,
   searchMilestones,
-  searchRichEditorPeople,
   searchTaskPeople,
   timelinePeople,
 } from "./mockData";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 const people = genPeople(5);
 
@@ -198,8 +198,7 @@ export function InProjectContextStory() {
               // Search functionality
               searchPeople={searchTaskPeople}
               searchMilestones={searchMilestones}
-              mentionedPeopleSearch={searchRichEditorPeople}
-              mentionedPersonLookup={mockMentionedPersonLookup}
+              richTextHandlers={createMockRichEditorHandlers()}
               // Permissions
               canEdit={true}
               // Timeline data
