@@ -1,17 +1,22 @@
 defmodule Operately.Activities.Notifications.ProjectCheckInAcknowledged do
-  alias Operately.Projects
+  alias Operately.{Projects, Repo}
 
   def dispatch(activity) do
-    project_id = activity.content["project_id"]
-    project = Projects.get_project!(project_id)
-    person = Projects.get_person_by_role(project, :champion)
+    check_in =
+      activity.content["check_in_id"]
+      |> Projects.get_check_in!()
+      |> Repo.preload(:author)
 
-    notifications = [%{
-      person_id: person.id,
-      activity_id: activity.id,
-      should_send_email: true,
-    }]
-
-    Operately.Notifications.bulk_create(notifications)
+    case check_in.author do
+      nil -> :ok
+      author ->
+        Operately.Notifications.bulk_create([
+          %{
+            person_id: author.id,
+            activity_id: activity.id,
+            should_send_email: true,
+          }
+        ])
+    end
   end
 end
