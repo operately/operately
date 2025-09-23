@@ -38,7 +38,8 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx
     |> Steps.submit_check_in(values)
-    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.log_in_as_reviewer()
+    |> Steps.open_check_in_from_notifications()
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
     |> Steps.assert_acknowledgement_email_sent_to_champion(values)
@@ -60,7 +61,8 @@ defmodule Operately.Features.ProjectCheckInsTest do
 
     ctx
     |> Steps.submit_check_in(values)
-    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.log_in_as_reviewer()
+    |> Steps.open_check_in_from_notifications()
     |> Steps.leave_comment_on_check_in()
     |> Steps.assert_check_in_comment_visible_on_feed()
     |> Steps.assert_comment_on_check_in_received_in_notifications()
@@ -85,7 +87,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.log_in_as_reviewer()
     |> Steps.submit_check_in(values)
     |> Steps.log_in_as_champion()
-    |> Steps.open_check_in_from_notifications(Map.put(values, :open_as, :champion))
+    |> Steps.open_check_in_from_notifications()
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
   end
@@ -94,9 +96,9 @@ defmodule Operately.Features.ProjectCheckInsTest do
     values = %{status: "caution", description: "Check-in posted by champion."}
 
     ctx
-    |> Steps.submit_check_in(values)  # Champion submits (default login)
+    |> Steps.submit_check_in(values)
     |> Steps.log_in_as_reviewer()
-    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.open_check_in_from_notifications()
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
   end
