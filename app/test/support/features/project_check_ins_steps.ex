@@ -128,7 +128,13 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :assert_check_in_acknowledged, ctx, %{status: _status, description: _description} do
-    person = ctx.last_acknowledged_by
+    person =
+      ctx.last_acknowledged_by
+      |> case do
+        nil -> Map.get(ctx, :current_user)
+        other -> other
+      end
+      |> resolve_acknowledger(ctx)
 
     ctx |> UI.assert_text("#{person.full_name} acknowledged this Check-In")
   end
@@ -143,6 +149,21 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
       author: ctx.reviewer
     })
   end
+
+  step :assert_acknowledgement_email_sent_to_reviewer, ctx, %{status: _status, description: _description} do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "acknowledged your check-in",
+      author: ctx.champion
+    })
+  end
+
+  defp resolve_acknowledger(%Operately.People.Person{} = person, _ctx), do: person
+  defp resolve_acknowledger(%{id: id}, _ctx), do: Operately.People.get_person!(id)
+  defp resolve_acknowledger(id, _ctx) when is_binary(id), do: Operately.People.get_person!(id)
+  defp resolve_acknowledger(_, ctx), do: Operately.People.get_person!(ctx.reviewer.person_id)
 
   step :assert_acknowledgement_notification_sent_to_champion, ctx, %{status: _status, description: _description} do
     ctx
