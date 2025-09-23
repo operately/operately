@@ -1,12 +1,12 @@
-import * as React from "react";
 import * as People from "@/models/people";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
+import * as React from "react";
 
 import { PrimaryButton } from "turboui";
 
-import { useLoadedData, useRefresh } from "./loader";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
+import { useLoadedData, useRefresh } from "./loader";
 
 //
 // There are two ways in which the AckCTA component is used:
@@ -52,6 +52,9 @@ function showAcknowledgeButton(checkIn: ProjectCheckIns.ProjectCheckIn, me: Peop
   const permissions = checkIn.project?.permissions;
   if (!permissions?.canAcknowledgeCheckIn) return false;
 
+  const isAuthor = compareIds(checkIn.author!.id, me.id);
+  if (isAuthor) return false;
+
   const reviewer = checkIn.project?.reviewer;
   const champion = checkIn.project?.champion;
 
@@ -62,12 +65,12 @@ function showAcknowledgeButton(checkIn: ProjectCheckIns.ProjectCheckIn, me: Peop
 }
 
 function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoad: boolean) {
+  const me = useMe();
   const refresh = useRefresh();
   const [ack] = ProjectCheckIns.useAcknowledgeProjectCheckIn();
 
   const handleAck = async () => {
-    if (checkIn.acknowledgedAt) return;
-    if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return;
+    if (!showAcknowledgeButton(checkIn, me!)) return;
 
     await ack({ id: checkIn.id });
 

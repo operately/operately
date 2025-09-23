@@ -15,11 +15,11 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
 
   def call(conn, inputs) do
     Action.new()
-    |> run(:id, fn -> {:ok, inputs.id} end)
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: ctx.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
-    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, ctx.check_in, ctx.me.id, :can_acknowledge_check_in) end)
+    |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: inputs.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
+    |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.request_info.access_level, :can_acknowledge_check_in) end)
     |> run(:check_already_acknowledged, fn ctx -> check_already_acknowledged(ctx.check_in) end)
+    |> run(:check_not_the_author, fn ctx -> check_not_the_author(ctx.me, ctx.check_in) end)
     |> run(:operation, fn ctx -> Operately.Operations.ProjectCheckInAcknowledgement.run(ctx.me, ctx.check_in) end)
     |> run(:serialized, fn ctx -> {:ok, %{check_in: Serializer.serialize(ctx.operation, level: :essential)}} end)
     |> respond()
@@ -31,7 +31,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
       {:error, :id, _} -> {:error, :bad_request}
       {:error, :check_in, _} -> {:error, :not_found}
       {:error, :check_permissions, _} -> {:error, :forbidden}
-      {:error, :check_already_acknowledged, _} -> {:error, :bad_request}
       {:error, :operation, _} -> {:error, :internal_server_error}
       _ -> {:error, :internal_server_error}
     end
@@ -39,9 +38,17 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
 
   defp check_already_acknowledged(check_in) do
     if check_in.acknowledged_at do
-      {:error, :already_acknowledged}
+      {:error, :bad_request, "This check-in has already been acknowledged"}
     else
       {:ok, :can_acknowledge}
+    end
+  end
+
+  defp check_not_the_author(me, check_in) do
+    if me.id == check_in.author_id do
+      {:error, :bad_request, "Authors cannot acknowledge their own check-ins"}
+    else
+      {:ok, :not_the_author}
     end
   end
 end
