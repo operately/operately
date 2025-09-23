@@ -150,7 +150,7 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: Commen
 
   return (
     <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1">
-      <Editor editor={editor} hideBorder hideToolbar />
+      <Editor editor={editor} hideBorder />
       <div className="flex gap-2 p-2 mt-2">
         <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty}>
           Save
