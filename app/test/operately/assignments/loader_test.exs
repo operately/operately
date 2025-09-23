@@ -23,12 +23,12 @@ defmodule Operately.Assignments.LoaderTest do
     end
 
     test "returns all late projects", ctx do
-      [mine: mine, reports: []] = Loader.load(ctx.champion, ctx.company)
+      assignments = Loader.load(ctx.champion, ctx.company)
 
-      assert length(mine) == 2
+      assert length(assignments) == 2
 
-      assert Enum.find(mine, &(&1.resource_id == Paths.project_id(ctx.late_project1)))
-      assert Enum.find(mine, &(&1.resource_id == Paths.project_id(ctx.late_project2)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.late_project1)))
+      assert Enum.find(assignments, &(&1.resource_id == Paths.project_id(ctx.late_project2)))
     end
 
     test "doesn't return late projects to non-champions", ctx do
