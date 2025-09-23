@@ -12,6 +12,7 @@ defmodule TurboConnect.TsGen do
     #{generate_imports()}
     #{to_camel_case()}
     #{to_snake_case()}
+    #{Queries.define_query_cache_helpers()}
     #{Queries.define_generic_use_query_hook()}
     #{Mutations.define_generic_use_mutation_hook()}
     #{generate_types(api_module)}
@@ -68,6 +69,7 @@ defmodule TurboConnect.TsGen do
     export class ApiClient {
       private basePath: string;
       private headers: any;
+      private queryCache = new Map<string, QueryCacheEntry<any>>();
     #{namespace_definitions(api_module)}
 
       constructor() {
@@ -98,9 +100,49 @@ defmodule TurboConnect.TsGen do
       }
 
       // @ts-ignore
-      async get(path: string, params: any) {
-        const response = await axios.get(this.getBasePath() + path, { params: toSnake(params), headers: this.getHeaders() });
+      async get(path: string, params: any, cacheOptions?: QueryCacheOptions<any, any>) {
+        if (cacheOptions) {
+          const cacheKey = this.buildQueryCacheKey(path, params, cacheOptions);
+          const cached = this.queryCache.get(cacheKey);
+          const now = Date.now();
+
+          if (cached && cached.expiresAt > now) {
+            return cached.data;
+          }
+
+          if (cached) {
+            this.queryCache.delete(cacheKey);
+          }
+
+          const response = await axios.get(this.getBasePath() + path, {
+            params: toSnake(params),
+            headers: this.getHeaders(),
+          });
+          const data = toCamel(response.data);
+
+          const ttlMs = cacheOptions.ttlMs ?? 5000;
+          this.queryCache.set(cacheKey, { data, expiresAt: now + ttlMs });
+
+          return data;
+        }
+
+        const response = await axios.get(this.getBasePath() + path, {
+          params: toSnake(params),
+          headers: this.getHeaders(),
+        });
         return toCamel(response.data);
+      }
+
+      private buildQueryCacheKey(path: string, params: any, cacheOptions: QueryCacheOptions<any, any>) {
+        if (cacheOptions.key) {
+          return cacheOptions.key;
+        }
+
+        const serializedParams = cacheOptions.serialize
+          ? cacheOptions.serialize(params)
+          : JSON.stringify(params ?? {});
+
+        return `${path}:${serializedParams}`;
       }
 
     #{generate_root_namespace_delegators(api_module)}
