@@ -22,6 +22,7 @@ defmodule Operately.Support.Features.UI.UserSession do
     |> logout()
     |> UI.visit(login_url(person))
     |> UI.assert_has(testid: "company-home")
+    |> Map.put(:current_user, person)
   rescue
     e ->
       IO.inspect(e)
@@ -34,7 +35,9 @@ defmodule Operately.Support.Features.UI.UserSession do
     session = state.session
     session = clear_cookie(session, "_operately_key")
 
-    Map.put(state, :session, session)
+    state
+    |> Map.put(:session, session)
+    |> Map.delete(:current_user)
   end
 
   defp clear_cookie(session, key) do

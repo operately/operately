@@ -67,6 +67,62 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
       assert {200, res} = request(ctx.conn, check_in)
       assert_response(res, check_in)
     end
+
+    test "champions can acknowledge check-ins posted by reviewers", ctx do
+      # Create project where ctx.person is champion
+      # and ctx.creator is reviewer (who posts the check-in)
+      reviewer = person_fixture(%{company_id: ctx.company.id})
+
+      check_in =
+        create_project_and_check_ins(ctx,
+          champion_id: ctx.person.id,
+          reviewer_id: reviewer.id,
+          author_id: reviewer.id
+        )
+
+      assert {200, res} = request(ctx.conn, check_in)
+      assert_response(res, check_in)
+    end
+
+    test "reviewers can acknowledge check-ins posted by champions", ctx do
+      # Create project where ctx.person is reviewer
+      # and ctx.creator is champion (who posts the check-in)
+      champion = person_fixture(%{company_id: ctx.company.id})
+
+      check_in =
+        create_project_and_check_ins(ctx,
+          champion_id: champion.id,
+          reviewer_id: ctx.person.id,
+          author_id: champion.id
+        )
+
+      assert {200, res} = request(ctx.conn, check_in)
+      assert_response(res, check_in)
+    end
+
+    test "champions cannot acknowledge their own check-ins", ctx do
+      # ctx.person is the champion and also the author
+      check_in =
+        create_project_and_check_ins(ctx,
+          champion_id: ctx.person.id,
+          author_id: ctx.person.id
+        )
+
+      assert {403, res} = request(ctx.conn, check_in)
+      assert res.message == "You don't have permission to perform this action"
+    end
+
+    test "reviewers cannot acknowledge their own check-ins", ctx do
+      # ctx.person is the reviewer and also the author
+      check_in =
+        create_project_and_check_ins(ctx,
+          reviewer_id: ctx.person.id,
+          author_id: ctx.person.id
+        )
+
+      assert {403, res} = request(ctx.conn, check_in)
+      assert res.message == "You don't have permission to perform this action"
+    end
   end
 
   describe "acknowledge_project_check_in functionality" do
@@ -110,7 +166,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   end
 
   defp assert_response(res, check_in) do
-    check_in = Repo.reload(check_in) |> Repo.preload(:project)
+    check_in = Repo.reload(check_in) |> Repo.preload(project: [:champion, :reviewer])
 
     assert check_in.acknowledged_at
     assert check_in.acknowledged_by_id
@@ -133,7 +189,9 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
         })
       )
 
-    check_in_fixture(%{author_id: ctx.creator.id, project_id: project.id})
+    # Use the specified author_id or default to ctx.creator.id
+    author_id = Keyword.get(opts, :author_id, ctx.creator.id)
+    check_in_fixture(%{author_id: author_id, project_id: project.id})
   end
 
   defp add_person_to_space(ctx) do
