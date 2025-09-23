@@ -5,8 +5,8 @@ import { EditorState, Person } from "./useEditor";
 
 export const EditorContext = React.createContext<EditorState | null>(null);
 
-export function useUploadFile(): EditorState["editor"]["uploadFile"] {
-  return useEditorContext().editor.uploadFile;
+export function useUploadFile(): EditorState["uploadFile"] {
+  return useEditorContext().uploadFile;
 }
 
 export function usePerson(id: string): Person | null {
