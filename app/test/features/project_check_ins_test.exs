@@ -85,7 +85,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.log_in_as_reviewer()
     |> Steps.submit_check_in(values)
     |> Steps.log_in_as_champion()
-    |> Steps.open_check_in_from_notifications(values)
+    |> Steps.open_check_in_from_notifications(Map.put(values, :open_as, :champion))
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
   end

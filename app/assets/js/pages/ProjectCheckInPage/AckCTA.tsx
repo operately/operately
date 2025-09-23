@@ -48,14 +48,17 @@ export function AckCTA() {
 
 function showAcknowledgeButton(checkIn: ProjectCheckIns.ProjectCheckIn, me: People.Person) {
   if (checkIn.acknowledgedAt) return false;
-  if (!checkIn.project!.permissions!.canAcknowledgeCheckIn) return false;
 
-  const reviewer = checkIn.project!.reviewer;
-  if (!reviewer) return false;
+  const permissions = checkIn.project?.permissions;
+  if (!permissions?.canAcknowledgeCheckIn) return false;
 
-  if (!compareIds(reviewer.id, me.id)) return false;
+  const reviewer = checkIn.project?.reviewer;
+  const champion = checkIn.project?.champion;
 
-  return true;
+  const isReviewer = reviewer ? compareIds(reviewer.id, me.id) : false;
+  const isChampion = champion ? compareIds(champion.id, me.id) : false;
+
+  return isReviewer || isChampion;
 }
 
 function useAcknowledgeHandler(checkIn: ProjectCheckIns.ProjectCheckIn, ackOnLoad: boolean) {

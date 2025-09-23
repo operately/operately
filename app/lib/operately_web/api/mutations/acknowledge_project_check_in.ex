@@ -15,7 +15,7 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckIn do
 
   def call(conn, inputs) do
     Action.new()
-    |> run(:id, fn -> inputs.id end)
+    |> run(:id, fn -> {:ok, inputs.id} end)
     |> run(:me, fn -> find_me(conn) end)
     |> run(:check_in, fn ctx -> CheckIn.get(ctx.me, id: ctx.id, opts: [preload: [project: [:champion, :reviewer]]]) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.check_in.requester_access_level, ctx.check_in, ctx.me.id, :can_acknowledge_check_in) end)
