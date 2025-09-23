@@ -97,6 +97,12 @@ function Page() {
     validations: [(v) => (v.trim() === "" ? "Goal name cannot be empty" : null)],
   });
 
+  const [description, setDescription] = usePageField({
+    value: (data: { goal: Goal }) => data.goal.description && JSON.parse(data.goal.description),
+    update: (v) => Api.goals.updateDescription({ goalId: goal.id, description: JSON.stringify(v) }),
+    onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
+  });
+
   const [accessLevels, setAccessLevels] = usePageField({
     value: (data) => accessLevelsAsStrings(data.goal.accessLevels),
     update: (v) => Api.goals.updateAccessLevels({ goalId: goal.id!, accessLevels: accessLevelsAsNumbers(v) }),
@@ -211,7 +217,9 @@ function Page() {
     setReviewer,
     reviewerSearch,
 
-    description: goal.description && JSON.parse(goal.description),
+    description,
+    updateDescription: setDescription,
+
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
     targets: prepareTargets(goal.targets),
@@ -296,17 +304,6 @@ function Page() {
     toggleChecklistItem: checklists.toggle,
     updateChecklistItemIndex: checklists.updateIndex,
 
-    updateDescription: function (description: any | null): Promise<boolean> {
-      return Api.goals
-        .updateDescription({ goalId: goal.id!, description: JSON.stringify(description) })
-        .then(() => PageCache.invalidate(pageCacheKey(goal.id!)))
-        .then(() => true)
-        .catch((e) => {
-          console.error("Failed to update goal description", e);
-          return false;
-        });
-    },
-
     activityFeed: <GoalFeedItems goalId={goal.id!} />,
   };
 
@@ -379,7 +376,7 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, onSuccess, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
+function usePageField<T>({ value, update, onError, onSuccess, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -392,47 +389,52 @@ function usePageField<T>({ value, update, onError, onSuccess, validations }: use
     }
   }, [value, cacheVersion, stateVersion]);
 
-  const updateState = (newVal: T): void => {
-    // Run validations if provided
-    if (validations) {
-      for (const validate of validations) {
-        const error = validate(newVal);
+  const updateState = (newVal: T): Promise<boolean> => {
+    return new Promise((resolve) => {
+      // Run validations if provided
+      if (validations) {
+        for (const validate of validations) {
+          const error = validate(newVal);
 
-        if (error) {
-          console.error("Validation failed:", error);
-          console.log("Reverting to previous value", value(data));
-          setState(value(data)); // revert to previous value
-          onError?.(error);
-          return;
+          if (error) {
+            console.error("Validation failed:", error);
+            console.log("Reverting to previous value", value(data));
+            setState(value(data)); // revert to previous value
+            onError?.(error);
+            resolve(false);
+            return;
+          }
         }
       }
-    }
 
-    const oldVal = state;
+      const oldVal = state;
 
-    const successHandler = () => {
-      PageCache.invalidate(pageCacheKey(data.goal.id!));
-      onSuccess?.();
-    };
+      const successHandler = () => {
+        PageCache.invalidate(pageCacheKey(data.goal.id!));
+        onSuccess?.();
+        resolve(true);
+      };
 
-    const errorHandler = (error: any) => {
-      onError?.(error);
+      const errorHandler = (error: any) => {
+        onError?.(error);
 
-      console.error("API update failed", error);
-      setState(oldVal);
-    };
+        console.error("API update failed", error);
+        setState(oldVal);
+        resolve(false);
+      };
 
-    setState(newVal);
+      setState(newVal);
 
-    update(newVal)
-      .then((res) => {
-        if (res === true || (typeof res === "object" && res?.success)) {
-          successHandler();
-        } else {
-          errorHandler("Network Error");
-        }
-      })
-      .catch(errorHandler);
+      update(newVal)
+         .then((res) => {
+           if (res === true || (typeof res === "object" && res?.success !== false)) {
+             successHandler();
+           } else {
+             errorHandler("Network Error");
+           }
+         })
+         .catch(errorHandler);
+    });
   };
 
   return [state, updateState];
