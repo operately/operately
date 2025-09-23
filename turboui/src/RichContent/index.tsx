@@ -18,7 +18,10 @@ export default function RichContent({ content, className, mentionedPersonLookup 
   });
 
   React.useEffect(() => {
-    editor.setContent(content);
+    // Use setTimeout to avoid flushSync warning by deferring the update
+    setTimeout(() => {
+      editor.setContent(content);
+    }, 0);
   }, [content]);
 
   return <Content editor={editor} className={className} />;
