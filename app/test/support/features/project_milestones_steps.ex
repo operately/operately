@@ -26,6 +26,12 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     Map.put(ctx, :milestone, milestone)
   end
 
+  step :given_that_milestone_has_comment, ctx do
+    ctx
+    |> Map.put(:creator, ctx.champion)
+    |> Factory.add_comment(:comment, :milestone)
+  end
+
   step :visit_milestone_page, ctx do
     path = Paths.project_milestone_path(ctx.company, ctx.milestone)
     UI.visit(ctx, path)
@@ -152,11 +158,29 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.click_button("Cancel")
   end
 
-  step :leave_a_comment, ctx, comment do
+  step :post_comment, ctx, comment do
     ctx
-    |> UI.click(testid: "add-comment")
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      el
+      |> UI.click_text("Write a comment here...")
+      |> UI.fill_rich_text(comment)
+      |> UI.click_button("Post")
+    end)
+    |> UI.refute_has(testid: "new-comment-form")
+    |> UI.sleep(300)
+  end
+
+  step :edit_comment, ctx, comment do
+    id =
+      Repo.preload(ctx.comment, :comment).comment
+      |> OperatelyWeb.Paths.comment_id()
+
+    ctx
+    |> UI.click(testid: UI.testid(["comment-menu", id]))
+    |> UI.click(testid: UI.testid(["edit", id]))
     |> UI.fill_rich_text(comment)
-    |> UI.click(testid: "post-comment")
+    |> UI.click_button("Save")
+    |> UI.refute_has(testid: "edit-comment-form")
     |> UI.sleep(300)
   end
 
@@ -164,9 +188,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   # Assertions
   #
 
+  step :assert_comment, ctx, comment do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      UI.assert_text(el, comment)
+    end)
+  end
+
   step :assert_comment_visible_in_feed, ctx, comment do
     ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el
       |> FeedSteps.assert_project_milestone_commented(author: ctx.champion, milestone_tile: ctx.milestone.title, comment: comment)

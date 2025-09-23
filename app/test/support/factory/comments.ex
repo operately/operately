@@ -5,7 +5,19 @@ defmodule Operately.Support.Factory.Comments do
     creator = Keyword.get(opts, :creator, ctx.creator)
     entity_type = find_entity_type(ctx[parent_name])
 
-    {:ok, comment} = Operately.Operations.CommentAdding.run(creator, ctx[parent_name], entity_type, RichText.rich_text("Content"))
+    content = Keyword.get(opts, :content, RichText.rich_text("Content"))
+
+    {:ok, comment} =
+      if entity_type == "project_milestone" do
+        Operately.Comments.create_milestone_comment(creator, ctx[parent_name], "none", %{
+          content: %{"message" => content},
+          author_id: creator.id,
+          entity_id: ctx[parent_name].id,
+          entity_type: :project_milestone,
+        })
+      else
+        Operately.Operations.CommentAdding.run(creator, ctx[parent_name], entity_type, content)
+      end
 
     Map.put(ctx, testid, comment)
   end
@@ -32,5 +44,6 @@ defmodule Operately.Support.Factory.Comments do
   defp find_entity_type(%Operately.ResourceHubs.Document{}), do: "resource_hub_document"
   defp find_entity_type(%Operately.ResourceHubs.File{}), do: "resource_hub_file"
   defp find_entity_type(%Operately.ResourceHubs.Link{}), do: "resource_hub_link"
+  defp find_entity_type(%Operately.Projects.Milestone{}), do: "project_milestone"
   defp find_entity_type(%Operately.Updates.Comment{}), do: "comment"
 end
