@@ -90,6 +90,7 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.open_check_in_from_notifications()
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
+    |> Steps.assert_acknowledgement_email_sent_to_reviewer(values)
   end
 
   feature "reviewer can acknowledge check-ins posted by champion", ctx do
@@ -101,5 +102,6 @@ defmodule Operately.Features.ProjectCheckInsTest do
     |> Steps.open_check_in_from_notifications()
     |> Steps.acknowledge_check_in()
     |> Steps.assert_check_in_acknowledged(values)
+    |> Steps.assert_acknowledgement_email_sent_to_champion(values)
   end
 end
