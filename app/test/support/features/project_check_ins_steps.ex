@@ -1,7 +1,6 @@
 defmodule Operately.Support.Features.ProjectCheckInsSteps do
   use Operately.FeatureCase
 
-  alias Operately.People.Person
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
