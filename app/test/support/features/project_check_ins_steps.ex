@@ -34,7 +34,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :log_in_as_champion, ctx do
-    ctx |> UI.login_as(ctx.creator)
+    ctx
+    |> UI.login_as(ctx.creator)
+  end
+
+  step :log_in_as_reviewer, ctx do
+    person = Operately.People.get_person!(ctx.reviewer.person_id)
+
+    ctx |> UI.login_as(person)
   end
 
   step :submit_check_in, ctx, %{status: status, description: description} do
@@ -105,22 +112,23 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     })
   end
 
-  step :open_check_in_from_notifications, ctx, %{status: _status, description: _description} do
+  step :open_check_in_from_notifications, ctx do
     ctx
-    |> Factory.log_in_contributor(:reviewer)
     |> NotificationsSteps.visit_notifications_page()
     |> UI.click(testid: "notification-item-project_check_in_submitted")
   end
 
   step :acknowledge_check_in, ctx do
+    acknowledged_by = Map.get(ctx, :current_user)
+
     ctx
     |> UI.click(testid: "acknowledge-check-in")
-    # Wait for the check-in to be acknowledged
     |> UI.sleep(300)
+    |> Map.put(:last_acknowledged_by, acknowledged_by)
   end
 
   step :assert_check_in_acknowledged, ctx, %{status: _status, description: _description} do
-    person = Operately.People.get_person!(ctx.reviewer.person_id)
+    person = ctx.last_acknowledged_by
 
     ctx |> UI.assert_text("#{person.full_name} acknowledged this Check-In")
   end
@@ -160,10 +168,13 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   step :acknowledge_check_in_from_email, ctx, %{status: _status, description: _description} do
     ctx = Factory.log_in_contributor(ctx, :reviewer)
+    person = Operately.People.get_person!(ctx.reviewer.person_id)
     email = UI.Emails.last_sent_email()
     link = UI.Emails.find_link(email, "Acknowledge")
 
-    UI.visit(ctx, link)
+    ctx
+    |> UI.visit(link)
+    |> Map.put(:last_acknowledged_by, person)
   end
 
   step :leave_comment_on_check_in, ctx do
