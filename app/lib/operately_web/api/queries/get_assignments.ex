@@ -4,7 +4,6 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
 
   alias Operately.Assignments.Loader
 
-
   outputs do
     field? :assignments, list_of(:review_assignment), null: true
   end
@@ -13,8 +12,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
     company = company(conn)
     me = me(conn)
 
-    [mine: my_assignments, reports: _] = Loader.load(me, company)
+    assignments = Loader.load(me, company)
 
-    {:ok, %{assignments: Serializer.serialize(my_assignments)}}
+    {:ok, %{assignments: Serializer.serialize(assignments)}}
   end
 end
