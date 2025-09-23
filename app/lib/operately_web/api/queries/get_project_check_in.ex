@@ -49,7 +49,7 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
     Inputs.parse_includes(inputs, [
       include_author: [:author],
       include_acknowledged_by: [:acknowledged_by],
-      include_project: [project: [:reviewer, [contributors: :person]]],
+      include_project: [project: [:champion, :reviewer, [contributors: :person]]],
       include_reactions: [reactions: :person],
       include_subscriptions_list: :subscription_list,
     ])
