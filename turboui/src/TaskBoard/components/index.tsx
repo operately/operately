@@ -40,6 +40,7 @@ export function TaskBoard({
   onFiltersChange,
 }: Types.TaskBoardProps) {
   const [internalTasks, setInternalTasks] = useState<Types.Task[]>(externalTasks);
+  const [internalMilestones, setInternalMilestones] = useState<Types.Milestone[]>(externalMilestones);
   const [isTaskModalOpen, setIsTaskModalOpen] = useState(false);
   const [isMilestoneModalOpen, setIsMilestoneModalOpen] = useState(false);
   const [activeTaskMilestoneId, setActiveTaskMilestoneId] = useState<string | undefined>();
@@ -56,17 +57,21 @@ export function TaskBoard({
     setInternalTasks(externalTasks);
   }, [externalTasks]);
 
+  useEffect(() => {
+    setInternalMilestones(externalMilestones);
+  }, [externalMilestones]);
+
   // Apply filters to tasks and track hidden tasks
   const { filteredTasks, hiddenTasksByMilestone, hiddenTasks, showHiddenTasksToggle } = useFilteredTasks(
     internalTasks,
-    externalMilestones,
+    internalMilestones,
     filters,
   );
 
   const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
   const milestones = useMemo(
-    () => getMilestonesWithStats(externalMilestones, internalTasks),
-    [externalMilestones, internalTasks],
+    () => getMilestonesWithStats(internalMilestones, internalTasks),
+    [internalMilestones, internalTasks],
   );
   const showNoTasksMsg = milestones.length === 0 && hiddenTasks.length === 0 && filteredTasks.length === 0;
 
@@ -122,12 +127,24 @@ export function TaskBoard({
       <MilestoneCreationModal
         isOpen={isMilestoneModalOpen}
         onClose={() => setIsMilestoneModalOpen(false)}
-        onCreateMilestone={(attrs) => onMilestoneCreate?.(attrs)}
+        onCreateMilestone={(attrs) => {
+          const newMilestone: Types.Milestone = {
+            id:
+              typeof globalThis.crypto !== "undefined" && typeof globalThis.crypto.randomUUID === "function"
+                ? globalThis.crypto.randomUUID()
+                : `temp-milestone-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+            ...attrs,
+          };
+
+          setInternalMilestones((previous) => [...previous, newMilestone]);
+          onMilestoneCreate?.(attrs);
+        }}
       />
 
       <StickyActionBar
         setActiveTaskMilestoneId={setActiveTaskMilestoneId}
         setIsTaskModalOpen={setIsTaskModalOpen}
+        setIsMilestoneModalOpen={setIsMilestoneModalOpen}
         onFiltersChange={onFiltersChange}
         filters={filters}
         internalTasks={internalTasks}
@@ -222,6 +239,7 @@ export function TaskBoard({
 interface ActionBarProps {
   setActiveTaskMilestoneId: (id: string | undefined) => void;
   setIsTaskModalOpen: (open: boolean) => void;
+  setIsMilestoneModalOpen: (open: boolean) => void;
   onFiltersChange?: (filters: Types.FilterCondition[]) => void;
   filters: Types.FilterCondition[];
   internalTasks: Types.Task[];
@@ -230,6 +248,7 @@ interface ActionBarProps {
 function StickyActionBar({
   setActiveTaskMilestoneId,
   setIsTaskModalOpen,
+  setIsMilestoneModalOpen,
   onFiltersChange,
   filters,
   internalTasks,
@@ -244,8 +263,12 @@ function StickyActionBar({
             setIsTaskModalOpen(true);
           }}
         >
-          + New task
+          New task
         </PrimaryButton>
+
+        <SecondaryButton size="xs" onClick={() => setIsMilestoneModalOpen(true)} testId="add-milestone">
+          New milestone
+        </SecondaryButton>
 
         {/* Filter widget */}
         {onFiltersChange && <TaskFilter filters={filters} onFiltersChange={onFiltersChange} tasks={internalTasks} />}
