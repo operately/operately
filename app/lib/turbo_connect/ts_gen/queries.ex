@@ -28,8 +28,8 @@ defmodule TurboConnect.TsGen.Queries do
         end
 
       """
-        async #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return this.client.get("#{path}", input);
+        async #{fn_name}(input: #{input_type}, options?: QueryOptions<#{input_type}, #{result_type}>): Promise<#{result_type}> {
+          return this.client.get("#{path}", input, options?.cache);
         }
       """
     end)
@@ -45,8 +45,8 @@ defmodule TurboConnect.TsGen.Queries do
       result_type = ts_type(fullname) <> "Result"
 
       """
-        #{fn_name}(input: #{input_type}): Promise<#{result_type}> {
-          return this.apiNamespaceRoot.#{fn_name}(input);
+        #{fn_name}(input: #{input_type}, options?: QueryOptions<#{input_type}, #{result_type}>): Promise<#{result_type}> {
+          return this.apiNamespaceRoot.#{fn_name}(input, options);
         }
       """
     end)
@@ -61,8 +61,8 @@ defmodule TurboConnect.TsGen.Queries do
       fn_name = ts_function_name(name)
 
       """
-      export function use#{ts_type(name)}(input: #{input_type}) : UseQueryHookResult<#{result_type}> {
-        return useQuery<#{result_type}>(() => defaultApiClient.#{fn_name}(input));
+      export function use#{ts_type(name)}(input: #{input_type}, options?: QueryOptions<#{input_type}, #{result_type}>) : UseQueryHookResult<#{result_type}> {
+        return useQuery<#{result_type}>(() => defaultApiClient.#{fn_name}(input, options));
       }
       """
     end)
@@ -74,8 +74,8 @@ defmodule TurboConnect.TsGen.Queries do
     |> Enum.map_join("\n", fn {name, _query} ->
       Enum.join(
         [
-          "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input) : Promise<#{ts_type(name)}Result> {",
-          "  return defaultApiClient.#{ts_function_name(name)}(input);",
+          "export async function #{ts_function_name(name)}(input: #{ts_type(name)}Input, options?: QueryOptions<#{ts_type(name)}Input, #{ts_type(name)}Result>) : Promise<#{ts_type(name)}Result> {",
+          "  return defaultApiClient.#{ts_function_name(name)}(input, options);",
           "}"
         ],
         "\n"
@@ -89,6 +89,22 @@ defmodule TurboConnect.TsGen.Queries do
     |> Enum.map_join("\n", fn {name, _query} ->
       "  #{ts_function_name(name)},\n  use#{ts_type(name)},"
     end)
+  end
+
+  def define_query_cache_helpers do
+    """
+    type QueryCacheEntry<ResultT> = { data: ResultT; expiresAt: number };
+
+    export type QueryCacheOptions<InputT, ResultT> = {
+      ttlMs?: number;
+      key?: string;
+      serialize?: (input: InputT) => string;
+    };
+
+    export type QueryOptions<InputT, ResultT> = {
+      cache?: QueryCacheOptions<InputT, ResultT>;
+    };
+    """
   end
 
   def define_generic_use_query_hook do

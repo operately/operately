@@ -57,6 +57,18 @@ function toSnake(o: any) {
   return newO;
 }
 
+type QueryCacheEntry<ResultT> = { data: ResultT; expiresAt: number };
+
+export type QueryCacheOptions<InputT, ResultT> = {
+  ttlMs?: number;
+  key?: string;
+  serialize?: (input: InputT) => string;
+};
+
+export type QueryOptions<InputT, ResultT> = {
+  cache?: QueryCacheOptions<InputT, ResultT>;
+};
+
 type UseQueryHookResult<ResultT> = { data: ResultT | null; loading: boolean; error: Error | null; refetch: () => void };
 
 export function useQuery<ResultT>(fn: () => Promise<ResultT>): UseQueryHookResult<ResultT> {
@@ -4172,192 +4184,197 @@ export interface UpdateTaskStatusResult {
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
-  async getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-    return this.client.get("/get_account", input);
+  async getAccount(input: GetAccountInput, options?: QueryOptions<GetAccountInput, GetAccountResult>): Promise<GetAccountResult> {
+    return this.client.get("/get_account", input, options?.cache);
   }
 
-  async getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.client.get("/get_activities", input);
+  async getActivities(input: GetActivitiesInput, options?: QueryOptions<GetActivitiesInput, GetActivitiesResult>): Promise<GetActivitiesResult> {
+    return this.client.get("/get_activities", input, options?.cache);
   }
 
-  async getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-    return this.client.get("/get_activity", input);
+  async getActivity(input: GetActivityInput, options?: QueryOptions<GetActivityInput, GetActivityResult>): Promise<GetActivityResult> {
+    return this.client.get("/get_activity", input, options?.cache);
   }
 
-  async getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.client.get("/get_assignments", input);
+  async getAssignments(input: GetAssignmentsInput, options?: QueryOptions<GetAssignmentsInput, GetAssignmentsResult>): Promise<GetAssignmentsResult> {
+    return this.client.get("/get_assignments", input, options?.cache);
   }
 
-  async getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.client.get("/get_assignments_count", input);
+  async getAssignmentsCount(input: GetAssignmentsCountInput, options?: QueryOptions<GetAssignmentsCountInput, GetAssignmentsCountResult>): Promise<GetAssignmentsCountResult> {
+    return this.client.get("/get_assignments_count", input, options?.cache);
   }
 
-  async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-    return this.client.get("/get_binded_people", input);
+  async getBindedPeople(input: GetBindedPeopleInput, options?: QueryOptions<GetBindedPeopleInput, GetBindedPeopleResult>): Promise<GetBindedPeopleResult> {
+    return this.client.get("/get_binded_people", input, options?.cache);
   }
 
-  async getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-    return this.client.get("/get_comments", input);
+  async getComments(input: GetCommentsInput, options?: QueryOptions<GetCommentsInput, GetCommentsResult>): Promise<GetCommentsResult> {
+    return this.client.get("/get_comments", input, options?.cache);
   }
 
-  async getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.client.get("/get_companies", input);
+  async getCompanies(input: GetCompaniesInput, options?: QueryOptions<GetCompaniesInput, GetCompaniesResult>): Promise<GetCompaniesResult> {
+    return this.client.get("/get_companies", input, options?.cache);
   }
 
-  async getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.client.get("/get_company", input);
+  async getCompany(input: GetCompanyInput, options?: QueryOptions<GetCompanyInput, GetCompanyResult>): Promise<GetCompanyResult> {
+    return this.client.get("/get_company", input, options?.cache);
   }
 
-  async getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-    return this.client.get("/get_discussion", input);
+  async getDiscussion(input: GetDiscussionInput, options?: QueryOptions<GetDiscussionInput, GetDiscussionResult>): Promise<GetDiscussionResult> {
+    return this.client.get("/get_discussion", input, options?.cache);
   }
 
-  async getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-    return this.client.get("/get_discussions", input);
+  async getDiscussions(input: GetDiscussionsInput, options?: QueryOptions<GetDiscussionsInput, GetDiscussionsResult>): Promise<GetDiscussionsResult> {
+    return this.client.get("/get_discussions", input, options?.cache);
   }
 
-  async getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
-    return this.client.get("/get_flat_work_map", input);
+  async getFlatWorkMap(input: GetFlatWorkMapInput, options?: QueryOptions<GetFlatWorkMapInput, GetFlatWorkMapResult>): Promise<GetFlatWorkMapResult> {
+    return this.client.get("/get_flat_work_map", input, options?.cache);
   }
 
-  async getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-    return this.client.get("/get_goal", input);
+  async getGoal(input: GetGoalInput, options?: QueryOptions<GetGoalInput, GetGoalResult>): Promise<GetGoalResult> {
+    return this.client.get("/get_goal", input, options?.cache);
   }
 
-  async getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-    return this.client.get("/get_goal_progress_update", input);
+  async getGoalProgressUpdate(input: GetGoalProgressUpdateInput, options?: QueryOptions<GetGoalProgressUpdateInput, GetGoalProgressUpdateResult>): Promise<GetGoalProgressUpdateResult> {
+    return this.client.get("/get_goal_progress_update", input, options?.cache);
   }
 
-  async getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-    return this.client.get("/get_goals", input);
+  async getGoals(input: GetGoalsInput, options?: QueryOptions<GetGoalsInput, GetGoalsResult>): Promise<GetGoalsResult> {
+    return this.client.get("/get_goals", input, options?.cache);
   }
 
-  async getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-    return this.client.get("/get_invitation", input);
+  async getInvitation(input: GetInvitationInput, options?: QueryOptions<GetInvitationInput, GetInvitationResult>): Promise<GetInvitationResult> {
+    return this.client.get("/get_invitation", input, options?.cache);
   }
 
-  async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-    return this.client.get("/get_key_resource", input);
+  async getKeyResource(input: GetKeyResourceInput, options?: QueryOptions<GetKeyResourceInput, GetKeyResourceResult>): Promise<GetKeyResourceResult> {
+    return this.client.get("/get_key_resource", input, options?.cache);
   }
 
-  async getMe(input: GetMeInput): Promise<GetMeResult> {
-    return this.client.get("/get_me", input);
+  async getMe(input: GetMeInput, options?: QueryOptions<GetMeInput, GetMeResult>): Promise<GetMeResult> {
+    return this.client.get("/get_me", input, options?.cache);
   }
 
-  async getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-    return this.client.get("/get_milestone", input);
+  async getMilestone(input: GetMilestoneInput, options?: QueryOptions<GetMilestoneInput, GetMilestoneResult>): Promise<GetMilestoneResult> {
+    return this.client.get("/get_milestone", input, options?.cache);
   }
 
-  async getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-    return this.client.get("/get_notifications", input);
+  async getNotifications(input: GetNotificationsInput, options?: QueryOptions<GetNotificationsInput, GetNotificationsResult>): Promise<GetNotificationsResult> {
+    return this.client.get("/get_notifications", input, options?.cache);
   }
 
-  async getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-    return this.client.get("/get_people", input);
+  async getPeople(input: GetPeopleInput, options?: QueryOptions<GetPeopleInput, GetPeopleResult>): Promise<GetPeopleResult> {
+    return this.client.get("/get_people", input, options?.cache);
   }
 
-  async getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-    return this.client.get("/get_person", input);
+  async getPerson(input: GetPersonInput, options?: QueryOptions<GetPersonInput, GetPersonResult>): Promise<GetPersonResult> {
+    return this.client.get("/get_person", input, options?.cache);
   }
 
-  async getProject(input: GetProjectInput): Promise<GetProjectResult> {
-    return this.client.get("/get_project", input);
+  async getProject(input: GetProjectInput, options?: QueryOptions<GetProjectInput, GetProjectResult>): Promise<GetProjectResult> {
+    return this.client.get("/get_project", input, options?.cache);
   }
 
-  async getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-    return this.client.get("/get_project_check_in", input);
+  async getProjectCheckIn(input: GetProjectCheckInInput, options?: QueryOptions<GetProjectCheckInInput, GetProjectCheckInResult>): Promise<GetProjectCheckInResult> {
+    return this.client.get("/get_project_check_in", input, options?.cache);
   }
 
-  async getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-    return this.client.get("/get_project_check_ins", input);
+  async getProjectCheckIns(input: GetProjectCheckInsInput, options?: QueryOptions<GetProjectCheckInsInput, GetProjectCheckInsResult>): Promise<GetProjectCheckInsResult> {
+    return this.client.get("/get_project_check_ins", input, options?.cache);
   }
 
-  async getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
-    return this.client.get("/get_project_contributor", input);
+  async getProjectContributor(input: GetProjectContributorInput, options?: QueryOptions<GetProjectContributorInput, GetProjectContributorResult>): Promise<GetProjectContributorResult> {
+    return this.client.get("/get_project_contributor", input, options?.cache);
   }
 
-  async getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
-    return this.client.get("/get_project_retrospective", input);
+  async getProjectRetrospective(input: GetProjectRetrospectiveInput, options?: QueryOptions<GetProjectRetrospectiveInput, GetProjectRetrospectiveResult>): Promise<GetProjectRetrospectiveResult> {
+    return this.client.get("/get_project_retrospective", input, options?.cache);
   }
 
-  async getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-    return this.client.get("/get_projects", input);
+  async getProjects(input: GetProjectsInput, options?: QueryOptions<GetProjectsInput, GetProjectsResult>): Promise<GetProjectsResult> {
+    return this.client.get("/get_projects", input, options?.cache);
   }
 
-  async getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-    return this.client.get("/get_resource_hub", input);
+  async getResourceHub(input: GetResourceHubInput, options?: QueryOptions<GetResourceHubInput, GetResourceHubResult>): Promise<GetResourceHubResult> {
+    return this.client.get("/get_resource_hub", input, options?.cache);
   }
 
-  async getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
-    return this.client.get("/get_resource_hub_document", input);
+  async getResourceHubDocument(input: GetResourceHubDocumentInput, options?: QueryOptions<GetResourceHubDocumentInput, GetResourceHubDocumentResult>): Promise<GetResourceHubDocumentResult> {
+    return this.client.get("/get_resource_hub_document", input, options?.cache);
   }
 
-  async getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-    return this.client.get("/get_resource_hub_file", input);
+  async getResourceHubFile(input: GetResourceHubFileInput, options?: QueryOptions<GetResourceHubFileInput, GetResourceHubFileResult>): Promise<GetResourceHubFileResult> {
+    return this.client.get("/get_resource_hub_file", input, options?.cache);
   }
 
-  async getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-    return this.client.get("/get_resource_hub_folder", input);
+  async getResourceHubFolder(input: GetResourceHubFolderInput, options?: QueryOptions<GetResourceHubFolderInput, GetResourceHubFolderResult>): Promise<GetResourceHubFolderResult> {
+    return this.client.get("/get_resource_hub_folder", input, options?.cache);
   }
 
-  async getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-    return this.client.get("/get_resource_hub_link", input);
+  async getResourceHubLink(input: GetResourceHubLinkInput, options?: QueryOptions<GetResourceHubLinkInput, GetResourceHubLinkResult>): Promise<GetResourceHubLinkResult> {
+    return this.client.get("/get_resource_hub_link", input, options?.cache);
   }
 
-  async getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-    return this.client.get("/get_space", input);
+  async getSpace(input: GetSpaceInput, options?: QueryOptions<GetSpaceInput, GetSpaceResult>): Promise<GetSpaceResult> {
+    return this.client.get("/get_space", input, options?.cache);
   }
 
-  async getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-    return this.client.get("/get_spaces", input);
+  async getSpaces(input: GetSpacesInput, options?: QueryOptions<GetSpacesInput, GetSpacesResult>): Promise<GetSpacesResult> {
+    return this.client.get("/get_spaces", input, options?.cache);
   }
 
-  async getTask(input: GetTaskInput): Promise<GetTaskResult> {
-    return this.client.get("/get_task", input);
+  async getTask(input: GetTaskInput, options?: QueryOptions<GetTaskInput, GetTaskResult>): Promise<GetTaskResult> {
+    return this.client.get("/get_task", input, options?.cache);
   }
 
-  async getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-    return this.client.get("/get_tasks", input);
+  async getTasks(input: GetTasksInput, options?: QueryOptions<GetTasksInput, GetTasksResult>): Promise<GetTasksResult> {
+    return this.client.get("/get_tasks", input, options?.cache);
   }
 
-  async getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
-    return this.client.get("/get_unread_notification_count", input);
+  async getUnreadNotificationCount(input: GetUnreadNotificationCountInput, options?: QueryOptions<GetUnreadNotificationCountInput, GetUnreadNotificationCountResult>): Promise<GetUnreadNotificationCountResult> {
+    return this.client.get("/get_unread_notification_count", input, options?.cache);
   }
 
-  async getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-    return this.client.get("/get_work_map", input);
+  async getWorkMap(input: GetWorkMapInput, options?: QueryOptions<GetWorkMapInput, GetWorkMapResult>): Promise<GetWorkMapResult> {
+    return this.client.get("/get_work_map", input, options?.cache);
   }
 
-  async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-    return this.client.get("/list_goal_contributors", input);
+  async listGoalContributors(input: ListGoalContributorsInput, options?: QueryOptions<ListGoalContributorsInput, ListGoalContributorsResult>): Promise<ListGoalContributorsResult> {
+    return this.client.get("/list_goal_contributors", input, options?.cache);
   }
 
-  async listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
-    return this.client.get("/list_possible_managers", input);
+  async listPossibleManagers(input: ListPossibleManagersInput, options?: QueryOptions<ListPossibleManagersInput, ListPossibleManagersResult>): Promise<ListPossibleManagersResult> {
+    return this.client.get("/list_possible_managers", input, options?.cache);
   }
 
-  async listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-    return this.client.get("/list_resource_hub_nodes", input);
+  async listResourceHubNodes(input: ListResourceHubNodesInput, options?: QueryOptions<ListResourceHubNodesInput, ListResourceHubNodesResult>): Promise<ListResourceHubNodesResult> {
+    return this.client.get("/list_resource_hub_nodes", input, options?.cache);
   }
 
-  async listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-    return this.client.get("/list_space_tools", input);
+  async listSpaceTools(input: ListSpaceToolsInput, options?: QueryOptions<ListSpaceToolsInput, ListSpaceToolsResult>): Promise<ListSpaceToolsResult> {
+    return this.client.get("/list_space_tools", input, options?.cache);
   }
 
-  async searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-    return this.client.get("/search_people", input);
+  async searchPeople(input: SearchPeopleInput, options?: QueryOptions<SearchPeopleInput, SearchPeopleResult>): Promise<SearchPeopleResult> {
+    return this.client.get("/search_people", input, options?.cache);
   }
 
   async searchPotentialSpaceMembers(
     input: SearchPotentialSpaceMembersInput,
+    options?: QueryOptions<SearchPotentialSpaceMembersInput, SearchPotentialSpaceMembersResult>,
   ): Promise<SearchPotentialSpaceMembersResult> {
-    return this.client.get("/search_potential_space_members", input);
+    return this.client.get("/search_potential_space_members", input, options?.cache);
   }
 
   async searchProjectContributorCandidates(
     input: SearchProjectContributorCandidatesInput,
+    options?: QueryOptions<
+      SearchProjectContributorCandidatesInput,
+      SearchProjectContributorCandidatesResult
+    >,
   ): Promise<SearchProjectContributorCandidatesResult> {
-    return this.client.get("/search_project_contributor_candidates", input);
+    return this.client.get("/search_project_contributor_candidates", input, options?.cache);
   }
 
   async acknowledgeGoalProgressUpdate(
@@ -4776,20 +4793,20 @@ class ApiNamespaceRoot {
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
 
-  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
-    return this.client.get("/spaces/search", input);
+  async search(input: SpacesSearchInput, options?: QueryOptions<SpacesSearchInput, SpacesSearchResult>): Promise<SpacesSearchResult> {
+    return this.client.get("/spaces/search", input, options?.cache);
   }
 }
 
 class ApiNamespaceProjectDiscussions {
   constructor(private client: ApiClient) {}
 
-  async get(input: ProjectDiscussionsGetInput): Promise<ProjectDiscussionsGetResult> {
-    return this.client.get("/project_discussions/get", input);
+  async get(input: ProjectDiscussionsGetInput, options?: QueryOptions<ProjectDiscussionsGetInput, ProjectDiscussionsGetResult>): Promise<ProjectDiscussionsGetResult> {
+    return this.client.get("/project_discussions/get", input, options?.cache);
   }
 
-  async list(input: ProjectDiscussionsListInput): Promise<ProjectDiscussionsListResult> {
-    return this.client.get("/project_discussions/list", input);
+  async list(input: ProjectDiscussionsListInput, options?: QueryOptions<ProjectDiscussionsListInput, ProjectDiscussionsListResult>): Promise<ProjectDiscussionsListResult> {
+    return this.client.get("/project_discussions/list", input, options?.cache);
   }
 
   async create(input: ProjectDiscussionsCreateInput): Promise<ProjectDiscussionsCreateResult> {
@@ -4804,8 +4821,8 @@ class ApiNamespaceProjectDiscussions {
 class ApiNamespaceProjectTasks {
   constructor(private client: ApiClient) {}
 
-  async list(input: ProjectTasksListInput): Promise<ProjectTasksListResult> {
-    return this.client.get("/project_tasks/list", input);
+  async list(input: ProjectTasksListInput, options?: QueryOptions<ProjectTasksListInput, ProjectTasksListResult>): Promise<ProjectTasksListResult> {
+    return this.client.get("/project_tasks/list", input, options?.cache);
   }
 
   async create(input: ProjectTasksCreateInput): Promise<ProjectTasksCreateResult> {
@@ -4850,8 +4867,8 @@ class ApiNamespaceProjectTasks {
 class ApiNamespaceProjectMilestones {
   constructor(private client: ApiClient) {}
 
-  async listTasks(input: ProjectMilestonesListTasksInput): Promise<ProjectMilestonesListTasksResult> {
-    return this.client.get("/project_milestones/list_tasks", input);
+  async listTasks(input: ProjectMilestonesListTasksInput, options?: QueryOptions<ProjectMilestonesListTasksInput, ProjectMilestonesListTasksResult>): Promise<ProjectMilestonesListTasksResult> {
+    return this.client.get("/project_milestones/list_tasks", input, options?.cache);
   }
 
   async delete(input: ProjectMilestonesDeleteInput): Promise<ProjectMilestonesDeleteResult> {
@@ -4876,20 +4893,20 @@ class ApiNamespaceProjectMilestones {
 class ApiNamespaceProjects {
   constructor(private client: ApiClient) {}
 
-  async countChildren(input: ProjectsCountChildrenInput): Promise<ProjectsCountChildrenResult> {
-    return this.client.get("/projects/count_children", input);
+  async countChildren(input: ProjectsCountChildrenInput, options?: QueryOptions<ProjectsCountChildrenInput, ProjectsCountChildrenResult>): Promise<ProjectsCountChildrenResult> {
+    return this.client.get("/projects/count_children", input, options?.cache);
   }
 
-  async getContributors(input: ProjectsGetContributorsInput): Promise<ProjectsGetContributorsResult> {
-    return this.client.get("/projects/get_contributors", input);
+  async getContributors(input: ProjectsGetContributorsInput, options?: QueryOptions<ProjectsGetContributorsInput, ProjectsGetContributorsResult>): Promise<ProjectsGetContributorsResult> {
+    return this.client.get("/projects/get_contributors", input, options?.cache);
   }
 
-  async getMilestones(input: ProjectsGetMilestonesInput): Promise<ProjectsGetMilestonesResult> {
-    return this.client.get("/projects/get_milestones", input);
+  async getMilestones(input: ProjectsGetMilestonesInput, options?: QueryOptions<ProjectsGetMilestonesInput, ProjectsGetMilestonesResult>): Promise<ProjectsGetMilestonesResult> {
+    return this.client.get("/projects/get_milestones", input, options?.cache);
   }
 
-  async parentGoalSearch(input: ProjectsParentGoalSearchInput): Promise<ProjectsParentGoalSearchResult> {
-    return this.client.get("/projects/parent_goal_search", input);
+  async parentGoalSearch(input: ProjectsParentGoalSearchInput, options?: QueryOptions<ProjectsParentGoalSearchInput, ProjectsParentGoalSearchResult>): Promise<ProjectsParentGoalSearchResult> {
+    return this.client.get("/projects/parent_goal_search", input, options?.cache);
   }
 
   async createMilestone(input: ProjectsCreateMilestoneInput): Promise<ProjectsCreateMilestoneResult> {
@@ -4928,16 +4945,16 @@ class ApiNamespaceProjects {
 class ApiNamespaceGoals {
   constructor(private client: ApiClient) {}
 
-  async getCheckIns(input: GoalsGetCheckInsInput): Promise<GoalsGetCheckInsResult> {
-    return this.client.get("/goals/get_check_ins", input);
+  async getCheckIns(input: GoalsGetCheckInsInput, options?: QueryOptions<GoalsGetCheckInsInput, GoalsGetCheckInsResult>): Promise<GoalsGetCheckInsResult> {
+    return this.client.get("/goals/get_check_ins", input, options?.cache);
   }
 
-  async getDiscussions(input: GoalsGetDiscussionsInput): Promise<GoalsGetDiscussionsResult> {
-    return this.client.get("/goals/get_discussions", input);
+  async getDiscussions(input: GoalsGetDiscussionsInput, options?: QueryOptions<GoalsGetDiscussionsInput, GoalsGetDiscussionsResult>): Promise<GoalsGetDiscussionsResult> {
+    return this.client.get("/goals/get_discussions", input, options?.cache);
   }
 
-  async parentGoalSearch(input: GoalsParentGoalSearchInput): Promise<GoalsParentGoalSearchResult> {
-    return this.client.get("/goals/parent_goal_search", input);
+  async parentGoalSearch(input: GoalsParentGoalSearchInput, options?: QueryOptions<GoalsParentGoalSearchInput, GoalsParentGoalSearchResult>): Promise<GoalsParentGoalSearchResult> {
+    return this.client.get("/goals/parent_goal_search", input, options?.cache);
   }
 
   async addCheck(input: GoalsAddCheckInput): Promise<GoalsAddCheckResult> {
@@ -5020,32 +5037,32 @@ class ApiNamespaceGoals {
 class ApiNamespaceAi {
   constructor(private client: ApiClient) {}
 
-  async getAgent(input: AiGetAgentInput): Promise<AiGetAgentResult> {
-    return this.client.get("/ai/get_agent", input);
+  async getAgent(input: AiGetAgentInput, options?: QueryOptions<AiGetAgentInput, AiGetAgentResult>): Promise<AiGetAgentResult> {
+    return this.client.get("/ai/get_agent", input, options?.cache);
   }
 
-  async getAgentRun(input: AiGetAgentRunInput): Promise<AiGetAgentRunResult> {
-    return this.client.get("/ai/get_agent_run", input);
+  async getAgentRun(input: AiGetAgentRunInput, options?: QueryOptions<AiGetAgentRunInput, AiGetAgentRunResult>): Promise<AiGetAgentRunResult> {
+    return this.client.get("/ai/get_agent_run", input, options?.cache);
   }
 
-  async getConversationMessages(input: AiGetConversationMessagesInput): Promise<AiGetConversationMessagesResult> {
-    return this.client.get("/ai/get_conversation_messages", input);
+  async getConversationMessages(input: AiGetConversationMessagesInput, options?: QueryOptions<AiGetConversationMessagesInput, AiGetConversationMessagesResult>): Promise<AiGetConversationMessagesResult> {
+    return this.client.get("/ai/get_conversation_messages", input, options?.cache);
   }
 
-  async getConversations(input: AiGetConversationsInput): Promise<AiGetConversationsResult> {
-    return this.client.get("/ai/get_conversations", input);
+  async getConversations(input: AiGetConversationsInput, options?: QueryOptions<AiGetConversationsInput, AiGetConversationsResult>): Promise<AiGetConversationsResult> {
+    return this.client.get("/ai/get_conversations", input, options?.cache);
   }
 
-  async listAgentRuns(input: AiListAgentRunsInput): Promise<AiListAgentRunsResult> {
-    return this.client.get("/ai/list_agent_runs", input);
+  async listAgentRuns(input: AiListAgentRunsInput, options?: QueryOptions<AiListAgentRunsInput, AiListAgentRunsResult>): Promise<AiListAgentRunsResult> {
+    return this.client.get("/ai/list_agent_runs", input, options?.cache);
   }
 
-  async listAgents(input: AiListAgentsInput): Promise<AiListAgentsResult> {
-    return this.client.get("/ai/list_agents", input);
+  async listAgents(input: AiListAgentsInput, options?: QueryOptions<AiListAgentsInput, AiListAgentsResult>): Promise<AiListAgentsResult> {
+    return this.client.get("/ai/list_agents", input, options?.cache);
   }
 
-  async prompt(input: AiPromptInput): Promise<AiPromptResult> {
-    return this.client.get("/ai/prompt", input);
+  async prompt(input: AiPromptInput, options?: QueryOptions<AiPromptInput, AiPromptResult>): Promise<AiPromptResult> {
+    return this.client.get("/ai/prompt", input, options?.cache);
   }
 
   async addAgent(input: AiAddAgentInput): Promise<AiAddAgentResult> {
@@ -5100,6 +5117,7 @@ class ApiNamespaceAi {
 export class ApiClient {
   private basePath: string;
   private headers: any;
+  private queryCache = new Map<string, QueryCacheEntry<any>>();
   public apiNamespaceRoot: ApiNamespaceRoot;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
@@ -5144,7 +5162,32 @@ export class ApiClient {
   }
 
   // @ts-ignore
-  async get(path: string, params: any) {
+  async get(path: string, params: any, cacheOptions?: QueryCacheOptions<any, any>) {
+    if (cacheOptions) {
+      const cacheKey = this.buildQueryCacheKey(path, params, cacheOptions);
+      const cached = this.queryCache.get(cacheKey);
+      const now = Date.now();
+
+      if (cached && cached.expiresAt > now) {
+        return cached.data;
+      }
+
+      if (cached) {
+        this.queryCache.delete(cacheKey);
+      }
+
+      const response = await axios.get(this.getBasePath() + path, {
+        params: toSnake(params),
+        headers: this.getHeaders(),
+      });
+      const data = toCamel(response.data);
+
+      const ttlMs = cacheOptions.ttlMs ?? 5000;
+      this.queryCache.set(cacheKey, { data, expiresAt: now + ttlMs });
+
+      return data;
+    }
+
     const response = await axios.get(this.getBasePath() + path, {
       params: toSnake(params),
       headers: this.getHeaders(),
@@ -5152,190 +5195,203 @@ export class ApiClient {
     return toCamel(response.data);
   }
 
-  getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-    return this.apiNamespaceRoot.getAccount(input);
+  private buildQueryCacheKey(path: string, params: any, cacheOptions: QueryCacheOptions<any, any>) {
+    if (cacheOptions.key) {
+      return cacheOptions.key;
+    }
+
+    const serializedParams = cacheOptions.serialize
+      ? cacheOptions.serialize(params)
+      : JSON.stringify(params ?? {});
+
+    return `${path}:${serializedParams}`;
   }
 
-  getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-    return this.apiNamespaceRoot.getActivities(input);
+  getAccount(input: GetAccountInput, options?: QueryOptions<GetAccountInput, GetAccountResult>): Promise<GetAccountResult> {
+    return this.apiNamespaceRoot.getAccount(input, options);
   }
 
-  getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-    return this.apiNamespaceRoot.getActivity(input);
+  getActivities(input: GetActivitiesInput, options?: QueryOptions<GetActivitiesInput, GetActivitiesResult>): Promise<GetActivitiesResult> {
+    return this.apiNamespaceRoot.getActivities(input, options);
   }
 
-  getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-    return this.apiNamespaceRoot.getAssignments(input);
+  getActivity(input: GetActivityInput, options?: QueryOptions<GetActivityInput, GetActivityResult>): Promise<GetActivityResult> {
+    return this.apiNamespaceRoot.getActivity(input, options);
   }
 
-  getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-    return this.apiNamespaceRoot.getAssignmentsCount(input);
+  getAssignments(input: GetAssignmentsInput, options?: QueryOptions<GetAssignmentsInput, GetAssignmentsResult>): Promise<GetAssignmentsResult> {
+    return this.apiNamespaceRoot.getAssignments(input, options);
   }
 
-  getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-    return this.apiNamespaceRoot.getBindedPeople(input);
+  getAssignmentsCount(input: GetAssignmentsCountInput, options?: QueryOptions<GetAssignmentsCountInput, GetAssignmentsCountResult>): Promise<GetAssignmentsCountResult> {
+    return this.apiNamespaceRoot.getAssignmentsCount(input, options);
   }
 
-  getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-    return this.apiNamespaceRoot.getComments(input);
+  getBindedPeople(input: GetBindedPeopleInput, options?: QueryOptions<GetBindedPeopleInput, GetBindedPeopleResult>): Promise<GetBindedPeopleResult> {
+    return this.apiNamespaceRoot.getBindedPeople(input, options);
   }
 
-  getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-    return this.apiNamespaceRoot.getCompanies(input);
+  getComments(input: GetCommentsInput, options?: QueryOptions<GetCommentsInput, GetCommentsResult>): Promise<GetCommentsResult> {
+    return this.apiNamespaceRoot.getComments(input, options);
   }
 
-  getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-    return this.apiNamespaceRoot.getCompany(input);
+  getCompanies(input: GetCompaniesInput, options?: QueryOptions<GetCompaniesInput, GetCompaniesResult>): Promise<GetCompaniesResult> {
+    return this.apiNamespaceRoot.getCompanies(input, options);
   }
 
-  getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-    return this.apiNamespaceRoot.getDiscussion(input);
+  getCompany(input: GetCompanyInput, options?: QueryOptions<GetCompanyInput, GetCompanyResult>): Promise<GetCompanyResult> {
+    return this.apiNamespaceRoot.getCompany(input, options);
   }
 
-  getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-    return this.apiNamespaceRoot.getDiscussions(input);
+  getDiscussion(input: GetDiscussionInput, options?: QueryOptions<GetDiscussionInput, GetDiscussionResult>): Promise<GetDiscussionResult> {
+    return this.apiNamespaceRoot.getDiscussion(input, options);
   }
 
-  getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
-    return this.apiNamespaceRoot.getFlatWorkMap(input);
+  getDiscussions(input: GetDiscussionsInput, options?: QueryOptions<GetDiscussionsInput, GetDiscussionsResult>): Promise<GetDiscussionsResult> {
+    return this.apiNamespaceRoot.getDiscussions(input, options);
   }
 
-  getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-    return this.apiNamespaceRoot.getGoal(input);
+  getFlatWorkMap(input: GetFlatWorkMapInput, options?: QueryOptions<GetFlatWorkMapInput, GetFlatWorkMapResult>): Promise<GetFlatWorkMapResult> {
+    return this.apiNamespaceRoot.getFlatWorkMap(input, options);
   }
 
-  getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-    return this.apiNamespaceRoot.getGoalProgressUpdate(input);
+  getGoal(input: GetGoalInput, options?: QueryOptions<GetGoalInput, GetGoalResult>): Promise<GetGoalResult> {
+    return this.apiNamespaceRoot.getGoal(input, options);
   }
 
-  getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-    return this.apiNamespaceRoot.getGoals(input);
+  getGoalProgressUpdate(input: GetGoalProgressUpdateInput, options?: QueryOptions<GetGoalProgressUpdateInput, GetGoalProgressUpdateResult>): Promise<GetGoalProgressUpdateResult> {
+    return this.apiNamespaceRoot.getGoalProgressUpdate(input, options);
   }
 
-  getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-    return this.apiNamespaceRoot.getInvitation(input);
+  getGoals(input: GetGoalsInput, options?: QueryOptions<GetGoalsInput, GetGoalsResult>): Promise<GetGoalsResult> {
+    return this.apiNamespaceRoot.getGoals(input, options);
   }
 
-  getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-    return this.apiNamespaceRoot.getKeyResource(input);
+  getInvitation(input: GetInvitationInput, options?: QueryOptions<GetInvitationInput, GetInvitationResult>): Promise<GetInvitationResult> {
+    return this.apiNamespaceRoot.getInvitation(input, options);
   }
 
-  getMe(input: GetMeInput): Promise<GetMeResult> {
-    return this.apiNamespaceRoot.getMe(input);
+  getKeyResource(input: GetKeyResourceInput, options?: QueryOptions<GetKeyResourceInput, GetKeyResourceResult>): Promise<GetKeyResourceResult> {
+    return this.apiNamespaceRoot.getKeyResource(input, options);
   }
 
-  getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-    return this.apiNamespaceRoot.getMilestone(input);
+  getMe(input: GetMeInput, options?: QueryOptions<GetMeInput, GetMeResult>): Promise<GetMeResult> {
+    return this.apiNamespaceRoot.getMe(input, options);
   }
 
-  getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-    return this.apiNamespaceRoot.getNotifications(input);
+  getMilestone(input: GetMilestoneInput, options?: QueryOptions<GetMilestoneInput, GetMilestoneResult>): Promise<GetMilestoneResult> {
+    return this.apiNamespaceRoot.getMilestone(input, options);
   }
 
-  getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-    return this.apiNamespaceRoot.getPeople(input);
+  getNotifications(input: GetNotificationsInput, options?: QueryOptions<GetNotificationsInput, GetNotificationsResult>): Promise<GetNotificationsResult> {
+    return this.apiNamespaceRoot.getNotifications(input, options);
   }
 
-  getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-    return this.apiNamespaceRoot.getPerson(input);
+  getPeople(input: GetPeopleInput, options?: QueryOptions<GetPeopleInput, GetPeopleResult>): Promise<GetPeopleResult> {
+    return this.apiNamespaceRoot.getPeople(input, options);
   }
 
-  getProject(input: GetProjectInput): Promise<GetProjectResult> {
-    return this.apiNamespaceRoot.getProject(input);
+  getPerson(input: GetPersonInput, options?: QueryOptions<GetPersonInput, GetPersonResult>): Promise<GetPersonResult> {
+    return this.apiNamespaceRoot.getPerson(input, options);
   }
 
-  getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-    return this.apiNamespaceRoot.getProjectCheckIn(input);
+  getProject(input: GetProjectInput, options?: QueryOptions<GetProjectInput, GetProjectResult>): Promise<GetProjectResult> {
+    return this.apiNamespaceRoot.getProject(input, options);
   }
 
-  getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-    return this.apiNamespaceRoot.getProjectCheckIns(input);
+  getProjectCheckIn(input: GetProjectCheckInInput, options?: QueryOptions<GetProjectCheckInInput, GetProjectCheckInResult>): Promise<GetProjectCheckInResult> {
+    return this.apiNamespaceRoot.getProjectCheckIn(input, options);
   }
 
-  getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
-    return this.apiNamespaceRoot.getProjectContributor(input);
+  getProjectCheckIns(input: GetProjectCheckInsInput, options?: QueryOptions<GetProjectCheckInsInput, GetProjectCheckInsResult>): Promise<GetProjectCheckInsResult> {
+    return this.apiNamespaceRoot.getProjectCheckIns(input, options);
   }
 
-  getProjectRetrospective(input: GetProjectRetrospectiveInput): Promise<GetProjectRetrospectiveResult> {
-    return this.apiNamespaceRoot.getProjectRetrospective(input);
+  getProjectContributor(input: GetProjectContributorInput, options?: QueryOptions<GetProjectContributorInput, GetProjectContributorResult>): Promise<GetProjectContributorResult> {
+    return this.apiNamespaceRoot.getProjectContributor(input, options);
   }
 
-  getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-    return this.apiNamespaceRoot.getProjects(input);
+  getProjectRetrospective(input: GetProjectRetrospectiveInput, options?: QueryOptions<GetProjectRetrospectiveInput, GetProjectRetrospectiveResult>): Promise<GetProjectRetrospectiveResult> {
+    return this.apiNamespaceRoot.getProjectRetrospective(input, options);
   }
 
-  getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-    return this.apiNamespaceRoot.getResourceHub(input);
+  getProjects(input: GetProjectsInput, options?: QueryOptions<GetProjectsInput, GetProjectsResult>): Promise<GetProjectsResult> {
+    return this.apiNamespaceRoot.getProjects(input, options);
   }
 
-  getResourceHubDocument(input: GetResourceHubDocumentInput): Promise<GetResourceHubDocumentResult> {
-    return this.apiNamespaceRoot.getResourceHubDocument(input);
+  getResourceHub(input: GetResourceHubInput, options?: QueryOptions<GetResourceHubInput, GetResourceHubResult>): Promise<GetResourceHubResult> {
+    return this.apiNamespaceRoot.getResourceHub(input, options);
   }
 
-  getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-    return this.apiNamespaceRoot.getResourceHubFile(input);
+  getResourceHubDocument(input: GetResourceHubDocumentInput, options?: QueryOptions<GetResourceHubDocumentInput, GetResourceHubDocumentResult>): Promise<GetResourceHubDocumentResult> {
+    return this.apiNamespaceRoot.getResourceHubDocument(input, options);
   }
 
-  getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-    return this.apiNamespaceRoot.getResourceHubFolder(input);
+  getResourceHubFile(input: GetResourceHubFileInput, options?: QueryOptions<GetResourceHubFileInput, GetResourceHubFileResult>): Promise<GetResourceHubFileResult> {
+    return this.apiNamespaceRoot.getResourceHubFile(input, options);
   }
 
-  getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-    return this.apiNamespaceRoot.getResourceHubLink(input);
+  getResourceHubFolder(input: GetResourceHubFolderInput, options?: QueryOptions<GetResourceHubFolderInput, GetResourceHubFolderResult>): Promise<GetResourceHubFolderResult> {
+    return this.apiNamespaceRoot.getResourceHubFolder(input, options);
   }
 
-  getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-    return this.apiNamespaceRoot.getSpace(input);
+  getResourceHubLink(input: GetResourceHubLinkInput, options?: QueryOptions<GetResourceHubLinkInput, GetResourceHubLinkResult>): Promise<GetResourceHubLinkResult> {
+    return this.apiNamespaceRoot.getResourceHubLink(input, options);
   }
 
-  getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-    return this.apiNamespaceRoot.getSpaces(input);
+  getSpace(input: GetSpaceInput, options?: QueryOptions<GetSpaceInput, GetSpaceResult>): Promise<GetSpaceResult> {
+    return this.apiNamespaceRoot.getSpace(input, options);
   }
 
-  getTask(input: GetTaskInput): Promise<GetTaskResult> {
-    return this.apiNamespaceRoot.getTask(input);
+  getSpaces(input: GetSpacesInput, options?: QueryOptions<GetSpacesInput, GetSpacesResult>): Promise<GetSpacesResult> {
+    return this.apiNamespaceRoot.getSpaces(input, options);
   }
 
-  getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-    return this.apiNamespaceRoot.getTasks(input);
+  getTask(input: GetTaskInput, options?: QueryOptions<GetTaskInput, GetTaskResult>): Promise<GetTaskResult> {
+    return this.apiNamespaceRoot.getTask(input, options);
   }
 
-  getUnreadNotificationCount(input: GetUnreadNotificationCountInput): Promise<GetUnreadNotificationCountResult> {
-    return this.apiNamespaceRoot.getUnreadNotificationCount(input);
+  getTasks(input: GetTasksInput, options?: QueryOptions<GetTasksInput, GetTasksResult>): Promise<GetTasksResult> {
+    return this.apiNamespaceRoot.getTasks(input, options);
   }
 
-  getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-    return this.apiNamespaceRoot.getWorkMap(input);
+  getUnreadNotificationCount(input: GetUnreadNotificationCountInput, options?: QueryOptions<GetUnreadNotificationCountInput, GetUnreadNotificationCountResult>): Promise<GetUnreadNotificationCountResult> {
+    return this.apiNamespaceRoot.getUnreadNotificationCount(input, options);
   }
 
-  listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-    return this.apiNamespaceRoot.listGoalContributors(input);
+  getWorkMap(input: GetWorkMapInput, options?: QueryOptions<GetWorkMapInput, GetWorkMapResult>): Promise<GetWorkMapResult> {
+    return this.apiNamespaceRoot.getWorkMap(input, options);
   }
 
-  listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
-    return this.apiNamespaceRoot.listPossibleManagers(input);
+  listGoalContributors(input: ListGoalContributorsInput, options?: QueryOptions<ListGoalContributorsInput, ListGoalContributorsResult>): Promise<ListGoalContributorsResult> {
+    return this.apiNamespaceRoot.listGoalContributors(input, options);
   }
 
-  listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-    return this.apiNamespaceRoot.listResourceHubNodes(input);
+  listPossibleManagers(input: ListPossibleManagersInput, options?: QueryOptions<ListPossibleManagersInput, ListPossibleManagersResult>): Promise<ListPossibleManagersResult> {
+    return this.apiNamespaceRoot.listPossibleManagers(input, options);
   }
 
-  listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-    return this.apiNamespaceRoot.listSpaceTools(input);
+  listResourceHubNodes(input: ListResourceHubNodesInput, options?: QueryOptions<ListResourceHubNodesInput, ListResourceHubNodesResult>): Promise<ListResourceHubNodesResult> {
+    return this.apiNamespaceRoot.listResourceHubNodes(input, options);
   }
 
-  searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-    return this.apiNamespaceRoot.searchPeople(input);
+  listSpaceTools(input: ListSpaceToolsInput, options?: QueryOptions<ListSpaceToolsInput, ListSpaceToolsResult>): Promise<ListSpaceToolsResult> {
+    return this.apiNamespaceRoot.listSpaceTools(input, options);
   }
 
-  searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput): Promise<SearchPotentialSpaceMembersResult> {
-    return this.apiNamespaceRoot.searchPotentialSpaceMembers(input);
+  searchPeople(input: SearchPeopleInput, options?: QueryOptions<SearchPeopleInput, SearchPeopleResult>): Promise<SearchPeopleResult> {
+    return this.apiNamespaceRoot.searchPeople(input, options);
+  }
+
+  searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput, options?: QueryOptions<SearchPotentialSpaceMembersInput, SearchPotentialSpaceMembersResult>): Promise<SearchPotentialSpaceMembersResult> {
+    return this.apiNamespaceRoot.searchPotentialSpaceMembers(input, options);
   }
 
   searchProjectContributorCandidates(
     input: SearchProjectContributorCandidatesInput,
+    options?: QueryOptions<SearchProjectContributorCandidatesInput, SearchProjectContributorCandidatesResult>,
   ): Promise<SearchProjectContributorCandidatesResult> {
-    return this.apiNamespaceRoot.searchProjectContributorCandidates(input);
+    return this.apiNamespaceRoot.searchProjectContributorCandidates(input, options);
   }
 
   acknowledgeGoalProgressUpdate(
@@ -5747,153 +5803,143 @@ export class ApiClient {
 
 const defaultApiClient = new ApiClient();
 
-export async function getAccount(input: GetAccountInput): Promise<GetAccountResult> {
-  return defaultApiClient.getAccount(input);
+export async function getAccount(input: GetAccountInput, options?: QueryOptions<GetAccountInput, GetAccountResult>): Promise<GetAccountResult> {
+  return defaultApiClient.getAccount(input, options);
 }
-export async function getActivities(input: GetActivitiesInput): Promise<GetActivitiesResult> {
-  return defaultApiClient.getActivities(input);
+export async function getActivities(input: GetActivitiesInput, options?: QueryOptions<GetActivitiesInput, GetActivitiesResult>): Promise<GetActivitiesResult> {
+  return defaultApiClient.getActivities(input, options);
 }
-export async function getActivity(input: GetActivityInput): Promise<GetActivityResult> {
-  return defaultApiClient.getActivity(input);
+export async function getActivity(input: GetActivityInput, options?: QueryOptions<GetActivityInput, GetActivityResult>): Promise<GetActivityResult> {
+  return defaultApiClient.getActivity(input, options);
 }
-export async function getAssignments(input: GetAssignmentsInput): Promise<GetAssignmentsResult> {
-  return defaultApiClient.getAssignments(input);
+export async function getAssignments(input: GetAssignmentsInput, options?: QueryOptions<GetAssignmentsInput, GetAssignmentsResult>): Promise<GetAssignmentsResult> {
+  return defaultApiClient.getAssignments(input, options);
 }
-export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
-  return defaultApiClient.getAssignmentsCount(input);
+export async function getAssignmentsCount(input: GetAssignmentsCountInput, options?: QueryOptions<GetAssignmentsCountInput, GetAssignmentsCountResult>): Promise<GetAssignmentsCountResult> {
+  return defaultApiClient.getAssignmentsCount(input, options);
 }
-export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
-  return defaultApiClient.getBindedPeople(input);
+export async function getBindedPeople(input: GetBindedPeopleInput, options?: QueryOptions<GetBindedPeopleInput, GetBindedPeopleResult>): Promise<GetBindedPeopleResult> {
+  return defaultApiClient.getBindedPeople(input, options);
 }
-export async function getComments(input: GetCommentsInput): Promise<GetCommentsResult> {
-  return defaultApiClient.getComments(input);
+export async function getComments(input: GetCommentsInput, options?: QueryOptions<GetCommentsInput, GetCommentsResult>): Promise<GetCommentsResult> {
+  return defaultApiClient.getComments(input, options);
 }
-export async function getCompanies(input: GetCompaniesInput): Promise<GetCompaniesResult> {
-  return defaultApiClient.getCompanies(input);
+export async function getCompanies(input: GetCompaniesInput, options?: QueryOptions<GetCompaniesInput, GetCompaniesResult>): Promise<GetCompaniesResult> {
+  return defaultApiClient.getCompanies(input, options);
 }
-export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResult> {
-  return defaultApiClient.getCompany(input);
+export async function getCompany(input: GetCompanyInput, options?: QueryOptions<GetCompanyInput, GetCompanyResult>): Promise<GetCompanyResult> {
+  return defaultApiClient.getCompany(input, options);
 }
-export async function getDiscussion(input: GetDiscussionInput): Promise<GetDiscussionResult> {
-  return defaultApiClient.getDiscussion(input);
+export async function getDiscussion(input: GetDiscussionInput, options?: QueryOptions<GetDiscussionInput, GetDiscussionResult>): Promise<GetDiscussionResult> {
+  return defaultApiClient.getDiscussion(input, options);
 }
-export async function getDiscussions(input: GetDiscussionsInput): Promise<GetDiscussionsResult> {
-  return defaultApiClient.getDiscussions(input);
+export async function getDiscussions(input: GetDiscussionsInput, options?: QueryOptions<GetDiscussionsInput, GetDiscussionsResult>): Promise<GetDiscussionsResult> {
+  return defaultApiClient.getDiscussions(input, options);
 }
-export async function getFlatWorkMap(input: GetFlatWorkMapInput): Promise<GetFlatWorkMapResult> {
-  return defaultApiClient.getFlatWorkMap(input);
+export async function getFlatWorkMap(input: GetFlatWorkMapInput, options?: QueryOptions<GetFlatWorkMapInput, GetFlatWorkMapResult>): Promise<GetFlatWorkMapResult> {
+  return defaultApiClient.getFlatWorkMap(input, options);
 }
-export async function getGoal(input: GetGoalInput): Promise<GetGoalResult> {
-  return defaultApiClient.getGoal(input);
+export async function getGoal(input: GetGoalInput, options?: QueryOptions<GetGoalInput, GetGoalResult>): Promise<GetGoalResult> {
+  return defaultApiClient.getGoal(input, options);
 }
-export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput): Promise<GetGoalProgressUpdateResult> {
-  return defaultApiClient.getGoalProgressUpdate(input);
+export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput, options?: QueryOptions<GetGoalProgressUpdateInput, GetGoalProgressUpdateResult>): Promise<GetGoalProgressUpdateResult> {
+  return defaultApiClient.getGoalProgressUpdate(input, options);
 }
-export async function getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
-  return defaultApiClient.getGoals(input);
+export async function getGoals(input: GetGoalsInput, options?: QueryOptions<GetGoalsInput, GetGoalsResult>): Promise<GetGoalsResult> {
+  return defaultApiClient.getGoals(input, options);
 }
-export async function getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-  return defaultApiClient.getInvitation(input);
+export async function getInvitation(input: GetInvitationInput, options?: QueryOptions<GetInvitationInput, GetInvitationResult>): Promise<GetInvitationResult> {
+  return defaultApiClient.getInvitation(input, options);
 }
-export async function getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
-  return defaultApiClient.getKeyResource(input);
+export async function getKeyResource(input: GetKeyResourceInput, options?: QueryOptions<GetKeyResourceInput, GetKeyResourceResult>): Promise<GetKeyResourceResult> {
+  return defaultApiClient.getKeyResource(input, options);
 }
-export async function getMe(input: GetMeInput): Promise<GetMeResult> {
-  return defaultApiClient.getMe(input);
+export async function getMe(input: GetMeInput, options?: QueryOptions<GetMeInput, GetMeResult>): Promise<GetMeResult> {
+  return defaultApiClient.getMe(input, options);
 }
-export async function getMilestone(input: GetMilestoneInput): Promise<GetMilestoneResult> {
-  return defaultApiClient.getMilestone(input);
+export async function getMilestone(input: GetMilestoneInput, options?: QueryOptions<GetMilestoneInput, GetMilestoneResult>): Promise<GetMilestoneResult> {
+  return defaultApiClient.getMilestone(input, options);
 }
-export async function getNotifications(input: GetNotificationsInput): Promise<GetNotificationsResult> {
-  return defaultApiClient.getNotifications(input);
+export async function getNotifications(input: GetNotificationsInput, options?: QueryOptions<GetNotificationsInput, GetNotificationsResult>): Promise<GetNotificationsResult> {
+  return defaultApiClient.getNotifications(input, options);
 }
-export async function getPeople(input: GetPeopleInput): Promise<GetPeopleResult> {
-  return defaultApiClient.getPeople(input);
+export async function getPeople(input: GetPeopleInput, options?: QueryOptions<GetPeopleInput, GetPeopleResult>): Promise<GetPeopleResult> {
+  return defaultApiClient.getPeople(input, options);
 }
-export async function getPerson(input: GetPersonInput): Promise<GetPersonResult> {
-  return defaultApiClient.getPerson(input);
+export async function getPerson(input: GetPersonInput, options?: QueryOptions<GetPersonInput, GetPersonResult>): Promise<GetPersonResult> {
+  return defaultApiClient.getPerson(input, options);
 }
-export async function getProject(input: GetProjectInput): Promise<GetProjectResult> {
-  return defaultApiClient.getProject(input);
+export async function getProject(input: GetProjectInput, options?: QueryOptions<GetProjectInput, GetProjectResult>): Promise<GetProjectResult> {
+  return defaultApiClient.getProject(input, options);
 }
-export async function getProjectCheckIn(input: GetProjectCheckInInput): Promise<GetProjectCheckInResult> {
-  return defaultApiClient.getProjectCheckIn(input);
+export async function getProjectCheckIn(input: GetProjectCheckInInput, options?: QueryOptions<GetProjectCheckInInput, GetProjectCheckInResult>): Promise<GetProjectCheckInResult> {
+  return defaultApiClient.getProjectCheckIn(input, options);
 }
-export async function getProjectCheckIns(input: GetProjectCheckInsInput): Promise<GetProjectCheckInsResult> {
-  return defaultApiClient.getProjectCheckIns(input);
+export async function getProjectCheckIns(input: GetProjectCheckInsInput, options?: QueryOptions<GetProjectCheckInsInput, GetProjectCheckInsResult>): Promise<GetProjectCheckInsResult> {
+  return defaultApiClient.getProjectCheckIns(input, options);
 }
-export async function getProjectContributor(input: GetProjectContributorInput): Promise<GetProjectContributorResult> {
-  return defaultApiClient.getProjectContributor(input);
+export async function getProjectContributor(input: GetProjectContributorInput, options?: QueryOptions<GetProjectContributorInput, GetProjectContributorResult>): Promise<GetProjectContributorResult> {
+  return defaultApiClient.getProjectContributor(input, options);
 }
-export async function getProjectRetrospective(
-  input: GetProjectRetrospectiveInput,
-): Promise<GetProjectRetrospectiveResult> {
-  return defaultApiClient.getProjectRetrospective(input);
+export async function getProjectRetrospective(input: GetProjectRetrospectiveInput, options?: QueryOptions<GetProjectRetrospectiveInput, GetProjectRetrospectiveResult>): Promise<GetProjectRetrospectiveResult> {
+  return defaultApiClient.getProjectRetrospective(input, options);
 }
-export async function getProjects(input: GetProjectsInput): Promise<GetProjectsResult> {
-  return defaultApiClient.getProjects(input);
+export async function getProjects(input: GetProjectsInput, options?: QueryOptions<GetProjectsInput, GetProjectsResult>): Promise<GetProjectsResult> {
+  return defaultApiClient.getProjects(input, options);
 }
-export async function getResourceHub(input: GetResourceHubInput): Promise<GetResourceHubResult> {
-  return defaultApiClient.getResourceHub(input);
+export async function getResourceHub(input: GetResourceHubInput, options?: QueryOptions<GetResourceHubInput, GetResourceHubResult>): Promise<GetResourceHubResult> {
+  return defaultApiClient.getResourceHub(input, options);
 }
-export async function getResourceHubDocument(
-  input: GetResourceHubDocumentInput,
-): Promise<GetResourceHubDocumentResult> {
-  return defaultApiClient.getResourceHubDocument(input);
+export async function getResourceHubDocument(input: GetResourceHubDocumentInput, options?: QueryOptions<GetResourceHubDocumentInput, GetResourceHubDocumentResult>): Promise<GetResourceHubDocumentResult> {
+  return defaultApiClient.getResourceHubDocument(input, options);
 }
-export async function getResourceHubFile(input: GetResourceHubFileInput): Promise<GetResourceHubFileResult> {
-  return defaultApiClient.getResourceHubFile(input);
+export async function getResourceHubFile(input: GetResourceHubFileInput, options?: QueryOptions<GetResourceHubFileInput, GetResourceHubFileResult>): Promise<GetResourceHubFileResult> {
+  return defaultApiClient.getResourceHubFile(input, options);
 }
-export async function getResourceHubFolder(input: GetResourceHubFolderInput): Promise<GetResourceHubFolderResult> {
-  return defaultApiClient.getResourceHubFolder(input);
+export async function getResourceHubFolder(input: GetResourceHubFolderInput, options?: QueryOptions<GetResourceHubFolderInput, GetResourceHubFolderResult>): Promise<GetResourceHubFolderResult> {
+  return defaultApiClient.getResourceHubFolder(input, options);
 }
-export async function getResourceHubLink(input: GetResourceHubLinkInput): Promise<GetResourceHubLinkResult> {
-  return defaultApiClient.getResourceHubLink(input);
+export async function getResourceHubLink(input: GetResourceHubLinkInput, options?: QueryOptions<GetResourceHubLinkInput, GetResourceHubLinkResult>): Promise<GetResourceHubLinkResult> {
+  return defaultApiClient.getResourceHubLink(input, options);
 }
-export async function getSpace(input: GetSpaceInput): Promise<GetSpaceResult> {
-  return defaultApiClient.getSpace(input);
+export async function getSpace(input: GetSpaceInput, options?: QueryOptions<GetSpaceInput, GetSpaceResult>): Promise<GetSpaceResult> {
+  return defaultApiClient.getSpace(input, options);
 }
-export async function getSpaces(input: GetSpacesInput): Promise<GetSpacesResult> {
-  return defaultApiClient.getSpaces(input);
+export async function getSpaces(input: GetSpacesInput, options?: QueryOptions<GetSpacesInput, GetSpacesResult>): Promise<GetSpacesResult> {
+  return defaultApiClient.getSpaces(input, options);
 }
-export async function getTask(input: GetTaskInput): Promise<GetTaskResult> {
-  return defaultApiClient.getTask(input);
+export async function getTask(input: GetTaskInput, options?: QueryOptions<GetTaskInput, GetTaskResult>): Promise<GetTaskResult> {
+  return defaultApiClient.getTask(input, options);
 }
-export async function getTasks(input: GetTasksInput): Promise<GetTasksResult> {
-  return defaultApiClient.getTasks(input);
+export async function getTasks(input: GetTasksInput, options?: QueryOptions<GetTasksInput, GetTasksResult>): Promise<GetTasksResult> {
+  return defaultApiClient.getTasks(input, options);
 }
-export async function getUnreadNotificationCount(
-  input: GetUnreadNotificationCountInput,
-): Promise<GetUnreadNotificationCountResult> {
-  return defaultApiClient.getUnreadNotificationCount(input);
+export async function getUnreadNotificationCount(input: GetUnreadNotificationCountInput, options?: QueryOptions<GetUnreadNotificationCountInput, GetUnreadNotificationCountResult>): Promise<GetUnreadNotificationCountResult> {
+  return defaultApiClient.getUnreadNotificationCount(input, options);
 }
-export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
-  return defaultApiClient.getWorkMap(input);
+export async function getWorkMap(input: GetWorkMapInput, options?: QueryOptions<GetWorkMapInput, GetWorkMapResult>): Promise<GetWorkMapResult> {
+  return defaultApiClient.getWorkMap(input, options);
 }
-export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
-  return defaultApiClient.listGoalContributors(input);
+export async function listGoalContributors(input: ListGoalContributorsInput, options?: QueryOptions<ListGoalContributorsInput, ListGoalContributorsResult>): Promise<ListGoalContributorsResult> {
+  return defaultApiClient.listGoalContributors(input, options);
 }
-export async function listPossibleManagers(input: ListPossibleManagersInput): Promise<ListPossibleManagersResult> {
-  return defaultApiClient.listPossibleManagers(input);
+export async function listPossibleManagers(input: ListPossibleManagersInput, options?: QueryOptions<ListPossibleManagersInput, ListPossibleManagersResult>): Promise<ListPossibleManagersResult> {
+  return defaultApiClient.listPossibleManagers(input, options);
 }
-export async function listResourceHubNodes(input: ListResourceHubNodesInput): Promise<ListResourceHubNodesResult> {
-  return defaultApiClient.listResourceHubNodes(input);
+export async function listResourceHubNodes(input: ListResourceHubNodesInput, options?: QueryOptions<ListResourceHubNodesInput, ListResourceHubNodesResult>): Promise<ListResourceHubNodesResult> {
+  return defaultApiClient.listResourceHubNodes(input, options);
 }
-export async function listSpaceTools(input: ListSpaceToolsInput): Promise<ListSpaceToolsResult> {
-  return defaultApiClient.listSpaceTools(input);
+export async function listSpaceTools(input: ListSpaceToolsInput, options?: QueryOptions<ListSpaceToolsInput, ListSpaceToolsResult>): Promise<ListSpaceToolsResult> {
+  return defaultApiClient.listSpaceTools(input, options);
 }
-export async function searchPeople(input: SearchPeopleInput): Promise<SearchPeopleResult> {
-  return defaultApiClient.searchPeople(input);
+export async function searchPeople(input: SearchPeopleInput, options?: QueryOptions<SearchPeopleInput, SearchPeopleResult>): Promise<SearchPeopleResult> {
+  return defaultApiClient.searchPeople(input, options);
 }
-export async function searchPotentialSpaceMembers(
-  input: SearchPotentialSpaceMembersInput,
-): Promise<SearchPotentialSpaceMembersResult> {
-  return defaultApiClient.searchPotentialSpaceMembers(input);
+export async function searchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput, options?: QueryOptions<SearchPotentialSpaceMembersInput, SearchPotentialSpaceMembersResult>): Promise<SearchPotentialSpaceMembersResult> {
+  return defaultApiClient.searchPotentialSpaceMembers(input, options);
 }
-export async function searchProjectContributorCandidates(
-  input: SearchProjectContributorCandidatesInput,
-): Promise<SearchProjectContributorCandidatesResult> {
-  return defaultApiClient.searchProjectContributorCandidates(input);
+export async function searchProjectContributorCandidates(input: SearchProjectContributorCandidatesInput, options?: QueryOptions<SearchProjectContributorCandidatesInput, SearchProjectContributorCandidatesResult>): Promise<SearchProjectContributorCandidatesResult> {
+  return defaultApiClient.searchProjectContributorCandidates(input, options);
 }
 export async function acknowledgeGoalProgressUpdate(
   input: AcknowledgeGoalProgressUpdateInput,
@@ -6256,211 +6302,195 @@ export async function updateTaskStatus(input: UpdateTaskStatusInput): Promise<Up
   return defaultApiClient.updateTaskStatus(input);
 }
 
-export function useGetAccount(input: GetAccountInput): UseQueryHookResult<GetAccountResult> {
-  return useQuery<GetAccountResult>(() => defaultApiClient.getAccount(input));
+export function useGetAccount(input: GetAccountInput, options?: QueryOptions<GetAccountInput, GetAccountResult>): UseQueryHookResult<GetAccountResult> {
+  return useQuery<GetAccountResult>(() => defaultApiClient.getAccount(input, options));
 }
 
-export function useGetActivities(input: GetActivitiesInput): UseQueryHookResult<GetActivitiesResult> {
-  return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input));
+export function useGetActivities(input: GetActivitiesInput, options?: QueryOptions<GetActivitiesInput, GetActivitiesResult>): UseQueryHookResult<GetActivitiesResult> {
+  return useQuery<GetActivitiesResult>(() => defaultApiClient.getActivities(input, options));
 }
 
-export function useGetActivity(input: GetActivityInput): UseQueryHookResult<GetActivityResult> {
-  return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input));
+export function useGetActivity(input: GetActivityInput, options?: QueryOptions<GetActivityInput, GetActivityResult>): UseQueryHookResult<GetActivityResult> {
+  return useQuery<GetActivityResult>(() => defaultApiClient.getActivity(input, options));
 }
 
-export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResult<GetAssignmentsResult> {
-  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input));
+export function useGetAssignments(input: GetAssignmentsInput, options?: QueryOptions<GetAssignmentsInput, GetAssignmentsResult>): UseQueryHookResult<GetAssignmentsResult> {
+  return useQuery<GetAssignmentsResult>(() => defaultApiClient.getAssignments(input, options));
 }
 
-export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
-  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
+export function useGetAssignmentsCount(input: GetAssignmentsCountInput, options?: QueryOptions<GetAssignmentsCountInput, GetAssignmentsCountResult>): UseQueryHookResult<GetAssignmentsCountResult> {
+  return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input, options));
 }
 
-export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookResult<GetBindedPeopleResult> {
-  return useQuery<GetBindedPeopleResult>(() => defaultApiClient.getBindedPeople(input));
+export function useGetBindedPeople(input: GetBindedPeopleInput, options?: QueryOptions<GetBindedPeopleInput, GetBindedPeopleResult>): UseQueryHookResult<GetBindedPeopleResult> {
+  return useQuery<GetBindedPeopleResult>(() => defaultApiClient.getBindedPeople(input, options));
 }
 
-export function useGetComments(input: GetCommentsInput): UseQueryHookResult<GetCommentsResult> {
-  return useQuery<GetCommentsResult>(() => defaultApiClient.getComments(input));
+export function useGetComments(input: GetCommentsInput, options?: QueryOptions<GetCommentsInput, GetCommentsResult>): UseQueryHookResult<GetCommentsResult> {
+  return useQuery<GetCommentsResult>(() => defaultApiClient.getComments(input, options));
 }
 
-export function useGetCompanies(input: GetCompaniesInput): UseQueryHookResult<GetCompaniesResult> {
-  return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input));
+export function useGetCompanies(input: GetCompaniesInput, options?: QueryOptions<GetCompaniesInput, GetCompaniesResult>): UseQueryHookResult<GetCompaniesResult> {
+  return useQuery<GetCompaniesResult>(() => defaultApiClient.getCompanies(input, options));
 }
 
-export function useGetCompany(input: GetCompanyInput): UseQueryHookResult<GetCompanyResult> {
-  return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input));
+export function useGetCompany(input: GetCompanyInput, options?: QueryOptions<GetCompanyInput, GetCompanyResult>): UseQueryHookResult<GetCompanyResult> {
+  return useQuery<GetCompanyResult>(() => defaultApiClient.getCompany(input, options));
 }
 
-export function useGetDiscussion(input: GetDiscussionInput): UseQueryHookResult<GetDiscussionResult> {
-  return useQuery<GetDiscussionResult>(() => defaultApiClient.getDiscussion(input));
+export function useGetDiscussion(input: GetDiscussionInput, options?: QueryOptions<GetDiscussionInput, GetDiscussionResult>): UseQueryHookResult<GetDiscussionResult> {
+  return useQuery<GetDiscussionResult>(() => defaultApiClient.getDiscussion(input, options));
 }
 
-export function useGetDiscussions(input: GetDiscussionsInput): UseQueryHookResult<GetDiscussionsResult> {
-  return useQuery<GetDiscussionsResult>(() => defaultApiClient.getDiscussions(input));
+export function useGetDiscussions(input: GetDiscussionsInput, options?: QueryOptions<GetDiscussionsInput, GetDiscussionsResult>): UseQueryHookResult<GetDiscussionsResult> {
+  return useQuery<GetDiscussionsResult>(() => defaultApiClient.getDiscussions(input, options));
 }
 
-export function useGetFlatWorkMap(input: GetFlatWorkMapInput): UseQueryHookResult<GetFlatWorkMapResult> {
-  return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input));
+export function useGetFlatWorkMap(input: GetFlatWorkMapInput, options?: QueryOptions<GetFlatWorkMapInput, GetFlatWorkMapResult>): UseQueryHookResult<GetFlatWorkMapResult> {
+  return useQuery<GetFlatWorkMapResult>(() => defaultApiClient.getFlatWorkMap(input, options));
 }
 
-export function useGetGoal(input: GetGoalInput): UseQueryHookResult<GetGoalResult> {
-  return useQuery<GetGoalResult>(() => defaultApiClient.getGoal(input));
+export function useGetGoal(input: GetGoalInput, options?: QueryOptions<GetGoalInput, GetGoalResult>): UseQueryHookResult<GetGoalResult> {
+  return useQuery<GetGoalResult>(() => defaultApiClient.getGoal(input, options));
 }
 
-export function useGetGoalProgressUpdate(
-  input: GetGoalProgressUpdateInput,
-): UseQueryHookResult<GetGoalProgressUpdateResult> {
-  return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input));
+export function useGetGoalProgressUpdate(input: GetGoalProgressUpdateInput, options?: QueryOptions<GetGoalProgressUpdateInput, GetGoalProgressUpdateResult>): UseQueryHookResult<GetGoalProgressUpdateResult> {
+  return useQuery<GetGoalProgressUpdateResult>(() => defaultApiClient.getGoalProgressUpdate(input, options));
 }
 
-export function useGetGoals(input: GetGoalsInput): UseQueryHookResult<GetGoalsResult> {
-  return useQuery<GetGoalsResult>(() => defaultApiClient.getGoals(input));
+export function useGetGoals(input: GetGoalsInput, options?: QueryOptions<GetGoalsInput, GetGoalsResult>): UseQueryHookResult<GetGoalsResult> {
+  return useQuery<GetGoalsResult>(() => defaultApiClient.getGoals(input, options));
 }
 
-export function useGetInvitation(input: GetInvitationInput): UseQueryHookResult<GetInvitationResult> {
-  return useQuery<GetInvitationResult>(() => defaultApiClient.getInvitation(input));
+export function useGetInvitation(input: GetInvitationInput, options?: QueryOptions<GetInvitationInput, GetInvitationResult>): UseQueryHookResult<GetInvitationResult> {
+  return useQuery<GetInvitationResult>(() => defaultApiClient.getInvitation(input, options));
 }
 
-export function useGetKeyResource(input: GetKeyResourceInput): UseQueryHookResult<GetKeyResourceResult> {
-  return useQuery<GetKeyResourceResult>(() => defaultApiClient.getKeyResource(input));
+export function useGetKeyResource(input: GetKeyResourceInput, options?: QueryOptions<GetKeyResourceInput, GetKeyResourceResult>): UseQueryHookResult<GetKeyResourceResult> {
+  return useQuery<GetKeyResourceResult>(() => defaultApiClient.getKeyResource(input, options));
 }
 
-export function useGetMe(input: GetMeInput): UseQueryHookResult<GetMeResult> {
-  return useQuery<GetMeResult>(() => defaultApiClient.getMe(input));
+export function useGetMe(input: GetMeInput, options?: QueryOptions<GetMeInput, GetMeResult>): UseQueryHookResult<GetMeResult> {
+  return useQuery<GetMeResult>(() => defaultApiClient.getMe(input, options));
 }
 
-export function useGetMilestone(input: GetMilestoneInput): UseQueryHookResult<GetMilestoneResult> {
-  return useQuery<GetMilestoneResult>(() => defaultApiClient.getMilestone(input));
+export function useGetMilestone(input: GetMilestoneInput, options?: QueryOptions<GetMilestoneInput, GetMilestoneResult>): UseQueryHookResult<GetMilestoneResult> {
+  return useQuery<GetMilestoneResult>(() => defaultApiClient.getMilestone(input, options));
 }
 
-export function useGetNotifications(input: GetNotificationsInput): UseQueryHookResult<GetNotificationsResult> {
-  return useQuery<GetNotificationsResult>(() => defaultApiClient.getNotifications(input));
+export function useGetNotifications(input: GetNotificationsInput, options?: QueryOptions<GetNotificationsInput, GetNotificationsResult>): UseQueryHookResult<GetNotificationsResult> {
+  return useQuery<GetNotificationsResult>(() => defaultApiClient.getNotifications(input, options));
 }
 
-export function useGetPeople(input: GetPeopleInput): UseQueryHookResult<GetPeopleResult> {
-  return useQuery<GetPeopleResult>(() => defaultApiClient.getPeople(input));
+export function useGetPeople(input: GetPeopleInput, options?: QueryOptions<GetPeopleInput, GetPeopleResult>): UseQueryHookResult<GetPeopleResult> {
+  return useQuery<GetPeopleResult>(() => defaultApiClient.getPeople(input, options));
 }
 
-export function useGetPerson(input: GetPersonInput): UseQueryHookResult<GetPersonResult> {
-  return useQuery<GetPersonResult>(() => defaultApiClient.getPerson(input));
+export function useGetPerson(input: GetPersonInput, options?: QueryOptions<GetPersonInput, GetPersonResult>): UseQueryHookResult<GetPersonResult> {
+  return useQuery<GetPersonResult>(() => defaultApiClient.getPerson(input, options));
 }
 
-export function useGetProject(input: GetProjectInput): UseQueryHookResult<GetProjectResult> {
-  return useQuery<GetProjectResult>(() => defaultApiClient.getProject(input));
+export function useGetProject(input: GetProjectInput, options?: QueryOptions<GetProjectInput, GetProjectResult>): UseQueryHookResult<GetProjectResult> {
+  return useQuery<GetProjectResult>(() => defaultApiClient.getProject(input, options));
 }
 
-export function useGetProjectCheckIn(input: GetProjectCheckInInput): UseQueryHookResult<GetProjectCheckInResult> {
-  return useQuery<GetProjectCheckInResult>(() => defaultApiClient.getProjectCheckIn(input));
+export function useGetProjectCheckIn(input: GetProjectCheckInInput, options?: QueryOptions<GetProjectCheckInInput, GetProjectCheckInResult>): UseQueryHookResult<GetProjectCheckInResult> {
+  return useQuery<GetProjectCheckInResult>(() => defaultApiClient.getProjectCheckIn(input, options));
 }
 
-export function useGetProjectCheckIns(input: GetProjectCheckInsInput): UseQueryHookResult<GetProjectCheckInsResult> {
-  return useQuery<GetProjectCheckInsResult>(() => defaultApiClient.getProjectCheckIns(input));
+export function useGetProjectCheckIns(input: GetProjectCheckInsInput, options?: QueryOptions<GetProjectCheckInsInput, GetProjectCheckInsResult>): UseQueryHookResult<GetProjectCheckInsResult> {
+  return useQuery<GetProjectCheckInsResult>(() => defaultApiClient.getProjectCheckIns(input, options));
 }
 
-export function useGetProjectContributor(
-  input: GetProjectContributorInput,
-): UseQueryHookResult<GetProjectContributorResult> {
-  return useQuery<GetProjectContributorResult>(() => defaultApiClient.getProjectContributor(input));
+export function useGetProjectContributor(input: GetProjectContributorInput, options?: QueryOptions<GetProjectContributorInput, GetProjectContributorResult>): UseQueryHookResult<GetProjectContributorResult> {
+  return useQuery<GetProjectContributorResult>(() => defaultApiClient.getProjectContributor(input, options));
 }
 
-export function useGetProjectRetrospective(
-  input: GetProjectRetrospectiveInput,
-): UseQueryHookResult<GetProjectRetrospectiveResult> {
-  return useQuery<GetProjectRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input));
+export function useGetProjectRetrospective(input: GetProjectRetrospectiveInput, options?: QueryOptions<GetProjectRetrospectiveInput, GetProjectRetrospectiveResult>): UseQueryHookResult<GetProjectRetrospectiveResult> {
+  return useQuery<GetProjectRetrospectiveResult>(() => defaultApiClient.getProjectRetrospective(input, options));
 }
 
-export function useGetProjects(input: GetProjectsInput): UseQueryHookResult<GetProjectsResult> {
-  return useQuery<GetProjectsResult>(() => defaultApiClient.getProjects(input));
+export function useGetProjects(input: GetProjectsInput, options?: QueryOptions<GetProjectsInput, GetProjectsResult>): UseQueryHookResult<GetProjectsResult> {
+  return useQuery<GetProjectsResult>(() => defaultApiClient.getProjects(input, options));
 }
 
-export function useGetResourceHub(input: GetResourceHubInput): UseQueryHookResult<GetResourceHubResult> {
-  return useQuery<GetResourceHubResult>(() => defaultApiClient.getResourceHub(input));
+export function useGetResourceHub(input: GetResourceHubInput, options?: QueryOptions<GetResourceHubInput, GetResourceHubResult>): UseQueryHookResult<GetResourceHubResult> {
+  return useQuery<GetResourceHubResult>(() => defaultApiClient.getResourceHub(input, options));
 }
 
-export function useGetResourceHubDocument(
-  input: GetResourceHubDocumentInput,
-): UseQueryHookResult<GetResourceHubDocumentResult> {
-  return useQuery<GetResourceHubDocumentResult>(() => defaultApiClient.getResourceHubDocument(input));
+export function useGetResourceHubDocument(input: GetResourceHubDocumentInput, options?: QueryOptions<GetResourceHubDocumentInput, GetResourceHubDocumentResult>): UseQueryHookResult<GetResourceHubDocumentResult> {
+  return useQuery<GetResourceHubDocumentResult>(() => defaultApiClient.getResourceHubDocument(input, options));
 }
 
-export function useGetResourceHubFile(input: GetResourceHubFileInput): UseQueryHookResult<GetResourceHubFileResult> {
-  return useQuery<GetResourceHubFileResult>(() => defaultApiClient.getResourceHubFile(input));
+export function useGetResourceHubFile(input: GetResourceHubFileInput, options?: QueryOptions<GetResourceHubFileInput, GetResourceHubFileResult>): UseQueryHookResult<GetResourceHubFileResult> {
+  return useQuery<GetResourceHubFileResult>(() => defaultApiClient.getResourceHubFile(input, options));
 }
 
-export function useGetResourceHubFolder(
-  input: GetResourceHubFolderInput,
-): UseQueryHookResult<GetResourceHubFolderResult> {
-  return useQuery<GetResourceHubFolderResult>(() => defaultApiClient.getResourceHubFolder(input));
+export function useGetResourceHubFolder(input: GetResourceHubFolderInput, options?: QueryOptions<GetResourceHubFolderInput, GetResourceHubFolderResult>): UseQueryHookResult<GetResourceHubFolderResult> {
+  return useQuery<GetResourceHubFolderResult>(() => defaultApiClient.getResourceHubFolder(input, options));
 }
 
-export function useGetResourceHubLink(input: GetResourceHubLinkInput): UseQueryHookResult<GetResourceHubLinkResult> {
-  return useQuery<GetResourceHubLinkResult>(() => defaultApiClient.getResourceHubLink(input));
+export function useGetResourceHubLink(input: GetResourceHubLinkInput, options?: QueryOptions<GetResourceHubLinkInput, GetResourceHubLinkResult>): UseQueryHookResult<GetResourceHubLinkResult> {
+  return useQuery<GetResourceHubLinkResult>(() => defaultApiClient.getResourceHubLink(input, options));
 }
 
-export function useGetSpace(input: GetSpaceInput): UseQueryHookResult<GetSpaceResult> {
-  return useQuery<GetSpaceResult>(() => defaultApiClient.getSpace(input));
+export function useGetSpace(input: GetSpaceInput, options?: QueryOptions<GetSpaceInput, GetSpaceResult>): UseQueryHookResult<GetSpaceResult> {
+  return useQuery<GetSpaceResult>(() => defaultApiClient.getSpace(input, options));
 }
 
-export function useGetSpaces(input: GetSpacesInput): UseQueryHookResult<GetSpacesResult> {
-  return useQuery<GetSpacesResult>(() => defaultApiClient.getSpaces(input));
+export function useGetSpaces(input: GetSpacesInput, options?: QueryOptions<GetSpacesInput, GetSpacesResult>): UseQueryHookResult<GetSpacesResult> {
+  return useQuery<GetSpacesResult>(() => defaultApiClient.getSpaces(input, options));
 }
 
-export function useGetTask(input: GetTaskInput): UseQueryHookResult<GetTaskResult> {
-  return useQuery<GetTaskResult>(() => defaultApiClient.getTask(input));
+export function useGetTask(input: GetTaskInput, options?: QueryOptions<GetTaskInput, GetTaskResult>): UseQueryHookResult<GetTaskResult> {
+  return useQuery<GetTaskResult>(() => defaultApiClient.getTask(input, options));
 }
 
-export function useGetTasks(input: GetTasksInput): UseQueryHookResult<GetTasksResult> {
-  return useQuery<GetTasksResult>(() => defaultApiClient.getTasks(input));
+export function useGetTasks(input: GetTasksInput, options?: QueryOptions<GetTasksInput, GetTasksResult>): UseQueryHookResult<GetTasksResult> {
+  return useQuery<GetTasksResult>(() => defaultApiClient.getTasks(input, options));
 }
 
-export function useGetUnreadNotificationCount(
-  input: GetUnreadNotificationCountInput,
-): UseQueryHookResult<GetUnreadNotificationCountResult> {
-  return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input));
+export function useGetUnreadNotificationCount(input: GetUnreadNotificationCountInput, options?: QueryOptions<GetUnreadNotificationCountInput, GetUnreadNotificationCountResult>): UseQueryHookResult<GetUnreadNotificationCountResult> {
+  return useQuery<GetUnreadNotificationCountResult>(() => defaultApiClient.getUnreadNotificationCount(input, options));
 }
 
-export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWorkMapResult> {
-  return useQuery<GetWorkMapResult>(() => defaultApiClient.getWorkMap(input));
+export function useGetWorkMap(input: GetWorkMapInput, options?: QueryOptions<GetWorkMapInput, GetWorkMapResult>): UseQueryHookResult<GetWorkMapResult> {
+  return useQuery<GetWorkMapResult>(() => defaultApiClient.getWorkMap(input, options));
 }
 
-export function useListGoalContributors(
-  input: ListGoalContributorsInput,
-): UseQueryHookResult<ListGoalContributorsResult> {
-  return useQuery<ListGoalContributorsResult>(() => defaultApiClient.listGoalContributors(input));
+export function useListGoalContributors(input: ListGoalContributorsInput, options?: QueryOptions<ListGoalContributorsInput, ListGoalContributorsResult>): UseQueryHookResult<ListGoalContributorsResult> {
+  return useQuery<ListGoalContributorsResult>(() => defaultApiClient.listGoalContributors(input, options));
 }
 
-export function useListPossibleManagers(
-  input: ListPossibleManagersInput,
-): UseQueryHookResult<ListPossibleManagersResult> {
-  return useQuery<ListPossibleManagersResult>(() => defaultApiClient.listPossibleManagers(input));
+export function useListPossibleManagers(input: ListPossibleManagersInput, options?: QueryOptions<ListPossibleManagersInput, ListPossibleManagersResult>): UseQueryHookResult<ListPossibleManagersResult> {
+  return useQuery<ListPossibleManagersResult>(() => defaultApiClient.listPossibleManagers(input, options));
 }
 
-export function useListResourceHubNodes(
-  input: ListResourceHubNodesInput,
-): UseQueryHookResult<ListResourceHubNodesResult> {
-  return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input));
+export function useListResourceHubNodes(input: ListResourceHubNodesInput, options?: QueryOptions<ListResourceHubNodesInput, ListResourceHubNodesResult>): UseQueryHookResult<ListResourceHubNodesResult> {
+  return useQuery<ListResourceHubNodesResult>(() => defaultApiClient.listResourceHubNodes(input, options));
 }
 
-export function useListSpaceTools(input: ListSpaceToolsInput): UseQueryHookResult<ListSpaceToolsResult> {
-  return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input));
+export function useListSpaceTools(input: ListSpaceToolsInput, options?: QueryOptions<ListSpaceToolsInput, ListSpaceToolsResult>): UseQueryHookResult<ListSpaceToolsResult> {
+  return useQuery<ListSpaceToolsResult>(() => defaultApiClient.listSpaceTools(input, options));
 }
 
-export function useSearchPeople(input: SearchPeopleInput): UseQueryHookResult<SearchPeopleResult> {
-  return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input));
+export function useSearchPeople(input: SearchPeopleInput, options?: QueryOptions<SearchPeopleInput, SearchPeopleResult>): UseQueryHookResult<SearchPeopleResult> {
+  return useQuery<SearchPeopleResult>(() => defaultApiClient.searchPeople(input, options));
 }
 
-export function useSearchPotentialSpaceMembers(
-  input: SearchPotentialSpaceMembersInput,
-): UseQueryHookResult<SearchPotentialSpaceMembersResult> {
-  return useQuery<SearchPotentialSpaceMembersResult>(() => defaultApiClient.searchPotentialSpaceMembers(input));
+export function useSearchPotentialSpaceMembers(input: SearchPotentialSpaceMembersInput, options?: QueryOptions<SearchPotentialSpaceMembersInput, SearchPotentialSpaceMembersResult>): UseQueryHookResult<SearchPotentialSpaceMembersResult> {
+  return useQuery<SearchPotentialSpaceMembersResult>(() => defaultApiClient.searchPotentialSpaceMembers(input, options));
 }
 
 export function useSearchProjectContributorCandidates(
   input: SearchProjectContributorCandidatesInput,
+  options?: QueryOptions<
+    SearchProjectContributorCandidatesInput,
+    SearchProjectContributorCandidatesResult
+  >,
 ): UseQueryHookResult<SearchProjectContributorCandidatesResult> {
   return useQuery<SearchProjectContributorCandidatesResult>(() =>
-    defaultApiClient.searchProjectContributorCandidates(input),
+    defaultApiClient.searchProjectContributorCandidates(input, options),
   );
 }
 
