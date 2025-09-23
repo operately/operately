@@ -9,7 +9,7 @@
 ## Build, Test, and Development Commands
 - Setup dev environment: `make dev.build` (deps, compile, DB create/migrate, build UI).
 - Run server: `make dev.server` (Phoenix at http://localhost:4000).
-- One-shot tests: `make test` (Elixir + Jest). Targeted: `make test FILE=app/test/some_test.exs` or `make test FILE=assets/js/path.spec.ts`.
+- One-shot tests: `make test` (Elixir + Jest). **Targeted: `make test FILE=test/some_test.exs` or `make test FILE=assets/js/path.spec.ts` (note: no `app/` prefix for test files).**
 - Separate suites: `make test.mix` (Elixir), `make test.npm` (Jest), `make test.dialyzer` (types), `make test.tsc.lint` (TS checks).
 - Unit tests: `make test.mix.unit` (Elixir unit tests with retry logic).
 - Feature tests: `make test.mix.features` (Elixir feature tests with parallel splitting).
@@ -25,6 +25,10 @@
 - TurboUI component architecture and patterns: `turboui/AGENTS.md`.
 
 ## Testing Guidelines
+- **For comprehensive test documentation, see `app/test/AGENTS.md`.**
+- **Single test files: `make test FILE=test/path/to/test.exs` (NEVER use `mix test` directly or INDEX/TOTAL with FILE)**
+- **❌ INCORRECT: `INDEX=1 TOTAL=1 make test.mix.features FILE=app/test/features/file_test.exs`**
+- **❌ INCORRECT: `mix test test/path/to/test.exs`**
 - Elixir: ExUnit for unit/integration; Wallaby for feature tests. **ALWAYS use `make test.mix` or other make targets, NEVER call `mix test` directly.**
 - Frontend: Jest in `app/` and `turboui/`. Run with `make test.npm` or `npm test` in the respective package.
 - CI emits JUnit/XML to `app/testreports/`. Prefer deterministic, isolated tests.
@@ -100,3 +104,7 @@ end
 ## Security & Configuration Tips
 - Local env: run `make dev.seed.env` to scaffold `.env` and certs. Never commit secrets.
 - Use `./devenv` wrapper (Docker-based) for consistent tooling and DB.
+
+## Additional Documentation
+- Testing guide: `app/test/AGENTS.md` - Comprehensive test documentation including factory usage and correct test execution commands
+- Component library: `turboui/AGENTS.md` - TurboUI development and component patterns
