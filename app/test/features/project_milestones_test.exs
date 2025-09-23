@@ -186,6 +186,33 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_activity_added_to_feed("created \"1st task\"")
       |> Steps.assert_activity_added_to_feed("created \"2nd task\"")
     end
+
+    feature "post comment to milestone", ctx do
+      comment = "This is a comment"
+
+      ctx
+      |> Steps.visit_milestone_page()
+      |> Steps.post_comment(comment)
+      |> Steps.assert_comment(comment)
+      |> Steps.reload_milestone_page()
+      |> Steps.assert_comment(comment)
+      |> Steps.assert_comment_visible_in_feed(comment)
+      |> Steps.assert_comment_email_sent_to_project_reviewer()
+      |> Steps.assert_comment_notification_sent_to_project_reviewer()
+    end
+
+    feature "edit milestone comment", ctx do
+      new_comment = "Edited comment"
+
+      ctx
+      |> Steps.given_that_milestone_has_comment()
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_comment("Content")
+      |> Steps.edit_comment(new_comment)
+      |> Steps.assert_comment(new_comment)
+      |> Steps.reload_milestone_page()
+      |> Steps.assert_comment(new_comment)
+    end
   end
 
   defp get_milestone_due_date(milestone) do

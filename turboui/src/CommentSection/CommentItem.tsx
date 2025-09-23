@@ -10,6 +10,7 @@ import { compareIds } from "../utils/ids";
 import { Editor, useEditor, MentionedPersonLookupFn } from "../RichEditor";
 import { PrimaryButton, SecondaryButton } from "../Button";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { createTestId } from "../TestableElement";
 
 // Function to shorten name for display
 function shortName(name: string | undefined): string {
@@ -80,8 +81,12 @@ export function CommentItem({
             </span>
 
             {isOwnComment && !isEditing && (
-              <Menu size="small">
-                <MenuActionItem onClick={() => setIsEditing(true)} icon={IconEdit}>
+              <Menu size="small" testId={createTestId("comment-menu", comment.id)}>
+                <MenuActionItem
+                  onClick={() => setIsEditing(true)}
+                  icon={IconEdit}
+                  testId={createTestId("edit", comment.id)}
+                >
                   Edit
                 </MenuActionItem>
               </Menu>
@@ -149,7 +154,7 @@ function CommentEditMode({ content, onSave, onCancel, richTextHandlers }: Commen
   };
 
   return (
-    <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1">
+    <div className="bg-surface-base rounded-lg border border-stroke-base p-2 mt-1" data-test-id="edit-comment-form">
       <Editor editor={editor} hideBorder />
       <div className="flex gap-2 p-2 mt-2">
         <PrimaryButton size="xs" onClick={handleSave} disabled={editor.empty}>

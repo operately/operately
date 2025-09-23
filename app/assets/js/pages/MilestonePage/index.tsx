@@ -113,7 +113,7 @@ function Page() {
     setMilestones: setMilestones,
     refresh,
   });
-  const { comments, setComments, handleCreateComment } = useComments(paths, milestone, () => {
+  const { comments, setComments, handleCreateComment, handleEditComment } = useComments(paths, milestone, () => {
     PageCache.invalidate(pageCacheKey(milestone.id));
   });
   const [status, setStatus] = useStatusField(paths, pageData, setComments);
@@ -163,7 +163,7 @@ function Page() {
     currentUser: People.parsePersonForTurboUi(paths, currentUser)!,
     timelineItems,
     onAddComment: handleCreateComment,
-    onEditComment: () => Promise.resolve(),
+    onEditComment: handleEditComment,
     canComment: Boolean(milestone.permissions.canComment),
 
     // Core milestone data
