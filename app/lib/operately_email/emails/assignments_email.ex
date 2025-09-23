@@ -11,7 +11,7 @@ defmodule OperatelyEmail.Emails.AssignmentsEmail do
 
   def send(person) do
     company = Repo.preload(person, [:company]).company
-    [mine: assignments, reports: _] = Operately.Assignments.Loader.load(person, company)
+    assignments = Operately.Assignments.Loader.load(person, company)
 
     if assignments != [] do
       company
