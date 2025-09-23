@@ -5,19 +5,18 @@ defmodule Operately.Assignments.Loader do
   alias Operately.Goals.{Goal, Update}
   alias Operately.Projects.{Project, CheckIn}
 
-  defmodule Operately.Assignments.Assignment do
+  alias OperatelyWeb.Paths
+
+  defmodule Assignment do
     @enforce_keys [:resource_id, :name, :due, :relative_due, :type, :path]
     defstruct [:resource_id, :name, :due, :relative_due, :type, :path, :url, :author_id, :author_name]
   end
 
-  alias Operately.Assignments.Assignment
-
-  @spec load(%Operately.People.Person{}, %Operately.Companies.Company{}) :: [Assignment.t()]
   def load(person, company) do
     [
-      Task.async(fn -> load_pending_project_check_ins(company, person) end)
+      Task.async(fn -> load_pending_project_check_ins(company, person) end),
+      Task.async(fn -> load_pending_project_check_in_acknowledgements(company, person) end)
       # Task.async(fn -> load_pending_goal_updates(company, person) end),
-      # Task.async(fn -> load_pending_project_check_in_acknowledgements(company, person) end),
       # Task.async(fn -> load_pending_goal_update_acknowledgements(company, person) end)
     ]
     |> Task.await_many()
@@ -35,7 +34,7 @@ defmodule Operately.Assignments.Loader do
     )
     |> Repo.all()
     |> Enum.map(fn project ->
-      %Assignment{
+      %__MODULE__.Assignment{
         resource_id: Paths.project_id(project),
         name: project.name,
         due: Operately.Time.as_datetime(project.next_check_in_scheduled_at),
@@ -43,6 +42,35 @@ defmodule Operately.Assignments.Loader do
         type: :project,
         path: Paths.project_check_in_new_path(company, project),
         url: Paths.to_url(Paths.project_check_in_new_path(company, project))
+      }
+    end)
+  end
+
+  defp load_pending_project_check_in_acknowledgements(company, person) do
+    from(c in CheckIn,
+      join: project in assoc(c, :project),
+      join: author in assoc(c, :author),
+      left_join: champion in assoc(project, :champion),
+      left_join: reviewer in assoc(project, :reviewer),
+      where: is_nil(c.acknowledged_by_id),
+      where: is_nil(project.deleted_at),
+      where: (reviewer.id == ^person.id and author.id != reviewer.id) or (champion.id == ^person.id and author.id != champion.id),
+      preload: [project: {project, reviewer: reviewer}, author: author]
+    )
+    |> Repo.all()
+    |> Enum.map(fn check_in ->
+      path = Paths.project_check_in_path(company, check_in)
+
+      %Assignment{
+        resource_id: Paths.project_check_in_id(check_in),
+        name: check_in.project.name,
+        due: Operately.Time.as_datetime(check_in.inserted_at),
+        relative_due: Operately.Time.relative_due_days(check_in.inserted_at),
+        type: :check_in,
+        path: path,
+        url: Paths.to_url(path),
+        author_id: Paths.person_id(check_in.author),
+        author_name: check_in.author.full_name
       }
     end)
   end
@@ -66,35 +94,6 @@ defmodule Operately.Assignments.Loader do
   #       type: :goal,
   #       path: path,
   #       url: Paths.to_url(path)
-  #     }
-  #   end)
-  # end
-
-  # defp load_pending_project_check_in_acknowledgements(person) do
-  #   from(c in CheckIn,
-  #     join: project in assoc(c, :project),
-  #     join: author in assoc(c, :author),
-  #     left_join: champion in assoc(project, :champion),
-  #     left_join: reviewer in assoc(project, :reviewer),
-  #     where: is_nil(c.acknowledged_by_id),
-  #     where: is_nil(project.deleted_at),
-  #     where: (reviewer.id == ^person.id and author.id != reviewer.id) or (champion.id == ^person.id and author.id != champion.id),
-  #     preload: [project: {project, reviewer: reviewer}, author: author]
-  #   )
-  #   |> Repo.all()
-  #   |> Enum.map(fn check_in ->
-  #     path = Paths.project_check_in_path(company, check_in)
-
-  #     %Assignment{
-  #       resource_id: Paths.project_check_in_id(check_in),
-  #       name: check_in.project.name,
-  #       due: Operately.Time.as_datetime(check_in.inserted_at),
-  #       relative_due: Operately.Time.relative_due_days(check_in.inserted_at),
-  #       type: :check_in,
-  #       path: path,
-  #       url: Paths.to_url(path),
-  #       author_id: Paths.person_id(check_in.author),
-  #       author_name: check_in.author.full_name
   #     }
   #   end)
   # end
