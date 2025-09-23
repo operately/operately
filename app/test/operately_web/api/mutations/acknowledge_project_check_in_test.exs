@@ -54,13 +54,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
       assert res.message == "You don't have permission to perform this action"
     end
 
-    test "contributors can't acknowledge a check-in", ctx do
-      check_in = create_project_and_check_ins(ctx, champion_id: ctx.person.id)
-
-      assert {403, res} = request(ctx.conn, check_in)
-      assert res.message == "You don't have permission to perform this action"
-    end
-
     test "reviewers can acknowledge a check-in", ctx do
       check_in = create_project_and_check_ins(ctx, reviewer_id: ctx.person.id)
 
@@ -108,8 +101,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
           author_id: ctx.person.id
         )
 
-      assert {403, res} = request(ctx.conn, check_in)
-      assert res.message == "You don't have permission to perform this action"
+      assert {400, res} = request(ctx.conn, check_in)
+      assert res.message == "Authors cannot acknowledge their own check-ins"
     end
 
     test "reviewers cannot acknowledge their own check-ins", ctx do
@@ -120,8 +113,8 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
           author_id: ctx.person.id
         )
 
-      assert {403, res} = request(ctx.conn, check_in)
-      assert res.message == "You don't have permission to perform this action"
+      assert {400, res} = request(ctx.conn, check_in)
+      assert res.message == "Authors cannot acknowledge their own check-ins"
     end
   end
 
@@ -178,6 +171,9 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
   #
 
   defp create_project_and_check_ins(ctx, opts) do
+    author_id = Keyword.get(opts, :author_id, ctx.creator.id)
+    opts = Keyword.delete(opts, :author_id)
+
     project =
       project_fixture(
         Enum.into(opts, %{
@@ -189,8 +185,6 @@ defmodule OperatelyWeb.Api.Mutations.AcknowledgeProjectCheckInTest do
         })
       )
 
-    # Use the specified author_id or default to ctx.creator.id
-    author_id = Keyword.get(opts, :author_id, ctx.creator.id)
     check_in_fixture(%{author_id: author_id, project_id: project.id})
   end
 

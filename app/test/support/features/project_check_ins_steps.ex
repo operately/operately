@@ -158,15 +158,10 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :assert_check_in_acknowledged, ctx, %{status: _status, description: _description} do
-    person = resolve_acknowledger(ctx, Map.get(ctx, :last_acknowledged_by))
+    person = Map.get(ctx, :last_acknowledged_by)
 
     ctx |> UI.assert_text("#{person.full_name} acknowledged this Check-In")
   end
-
-  defp resolve_acknowledger(ctx, %Person{} = person), do: person
-  defp resolve_acknowledger(_ctx, %{id: id}), do: Operately.People.get_person!(id)
-  defp resolve_acknowledger(_ctx, id) when is_binary(id), do: Operately.People.get_person!(id)
-  defp resolve_acknowledger(ctx, _), do: Operately.People.get_person!(ctx.reviewer.person_id)
 
   step :assert_acknowledgement_email_sent_to_champion, ctx, %{status: _status, description: _description} do
     ctx
