@@ -15,7 +15,6 @@ import {
 } from "../icons";
 import { ProjectPageLayout } from "../ProjectPageLayout";
 import { useTabs } from "../Tabs";
-import { MilestoneDescription } from "./components/Description";
 import { MilestoneSidebar } from "./components/Sidebar";
 import { DeleteModal } from "./components/DeleteModal";
 import { SearchFn } from "../RichEditor/extensions/MentionPeople";
@@ -26,6 +25,7 @@ import { SidebarSection } from "../SidebarSection";
 import { GhostButton, SecondaryButton } from "../Button";
 import { launchConfetti } from "../utils/confetti";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { PageDescription } from "../PageDescription";
 
 export namespace MilestonePage {
   export type Milestone = Types.Milestone;
@@ -138,9 +138,6 @@ export function MilestonePage(props: MilestonePage.Props) {
     status,
     searchPeople,
     canEdit = true,
-    description,
-    onDescriptionChange,
-    richTextHandlers,
     projectName,
     projectLink,
     projectStatus = "active",
@@ -205,11 +202,10 @@ export function MilestonePage(props: MilestonePage.Props) {
         <div className="sm:grid sm:grid-cols-12">
           {/* Main content - left column (8 columns) */}
           <div className="sm:col-span-8 sm:px-4 space-y-4">
-            <MilestoneDescription
-              description={description}
-              onDescriptionChange={onDescriptionChange}
-              richDescriptionHandlers={richTextHandlers}
-              canEdit={canEdit}
+            <PageDescription
+              {...state}
+              placeholder="Describe the milestone..."
+              zeroStatePlaceholder="Add details about this milestone..."
             />
 
             <TasksSection {...state} />
@@ -281,8 +277,8 @@ function MobileMeta(props: MilestonePage.State) {
               )}
             </div>
 
-            {canEdit && (
-              isCompleted ? (
+            {canEdit &&
+              (isCompleted ? (
                 <SecondaryButton size="xs" onClick={handleStatusToggle}>
                   Reopen
                 </SecondaryButton>
@@ -290,8 +286,7 @@ function MobileMeta(props: MilestonePage.State) {
                 <GhostButton size="xs" icon={IconCheck} onClick={handleStatusToggle}>
                   Mark complete
                 </GhostButton>
-              )
-            )}
+              ))}
           </div>
         </SidebarSection>
       </div>

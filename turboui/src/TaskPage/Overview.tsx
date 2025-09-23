@@ -1,12 +1,16 @@
 import React from "react";
 import { TaskPage } from ".";
-import { Description } from "./Description";
 import { Timeline } from "../Timeline";
+import { PageDescription } from "../PageDescription";
 
 export function Overview(props: TaskPage.State) {
   return (
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
-      <Description {...props} />
+      <PageDescription
+        {...props}
+        placeholder="Describe the task..."
+        zeroStatePlaceholder="Add notes about this task..."
+      />
       <ActivitySection {...props} />
     </div>
   );
