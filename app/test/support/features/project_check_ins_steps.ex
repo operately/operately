@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.ProjectCheckInsSteps do
   use Operately.FeatureCase
 
+  alias Operately.People.Person
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
   alias Operately.Support.Features.EmailSteps
@@ -34,7 +35,14 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
   end
 
   step :log_in_as_champion, ctx do
-    ctx |> UI.login_as(ctx.creator)
+    ctx
+    |> UI.login_as(ctx.creator)
+  end
+
+  step :log_in_as_reviewer, ctx do
+    person = Operately.People.get_person!(ctx.reviewer.person_id)
+    ctx
+    |> UI.login_as(person)
   end
 
   step :submit_check_in, ctx, %{status: status, description: description} do
@@ -105,25 +113,60 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
     })
   end
 
-  step :open_check_in_from_notifications, ctx, %{status: _status, description: _description} do
+  step :open_check_in_from_notifications, ctx, values do
+    role = Map.get(values, :open_as, :reviewer)
+
     ctx
-    |> Factory.log_in_contributor(:reviewer)
+    |> login_for_notifications(role)
     |> NotificationsSteps.visit_notifications_page()
     |> UI.click(testid: "notification-item-project_check_in_submitted")
   end
 
+  defp login_for_notifications(ctx, :champion) do
+    champion = Map.fetch!(ctx, :champion)
+
+    ctx
+    |> UI.login_as(champion)
+  end
+
+  defp login_for_notifications(ctx, :current), do: ctx
+  defp login_for_notifications(ctx, nil), do: ctx
+
+  defp login_for_notifications(ctx, role) when is_atom(role) do
+    try do
+      Factory.log_in_contributor(ctx, role)
+    rescue
+      KeyError -> ctx
+    end
+  end
+
+  defp login_for_notifications(ctx, %{id: _} = person) do
+    ctx
+    |> UI.login_as(person)
+  end
+
+  defp login_for_notifications(ctx, _other), do: ctx
+
   step :acknowledge_check_in, ctx do
+    acknowledged_by = Map.get(ctx, :current_user)
+
     ctx
     |> UI.click(testid: "acknowledge-check-in")
     # Wait for the check-in to be acknowledged
     |> UI.sleep(300)
+    |> Map.put(:last_acknowledged_by, acknowledged_by)
   end
 
   step :assert_check_in_acknowledged, ctx, %{status: _status, description: _description} do
-    person = Operately.People.get_person!(ctx.reviewer.person_id)
+    person = resolve_acknowledger(ctx, Map.get(ctx, :last_acknowledged_by))
 
     ctx |> UI.assert_text("#{person.full_name} acknowledged this Check-In")
   end
+
+  defp resolve_acknowledger(ctx, %Person{} = person), do: person
+  defp resolve_acknowledger(_ctx, %{id: id}), do: Operately.People.get_person!(id)
+  defp resolve_acknowledger(_ctx, id) when is_binary(id), do: Operately.People.get_person!(id)
+  defp resolve_acknowledger(ctx, _), do: Operately.People.get_person!(ctx.reviewer.person_id)
 
   step :assert_acknowledgement_email_sent_to_champion, ctx, %{status: _status, description: _description} do
     ctx

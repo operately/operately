@@ -25,6 +25,7 @@ defmodule Operately.Projects.CheckIn do
     field :potential_subscribers, :any, virtual: true
     field :notifications, :any, virtual: true, default: []
     field :comment_count, :any, virtual: true
+    field :permissions, :any, virtual: true
 
     timestamps()
     requester_access_level()
@@ -55,6 +56,21 @@ defmodule Operately.Projects.CheckIn do
       |> Notifications.Subscriber.from_project_child()
 
     %{check_in | potential_subscribers: subs}
+  end
+
+  def preload_permissions(check_in) do
+    preload_permissions(check_in, check_in.requester_access_level)
+  end
+
+  def preload_permissions(check_in, access_level) do
+    preload_permissions(check_in, access_level, check_in.request_info.requester.id)
+  end
+
+  def preload_permissions(check_in, access_level, user_id) do
+    check_in = Repo.preload(check_in, [project: [:champion, :reviewer]])
+
+    permissions = Operately.Projects.Permissions.calculate(access_level, check_in, user_id)
+    Map.put(check_in, :permissions, permissions)
   end
 
   def preload_comment_count(check_ins) when is_list(check_ins) do
