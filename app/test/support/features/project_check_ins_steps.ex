@@ -41,8 +41,8 @@ defmodule Operately.Support.Features.ProjectCheckInsSteps do
 
   step :log_in_as_reviewer, ctx do
     person = Operately.People.get_person!(ctx.reviewer.person_id)
-    ctx
-    |> UI.login_as(person)
+
+    ctx |> UI.login_as(person)
   end
 
   step :submit_check_in, ctx, %{status: status, description: description} do

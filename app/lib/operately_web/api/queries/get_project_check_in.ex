@@ -57,16 +57,9 @@ defmodule OperatelyWeb.Api.Queries.GetProjectCheckIn do
 
   defp after_load(inputs, person) do
     Inputs.parse_includes(inputs, [
-      include_project: &load_project_with_check_in_permissions(&1, person),
+      include_project: &Project.set_permissions/1,
       include_potential_subscribers: &CheckIn.load_potential_subscribers/1,
       include_unread_notifications: UnreadNotificationsLoader.load(person),
     ])
-  end
-
-  defp load_project_with_check_in_permissions(check_in, person) do
-    # Load project permissions first
-    check_in = Project.set_permissions(check_in)
-    # Then override with check-in specific permissions
-    CheckIn.preload_permissions(check_in, check_in.requester_access_level, person.id)
   end
 end
