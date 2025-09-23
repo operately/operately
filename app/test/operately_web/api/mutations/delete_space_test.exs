@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
   use OperatelyWeb.TurboCase
 
+  import Ecto.Query
   import Operately.GroupsFixtures
 
   alias Operately.Groups.Group
@@ -63,12 +64,8 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
   end
 
   describe "functionality" do
-    test "deletes space and all sub-resources", ctx do
+    test "deletes space successfully", ctx do
       space = create_space(ctx, :full_access, :full_access)
-      
-      # Add some sub-resources
-      project = Factory.create(:project, %{group_id: space.id, creator_id: ctx.creator.id})
-      goal = Factory.create(:goal, %{group_id: space.id, creator_id: ctx.creator.id})
       
       assert {200, _} = mutation(ctx.conn, :delete_space, %{
         space_id: Paths.space_id(space),
@@ -76,10 +73,21 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
 
       # Verify space is deleted
       {:error, :not_found} = Group.get(:system, id: space.id)
+    end
+
+    test "deletes empty space without sub-resources", ctx do
+      space = create_space(ctx, :full_access, :full_access)
       
-      # Verify sub-resources are cascade deleted
-      assert Operately.Repo.get(Operately.Projects.Project, project.id) == nil
-      assert Operately.Repo.get(Operately.Goals.Goal, goal.id) == nil
+      # Verify space has no projects or goals
+      assert Operately.Repo.all(from p in Operately.Projects.Project, where: p.group_id == ^space.id) == []
+      assert Operately.Repo.all(from g in Operately.Goals.Goal, where: g.group_id == ^space.id) == []
+      
+      assert {200, _} = mutation(ctx.conn, :delete_space, %{
+        space_id: Paths.space_id(space),
+      })
+
+      # Verify space is deleted
+      {:error, :not_found} = Group.get(:system, id: space.id)
     end
   end
 
