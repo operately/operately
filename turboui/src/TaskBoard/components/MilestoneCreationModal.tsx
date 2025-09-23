@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
 import Modal from "../../Modal";
 import { DateField } from "../../DateField";
 import { SwitchToggle } from "../../SwitchToggle";
 import { TextField } from "../../TextField";
-import { createTestId } from "../../TestableElement";
 
 interface MilestoneCreationModalProps {
   isOpen: boolean;
@@ -23,16 +22,7 @@ export function MilestoneCreationModal({
   const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [createMore, setCreateMore] = useState(false);
 
-  const nameInputTestId = "milestone-name";
-
-  const focusNameInput = () => {
-    const selector = `[data-test-id="${createTestId(nameInputTestId, "input")}"]`;
-    const input = document.querySelector<HTMLInputElement>(selector);
-    if (input) {
-      input.focus();
-      input.select();
-    }
-  };
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
 
   // Reset form after milestone creation
   const resetForm = () => {
@@ -44,7 +34,10 @@ export function MilestoneCreationModal({
   // Focus name input when modal opens
   useEffect(() => {
     if (isOpen) {
-      setTimeout(() => focusNameInput(), 100);
+      requestAnimationFrame(() => {
+        nameInputRef.current?.focus();
+        nameInputRef.current?.select();
+      });
     } else if (!isOpen) {
       // Reset the form when the modal is closed
       resetForm();
@@ -74,9 +67,10 @@ export function MilestoneCreationModal({
     if (createMore) {
       resetForm();
       // Focus name input again
-      setTimeout(() => {
-        focusNameInput();
-      }, 100);
+      requestAnimationFrame(() => {
+        nameInputRef.current?.focus();
+        nameInputRef.current?.select();
+      });
     } else {
       onClose();
     }
@@ -96,8 +90,9 @@ export function MilestoneCreationModal({
           text={name}
           onChange={setName}
           placeholder="Enter milestone name"
-          testId={nameInputTestId}
+          testId="milestone-name"
           autofocus
+          inputRef={nameInputRef}
         />
 
         <div>

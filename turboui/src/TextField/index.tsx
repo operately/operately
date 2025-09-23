@@ -15,6 +15,7 @@ export namespace TextField {
     label?: string;
     error?: string;
     autofocus?: boolean;
+    inputRef?: React.Ref<HTMLInputElement>;
   }
 
   export interface State {
@@ -84,18 +85,36 @@ function useTextFieldState(props: TextField.Props): TextField.State {
 export function TextField(props: TextField.Props) {
   const state = useTextFieldState(props);
   if (props.variant === "form-field") {
-    return <FormFieldTextField {...state} />;
+    return <FormFieldTextField {...state} inputRef={props.inputRef} />;
   } else {
-    return <InlineTextField {...state} />;
+    return <InlineTextField {...state} inputRef={props.inputRef} />;
   }
 }
 
-function FormFieldTextField(state: TextField.State) {
-  const inputRef = useRef<HTMLInputElement | null>(null);
+function assignRef(ref: React.Ref<HTMLInputElement> | undefined, value: HTMLInputElement | null) {
+  if (!ref) return;
+  if (typeof ref === "function") {
+    ref(value);
+  } else {
+    try {
+      (ref as React.MutableRefObject<HTMLInputElement | null>).current = value;
+    } catch {
+      // ignore assignment errors for read-only refs
+    }
+  }
+}
+
+function FormFieldTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInputElement> }) {
+  const localRef = useRef<HTMLInputElement | null>(null);
+
+  const setRef = (node: HTMLInputElement | null) => {
+    localRef.current = node;
+    assignRef(state.inputRef, node);
+  };
 
   useEffect(() => {
-    if (state.autofocus && inputRef.current) {
-      inputRef.current.focus();
+    if (state.autofocus && localRef.current) {
+      localRef.current.focus();
     }
   }, [state.autofocus]);
 
@@ -119,7 +138,7 @@ function FormFieldTextField(state: TextField.State) {
       <div className={outerClass} data-test-id={state.testId}>
         <input
           data-test-id={createTestId(state.testId, "input")}
-          ref={inputRef}
+          ref={setRef}
           type="text"
           value={state.currentText}
           onChange={(e) => {
@@ -145,9 +164,11 @@ function FormFieldTextField(state: TextField.State) {
   );
 }
 
-function InlineTextField(state: TextField.State) {
+function InlineTextField(state: TextField.State & { inputRef?: React.Ref<HTMLInputElement> }) {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const hiddenSpanRef = useRef<HTMLSpanElement | null>(null);
+
+  useEffect(() => assignRef(state.inputRef, inputRef.current), [state.inputRef]);
 
   useEffect(() => {
     if (state.isEditing && inputRef.current) {
