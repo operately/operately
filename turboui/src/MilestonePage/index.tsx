@@ -206,6 +206,7 @@ export function MilestonePage(props: MilestonePage.Props) {
               {...state}
               placeholder="Describe the milestone..."
               zeroStatePlaceholder="Add details about this milestone..."
+              emptyTestId="description-section-empty"
             />
 
             <TasksSection {...state} />
