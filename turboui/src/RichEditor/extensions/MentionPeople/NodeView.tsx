@@ -17,6 +17,7 @@ export const NodeView: React.FC<TipTap.NodeViewProps> = (props) => {
   const { node, updateAttributes } = props;
   const ref = React.useRef<HTMLSpanElement>(null);
   const mentionedPersonLookup = useMentionedPersonLookup();
+  const scheduleAttributeUpdate = useAttributeUpdateScheduler(updateAttributes);
 
   React.useEffect(() => {
     if (!mentionedPersonLookup) return;
@@ -38,24 +39,29 @@ export const NodeView: React.FC<TipTap.NodeViewProps> = (props) => {
       }
 
       if (Object.keys(attrs).length > 0) {
-        updateAttributes(attrs);
+        scheduleAttributeUpdate(attrs, () => cancelled);
       }
     });
 
     return () => {
       cancelled = true;
     };
-  }, [mentionedPersonLookup, node.attrs.avatarUrl, node.attrs.fullName, node.attrs.id, updateAttributes]);
+  }, [mentionedPersonLookup, node.attrs.avatarUrl, node.attrs.fullName, node.attrs.id, scheduleAttributeUpdate]);
 
   React.useEffect(() => {
     if (!ref.current) return;
+    let cancelled = false;
 
     const size = getFontSize(ref.current);
 
     if (size && size !== node.attrs.avatarSize) {
-      updateAttributes({ avatarSize: size });
+      scheduleAttributeUpdate({ avatarSize: size }, () => cancelled);
     }
-  }, [node.attrs.avatarSize, updateAttributes]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [node.attrs.avatarSize, scheduleAttributeUpdate]);
 
   const displayName = node.attrs.fullName || node.attrs.label || "";
   const avatarUrl = node.attrs.avatarUrl || null;
@@ -103,4 +109,35 @@ function getFontSize(element: HTMLElement): number {
   const fontSize = parseFloat(style.getPropertyValue("font-size"));
 
   return fontSize + 3;
+}
+
+type AttributeMap = Record<string, unknown>;
+
+function useAttributeUpdateScheduler(updateAttributes: TipTap.NodeViewProps["updateAttributes"]) {
+  const updateRef = React.useRef(updateAttributes);
+
+  React.useEffect(() => {
+    updateRef.current = updateAttributes;
+  }, [updateAttributes]);
+
+  return React.useCallback(
+    (attrs: AttributeMap, isCancelled?: () => boolean) => {
+      if (!attrs || Object.keys(attrs).length === 0) return;
+
+      scheduleMicrotask(() => {
+        if (isCancelled?.()) return;
+
+        updateRef.current(attrs);
+      });
+    },
+    [],
+  );
+}
+
+function scheduleMicrotask(callback: () => void) {
+  if (typeof queueMicrotask === "function") {
+    queueMicrotask(callback);
+  } else {
+    Promise.resolve().then(callback);
+  }
 }
