@@ -144,8 +144,8 @@ export interface TimelineProps {
   currentUser: Person;
   canComment: boolean;
   commentParentType: string;
-  onAddComment?: (content: any) => void;
-  onEditComment?: (id: string, content: any) => void;
+  onAddComment: (content: any) => void;
+  onEditComment: (id: string, content: any) => void;
   filters?: TimelineFilters;
   richTextHandlers: RichEditorHandlers;
 }
@@ -165,7 +165,7 @@ export interface TimelineItemProps {
   currentUser: Person;
   canComment: boolean;
   commentParentType: string;
-  onEditComment?: (id: string, content: any) => void;
+  onEditComment: (id: string, content: any) => void;
   richTextHandlers: RichEditorHandlers;
 }
 

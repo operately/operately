@@ -28,7 +28,7 @@ export function TimelineItem({
             items: [],
             submitting: false,
             postComment: () => {},
-            editComment: onEditComment || (() => {}),
+            editComment: onEditComment,
           }}
           commentParentType={commentParentType}
           canComment={canComment}

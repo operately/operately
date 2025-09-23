@@ -90,7 +90,7 @@ export namespace MilestonePage {
     currentUser: Person;
     canComment: boolean;
     onAddComment: (comment: string) => void;
-    onEditComment?: (commentId: string, content: string) => void;
+    onEditComment: (commentId: string, content: string) => void;
 
     // Milestone metadata
     createdBy: Person | null;
