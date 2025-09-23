@@ -11,6 +11,7 @@ import { sortTasks } from "../utils/sortTasks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
 import { SecondaryButton } from "../../Button";
+import classNames from "../../utils/classnames";
 
 export interface MilestoneCardProps {
   milestone: Types.Milestone;
@@ -78,7 +79,12 @@ export function MilestoneCard({
     <>
       <li {...hoverBind}>
         {/* Milestone header */}
-        <div className="flex items-center justify-between gap-3 px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+        <div
+          className={classNames(
+            "flex items-center justify-between gap-3 px-4 py-3 bg-surface-dimmed border-b border-surface-outline",
+            !milestone.dueDate && onMilestoneUpdate ? "group/milestone-header" : undefined,
+          )}
+        >
           <div className="flex items-center gap-2 flex-1 min-w-0">
             {/* Progress pie chart */}
             <PieChart
@@ -90,37 +96,36 @@ export function MilestoneCard({
                 },
               ]}
             />
-            <BlackLink
-              to={milestone.link || ""}
-              className="flex-1 min-w-0 truncate text-sm font-semibold text-content-base hover:text-link-hover transition-colors"
-              underline="hover"
-              title={milestone.name}
-            >
-              {milestone.name}
-            </BlackLink>
+            <div className="flex items-center gap-2 flex-1 min-w-0">
+              <BlackLink
+                to={milestone.link || ""}
+                className="truncate text-sm font-semibold text-content-base hover:text-link-hover transition-colors min-w-0"
+                underline="hover"
+                title={milestone.name}
+              >
+                <span className="truncate">{milestone.name}</span>
+              </BlackLink>
 
-            {/* Milestone indicators */}
-            <div className="flex items-center gap-1 ml-1 flex-shrink-0">
-              {/* Description indicator */}
-              {milestone.hasDescription && (
-                <span className="text-content-dimmed flex items-center">
-                  <IconFileText size={12} />
-                </span>
-              )}
+              {/* Milestone indicators */}
+              <div className="flex items-center gap-1 flex-shrink-0 text-content-dimmed">
+                {milestone.hasDescription && (
+                  <span className="flex items-center">
+                    <IconFileText size={12} />
+                  </span>
+                )}
 
-              {/* Comments indicator */}
-              {milestone.hasComments && (
-                <span className="text-content-dimmed flex items-center">
-                  <IconMessageCircle size={12} />
-                  {milestone.commentCount && (
-                    <span className="ml-0.5 text-xs text-content-dimmed">{milestone.commentCount}</span>
-                  )}
-                </span>
-              )}
+                {milestone.hasComments && (
+                  <span className="flex items-center">
+                    <IconMessageCircle size={12} />
+                    {milestone.commentCount && (
+                      <span className="ml-0.5 text-xs">{milestone.commentCount}</span>
+                    )}
+                  </span>
+                )}
+              </div>
 
               {/* Due date indicator */}
-              <div className="pl-1 group/milestone-due-date flex items-center">
-                {/* Show DateField when there's a date OR on hover when no date */}
+              <div className="group/milestone-due-date flex-shrink-0 flex items-center pl-1">
                 {milestone.dueDate || !onMilestoneUpdate ? (
                   <DateField
                     date={milestone.dueDate || null}
@@ -132,8 +137,7 @@ export function MilestoneCard({
                     size="small"
                   />
                 ) : (
-                  /* Empty state that appears on hover */
-                  <div className="opacity-0 group-hover/milestone-due-date:opacity-100 transition-opacity">
+                  <div className="opacity-0 transition-opacity group-hover/milestone-due-date:opacity-100 group-hover/milestone-header:opacity-100">
                     <DateField
                       date={null}
                       onDateSelect={handleMilestoneDueDateChange}

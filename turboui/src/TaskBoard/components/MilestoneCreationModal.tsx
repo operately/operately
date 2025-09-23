@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { PrimaryButton, SecondaryButton } from "../../Button";
 import * as Types from "../types";
 import Modal from "../../Modal";
-import { IconCalendar } from "../../icons";
+import { DateField } from "../../DateField";
+import { SwitchToggle } from "../../SwitchToggle";
+import { TextField } from "../../TextField";
 
 interface MilestoneCreationModalProps {
   isOpen: boolean;
@@ -17,70 +19,63 @@ export function MilestoneCreationModal({
 }: MilestoneCreationModalProps) {
   // Form state
   const [name, setName] = useState("");
-  const [dueDate, setDueDate] = useState<string>("");
+  const [dueDate, setDueDate] = useState<DateField.ContextualDate | null>(null);
   const [createMore, setCreateMore] = useState(false);
-  
-  // Refs
-  const nameInputRef = useRef<HTMLInputElement>(null);
-  
+
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+
   // Reset form after milestone creation
   const resetForm = () => {
     setName("");
-    setDueDate("");
+    setDueDate(null);
     // Keep the createMore toggle state
   };
-  
+
   // Focus name input when modal opens
   useEffect(() => {
-    if (isOpen && nameInputRef.current) {
-      setTimeout(() => {
+    if (isOpen) {
+      requestAnimationFrame(() => {
         nameInputRef.current?.focus();
-      }, 100);
+        nameInputRef.current?.select();
+      });
     } else if (!isOpen) {
       // Reset the form when the modal is closed
       resetForm();
     }
   }, [isOpen]);
-  
+
   // Handle form submission
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Don't submit if name is empty
     if (!name.trim()) return;
-    
+
     // Create new milestone object
     const newMilestone: Types.NewMilestonePayload = {
       name: name.trim(),
       hasDescription: false,
       hasComments: false,
       status: "pending",
+      dueDate,
     };
-    
-    // Add optional fields if they exist
-    if (dueDate) {
-      newMilestone.dueDate = {
-        date: new Date(dueDate),
-        dateType: "day",
-        value: dueDate,
-      };
-    }
-    
+
     // Submit the milestone
     onCreateMilestone(newMilestone);
-    
+
     // Handle form after submission
     if (createMore) {
       resetForm();
       // Focus name input again
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         nameInputRef.current?.focus();
-      }, 100);
+        nameInputRef.current?.select();
+      });
     } else {
       onClose();
     }
   };
-  
+
   return (
     <Modal
       isOpen={isOpen}
@@ -88,62 +83,41 @@ export function MilestoneCreationModal({
       title="Create Milestone"
       size="medium"
     >
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <TextField
+          variant="form-field"
+          label="Milestone name"
+          text={name}
+          onChange={setName}
+          placeholder="Enter milestone name"
+          testId="milestone-name"
+          autofocus
+          inputRef={nameInputRef}
+        />
+
         <div>
-          <label htmlFor="milestone-name" className="block text-sm font-medium text-content-base mb-1">
-            Milestone name
-          </label>
-          <input
-            id="milestone-name"
-            ref={nameInputRef}
-            type="text"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Enter milestone name"
-            className="w-full px-3 py-2 border border-surface-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary-base"
-            required
-            autoFocus
+          <label className="block text-sm font-medium text-content-base mb-1">Due date</label>
+          <DateField
+            variant="form-field"
+            date={dueDate}
+            onDateSelect={setDueDate}
+            placeholder="Set due date"
+            calendarOnly
+            testId="milestone-due-date"
           />
         </div>
-        
-        <div>
-          <label htmlFor="due-date" className="block text-sm font-medium text-content-base mb-1">
-            Due date
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <IconCalendar size={16} className="text-content-subtle" />
-            </div>
-            <input
-              id="due-date"
-              type="date"
-              value={dueDate}
-              onChange={(e) => setDueDate(e.target.value)}
-              className="w-full pl-10 pr-3 py-2 border border-surface-outline rounded-md focus:outline-none focus:ring-2 focus:ring-primary-base"
-            />
+
+        <div className="flex items-center mt-4 gap-4">
+          <SwitchToggle value={createMore} setValue={setCreateMore} label="Create more" testId="add-more-switch" />
+          <div className="flex-1" />
+          <div className="flex gap-3">
+            <SecondaryButton onClick={onClose} type="button">
+              Cancel
+            </SecondaryButton>
+            <PrimaryButton type="submit" disabled={!name.trim()}>
+              Create milestone
+            </PrimaryButton>
           </div>
-        </div>
-        
-        <div className="flex items-center mt-4">
-          <input
-            id="create-more"
-            type="checkbox"
-            checked={createMore}
-            onChange={(e) => setCreateMore(e.target.checked)}
-            className="h-4 w-4 text-primary-base border-surface-outline rounded focus:ring-primary-base"
-          />
-          <label htmlFor="create-more" className="ml-2 block text-sm text-content-base">
-            Create another milestone after this one
-          </label>
-        </div>
-        
-        <div className="flex justify-end space-x-2 pt-2">
-          <SecondaryButton onClick={onClose} type="button">
-            Cancel
-          </SecondaryButton>
-          <PrimaryButton type="submit" disabled={!name.trim()}>
-            Create Milestone
-          </PrimaryButton>
         </div>
       </form>
     </Modal>
