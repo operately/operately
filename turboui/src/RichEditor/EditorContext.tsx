@@ -1,7 +1,7 @@
 import * as TipTap from "@tiptap/react";
 import * as React from "react";
 
-import { EditorState, Person } from "./useEditor";
+import { EditorState, MentionedPersonLookupFn, Person } from "./useEditor";
 
 export const EditorContext = React.createContext<EditorState | null>(null);
 
@@ -11,7 +11,7 @@ export function useUploadFile(): EditorState["uploadFile"] {
 
 export function usePerson(id: string): Person | null {
   const [person, setPerson] = React.useState<Person | null>(null);
-  const { mentionedPersonLookup } = useEditorContext();
+  const mentionedPersonLookup = useMentionedPersonLookup();
 
   React.useEffect(() => {
     let isMounted = true;
@@ -48,6 +48,10 @@ export function useLinkState(): [boolean, React.Dispatch<React.SetStateAction<bo
 
 export function useTipTapEditor(): TipTap.Editor {
   return useEditorContext().editor;
+}
+
+export function useMentionedPersonLookup(): MentionedPersonLookupFn | undefined {
+  return useEditorContext().mentionedPersonLookup;
 }
 
 function useEditorContext(): EditorState {
