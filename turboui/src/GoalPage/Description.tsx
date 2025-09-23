@@ -7,12 +7,13 @@ import { Editor, MentionedPersonLookupFn, useEditor } from "../RichEditor";
 import { SectionHeader } from "./SectionHeader";
 
 export function Description(props: GoalPage.State) {
-  const state = useDescriptionState(props);
+  const initialMode = isContentEmpty(props.description) ? "zero" : "view";
+  const [mode, setMode] = React.useState<"view" | "edit" | "zero">(initialMode);
 
-  if (state.mode == "zero" && !props.canEdit) return null;
+  const startEdit = () => setMode("edit");
 
   const editButton = (
-    <SecondaryButton size="xxs" onClick={state.startEdit}>
+    <SecondaryButton size="xxs" onClick={startEdit}>
       {props.description ? "Edit" : "Write"}
     </SecondaryButton>
   );
@@ -22,40 +23,43 @@ export function Description(props: GoalPage.State) {
       <SectionHeader
         title="Goal Description"
         buttons={editButton}
-        showButtons={props.canEdit && state.mode !== "edit"}
+        showButtons={props.canEdit && mode !== "edit"}
       />
 
-      {state.mode === "zero" && <DescriptionZeroState />}
-      {state.mode === "view" && <DescriptionContent state={state} />}
-      {state.mode === "edit" && <DescriptionEditor state={state} />}
+      {mode === "zero" && <ZeroState canEdit={props.canEdit} />}
+      {mode === "view" && (
+        <ViewMode
+          rawDescription={props.description}
+          mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+        />
+      )}
+      {mode === "edit" && (
+        <EditMode
+          description={props.description}
+          richTextHandlers={props.richTextHandlers}
+          updateDescription={props.updateDescription}
+          setMode={setMode}
+        />
+      )}
     </div>
   );
 }
 
-function DescriptionContent({ state }: { state: State }) {
-  const [isExpanded, setIsExpanded] = React.useState(false);
+interface ViewModeProps {
+  rawDescription: any;
+  mentionedPersonLookup: MentionedPersonLookupFn;
+}
 
-  const length = React.useMemo(() => {
-    return state.description ? countCharacters(state.description, { skipParse: true }) : 0;
-  }, [state.description]);
-
-  const displayedDescription = React.useMemo(() => {
-    if (length <= 200) {
-      return state.description;
-    } else if (isExpanded) {
-      return state.description;
-    } else {
-      return shortenContent(state.description!, 200, { suffix: "...", skipParse: true });
-    }
-  }, [state.description, length, isExpanded]);
+function ViewMode({ rawDescription, mentionedPersonLookup }: ViewModeProps) {
+  const { description, length, isExpanded, toggleExpand } = useExpandDescription(rawDescription);
 
   return (
     <div className="mt-2">
-      <RichContent content={displayedDescription} mentionedPersonLookup={state.mentionedPersonLookup} />
+      <RichContent content={description} mentionedPersonLookup={mentionedPersonLookup} />
 
       {length > 200 && (
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={toggleExpand}
           className="text-content-dimmed hover:underline text-sm mt-1 font-medium"
         >
           {isExpanded ? "Collapse" : "Expand"}
@@ -65,7 +69,9 @@ function DescriptionContent({ state }: { state: State }) {
   );
 }
 
-function DescriptionZeroState() {
+function ZeroState({ canEdit }: { canEdit: boolean }) {
+  if (!canEdit) return null;
+
   return (
     <div className="mb-1">
       <div className="text-content-dimmed text-sm">Describe the goal to provide context and clarity.</div>
@@ -73,15 +79,44 @@ function DescriptionZeroState() {
   );
 }
 
-function DescriptionEditor({ state }: { state: State }) {
+interface EditModeProps {
+  description?: any;
+  richTextHandlers: any;
+  updateDescription: (content: any) => void;
+  setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
+}
+
+function EditMode({ description, richTextHandlers, updateDescription, setMode }: EditModeProps) {
+  const editor = useEditor({
+    content: description,
+    editable: true,
+    placeholder: "Describe the goal...",
+    handlers: richTextHandlers,
+  });
+
+  const save = React.useCallback(() => {
+    const content = editor.getJson();
+    updateDescription(content);
+
+    if (isContentEmpty(content)) {
+      setMode("zero");
+    } else {
+      setMode("view");
+    }
+  }, [editor, setMode, updateDescription]);
+
+  const cancel = React.useCallback(() => {
+    setMode("view");
+  }, [setMode]);
+
   return (
     <div className="mt-2">
-      <Editor editor={state.editor} />
+      <Editor editor={editor} />
       <div className="flex gap-2 mt-2">
-        <PrimaryButton size="xs" onClick={state.save}>
+        <PrimaryButton size="xs" onClick={save}>
           Save
         </PrimaryButton>
-        <SecondaryButton size="xs" onClick={state.cancel}>
+        <SecondaryButton size="xs" onClick={cancel}>
           Cancel
         </SecondaryButton>
       </div>
@@ -89,71 +124,27 @@ function DescriptionEditor({ state }: { state: State }) {
   );
 }
 
-interface State {
-  description: string | null;
-  mode: "view" | "edit" | "zero";
-  mentionedPersonLookup: MentionedPersonLookupFn;
-  setMode: React.Dispatch<React.SetStateAction<"view" | "edit" | "zero">>;
-  setDescription: React.Dispatch<React.SetStateAction<string | null>>;
-  editor: ReturnType<typeof useEditor>;
-  startEdit: () => void;
-  save: () => void;
-  cancel: () => void;
-}
+function useExpandDescription(rawDescription: any) {
+  const [isExpanded, setIsExpanded] = React.useState(false);
 
-function useDescriptionState(props: GoalPage.State): State {
-  const initialMode = isContentEmpty(props.description) ? "zero" : "view";
+  const length = React.useMemo(() => {
+    return rawDescription ? countCharacters(rawDescription, { skipParse: true }) : 0;
+  }, [rawDescription]);
 
-  const [description, setDescription] = React.useState<string | null>(props.description || null);
-  const [mode, setMode] = React.useState<"view" | "edit" | "zero">(initialMode);
-
-  React.useEffect(() => {
-    setDescription(props.description || null);
-  }, [props.description]);
-
-  const editor = useEditor({
-    content: props.description,
-    editable: true,
-    placeholder: "Describe the goal...",
-    handlers: props.richTextHandlers,
-  });
-
-  const save = React.useCallback(() => {
-    const content = editor.getJson();
-
-    props.updateDescription(content);
-    setDescription(content);
-
-    if (isContentEmpty(content)) {
-      setMode("zero");
+  const description = React.useMemo(() => {
+    if (length <= 200 || isExpanded) {
+      return rawDescription;
     } else {
-      setMode("view");
+      return shortenContent(rawDescription, 200, { suffix: "...", skipParse: true });
     }
-  }, [editor, setDescription, setMode]);
+  }, [rawDescription, length, isExpanded]);
 
-  const cancel = React.useCallback(() => {
-    if (isContentEmpty(description)) {
-      setMode("zero");
-    } else {
-      setMode("view");
-    }
-  }, [setMode, description]);
-
-  const startEdit = React.useCallback(() => {
-    editor.setContent(props.description);
-    editor.setFocused(true);
-    setMode("edit");
-  }, [setMode]);
+  const toggleExpand = React.useCallback(() => setIsExpanded((prev) => !prev), [setIsExpanded]);
 
   return {
     description,
-    mode,
-    editor,
-    startEdit,
-    setMode,
-    setDescription,
-    save,
-    cancel,
-    mentionedPersonLookup: props.richTextHandlers.mentionedPersonLookup,
+    length,
+    isExpanded,
+    toggleExpand,
   };
 }
