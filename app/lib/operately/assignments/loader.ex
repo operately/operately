@@ -15,9 +15,9 @@ defmodule Operately.Assignments.Loader do
   def load(person, company) do
     [
       Task.async(fn -> load_pending_project_check_ins(company, person) end),
-      Task.async(fn -> load_pending_project_check_in_acknowledgements(company, person) end)
-      # Task.async(fn -> load_pending_goal_updates(company, person) end),
-      # Task.async(fn -> load_pending_goal_update_acknowledgements(company, person) end)
+      Task.async(fn -> load_pending_project_check_in_acknowledgements(company, person) end),
+      Task.async(fn -> load_pending_goal_updates(company, person) end),
+      Task.async(fn -> load_pending_goal_update_acknowledgements(company, person) end)
     ]
     |> Task.await_many()
     |> List.flatten()
@@ -75,52 +75,53 @@ defmodule Operately.Assignments.Loader do
     end)
   end
 
-  # defp load_pending_goal_updates(company, person) do
-  #   from(g in Goal,
-  #     where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
-  #     where: is_nil(g.closed_at),
-  #     where: g.champion_id == ^person.id,
-  #     where: fragment("(g0.timeframe->'contextual_start_date'->>'date' <= ? OR g0.timeframe->'contextual_start_date'->>'date' IS NULL)", ^to_string(Date.utc_today()))
-  #   )
-  #   |> Repo.all()
-  #   |> Enum.map(fn goal ->
-  #     path = Paths.goal_check_in_new_path(company, goal)
+  defp load_pending_goal_updates(company, person) do
+    from(g in Goal,
+      where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
+      where: is_nil(g.closed_at),
+      where: g.champion_id == ^person.id,
+      where: fragment("(g0.timeframe->'contextual_start_date'->>'date' <= ? OR g0.timeframe->'contextual_start_date'->>'date' IS NULL)", ^to_string(Date.utc_today()))
+    )
+    |> Repo.all()
+    |> Enum.map(fn goal ->
+      path = Paths.goal_check_in_new_path(company, goal)
 
-  #     %Assignment{
-  #       resource_id: Paths.goal_id(goal),
-  #       name: goal.name,
-  #       due: Operately.Time.as_datetime(goal.next_update_scheduled_at),
-  #       relative_due: Operately.Time.relative_due_days(goal.next_update_scheduled_at),
-  #       type: :goal,
-  #       path: path,
-  #       url: Paths.to_url(path)
-  #     }
-  #   end)
-  # end
+      %Assignment{
+        resource_id: Paths.goal_id(goal),
+        name: goal.name,
+        due: Operately.Time.as_datetime(goal.next_update_scheduled_at),
+        relative_due: Operately.Time.relative_due_days(goal.next_update_scheduled_at),
+        type: :goal,
+        path: path,
+        url: Paths.to_url(path)
+      }
+    end)
+  end
 
-  # defp load_pending_goal_update_acknowledgements(company, person) do
-  #   from(u in Update,
-  #     join: goal in assoc(u, :goal),
-  #     join: author in assoc(u, :author),
-  #     where: is_nil(goal.deleted_at),
-  #     where: is_nil(u.acknowledged_by_id),
-  #     preload: [goal: goal, author: author]
-  #   )
-  #   |> Repo.all()
-  #   |> Enum.map(fn update ->
-  #     path = Paths.goal_check_in_path(company, update)
+  defp load_pending_goal_update_acknowledgements(company, person) do
+    from(u in Update,
+      join: goal in assoc(u, :goal),
+      join: author in assoc(u, :author),
+      where: is_nil(goal.deleted_at),
+      where: is_nil(u.acknowledged_by_id),
+      where: (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or (goal.champion_id == ^person.id and author.id != goal.champion_id),
+      preload: [goal: goal, author: author]
+    )
+    |> Repo.all()
+    |> Enum.map(fn update ->
+      path = Paths.goal_check_in_path(company, update)
 
-  #     %Assignment{
-  #       resource_id: Paths.goal_update_id(update),
-  #       name: update.goal.name,
-  #       due: Operately.Time.as_datetime(update.inserted_at),
-  #       relative_due: Operately.Time.relative_due_days(update.inserted_at),
-  #       type: :goal_update,
-  #       path: path,
-  #       url: Paths.to_url(path),
-  #       author_id: Paths.person_id(update.author),
-  #       author_name: update.author.full_name
-  #     }
-  #   end)
-  # end
+      %Assignment{
+        resource_id: Paths.goal_update_id(update),
+        name: update.goal.name,
+        due: Operately.Time.as_datetime(update.inserted_at),
+        relative_due: Operately.Time.relative_due_days(update.inserted_at),
+        type: :goal_update,
+        path: path,
+        url: Paths.to_url(path),
+        author_id: Paths.person_id(update.author),
+        author_name: update.author.full_name
+      }
+    end)
+  end
 end
