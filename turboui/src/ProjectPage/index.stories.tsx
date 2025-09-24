@@ -7,9 +7,9 @@ import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { ProjectPage } from "./index";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 // Helper function to create rich text content for check-ins
 function asRichText(content: string): any {
@@ -327,6 +327,7 @@ export const Default: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,
@@ -416,12 +417,13 @@ export const ReadOnly: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
-           tasksCount: mockTasks.length,
-           discussionsCount: mockDiscussions.length,
-           checkInsCount: mockCheckIns.length,
-         }}
+          tasksCount: mockTasks.length,
+          discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
+        }}
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
         setSpace={setSpace}
@@ -547,6 +549,7 @@ export const EmptyTasks: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,
@@ -661,6 +664,7 @@ export const EmptyProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="New Project"
         childrenCount={{
           tasksCount: 0,
@@ -733,6 +737,7 @@ export const EmptyProjectReadOnly: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,
@@ -880,6 +885,7 @@ export const PausedProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="AI Chatbot Prototype"
         childrenCount={{
           tasksCount: tasks.length,
@@ -972,6 +978,7 @@ export const ClosedProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
+        markdownLink="#"
         projectName="Work Map GA"
         childrenCount={{
           tasksCount: tasks.length,

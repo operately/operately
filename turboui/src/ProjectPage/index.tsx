@@ -75,6 +75,7 @@ export namespace ProjectPage {
     reopenLink: string;
     pauseLink: string;
     markdownLink: string;
+    fetchMarkdown?: () => Promise<string>;
 
     projectName: string;
     description?: string;

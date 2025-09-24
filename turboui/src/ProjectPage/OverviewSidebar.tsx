@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { ActionList } from "../ActionList";
 import { SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -253,6 +253,32 @@ function NotificationSection(_props: ProjectPage.State) {
 }
 
 function Actions(props: ProjectPage.State) {
+  const handleExportAsMarkdown = useCallback(async () => {
+    try {
+      const filename = sanitizeFilename(props.projectName);
+
+      if (props.fetchMarkdown) {
+        const content = await props.fetchMarkdown();
+        downloadMarkdownContent(content, filename);
+        return;
+      }
+
+      if (!props.markdownLink || props.markdownLink === "#") {
+        return;
+      }
+
+      const response = await fetch(props.markdownLink, { credentials: "include" });
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const content = await response.text();
+      downloadMarkdownContent(content, filename);
+    } catch (error) {
+      console.error("Failed to export project as Markdown", error);
+    }
+  }, [props.fetchMarkdown, props.markdownLink, props.projectName]);
+
   const actions = [
     {
       type: "action" as const,
@@ -289,9 +315,9 @@ function Actions(props: ProjectPage.State) {
       hidden: !props.canEdit || props.state !== "paused",
     },
     {
-      type: "link" as const,
+      type: "action" as const,
       label: "Export as Markdown",
-      link: props.markdownLink,
+      onClick: handleExportAsMarkdown,
       icon: IconFileExport,
       testId: "export-as-markdown",
     },
@@ -315,6 +341,30 @@ function Actions(props: ProjectPage.State) {
       <ActionList actions={visibleActions} />
     </SidebarSection>
   );
+}
+
+function sanitizeFilename(name: string) {
+  const collapsed = name.trim().replace(/\s+/g, " ");
+  const cleaned = collapsed.replace(/[\\/:*?"<>|]/g, "");
+  return cleaned.length > 0 ? cleaned : "project";
+}
+
+function downloadMarkdownContent(content: string, filename: string) {
+  if (!content) {
+    throw new Error("Empty markdown content");
+  }
+
+  const blob = new Blob([content], { type: "text/markdown" });
+  const url = window.URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+
+  anchor.href = url;
+  anchor.download = `${filename}.md`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  window.URL.revokeObjectURL(url);
 }
 
 // Uses shared SidebarSection; callers can pass className/testId as needed
