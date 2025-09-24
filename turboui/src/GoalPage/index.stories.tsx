@@ -132,7 +132,6 @@ function Component(props: Partial<GoalPage.Props>) {
       workmapLink="#"
       closeLink="#"
       reopenLink="#"
-      markdownLink="#"
       newCheckInLink={storyPath("Pages/GoalCheckInPage", "Default")}
       newDiscussionLink="#"
       addSubgoalLink="#"

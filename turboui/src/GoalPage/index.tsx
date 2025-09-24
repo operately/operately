@@ -87,7 +87,6 @@ export namespace GoalPage {
     newDiscussionLink: string;
     addSubgoalLink: string;
     addSubprojectLink: string;
-    markdownLink: string;
     exportMarkdown?: () => void;
 
     goalName: string;

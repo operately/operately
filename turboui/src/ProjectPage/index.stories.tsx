@@ -327,7 +327,6 @@ export const Default: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,
@@ -417,7 +416,6 @@ export const ReadOnly: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: mockTasks.length,
@@ -549,7 +547,6 @@ export const EmptyTasks: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,
@@ -664,7 +661,6 @@ export const EmptyProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="New Project"
         childrenCount={{
           tasksCount: 0,
@@ -737,7 +733,6 @@ export const EmptyProjectReadOnly: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
           tasksCount: tasks.length,
@@ -885,7 +880,6 @@ export const PausedProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="AI Chatbot Prototype"
         childrenCount={{
           tasksCount: tasks.length,
@@ -978,7 +972,6 @@ export const ClosedProject: Story = {
         closeLink="#"
         reopenLink="#"
         pauseLink="#"
-        markdownLink="#"
         projectName="Work Map GA"
         childrenCount={{
           tasksCount: tasks.length,
