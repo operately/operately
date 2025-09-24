@@ -178,24 +178,8 @@ function Page() {
     }
   };
 
-  const fetchMarkdown = React.useCallback(async () => {
-    try {
-      const response = await fetch(paths.goalMarkdownExportPath(goal.id), {
-        credentials: "include",
-        headers: {
-          "x-company-id": paths.companyIdentifier(),
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-
-      return await response.text();
-    } catch (error) {
-      console.error("Failed to fetch goal markdown", error);
-      showErrorToast("Error", "We couldn't export this goal as Markdown. Please try again.");
-      throw error;
-    }
+  const exportMarkdown = React.useCallback(() => {
+    window.open(paths.goalMarkdownExportPath(goal.id), "_blank", "noopener");
   }, [goal.id, paths]);
 
   const props: GoalPage.Props = {
@@ -207,7 +191,7 @@ function Page() {
     addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
     markdownLink: paths.goalMarkdownExportPath(goal.id),
-    fetchMarkdown,
+    exportMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,

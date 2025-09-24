@@ -195,24 +195,8 @@ function Page() {
       });
   };
 
-  const fetchMarkdown = React.useCallback(async () => {
-    try {
-      const response = await fetch(paths.projectMarkdownExportPath(project.id), {
-        credentials: "include",
-        headers: {
-          "x-company-id": paths.companyIdentifier(),
-        },
-      });
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-
-      return await response.text();
-    } catch (error) {
-      console.error("Failed to fetch project markdown", error);
-      showErrorToast("Error", "We couldn't export this project as Markdown. Please try again.");
-      throw error;
-    }
+  const exportMarkdown = React.useCallback(() => {
+    window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
   }, [paths, project.id]);
 
   const props: ProjectPage.Props = {
@@ -221,8 +205,7 @@ function Page() {
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
     markdownLink: paths.projectMarkdownExportPath(project.id),
-    fetchMarkdown,
-
+    exportMarkdown,
     childrenCount,
 
     projectName: projectName as string,

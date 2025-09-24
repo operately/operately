@@ -152,10 +152,6 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId]);
   }
 
-  projectAsMarkdownPath(projectId: string) {
-    return this.createCompanyPath(["projects", projectId, "md"]);
-  }
-
   projectMarkdownExportPath(projectId: string) {
     return this.createCompanyPath(["exports", "markdown", "projects", projectId]);
   }
@@ -340,10 +336,6 @@ export class Paths {
     return this.createCompanyPath(["goals", goalId]) + (params?.tab ? "?tab=" + params.tab : "");
   }
 
-  goalAsMarkdownPath(goalId: string) {
-    return this.createCompanyPath(["goals", goalId, "md"]);
-  }
-
   goalMarkdownExportPath(goalId: string) {
     return this.createCompanyPath(["exports", "markdown", "goals", goalId]);
   }
@@ -410,10 +402,6 @@ export class Paths {
 
   projectClosePath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "close"]);
-  }
-
-  companyIdentifier() {
-    return this.getCompanyID();
   }
 
   taskPath(taskId: string) {
