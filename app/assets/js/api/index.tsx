@@ -1618,13 +1618,13 @@ export interface ResourceHubUploadedFile {
 }
 
 export interface ReviewAssignment {
-  resourceId?: string | null;
-  name?: string | null;
-  due?: string | null;
-  type?: string | null;
-  authorId?: string | null;
-  authorName?: string | null;
-  path?: string | null;
+  resourceId: string;
+  name: string;
+  due: string;
+  type: ReviewAssignmentTypes;
+  authorId: string | null;
+  authorName: string | null;
+  path: string;
 }
 
 export interface Space {
@@ -1976,6 +1976,8 @@ export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 
+export type ReviewAssignmentTypes = "goal" | "project" | "goal_update" | "check_in";
+
 export type SuccessStatus = "achieved" | "missed";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
@@ -2080,7 +2082,7 @@ export interface GetActivityResult {
 export interface GetAssignmentsInput {}
 
 export interface GetAssignmentsResult {
-  assignments?: ReviewAssignment[] | null;
+  assignments: ReviewAssignment[];
 }
 
 export interface GetAssignmentsCountInput {}

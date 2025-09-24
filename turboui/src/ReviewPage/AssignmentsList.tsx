@@ -1,13 +1,13 @@
 import React from "react";
 
-import { ReviewAssignment, AssignmentType } from "@/models/assignments";
-
-import FormattedTime from "@/components/FormattedTime";
-import { parseDate, relativeDay } from "@/utils/time";
 import { match } from "ts-pattern";
-import { DivLink, IconTarget, IconHexagons } from "turboui";
-import classNames from "classnames";
-import { assertPresent } from "@/utils/assertions";
+import { ReviewAssignment, AssignmentType } from "./types";
+
+import { parseDate, relativeDay } from "../utils/time";
+import { IconTarget, IconHexagons } from "../icons";
+import { DivLink } from "../Link";
+import { FormattedTime } from "../FormattedTime";
+import classNames from "../utils/classnames";
 
 export function AssignmentsList({ assignments }: { assignments: ReviewAssignment[] }) {
   return (
@@ -20,7 +20,6 @@ export function AssignmentsList({ assignments }: { assignments: ReviewAssignment
 }
 
 function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
-  assertPresent(assignment.path, "path must be present in assingment");
   const testId = `assignment-${assignment.resourceId}`;
 
   const className = classNames(
