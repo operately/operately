@@ -138,6 +138,8 @@ export namespace ProjectPage {
     checkIns: CheckIn[];
     discussions: Discussion[];
 
+    currentUser?: Person | null;
+
     richTextHandlers: RichEditorHandlers;
 
     // Resource management

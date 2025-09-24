@@ -10,5 +10,5 @@ export function CheckInButton({ project }: { project: Projects.Project }) {
 
   const path = paths.projectCheckInNewPath(project.id!);
 
-  return <PrimaryButton linkTo={path}>Check-In Now</PrimaryButton>;
+  return <PrimaryButton linkTo={path}>Check in</PrimaryButton>;
 }

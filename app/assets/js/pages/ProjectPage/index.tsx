@@ -23,6 +23,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
 import { useRichEditorHandlers } from "@/features/richtexteditor";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
 export { pageCacheKey as projectPageCacheKey };
@@ -76,6 +77,7 @@ function Page() {
   const { data, refresh } = PageCache.useData(loader);
   const { project, checkIns, discussions, backendTasks, childrenCount } = data;
   const navigate = useNavigate();
+  const currentUser = useMe();
 
   useAiSidebar({
     conversationContext: {
@@ -266,6 +268,7 @@ function Page() {
     discussions: prepareDiscussions(paths, discussions),
     newCheckInLink: paths.projectCheckInNewPath(project.id),
     newDiscussionLink: paths.projectDiscussionNewPath(project.id),
+    currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
     searchPeople: assigneeSearch,
 
     richTextHandlers: richEditorHandlers,

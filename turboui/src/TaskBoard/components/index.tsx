@@ -111,7 +111,7 @@ export function TaskBoard({
   );
 
   return (
-    <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto">
+    <div className="flex flex-col flex-1 w-full max-w-6xl mx-auto pb-8">
       <TaskCreationModal
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}

@@ -28,6 +28,7 @@ import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { useChecklists } from "./useChecklists";
 import { useRichEditorHandlers } from "@/features/richtexteditor";
+import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
 function pageCacheKey(id: string): string {
@@ -76,6 +77,7 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const { goal, workMap, checkIns, discussions } = PageCache.useData(loader).data;
+  const currentUser = useMe();
 
   assertPresent(goal.space);
   assertPresent(goal.privacy);
@@ -227,6 +229,7 @@ function Page() {
     discussions: prepareDiscussions(paths, discussions),
     contributors: [],
     relatedWorkItems: prepareWorkMapData(workMap),
+    currentUser: currentUser ? People.parsePersonForTurboUi(paths, currentUser) : null,
 
     richTextHandlers: richEditorHandlers,
 

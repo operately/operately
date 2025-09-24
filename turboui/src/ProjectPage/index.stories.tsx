@@ -41,6 +41,7 @@ function daysAgo(days: number): Date {
 }
 
 const people = genPeople(5);
+const currentViewer = people[0]!;
 
 const meta: Meta<typeof ProjectPage> = {
   title: "Pages/ProjectPage",
@@ -387,6 +388,7 @@ export const Default: Story = {
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={mockDiscussions}
         onProjectDelete={() => {}}
         canDelete={true}
@@ -469,6 +471,7 @@ export const ReadOnly: Story = {
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
@@ -595,6 +598,7 @@ export const EmptyTasks: Story = {
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
@@ -706,6 +710,7 @@ export const EmptyProject: Story = {
         newCheckInLink="#"
         checkIns={[]}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
@@ -777,6 +782,7 @@ export const EmptyProjectReadOnly: Story = {
         newCheckInLink="#"
         checkIns={[]}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
@@ -931,6 +937,7 @@ export const PausedProject: Story = {
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
@@ -1017,6 +1024,7 @@ export const ClosedProject: Story = {
         newCheckInLink="#"
         checkIns={mockCheckIns}
         newDiscussionLink="#"
+        currentUser={currentViewer}
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
