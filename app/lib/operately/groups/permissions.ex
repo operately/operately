@@ -16,6 +16,7 @@ defmodule Operately.Groups.Permissions do
     :can_view,
     :can_view_message,
     :can_add_members,
+    :can_delete,
   ]
 
   def calculate_permissions(access_level) do
@@ -34,6 +35,7 @@ defmodule Operately.Groups.Permissions do
       can_view: can_view(access_level),
       can_view_message: can_view_message(access_level),
       can_add_members: can_add_members(access_level),
+      can_delete: can_delete(access_level),
     }
   end
 
@@ -51,6 +53,7 @@ defmodule Operately.Groups.Permissions do
   def can_view(access_level), do: access_level >= Binding.view_access()
   def can_view_message(access_level), do: access_level >= Binding.view_access()
   def can_add_members(access_level), do: access_level >= Binding.full_access()
+  def can_delete(access_level), do: access_level >= Binding.full_access()
 
   def check(access_level, permission) when is_number(access_level) and is_atom(permission) do
     permissions = calculate_permissions(access_level)

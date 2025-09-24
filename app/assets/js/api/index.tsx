@@ -3240,6 +3240,14 @@ export interface DeleteResourceHubLinkResult {
   success?: boolean | null;
 }
 
+export interface DeleteSpaceInput {
+  spaceId?: Id | null;
+}
+
+export interface DeleteSpaceResult {
+  space?: Space | null;
+}
+
 export interface DisconnectGoalFromProjectInput {
   projectId?: string | null;
   goalId?: string | null;
@@ -4534,6 +4542,10 @@ class ApiNamespaceRoot {
     return this.client.post("/delete_resource_hub_link", input);
   }
 
+  async deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
+    return this.client.post("/delete_space", input);
+  }
+
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
     return this.client.post("/disconnect_goal_from_project", input);
   }
@@ -5510,6 +5522,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.deleteResourceHubLink(input);
   }
 
+  deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
+    return this.apiNamespaceRoot.deleteSpace(input);
+  }
+
   disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
     return this.apiNamespaceRoot.disconnectGoalFromProject(input);
   }
@@ -6040,6 +6056,9 @@ export async function deleteResourceHubFolder(
 }
 export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
   return defaultApiClient.deleteResourceHubLink(input);
+}
+export async function deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
+  return defaultApiClient.deleteSpace(input);
 }
 export async function disconnectGoalFromProject(
   input: DisconnectGoalFromProjectInput,
@@ -6734,6 +6753,10 @@ export function useDeleteResourceHubLink(): UseMutationHookResult<
   );
 }
 
+export function useDeleteSpace(): UseMutationHookResult<DeleteSpaceInput, DeleteSpaceResult> {
+  return useMutation<DeleteSpaceInput, DeleteSpaceResult>((input) => defaultApiClient.deleteSpace(input));
+}
+
 export function useDisconnectGoalFromProject(): UseMutationHookResult<
   DisconnectGoalFromProjectInput,
   DisconnectGoalFromProjectResult
@@ -7305,6 +7328,8 @@ export default {
   useDeleteResourceHubFolder,
   deleteResourceHubLink,
   useDeleteResourceHubLink,
+  deleteSpace,
+  useDeleteSpace,
   disconnectGoalFromProject,
   useDisconnectGoalFromProject,
   editComment,

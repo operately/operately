@@ -205,6 +205,7 @@ defmodule OperatelyWeb.Api do
   mutation(:delete_resource_hub_file, M.DeleteResourceHubFile)
   mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
   mutation(:delete_resource_hub_link, M.DeleteResourceHubLink)
+  mutation(:delete_space, M.DeleteSpace)
 
   mutation(:remove_company_admin, M.RemoveCompanyAdmin)
   mutation(:remove_company_member, M.RemoveCompanyMember)
