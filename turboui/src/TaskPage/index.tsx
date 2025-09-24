@@ -97,8 +97,8 @@ export namespace TaskPage {
     timelineItems?: TimelineItem[];
     currentUser?: TimelinePerson;
     canComment?: boolean;
-    onAddComment?: (content: any) => void;
-    onEditComment?: (id: string, content: any) => void;
+    onAddComment: (content: any) => void;
+    onEditComment: (id: string, content: any) => void;
     timelineFilters?: TimelineFilters;
 
     notifications?: any;
