@@ -117,6 +117,7 @@ export namespace GoalPage {
     relatedWorkItems: MiniWorkMap.WorkItem[];
     checkIns: CheckIn[];
     discussions: Discussion[];
+    currentUser?: Person | null;
     status: BadgeStatus;
     state: "active" | "closed";
 

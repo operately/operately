@@ -53,6 +53,7 @@ function Component(props: Partial<GoalPage.Props>) {
       space: "view",
     },
   );
+  const currentUser = React.useMemo(() => props.currentUser || genPerson(), [props.currentUser]);
 
   React.useEffect(() => {
     setChecklistItems(props.checklistItems || []);
@@ -159,6 +160,7 @@ function Component(props: Partial<GoalPage.Props>) {
       {...checklistHandlers}
       deleteGoal={deleteGoal}
       richTextHandlers={createMockRichEditorHandlers()}
+      currentUser={currentUser}
     />
   );
 }

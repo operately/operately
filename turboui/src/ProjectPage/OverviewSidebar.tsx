@@ -23,7 +23,7 @@ export function OverviewSidebar(props: ProjectPage.State) {
   return (
     <div className="sm:col-span-4 sm:pl-8">
       <div className="space-y-6">
-        <LastCheckInSection {...props} />
+        <CheckInsSection {...props} />
         <ParentGoal {...props} />
         <ProjectDates {...props} />
       </div>
@@ -47,14 +47,50 @@ export function OverviewSidebar(props: ProjectPage.State) {
   );
 }
 
-function LastCheckInSection(props: any) {
-  if (!props.checkIns || props.checkIns.length === 0) {
-    return null;
+function CheckInsSection(props: ProjectPage.State) {
+  const checkIns = props.checkIns || [];
+  const isClosed = props.state === "closed";
+  const lastCheckInState: "active" | "closed" | undefined = isClosed ? "closed" : "active";
+  const viewerCanCheckIn = props.canEdit && !isClosed;
+  const isChampion = !!props.currentUser?.id && !!props.champion?.id && props.currentUser.id === props.champion.id;
+  const championFirstName = props.champion?.fullName?.split(" ")[0];
+
+  let zeroStateCopy = "Weekly check-ins keep everyone in the loop. Updates will appear here.";
+
+  if (isClosed) {
+    zeroStateCopy = "This project is closed. Earlier check-ins stay available for reference.";
+  } else if (viewerCanCheckIn && isChampion) {
+    zeroStateCopy = "Share the first update to set the project status and start the weekly cadence.";
+  } else if (championFirstName) {
+    zeroStateCopy = `${championFirstName} hasn't shared a check-in yet. Updates will land here soon.`;
   }
 
+  const header = (
+    <div className="flex items-center gap-2">
+      <span>Last update</span>
+      {viewerCanCheckIn && (
+        <span className="shrink-0">
+          <SecondaryButton size="xxs" linkTo={props.newCheckInLink} testId="sidebar-check-in-button">
+            Check in
+          </SecondaryButton>
+        </span>
+      )}
+    </div>
+  );
+
   return (
-    <SidebarSection title="Last check-in">
-      <LastCheckIn checkIns={props.checkIns} state={props.state} mentionedPersonLookup={props.mentionedPersonLookup} />
+    <SidebarSection title={header} className="pt-4 sm:pt-0">
+      <div className="space-y-3">
+        {checkIns.length > 0 ? (
+          <LastCheckIn
+            checkIns={checkIns}
+            state={lastCheckInState}
+            mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+          />
+        ) : (
+          <p className="text-sm text-content-dimmed">{zeroStateCopy}</p>
+        )}
+      </div>
     </SidebarSection>
   );
 }

@@ -18,14 +18,18 @@ export function CheckIns(props: ProjectPage.State) {
 
         {showCheckInButton && (
           <PrimaryButton linkTo={props.newCheckInLink} size="xs" testId="check-in-button">
-            Check-In Now
+            Post check-in
           </PrimaryButton>
         )}
       </div>
 
       <div className="mt-8">
         {props.checkIns.map((checkIn) => (
-          <CheckInCard key={checkIn.id} checkIn={checkIn} mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup} />
+          <CheckInCard
+            key={checkIn.id}
+            checkIn={checkIn}
+            mentionedPersonLookup={props.richTextHandlers.mentionedPersonLookup}
+          />
         ))}
       </div>
     </div>
