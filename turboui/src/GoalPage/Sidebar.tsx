@@ -22,6 +22,7 @@ import { durationHumanized, isOverdue } from "../utils/time";
 import {
   IconCircleArrowRight,
   IconCircleCheck,
+  IconFileExport,
   IconInfoCircle,
   IconRotateDot,
   IconTrash,
@@ -351,6 +352,13 @@ function Actions(props: GoalPage.State) {
       icon: IconCircleArrowRight,
       hidden: !props.canEdit,
       testId: "move-to-another-space",
+    },
+    {
+      type: "link" as const,
+      label: "Export as Markdown",
+      link: props.markdownLink,
+      icon: IconFileExport,
+      testId: "export-as-markdown",
     },
     {
       type: "action" as const,

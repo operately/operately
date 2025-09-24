@@ -74,6 +74,7 @@ export namespace ProjectPage {
     closeLink: string;
     reopenLink: string;
     pauseLink: string;
+    markdownLink: string;
 
     projectName: string;
     description?: string;

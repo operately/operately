@@ -7,6 +7,7 @@ import {
   IconCircleArrowRight,
   IconCircleCheck,
   IconCopy,
+  IconFileExport,
   IconInfoCircle,
   IconPlayerPause,
   IconRotateDot,
@@ -286,6 +287,13 @@ function Actions(props: ProjectPage.State) {
       link: props.reopenLink,
       icon: IconRotateDot,
       hidden: !props.canEdit || props.state !== "paused",
+    },
+    {
+      type: "link" as const,
+      label: "Export as Markdown",
+      link: props.markdownLink,
+      icon: IconFileExport,
+      testId: "export-as-markdown",
     },
     {
       type: "action" as const,

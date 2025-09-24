@@ -200,6 +200,7 @@ function Page() {
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
+    markdownLink: paths.projectAsMarkdownPath(project.id),
 
     childrenCount,
 
