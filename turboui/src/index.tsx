@@ -44,6 +44,7 @@ export { TaskPage } from "./TaskPage";
 export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
+export { ReviewPage } from "./ReviewPage";
 
 export { RichContent };
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
