@@ -44,6 +44,12 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_reviewer_removed_feed_posted()
   end
 
+  feature "export goal as markdown", ctx do
+    ctx
+    |> Steps.download_goal_markdown()
+    |> Steps.assert_goal_markdown_includes_details()
+  end
+
   # feature "changing the due date", ctx do
   #   ctx
   #   |> Steps.change_due_date()

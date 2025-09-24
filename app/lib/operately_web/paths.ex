@@ -39,6 +39,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goals", goal_id(goal)]) <> "?tab=#{tab}"
   end
 
+  def export_goal_markdown_path(company = %Company{}, goal = %Goal{}) do
+    create_path([company_id(company), "exports", "markdown", "goals", goal_id(goal)])
+  end
+
   def new_goal_path(company = %Company{}) do
     create_path([company_id(company), "goals", "new"])
   end
@@ -121,6 +125,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "projects", project_id(project)]) <> "?tab=#{tab}"
   end
 
+  def export_project_markdown_path(company = %Company{}, project = %Project{}) do
+    create_path([company_id(company), "exports", "markdown", "projects", project_id(project)])
+  end
+
   def pause_project_path(company = %Company{}, project = %Project{}) do
     create_path([company_id(company), "projects", project_id(project), "pause"])
   end
@@ -154,7 +162,12 @@ defmodule OperatelyWeb.Paths do
   def project_retrospective_path(company = %Company{}, project = %Project{}, comment = %Comment{}) do
     retrospective_with_comment = "retrospective#" <> comment_id(comment)
 
-    create_path([company_id(company), "projects", project_id(project), retrospective_with_comment])
+    create_path([
+      company_id(company),
+      "projects",
+      project_id(project),
+      retrospective_with_comment
+    ])
   end
 
   def project_milestone_path(company = %Company{}, milestone = %Milestone{}) do
@@ -178,7 +191,12 @@ defmodule OperatelyWeb.Paths do
   end
 
   def new_document_path(company = %Company{}, resource_hub) do
-    create_path([company_id(company), "resource-hubs", resource_hub_id(resource_hub), "new-document"])
+    create_path([
+      company_id(company),
+      "resource-hubs",
+      resource_hub_id(resource_hub),
+      "new-document"
+    ])
   end
 
   def folder_path(company = %Company{}, folder) do
