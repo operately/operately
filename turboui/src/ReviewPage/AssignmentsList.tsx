@@ -1,15 +1,15 @@
 import React from "react";
 
-import { ReviewAssignment, AssignmentType } from "@/models/assignments";
-
-import FormattedTime from "@/components/FormattedTime";
-import { parseDate, relativeDay } from "@/utils/time";
 import { match } from "ts-pattern";
-import { DivLink, IconTarget, IconHexagons } from "turboui";
-import classNames from "classnames";
-import { assertPresent } from "@/utils/assertions";
 
-export function AssignmentsList({ assignments }: { assignments: ReviewAssignment[] }) {
+import { ReviewPage } from ".";
+import { parseDate, relativeDay } from "../utils/time";
+import { IconTarget, IconHexagons } from "../icons";
+import { DivLink } from "../Link";
+import { FormattedTime } from "../FormattedTime";
+import classNames from "../utils/classnames";
+
+export function AssignmentsList({ assignments }: { assignments: ReviewPage.Assignment[] }) {
   return (
     <div className="flex flex-col mt-4">
       {assignments.map((assignment) => (
@@ -19,8 +19,7 @@ export function AssignmentsList({ assignments }: { assignments: ReviewAssignment
   );
 }
 
-function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
-  assertPresent(assignment.path, "path must be present in assingment");
+function AssignmentItem({ assignment }: { assignment: ReviewPage.Assignment }) {
   const testId = `assignment-${assignment.resourceId}`;
 
   const className = classNames(
@@ -35,7 +34,7 @@ function AssignmentItem({ assignment }: { assignment: ReviewAssignment }) {
       <DueDate date={assignment.due!} />
 
       <div className="flex gap-4 items-center">
-        <AssignmentIcon type={assignment.type as AssignmentType} />
+        <AssignmentIcon type={assignment.type as ReviewPage.AssignmentType} />
         <AssignmentInfo assignment={assignment} />
       </div>
     </DivLink>
@@ -58,7 +57,7 @@ const ICON_SIZE = 20;
 const GOAL_COLOR = "text-red-500 shrink-0";
 const PROJECT_COLOR = "text-indigo-500 shrink-0";
 
-function AssignmentIcon({ type }: { type: AssignmentType }) {
+function AssignmentIcon({ type }: { type: ReviewPage.AssignmentType }) {
   return match(type)
     .with("project", () => <IconHexagons size={ICON_SIZE} className={PROJECT_COLOR} />)
     .with("check_in", () => <IconHexagons size={ICON_SIZE} className={PROJECT_COLOR} />)
@@ -67,8 +66,8 @@ function AssignmentIcon({ type }: { type: AssignmentType }) {
     .exhaustive();
 }
 
-function AssignmentInfo({ assignment }: { assignment: ReviewAssignment }) {
-  return match(assignment.type as AssignmentType)
+function AssignmentInfo({ assignment }: { assignment: ReviewPage.Assignment }) {
+  return match(assignment.type as ReviewPage.AssignmentType)
     .with("project", () => <DueProjectCheckIn assignment={assignment} />)
     .with("check_in", () => <AcknowledgeProjectCheckIn assignment={assignment} />)
     .with("goal", () => <DueGoalUpdate assignment={assignment} />)
@@ -76,7 +75,7 @@ function AssignmentInfo({ assignment }: { assignment: ReviewAssignment }) {
     .exhaustive();
 }
 
-function DueProjectCheckIn({ assignment }: { assignment: ReviewAssignment }) {
+function DueProjectCheckIn({ assignment }: { assignment: ReviewPage.Assignment }) {
   return (
     <div>
       <span className="font-bold">Write the weekly check-in:</span> {assignment.name}
@@ -84,7 +83,7 @@ function DueProjectCheckIn({ assignment }: { assignment: ReviewAssignment }) {
   );
 }
 
-function AcknowledgeProjectCheckIn({ assignment }: { assignment: ReviewAssignment }) {
+function AcknowledgeProjectCheckIn({ assignment }: { assignment: ReviewPage.Assignment }) {
   return (
     <div>
       <div>
@@ -96,7 +95,7 @@ function AcknowledgeProjectCheckIn({ assignment }: { assignment: ReviewAssignmen
   );
 }
 
-function DueGoalUpdate({ assignment }: { assignment: ReviewAssignment }) {
+function DueGoalUpdate({ assignment }: { assignment: ReviewPage.Assignment }) {
   return (
     <div>
       <span className="font-bold">Update progress:</span> {assignment.name}
@@ -104,7 +103,7 @@ function DueGoalUpdate({ assignment }: { assignment: ReviewAssignment }) {
   );
 }
 
-function AcknowledgeGoalUpdate({ assignment }: { assignment: ReviewAssignment }) {
+function AcknowledgeGoalUpdate({ assignment }: { assignment: ReviewPage.Assignment }) {
   return (
     <div>
       <div>
