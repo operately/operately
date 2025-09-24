@@ -151,7 +151,7 @@ function Component(props: Partial<GoalPage.Props>) {
       championSearch={searchPeopleFn}
       reviewerSearch={searchPeopleFn}
       activityFeed={<div></div>}
-      updateDescription={async (_description: string | null) => true}
+      onDescriptionChange={async (_description: string | null) => true}
       addTarget={addTarget}
       deleteTarget={deleteTarget}
       updateTarget={async (_inputs) => true}
