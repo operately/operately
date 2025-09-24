@@ -178,6 +178,22 @@ function Page() {
     }
   };
 
+  const fetchMarkdown = React.useCallback(async () => {
+    try {
+      const result = await Goals.getGoal({ id: goal.id, includeMarkdown: true });
+
+      if (!result.markdown) {
+        throw new Error("Markdown content was not returned by the API");
+      }
+
+      return result.markdown;
+    } catch (error) {
+      console.error("Failed to fetch goal markdown", error);
+      showErrorToast("Error", "We couldn't export this goal as Markdown. Please try again.");
+      throw error;
+    }
+  }, [goal.id]);
+
   const props: GoalPage.Props = {
     workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
     closeLink: paths.goalClosePath(goal.id),
@@ -187,6 +203,7 @@ function Page() {
     addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
     markdownLink: paths.goalAsMarkdownPath(goal.id),
+    fetchMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,

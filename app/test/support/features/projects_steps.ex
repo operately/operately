@@ -6,10 +6,19 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.FeedSteps
   alias Operately.People.Person
+  alias OperatelyWeb.Api.Queries.GetProject
+  alias OperatelyWeb.Paths
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+
+  defp build_api_conn(person, company) do
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Test.init_test_session(%{})
+    |> Plug.Conn.assign(:current_person, person)
+    |> Plug.Conn.assign(:current_company, company)
+  end
 
   step :given_a_goal_exists, ctx, name: name do
     {:ok, goal} =
@@ -613,5 +622,24 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.find(UI.query(testid: "company-feed"), fn el ->
       FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
     end)
+  end
+
+  step :download_project_markdown, ctx do
+    conn = build_api_conn(ctx.champion, ctx.company)
+
+    {:ok, %{markdown: markdown}} =
+      GetProject.call(conn, %{id: Paths.project_id(ctx.project), include_markdown: true})
+
+    Map.put(ctx, :project_markdown, markdown)
+  end
+
+  step :assert_project_markdown_includes_details, ctx do
+    markdown = ctx.project_markdown
+
+    assert is_binary(markdown)
+    assert String.contains?(markdown, "# #{ctx.project.name}")
+    assert String.contains?(markdown, "Status:")
+
+    ctx
   end
 end

@@ -88,6 +88,7 @@ export namespace GoalPage {
     addSubgoalLink: string;
     addSubprojectLink: string;
     markdownLink: string;
+    fetchMarkdown?: () => Promise<string>;
 
     goalName: string;
     setGoalName: (name: string) => void;

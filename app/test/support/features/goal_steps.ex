@@ -5,6 +5,8 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.ContextualDates.ContextualDate
+  alias OperatelyWeb.Api.Queries.GetGoal
+  alias OperatelyWeb.Paths
 
   def setup(ctx) do
     ctx
@@ -27,6 +29,13 @@ defmodule Operately.Support.Features.GoalSteps do
     |> then(fn ctx ->
       UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
     end)
+  end
+
+  defp build_api_conn(person, company) do
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Test.init_test_session(%{})
+    |> Plug.Conn.assign(:current_person, person)
+    |> Plug.Conn.assign(:current_company, company)
   end
 
   #
@@ -483,5 +492,24 @@ defmodule Operately.Support.Features.GoalSteps do
     |> Enum.each(fn target ->
       Operately.Repo.delete(target)
     end)
+  end
+
+  step :download_goal_markdown, ctx do
+    conn = build_api_conn(ctx.champion, ctx.company)
+
+    {:ok, %{markdown: markdown}} =
+      GetGoal.call(conn, %{id: Paths.goal_id(ctx.goal), include_markdown: true})
+
+    Map.put(ctx, :goal_markdown, markdown)
+  end
+
+  step :assert_goal_markdown_includes_details, ctx do
+    markdown = ctx.goal_markdown
+
+    assert is_binary(markdown)
+    assert String.contains?(markdown, "# #{ctx.goal.name}")
+    assert String.contains?(markdown, "Status:")
+
+    ctx
   end
 end

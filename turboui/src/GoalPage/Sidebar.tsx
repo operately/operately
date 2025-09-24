@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import classNames from "../utils/classnames";
 
 import { match } from "ts-pattern";
@@ -328,6 +328,32 @@ function Privacy(props: GoalPage.State) {
 }
 
 function Actions(props: GoalPage.State) {
+  const handleExportAsMarkdown = useCallback(async () => {
+    try {
+      const filename = sanitizeFilename(props.goalName);
+
+      if (props.fetchMarkdown) {
+        const content = await props.fetchMarkdown();
+        downloadMarkdownContent(content, filename);
+        return;
+      }
+
+      if (!props.markdownLink || props.markdownLink === "#") {
+        return;
+      }
+
+      const response = await fetch(props.markdownLink, { credentials: "include" });
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
+      }
+
+      const content = await response.text();
+      downloadMarkdownContent(content, filename);
+    } catch (error) {
+      console.error("Failed to export goal as Markdown", error);
+    }
+  }, [props.fetchMarkdown, props.goalName, props.markdownLink]);
+
   const actions = [
     {
       type: "link" as const,
@@ -354,9 +380,9 @@ function Actions(props: GoalPage.State) {
       testId: "move-to-another-space",
     },
     {
-      type: "link" as const,
+      type: "action" as const,
       label: "Export as Markdown",
-      link: props.markdownLink,
+      onClick: handleExportAsMarkdown,
       icon: IconFileExport,
       testId: "export-as-markdown",
     },
@@ -381,4 +407,28 @@ function Actions(props: GoalPage.State) {
       <ActionList actions={actions} />
     </div>
   );
+}
+
+function sanitizeFilename(name: string) {
+  const collapsed = name.trim().replace(/\s+/g, " ");
+  const cleaned = collapsed.replace(/[\\/:*?"<>|]/g, "");
+  return cleaned.length > 0 ? cleaned : "goal";
+}
+
+function downloadMarkdownContent(content: string, filename: string) {
+  if (!content) {
+    throw new Error("Empty markdown content");
+  }
+
+  const blob = new Blob([content], { type: "text/markdown" });
+  const url = window.URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+
+  anchor.href = url;
+  anchor.download = `${filename}.md`;
+  document.body.appendChild(anchor);
+  anchor.click();
+  document.body.removeChild(anchor);
+
+  window.URL.revokeObjectURL(url);
 }

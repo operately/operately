@@ -67,6 +67,14 @@ defmodule Operately.Features.ProjectsTest do
       |> Steps.assert_project_goal_connection_visible_on_feed(goal_name: goal_name)
       |> Steps.assert_goal_connected_email_sent_to_champion(goal_name: goal_name)
     end
+
+    @tag login_as: :champion
+    feature "export project as markdown", ctx do
+      ctx
+      |> Steps.visit_project_page()
+      |> Steps.download_project_markdown()
+      |> Steps.assert_project_markdown_includes_details()
+    end
   end
 
   describe "new project page" do
