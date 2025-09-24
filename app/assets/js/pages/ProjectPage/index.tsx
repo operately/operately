@@ -102,6 +102,12 @@ function Page() {
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
   });
 
+  const [description, setDescription] = usePageField({
+    value: (data: {project: Projects.Project}) => data.project.description && JSON.parse(data.project.description),
+    update: (v) => Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
+    onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
+  });
+
   const [space, setSpace] = usePageField({
     value: (data) => parseSpaceForTurboUI(paths, data.project.space),
     update: (v) => Api.moveProjectToSpace({ projectId: project.id, spaceId: v.id }).then(() => true),
@@ -209,18 +215,8 @@ function Page() {
       return Promise.resolve(true);
     },
 
-    description: project.description && JSON.parse(project.description),
-    updateDescription: (description: any | null) => {
-      return Api.updateProjectDescription({
-        projectId: project.id!,
-        description: JSON.stringify(description),
-      })
-        .then(() => {
-          PageCache.invalidate(pageCacheKey(project.id!));
-          return true;
-        })
-        .catch(() => false);
-    },
+    description,
+    onDescriptionChange: setDescription,
 
     space: space as ProjectPage.Space,
     setSpace,
@@ -301,7 +297,7 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
+function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -314,39 +310,44 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
     }
   }, [value, cacheVersion, stateVersion]);
 
-  const updateState = (newVal: T): void => {
-    if (validations) {
-      for (const validation of validations) {
-        const error = validation(newVal);
-        if (error) {
-          onError?.(error);
-          return;
+  const updateState = (newVal: T): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (validations) {
+        for (const validation of validations) {
+          const error = validation(newVal);
+          if (error) {
+            onError?.(error);
+            resolve(false);
+            return;
+          }
         }
       }
-    }
 
-    const oldVal = state;
+      const oldVal = state;
 
-    const successHandler = () => {
-      PageCache.invalidate(pageCacheKey(data.project.id!));
-    };
+      const successHandler = () => {
+        PageCache.invalidate(pageCacheKey(data.project.id!));
+        resolve(true);
+      };
 
-    const errorHandler = (error: any) => {
-      setState(oldVal);
-      onError?.(error);
-    };
+      const errorHandler = (error: any) => {
+        setState(oldVal);
+        onError?.(error);
+        resolve(false);
+      };
 
-    setState(newVal);
+      setState(newVal);
 
-    update(newVal)
-      .then((res) => {
-        if (res === false || (typeof res === "object" && res?.success === false)) {
-          errorHandler("Update failed");
-        } else {
-          successHandler();
-        }
-      })
-      .catch(errorHandler);
+      update(newVal)
+        .then((res) => {
+          if (res === false || (typeof res === "object" && res?.success === false)) {
+            errorHandler("Update failed");
+          } else {
+            successHandler();
+          }
+        })
+        .catch(errorHandler);
+    });
   };
 
   return [state, updateState];

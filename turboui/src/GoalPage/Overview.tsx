@@ -4,10 +4,10 @@ import { GoalPage } from ".";
 import { WarningCallout } from "../Callouts";
 import { Checklists } from "./Checklists";
 import { Contributors } from "./Contributors";
-import { Description } from "./Description";
 import { RelatedWork } from "./RelatedWork";
 import { Sidebar } from "./Sidebar";
 import { Targets } from "./Targets";
+import { PageDescription } from "../PageDescription";
 
 export function Overview(props: GoalPage.State) {
   return (
@@ -24,7 +24,12 @@ function MainContent(props: GoalPage.State) {
   return (
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <Warnings {...props} />
-      <Description {...props} />
+      <PageDescription
+        {...props}
+        label="Goal description"
+        placeholder="Describe the goal..."
+        zeroStatePlaceholder="Describe the goal to provide context and clarity."
+      />
       <Targets {...props} />
       <Checklists {...props} />
       <RelatedWork {...props} />

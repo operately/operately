@@ -90,7 +90,6 @@ export namespace GoalPage {
 
     goalName: string;
     setGoalName: (name: string) => void;
-    description?: string;
 
     space: Space;
     setSpace: (space: Space) => void;
@@ -133,7 +132,8 @@ export namespace GoalPage {
     championSearch: SearchFn;
     reviewerSearch: SearchFn;
 
-    updateDescription: (description: string | null) => Promise<boolean>;
+    description: string;
+    onDescriptionChange: (description: string | null) => Promise<boolean>;
 
     addTarget: GoalTargetList.AddTargetFn;
     deleteTarget: GoalTargetList.DeleteTargetFn;

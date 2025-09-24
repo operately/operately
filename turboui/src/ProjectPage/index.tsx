@@ -76,7 +76,6 @@ export namespace ProjectPage {
     pauseLink: string;
 
     projectName: string;
-    description?: string;
     newCheckInLink: string;
     newDiscussionLink: string;
 
@@ -113,7 +112,9 @@ export namespace ProjectPage {
     manageTeamLink: string;
 
     updateProjectName: (name: string) => Promise<boolean>;
-    updateDescription: (description: string | null) => Promise<boolean>;
+
+    description: string;
+    onDescriptionChange: (description: string | null) => Promise<boolean>;
 
     activityFeed: React.ReactNode;
 
