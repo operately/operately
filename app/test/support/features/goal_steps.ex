@@ -1,5 +1,6 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
+  @endpoint OperatelyWeb.Endpoint
 
   alias Operately.Access
   alias Operately.Support.Features.EmailSteps
@@ -33,10 +34,12 @@ defmodule Operately.Support.Features.GoalSteps do
   end
 
   defp build_api_conn(person, company) do
+    person = Operately.Repo.preload(person, :account)
+    account = person.account
+
     Phoenix.ConnTest.build_conn()
     |> Plug.Test.init_test_session(%{})
-    |> Plug.Conn.assign(:current_person, person)
-    |> Plug.Conn.assign(:current_company, company)
+    |> OperatelyWeb.ConnCase.log_in_account(account, company)
   end
 
   #

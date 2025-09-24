@@ -30,19 +30,10 @@ defmodule OperatelyWeb.Api.Helpers do
   end
 
   def find_me(conn) do
-    case Map.get(conn.assigns, :current_person) do
-      nil ->
-        with %{email: email} = _account <- Map.get(conn.assigns, :current_account),
-             company when not is_nil(company) <- Map.get(conn.assigns, :current_company),
-             person when not is_nil(person) <-
-               Operately.People.get_person_by_email(company, email) do
-          {:ok, person}
-        else
-          _ -> {:error, :not_found}
-        end
-
-      person ->
-        {:ok, person}
+    if conn.assigns.current_person do
+      {:ok, conn.assigns.current_person}
+    else
+      {:error, :not_found}
     end
   end
 
