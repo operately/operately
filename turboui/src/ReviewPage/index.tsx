@@ -5,15 +5,26 @@ import { IconCoffee, IconMailFast, IconSparkles } from "../icons";
 import classNames from "../utils/classnames";
 
 import { AssignmentsList } from "./AssignmentsList";
-import { ReviewAssignment } from "./types";
 
 export namespace ReviewPage {
+  export type AssignmentType = "goal" | "project" | "goal_update" | "check_in";
+
+  export interface Assignment {
+    resourceId: string;
+    name: string;
+    due: string;
+    type: AssignmentType;
+    authorId: string | null;
+    authorName: string | null;
+    path: string;
+  }
+
   export interface Props {
-    assignments: ReviewAssignment[];
+    assignments: Assignment[];
     assignmentsCount: number;
 
-    myWork: ReviewAssignment[];
-    forReview: ReviewAssignment[];
+    myWork: Assignment[];
+    forReview: Assignment[];
   }
 }
 

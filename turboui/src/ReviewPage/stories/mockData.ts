@@ -1,4 +1,4 @@
-import { ReviewAssignment } from "../types";
+import { ReviewPage } from "..";
 
 function getDynamicDate(daysOffset: number): string {
   const date = new Date();
@@ -18,7 +18,7 @@ function getYesterdayDate(): string {
   return getDynamicDate(-1);
 }
 
-export const mockMyWorkAssignments: ReviewAssignment[] = [
+export const mockMyWorkAssignments: ReviewPage.Assignment[] = [
   {
     resourceId: "goal-1",
     name: "Increase user engagement by 25%",
@@ -48,7 +48,7 @@ export const mockMyWorkAssignments: ReviewAssignment[] = [
   },
 ];
 
-export const mockForReviewAssignments: ReviewAssignment[] = [
+export const mockForReviewAssignments: ReviewPage.Assignment[] = [
   {
     resourceId: "check-in-1",
     name: "Q1 Marketing Campaign",
@@ -78,7 +78,7 @@ export const mockForReviewAssignments: ReviewAssignment[] = [
   },
 ];
 
-export const mockSingleMyWorkAssignment: ReviewAssignment[] = [
+export const mockSingleMyWorkAssignment: ReviewPage.Assignment[] = [
   {
     resourceId: "goal-single",
     name: "Complete quarterly objectives",
@@ -90,7 +90,7 @@ export const mockSingleMyWorkAssignment: ReviewAssignment[] = [
   },
 ];
 
-export const mockSingleForReviewAssignment: ReviewAssignment[] = [
+export const mockSingleForReviewAssignment: ReviewPage.Assignment[] = [
   {
     resourceId: "update-single",
     name: "Team Performance Review",
@@ -102,7 +102,7 @@ export const mockSingleForReviewAssignment: ReviewAssignment[] = [
   },
 ];
 
-export const mockOverdueAssignments: ReviewAssignment[] = [
+export const mockOverdueAssignments: ReviewPage.Assignment[] = [
   {
     resourceId: "overdue-1",
     name: "Critical Bug Fix Project",
