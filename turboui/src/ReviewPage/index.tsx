@@ -1,34 +1,47 @@
 import * as React from "react";
-import * as Pages from "@/components/Pages";
-import * as Paper from "@/components/PaperContainer";
-import * as Signals from "@/signals";
 
-import { useLoadedData } from "./loader";
+import { Page } from "../Page";
+import { IconCoffee, IconMailFast, IconSparkles } from "../icons";
+import classNames from "../utils/classnames";
+
 import { AssignmentsList } from "./AssignmentsList";
-import classNames from "classnames";
-import { IconCoffee, IconMailFast, IconSparkles } from "turboui";
 
-export function Page() {
-  const onLoad = () => Signals.publish(Signals.LocalSignal.RefreshReviewCount);
-  const title = useHtmlTitle();
+export namespace ReviewPage {
+  export type AssignmentType = "goal" | "project" | "goal_update" | "check_in";
+
+  export interface Assignment {
+    resourceId: string;
+    name: string;
+    due: string;
+    type: AssignmentType;
+    authorId: string | null;
+    authorName: string | null;
+    path: string;
+  }
+
+  export interface Props {
+    assignments: Assignment[];
+    assignmentsCount: number;
+
+    myWork: Assignment[];
+    forReview: Assignment[];
+  }
+}
+
+export function ReviewPage(props: ReviewPage.Props) {
+  const title = useHtmlTitle(props.assignmentsCount);
 
   return (
-    <Pages.Page title={title} onLoad={onLoad}>
-      <Paper.Root size="medium">
-        <Paper.Body minHeight="600px" noPadding>
-          <SendingEmailsBanner />
-          <Title />
-          <MyWork />
-          <ForReview />
-        </Paper.Body>
-      </Paper.Root>
-    </Pages.Page>
+    <Page title={title} size="medium">
+      <SendingEmailsBanner />
+      <Title />
+      <MyWork {...props} />
+      <ForReview {...props} />
+    </Page>
   );
 }
 
-function useHtmlTitle() {
-  const { assignmentsCount } = useLoadedData();
-
+function useHtmlTitle(assignmentsCount: number) {
   const noAssignments = assignmentsCount === 0;
   return noAssignments ? "Review" : `Review (${assignmentsCount})`;
 }
@@ -92,9 +105,7 @@ function SectionTitle({ title, description }) {
   );
 }
 
-function MyWork() {
-  const { myWork } = useLoadedData();
-
+function MyWork({ myWork }: ReviewPage.Props) {
   return (
     <PageSection>
       <SectionTitle title="My work" description="Due updates you are responsible for as a champion" />
@@ -104,9 +115,7 @@ function MyWork() {
   );
 }
 
-function ForReview() {
-  const { forReview } = useLoadedData();
-
+function ForReview({ forReview }: ReviewPage.Props) {
   return (
     <PageSection>
       <SectionTitle title="For review" description="Updates from others needing your acknowledgment" />
@@ -133,3 +142,4 @@ function ForReviewEmpty() {
     </div>
   );
 }
+

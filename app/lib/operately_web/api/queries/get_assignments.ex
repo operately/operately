@@ -5,7 +5,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignments do
   alias Operately.Assignments.Loader
 
   outputs do
-    field? :assignments, list_of(:review_assignment), null: true
+    field :assignments, list_of(:review_assignment), null: false
   end
 
   def call(conn, _inputs) do
