@@ -6,12 +6,12 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.FeedSteps
   alias Operately.People.Person
-  alias OperatelyWeb.Api.Queries.GetProject
   alias OperatelyWeb.Paths
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+  import Phoenix.ConnTest
 
   defp build_api_conn(person, company) do
     Phoenix.ConnTest.build_conn()
@@ -627,8 +627,10 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :download_project_markdown, ctx do
     conn = build_api_conn(ctx.champion, ctx.company)
 
-    {:ok, %{markdown: markdown}} =
-      GetProject.call(conn, %{id: Paths.project_id(ctx.project), include_markdown: true})
+    markdown =
+      conn
+      |> get(Paths.export_project_markdown_path(ctx.company, ctx.project))
+      |> response(200)
 
     Map.put(ctx, :project_markdown, markdown)
   end

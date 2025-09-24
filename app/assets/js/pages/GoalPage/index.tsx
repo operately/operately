@@ -180,19 +180,18 @@ function Page() {
 
   const fetchMarkdown = React.useCallback(async () => {
     try {
-      const result = await Goals.getGoal({ id: goal.id, includeMarkdown: true });
-
-      if (!result.markdown) {
-        throw new Error("Markdown content was not returned by the API");
+      const response = await fetch(paths.goalMarkdownExportPath(goal.id), { credentials: "include" });
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
       }
 
-      return result.markdown;
+      return await response.text();
     } catch (error) {
       console.error("Failed to fetch goal markdown", error);
       showErrorToast("Error", "We couldn't export this goal as Markdown. Please try again.");
       throw error;
     }
-  }, [goal.id]);
+  }, [goal.id, paths]);
 
   const props: GoalPage.Props = {
     workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
@@ -202,7 +201,7 @@ function Page() {
     newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
     addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
-    markdownLink: paths.goalAsMarkdownPath(goal.id),
+    markdownLink: paths.goalMarkdownExportPath(goal.id),
     fetchMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),

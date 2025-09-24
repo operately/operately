@@ -156,6 +156,10 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId, "md"]);
   }
 
+  projectMarkdownExportPath(projectId: string) {
+    return this.createCompanyPath(["exports", "markdown", "projects", projectId]);
+  }
+
   projectCheckInNewPath(projectId: string) {
     return this.createCompanyPath(["projects", projectId, "check-ins", "new"]);
   }
@@ -338,6 +342,10 @@ export class Paths {
 
   goalAsMarkdownPath(goalId: string) {
     return this.createCompanyPath(["goals", goalId, "md"]);
+  }
+
+  goalMarkdownExportPath(goalId: string) {
+    return this.createCompanyPath(["exports", "markdown", "goals", goalId]);
   }
 
   newGoalPath(params?: GoalAddPage.UrlParams) {

@@ -197,26 +197,25 @@ function Page() {
 
   const fetchMarkdown = React.useCallback(async () => {
     try {
-      const result = await Projects.getProject({ id: project.id, includeMarkdown: true });
-
-      if (!result.markdown) {
-        throw new Error("Markdown content was not returned by the API");
+      const response = await fetch(paths.projectMarkdownExportPath(project.id), { credentials: "include" });
+      if (!response.ok) {
+        throw new Error(`Request failed with status ${response.status}`);
       }
 
-      return result.markdown;
+      return await response.text();
     } catch (error) {
       console.error("Failed to fetch project markdown", error);
       showErrorToast("Error", "We couldn't export this project as Markdown. Please try again.");
       throw error;
     }
-  }, [project.id]);
+  }, [paths, project.id]);
 
   const props: ProjectPage.Props = {
     workmapLink,
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
-    markdownLink: paths.projectAsMarkdownPath(project.id),
+    markdownLink: paths.projectMarkdownExportPath(project.id),
     fetchMarkdown,
 
     childrenCount,

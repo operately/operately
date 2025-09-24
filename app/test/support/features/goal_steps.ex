@@ -5,8 +5,9 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.ContextualDates.ContextualDate
-  alias OperatelyWeb.Api.Queries.GetGoal
   alias OperatelyWeb.Paths
+
+  import Phoenix.ConnTest
 
   def setup(ctx) do
     ctx
@@ -497,8 +498,10 @@ defmodule Operately.Support.Features.GoalSteps do
   step :download_goal_markdown, ctx do
     conn = build_api_conn(ctx.champion, ctx.company)
 
-    {:ok, %{markdown: markdown}} =
-      GetGoal.call(conn, %{id: Paths.goal_id(ctx.goal), include_markdown: true})
+    markdown =
+      conn
+      |> get(Paths.export_goal_markdown_path(ctx.company, ctx.goal))
+      |> response(200)
 
     Map.put(ctx, :goal_markdown, markdown)
   end
