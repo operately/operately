@@ -201,12 +201,16 @@ function Page() {
       });
   };
 
+  const exportMarkdown = React.useCallback(() => {
+    window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
+  }, [paths, project.id]);
+
   const props: ProjectPage.Props = {
     workmapLink,
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
-
+    exportMarkdown,
     childrenCount,
 
     projectName: projectName as string,

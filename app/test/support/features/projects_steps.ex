@@ -1,15 +1,27 @@
 defmodule Operately.Support.Features.ProjectSteps do
   use Operately.FeatureCase
+  @endpoint OperatelyWeb.Endpoint
   alias Operately.Access.Binding
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.FeedSteps
   alias Operately.People.Person
+  alias OperatelyWeb.Paths
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
+  import Phoenix.ConnTest
+
+  defp build_api_conn(person, company) do
+    person = Operately.Repo.preload(person, :account)
+    account = person.account
+
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Test.init_test_session(%{})
+    |> OperatelyWeb.ConnCase.log_in_account(account, company)
+  end
 
   step :given_a_goal_exists, ctx, name: name do
     {:ok, goal} =
@@ -613,5 +625,26 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.find(UI.query(testid: "company-feed"), fn el ->
       FeedSteps.assert_feed_item_exists(el, %{author: ctx.creator, title: long_tile})
     end)
+  end
+
+  step :download_project_markdown, ctx do
+    conn = build_api_conn(ctx.champion, ctx.company)
+
+    markdown =
+      conn
+      |> get(Paths.export_project_markdown_path(ctx.company, ctx.project))
+      |> response(200)
+
+    Map.put(ctx, :project_markdown, markdown)
+  end
+
+  step :assert_project_markdown_includes_details, ctx do
+    markdown = ctx.project_markdown
+
+    assert is_binary(markdown)
+    assert String.contains?(markdown, "# #{ctx.project.name}")
+    assert String.contains?(markdown, "Status:")
+
+    ctx
   end
 end

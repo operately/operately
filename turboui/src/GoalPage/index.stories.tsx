@@ -6,10 +6,10 @@ import { MiniWorkMap } from "../MiniWorkMap";
 import { PrivacyField } from "../PrivacyField";
 import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 const meta: Meta<typeof GoalPage> = {
   title: "Pages/GoalPage",
