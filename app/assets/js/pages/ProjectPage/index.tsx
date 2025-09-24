@@ -197,7 +197,12 @@ function Page() {
 
   const fetchMarkdown = React.useCallback(async () => {
     try {
-      const response = await fetch(paths.projectMarkdownExportPath(project.id), { credentials: "include" });
+      const response = await fetch(paths.projectMarkdownExportPath(project.id), {
+        credentials: "include",
+        headers: {
+          "x-company-id": paths.companyIdentifier(),
+        },
+      });
       if (!response.ok) {
         throw new Error(`Request failed with status ${response.status}`);
       }

@@ -412,6 +412,10 @@ export class Paths {
     return this.createCompanyPath(["projects", projectId, "close"]);
   }
 
+  companyIdentifier() {
+    return this.getCompanyID();
+  }
+
   taskPath(taskId: string) {
     return this.createCompanyPath(["tasks", taskId]);
   }
