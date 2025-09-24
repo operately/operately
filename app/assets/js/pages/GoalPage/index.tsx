@@ -220,7 +220,7 @@ function Page() {
     reviewerSearch,
 
     description,
-    updateDescription: setDescription,
+    onDescriptionChange: setDescription,
 
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",
