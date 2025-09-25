@@ -1,8 +1,8 @@
-import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
-import classNames from "../utils/classnames";
-import { IconSearch, IconBriefcase, IconGoal, IconCheck, IconUser } from "../icons";
+import * as React from "react";
+import { IconBriefcase, IconCheck, IconGoal, IconSearch, IconUser } from "../icons";
 import { createTestId } from "../TestableElement";
+import classNames from "../utils/classnames";
 
 export namespace GlobalSearch {
   export interface Project {
@@ -59,13 +59,13 @@ export namespace GlobalSearch {
   export interface State extends Required<Props> {
     isOpen: boolean;
     setIsOpen: (isOpen: boolean) => void;
-    
+
     query: string;
     setQuery: (query: string) => void;
-    
+
     results: SearchResult;
     setResults: (results: SearchResult) => void;
-    
+
     isSearching: boolean;
     setIsSearching: (searching: boolean) => void;
   }
@@ -79,25 +79,28 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 
   const searchTimeoutRef = React.useRef<NodeJS.Timeout>();
 
-  const performSearch = React.useCallback(async (searchQuery: string) => {
-    if (searchQuery.trim().length < 2) {
-      setResults({});
-      setIsOpen(false);
-      return;
-    }
+  const performSearch = React.useCallback(
+    async (searchQuery: string) => {
+      if (searchQuery.trim().length < 2) {
+        setResults({});
+        setIsOpen(false);
+        return;
+      }
 
-    setIsSearching(true);
-    try {
-      const searchResults = await props.search({ query: searchQuery.trim() });
-      setResults(searchResults);
-      setIsOpen(true);
-    } catch (error) {
-      console.error("Search failed:", error);
-      setResults({});
-    } finally {
-      setIsSearching(false);
-    }
-  }, [props.search]);
+      setIsSearching(true);
+      try {
+        const searchResults = await props.search({ query: searchQuery.trim() });
+        setResults(searchResults);
+        setIsOpen(true);
+      } catch (error) {
+        console.error("Search failed:", error);
+        setResults({});
+      } finally {
+        setIsSearching(false);
+      }
+    },
+    [props.search],
+  );
 
   React.useEffect(() => {
     if (searchTimeoutRef.current) {
@@ -117,7 +120,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
 
   return {
     ...props,
-    placeholder: props.placeholder ?? "Search projects, goals, tasks, people...",
+    placeholder: props.placeholder ?? "Search...",
     testId: props.testId ?? "global-search",
     isOpen,
     setIsOpen,
@@ -151,11 +154,11 @@ function SearchInput({ state }: { state: GlobalSearch.State }) {
 
   return (
     <Popover.Trigger asChild>
-      <div className="relative">
+      <div className="relative w-[250px]">
         <div className="relative">
-          <IconSearch 
-            size={16} 
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-dimmed pointer-events-none" 
+          <IconSearch
+            size={14}
+            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-dimmed pointer-events-none"
           />
           <input
             ref={inputRef}
@@ -164,10 +167,10 @@ function SearchInput({ state }: { state: GlobalSearch.State }) {
             onChange={(e) => state.setQuery(e.target.value)}
             placeholder={state.placeholder}
             className={classNames(
-              "w-full pl-9 pr-16 py-2 text-sm",
-              "bg-surface-base border border-surface-outline rounded-lg",
+              "w-full pl-8 pr-8 py-1 text-sm",
+              "bg-transparent border border-surface-outline rounded-lg",
               "focus:outline-none focus:ring-1 focus:ring-accent-base focus:border-accent-base",
-              "placeholder:text-content-dimmed"
+              "placeholder:text-content-dimmed",
             )}
             data-test-id={state.testId}
             onFocus={() => state.query.length >= 2 && setImmediate(() => state.setIsOpen(true))}
@@ -193,19 +196,11 @@ function SearchResults({ state }: { state: GlobalSearch.State }) {
   }, [state.results]);
 
   if (state.isSearching) {
-    return (
-      <div className="p-4 text-center text-content-dimmed text-sm">
-        Searching...
-      </div>
-    );
+    return <div className="p-4 text-center text-content-dimmed text-sm">Searching...</div>;
   }
 
   if (!hasResults && state.query.length >= 2) {
-    return (
-      <div className="p-4 text-center text-content-dimmed text-sm">
-        No results found for "{state.query}"
-      </div>
-    );
+    return <div className="p-4 text-center text-content-dimmed text-sm">No results found for "{state.query}"</div>;
   }
 
   if (!hasResults) {
@@ -316,9 +311,7 @@ function SearchResults({ state }: { state: GlobalSearch.State }) {
                 <IconUser size={16} className="text-content-subtle" />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{person.fullName}</div>
-                  {person.title && (
-                    <div className="text-xs text-content-dimmed truncate">{person.title}</div>
-                  )}
+                  {person.title && <div className="text-xs text-content-dimmed truncate">{person.title}</div>}
                 </div>
               </div>
             </div>
@@ -335,7 +328,7 @@ export function GlobalSearch(props: GlobalSearch.Props) {
   return (
     <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
       <SearchInput state={state} />
-      
+
       <Popover.Portal>
         <Popover.Content
           className="bg-surface-base shadow-lg rounded-lg border border-stroke-base max-w-md w-96 max-h-96 overflow-y-auto z-50"

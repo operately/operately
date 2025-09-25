@@ -192,18 +192,13 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           </div>
         </div>
 
-        <div className="flex-1 max-w-md mx-8">
-          <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />
-        </div>
-
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
           <Bell />
+          <HelpDropdown company={company} />
+          <NewDropdown />
 
-          <div className="border-r border-surface-outline px-2.5 mr-2 flex items-center gap-2">
-            <NewDropdown />
-            <HelpDropdown company={company} />
-          </div>
+          <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />
         </div>
       </div>
     </div>
