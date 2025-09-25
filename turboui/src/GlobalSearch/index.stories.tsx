@@ -1,3 +1,4 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { GlobalSearch } from "./index";
 
@@ -155,7 +156,6 @@ export const Default: Story = {
             <li>"goal" - Goals only</li>
             <li>"task" - Tasks only</li>
             <li>"people" - People only</li>
-            <li>"work map" - Work map link</li>
             <li>"empty" - No results</li>
             <li>Any other term - Mixed results</li>
           </ul>

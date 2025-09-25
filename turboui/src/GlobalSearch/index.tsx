@@ -1,9 +1,8 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import classNames from "../utils/classnames";
-import { IconSearch, IconHome2, IconBriefcase, IconGoal, IconCheck, IconUser } from "../icons";
+import { IconSearch, IconBriefcase, IconGoal, IconCheck, IconUser } from "../icons";
 import { createTestId } from "../TestableElement";
-import { DivLink } from "../Link";
 
 export namespace GlobalSearch {
   export interface Project {
