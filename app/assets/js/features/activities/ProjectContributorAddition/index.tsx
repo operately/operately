@@ -55,7 +55,7 @@ const ProjectContributorAddition: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
+  NotificationTitle(_props: { activity: Activity }) {
     return "Added you as a contributor";
   },
 

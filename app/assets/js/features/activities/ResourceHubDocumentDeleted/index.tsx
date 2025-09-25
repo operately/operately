@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubDocumentDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 

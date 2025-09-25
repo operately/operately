@@ -1,8 +1,6 @@
 import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import { Summary } from "@/components/RichContent";
 import type { Activity } from "@/models/activities";
-import * as People from "@/models/people";
-
 import React from "react";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";

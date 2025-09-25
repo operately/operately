@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import { Activity, ActivityContentGoalClosing } from "@/api";

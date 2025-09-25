@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import { IconFlag3Filled } from "turboui";
 import * as React from "react";
@@ -68,7 +67,7 @@ const ProjectTimelineEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
+  NotificationTitle(_props: { activity: Activity }) {
     return "Changed the project timeline";
   },
 

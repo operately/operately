@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import * as Timeframes from "@/utils/timeframes";
@@ -110,7 +109,7 @@ const GoalTimeframeEditing: ActivityHandler = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
+  NotificationTitle(_props: { activity: Activity }) {
     return "Edited the goal's timeframe";
   },
 

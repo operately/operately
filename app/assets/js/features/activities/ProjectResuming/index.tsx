@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectResuming } from "@/api";

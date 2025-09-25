@@ -1,8 +1,6 @@
 import React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 

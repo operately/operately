@@ -1,5 +1,5 @@
 import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
-import { firstName, namesListToString } from "@/models/people";
+import { namesListToString } from "@/models/people";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";

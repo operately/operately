@@ -1,6 +1,5 @@
 import type { ActivityContentProjectPausing } from "@/api";
 import type { Activity } from "@/models/activities";
-import * as People from "@/models/people";
 import type { ActivityHandler } from "../interfaces";
 
 

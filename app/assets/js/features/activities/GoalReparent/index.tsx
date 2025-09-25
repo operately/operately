@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import React from "react";
 
 import { Activity, ActivityContentGoalReparent } from "@/api";

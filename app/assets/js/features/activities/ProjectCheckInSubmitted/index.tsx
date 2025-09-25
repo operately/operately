@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectCheckInSubmitted } from "@/api";
@@ -71,7 +70,7 @@ const ProjectCheckInSubmitted: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
+  NotificationTitle(_props: { activity: Activity }) {
     return "Submitted a check-in";
   },
 

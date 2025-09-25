@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as Timeframes from "@/utils/timeframes";
 import * as React from "react";
 

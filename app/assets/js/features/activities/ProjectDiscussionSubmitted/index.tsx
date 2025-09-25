@@ -1,7 +1,5 @@
 import React from "react";
 
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentProjectDiscussionSubmitted } from "@/api";
 import { Summary } from "@/components/RichContent";
 
