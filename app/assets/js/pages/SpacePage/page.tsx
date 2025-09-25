@@ -2,10 +2,11 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { AvatarList, PrimaryButton, SecondaryButton } from "turboui";
+import { AvatarList, IconPencil, IconTrash, PrimaryButton, SecondaryButton } from "turboui";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
@@ -13,9 +14,9 @@ import { ToolsSection } from "@/features/SpaceTools";
 import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
-import { usePaths } from "@/routes/paths";
 
 export function Page() {
   const { space, tools } = useLoadedData();
@@ -27,7 +28,7 @@ export function Page() {
     <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <SpaceEdit />
+          <SpaceOptions />
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
@@ -36,21 +37,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function SpaceEdit() {
-  const paths = usePaths();
-  const { space } = useLoadedData();
-
-  if (space.permissions?.canEdit !== true) return null;
-
-  return (
-    <div className="absolute right-4 top-4">
-      <SecondaryButton size="xs" linkTo={paths.spaceEditPath(space.id!)} testId="edit-space">
-        Edit
-      </SecondaryButton>
-    </div>
   );
 }
 
@@ -146,5 +132,29 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
     <SecondaryButton linkTo={path} size="xs" testId="access-management">
       Manage access
     </SecondaryButton>
+  );
+}
+
+function SpaceOptions() {
+  const { space } = useLoadedData();
+
+  assertPresent(space.permissions, "permissions must be present in space");
+  if (!space.permissions.canDelete) return null;
+
+  const handleDelete = async () => {
+    const confirmed = window.confirm("Are you sure you want to delete this space? This action cannot be undone.");
+    console.log("User confirmed deletion:", confirmed);
+  };
+
+  const paths = usePaths();
+  const editLink = paths.spaceEditPath(space.id!);
+
+  if (space.permissions?.canEdit !== true) return null;
+
+  return (
+    <PageOptions.Root testId="options-button">
+      <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
+      <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
+    </PageOptions.Root>
   );
 }

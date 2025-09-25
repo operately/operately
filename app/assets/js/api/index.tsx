@@ -1657,6 +1657,7 @@ export interface SpacePermissions {
   canView?: boolean | null;
   canViewMessage?: boolean | null;
   canAddMembers?: boolean | null;
+  canDelete?: boolean | null;
 }
 
 export interface SpaceTools {

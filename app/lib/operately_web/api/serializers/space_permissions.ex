@@ -14,6 +14,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Groups.Permissions do
       can_view: permissions.can_view,
       can_view_message: permissions.can_view_message,
       can_add_members: permissions.can_add_members,
+      can_delete: permissions.can_delete
     }
   end
 end

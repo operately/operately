@@ -2,7 +2,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Spaces from "@/models/spaces";
 import * as React from "react";
-import * as Api from "@/api";
 
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import Forms from "@/components/Forms";
 
 import { usePaths } from "@/routes/paths";
-import { showErrorToast, showSuccessToast } from "@/features/toasts";
 export default { name: "SpaceEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -48,21 +46,6 @@ function Page() {
     cancel: () => navigate(backPath),
   });
 
-  const deleteSpace = async () => {
-    if (!window.confirm(`Are you sure you want to delete "${space.name}"? This action cannot be undone and will delete all projects, goals, and other content in this space.`)) {
-      return;
-    }
-
-    try {
-      await Api.deleteSpace({ spaceId: space.id! });
-      showSuccessToast("Space deleted", `${space.name} has been deleted successfully.`);
-      navigate(paths.companyHomePath());
-    } catch (error) {
-      console.error("Failed to delete space:", error);
-      showErrorToast("Failed to delete space", "Please try again. If the problem persists, contact support.");
-    }
-  };
-
   return (
     <Pages.Page title={["Edit Space", space.name!]}>
       <Paper.Root size="small">
@@ -75,24 +58,6 @@ function Page() {
             </Forms.FieldGroup>
             <Forms.Submit saveText="Save" />
           </Forms.Form>
-
-          {space.permissions?.canDelete && (
-            <div className="mt-8 pt-8 border-t border-stroke-base">
-              <div className="font-semibold text-lg mb-4 text-content-error">Danger Zone</div>
-              <div className="bg-surface-dimmed p-4 rounded border border-stroke-base">
-                <div className="font-medium mb-2">Delete this space</div>
-                <div className="text-content-dimmed text-sm mb-4">
-                  Once you delete a space, there is no going back. All projects, goals, discussions, and other content will be permanently deleted.
-                </div>
-                <button
-                  onClick={deleteSpace}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
-                >
-                  Delete Space
-                </button>
-              </div>
-            </div>
-          )}
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
