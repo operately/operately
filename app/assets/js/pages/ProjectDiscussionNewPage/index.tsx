@@ -1,11 +1,10 @@
-import * as TipTapEditor from "@/components/Editor";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
 import * as React from "react";
 
 import { PageModule } from "@/routes/types";
-import { DimmedLink, PrimaryButton } from "turboui";
+import { DimmedLink, Editor, PrimaryButton } from "turboui";
 import { FormTitleInput } from "../../components/FormTitleInput";
 import { SubscribersSelector, useSubscriptions } from "../../features/Subscriptions";
 import { usePaths } from "../../routes/paths";
@@ -79,7 +78,7 @@ function Form() {
       />
 
       <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-        <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
+        <Editor editor={form.fields.editor} hideBorder padding="p-0" />
       </div>
 
       <div className="my-10">

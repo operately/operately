@@ -10,7 +10,6 @@ import Forms from "@/components/Forms";
 import { usePublishResourceHubDocument, useDeleteResourceHubDocument } from "@/models/resourceHubs";
 import { usePaths } from "@/routes/paths";
 
-import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { DocumentTitle } from "@/features/documents/DocumentTitle";
@@ -21,6 +20,8 @@ import { CopyDocumentModal, ResourcePageNavigation } from "@/features/ResourceHu
 import { CurrentSubscriptions } from "@/features/Subscriptions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { assertPresent } from "@/utils/assertions";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { RichContent } from "turboui";
 
 import { useLoadedData } from "./loader";
 import { Options } from "./Options";
@@ -82,11 +83,17 @@ function Title() {
 
 function Body() {
   const { document } = useLoadedData();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <>
       <Spacer size={4} />
-      <RichContent jsonContent={document.content!} className="text-md sm:text-lg" />
+      <RichContent
+        content={document.content!}
+        className="text-md sm:text-lg"
+        mentionedPersonLookup={mentionedPersonLookup}
+        parseContent
+      />
     </>
   );
 }

@@ -1,12 +1,10 @@
 import React from "react";
 
-import { IconSquareCheckFilled, IconSquareChevronsLeftFilled, IconEdit } from "turboui";
-import * as TipTapEditor from "@/components/Editor";
+import * as People from "@/models/people";
 import * as Reactions from "@/models/reactions";
 
 import { Avatar } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
-import RichContent from "@/components/RichContent";
 import { PrimaryButton, SecondaryButton } from "turboui";
 import { useClearNotificationOnIntersection } from "@/features/notifications";
 
@@ -17,7 +15,17 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { compareIds } from "@/routes/paths";
 import { CommentParentType } from "@/models/comments";
 import { useScrollIntoViewOnLoad } from "./useScrollIntoViewOnLoad";
-import { Menu, MenuActionItem } from "turboui";
+import {
+  Menu,
+  MenuActionItem,
+  RichContent,
+  IconSquareCheckFilled,
+  IconSquareChevronsLeftFilled,
+  IconEdit,
+  useEditor,
+  Editor,
+} from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface CommentSectionProps {
   form: FormState;
@@ -75,18 +83,19 @@ function Comment({ comment, form, commentParentType, canComment }) {
 function EditComment({ comment, onCancel, form }) {
   const me = useMe()!;
 
-  const { editor, uploading } = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: form.mentionSearchScope });
+  const editor = useEditor({
     placeholder: "Write a comment here...",
     className: "min-h-[200px] p-4",
     content: JSON.parse(comment.content)["message"],
-    mentionSearchScope: form.mentionSearchScope,
+    handlers,
   });
 
   const handlePost = async () => {
     if (!editor) return;
-    if (uploading) return;
+    if (editor.uploading) return;
 
-    form.editComment(comment.id, editor.getJSON());
+    form.editComment(comment.id, editor.editor.getJSON());
     onCancel();
   };
 
@@ -94,24 +103,21 @@ function EditComment({ comment, onCancel, form }) {
     <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
       <Avatar person={me} size="normal" />
       <div className="flex-1">
-        <TipTapEditor.Root editor={editor}>
-          <div className="border border-surface-outline rounded-lg overflow-hidden">
-            <TipTapEditor.Toolbar editor={editor} noTopBorder />
-            <TipTapEditor.EditorContent editor={editor} />
+        <div className="border border-surface-outline rounded-lg overflow-hidden">
+          <Editor editor={editor} hideBorder padding="p-0" />
 
-            <div className="flex justify-between items-center m-4">
-              <div className="flex items-center gap-2">
-                <PrimaryButton onClick={handlePost} testId="post-comment" size="xs" loading={form.submitting}>
-                  {uploading ? "Uploading..." : "Save Changes"}
-                </PrimaryButton>
+          <div className="flex justify-between items-center m-4">
+            <div className="flex items-center gap-2">
+              <PrimaryButton onClick={handlePost} testId="post-comment" size="xs" loading={form.submitting}>
+                {editor.uploading ? "Uploading..." : "Save Changes"}
+              </PrimaryButton>
 
-                <SecondaryButton onClick={onCancel} size="xs">
-                  Cancel
-                </SecondaryButton>
-              </div>
+              <SecondaryButton onClick={onCancel} size="xs">
+                Cancel
+              </SecondaryButton>
             </div>
           </div>
-        </TipTapEditor.Root>
+        </div>
       </div>
     </div>
   );
@@ -171,6 +177,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
   const commentRef = useClearNotificationOnIntersection(comment.notification);
   useScrollIntoViewOnLoad(comment.id);
 
+  const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
   const entity = Reactions.entity(comment.id, "comment", commentParentType);
   const addReactionForm = useReactionsForm(entity, comment.reactions);
 
@@ -204,7 +211,7 @@ function ViewComment({ comment, onEdit, commentParentType, canComment }) {
         </div>
 
         <div className="mb-2">
-          <RichContent jsonContent={content} skipParse />
+          <RichContent content={content} mentionedPersonLookup={mentionedPersonLookup} />
         </div>
 
         <ReactionList form={addReactionForm} size={20} canAddReaction={canComment} />
@@ -277,49 +284,47 @@ function AddCommentNonActive({ onClick }) {
 function AddCommentActive({ onBlur, onPost, form }) {
   const me = useMe()!;
 
-  const { editor, uploading } = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: form.mentionSearchScope });
+  const editor = useEditor({
     placeholder: "Write a comment here...",
     className: "min-h-[200px] px-4 py-3",
     autoFocus: true,
-    mentionSearchScope: form.mentionSearchScope,
+    handlers,
   });
 
   const handlePost = async () => {
     if (!editor) return;
-    if (uploading) return;
+    if (editor.uploading) return;
 
-    form.postComment(editor.getJSON());
+    form.postComment(editor.editor.getJSON());
     onPost();
   };
 
   React.useEffect(() => {
     if (editor) {
-      editor.commands.focus();
+      editor.editor.commands.focus();
     }
-  }, [editor]);
+  }, [editor.editor]);
 
   return (
     <div className="py-6 not-first:border-t border-surface-outline flex items-start gap-3">
       <Avatar person={me} size="normal" />
       <div className="flex-1">
-        <TipTapEditor.Root editor={editor}>
-          <div className="border border-surface-outline rounded-lg overflow-hidden">
-            <TipTapEditor.Toolbar editor={editor} noTopBorder />
-            <TipTapEditor.EditorContent editor={editor} />
+        <div className="border border-surface-outline rounded-lg overflow-hidden">
+          <Editor editor={editor} hideBorder padding="p-0" />
 
-            <div className="flex justify-between items-center m-4">
-              <div className="flex items-center gap-2">
-                <PrimaryButton onClick={handlePost} loading={form.submitting} testId="post-comment" size="xs">
-                  {uploading ? "Uploading..." : "Post"}
-                </PrimaryButton>
+          <div className="flex justify-between items-center m-4">
+            <div className="flex items-center gap-2">
+              <PrimaryButton onClick={handlePost} loading={form.submitting} testId="post-comment" size="xs">
+                {editor.uploading ? "Uploading..." : "Post"}
+              </PrimaryButton>
 
-                <SecondaryButton onClick={onBlur} size="xs">
-                  Cancel
-                </SecondaryButton>
-              </div>
+              <SecondaryButton onClick={onBlur} size="xs">
+                Cancel
+              </SecondaryButton>
             </div>
           </div>
-        </TipTapEditor.Root>
+        </div>
       </div>
     </div>
   );

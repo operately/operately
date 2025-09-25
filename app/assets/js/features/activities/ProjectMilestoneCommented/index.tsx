@@ -4,9 +4,9 @@ import type { ActivityContentProjectMilestoneCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectMilestoneCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -42,11 +42,12 @@ const ProjectMilestoneCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentMessage = JSON.parse(comment.content!)["message"];
+    const { comment } = content(activity);
+    const commentMessage = comment?.content ? JSON.parse(comment.content)["message"] : null;
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     if (commentMessage) {
-      return <Summary jsonContent={commentMessage} characterCount={200} />;
+      return <Summary content={commentMessage} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
     } else {
       return null;
     }

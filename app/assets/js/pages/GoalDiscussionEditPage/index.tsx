@@ -1,5 +1,4 @@
 import * as Api from "@/api";
-import * as TipTapEditor from "@/components/Editor";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Activities from "@/models/activities";
@@ -10,12 +9,13 @@ import * as React from "react";
 import { FormTitleInput } from "@/components/FormTitleInput";
 import { GoalSubpageNavigation } from "@/features/goals/GoalSubpageNavigation";
 import { Validators } from "@/utils/validators";
-import { DimmedLink, PrimaryButton } from "turboui";
+import { DimmedLink, Editor, PrimaryButton, useEditor } from "turboui";
 
 import { formValidator, useFormMutationAction, useFormState } from "@/components/Form/useFormState";
 import { match } from "ts-pattern";
 
 import { usePaths } from "@/routes/paths";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 export default { name: "GoalDiscussionEditPage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -48,7 +48,8 @@ function Page() {
           />
 
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-            <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
+            {/* <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} /> */}
+            <Editor editor={form.fields.editor} hideBorder padding="p-0" />
           </div>
 
           <div className="flex items-center gap-4 mt-4">
@@ -67,7 +68,7 @@ function Page() {
 type FormFields = {
   title: string;
   setTitle: (title: string) => void;
-  editor: TipTapEditor.EditorState;
+  editor: any;
 };
 
 function useForm({ activity }: { activity: Activities.Activity }) {
@@ -75,11 +76,12 @@ function useForm({ activity }: { activity: Activities.Activity }) {
   const commentThread = activity.commentThread!;
   const [title, setTitle] = React.useState(commentThread.title!);
 
-  const editor = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: { type: "goal", id: findGoalId(activity) }});
+  const editor = useEditor({
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
     content: JSON.parse(commentThread.message!),
-    mentionSearchScope: { type: "goal", id: findGoalId(activity) },
+    handlers
   });
 
   return useFormState<FormFields>({

@@ -4,10 +4,10 @@ import type { ActivityContentResourceHubLinkCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ResourceHubLinkCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -47,9 +47,11 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
     const comment = content(activity).comment!;
     const commentContent = JSON.parse(comment.content!)["message"];
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

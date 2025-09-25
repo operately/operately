@@ -15,13 +15,13 @@ import { findFileSize, useDownloadFile } from "@/models/blobs";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
 import { CurrentSubscriptions } from "@/features/Subscriptions";
-import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
-import { Avatar, richContentToString } from "turboui";
+import { Avatar, richContentToString, RichContent } from "turboui";
 import FormattedTime from "@/components/FormattedTime";
 import { TextSeparator } from "@/components/TextSeparator";
 import { ResourcePageNavigation } from "@/features/ResourceHub";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 import { useLoadedData } from "./loader";
 import { Content } from "./Content";
@@ -107,6 +107,7 @@ function Description() {
   const { file } = useLoadedData();
   assertPresent(file.description, "description must be present in file");
 
+  const { mentionedPersonLookup } = useRichEditorHandlers();
   const hasDescription = Boolean(richContentToString(JSON.parse(file.description)).trim());
 
   if (!hasDescription) return <></>;
@@ -114,7 +115,12 @@ function Description() {
   return (
     <>
       <Spacer size={2} />
-      <RichContent jsonContent={file.description} className="text-md sm:text-lg" />
+      <RichContent
+        content={file.description}
+        className="text-md sm:text-lg"
+        mentionedPersonLookup={mentionedPersonLookup}
+        parseContent
+      />
     </>
   );
 }
