@@ -160,7 +160,8 @@ function ZeroState({ startEdit, canEdit, placeholder, testId }: ZeroStateProps) 
     <div data-test-id={testId}>
       <button
         onClick={startEdit}
-        className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
+        // The py-4 -my-4 is to make the clickable are larger without adding extra empty space
+        className="py-4 -my-4 w-full text-left text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
       >
         {placeholder}
       </button>
