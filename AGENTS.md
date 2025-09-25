@@ -17,8 +17,8 @@
 - Feature tests: `make test.mix.features` (Elixir feature tests with parallel splitting).
 - Enterprise tests: `make test.ee` (Enterprise edition tests with retry logic).
 - UI lib: `make turboui.build`, `make turboui.test`, `make turboui.storybook`.
-- For component workflow, see `turboui/AGENTS.md`.
 - Docker image: `make docker.build` (see `Dockerfile.prod`).
+- For component workflow, see `turboui/AGENTS.md`.
 
 ## Coding Style & Naming Conventions
 
