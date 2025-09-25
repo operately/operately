@@ -63,7 +63,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " posted: " + content(activity).discussion!.title!;
+    return "Posted: " + content(activity).discussion!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

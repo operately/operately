@@ -63,7 +63,7 @@ const ResourceHubFolderCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " created folder: " + content(activity).folder!.name!;
+    return "Created folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

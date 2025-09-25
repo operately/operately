@@ -97,7 +97,7 @@ const ProjectGoalConnection: ActivityHandler = {
     const projectName = content(activity).project!.name!;
     const goalName = content(activity).goal!.name!;
 
-    return People.firstName(activity.author!) + ` connected ${projectName} project to the ${goalName} goal`;
+    return `Connected ${projectName} project to the ${goalName} goal`;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

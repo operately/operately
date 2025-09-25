@@ -63,88 +63,88 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_discussion_posted(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} posted: #{title}")
+    ctx |> assert_notification_exists(author: author, subject: "Posted: #{title}")
   end
 
   def assert_activity_notification(ctx, %{author: author, action: action}) do
     author = find_person(author)
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} #{action}")
+    ctx |> assert_notification_exists(author: author, subject: action)
   end
 
   def assert_project_moved_sent(ctx, author: author, old_space: old_space, new_space: new_space) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} moved the project from #{old_space.name} to #{new_space.name}")
+    ctx |> assert_notification_exists(author: author, subject: "Moved the project from #{old_space.name} to #{new_space.name}")
   end
 
   def assert_project_retrospective_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} closed this project and submitted a retrospective")
+    ctx |> assert_notification_exists(author: author, subject: "Closed this project and submitted a retrospective")
   end
 
   def assert_project_review_request_notification(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} requested a review")
+    ctx |> assert_notification_exists(author: author, subject: "Requested a review")
   end
 
   def assert_project_review_acknowledged_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your review")
+    ctx |> assert_notification_exists(author: author, subject: "Acknowledged your review")
   end
 
   def assert_project_review_commented_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on the project review")
+    ctx |> assert_notification_exists(author: author, subject: "Re: project review")
   end
 
   def assert_project_check_in_submitted_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} submitted a check-in")
+    ctx |> assert_notification_exists(author: author, subject: "Submitted a check-in")
   end
 
   def assert_project_paused_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} paused the project")
+    ctx |> assert_notification_exists(author: author, subject: "Paused the project")
   end
 
   def assert_goal_created_sent(ctx, author: author, role: role) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} added a new goal and assigned you as the #{role}")
+    ctx |> assert_notification_exists(author: author, subject: "Added a new goal and assigned you as the #{role}")
   end
 
   def assert_project_archived_sent(ctx, author: author, project: project) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} archived the #{project.name} project")
+    ctx |> assert_notification_exists(author: author, subject: "Archived the #{project.name} project")
   end
 
   def assert_goal_archived_sent(ctx, author: author, goal: project) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} archived the #{project.name} goal")
+    ctx |> assert_notification_exists(author: author, subject: "Archived the #{project.name} goal")
   end
 
   def assert_project_update_acknowledged_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} acknowledged your check-in")
+    ctx |> assert_notification_exists(author: author, subject: "Acknowledged check-in")
   end
 
   def assert_project_update_submitted_sent(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} started a new discussion: #{title}")
+    ctx |> assert_notification_exists(author: author, subject: "Posted: #{title}")
   end
 
   def assert_project_update_commented_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on the project check-in")
+    ctx |> assert_notification_exists(author: author, subject: "Re: project check-in")
   end
 
   def assert_discussion_commented_sent(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on: #{title}")
+    ctx |> assert_notification_exists(author: author, subject: "Re: #{title}")
   end
 
   def assert_project_timeline_edited_sent(ctx, author: author) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} changed the project timeline")
+    ctx |> assert_notification_exists(author: author, subject: "Changed the project timeline")
   end
 
   def assert_milestone_comment_sent(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} commented on: #{title}")
+    ctx |> assert_notification_exists(author: author, subject: "Re: #{title}")
   end
 
   def assert_milestone_completed_sent(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} completed: #{title}")
+    ctx |> assert_notification_exists(author: author, subject: "Completed: #{title}")
   end
 
   def assert_milestone_reopened_sent(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} re-opened: #{title}")
+    ctx |> assert_notification_exists(author: author, subject: "Re-opened: #{title}")
   end
 
   def assert_space_members_added_sent(ctx, author: author, title: title) do
-    ctx |> assert_notification_exists(author: author, subject: "#{Person.first_name(author)} added you to the #{title} space")
+    ctx |> assert_notification_exists(author: author, subject: "Added you to the #{title} space")
   end
 
   defp find_person(person) do
