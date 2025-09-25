@@ -14,9 +14,6 @@ export {
   usePostProjectCheckIn,
 } from "@/api";
 
-export { groupCheckInsByMonth } from "./groupCheckInsByMonth";
-export type { CheckInGroupByMonth } from "./groupCheckInsByMonth";
-
 export function parseCheckInsForTurboUi(paths: Paths, checkIns: ProjectCheckIn[]) {
   return checkIns.map((checkIn) => {
     assertPresent(checkIn.author, "author must be present in check-in");
