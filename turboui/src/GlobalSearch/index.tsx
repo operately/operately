@@ -1,8 +1,8 @@
-import * as Popover from "@radix-ui/react-popover";
 import * as React from "react";
+import { createPortal } from "react-dom";
+
 import { IconBriefcase, IconCheck, IconGoal, IconSearch, IconUser } from "../icons";
 import { createTestId } from "../TestableElement";
-import classNames from "../utils/classnames";
 
 export namespace GlobalSearch {
   export interface Project {
@@ -133,58 +133,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   };
 }
 
-function SearchInput({ state }: { state: GlobalSearch.State }) {
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key === "k") {
-        event.preventDefault();
-        inputRef.current?.focus();
-      }
-      if (event.key === "Escape") {
-        state.setIsOpen(false);
-        inputRef.current?.blur();
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [state.setIsOpen]);
-
-  return (
-    <Popover.Trigger asChild>
-      <div className="relative w-[250px]">
-        <div className="relative">
-          <IconSearch
-            size={14}
-            className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-dimmed pointer-events-none"
-          />
-          <input
-            ref={inputRef}
-            type="text"
-            value={state.query}
-            onChange={(e) => state.setQuery(e.target.value)}
-            placeholder={state.placeholder}
-            className={classNames(
-              "w-full pl-8 pr-8 py-1 text-sm",
-              "bg-transparent border border-surface-outline rounded-lg",
-              "focus:outline-none focus:ring-1 focus:ring-accent-base focus:border-accent-base",
-              "placeholder:text-content-dimmed",
-            )}
-            data-test-id={state.testId}
-            onFocus={() => state.query.length >= 2 && setImmediate(() => state.setIsOpen(true))}
-          />
-          <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-xs text-content-dimmed pointer-events-none">
-            ⌘K
-          </div>
-        </div>
-      </div>
-    </Popover.Trigger>
-  );
-}
-
-function SearchResults({ state }: { state: GlobalSearch.State }) {
+function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose: () => void }) {
   const hasResults = React.useMemo(() => {
     const { projects, goals, tasks, people } = state.results;
     return (
@@ -211,6 +160,7 @@ function SearchResults({ state }: { state: GlobalSearch.State }) {
     state.onNavigate(link);
     state.setIsOpen(false);
     state.setQuery("");
+    onClose();
   };
 
   return (
@@ -322,24 +272,125 @@ function SearchResults({ state }: { state: GlobalSearch.State }) {
   );
 }
 
+interface SearchOverlayProps {
+  state: GlobalSearch.State;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const { query, setIsOpen, placeholder, testId, setQuery } = state;
+
+  React.useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      requestAnimationFrame(() => inputRef.current?.focus());
+
+      if (query.trim().length >= 2) {
+        setIsOpen(true);
+      }
+    }
+  }, [isOpen, query, setIsOpen]);
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return createPortal(
+    <div className="fixed inset-0 z-[90]" onClick={onClose}>
+      <div className="absolute inset-0 bg-surface-base/70" />
+
+      <div className="relative flex justify-center mt-12 px-4" onClick={(event) => event.stopPropagation()}>
+        <div className="w-[700px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-lg shadow-xl">
+          <div className="relative">
+            <IconSearch size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-content-dimmed" />
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder={placeholder}
+              className="w-full pl-10 pr-12 py-3 text-base bg-surface-base border-b border-surface-outline focus:outline-none"
+              data-test-id={testId}
+            />
+            <button
+              type="button"
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-content-dimmed uppercase tracking-wide"
+              onClick={onClose}
+            >
+              Esc
+            </button>
+          </div>
+
+          <div className="max-h-[60vh] overflow-y-auto">
+            <SearchResults state={state} onClose={onClose} />
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function SearchActivator({ placeholder, onActivate }: { placeholder: string; onActivate: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onActivate}
+      className="w-[250px] flex items-center gap-2 px-3 py-1.5 text-sm text-content-dimmed bg-transparent border border-surface-outline rounded-lg hover:bg-surface-dimmed transition"
+    >
+      <IconSearch size={14} className="text-content-dimmed" />
+      <span className="flex-1 text-left truncate">{placeholder}</span>
+      <span className="text-xs">⌘K</span>
+    </button>
+  );
+}
+
 export function GlobalSearch(props: GlobalSearch.Props) {
   const state = useGlobalSearchState(props);
+  const [overlayOpen, setOverlayOpen] = React.useState(false);
+
+  const openOverlay = React.useCallback(() => {
+    setOverlayOpen(true);
+  }, []);
+
+  const closeOverlay = React.useCallback(() => {
+    setOverlayOpen(false);
+    state.setIsOpen(false);
+  }, [state]);
+
+  React.useEffect(() => {
+    const handleGlobalShortcut = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        openOverlay();
+      }
+    };
+
+    document.addEventListener("keydown", handleGlobalShortcut);
+    return () => document.removeEventListener("keydown", handleGlobalShortcut);
+  }, [openOverlay]);
 
   return (
-    <Popover.Root open={state.isOpen} onOpenChange={state.setIsOpen}>
-      <SearchInput state={state} />
-
-      <Popover.Portal>
-        <Popover.Content
-          className="bg-surface-base shadow-lg rounded-lg border border-stroke-base max-w-md w-96 max-h-96 overflow-y-auto z-50"
-          sideOffset={4}
-          alignOffset={0}
-          align="start"
-          onOpenAutoFocus={(e) => e.preventDefault()}
-        >
-          <SearchResults state={state} />
-        </Popover.Content>
-      </Popover.Portal>
-    </Popover.Root>
+    <>
+      <SearchActivator placeholder={state.placeholder} onActivate={openOverlay} />
+      <SearchOverlay state={state} isOpen={overlayOpen} onClose={closeOverlay} />
+    </>
   );
 }
