@@ -4,8 +4,8 @@ defmodule Operately.Operations.SpaceDeleting do
 
   ## Deletion Process
 
-  Direct associations to the space (i.e. projects, goals, resource hubs, message boards, 
-  members, access contexts, and access bindings) are automatically cascade deleted 
+  Direct associations to the space (i.e. projects, goals, resource hubs, message boards,
+  members, access contexts, and access bindings) are automatically cascade deleted
   at the database level.
 
   Polymorphic associations (i.e. comments, reactions, activities related to deleted entities)
@@ -18,8 +18,6 @@ defmodule Operately.Operations.SpaceDeleting do
   alias Operately.Projects.{Project, CheckIn}
   alias Operately.Goals.{Goal, Update}
   alias Operately.Messages.{Message, MessagesBoard}
-  alias Operately.ResourceHubs.ResourceHub
-  import Ecto.Query
 
   def run(space) do
     Multi.new()
@@ -31,32 +29,35 @@ defmodule Operately.Operations.SpaceDeleting do
   end
 
   defp collect_sub_resources(multi, space) do
+    import Ecto.Query, only: [from: 2]
+
     Multi.run(multi, :sub_resources, fn _, _ ->
       # Get all projects in the space
       project_ids = from(p in Project, where: p.group_id == ^space.id, select: p.id) |> Repo.all()
-      
+
       # Get all goals in the space
       goal_ids = from(g in Goal, where: g.group_id == ^space.id, select: g.id) |> Repo.all()
-      
+
       # Get all message boards in the space
       message_board_ids = from(mb in MessagesBoard, where: mb.space_id == ^space.id, select: mb.id) |> Repo.all()
-      
+
       # Get all messages from these message boards
       message_ids = from(m in Message, where: m.messages_board_id in ^message_board_ids, select: m.id) |> Repo.all()
-      
+
       # Get all project check-ins
       project_check_in_ids = from(c in CheckIn, where: c.project_id in ^project_ids, select: c.id) |> Repo.all()
-      
+
       # Get all goal updates
       goal_update_ids = from(u in Update, where: u.goal_id in ^goal_ids, select: u.id) |> Repo.all()
 
-      {:ok, %{
-        projects: project_ids,
-        goals: goal_ids,
-        messages: message_ids,
-        project_check_ins: project_check_in_ids,
-        goal_updates: goal_update_ids
-      }}
+      {:ok,
+       %{
+         projects: project_ids,
+         goals: goal_ids,
+         messages: message_ids,
+         project_check_ins: project_check_in_ids,
+         goal_updates: goal_update_ids
+       }}
     end)
   end
 
