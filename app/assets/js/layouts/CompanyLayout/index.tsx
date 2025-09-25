@@ -2,6 +2,7 @@ import * as Api from "@/api";
 import * as React from "react";
 
 import {
+  GlobalSearch,
   IconBell,
   IconBriefcase,
   IconBuildingEstate,
@@ -16,10 +17,9 @@ import {
 } from "turboui";
 
 import { logOut } from "@/routes/auth";
-import { useLoaderData } from "react-router-dom";
+import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
-import { Outlet } from "react-router-dom";
 import { DivLink } from "turboui";
 import { Bell } from "./Bell";
 import { CompanyDropdown } from "./CompanyDropdown";
@@ -34,6 +34,8 @@ import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
+import { hasFeature } from "../../models/companies";
+import { useGlobalSearchHandler } from "./useGlobalSearch";
 
 function Navigation({ company }: { company: Api.Company }) {
   const size = useWindowSizeBreakpoints();
@@ -150,7 +152,6 @@ function MobileSectionAction({ onClick, children, icon }) {
 function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
-
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
@@ -181,16 +182,13 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
             <Review />
           </div>
         </div>
-        <div className="flex-1"></div>
 
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
           <Bell />
-
-          <div className="border-r border-surface-outline px-2.5 mr-2 flex items-center gap-2">
-            <NewDropdown />
-            <HelpDropdown company={company} />
-          </div>
+          <HelpDropdown company={company} />
+          <NewDropdown />
+          <Search company={company} />
         </div>
       </div>
     </div>
@@ -226,4 +224,15 @@ export default function CompanyLayout() {
       <AiSidebar />
     </div>
   );
+}
+
+function Search({ company }: { company: Api.Company }) {
+  const navigate = useNavigate();
+  const handleGlobalSearch = useGlobalSearchHandler();
+
+  if (hasFeature(company, "global-search")) {
+    return <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />;
+  } else {
+    return null;
+  }
 }
