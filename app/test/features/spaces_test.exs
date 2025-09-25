@@ -181,4 +181,25 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.assert_closed_projects_not_shown_in_goals_and_projects()
     |> Steps.assert_active_projects_shown_in_goals_and_projects()
   end
+
+  feature "deleting an empty space removes it immediately", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.visit_space()
+    |> Steps.request_space_deletion()
+    |> Steps.assert_space_deleted()
+  end
+
+  feature "deleting a populated space requires confirmation", ctx do
+    ctx
+    |> Steps.given_a_space_exists()
+    |> Steps.given_space_has_subresources()
+    |> Steps.visit_space()
+    |> Steps.request_space_deletion()
+    |> Steps.assert_space_delete_modal_visible()
+    |> Steps.assert_space_delete_modal_lists_subresources()
+    |> Steps.assert_space_still_exists()
+    |> Steps.confirm_space_deletion()
+    |> Steps.assert_space_deleted()
+  end
 end

@@ -2,10 +2,22 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { AvatarList, PrimaryButton, SecondaryButton } from "turboui";
+import {
+  AvatarList,
+  DangerButton,
+  IconPencil,
+  IconTrash,
+  Modal,
+  PrimaryButton,
+  SecondaryButton,
+  showErrorToast,
+  showSuccessToast,
+  WarningCallout,
+} from "turboui";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
@@ -13,9 +25,10 @@ import { ToolsSection } from "@/features/SpaceTools";
 import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
+import { usePaths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
-import { usePaths } from "@/routes/paths";
 
 export function Page() {
   const { space, tools } = useLoadedData();
@@ -27,7 +40,7 @@ export function Page() {
     <Pages.Page title={space.name!} testId="space-page">
       <Paper.Root size="xlarge">
         <Paper.Body>
-          <SpaceEdit />
+          <SpaceOptions />
           <SpaceHeader space={space} />
           <SpaceMembers space={space} />
           <JoinButton space={space} />
@@ -36,21 +49,6 @@ export function Page() {
         </Paper.Body>
       </Paper.Root>
     </Pages.Page>
-  );
-}
-
-function SpaceEdit() {
-  const paths = usePaths();
-  const { space } = useLoadedData();
-
-  if (space.permissions?.canEdit !== true) return null;
-
-  return (
-    <div className="absolute right-4 top-4">
-      <SecondaryButton size="xs" linkTo={paths.spaceEditPath(space.id!)} testId="edit-space">
-        Edit
-      </SecondaryButton>
-    </div>
   );
 }
 
@@ -146,5 +144,108 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
     <SecondaryButton linkTo={path} size="xs" testId="access-management">
       Manage access
     </SecondaryButton>
+  );
+}
+
+function SpaceOptions() {
+  const { space, tools } = useLoadedData();
+
+  assertPresent(space.permissions, "permissions must be present in space");
+  if (!space.permissions.canDelete || !space.permissions.canEdit) return null;
+
+  const navigate = useNavigate();
+  const [deleteSpace, { loading: isDeleting }] = Spaces.useDeleteSpace();
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const resourceCounts = React.useMemo(() => {
+    const projectCount = tools.projects?.length ?? 0;
+    const goalCount = tools.goals?.length ?? 0;
+    const messageCount = (tools.messagesBoards ?? []).reduce((sum, board) => sum + (board.messages?.length ?? 0), 0);
+
+    return { projectCount, goalCount, messageCount };
+  }, [tools]);
+
+  const hasSubresources = React.useMemo(() => {
+    return Object.values(resourceCounts).some((count) => count > 0);
+  }, [resourceCounts]);
+
+  const paths = usePaths();
+
+  const performDelete = React.useCallback(async () => {
+    try {
+      await deleteSpace({ spaceId: space.id });
+      showSuccessToast("Space deleted", "The space and its content were deleted.");
+      navigate(paths.homePath());
+    } catch (error) {
+      console.error("Failed to delete space", error);
+      showErrorToast("Failed to delete space", "Please try again.");
+      throw error;
+    }
+  }, [deleteSpace, navigate, paths, space.id]);
+
+  const handleDelete = React.useCallback(() => {
+    if (isDeleting) return;
+
+    if (hasSubresources) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    performDelete();
+  }, [hasSubresources, isDeleting, performDelete]);
+
+  const handleConfirmDelete = React.useCallback(async () => {
+    try {
+      await performDelete();
+      setIsModalOpen(false);
+    } catch (error) {
+      // Error toast already shown in performDelete; keep modal open for another attempt.
+    }
+  }, [performDelete]);
+
+  const handleCloseModal = React.useCallback(() => {
+    if (!isDeleting) {
+      setIsModalOpen(false);
+    }
+  }, [isDeleting]);
+
+  const editLink = paths.spaceEditPath(space.id!);
+
+  return (
+    <>
+      <PageOptions.Root testId="options-button">
+        {space.permissions.canEdit && (
+          <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
+        )}
+        {space.permissions.canDelete && (
+          <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
+        )}
+      </PageOptions.Root>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Delete space"
+        size="large"
+        contentPadding="p-6"
+        closeOnBackdropClick={!isDeleting}
+      >
+        <div className="space-y-4">
+          <WarningCallout
+            message="This action cannot be undone."
+            description="Deleting this space will permanently remove everything in it. This includes all projects, goals, and discussions."
+          />
+
+          <div className="flex justify-end gap-3">
+            <SecondaryButton size="sm" onClick={handleCloseModal} disabled={isDeleting}>
+              Cancel
+            </SecondaryButton>
+            <DangerButton size="sm" onClick={handleConfirmDelete} loading={isDeleting} testId="confirm-delete-space">
+              Delete everything
+            </DangerButton>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }

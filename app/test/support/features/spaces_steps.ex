@@ -390,4 +390,55 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> UI.assert_text("1/3 projects on track")
     |> UI.assert_text("1/3 goals on track")
   end
+
+  step :given_space_has_subresources, ctx do
+    ctx
+    |> Factory.add_goal(:goal_to_delete, :marketing, name: "Goal slated for deletion")
+    |> Factory.add_project(:project_to_delete, :marketing, name: "Project slated for deletion")
+    |> Factory.add_messages_board(:board_to_delete, :marketing, name: "Updates Board")
+    |> Factory.add_message(:message_to_delete, :board_to_delete, title: "Weekly update")
+    |> Factory.add_resource_hub(:hub_to_delete, :marketing, :creator, name: "Team Resources")
+    |> Factory.add_document(:document_to_delete, :hub_to_delete, name: "Runbook")
+  end
+
+  step :request_space_deletion, ctx do
+    ctx
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "delete-space")
+  end
+
+  step :assert_space_delete_modal_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "confirm-delete-space")
+    |> UI.assert_text("This space contains work.")
+  end
+
+  step :assert_space_delete_modal_lists_subresources, ctx do
+    ctx
+    |> UI.assert_text("1 projects")
+    |> UI.assert_text("1 goals")
+    |> UI.assert_text("1 discussions")
+    |> UI.assert_text("1 resource hub items")
+  end
+
+  step :assert_space_still_exists, ctx do
+    assert Operately.Repo.get(Operately.Groups.Group, ctx.marketing.id)
+
+    ctx |> UI.assert_has(testid: "space-page")
+  end
+
+  step :confirm_space_deletion, ctx do
+    ctx |> UI.click(testid: "confirm-delete-space")
+  end
+
+  step :assert_space_deleted, ctx do
+    ctx = attempts(ctx, 5, fn ->
+      assert Operately.Repo.get(Operately.Groups.Group, ctx.marketing.id) == nil
+    end)
+
+    ctx
+    |> UI.assert_has(testid: "company-home")
+    |> UI.assert_text("Space deleted")
+    |> UI.assert_text("The space and its content were deleted.")
+  end
 end

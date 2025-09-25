@@ -1098,6 +1098,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_view, :boolean, null: true
     field? :can_view_message, :boolean, null: true
     field? :can_add_members, :boolean, null: true
+    field? :can_delete, :boolean, null: true
   end
 
   union(:activity_data_union,
@@ -1658,18 +1659,20 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_comment, :boolean
   end
 
-  enum(:comment_parent_type, values: [
-    :project_check_in,
-    :project_retrospective,
-    :comment_thread,
-    :goal_update,
-    :message,
-    :resource_hub_document,
-    :resource_hub_file,
-    :resource_hub_link,
-    :project_task,
-    :milestone
-  ])
+  enum(:comment_parent_type,
+    values: [
+      :project_check_in,
+      :project_retrospective,
+      :comment_thread,
+      :goal_update,
+      :message,
+      :resource_hub_document,
+      :resource_hub_file,
+      :resource_hub_link,
+      :project_task,
+      :milestone
+    ]
+  )
 
   object :comment do
     field? :id, :string, null: true
