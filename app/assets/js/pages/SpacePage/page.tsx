@@ -139,7 +139,7 @@ function SpaceOptions() {
   const { space } = useLoadedData();
 
   assertPresent(space.permissions, "permissions must be present in space");
-  if (!space.permissions.canDelete) return null;
+  if (!space.permissions.canDelete || !space.permissions.canEdit) return null;
 
   const handleDelete = async () => {
     const confirmed = window.confirm("Are you sure you want to delete this space? This action cannot be undone.");
@@ -149,12 +149,14 @@ function SpaceOptions() {
   const paths = usePaths();
   const editLink = paths.spaceEditPath(space.id!);
 
-  if (space.permissions?.canEdit !== true) return null;
-
   return (
     <PageOptions.Root testId="options-button">
-      <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
-      <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
+      {space.permissions.canEdit && (
+        <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
+      )}
+      {space.permissions.canDelete && (
+        <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
+      )}
     </PageOptions.Root>
   );
 }
