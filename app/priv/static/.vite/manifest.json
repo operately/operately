@@ -1,15 +1,15 @@
 {
-  "_vendor-PcKVklIR.js": {
-    "file": "assets/vendor-PcKVklIR.js",
+  "_vendor-DEpOJTSJ.js": {
+    "file": "assets/vendor-DEpOJTSJ.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-BgAq5SWB.js",
+    "file": "assets/app-DsOZgWb0.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-PcKVklIR.js"
+      "_vendor-DEpOJTSJ.js"
     ]
   }
 }
