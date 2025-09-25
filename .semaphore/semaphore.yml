@@ -132,6 +132,11 @@ after_pipeline:
           - test-results gen-pipeline-report
 
 promotions:
+  - name: Production Deployment
+    pipeline_file: deploy.yml
+    auto_promote:
+      when: "result = 'passed' and branch = 'main'"
+
   - name: Populate CI Cache
     pipeline_file: cache.yml
     auto_promote:
