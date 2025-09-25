@@ -77,7 +77,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
   const [isSearching, setIsSearching] = React.useState(false);
 
-  const searchTimeoutRef = React.useRef<NodeJS.Timeout>();
+  const searchTimeoutRef = React.useRef<any>();
 
   const performSearch = React.useCallback(
     async (searchQuery: string) => {
