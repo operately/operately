@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import React from "react";
 
 import type { ActivityContentResourceHubFileCreated } from "@/api";
@@ -110,9 +109,9 @@ const ResourceHubFileCreated: ActivityHandler = {
     const data = content(activity);
 
     if (data.files?.length === 1) {
-      return People.firstName(activity.author!) + " added a file: " + data.files[0]?.name;
+      return "Added a file: " + data.files[0]?.name;
     } else {
-      return People.firstName(activity.author!) + " added some files";
+      return "Added some files";
     }
   },
 

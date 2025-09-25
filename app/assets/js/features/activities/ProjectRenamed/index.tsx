@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectRenamed } from "@/api";
@@ -61,7 +60,7 @@ const ProjectRenamed: ActivityHandler = {
     const oldName = content(activity).oldName;
     const newName = content(activity).newName;
 
-    return People.firstName(activity.author!) + " renamed " + oldName + " to " + newName;
+    return "Renamed " + oldName + " to " + newName;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -7,6 +7,7 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
+  alias Operately.People.Person
 
   import Phoenix.ConnTest
 
@@ -23,7 +24,7 @@ defmodule Operately.Support.Features.GoalSteps do
       reviewer: :reviewer,
       timeframe: %{
         contextual_start_date: Operately.Time.days_ago(10) |> ContextualDate.create_day_date(),
-        contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date(),
+        contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date()
       },
       parent_goal: :parent_goal
     )
@@ -158,7 +159,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.login_as(ctx.new_champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "assigned you as the champion"
+      action: "#{Person.first_name(ctx.champion)} assigned you as the champion"
     })
   end
 
@@ -225,7 +226,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.login_as(ctx.new_reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "assigned you as the reviewer"
+      action: "#{Person.first_name(ctx.champion)} assigned you as the reviewer"
     })
   end
 

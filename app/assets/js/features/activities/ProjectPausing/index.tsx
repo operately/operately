@@ -1,6 +1,5 @@
 import type { ActivityContentProjectPausing } from "@/api";
 import type { Activity } from "@/models/activities";
-import * as People from "@/models/people";
 import type { ActivityHandler } from "../interfaces";
 
 
@@ -52,7 +51,7 @@ const ProjectPausing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " paused the " + content(activity).project!.name! + " project";
+    return "Paused the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

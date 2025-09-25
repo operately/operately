@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubDocumentDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
@@ -58,7 +56,7 @@ const ResourceHubDocumentDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a document: " + content(activity).document!.name!;
+    return "Deleted a document: " + content(activity).document!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

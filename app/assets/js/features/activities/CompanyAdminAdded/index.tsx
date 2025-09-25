@@ -1,5 +1,5 @@
 import { Activity, ActivityContentCompanyAdminAdded } from "@/api";
-import { firstName, namesListToString } from "@/models/people";
+import { namesListToString } from "@/models/people";
 import { feedTitle } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
 
@@ -46,8 +46,8 @@ const CompanyAdminAdded: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " granted you admin privileges";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Granted you admin privileges";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -1,8 +1,6 @@
 import React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
 import RichContent, { Summary } from "@/components/RichContent";
 
@@ -88,7 +86,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " posted: " + activity.commentThread!.title!;
+    return "Posted: " + activity.commentThread!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

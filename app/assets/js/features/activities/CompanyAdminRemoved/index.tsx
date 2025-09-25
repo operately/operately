@@ -46,8 +46,8 @@ const CompanyAdminRemoved: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " has revoked your admin privileges";
+  NotificationTitle(_activity: { activity: Activity }) {
+    return "Revoked your admin privileges";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

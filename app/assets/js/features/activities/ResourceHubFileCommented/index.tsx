@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubFileCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -71,7 +69,7 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on: " + content(activity).file!.name!;
+    return "Re: " + content(activity).file!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

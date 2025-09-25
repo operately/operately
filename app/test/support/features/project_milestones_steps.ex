@@ -229,7 +229,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.visit(Paths.notifications_path(ctx.company))
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "commented on #{ctx.milestone.title}"
+      action: "Re: #{ctx.milestone.title}"
     })
   end
 

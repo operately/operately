@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubFolderDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
@@ -58,7 +56,7 @@ const ResourceHubFolderDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a folder: " + content(activity).folder!.name!;
+    return "Deleted a folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

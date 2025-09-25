@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentDiscussionCommentSubmitted } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -66,7 +64,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on: " + content(activity).discussion!.title!;
+    return "Re: " + content(activity).discussion!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

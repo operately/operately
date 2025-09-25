@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentGoalCheckInCommented } from "@/api";
@@ -70,8 +69,8 @@ const GoalUpdateCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the goal check-in";
+  NotificationTitle(_activity: { activity: Activity }) {
+    return "Re: goal check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

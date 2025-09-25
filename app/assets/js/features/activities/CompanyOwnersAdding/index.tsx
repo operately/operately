@@ -1,4 +1,4 @@
-import { firstName, namesListToString } from "@/models/people";
+import { namesListToString } from "@/models/people";
 import { feedTitle } from "../feedItemLinks";
 
 import type { ActivityContentCompanyOwnersAdding } from "@/api";
@@ -50,8 +50,8 @@ const CompanyOwnersAdding: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " promoted you to an account owner";
+  NotificationTitle(_activity: { activity: Activity }) {
+    return "Promoted you to an account owner";
   },
 
   NotificationLocation(_props: { activity: Activity }) {

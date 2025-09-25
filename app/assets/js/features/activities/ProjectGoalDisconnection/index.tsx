@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentProjectGoalDisconnection } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -61,7 +59,7 @@ const ProjectGoalDisconnection: ActivityHandler = {
     const projectName = content(activity).project!.name!;
     const goalName = content(activity).goal!.name!;
 
-    return People.firstName(activity.author!) + ` disconnected the ${projectName} project to the ${goalName} goal`;
+    return `Disconnected the ${projectName} project from the ${goalName} goal`;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

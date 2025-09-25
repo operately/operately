@@ -129,7 +129,7 @@ defmodule Operately.Support.Features.ProjectContributorsSteps do
       |> UI.login_as(person)
       |> NotificationsSteps.assert_activity_notification(%{
         author: ctx.champion,
-        action: "added you as a contributor"
+        action: "Added you as a contributor"
       })
     end)
   end

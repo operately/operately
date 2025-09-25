@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentProjectArchived } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -53,7 +51,7 @@ const ProjectArchived: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " archived the " + content(activity).project!.name! + " project";
+    return "Archived the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

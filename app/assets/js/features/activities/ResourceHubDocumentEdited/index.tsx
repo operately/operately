@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubDocumentEdited } from "@/api";
 import type { Activity } from "@/models/activities";
 
@@ -56,8 +54,8 @@ const ResourceHubDocumentEdited: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " edited the document";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Edited the document";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

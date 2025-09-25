@@ -1,9 +1,6 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentProjectCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
-
 
 import { feedTitle, projectLink } from "../feedItemLinks";
 
@@ -55,7 +52,7 @@ const ProjectCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " started the " + content(activity).project!.name! + " project";
+    return "Added the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

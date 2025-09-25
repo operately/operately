@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import { feedTitle, projectLink } from "../feedItemLinks";
 
 import type { ActivityContentProjectResuming } from "@/api";
@@ -52,7 +50,7 @@ const ProjectResuming: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " resumed the " + content(activity).project!.name! + " project";
+    return "Resumed the " + content(activity).project!.name! + " project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

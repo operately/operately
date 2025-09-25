@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectRetrospectiveCommented } from "@/api";
@@ -65,8 +64,8 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the project retrospective";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Re: project retrospective";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

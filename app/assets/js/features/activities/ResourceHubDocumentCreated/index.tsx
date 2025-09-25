@@ -1,8 +1,6 @@
 import type { ActivityContentResourceHubDocumentCreated } from "@/api";
 import { Summary } from "@/components/RichContent";
 import type { Activity } from "@/models/activities";
-import * as People from "@/models/people";
-
 import React from "react";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
@@ -58,14 +56,13 @@ const ResourceHubDocumentCreating: ActivityHandler = {
 
     if (copiedDocument) {
       return (
-        People.firstName(activity.author!) +
-        " created a copy of " +
+        "Created a copy of " +
         copiedDocument.name +
         " and named it " +
         document.name
       );
     } else {
-      return People.firstName(activity.author!) + " added: " + document.name!;
+      return "Added: " + document.name!;
     }
   },
 
