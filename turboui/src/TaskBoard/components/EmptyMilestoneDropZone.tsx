@@ -12,7 +12,7 @@ export interface EmptyMilestoneDropZoneProps {
  */
 export function EmptyMilestoneDropZone({ milestoneId, children }: EmptyMilestoneDropZoneProps) {
   // Set up drop zone with the same ID pattern as TaskList
-  const { ref } = useDropZone({ id: milestoneId, dependencies: [] });
+  const { ref } = useDropZone({ id: milestoneId, dependencies: [], accepts: ["task"] });
 
   return (
     <div ref={ref as React.RefObject<HTMLDivElement>} className="py-3 px-4 min-h-[40px] bg-surface-base">

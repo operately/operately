@@ -1548,6 +1548,7 @@ defmodule OperatelyWeb.Api.Types do
     field :title, :string, null: false
     field :status, :milestone_status
     field :inserted_at, :date
+    field :position, :integer
     field :timeframe, :timeframe, null: true
     field :completed_at, :date
     field? :description, :string, null: true

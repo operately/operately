@@ -15,7 +15,14 @@ export {
 } from "@/api";
 
 export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
-  return milestones.map((m) => parseMilestoneForTurboUi(paths, m));
+  return [...milestones]
+    .sort((a, b) => {
+      const posA = a.position ?? 0;
+      const posB = b.position ?? 0;
+      if (posA === posB) return a.insertedAt.localeCompare(b.insertedAt);
+      return posA - posB;
+    })
+    .map((m) => parseMilestoneForTurboUi(paths, m));
 }
 
 export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
@@ -27,6 +34,7 @@ export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
     link: paths.projectMilestonePath(milestone.id),
     tasksOrderingState: milestone.tasksOrderingState ?? [],
     completedAt: Time.parseDate(milestone.completedAt),
+    position: milestone.position ?? 0,
   };
 }
 

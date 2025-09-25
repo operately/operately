@@ -63,8 +63,6 @@ export function MilestoneCard({
     if (onTaskCreate) {
       onTaskCreate(newTask);
     }
-    // Close modal if not creating multiple tasks
-    // (the modal handles this internally)
   };
 
   const handleMilestoneDueDateChange = (newDueDate: DateField.ContextualDate | null) => {
@@ -73,11 +71,9 @@ export function MilestoneCard({
     }
   };
 
-  // Do not auto-open on empty milestones; rely on explicit triggers
-
   return (
     <>
-      <li {...hoverBind}>
+      <li {...hoverBind} className="transition-shadow list-none rounded-lg">
         {/* Milestone header */}
         <div
           className={classNames(
@@ -85,8 +81,7 @@ export function MilestoneCard({
             !milestone.dueDate && onMilestoneUpdate ? "group/milestone-header" : undefined,
           )}
         >
-          <div className="flex items-center gap-2 flex-1 min-w-0">
-            {/* Progress pie chart */}
+          <div className="flex items-center gap-3 flex-1 min-w-0">
             <PieChart
               size={16}
               slices={[
@@ -117,9 +112,7 @@ export function MilestoneCard({
                 {milestone.hasComments && (
                   <span className="flex items-center">
                     <IconMessageCircle size={12} />
-                    {milestone.commentCount && (
-                      <span className="ml-0.5 text-xs">{milestone.commentCount}</span>
-                    )}
+                    {milestone.commentCount && <span className="ml-0.5 text-xs">{milestone.commentCount}</span>}
                   </span>
                 )}
               </div>
@@ -153,12 +146,10 @@ export function MilestoneCard({
             </div>
           </div>
           <SecondaryButton size="xs" icon={IconPlus} onClick={openCreator} testId="milestone-add-task">
-            {/* icon-only for reduced repetition; keep accessible label */}
             <span className="sr-only">Add task</span>
           </SecondaryButton>
         </div>
 
-        {/* Tasks in this milestone - show empty state when no tasks at all */}
         {(sortedTasks && sortedTasks.length > 0) || (hiddenTasks && hiddenTasks.length > 0) ? (
           <TaskList
             tasks={sortedTasks}
@@ -201,8 +192,8 @@ export function MilestoneCard({
                 </div>
               </>
             ) : (
-              <div className="text-center text-content-subtle text-sm">
-                Click + or press 'c' to add a task, or drag a task here.
+              <div className="px-4 pb-3 text-center text-content-subtle text-xs">
+                Click + or press c to add a task, or drag a task here.
               </div>
             )}
           </EmptyMilestoneDropZone>
@@ -210,40 +201,22 @@ export function MilestoneCard({
       </li>
 
       <TaskCreationModal
-        searchPeople={searchPeople}
         isOpen={isTaskModalOpen}
         onClose={() => setIsTaskModalOpen(false)}
-        onCreateTask={handleCreateTask}
-        milestones={availableMilestones.length > 0 ? availableMilestones : [milestone]}
+        onCreateTask={onTaskCreate}
+        milestones={availableMilestones}
         currentMilestoneId={milestone.id}
+        searchPeople={searchPeople}
         people={availablePeople}
       />
     </>
   );
 }
 
-/**
- * Calculate statistics for a milestone based on its tasks
- */
-export const calculateMilestoneStats = (tasks: Types.Task[]) => {
-  const stats = {
-    pending: 0,
-    inProgress: 0,
-    done: 0,
-    canceled: 0,
-    total: 0,
-  };
+export function calculateMilestoneStats(tasks: Types.Task[]): Types.MilestoneStats {
+  const stats: Types.MilestoneStats = { pending: 0, inProgress: 0, done: 0, canceled: 0, total: 0 };
 
-  // Skip empty task lists
-  if (!tasks || tasks.length === 0) {
-    return stats;
-  }
-
-  // Count tasks by status
   tasks.forEach((task) => {
-    // Don't count helper tasks
-    if (task._isHelperTask) return;
-
     stats.total++;
 
     switch (task.status) {
@@ -263,27 +236,9 @@ export const calculateMilestoneStats = (tasks: Types.Task[]) => {
   });
 
   return stats;
-};
-
-/**
- * Calculate completion percentage for a milestone, excluding canceled tasks
- * If a milestone has 1 done task and 1 canceled task, it should show as 100% complete
- */
-function calculateCompletionPercentage(stats: {
-  pending: number;
-  inProgress: number;
-  done: number;
-  canceled: number;
-  total: number;
-}) {
-  // Active tasks are those that aren't canceled
-  const activeTasks = stats.total - stats.canceled;
-
-  // If there are no active tasks, show as 0% complete
-  if (activeTasks === 0) return 0;
-
-  // Calculate percentage based only on active tasks
-  return (stats.done / activeTasks) * 100;
 }
 
-export default MilestoneCard;
+export function calculateCompletionPercentage(stats: Types.MilestoneStats): number {
+  if (stats.total === 0) return 0;
+  return (stats.done / stats.total) * 100;
+}

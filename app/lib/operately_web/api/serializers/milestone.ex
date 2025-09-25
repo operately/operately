@@ -6,6 +6,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       creator: OperatelyWeb.Api.Serializer.serialize(milestone.creator),
       title: milestone.title,
       status: to_string(milestone.status),
+      position: milestone.position,
       description: milestone.description && Jason.encode!(milestone.description),
       inserted_at: OperatelyWeb.Api.Serializer.serialize(milestone.inserted_at),
       completed_at: OperatelyWeb.Api.Serializer.serialize(milestone.completed_at),

@@ -127,13 +127,15 @@ defmodule Operately.Projects do
   def list_project_milestones(project) do
     query = from m in Milestone,
       where: m.project_id == ^project.id,
-      order_by: [asc: m.id]
+      order_by: [asc: m.position, asc: m.inserted_at]
 
     Repo.all(query)
   end
 
   def create_milestone(attrs) do
-    Milestone.changeset(attrs)
+    attrs
+    |> ensure_milestone_position()
+    |> Milestone.changeset()
     |> Repo.insert()
   end
 
@@ -149,6 +151,65 @@ defmodule Operately.Projects do
 
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do
     Milestone.changeset(milestone, attrs)
+  end
+
+  def next_milestone_position(project_id, repo \\ Repo) do
+    query = from m in Milestone,
+      where: m.project_id == ^project_id,
+      select: max(m.position)
+
+    ((repo.one(query) || 0) + 1)
+  end
+
+  def reorder_project_milestones(project_id, ordered_ids, repo \\ Repo) when is_list(ordered_ids) do
+    ordered_ids = Enum.uniq(ordered_ids)
+
+    existing_ids_query = from m in Milestone,
+      where: m.project_id == ^project_id,
+      order_by: [asc: m.position, asc: m.inserted_at],
+      select: m.id
+
+    existing_ids = repo.all(existing_ids_query)
+    existing_set = MapSet.new(existing_ids)
+    ordered_set = MapSet.new(ordered_ids)
+
+    case Enum.filter(ordered_ids, fn id -> not MapSet.member?(existing_set, id) end) do
+      [] ->
+        remaining = Enum.filter(existing_ids, fn id -> not MapSet.member?(ordered_set, id) end)
+        final_order = ordered_ids ++ remaining
+
+        Enum.with_index(final_order, 1)
+        |> Enum.each(fn {id, index} ->
+          repo.update_all(
+            from(m in Milestone, where: m.project_id == ^project_id and m.id == ^id),
+            set: [position: index]
+          )
+        end)
+
+        updated = repo.all(from m in Milestone,
+          where: m.project_id == ^project_id,
+          order_by: [asc: m.position, asc: m.inserted_at]
+        )
+
+        {:ok, updated}
+
+      unknown ->
+        {:error, {:unknown_milestones, unknown}}
+    end
+  end
+
+  defp ensure_milestone_position(attrs) do
+    cond do
+      Map.has_key?(attrs, :position) -> attrs
+      Map.has_key?(attrs, "position") -> attrs
+      true ->
+        project_id = Map.get(attrs, :project_id) || Map.get(attrs, "project_id")
+
+        case project_id do
+          nil -> attrs
+          id -> Map.put(attrs, :position, next_milestone_position(id))
+        end
+    end
   end
 
   def get_contributor!(person_id: person_id, project_id: project_id) do

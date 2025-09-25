@@ -143,7 +143,10 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
-  const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project);
+  const { milestones, setMilestones, createMilestone, updateMilestone, reorderMilestones } = useMilestones(
+    paths,
+    project,
+  );
   const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
@@ -263,6 +266,7 @@ function Page() {
     milestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
+    onMilestonesReorder: reorderMilestones,
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
@@ -483,7 +487,42 @@ function useMilestones(paths: Paths, project: Projects.Project) {
       });
   };
 
-  return { milestones, setMilestones, createMilestone, updateMilestone };
+  const reorderMilestones = async (orderedIds: string[]) => {
+    const previous = milestones;
+    const idToMilestone = new Map(previous.map((milestone) => [milestone.id, milestone]));
+
+    const optimistic = [
+      ...orderedIds
+        .map((id) => idToMilestone.get(id))
+        .filter((milestone): milestone is ProjectPage.Milestone => Boolean(milestone)),
+      ...previous.filter((milestone) => !orderedIds.includes(milestone.id)),
+    ];
+
+    setMilestones(optimistic);
+
+    return Api.projects
+      .reorderMilestones({
+        projectId: project.id,
+        orderedIds,
+      })
+      .then((data) => {
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        if (data.milestones) {
+          setMilestones(parseMilestonesForTurboUi(paths, data.milestones));
+        }
+
+        return true;
+      })
+      .catch((e) => {
+        console.error("Failed to reorder milestones", e);
+        showErrorToast("Error", "Failed to reorder milestones");
+        setMilestones(previous);
+        return false;
+      });
+  };
+
+  return { milestones, setMilestones, createMilestone, updateMilestone, reorderMilestones };
 }
 
 function useResources(project: Projects.Project) {

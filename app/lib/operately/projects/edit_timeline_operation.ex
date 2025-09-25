@@ -42,6 +42,8 @@ defmodule Operately.Projects.EditTimelineOperation do
   end
 
   defp insert_new_milestones(multi, author, project, attrs) do
+    starting_position = Operately.Projects.next_milestone_position(project.id)
+
     attrs.new_milestones
     |> Enum.with_index()
     |> Enum.reduce(multi, fn {milestone, index}, multi ->
@@ -54,7 +56,8 @@ defmodule Operately.Projects.EditTimelineOperation do
         timeframe: %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
           contextual_end_date: milestone.due_date,
-        }
+        },
+        position: starting_position + index
       })
 
       multi |> Multi.insert("new_milestone_#{index}", changeset)

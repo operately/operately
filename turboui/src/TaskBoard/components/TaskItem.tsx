@@ -36,7 +36,12 @@ export function TaskItem({
   const [currentStatus, setCurrentStatus] = useState<TaskWithIndex["status"]>(task.status || "pending");
 
   // Set up draggable behavior
-  const { ref, isDragging } = useDraggable({ id: task.id, zoneId: milestoneId, disabled: draggingDisabled });
+  const { ref, isDragging } = useDraggable({
+    id: task.id,
+    zoneId: milestoneId,
+    disabled: draggingDisabled,
+    type: "task",
+  });
 
   const itemClasses = classNames(isDragging ? "bg-surface-accent" : "");
 

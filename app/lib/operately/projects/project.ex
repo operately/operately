@@ -19,7 +19,9 @@ defmodule Operately.Projects.Project do
     has_many :contributors, Contributor, foreign_key: :project_id
     has_many :contributing_people, through: [:contributors, :person]
     has_many :key_resources, Operately.Projects.KeyResource, foreign_key: :project_id
-    has_many :milestones, Operately.Projects.Milestone, foreign_key: :project_id
+    has_many :milestones, Operately.Projects.Milestone,
+      foreign_key: :project_id,
+      preload_order: [asc: :position, asc: :inserted_at]
     has_many :check_ins, CheckIn, foreign_key: :project_id
     has_many :tasks, Operately.Tasks.Task, foreign_key: :project_id
 

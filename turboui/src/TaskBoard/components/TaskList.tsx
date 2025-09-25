@@ -57,6 +57,7 @@ export function TaskList({
   const { ref } = useDropZone({
     id: milestoneId,
     dependencies: [tasksWithIndex],
+    accepts: ["task"],
   });
 
   // Get the animation styles for the container and items

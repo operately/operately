@@ -34,6 +34,7 @@ export interface Milestone {
   id: string;
   name: string;
   dueDate?: DateField.ContextualDate | null;
+  position?: number;
   hasDescription?: boolean;
   hasComments?: boolean;
   commentCount?: number;
@@ -160,6 +161,7 @@ export interface TaskBoardProps {
   onTaskStatusChange: (taskId: string, status: string) => void;
   onTaskMilestoneChange?: (taskId: string, milestoneId: string | null, index: number) => void;
   onMilestoneUpdate?: (milestoneId: string, updates: Partial<Milestone>) => void;
+  onMilestonesReorder?: (orderedIds: string[]) => Promise<boolean>;
   searchPeople?: (params: { query: string }) => Promise<Person[]>;
 
   // Filter functionality
