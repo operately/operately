@@ -16,6 +16,7 @@ import {
   SecondaryButton,
   showErrorToast,
   showSuccessToast,
+  WarningCallout,
 } from "turboui";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
@@ -25,9 +26,9 @@ import { useJoinSpace } from "@/models/spaces";
 import { assertPresent } from "@/utils/assertions";
 
 import { usePaths } from "@/routes/paths";
+import { useNavigate } from "react-router-dom";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
-import { useNavigate } from "react-router-dom";
 
 export function Page() {
   const { space, tools } = useLoadedData();
@@ -159,31 +160,13 @@ function SpaceOptions() {
   const resourceCounts = React.useMemo(() => {
     const projectCount = tools.projects?.length ?? 0;
     const goalCount = tools.goals?.length ?? 0;
-    const messageCount = (tools.messagesBoards ?? []).reduce(
-      (sum, board) => sum + (board.messages?.length ?? 0),
-      0,
-    );
-    const resourceHubItemCount = (tools.resourceHubs ?? []).reduce(
-      (sum, hub) => sum + (hub.nodes?.length ?? 0),
-      0,
-    );
+    const messageCount = (tools.messagesBoards ?? []).reduce((sum, board) => sum + (board.messages?.length ?? 0), 0);
 
-    return { projectCount, goalCount, messageCount, resourceHubItemCount };
+    return { projectCount, goalCount, messageCount };
   }, [tools]);
 
   const hasSubresources = React.useMemo(() => {
     return Object.values(resourceCounts).some((count) => count > 0);
-  }, [resourceCounts]);
-
-  const subresourceSummaries = React.useMemo(() => {
-    const entries = [
-      { label: "Projects", count: resourceCounts.projectCount },
-      { label: "Goals", count: resourceCounts.goalCount },
-      { label: "Discussions", count: resourceCounts.messageCount },
-      { label: "Resource hub items", count: resourceCounts.resourceHubItemCount },
-    ];
-
-    return entries.filter((entry) => entry.count > 0);
   }, [resourceCounts]);
 
   const paths = usePaths();
@@ -208,7 +191,7 @@ function SpaceOptions() {
       return;
     }
 
-    void performDelete();
+    performDelete();
   }, [hasSubresources, isDeleting, performDelete]);
 
   const handleConfirmDelete = React.useCallback(async () => {
@@ -248,25 +231,10 @@ function SpaceOptions() {
         closeOnBackdropClick={!isDeleting}
       >
         <div className="space-y-4">
-          <p className="text-content-base font-medium">
-            This space contains work. Deleting it will permanently remove everything listed below and cannot be
-            undone.
-          </p>
-
-          {subresourceSummaries.length > 0 && (
-            <ul className="list-disc pl-5 text-sm text-content-dimmed space-y-1">
-              {subresourceSummaries.map(({ label, count }) => (
-                <li key={label}>
-                  <span className="font-semibold text-content-base">{count}</span> {label.toLowerCase()}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <p className="text-content-dimmed text-sm">
-            Please confirm you still want to delete this space and all of its subresources. This action cannot be
-            reverted.
-          </p>
+          <WarningCallout
+            message="This action cannot be undone."
+            description="Deleting this space will permanently remove everything in it. This includes all projects, goals, and discussions."
+          />
 
           <div className="flex justify-end gap-3">
             <SecondaryButton size="sm" onClick={handleCloseModal} disabled={isDeleting}>
