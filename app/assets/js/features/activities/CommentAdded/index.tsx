@@ -11,11 +11,11 @@ import type {
 } from "@/api";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
 import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
-import { Link } from "turboui";
+import { Link, Summary } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const CommentAdded: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -122,10 +122,11 @@ const CommentAdded: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
+    const { comment } = content(activity);
+    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

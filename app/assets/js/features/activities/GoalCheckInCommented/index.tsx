@@ -4,12 +4,11 @@ import type { ActivityContentGoalCheckInCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
-import { Link } from "turboui";
+import { Link, Summary } from "turboui";
 import { feedTitle, goalLink } from "./../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalUpdateCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -51,10 +50,11 @@ const GoalUpdateCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+    const { comment } = content(activity);
+    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
 
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

@@ -1,17 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import * as TipTapEditor from "@/components/Editor";
 import { formValidator, useFormState } from "@/components/Form/useFormState";
 import { Options, SubscriptionsState } from "@/features/Subscriptions";
 import * as Goals from "@/models/goals";
 import { Validators } from "@/utils/validators";
 
 import { usePaths } from "@/routes/paths";
+import { useEditor } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+
 type FormFields = {
   title: string;
   setTitle: (title: string) => void;
-  editor: TipTapEditor.EditorState;
+  editor: any;
 };
 
 export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscriptionsState: SubscriptionsState }) {
@@ -20,10 +22,11 @@ export function useForm({ goal, subscriptionsState }: { goal: Goals.Goal; subscr
 
   const [title, setTitle] = React.useState("");
 
-  const editor = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: { type: "goal", id: goal.id } });
+  const editor = useEditor({
     placeholder: "Start a new discussion...",
     className: "min-h-[350px] py-2 text-lg",
-    mentionSearchScope: { type: "goal", id: goal.id! },
+    handlers,
   });
 
   const [submitting, setSubmitting] = React.useState(false);
