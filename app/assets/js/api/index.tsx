@@ -2542,6 +2542,17 @@ export interface GetWorkMapResult {
   workMap?: WorkMapItem[] | null;
 }
 
+export interface GlobalSearchInput {
+  query: string;
+}
+
+export interface GlobalSearchResult {
+  projects: Project[];
+  goals: Goal[];
+  tasks: Task[];
+  people: Person[];
+}
+
 export interface GoalsGetCheckInsInput {
   goalId: Id;
 }
@@ -2717,17 +2728,6 @@ export interface SpacesSearchInput {
 
 export interface SpacesSearchResult {
   spaces: Space[];
-}
-
-export interface GlobalSearchInput {
-  query: string;
-}
-
-export interface GlobalSearchResult {
-  projects?: Project[] | null;
-  goals?: Goal[] | null;
-  tasks?: Task[] | null;
-  people?: Person[] | null;
 }
 
 export interface AcknowledgeGoalProgressUpdateInput {
@@ -4350,6 +4350,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_work_map", input);
   }
 
+  async globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+    return this.client.get("/global_search", input);
+  }
+
   async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.client.get("/list_goal_contributors", input);
   }
@@ -4380,10 +4384,6 @@ class ApiNamespaceRoot {
     input: SearchProjectContributorCandidatesInput,
   ): Promise<SearchProjectContributorCandidatesResult> {
     return this.client.get("/search_project_contributor_candidates", input);
-  }
-
-  async globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
-    return this.client.get("/global_search", input);
   }
 
   async acknowledgeGoalProgressUpdate(
@@ -5338,6 +5338,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getWorkMap(input);
   }
 
+  globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+    return this.apiNamespaceRoot.globalSearch(input);
+  }
+
   listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.apiNamespaceRoot.listGoalContributors(input);
   }
@@ -5366,10 +5370,6 @@ export class ApiClient {
     input: SearchProjectContributorCandidatesInput,
   ): Promise<SearchProjectContributorCandidatesResult> {
     return this.apiNamespaceRoot.searchProjectContributorCandidates(input);
-  }
-
-  globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
-    return this.apiNamespaceRoot.globalSearch(input);
   }
 
   acknowledgeGoalProgressUpdate(
@@ -5908,6 +5908,9 @@ export async function getUnreadNotificationCount(
 export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
   return defaultApiClient.getWorkMap(input);
 }
+export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+  return defaultApiClient.globalSearch(input);
+}
 export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
   return defaultApiClient.listGoalContributors(input);
 }
@@ -5932,9 +5935,6 @@ export async function searchProjectContributorCandidates(
   input: SearchProjectContributorCandidatesInput,
 ): Promise<SearchProjectContributorCandidatesResult> {
   return defaultApiClient.searchProjectContributorCandidates(input);
-}
-export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
-  return defaultApiClient.globalSearch(input);
 }
 export async function acknowledgeGoalProgressUpdate(
   input: AcknowledgeGoalProgressUpdateInput,
@@ -6468,6 +6468,10 @@ export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWor
   return useQuery<GetWorkMapResult>(() => defaultApiClient.getWorkMap(input));
 }
 
+export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
+  return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
+}
+
 export function useListGoalContributors(
   input: ListGoalContributorsInput,
 ): UseQueryHookResult<ListGoalContributorsResult> {
@@ -6506,10 +6510,6 @@ export function useSearchProjectContributorCandidates(
   return useQuery<SearchProjectContributorCandidatesResult>(() =>
     defaultApiClient.searchProjectContributorCandidates(input),
   );
-}
-
-export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
-  return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
 }
 
 export function useAcknowledgeGoalProgressUpdate(): UseMutationHookResult<
@@ -7257,6 +7257,8 @@ export default {
   useGetUnreadNotificationCount,
   getWorkMap,
   useGetWorkMap,
+  globalSearch,
+  useGlobalSearch,
   listGoalContributors,
   useListGoalContributors,
   listPossibleManagers,
@@ -7271,8 +7273,6 @@ export default {
   useSearchPotentialSpaceMembers,
   searchProjectContributorCandidates,
   useSearchProjectContributorCandidates,
-  globalSearch,
-  useGlobalSearch,
   acknowledgeGoalProgressUpdate,
   useAcknowledgeGoalProgressUpdate,
   acknowledgeProjectCheckIn,
