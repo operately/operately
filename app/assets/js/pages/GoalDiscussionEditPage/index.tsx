@@ -48,7 +48,6 @@ function Page() {
           />
 
           <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-            {/* <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} /> */}
             <Editor editor={form.fields.editor} hideBorder padding="p-0" />
           </div>
 

@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as People from "@/models/people";
 
-// import RichContent from "@/components/RichContent";
 import { InputField } from "./FieldGroup";
 import { useFieldError, useFieldValue, useFormContext } from "./FormContext";
 import { useValidation } from "./validations/hook";

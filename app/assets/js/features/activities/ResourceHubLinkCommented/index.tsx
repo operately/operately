@@ -47,7 +47,7 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
+    const { mentionedPersonLookup } = useRichEditorHandlers();
     const comment = content(activity).comment!;
     const commentContent = JSON.parse(comment.content!)["message"];
 
