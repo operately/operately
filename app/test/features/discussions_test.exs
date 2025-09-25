@@ -12,11 +12,18 @@ defmodule Operately.Features.DiscussionsTest do
     |> Steps.assert_validation_error()
   end
 
-  feature "post a discussion with blank body", ctx do
+  feature "save a discussion with blank body as draft", ctx do
     ctx
     |> Steps.start_writting_discussion_with_blank_body()
-    |> Steps.submit_discussion()
-    |> Steps.assert_discussion_is_posted_with_blank_body()
+    |> Steps.save_as_draft()
+    |> Steps.assert_draft_discussion_is_posted_with_blank_body()
+  end
+
+  feature "cannot publish a discussion with blank body", ctx do
+    ctx
+    |> Steps.start_writting_discussion_with_blank_body()
+    |> Steps.try_to_submit_discussion()
+    |> Steps.assert_body_validation_error()
   end
 
   feature "post a draft discussion", ctx do

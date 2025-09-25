@@ -366,6 +366,30 @@ defmodule Operately.Support.Features.DiscussionsSteps do
     |> UI.assert_feed_item(ctx.reader, "commented on #{@title}")
   end
 
+  step :save_as_draft, ctx do
+    ctx |> UI.click(testid: "save-as-draft")
+  end
+
+  step :try_to_submit_discussion, ctx do
+    ctx |> UI.click(testid: "post-discussion")
+  end
+
+  step :assert_draft_discussion_is_posted_with_blank_body, ctx do
+    message = last_message(ctx)
+
+    assert message.state == :draft
+
+    ctx
+    |> UI.assert_page(Paths.message_path(ctx.company, message))
+    |> UI.assert_text(@title)
+  end
+
+  step :assert_body_validation_error, ctx do
+    ctx
+    |> UI.sleep(500)  # Wait for validation to trigger
+    |> UI.assert_has(Query.css(".text-red-500", text: "Body is required before publishing the discussion"))
+  end
+
   #
   # Utilities
   #

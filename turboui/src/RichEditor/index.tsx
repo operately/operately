@@ -15,6 +15,7 @@ interface EditorProps {
   hideBorder?: boolean;
   hideToolbar?: boolean;
   padding?: string;
+  error?: string;
 }
 
 //
@@ -54,6 +55,8 @@ function EditorContent(props: EditorProps): JSX.Element {
       <div className="ProseMirror text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
       </div>
+
+      {props.error && <div className="text-red-500 text-xs mb-1">{props.error}</div>}
     </div>
   );
 }
