@@ -5,8 +5,6 @@ import * as Discussions from "@/models/discussions";
 import * as Reactions from "@/models/reactions";
 import * as React from "react";
 
-import RichContent from "@/components/RichContent";
-
 import { Spacer } from "@/components/Spacer";
 import { CommentSection, useComments } from "@/features/CommentSection";
 import { ReactionList, useReactionsForm } from "@/features/Reactions";
@@ -21,9 +19,11 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { assertPresent } from "@/utils/assertions";
 import { useNavigate } from "react-router-dom";
 import { useLoadedData } from "./loader";
-import { IconEdit, IconTrash } from "turboui";
+import { IconEdit, IconTrash, RichContent } from "turboui";
 
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { usePaths } from "@/routes/paths";
+
 export function Page() {
   const { discussion } = useLoadedData();
 
@@ -51,11 +51,17 @@ export function Page() {
 
 function DiscussionBody() {
   const { discussion } = useLoadedData();
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <>
       <Spacer size={4} />
-      <RichContent jsonContent={discussion.body!} className="text-md sm:text-lg" />
+      <RichContent
+        content={discussion.body}
+        className="text-md sm:text-lg"
+        mentionedPersonLookup={mentionedPersonLookup}
+        parseContent
+      />
     </>
   );
 }

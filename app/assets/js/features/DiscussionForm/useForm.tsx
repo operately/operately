@@ -7,6 +7,8 @@ import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscr
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
+import { useEditor } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface UseFormOptions {
   mode: "create" | "edit";
@@ -51,16 +53,17 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
 
-  const { editor, uploading } = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! }});
+  const editor = useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
-    mentionSearchScope: { type: "space", id: space ? space.id! : discussion!.space!.id! },
+    handlers
   });
 
   const validate = () => {
-    if (!editor) return false;
-    if (uploading) return false;
+    if (!editor.editor) return false;
+    if (editor.uploading) return false;
 
     const foundErrors: Error[] = [];
     if (title.trim() === "") foundErrors.push({ field: "title", message: "Title is required" });
@@ -120,7 +123,7 @@ function usePostMessage({ space, title, editor, subscriptionsState, validate }):
       spaceId: space.id,
       title: title,
       postAsDraft: false,
-      body: JSON.stringify(editor.getJSON()),
+      body: JSON.stringify(editor.editor.getJSON()),
       sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
@@ -151,7 +154,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
       spaceId: space.id,
       title: title,
       postAsDraft: true,
-      body: JSON.stringify(editor.getJSON()),
+      body: JSON.stringify(editor.editor.getJSON()),
       sendNotificationsToEveryone: subscriptionsState.subscriptionType == Options.ALL,
       subscriberIds: subscriptionsState.currentSubscribersList,
     });
@@ -180,7 +183,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
     const res = await edit({
       id: discussion!.id,
       title: title,
-      body: JSON.stringify(editor.getJSON()),
+      body: JSON.stringify(editor.editor.getJSON()),
     });
 
     setSubmitting(false);
@@ -207,7 +210,7 @@ function usePublishDraft({ discussion, title, editor, validate }): [() => Promis
     const res = await edit({
       id: discussion!.id,
       title: title,
-      body: JSON.stringify(editor.getJSON()),
+      body: JSON.stringify(editor.editor.getJSON()),
       state: "published",
     });
 

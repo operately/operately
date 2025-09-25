@@ -1,14 +1,15 @@
 import * as React from "react";
-import * as TipTapEditor from "@/components/Editor";
 import * as People from "@/models/people";
 
-import RichContent from "@/components/RichContent";
+// import RichContent from "@/components/RichContent";
 import { InputField } from "./FieldGroup";
 import { useFieldError, useFieldValue, useFormContext } from "./FormContext";
 import { useValidation } from "./validations/hook";
 
 import classNames from "classnames";
 import { validateRichContentPresence } from "./validations/richContentPresence";
+import { useEditor, Editor as RichTextEditor, RichContent } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface RichTextAreaProps {
   field: string;
@@ -56,10 +57,11 @@ function ReadonlyContent(props: RichTextAreaProps) {
   const className = classNames(contentClassName(props), {
     "border rounded-lg border-stroke-base": !props.hideBorder,
   });
+  const { mentionedPersonLookup } = useRichEditorHandlers({ scope: props.mentionSearchScope });
 
   return (
     <div className={className}>
-      <RichContent jsonContent={value} skipParse />
+      <RichContent content={value} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }
@@ -68,10 +70,11 @@ function Editor(props: RichTextAreaProps & { error: boolean }) {
   const form = useFormContext();
   const [value, setValue] = useFieldValue(props.field);
 
-  const editor = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: props.mentionSearchScope });
+  const editor = useEditor({
     placeholder: props.placeholder,
     className: contentClassName(props),
-    mentionSearchScope: props.mentionSearchScope,
+    handlers,
     onBlur: () => {
       setValue(editor.editor.getJSON());
     },
@@ -92,12 +95,7 @@ function Editor(props: RichTextAreaProps & { error: boolean }) {
 
   return (
     <div className={wrapperClassName(props)}>
-      <TipTapEditor.Root editor={editor.editor}>
-        {!props.hideToolbar && (
-          <TipTapEditor.Toolbar editor={editor.editor} noTopBorder={!props.showToolbarTopBorder} />
-        )}
-        <TipTapEditor.EditorContent editor={editor.editor} />
-      </TipTapEditor.Root>
+      <RichTextEditor editor={editor} hideToolbar={props.hideToolbar} hideBorder padding="p-0" />
     </div>
   );
 }

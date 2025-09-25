@@ -3,16 +3,16 @@ import * as Paper from "@/components/PaperContainer";
 import * as ProjectCheckIns from "@/models/projectCheckIns";
 import * as React from "react";
 
-import { Summary } from "@/components/RichContent";
 import { DivLink } from "turboui";
 import { CheckInButton } from "./CheckInButton";
 import { useLoadedData } from "./loader";
 
 import FormattedTime from "@/components/FormattedTime";
 import { SmallStatusIndicator } from "@/components/status";
-import { Avatar } from "turboui";
+import { Avatar, Summary } from "turboui";
 
 import { usePaths } from "@/routes/paths";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 export function Page() {
   const { project } = useLoadedData();
 
@@ -92,6 +92,7 @@ function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
   const paths = usePaths();
   const author = checkIn.author!;
   const path = paths.projectCheckInPath(checkIn.id!);
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <DivLink className="flex items-start gap-2 rounded-lg cursor-pointer border border-stroke-base" to={path}>
@@ -110,7 +111,11 @@ function CheckInCard({ checkIn }: { checkIn: ProjectCheckIns.ProjectCheckIn }) {
           </div>
 
           <div className="flex-1">
-            <Summary jsonContent={checkIn.description!} characterCount={250} />
+            <Summary
+              content={checkIn.description!}
+              characterCount={250}
+              mentionedPersonLookup={mentionedPersonLookup}
+            />
           </div>
         </div>
 

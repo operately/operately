@@ -8,15 +8,15 @@ import { useMentionedPersonLookupFn } from "@/contexts/CurrentCompanyContext";
 import { RichEditorHandlers } from "turboui";
 
 interface Props {
-  scope: People.SearchScope;
+  scope?: People.SearchScope;
 }
 
-export function useRichEditorHandlers({ scope }: Props): RichEditorHandlers {
+export function useRichEditorHandlers(attrs?: Props): RichEditorHandlers {
   const paths = usePaths();
   const mentionedPersonLookup = useMentionedPersonLookupFn();
 
   const peopleSearch = People.useMentionedPersonSearch({
-    scope: scope,
+    scope: attrs?.scope ?? People.NoneSearchScope,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 

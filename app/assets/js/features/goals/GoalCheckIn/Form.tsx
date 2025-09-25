@@ -7,13 +7,13 @@ import { SubscribersSelector, SubscriptionsState } from "@/features/Subscription
 import { InfoCallout } from "@/components/Callouts";
 import Forms from "@/components/Forms";
 import { useFieldValue } from "@/components/Forms/FormContext";
-import RichContent from "@/components/RichContent";
 import { GoalTargetsField } from "@/features/goals/GoalTargetsV2";
 import { assertPresent } from "@/utils/assertions";
 import { durationHumanized } from "@/utils/time";
 import { match } from "ts-pattern";
-import { Checklist, DateField, IconInfoCircle, Tooltip } from "turboui";
+import { Checklist, DateField, IconInfoCircle, RichContent, Tooltip } from "turboui";
 import { StatusSelector } from "./StatusSelector";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface Props {
   form: any;
@@ -185,11 +185,12 @@ function Description(props: Props) {
 
 function DescriptionView() {
   const [value] = Forms.useFieldValue("description");
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   return (
     <div>
       <Label text="Key wins, obstacles and needs" />
-      <RichContent jsonContent={value} skipParse />
+      <RichContent content={value} mentionedPersonLookup={mentionedPersonLookup} />
     </div>
   );
 }

@@ -11,7 +11,6 @@ import * as Paper from "@/components/PaperContainer";
 import Modal from "@/components/Modal";
 import Forms from "@/components/Forms";
 
-import RichContent from "@/components/RichContent";
 import { Spacer } from "@/components/Spacer";
 import { assertPresent } from "@/utils/assertions";
 
@@ -23,9 +22,10 @@ import { useClearNotificationsOnLoad } from "@/features/notifications";
 
 import { Options } from "./Options";
 import { useLoadedData } from "./loader";
-import { isContentEmpty, PrimaryButton } from "turboui";
+import { isContentEmpty, PrimaryButton, RichContent } from "turboui";
 import { BulletDot } from "@/components/TextElements";
 import FormattedTime from "@/components/FormattedTime";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function Page() {
   const { link } = useLoadedData();
@@ -102,6 +102,7 @@ function Description() {
   assertPresent(link.description, "description must be present in link");
 
   const hasDescription = !isContentEmpty(link.description);
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   if (!hasDescription) return <></>;
 
@@ -109,7 +110,7 @@ function Description() {
     <>
       <Spacer size={2} />
       <div className="font-bold text-content-accent">Notes:</div>
-      <RichContent jsonContent={link.description} />
+      <RichContent content={link.description} mentionedPersonLookup={mentionedPersonLookup} parseContent />
     </>
   );
 }
