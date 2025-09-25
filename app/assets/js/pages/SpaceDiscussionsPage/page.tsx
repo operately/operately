@@ -2,7 +2,6 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
 
-import { Summary } from "@/components/RichContent";
 import { SpacePageNavigation } from "@/components/SpacePageNavigation";
 import { Discussion } from "@/models/discussions";
 import { usePaths } from "@/routes/paths";
@@ -14,7 +13,8 @@ import { useLoadedData } from "./loader";
 import FormattedTime from "@/components/FormattedTime";
 import { CommentsCountIndicator } from "@/features/Comments";
 import classNames from "classnames";
-import { Avatar } from "turboui";
+import { Avatar, Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 export function Page() {
   const { space, discussions } = useLoadedData();
@@ -106,6 +106,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
   assertPresent(discussion.commentsCount, "commentsCount must be present in discussion");
 
   const path = paths.discussionPath(discussion.id!);
+  const { mentionedPersonLookup } = useRichEditorHandlers();
 
   const className = classNames(
     "flex gap-4",
@@ -124,7 +125,7 @@ function DiscussionListItem({ discussion }: { discussion: Discussion }) {
       <div className="flex-1 h-full">
         <div className="font-semibold leading-none mb-1">{discussion.title}</div>
         <div className="break-words">
-          <Summary jsonContent={discussion.body!} characterCount={150} />
+          <Summary content={discussion.body!} characterCount={150} mentionedPersonLookup={mentionedPersonLookup} />
         </div>
 
         <div className="flex gap-1 mt-1 text-xs">

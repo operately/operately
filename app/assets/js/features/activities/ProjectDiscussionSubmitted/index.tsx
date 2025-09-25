@@ -1,12 +1,11 @@
 import React from "react";
 
 import { Activity, ActivityContentProjectDiscussionSubmitted } from "@/api";
-import { Summary } from "@/components/RichContent";
-
 import { usePaths } from "@/routes/paths";
-import { isContentEmpty, Link } from "turboui";
+import { isContentEmpty, Link, Summary } from "turboui";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, projectLink } from "./../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectDiscussionSubmitted: ActivityHandler = {
   pageHtmlTitle(activity: Activity) {
@@ -30,10 +29,16 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <Summary jsonContent={activity.commentThread.message!} characterCount={300} />
+          <Summary
+            content={activity.commentThread.message}
+            characterCount={300}
+            mentionedPersonLookup={mentionedPersonLookup}
+          />
         )}
       </div>
     );

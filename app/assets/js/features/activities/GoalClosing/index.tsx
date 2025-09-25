@@ -1,13 +1,13 @@
 import * as React from "react";
 
 import { ActivityContentGoalClosing } from "@/api";
-import RichContent, { Summary } from "@/components/RichContent";
 import { Activity } from "@/models/activities";
 
 import { usePaths } from "@/routes/paths";
-import { isContentEmpty, Link, StatusBadge } from "turboui";
+import { isContentEmpty, Link, RichContent, StatusBadge, Summary } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -24,6 +24,7 @@ const GoalClosing: ActivityHandler = {
 
   PageContent({ activity }: { activity: Activity }) {
     const data = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div>
@@ -33,7 +34,7 @@ const GoalClosing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
-            <RichContent jsonContent={activity.commentThread!.message!} />
+            <RichContent content={activity.commentThread.message} mentionedPersonLookup={mentionedPersonLookup} parseContent />
           </div>
         )}
       </div>
@@ -46,6 +47,7 @@ const GoalClosing: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div>
@@ -55,7 +57,11 @@ const GoalClosing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-2">
-            <Summary jsonContent={activity.commentThread.message!} characterCount={300} />
+            <Summary
+              content={activity.commentThread.message!}
+              characterCount={300}
+              mentionedPersonLookup={mentionedPersonLookup}
+            />
           </div>
         )}
       </div>

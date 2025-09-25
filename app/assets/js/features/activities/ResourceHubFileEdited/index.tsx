@@ -1,11 +1,12 @@
 import React from "react";
 
 import type { ActivityContentResourceHubFileEdited } from "@/api";
-import { Summary } from "@/components/RichContent";
 import type { Activity } from "@/models/activities";
 
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ResourceHubFileEdited: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -43,7 +44,10 @@ const ResourceHubFileEdited: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity; page: any }) {
-    return <Summary jsonContent={content(activity).file!.description!} characterCount={160} />;
+    const { file } = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    return <Summary content={file?.description} characterCount={160} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {

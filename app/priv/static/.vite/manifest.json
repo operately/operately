@@ -1,15 +1,15 @@
 {
-  "_vendor-CH8PfmVN.js": {
-    "file": "assets/vendor-CH8PfmVN.js",
+  "_vendor-PcKVklIR.js": {
+    "file": "assets/vendor-PcKVklIR.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-DrZixOdJ.js",
+    "file": "assets/app-BgAq5SWB.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-CH8PfmVN.js"
+      "_vendor-PcKVklIR.js"
     ]
   }
 }

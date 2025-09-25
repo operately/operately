@@ -48,6 +48,8 @@ export { Tooltip } from "./Tooltip";
 export { ReviewPage } from "./ReviewPage";
 
 export { RichContent };
+export { Editor, useEditor } from "./RichEditor";
+export { Summary } from "./RichContent";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
 
 export { createDropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";

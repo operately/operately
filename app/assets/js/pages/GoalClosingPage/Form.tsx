@@ -10,6 +10,7 @@ import { useLoadedData } from "./loader";
 
 import { usePaths } from "@/routes/paths";
 import { emptyContent } from "turboui";
+
 export function Form() {
   const paths = usePaths();
   const { goal } = useLoadedData();

@@ -23,7 +23,7 @@ import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { useComments } from "./useComments";
-import { useRichEditorHandlers } from "@/features/richtexteditor";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 type LoaderResult = {
   data: {
