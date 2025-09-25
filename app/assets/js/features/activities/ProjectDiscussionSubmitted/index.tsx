@@ -1,7 +1,5 @@
 import React from "react";
 
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentProjectDiscussionSubmitted } from "@/api";
 import { Summary } from "@/components/RichContent";
 
@@ -66,7 +64,7 @@ const ProjectDiscussionSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " posted: " + activity.commentThread!.title!;
+    return "Posted: " + activity.commentThread!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

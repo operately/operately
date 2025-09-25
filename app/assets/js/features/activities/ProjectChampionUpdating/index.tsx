@@ -62,8 +62,8 @@ const ProjectChampionUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(props: { activity: Activity }) {
-    return People.firstName(props.activity.author!) + " assigned you as the champion";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Assigned you as the champion";
   },
 
   NotificationLocation(props: { activity: Activity }) {

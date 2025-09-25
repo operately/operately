@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubLinkDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
 
@@ -56,7 +54,7 @@ const ResourceHubLinkDeleted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " deleted a link: " + content(activity).link!.name!;
+    return "Deleted a link: " + content(activity).link!.name!;
   },
 
   NotificationLocation(_props: { activity: Activity }) {

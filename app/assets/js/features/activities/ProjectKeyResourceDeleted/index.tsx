@@ -1,6 +1,5 @@
 import type { ActivityContentProjectKeyResourceDeleted } from "@/api";
 import type { Activity } from "@/models/activities";
-import * as People from "@/models/people";
 import React from "react";
 import type { ActivityHandler } from "../interfaces";
 
@@ -65,8 +64,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     return (
-      People.firstName(activity.author!) +
-      " deleted a key resource from the " +
+      "Deleted a key resource from the " +
       content(activity).project!.name! +
       " project"
     );

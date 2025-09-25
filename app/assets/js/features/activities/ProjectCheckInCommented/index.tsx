@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectCheckInCommented } from "@/api";
@@ -66,8 +65,8 @@ const ProjectCheckInCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the project check-in";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Re: project check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

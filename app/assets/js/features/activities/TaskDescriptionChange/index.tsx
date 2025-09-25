@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentTaskDescriptionChange } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -70,7 +68,7 @@ const TaskDescriptionChange: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " updated the description of: " + content(activity).task!.name;
+    return "Updated the description of: " + content(activity).task!.name;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

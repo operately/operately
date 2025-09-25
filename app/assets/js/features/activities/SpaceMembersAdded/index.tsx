@@ -1,5 +1,5 @@
 import { Activity, ActivityContentSpaceMembersAdded } from "@/api";
-import { firstName, namesListToString } from "@/models/people";
+import { namesListToString } from "@/models/people";
 
 import { feedTitle, spaceLink } from "../feedItemLinks";
 import { ActivityHandler } from "../interfaces";
@@ -53,7 +53,7 @@ const SpaceMembersAdded: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " added you to the " + content(activity).space?.name + " space";
+    return "Added you to the " + content(activity).space?.name + " space";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
