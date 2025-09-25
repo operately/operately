@@ -95,7 +95,6 @@ function MobileNavigation({ company }: { company: Api.Company }) {
           title: person.title || null,
           link: paths.profilePath(person.id!),
         })) || [],
-        workMapLink: result.workMapLink || null,
       };
     } catch (error) {
       console.error("Global search failed:", error);
@@ -246,7 +245,6 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           title: person.title || null,
           link: paths.profilePath(person.id!),
         })) || [],
-        workMapLink: result.workMapLink || null,
       };
     } catch (error) {
       console.error("Global search failed:", error);

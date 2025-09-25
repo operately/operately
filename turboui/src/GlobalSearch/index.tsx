@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as Popover from "@radix-ui/react-popover";
 import classNames from "../utils/classnames";
-import { IconSearch, IconHome2, IconBriefcase, IconGoal, IconCheck, IconUser, IconBuildingEstate } from "../icons";
+import { IconSearch, IconHome2, IconBriefcase, IconGoal, IconCheck, IconUser } from "../icons";
 import { createTestId } from "../TestableElement";
 import { DivLink } from "../Link";
 
@@ -46,7 +46,6 @@ export namespace GlobalSearch {
     goals?: Goal[] | null;
     tasks?: Task[] | null;
     people?: Person[] | null;
-    workMapLink?: string | null;
   }
 
   export type SearchFn = (params: { query: string }) => Promise<SearchResult>;
@@ -185,13 +184,12 @@ function SearchInput({ state }: { state: GlobalSearch.State }) {
 
 function SearchResults({ state }: { state: GlobalSearch.State }) {
   const hasResults = React.useMemo(() => {
-    const { projects, goals, tasks, people, workMapLink } = state.results;
+    const { projects, goals, tasks, people } = state.results;
     return (
       (projects && projects.length > 0) ||
       (goals && goals.length > 0) ||
       (tasks && tasks.length > 0) ||
-      (people && people.length > 0) ||
-      workMapLink
+      (people && people.length > 0)
     );
   }, [state.results]);
 
@@ -223,21 +221,6 @@ function SearchResults({ state }: { state: GlobalSearch.State }) {
 
   return (
     <div className="py-1">
-      {/* Work Map */}
-      {state.results.workMapLink && (
-        <div className="mb-2">
-          <div className="px-3 py-1 text-xs font-medium text-content-subtle">NAVIGATION</div>
-          <div
-            className="mx-1 px-2 py-2 rounded hover:bg-surface-dimmed cursor-pointer flex items-center gap-2"
-            onClick={() => handleItemClick("/work-map")}
-            data-test-id={createTestId(state.testId, "work-map")}
-          >
-            <IconBuildingEstate size={16} className="text-content-subtle" />
-            <span className="text-sm">{state.results.workMapLink}</span>
-          </div>
-        </div>
-      )}
-
       {/* Projects */}
       {state.results.projects && state.results.projects.length > 0 && (
         <div className="mb-2">

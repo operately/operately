@@ -48,42 +48,89 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     end
   end
 
-  defp search_projects(person, query) do
-    ilike_query = "%" <> query <> "%"
+  defp search_projects(person, search_term) do
+    ilike_query = "%" <> search_term <> "%"
 
-    from(p in Project, as: :project)
-    |> Project.scope_company(person.company_id)
-    |> where([p], ilike(p.name, ^ilike_query))
-    |> filter_by_view_access(person.id)
-    |> order_by([p], asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^query, p.name))
-    |> limit(@limit)
-    |> preload([:champion, :reviewer, :group])
+    ranked_projects_query =
+      from(p in Project, as: :project)
+      |> Project.scope_company(person.company_id)
+      |> where([p], ilike(p.name, ^ilike_query))
+      |> filter_by_view_access(person.id)
+      |> select([p], %{
+        id: p.id,
+        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, p.name)
+      })
+
+    limited_projects =
+      from(r in subquery(ranked_projects_query),
+        order_by: [asc: r.search_rank, asc: r.id],
+        limit: @limit
+      )
+
+    from(p in Project,
+      join: r in subquery(limited_projects), on: p.id == r.id,
+      preload: [:champion, :reviewer, :group],
+      order_by: [asc: r.search_rank, asc: p.id],
+      select: p
+    )
     |> Repo.all()
   end
 
-  defp search_goals(person, query) do
-    ilike_query = "%" <> query <> "%"
+  defp search_goals(person, search_term) do
+    ilike_query = "%" <> search_term <> "%"
 
-    from(g in Goal, as: :goal)
-    |> Goal.scope_company(person.company_id)
-    |> where([g], ilike(g.name, ^ilike_query))
-    |> filter_by_view_access(person.id)
-    |> order_by([g], asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^query, g.name))
-    |> limit(@limit)
-    |> preload([:champion, :reviewer, :group])
+    ranked_goals_query =
+      from(g in Goal, as: :goal)
+      |> Goal.scope_company(person.company_id)
+      |> where([g], ilike(g.name, ^ilike_query))
+      |> filter_by_view_access(person.id)
+      |> select([g], %{
+        id: g.id,
+        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, g.name)
+      })
+
+    limited_goals =
+      from(r in subquery(ranked_goals_query),
+        order_by: [asc: r.search_rank, asc: r.id],
+        limit: @limit
+      )
+
+    from(g in Goal,
+      join: r in subquery(limited_goals), on: g.id == r.id,
+      preload: [:champion, :reviewer, :group],
+      order_by: [asc: r.search_rank, asc: g.id],
+      select: g
+    )
     |> Repo.all()
   end
 
-  defp search_tasks(person, query) do
-    ilike_query = "%" <> query <> "%"
+  defp search_tasks(person, search_term) do
+    ilike_query = "%" <> search_term <> "%"
 
-    from(t in Task, as: :task, join: m in assoc(t, :milestone), join: p in assoc(m, :project), as: :project)
-    |> Task.scope_company(person.company_id)
-    |> where([t], ilike(t.name, ^ilike_query))
-    |> filter_by_view_access(person.id, named_binding: :project)
-    |> order_by([t], asc: fragment("POSITION(LOWER(?) IN LOWER(?))", ^query, t.name))
-    |> limit(@limit)
-    |> preload(milestone: [project: [:group]])
+    ranked_tasks_query =
+      from(t in Task, as: :task)
+      |> join(:inner, [t], m in assoc(t, :milestone))
+      |> join(:inner, [t, m], p in assoc(m, :project), as: :project)
+      |> Task.scope_company(person.company_id)
+      |> where([t], ilike(t.name, ^ilike_query))
+      |> filter_by_view_access(person.id, named_binding: :project)
+      |> select([t], %{
+        id: t.id,
+        search_rank: fragment("POSITION(LOWER(?) IN LOWER(?))", ^search_term, t.name)
+      })
+
+    limited_tasks =
+      from(r in subquery(ranked_tasks_query),
+        order_by: [asc: r.search_rank, asc: r.id],
+        limit: @limit
+      )
+
+    from(t in Task,
+      join: r in subquery(limited_tasks), on: t.id == r.id,
+      preload: [milestone: [project: [:group]]],
+      order_by: [asc: r.search_rank, asc: t.id],
+      select: t
+    )
     |> Repo.all()
   end
 

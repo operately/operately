@@ -84,7 +84,6 @@ const mockSearchResults: GlobalSearch.SearchResult = {
       link: "/people/2", 
     },
   ],
-  workMapLink: "Company Work Map",
 };
 
 const mockEmptyResults: GlobalSearch.SearchResult = {
@@ -123,10 +122,6 @@ const mockSearch: GlobalSearch.SearchFn = async ({ query }) => {
   
   if (query.toLowerCase().includes("people") || query.toLowerCase().includes("person")) {
     filteredResults.people = mockSearchResults.people;
-  }
-  
-  if (query.toLowerCase().includes("work") || query.toLowerCase().includes("map")) {
-    filteredResults.workMapLink = mockSearchResults.workMapLink;
   }
   
   // Default: return a mix of results

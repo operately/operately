@@ -2727,7 +2727,6 @@ export interface GlobalSearchResult {
   goals?: Goal[] | null;
   tasks?: Task[] | null;
   people?: Person[] | null;
-  workMapLink?: string | null;
 }
 
 export interface AcknowledgeGoalProgressUpdateInput {
