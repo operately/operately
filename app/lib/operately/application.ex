@@ -24,7 +24,10 @@ defmodule Operately.Application do
        [
          name: Operately.PubSub,
          adapter: Operately.PubSub.PostgresPubSub
-       ]}
+       ]},
+      # MCP Server Registry and Server
+      Hermes.Server.Registry,
+      {Operately.MCP.Server, transport: :streamable_http}
     ]
 
     :ok = Oban.Telemetry.attach_default_logger()
