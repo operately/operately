@@ -34,6 +34,7 @@ import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
 import { Paths, usePaths } from "@/routes/paths";
+import { hasFeature } from "../../models/companies";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 
 function Navigation({ company }: { company: Api.Company }) {
@@ -49,8 +50,6 @@ function Navigation({ company }: { company: Api.Company }) {
 function MobileNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
-  const navigate = useNavigate();
-  const handleGlobalSearch = useGlobalSearchHandler();
   const [open, setOpen] = React.useState(false);
 
   const handleLogOut = async () => {
@@ -76,14 +75,9 @@ function MobileNavigation({ company }: { company: Api.Company }) {
         </div>
       </div>
 
-      {/* Mobile Search Bar - always visible below header */}
-      <div className="px-4 pt-2">
-        <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="mobile-global-search" />
-      </div>
-
       {open && (
         <div
-          className="flex flex-col bg-base absolute inset-0 top-20 bg-surface-bg border-t border-surface-outline"
+          className="flex flex-col bg-base absolute inset-0 top-10 bg-surface-bg border-t border-surface-outline"
           onClick={() => setOpen(false)}
         >
           <MobileSectionLink to={paths.homePath()} icon={IconHome2}>
@@ -158,9 +152,6 @@ function MobileSectionAction({ onClick, children, icon }) {
 function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
-  const navigate = useNavigate();
-  const handleGlobalSearch = useGlobalSearchHandler();
-
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
@@ -197,8 +188,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           <Bell />
           <HelpDropdown company={company} />
           <NewDropdown />
-
-          <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />
+          <Search company={company} />
         </div>
       </div>
     </div>
@@ -234,4 +224,15 @@ export default function CompanyLayout() {
       <AiSidebar />
     </div>
   );
+}
+
+function Search({ company }: { company: Api.Company }) {
+  const navigate = useNavigate();
+  const handleGlobalSearch = useGlobalSearchHandler();
+
+  if (hasFeature(company, "global-search")) {
+    return <GlobalSearch search={handleGlobalSearch} onNavigate={navigate} testId="header-global-search" />;
+  } else {
+    return null;
+  }
 }

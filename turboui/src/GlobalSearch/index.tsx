@@ -280,7 +280,7 @@ interface SearchOverlayProps {
 
 function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const { query, setIsOpen, placeholder, testId, setQuery } = state;
+  const { query, setIsOpen, testId, setQuery } = state;
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -314,10 +314,10 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
 
   return createPortal(
     <div className="fixed inset-0 z-[90]" onClick={onClose}>
-      <div className="absolute inset-0 bg-surface-base/70" />
+      <div className="absolute inset-0 bg-stone-900/10 dark:bg-stone-900/60" />
 
-      <div className="relative flex justify-center mt-12 px-4" onClick={(event) => event.stopPropagation()}>
-        <div className="w-[700px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-lg shadow-xl">
+      <div className="relative flex justify-center px-4" onClick={(event) => event.stopPropagation()}>
+        <div className="w-[900px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-lg shadow">
           <div className="relative">
             <IconSearch size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-content-dimmed" />
             <input
@@ -325,8 +325,8 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder={placeholder}
-              className="w-full pl-10 pr-12 py-3 text-base bg-surface-base border-b border-surface-outline focus:outline-none"
+              placeholder="Search for projects, goals, tasks, or people..."
+              className="w-full pl-10 pr-12 py-2.5 text-base bg-surface-base border-b border-surface-outline focus:outline-none rounded-b-lg"
               data-test-id={testId}
             />
             <button
@@ -353,7 +353,7 @@ function SearchActivator({ placeholder, onActivate }: { placeholder: string; onA
     <button
       type="button"
       onClick={onActivate}
-      className="w-[250px] flex items-center gap-2 px-3 py-1.5 text-sm text-content-dimmed bg-transparent border border-surface-outline rounded-lg hover:bg-surface-dimmed transition"
+      className="w-[250px] flex items-center gap-2 px-3 py-1.5 -mb-0.5 text-sm text-content-dimmed bg-transparent border border-surface-outline rounded-lg hover:bg-surface-dimmed transition"
     >
       <IconSearch size={14} className="text-content-dimmed" />
       <span className="flex-1 text-left truncate">{placeholder}</span>
