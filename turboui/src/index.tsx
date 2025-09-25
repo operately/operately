@@ -27,6 +27,7 @@ export { Conversations, useConversations } from "./Conversations";
 export { DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
+export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
 export { MilestonePage } from "./MilestonePage";

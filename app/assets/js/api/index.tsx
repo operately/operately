@@ -2718,6 +2718,18 @@ export interface SpacesSearchResult {
   spaces: Space[];
 }
 
+export interface GlobalSearchInput {
+  query: string;
+}
+
+export interface GlobalSearchResult {
+  projects?: Project[] | null;
+  goals?: Goal[] | null;
+  tasks?: Task[] | null;
+  people?: Person[] | null;
+  workMapLink?: string | null;
+}
+
 export interface AcknowledgeGoalProgressUpdateInput {
   id?: string | null;
 }
@@ -4362,6 +4374,10 @@ class ApiNamespaceRoot {
     return this.client.get("/search_project_contributor_candidates", input);
   }
 
+  async globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+    return this.client.get("/global_search", input);
+  }
+
   async acknowledgeGoalProgressUpdate(
     input: AcknowledgeGoalProgressUpdateInput,
   ): Promise<AcknowledgeGoalProgressUpdateResult> {
@@ -5340,6 +5356,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.searchProjectContributorCandidates(input);
   }
 
+  globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+    return this.apiNamespaceRoot.globalSearch(input);
+  }
+
   acknowledgeGoalProgressUpdate(
     input: AcknowledgeGoalProgressUpdateInput,
   ): Promise<AcknowledgeGoalProgressUpdateResult> {
@@ -5896,6 +5916,9 @@ export async function searchProjectContributorCandidates(
   input: SearchProjectContributorCandidatesInput,
 ): Promise<SearchProjectContributorCandidatesResult> {
   return defaultApiClient.searchProjectContributorCandidates(input);
+}
+export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+  return defaultApiClient.globalSearch(input);
 }
 export async function acknowledgeGoalProgressUpdate(
   input: AcknowledgeGoalProgressUpdateInput,
@@ -6464,6 +6487,10 @@ export function useSearchProjectContributorCandidates(
   return useQuery<SearchProjectContributorCandidatesResult>(() =>
     defaultApiClient.searchProjectContributorCandidates(input),
   );
+}
+
+export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
+  return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
 }
 
 export function useAcknowledgeGoalProgressUpdate(): UseMutationHookResult<
@@ -7221,6 +7248,8 @@ export default {
   useSearchPotentialSpaceMembers,
   searchProjectContributorCandidates,
   useSearchProjectContributorCandidates,
+  globalSearch,
+  useGlobalSearch,
   acknowledgeGoalProgressUpdate,
   useAcknowledgeGoalProgressUpdate,
   acknowledgeProjectCheckIn,

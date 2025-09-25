@@ -13,6 +13,7 @@ import {
   IconSwitch,
   IconUser,
   IconUserCircle,
+  GlobalSearch,
 } from "turboui";
 
 import { logOut } from "@/routes/auth";
@@ -151,6 +152,54 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
 
+  const handleGlobalSearch = React.useCallback(async ({ query }: { query: string }): Promise<GlobalSearch.SearchResult> => {
+    try {
+      const result = await Api.globalSearch({ query });
+      
+      return {
+        projects: result.projects?.map(project => ({
+          id: project.id!,
+          name: project.name!,
+          link: paths.projectPath(project.id!),
+          champion: project.champion ? { fullName: project.champion.fullName! } : null,
+          space: project.space ? { name: project.space.name! } : null,
+        })) || [],
+        goals: result.goals?.map(goal => ({
+          id: goal.id!,
+          name: goal.name!,
+          link: paths.goalPath(goal.id!),
+          champion: goal.champion ? { fullName: goal.champion.fullName! } : null,
+          space: goal.space ? { name: goal.space.name! } : null,
+        })) || [],
+        tasks: result.tasks?.map(task => ({
+          id: task.id!,
+          name: task.name!,
+          link: paths.taskPath(task.id!),
+          milestone: task.milestone ? {
+            project: task.milestone.project ? {
+              name: task.milestone.project.name!,
+              space: task.milestone.project.space ? { name: task.milestone.project.space.name! } : null,
+            } : null,
+          } : null,
+        })) || [],
+        people: result.people?.map(person => ({
+          id: person.id!,
+          fullName: person.fullName!,
+          title: person.title || null,
+          link: paths.profilePath(person.id!),
+        })) || [],
+        workMapLink: result.workMapLink || null,
+      };
+    } catch (error) {
+      console.error("Global search failed:", error);
+      return {};
+    }
+  }, [paths]);
+
+  const handleNavigate = React.useCallback((link: string) => {
+    window.location.href = link;
+  }, []);
+
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
@@ -181,7 +230,14 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
             <Review />
           </div>
         </div>
-        <div className="flex-1"></div>
+        
+        <div className="flex-1 max-w-md mx-8">
+          <GlobalSearch
+            search={handleGlobalSearch}
+            onNavigate={handleNavigate}
+            testId="header-global-search"
+          />
+        </div>
 
         <div className="flex items-center gap-2 flex-row-reverse">
           <User />
