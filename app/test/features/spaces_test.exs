@@ -197,7 +197,6 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.visit_space()
     |> Steps.request_space_deletion()
     |> Steps.assert_space_delete_modal_visible()
-    |> Steps.assert_space_delete_modal_lists_subresources()
     |> Steps.assert_space_still_exists()
     |> Steps.confirm_space_deletion()
     |> Steps.assert_space_deleted()

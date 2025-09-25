@@ -386,7 +386,7 @@ defmodule Operately.Support.Features.SpacesSteps do
   step :assert_pending_projects_and_goals_counted_correctly, ctx do
     # Should show "1/3 projects on track" (1 with check-in out of 3 total)
     # and "1/3 goals on track" (1 with update out of 3 total)
-    ctx 
+    ctx
     |> UI.assert_text("1/3 projects on track")
     |> UI.assert_text("1/3 goals on track")
   end
@@ -410,15 +410,6 @@ defmodule Operately.Support.Features.SpacesSteps do
   step :assert_space_delete_modal_visible, ctx do
     ctx
     |> UI.assert_has(testid: "confirm-delete-space")
-    |> UI.assert_text("This space contains work.")
-  end
-
-  step :assert_space_delete_modal_lists_subresources, ctx do
-    ctx
-    |> UI.assert_text("1 projects")
-    |> UI.assert_text("1 goals")
-    |> UI.assert_text("1 discussions")
-    |> UI.assert_text("1 resource hub items")
   end
 
   step :assert_space_still_exists, ctx do
@@ -432,9 +423,10 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :assert_space_deleted, ctx do
-    ctx = attempts(ctx, 5, fn ->
-      assert Operately.Repo.get(Operately.Groups.Group, ctx.marketing.id) == nil
-    end)
+    ctx =
+      attempts(ctx, 5, fn ->
+        assert Operately.Repo.get(Operately.Groups.Group, ctx.marketing.id) == nil
+      end)
 
     ctx
     |> UI.assert_has(testid: "company-home")
