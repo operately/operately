@@ -144,10 +144,6 @@ export function hoursBetween(start: Date, end: Date) {
   return datefsn.differenceInHours(end, start);
 }
 
-export function getMonthName(date: Date) {
-  return datefsn.format(date, "MMMM");
-}
-
 export function isSameDay(date1: Date, date2: Date) {
   return datefsn.isSameDay(date1, date2);
 }

@@ -146,7 +146,6 @@ export function createAppRoutes() {
         pageRoute("projects/:projectID/close", pages.ProjectClosePage),
         pageRoute("projects/:projectID/retrospective", pages.ProjectRetrospectivePage),
         pageRoute("projects/:projectID/retrospective/edit", pages.ProjectRetrospectiveEditPage),
-        pageRoute("projects/:projectID/check-ins", pages.ProjectCheckInsPage),
         pageRoute("projects/:projectID/check-ins/new", pages.ProjectCheckInNewPage),
         pageRoute("projects/:projectID/edit/permissions", pages.ProjectEditAccessLevelsPage),
         pageRoute("projects/:projectID/contributors", pages.ProjectContributorsPage),
