@@ -43,6 +43,32 @@ defmodule Operately.Assignments.LoaderTest do
       assignments = Loader.load(ctx.champion, ctx.company)
       assert length(assignments) == 0
     end
+
+    test "paused projects with due check-ins appear as assignments", ctx do
+      ctx = 
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.pause_project(:project)
+
+      set_next_check_in_date(ctx, :project, days_ago(3))
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+
+      assert length(assignments) == 1
+      assert Enum.at(assignments, 0).resource_id == Paths.project_id(ctx.project)
+    end
+
+    test "paused projects with future check-in dates do not appear as assignments", ctx do
+      ctx = 
+        ctx
+        |> Factory.add_project(:project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.pause_project(:project)
+
+      set_next_check_in_date(ctx, :project, days_from_now(3))
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(assignments) == 0
+    end
   end
 
   describe "project check-in acknowledgements" do

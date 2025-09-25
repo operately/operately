@@ -27,7 +27,7 @@ defmodule Operately.Assignments.Loader do
     from(p in Project,
       join: champion in assoc(p, :champion),
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
-      where: p.status == "active",
+      where: p.status in ["active", "paused"],
       where: champion.id == ^person.id,
       where: is_nil(p.deleted_at),
       preload: [champion: champion]

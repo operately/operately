@@ -164,6 +164,37 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.refute_text(ctx.project.name)
   end
 
+  step :given_there_are_paused_project_check_ins, ctx do
+    ctx
+    |> Factory.add_project(:paused_project, :product_space, [
+      champion: :me,
+      reviewer: :my_manager,
+      name: "Paused Project Test"
+    ])
+    |> Factory.pause_project(:paused_project)
+    |> Factory.set_project_next_check_in_date(:paused_project, past_date())
+  end
+
+  step :assert_the_paused_project_is_listed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.assert_text("Write the weekly check-in: #{ctx.paused_project.name}")
+  end
+
+  step :when_a_paused_project_is_resumed, ctx do
+    ctx |> Factory.resume_project(:paused_project)
+  end
+
+  step :when_a_paused_project_check_in_is_submitted, ctx do
+    ctx
+    |> UI.click(testid: "assignment-" <> Paths.project_id(ctx.paused_project))
+    |> UI.click(testid: "status-dropdown")
+    |> UI.click(testid: "status-dropdown-on_track")
+    |> UI.fill_rich_text("Paused project update")
+    |> UI.click(testid: "submit")
+    |> UI.assert_has(testid: "project-check-in-page")
+  end
+
   #
   # Helpers
   #
