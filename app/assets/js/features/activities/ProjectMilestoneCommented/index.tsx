@@ -68,7 +68,16 @@ const ProjectMilestoneCommented: ActivityHandler = {
     const action = content(activity).commentAction!;
     const title = content(activity).milestone!.title!;
 
-    return didWhat(action) + " " + title;
+    switch (action) {
+      case "none":
+        return "Re: " + title;
+      case "complete":
+        return "Closed milestone: " + title;
+      case "reopen":
+        return "Re-opened milestone: " + title;
+      default:
+        throw new Error("Unknown action: " + action);
+    }
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

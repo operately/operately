@@ -2,7 +2,6 @@ defmodule Operately.Support.Features.NotificationsSteps do
   use Operately.FeatureCase
 
   alias Operately.Support.Features.UI
-  alias Operately.People.Person
   alias OperatelyWeb.Paths
   alias Operately.Access.Binding
 
@@ -19,7 +18,7 @@ defmodule Operately.Support.Features.NotificationsSteps do
       group_id: ctx.group.id,
       anonymous_access_level: Binding.view_access(),
       company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
+      space_access_level: Binding.edit_access()
     }
 
     {:ok, _} = Operately.Operations.ProjectCreation.run(project_attrs)
@@ -58,7 +57,8 @@ defmodule Operately.Support.Features.NotificationsSteps do
   end
 
   def assert_no_unread_notifications(ctx) do
-    :timer.sleep(500) # give the notification count time to update
+    # give the notification count time to update
+    :timer.sleep(500)
     UI.refute_has(ctx, testid: "unread-notifications-count")
   end
 
