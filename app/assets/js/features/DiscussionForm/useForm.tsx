@@ -7,7 +7,7 @@ import { Options, SubscriptionsState, useSubscriptions } from "@/features/Subscr
 import { Subscriber } from "@/models/notifications";
 import { usePaths } from "@/routes/paths";
 import { useNavigate } from "react-router-dom";
-import { useEditor } from "turboui";
+import { isContentEmpty, useEditor } from "turboui";
 import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 interface UseFormOptions {
@@ -53,20 +53,24 @@ export function useForm({ space, mode, discussion, potentialSubscribers = [] }: 
   const [errors, setErrors] = React.useState<Error[]>([]);
   const [title, setTitle] = React.useState(() => discussion?.title || "");
 
-  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! }});
+  const handlers = useRichEditorHandlers({ scope: { type: "space", id: space ? space.id : discussion?.space?.id! } });
   const editor = useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 px-1",
     content: discussion?.body && JSON.parse(discussion.body),
-    handlers
+    handlers,
   });
 
-  const validate = () => {
+  const validate = (opts?: { isDraft?: boolean }) => {
     if (!editor.editor) return false;
     if (editor.uploading) return false;
 
     const foundErrors: Error[] = [];
     if (title.trim() === "") foundErrors.push({ field: "title", message: "Title is required" });
+
+    if (!opts?.isDraft && isContentEmpty(editor.editor.getJSON())) {
+      foundErrors.push({ field: "body", message: "Body is required before publishing the discussion" });
+    }
 
     if (foundErrors.length) {
       setErrors(foundErrors);
@@ -146,7 +150,7 @@ function usePostAsDraft({ space, title, editor, subscriptionsState, validate }):
   const [submitting, setSubmitting] = React.useState(false);
 
   const postMessage = async (): Promise<boolean> => {
-    if (!validate()) return false;
+    if (!validate({ isDraft: true })) return false;
 
     setSubmitting(true);
 
@@ -176,7 +180,7 @@ function useSaveChanges({ discussion, title, editor, validate }): [() => Promise
   const [submitting, setSubmitting] = React.useState(false);
 
   const saveChanges = async () => {
-    if (!validate()) return false;
+    if (!validate({ isDraft: discussion.state = "draft" })) return false;
 
     setSubmitting(true);
 

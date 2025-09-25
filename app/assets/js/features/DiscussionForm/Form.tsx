@@ -13,15 +13,20 @@ export function Form({ form }: { form: FormState }) {
         onChange={form.setTitle}
         error={!!form.errors.find((e) => e.field === "title")}
       />
-      <Message editor={form.editor} />
+      <Message editor={form.editor} form={form} />
     </>
   );
 }
 
-function Message({ editor }) {
+function Message({ form, editor }: { form: FormState; editor: any }) {
+  const error = React.useMemo(() => {
+    const bodyError = form.errors.find((e) => e.field === "body");
+    return bodyError?.message;
+  }, [form.errors])
+
   return (
     <div className="text-lg">
-      <Editor editor={editor} hideBorder padding="p-0" />
+      <Editor editor={editor} hideBorder padding="p-0" error={error} />
     </div>
   );
 }
