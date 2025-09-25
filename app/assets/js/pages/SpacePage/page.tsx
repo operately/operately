@@ -6,7 +6,17 @@ import * as PageOptions from "@/components/PaperContainer/PageOptions";
 import * as Spaces from "@/models/spaces";
 
 import { Feed, useItemsQuery } from "@/features/Feed";
-import { AvatarList, IconPencil, IconTrash, PrimaryButton, SecondaryButton } from "turboui";
+import {
+  AvatarList,
+  DangerButton,
+  IconPencil,
+  IconTrash,
+  Modal,
+  PrimaryButton,
+  SecondaryButton,
+  showErrorToast,
+  showSuccessToast,
+} from "turboui";
 
 import { useClearNotificationsOnLoad } from "@/features/notifications";
 import { PrivacyIndicator } from "@/features/spaces/PrivacyIndicator";
@@ -17,6 +27,7 @@ import { assertPresent } from "@/utils/assertions";
 import { usePaths } from "@/routes/paths";
 import { match } from "ts-pattern";
 import { useLoadedData, useRefresh } from "./loader";
+import { useNavigate } from "react-router-dom";
 
 export function Page() {
   const { space, tools } = useLoadedData();
@@ -136,27 +147,137 @@ function ManageAccessButton({ space }: { space: Spaces.Space }) {
 }
 
 function SpaceOptions() {
-  const { space } = useLoadedData();
+  const { space, tools } = useLoadedData();
 
   assertPresent(space.permissions, "permissions must be present in space");
   if (!space.permissions.canDelete || !space.permissions.canEdit) return null;
 
-  const handleDelete = async () => {
-    const confirmed = window.confirm("Are you sure you want to delete this space? This action cannot be undone.");
-    console.log("User confirmed deletion:", confirmed);
-  };
+  const navigate = useNavigate();
+  const [deleteSpace, { loading: isDeleting }] = Spaces.useDeleteSpace();
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+
+  const resourceCounts = React.useMemo(() => {
+    const projectCount = tools.projects?.length ?? 0;
+    const goalCount = tools.goals?.length ?? 0;
+    const messageCount = (tools.messagesBoards ?? []).reduce(
+      (sum, board) => sum + (board.messages?.length ?? 0),
+      0,
+    );
+    const resourceHubItemCount = (tools.resourceHubs ?? []).reduce(
+      (sum, hub) => sum + (hub.nodes?.length ?? 0),
+      0,
+    );
+
+    return { projectCount, goalCount, messageCount, resourceHubItemCount };
+  }, [tools]);
+
+  const hasSubresources = React.useMemo(() => {
+    return Object.values(resourceCounts).some((count) => count > 0);
+  }, [resourceCounts]);
+
+  const subresourceSummaries = React.useMemo(() => {
+    const entries = [
+      { label: "Projects", count: resourceCounts.projectCount },
+      { label: "Goals", count: resourceCounts.goalCount },
+      { label: "Discussions", count: resourceCounts.messageCount },
+      { label: "Resource hub items", count: resourceCounts.resourceHubItemCount },
+    ];
+
+    return entries.filter((entry) => entry.count > 0);
+  }, [resourceCounts]);
 
   const paths = usePaths();
+
+  const performDelete = React.useCallback(async () => {
+    try {
+      await deleteSpace({ spaceId: space.id });
+      showSuccessToast("Space deleted", "The space and its content were deleted.");
+      navigate(paths.homePath());
+    } catch (error) {
+      console.error("Failed to delete space", error);
+      showErrorToast("Failed to delete space", "Please try again.");
+      throw error;
+    }
+  }, [deleteSpace, navigate, paths, space.id]);
+
+  const handleDelete = React.useCallback(() => {
+    if (isDeleting) return;
+
+    if (hasSubresources) {
+      setIsModalOpen(true);
+      return;
+    }
+
+    void performDelete();
+  }, [hasSubresources, isDeleting, performDelete]);
+
+  const handleConfirmDelete = React.useCallback(async () => {
+    try {
+      await performDelete();
+      setIsModalOpen(false);
+    } catch (error) {
+      // Error toast already shown in performDelete; keep modal open for another attempt.
+    }
+  }, [performDelete]);
+
+  const handleCloseModal = React.useCallback(() => {
+    if (!isDeleting) {
+      setIsModalOpen(false);
+    }
+  }, [isDeleting]);
+
   const editLink = paths.spaceEditPath(space.id!);
 
   return (
-    <PageOptions.Root testId="options-button">
-      {space.permissions.canEdit && (
-        <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
-      )}
-      {space.permissions.canDelete && (
-        <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
-      )}
-    </PageOptions.Root>
+    <>
+      <PageOptions.Root testId="options-button">
+        {space.permissions.canEdit && (
+          <PageOptions.Link keepOutsideOnBigScreen icon={IconPencil} to={editLink} title="Edit" testId="edit-space" />
+        )}
+        {space.permissions.canDelete && (
+          <PageOptions.Action icon={IconTrash} title="Delete" onClick={handleDelete} testId="delete-space" />
+        )}
+      </PageOptions.Root>
+
+      <Modal
+        isOpen={isModalOpen}
+        onClose={handleCloseModal}
+        title="Delete space"
+        size="large"
+        contentPadding="p-6"
+        closeOnBackdropClick={!isDeleting}
+      >
+        <div className="space-y-4">
+          <p className="text-content-base font-medium">
+            This space contains work. Deleting it will permanently remove everything listed below and cannot be
+            undone.
+          </p>
+
+          {subresourceSummaries.length > 0 && (
+            <ul className="list-disc pl-5 text-sm text-content-dimmed space-y-1">
+              {subresourceSummaries.map(({ label, count }) => (
+                <li key={label}>
+                  <span className="font-semibold text-content-base">{count}</span> {label.toLowerCase()}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <p className="text-content-dimmed text-sm">
+            Please confirm you still want to delete this space and all of its subresources. This action cannot be
+            reverted.
+          </p>
+
+          <div className="flex justify-end gap-3">
+            <SecondaryButton size="sm" onClick={handleCloseModal} disabled={isDeleting}>
+              Cancel
+            </SecondaryButton>
+            <DangerButton size="sm" onClick={handleConfirmDelete} loading={isDeleting} testId="confirm-delete-space">
+              Delete everything
+            </DangerButton>
+          </div>
+        </div>
+      </Modal>
+    </>
   );
 }
