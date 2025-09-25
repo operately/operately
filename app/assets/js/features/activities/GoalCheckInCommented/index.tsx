@@ -69,7 +69,7 @@ const GoalUpdateCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_: { activity: Activity }) {
+  NotificationTitle(_activity: { activity: Activity }) {
     return "Re: goal check-in";
   },
 
