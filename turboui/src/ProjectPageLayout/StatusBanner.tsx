@@ -5,14 +5,15 @@ import { IconPlayerPauseFilled, IconArchive } from "../icons";
 
 export namespace StatusBanner {
   export interface Props {
-    state: "paused" | "closed";
+    state: "paused" | "closed" | null;
     closedAt?: Date | null;
     reopenLink?: string;
     retrospectiveLink?: string;
+    entityName?: string;
   }
 }
 
-export function StatusBanner({ state, closedAt, reopenLink, retrospectiveLink }: StatusBanner.Props) {
+export function StatusBanner({ state, closedAt, reopenLink, retrospectiveLink, entityName = "project" }: StatusBanner.Props) {
   if (state === "paused") {
     return (
       <div data-test-id="paused-status-banner" className="bg-callout-warning-bg border-y my-2 border-surface-outline">
@@ -20,7 +21,7 @@ export function StatusBanner({ state, closedAt, reopenLink, retrospectiveLink }:
           <div className="flex items-center gap-3">
             <IconPlayerPauseFilled className="w-5 h-5 text-content-accent" />
             <div>
-              <span className="text-content-accent font-medium">This project is paused</span>
+              <span className="text-content-accent font-medium">This {entityName} is paused</span>
             </div>
             {reopenLink && (
               <PrimaryButton linkTo={reopenLink} size="xs">
@@ -48,7 +49,9 @@ export function StatusBanner({ state, closedAt, reopenLink, retrospectiveLink }:
           <div className="flex items-center gap-3 text-callout-info-content">
             <IconArchive className="w-5 h-5" />
             <div>
-              <span>This project was closed on {closedAt ? formatDate(closedAt) : "an unknown date"}.</span>
+              <span>
+                This {entityName} was closed on {closedAt ? formatDate(closedAt) : "an unknown date"}.
+              </span>
               {retrospectiveLink && (
                 <>
                   <span> Read the </span>
