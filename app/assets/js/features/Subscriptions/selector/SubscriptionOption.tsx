@@ -5,6 +5,7 @@ import { Radio } from "@/components/Form";
 import { Subscriber } from "@/models/notifications";
 import { Options } from "@/features/Subscriptions";
 import { useSubscribersSelectorContext } from "../SubscribersSelectorContext";
+import { sortSubscribersByName } from "@/features/Subscriptions";
 
 interface SubscriptionOptionProps {
   label: string;
@@ -28,9 +29,11 @@ export function SubscriptionOption({ label, value, subscribers, testId, onClick 
 function SelectedPeople({ subscribers, hide }: { subscribers: Subscriber[]; hide: boolean }) {
   if (subscribers.length === 0 || hide) return <></>;
 
+  const sortedSubscribers = sortSubscribersByName(subscribers);
+
   return (
     <div className="flex flex-wrap gap-2 ml-6">
-      {subscribers.map((subscriber) => (
+      {sortedSubscribers.map((subscriber) => (
         <Avatar person={subscriber.person!} size="tiny" key={subscriber.person!.id} />
       ))}
     </div>

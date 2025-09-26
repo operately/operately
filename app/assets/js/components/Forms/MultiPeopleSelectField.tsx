@@ -4,6 +4,7 @@ import { Subscriber } from "@/models/notifications";
 import { compareIds, includesId } from "@/routes/paths";
 import { Avatar, Checkbox } from "turboui";
 import { useFieldValue } from "./FormContext";
+import { sortSubscribersByName } from "@/features/Subscriptions";
 
 interface MultiPeopleSelectFieldProps {
   field: string;
@@ -15,17 +16,21 @@ export function MultiPeopleSelectField(props: MultiPeopleSelectFieldProps) {
   const { field, options, alwaysSelected } = props;
   const alwaysSelectedIds = alwaysSelected.map((subscriber) => subscriber.person!.id!);
 
+  // Sort both always selected and regular options by name
+  const sortedAlwaysSelected = sortSubscribersByName(alwaysSelected);
+  const sortedOptions = sortSubscribersByName(
+    options.filter((subscriber) => !includesId(alwaysSelectedIds, subscriber.person!.id))
+  );
+
   return (
     <div>
-      {alwaysSelected.map((subscriber) => (
+      {sortedAlwaysSelected.map((subscriber) => (
         <PersonAlwaysSelected subscriber={subscriber} key={subscriber.person!.id} />
       ))}
 
-      {options
-        .filter((subscriber) => !includesId(alwaysSelectedIds, subscriber.person!.id))
-        .map((subscriber) => (
-          <PersonOption subscriber={subscriber} field={field} key={subscriber.person!.id} />
-        ))}
+      {sortedOptions.map((subscriber) => (
+        <PersonOption subscriber={subscriber} field={field} key={subscriber.person!.id} />
+      ))}
     </div>
   );
 }
