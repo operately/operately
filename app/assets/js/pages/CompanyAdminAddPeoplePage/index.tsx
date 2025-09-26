@@ -112,9 +112,9 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
       </Paper.Body>
 
       <div className="my-8 text-center px-20">
-        <span className="font-bold">What happens next?</span> If the new member already has an account, they will be
-        added to your company. If they don't have an account, you will get a invitation link to share with them. The
-        link will be valid for 24 hours.
+        <span className="font-bold">What happens next?</span> We'll check if this person already has an account. 
+        If they do, they'll be added to your company immediately. If they don't have an account yet, 
+        you'll receive an invitation link to share with them (valid for 24 hours).
       </div>
     </Paper.Root>
   );
@@ -122,6 +122,17 @@ function InviteForm({ setPageState }: { setPageState: SetPageStateFn }) {
 
 function InvitedPage({ state, setPageState }: { state: PageStateInvited; setPageState: SetPageStateFn }) {
   const inviteAnother = () => setPageState({ state: "form" });
+  const { company } = Pages.useLoadedData<LoaderResult>();
+
+  const suggestedMessage = `Hi ${state.fullName},
+
+You've been invited to join ${company.name!} on Operately! Please use the link below to create your account and get started.
+
+${state.url}
+
+This link will expire in 24 hours, so please join soon.
+
+Looking forward to working with you!`;
 
   return (
     <Paper.Root size="medium">
@@ -140,6 +151,16 @@ function InvitedPage({ state, setPageState }: { state: PageStateInvited; setPage
         </div>
 
         <div className="mt-2">This link will expire in 24 hours.</div>
+
+        <div className="mt-6">
+          <div className="font-bold text-content-accent mb-1">Suggested Message</div>
+          <div className="text-content-primary border border-surface-outline rounded-lg px-3 py-3 text-sm whitespace-pre-line">
+            {suggestedMessage}
+          </div>
+          <div className="mt-2 flex justify-end">
+            <CopyToClipboard text={suggestedMessage} size={20} padding={1} containerClass="text-xs" />
+          </div>
+        </div>
       </Paper.Body>
 
       <div className="flex items-center gap-3 mt-8 justify-center">
