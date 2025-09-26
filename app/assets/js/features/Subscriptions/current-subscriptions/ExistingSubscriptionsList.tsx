@@ -7,11 +7,22 @@ import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 import { SecondaryButton } from "turboui";
 
+function sortSubscribersByName(subscribers: Subscriber[]): Subscriber[] {
+  return [...subscribers].sort((a, b) => {
+    const nameA = a.person?.fullName || "";
+    const nameB = b.person?.fullName || "";
+    return nameA.localeCompare(nameB);
+  });
+}
+
 export function ExistingSubscriptionsList() {
   const { potentialSubscribers, name } = useCurrentSubscriptionsContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const subscribers = useMemo(() => potentialSubscribers.filter((sub) => sub.isSubscribed), [potentialSubscribers]);
+  const subscribers = useMemo(() => {
+    const filtered = potentialSubscribers.filter((sub) => sub.isSubscribed);
+    return sortSubscribersByName(filtered);
+  }, [potentialSubscribers]);
   const label = useMemo(() => buildLabel(subscribers, name), [subscribers]);
 
   return (

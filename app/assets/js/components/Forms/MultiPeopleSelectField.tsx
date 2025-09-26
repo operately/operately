@@ -5,6 +5,14 @@ import { compareIds, includesId } from "@/routes/paths";
 import { Avatar, Checkbox } from "turboui";
 import { useFieldValue } from "./FormContext";
 
+function sortSubscribersByName(subscribers: Subscriber[]): Subscriber[] {
+  return [...subscribers].sort((a, b) => {
+    const nameA = a.person?.fullName || "";
+    const nameB = b.person?.fullName || "";
+    return nameA.localeCompare(nameB);
+  });
+}
+
 interface MultiPeopleSelectFieldProps {
   field: string;
   options: Subscriber[];
@@ -15,17 +23,21 @@ export function MultiPeopleSelectField(props: MultiPeopleSelectFieldProps) {
   const { field, options, alwaysSelected } = props;
   const alwaysSelectedIds = alwaysSelected.map((subscriber) => subscriber.person!.id!);
 
+  // Sort both always selected and regular options by name
+  const sortedAlwaysSelected = sortSubscribersByName(alwaysSelected);
+  const sortedOptions = sortSubscribersByName(
+    options.filter((subscriber) => !includesId(alwaysSelectedIds, subscriber.person!.id))
+  );
+
   return (
     <div>
-      {alwaysSelected.map((subscriber) => (
+      {sortedAlwaysSelected.map((subscriber) => (
         <PersonAlwaysSelected subscriber={subscriber} key={subscriber.person!.id} />
       ))}
 
-      {options
-        .filter((subscriber) => !includesId(alwaysSelectedIds, subscriber.person!.id))
-        .map((subscriber) => (
-          <PersonOption subscriber={subscriber} field={field} key={subscriber.person!.id} />
-        ))}
+      {sortedOptions.map((subscriber) => (
+        <PersonOption subscriber={subscriber} field={field} key={subscriber.person!.id} />
+      ))}
     </div>
   );
 }
