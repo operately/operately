@@ -4,14 +4,7 @@ import { Subscriber } from "@/models/notifications";
 import { compareIds, includesId } from "@/routes/paths";
 import { Avatar, Checkbox } from "turboui";
 import { useFieldValue } from "./FormContext";
-
-function sortSubscribersByName(subscribers: Subscriber[]): Subscriber[] {
-  return [...subscribers].sort((a, b) => {
-    const nameA = a.person?.fullName || "";
-    const nameB = b.person?.fullName || "";
-    return nameA.localeCompare(nameB);
-  });
-}
+import { sortSubscribersByName } from "@/features/Subscriptions";
 
 interface MultiPeopleSelectFieldProps {
   field: string;

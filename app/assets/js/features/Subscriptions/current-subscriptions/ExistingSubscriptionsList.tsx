@@ -6,14 +6,7 @@ import { Subscriber } from "@/models/notifications";
 import { EditSubscriptionsModal } from "./EditSubscriptionsModal";
 import { useCurrentSubscriptionsContext } from "../CurrentSubscriptions";
 import { SecondaryButton } from "turboui";
-
-function sortSubscribersByName(subscribers: Subscriber[]): Subscriber[] {
-  return [...subscribers].sort((a, b) => {
-    const nameA = a.person?.fullName || "";
-    const nameB = b.person?.fullName || "";
-    return nameA.localeCompare(nameB);
-  });
-}
+import { sortSubscribersByName } from "@/features/Subscriptions";
 
 export function ExistingSubscriptionsList() {
   const { potentialSubscribers, name } = useCurrentSubscriptionsContext();
