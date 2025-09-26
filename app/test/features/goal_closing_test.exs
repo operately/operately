@@ -63,4 +63,21 @@ defmodule Operately.Features.GoalClosingTest do
     |> Steps.reopen_goal()
     |> Steps.assert_goal_is_reopened()
   end
+
+  feature "closing a goal shows the closed status banner", ctx do
+    ctx
+    |> Steps.visit_goal_page()
+    |> Steps.assert_goal_closed_status_banner_not_visible()
+    |> Steps.close_goal()
+    |> Steps.assert_goal_closed_status_banner_visible()
+  end
+
+  feature "reopening a goal hides the closed status banner", ctx do
+    ctx
+    |> Steps.given_closed_goal_exists()
+    |> Steps.visit_goal_page()
+    |> Steps.assert_goal_closed_status_banner_visible()
+    |> Steps.reopen_goal()
+    |> Steps.assert_goal_closed_status_banner_not_visible()
+  end
 end
