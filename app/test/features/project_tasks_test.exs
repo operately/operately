@@ -99,7 +99,7 @@ defmodule Operately.Features.ProjectTasksTest do
   @tag login_as: :champion
   feature "edit task name", ctx do
     new_name = "New task name"
-    feed_title = "changed the title of this task from \"some name\" to \"#{new_name}\""
+    feed_title = "changed the title of this task from \"My task\" to \"#{new_name}\""
 
     ctx
     |> Steps.given_task_exists()
