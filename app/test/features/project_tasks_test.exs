@@ -97,6 +97,57 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "create task with due date, assignee and milestone", ctx do
+    next_friday = Operately.Support.Time.next_friday()
+    formatted_date = Operately.Support.Time.format_month_day(next_friday)
+
+    attrs = %{
+      name: "Task 1",
+      assignee: ctx.champion.full_name,
+      due_date: next_friday,
+      milestone: ctx.milestone.title
+    }
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_assignee(attrs.assignee)
+    |> Steps.assert_task_due_date(formatted_date)
+    |> Steps.assert_task_milestone(attrs.milestone)
+  end
+
+  @tag login_as: :champion
+  feature "add multiple tasks with 'Create more' toggle on", ctx do
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_multiple_tasks(names: ["1st task", "2nd task"])
+    |> Steps.assert_task_added("1st task")
+    |> Steps.assert_task_added("2nd task")
+  end
+
+  @tag login_as: :champion
+  feature "all form fields are cleared after task is added", ctx do
+    attrs = %{
+      name: "Task 1",
+      assignee: ctx.champion.full_name,
+      due_date: Operately.Support.Time.next_friday(),
+      milestone: ctx.milestone.title
+    }
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.open_task_form_and_fill_out_all_fields(attrs)
+    |> Steps.toggle_create_more_switch()
+    |> Steps.click_create_task_button()
+    |> Steps.assert_form_fields_are_empty()
+  end
+
+  @tag login_as: :champion
   feature "edit task name", ctx do
     new_name = "New task name"
     feed_title = "changed the title of this task from \"My task\" to \"#{new_name}\""
