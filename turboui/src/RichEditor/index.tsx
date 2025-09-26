@@ -40,11 +40,8 @@ function EditorContent(props: EditorProps): JSX.Element {
   const handleClick = useLinkEditFormClose();
   const editor = props.editor.editor;
 
-  const handleEditorAreaClick = (e: React.MouseEvent) => {
-    // First handle the existing link edit form close functionality
-    handleClick(e);
-
-    // Then focus the editor if it's not already focused and is editable
+  const handleFocus = () => {
+    // Focus the editor if it's not already focused and is editable
     if (editor && !editor.isFocused && editor.isEditable) {
       editor.commands.focus();
     }
@@ -60,10 +57,10 @@ function EditorContent(props: EditorProps): JSX.Element {
   const contentClassName = classNames("min-h-[100px]", props.padding ?? "p-3");
 
   return (
-    <div onClick={handleEditorAreaClick} className={className}>
+    <div onClick={handleClick} className={className}>
       {!props.hideToolbar && <Toolbar />}
 
-      <div className="ProseMirror text-content-accent relative">
+      <div onClick={handleFocus} className="ProseMirror text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
       </div>
     </div>
