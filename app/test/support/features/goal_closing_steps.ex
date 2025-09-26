@@ -26,6 +26,12 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     end)
   end
 
+  step :given_closed_goal_exists, ctx do
+    ctx
+    |> Factory.add_goal_update(:check_in, :goal, :champion)
+    |> Factory.close_goal(:goal)
+  end
+
   step :given_goal_with_no_projects_exists, ctx do
     # Goal already created in setup, no projects to add
     ctx
@@ -62,12 +68,61 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     ctx
   end
 
+  step :close_goal, ctx do
+    ctx
+    |> UI.click(testid: "close-goal")
+    |> UI.assert_page(OperatelyWeb.Paths.goal_closing_path(ctx.company, ctx.goal))
+    |> UI.fill_rich_text("We are closing the goal.")
+    |> UI.click_button("Close Goal")
+    |> UI.assert_page(OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :reopen_goal, ctx do
+    ctx
+    |> UI.click(testid: "reopen-goal")
+    |> UI.assert_page(OperatelyWeb.Paths.goal_reopening_path(ctx.company, ctx.goal))
+    |> UI.fill_rich_text("We are reopening the goal.")
+    |> UI.click_button("Reopen Goal")
+    |> UI.assert_page(OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+  end
+
+  step :visit_goal_page, ctx do
+    UI.visit(ctx, OperatelyWeb.Paths.goal_path(ctx.company, ctx.goal))
+  end
+
   step :visit_goal_closing_page, ctx do
     path = OperatelyWeb.Paths.goal_closing_path(ctx.company, ctx.goal)
 
     ctx
     |> UI.visit(path)
     |> UI.assert_has(testid: "goal-closing-page")
+  end
+
+  step :assert_goal_is_closed, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "page-header"), fn el ->
+      UI.assert_text(el, "Achieved")
+    end)
+    |> UI.find(UI.query(testid: "sidebar"), fn el ->
+      el
+      |> UI.assert_text("Goal Retrospective")
+      |> UI.assert_has(testid: "reopen-goal")
+    end)
+  end
+
+  step :assert_goal_is_reopened, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "page-header"), fn el ->
+      UI.assert_text(el, "On track")
+    end)
+    |> UI.find(UI.query(testid: "sidebar"), fn el ->
+      el
+      |> UI.assert_text("Last update")
+      |> UI.assert_has(testid: "close-goal")
+    end)
+    |> UI.refute_text("Achieved")
+    |> UI.refute_text("Goal Retrospective")
+    |> UI.refute_has(testid: "reopen-goal")
   end
 
   step :assert_closed_projects_not_shown_in_warning, ctx do
@@ -90,5 +145,47 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.refute_text("Active Project")
     |> UI.refute_text("Project To Close")
     |> UI.refute_text("Paused Project")
+  end
+
+  step :assert_open_goal_in_all_work_tab_in_work_map, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :all))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.assert_text(ctx.goal.name)
+  end
+
+  step :assert_open_goal_in_goals_tab_in_work_map, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :goals))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.assert_text(ctx.goal.name)
+  end
+
+  step :assert_closed_goal_in_completed_tab_in_work_map, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :completed))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.assert_text(ctx.goal.name)
+  end
+
+  step :refute_open_goal_in_completed_tab_in_work_map, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :completed))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.refute_text(ctx.goal.name)
+  end
+
+  step :refute_closed_goal_in_all_work_tab_in_work_map, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :all))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.refute_text(ctx.goal.name)
+  end
+
+  step :refute_closed_goal_in_goals_tab_in_work_map, ctx do
+    ctx
+    |> UI.visit(OperatelyWeb.Paths.work_map_path(ctx.company, tab: :goals))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.refute_text(ctx.goal.name)
   end
 end

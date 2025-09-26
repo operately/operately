@@ -9,7 +9,7 @@ defmodule Operately.Operations.GoalReopening do
   @action :goal_reopening
 
   def run(author, goal, attrs) do
-    changeset = Goals.Goal.changeset(goal, %{closed_at: nil, closed_by_id: nil, success: nil})
+    changeset = Goals.Goal.changeset(goal, %{closed_at: nil, closed_by_id: nil, success: nil, success_status: nil})
 
     Multi.new()
     |> SubscriptionList.insert(attrs)
