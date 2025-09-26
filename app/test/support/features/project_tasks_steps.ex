@@ -67,6 +67,50 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.refute_has(testid: "add-task-form")
   end
 
+ step :add_multiple_tasks, ctx, names: names do
+    ctx
+    |> UI.click_button("New task")
+    |> UI.click(testid: "add-more-switch")
+    |> UI.find(UI.query(testid: "add-task-form"), fn el ->
+      Enum.reduce(names, el, fn name, el ->
+        el
+        |> UI.fill(placeholder: "Enter task title", with: name)
+        |> UI.click_button("Create task")
+      end)
+    end)
+    |> UI.click_button("Cancel")
+    |> UI.sleep(300)
+    |> UI.refute_has(testid: "add-task-form")
+  end
+
+  step :open_task_form_and_fill_out_all_fields, ctx, attrs do
+    ctx
+    |> UI.click_button("New task")
+    |> UI.fill(placeholder: "Enter task title", with: attrs.name)
+    |> if_present(attrs[:assignee], fn ctx ->
+      ctx
+      |> UI.click(testid: "assignee")
+      |> UI.click(testid: UI.testid(["assignee-search-result", attrs.assignee]))
+    end)
+    |> if_present(attrs[:due_date], fn ctx ->
+      ctx
+      |> UI.select_day_in_date_field(testid: "task-due-date", date: attrs.due_date)
+    end)
+    |> if_present(attrs[:milestone], fn ctx ->
+      ctx
+      |> UI.click(testid: "milestone-field")
+      |> UI.click(testid: UI.testid(["milestone-field-search-result", attrs.milestone]))
+    end)
+  end
+
+  step :toggle_create_more_switch, ctx do
+    UI.click(ctx, testid: "add-more-switch")
+  end
+
+  step :click_create_task_button, ctx do
+    UI.click_button(ctx, "Create task")
+  end
+
   step :add_task_from_milestone_page, ctx, title do
     ctx
     |> UI.click(testid: "tasks-section-add-task")
@@ -128,6 +172,15 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   #
   # Assertions
   #
+
+  step :assert_form_fields_are_empty, ctx do
+    UI.find(ctx, UI.query(testid: "add-task-form"), fn el ->
+      el
+      |> UI.assert_text("", testid: "task-title")
+      |> UI.assert_text("Set due date", testid: "task-due-date")
+      |> UI.assert_text("Select assignee", testid: "assignee")
+    end)
+  end
 
   step :assert_task_added, ctx, title do
     UI.assert_text(ctx, title)
