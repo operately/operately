@@ -67,7 +67,9 @@ function MobileNavigation({ company }: { company: Api.Company }) {
           <DivLink className="flex items-center gap-2 cursor-pointer" to={paths.homePath()}>
             <OperatelyLogo />
           </DivLink>
-          <div className="font-bold">{company.name}</div>
+          <DivLink className="font-bold cursor-pointer" to={paths.homePath()}>
+            {company.name}
+          </DivLink>
         </div>
 
         <div className="">
