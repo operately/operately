@@ -38,11 +38,20 @@ export function Editor(props: EditorProps) {
 
 function EditorContent(props: EditorProps): JSX.Element {
   const handleClick = useLinkEditFormClose();
+  const editor = props.editor.editor;
+
+  const handleFocus = () => {
+    // Focus the editor if it's not already focused and is editable
+    if (editor && !editor.isFocused && editor.isEditable) {
+      editor.commands.focus();
+    }
+  };
 
   const className = classNames(
     {
       "border border-surface-outline rounded-lg": !props.hideBorder,
     },
+    "cursor-pointer",
     props.className,
   );
   const contentClassName = classNames("min-h-[100px]", props.padding ?? "p-3");
@@ -51,7 +60,7 @@ function EditorContent(props: EditorProps): JSX.Element {
     <div onClick={handleClick} className={className}>
       {!props.hideToolbar && <Toolbar />}
 
-      <div className="ProseMirror text-content-accent relative">
+      <div onClick={handleFocus} className="ProseMirror text-content-accent relative">
         <TipTapEditorContent className={contentClassName} />
       </div>
     </div>
