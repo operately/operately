@@ -1,14 +1,12 @@
-import * as People from "@/models/people";
+import React from "react";
 
 import type { ActivityContentTaskDescriptionChange } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
-
-import { Summary } from "@/components/RichContent";
-
 import { assertPresent } from "@/utils/assertions";
-import React from "react";
 import { feedTitle, taskLink } from "../feedItemLinks";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const TaskDescriptionChange: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -47,14 +45,14 @@ const TaskDescriptionChange: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     if (!data.task?.description) return null;
-    
-    const description = typeof data.task.description === "string" 
-      ? JSON.parse(data.task.description) 
-      : data.task.description;
-    
-    return <Summary jsonContent={description} characterCount={200} />;
+
+    const description =
+      typeof data.task.description === "string" ? JSON.parse(data.task.description) : data.task.description;
+
+    return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -70,7 +68,7 @@ const TaskDescriptionChange: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " updated the description of: " + content(activity).task!.name;
+    return "Updated the description of: " + content(activity).task!.name;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

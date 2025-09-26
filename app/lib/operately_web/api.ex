@@ -168,6 +168,7 @@ defmodule OperatelyWeb.Api do
   query(:list_possible_managers, Q.ListPossibleManagers)
   query(:get_work_map, Q.GetWorkMap)
   query(:get_flat_work_map, Q.GetFlatWorkMap)
+  query(:global_search, Q.GlobalSearch)
 
   mutation(:archive_message, M.ArchiveMessage)
   mutation(:restore_company_member, M.RestoreCompanyMember)
@@ -206,6 +207,7 @@ defmodule OperatelyWeb.Api do
   mutation(:delete_resource_hub_file, M.DeleteResourceHubFile)
   mutation(:delete_resource_hub_folder, M.DeleteResourceHubFolder)
   mutation(:delete_resource_hub_link, M.DeleteResourceHubLink)
+  mutation(:delete_space, M.DeleteSpace)
 
   mutation(:remove_company_admin, M.RemoveCompanyAdmin)
   mutation(:remove_company_member, M.RemoveCompanyMember)

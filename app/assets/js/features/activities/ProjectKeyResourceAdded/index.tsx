@@ -1,6 +1,5 @@
 import type { ActivityContentProjectKeyResourceAdded } from "@/api";
 import type { Activity } from "@/models/activities";
-import * as People from "@/models/people";
 import React from "react";
 import type { ActivityHandler } from "../interfaces";
 
@@ -65,8 +64,7 @@ const ProjectKeyResourceAdded: ActivityHandler = {
 
   NotificationTitle({ activity }: { activity: Activity }) {
     return (
-      People.firstName(activity.author!) +
-      " added a key resource to the " +
+      "Added a key resource to the " +
       content(activity).project!.name! +
       " project"
     );

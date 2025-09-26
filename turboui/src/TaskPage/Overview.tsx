@@ -8,6 +8,7 @@ export function Overview(props: TaskPage.State) {
     <div className="space-y-12 sm:col-span-8 sm:pr-8">
       <PageDescription
         {...props}
+        label="Notes"
         placeholder="Describe the task..."
         zeroStatePlaceholder="Add notes about this task..."
       />

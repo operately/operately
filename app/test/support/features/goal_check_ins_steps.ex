@@ -54,7 +54,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "submitted a check-in"
+      action: "Submitted a check-in for #{ctx.goal.name}"
     })
   end
 
@@ -97,7 +97,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "acknowledged your check-in"
+      action: "Acknowledged check-in"
     })
   end
 
@@ -137,7 +137,7 @@ defmodule Operately.Support.Features.GoalCheckInsSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "commented on the goal check-in"
+      action: "Re: goal check-in"
     })
   end
 

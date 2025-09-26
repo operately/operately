@@ -27,7 +27,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { useChecklists } from "./useChecklists";
-import { useRichEditorHandlers } from "@/features/richtexteditor";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
@@ -178,6 +178,10 @@ function Page() {
     }
   };
 
+  const exportMarkdown = React.useCallback(() => {
+    window.open(paths.goalMarkdownExportPath(goal.id), "_blank", "noopener");
+  }, [goal.id, paths]);
+
   const props: GoalPage.Props = {
     workmapLink: paths.spaceWorkMapPath(goal.space.id, "goals"),
     closeLink: paths.goalClosePath(goal.id),
@@ -186,6 +190,7 @@ function Page() {
     newDiscussionLink: paths.newGoalDiscussionPath(goal.id),
     addSubprojectLink: paths.newProjectPath({ goalId: goal.id!, spaceId: goal.space!.id! }),
     addSubgoalLink: paths.newGoalPath({ parentGoalId: goal.id!, spaceId: goal.space!.id! }),
+    exportMarkdown,
     closedAt: Time.parse(goal.closedAt),
     retrospective: prepareRetrospective(paths, goal.retrospective),
     neglectedGoal: false,
@@ -220,7 +225,7 @@ function Page() {
     reviewerSearch,
 
     description,
-    updateDescription: setDescription,
+    onDescriptionChange: setDescription,
 
     status: goal.status,
     state: goal.closedAt ? "closed" : "active",

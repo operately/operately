@@ -52,7 +52,6 @@ import ProjectAsMarkdownPage from "./ProjectAsMarkdownPage";
 import ProjectCheckInEditPage from "./ProjectCheckInEditPage";
 import ProjectCheckInNewPage from "./ProjectCheckInNewPage";
 import ProjectCheckInPage from "./ProjectCheckInPage";
-import ProjectCheckInsPage from "./ProjectCheckInsPage";
 import ProjectClosePage from "./ProjectClosePage";
 import ProjectContributorsAddPage from "./ProjectContributorsAddPage";
 import ProjectContributorsEditPage from "./ProjectContributorsEditPage";
@@ -146,7 +145,6 @@ export default {
   ProjectCheckInEditPage,
   ProjectCheckInNewPage,
   ProjectCheckInPage,
-  ProjectCheckInsPage,
   ProjectClosePage,
   ProjectContributorsAddPage,
   ProjectContributorsEditPage,

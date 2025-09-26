@@ -55,8 +55,8 @@ const ProjectContributorRemoved: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " removed you from the project";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Removed you from the project";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -3,7 +3,6 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
 
   alias Operately.Access
   alias Operately.Access.Binding
-  alias Operately.People.Person
   alias Operately.Projects.Project
   alias Operately.Support.Features.UI
   alias Operately.Support.Features.FeedSteps
@@ -24,36 +23,39 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     project_manager = person_fixture_with_account(%{company_id: company.id, full_name: "Project Manager"})
 
     group = group_fixture(champion, %{company_id: company.id, name: "Test Group"})
+
     Operately.Groups.add_members(non_contributor, group.id, [
       %{id: non_contributor.id, access_level: Binding.full_access()},
       %{id: project_manager.id, access_level: Binding.full_access()},
-      %{id: reviewer.id, access_level: Binding.edit_access()},
+      %{id: reviewer.id, access_level: Binding.edit_access()}
     ])
 
-    {:ok, goal} = Operately.Goals.create_goal(champion, %{
-      company_id: company.id,
-      space_id: group.id,
-      name: "Test Goal",
-      champion_id: champion.id,
-      reviewer_id: reviewer.id,
-      timeframe: %{
-        contextual_start_date: ContextualDate.create_year_date(~D[2021-01-01]),
-        contextual_end_date: ContextualDate.create_year_date(~D[2021-12-31])
-      },
-      company_access_level: Binding.comment_access(),
-      space_access_level: Binding.edit_access(),
-      anonymous_access_level: Binding.view_access(),
-    })
+    {:ok, goal} =
+      Operately.Goals.create_goal(champion, %{
+        company_id: company.id,
+        space_id: group.id,
+        name: "Test Goal",
+        champion_id: champion.id,
+        reviewer_id: reviewer.id,
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_year_date(~D[2021-01-01]),
+          contextual_end_date: ContextualDate.create_year_date(~D[2021-12-31])
+        },
+        company_access_level: Binding.comment_access(),
+        space_access_level: Binding.edit_access(),
+        anonymous_access_level: Binding.view_access()
+      })
 
-    ctx = Map.merge(ctx, %{
-      company: company,
-      champion: champion,
-      reviewer: reviewer,
-      group: group,
-      non_contributor: non_contributor,
-      project_manager: project_manager,
-      goal: goal
-    })
+    ctx =
+      Map.merge(ctx, %{
+        company: company,
+        champion: champion,
+        reviewer: reviewer,
+        group: group,
+        non_contributor: non_contributor,
+        project_manager: project_manager,
+        goal: goal
+      })
 
     UI.login_based_on_tag(ctx)
   end
@@ -109,7 +111,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.assert_has(testid: "project-page")
 
     project = Operately.Repo.get_by!(Operately.Projects.Project, name: fields.name)
-    project = Operately.Repo.preload(project, [contributors: :person])
+    project = Operately.Repo.preload(project, contributors: :person)
 
     champion = Enum.find(project.contributors, fn c -> c.role == :champion end)
     reviewer = Enum.find(project.contributors, fn c -> c.role == :reviewer end)
@@ -149,7 +151,7 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
       |> UI.login_as(person)
       |> NotificationsSteps.assert_notification_exists(
         author: fields.creator,
-        subject: "#{Person.first_name(fields.creator)} started the #{fields.name} project"
+        subject: "Added the #{fields.name} project"
       )
     end)
   end
@@ -266,7 +268,8 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     [
       {fields.champion, "champion"},
       {fields.reviewer, "reviewer"}
-    ] |> Enum.filter(& elem(&1, 0).id != fields.creator.id)
+    ]
+    |> Enum.filter(&(elem(&1, 0).id != fields.creator.id))
   end
 
   defp run_if(ctx, condition, fun) do
@@ -279,5 +282,4 @@ defmodule Operately.Support.Features.ProjectCreationSteps do
     |> UI.assert_text(ctx.goal.name)
     |> UI.assert_text(ctx.group.name)
   end
-
 end

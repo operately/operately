@@ -14,6 +14,7 @@ interface EditorProps {
   className?: string;
   hideBorder?: boolean;
   hideToolbar?: boolean;
+  padding?: string;
 }
 
 //
@@ -44,13 +45,14 @@ function EditorContent(props: EditorProps): JSX.Element {
     },
     props.className,
   );
+  const contentClassName = classNames("min-h-[100px]", props.padding ?? "p-3");
 
   return (
     <div onClick={handleClick} className={className}>
       {!props.hideToolbar && <Toolbar />}
 
       <div className="ProseMirror text-content-accent relative">
-        <TipTapEditorContent className="p-3 min-h-[100px]" />
+        <TipTapEditorContent className={contentClassName} />
       </div>
     </div>
   );

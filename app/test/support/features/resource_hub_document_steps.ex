@@ -385,7 +385,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "added: #{document_name}",
+      action: "Added: #{document_name}",
     })
   end
 
@@ -395,7 +395,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "created a copy of #{attrs.name} and named it #{attrs.new_name}",
+      action: "Created a copy of #{attrs.name} and named it #{attrs.new_name}",
     })
   end
 
@@ -405,7 +405,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "commented on: #{document_name}",
+      action: "Re: #{document_name}",
     })
   end
 
@@ -415,7 +415,7 @@ defmodule Operately.Support.Features.ResourceHubDocumentSteps do
     |> NotificationsSteps.visit_notifications_page()
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.creator,
-      action: "deleted a document: #{document_name}",
+      action: "Deleted a document: #{document_name}",
     })
   end
 

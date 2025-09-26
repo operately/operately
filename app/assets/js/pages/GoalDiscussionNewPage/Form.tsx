@@ -1,8 +1,7 @@
 import React from "react";
 
-import { DimmedLink, PrimaryButton } from "turboui";
+import { DimmedLink, Editor, PrimaryButton } from "turboui";
 
-import * as TipTapEditor from "@/components/Editor";
 import { FormTitleInput } from "@/components/FormTitleInput";
 import * as Goals from "@/models/goals";
 
@@ -10,8 +9,8 @@ import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/fea
 import { assertPresent } from "@/utils/assertions";
 
 import { useForm } from "./useForm";
-
 import { usePaths } from "@/routes/paths";
+
 export function Form({ goal }: { goal: Goals.Goal }) {
   const paths = usePaths();
   assertPresent(goal.potentialSubscribers, "potentialSubscribers must be present in goal");
@@ -32,7 +31,7 @@ export function Form({ goal }: { goal: Goals.Goal }) {
       />
 
       <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-        <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
+        <Editor editor={form.fields.editor} hideBorder padding="p-0" />
       </div>
 
       <Subscribers goal={goal} subscriptionsState={subscriptionsState} />

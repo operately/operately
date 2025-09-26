@@ -20,13 +20,14 @@ export * from "./WorkMap";
 
 import RichContent from "./RichContent";
 
-export { InfoCallout } from "./Callouts";
+export { InfoCallout, WarningCallout } from "./Callouts";
 export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
 export { Conversations, useConversations } from "./Conversations";
 export { DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
+export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
 export { MilestonePage } from "./MilestonePage";
@@ -35,6 +36,7 @@ export { Modal } from "./Modal";
 export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
+export { ReviewPage } from "./ReviewPage";
 export { SpaceField } from "./SpaceField";
 export { SwitchToggle } from "./SwitchToggle";
 export { Tabs, useTabs } from "./Tabs";
@@ -45,8 +47,10 @@ export { TextField } from "./TextField";
 export { showErrorToast, showInfoToast, showSuccessToast, ToasterBar } from "./Toasts";
 export { Tooltip } from "./Tooltip";
 
-export { RichContent };
+export { Summary } from "./RichContent";
+export { Editor, useEditor } from "./RichEditor";
 export type { RichEditorHandlers } from "./RichEditor/useEditor";
+export { RichContent };
 
 export { createDropFilePlugin } from "./RichEditor/Blob/DropFilePlugin";
 export { createPasteFilePlugin } from "./RichEditor/Blob/PasteFilePlugin";

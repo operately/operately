@@ -1,14 +1,14 @@
+import React from "react";
 import * as People from "@/models/people";
 
 import type { ActivityContentResourceHubFileCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { assertPresent } from "@/utils/assertions";
-import React from "react";
 import { feedTitle, fileLink, spaceLink } from "../feedItemLinks";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ResourceHubFileCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -54,8 +54,10 @@ const ResourceHubFileCommented: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.comment?.content, "comment must be present in activity");
 
+    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
     const commentContent = JSON.parse(data.comment.content)["message"];
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -71,7 +73,7 @@ const ResourceHubFileCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on: " + content(activity).file!.name!;
+    return "Re: " + content(activity).file!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

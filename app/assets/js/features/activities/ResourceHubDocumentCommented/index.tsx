@@ -1,13 +1,13 @@
+import React from "react";
 import * as People from "@/models/people";
 
 import type { ActivityContentResourceHubDocumentCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
-import React from "react";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
+import { Summary } from "turboui";
 
 const ResourceHubDocumentCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -44,9 +44,12 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+    const { comment } = content(activity);
+    const commentContent = comment?.content ? JSON.parse(comment?.content)["message"] : "";
+
+    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
+
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -62,7 +65,7 @@ const ResourceHubDocumentCommented: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on: " + content(activity).document!.name!;
+    return "Re: " + content(activity).document!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

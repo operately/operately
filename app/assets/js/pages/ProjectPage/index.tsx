@@ -22,7 +22,7 @@ import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { parseContextualDate, serializeContextualDate } from "../../models/contextualDates";
-import { useRichEditorHandlers } from "@/features/richtexteditor";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 
 export default { name: "ProjectV2Page", loader, Page } as PageModule;
@@ -100,6 +100,12 @@ function Page() {
     update: (v) => Api.editProjectName({ projectId: project.id, name: v }).then(() => true),
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
+  });
+
+  const [description, setDescription] = usePageField({
+    value: (data: {project: Projects.Project}) => data.project.description && JSON.parse(data.project.description),
+    update: (v) => Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
+    onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
   });
 
   const [space, setSpace] = usePageField({
@@ -198,12 +204,16 @@ function Page() {
       });
   };
 
+  const exportMarkdown = React.useCallback(() => {
+    window.open(paths.projectMarkdownExportPath(project.id), "_blank", "noopener");
+  }, [paths, project.id]);
+
   const props: ProjectPage.Props = {
     workmapLink,
     closeLink: paths.projectClosePath(project.id),
     reopenLink: paths.resumeProjectPath(project.id),
     pauseLink: paths.pauseProjectPath(project.id),
-
+    exportMarkdown,
     childrenCount,
 
     projectName: projectName as string,
@@ -212,18 +222,8 @@ function Page() {
       return Promise.resolve(true);
     },
 
-    description: project.description && JSON.parse(project.description),
-    updateDescription: (description: any | null) => {
-      return Api.updateProjectDescription({
-        projectId: project.id!,
-        description: JSON.stringify(description),
-      })
-        .then(() => {
-          PageCache.invalidate(pageCacheKey(project.id!));
-          return true;
-        })
-        .catch(() => false);
-    },
+    description,
+    onDescriptionChange: setDescription,
 
     space: space as ProjectPage.Space,
     setSpace,
@@ -305,7 +305,7 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => void] {
+function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -318,39 +318,44 @@ function usePageField<T>({ value, update, onError, validations }: usePageFieldPr
     }
   }, [value, cacheVersion, stateVersion]);
 
-  const updateState = (newVal: T): void => {
-    if (validations) {
-      for (const validation of validations) {
-        const error = validation(newVal);
-        if (error) {
-          onError?.(error);
-          return;
+  const updateState = (newVal: T): Promise<boolean> => {
+    return new Promise((resolve) => {
+      if (validations) {
+        for (const validation of validations) {
+          const error = validation(newVal);
+          if (error) {
+            onError?.(error);
+            resolve(false);
+            return;
+          }
         }
       }
-    }
 
-    const oldVal = state;
+      const oldVal = state;
 
-    const successHandler = () => {
-      PageCache.invalidate(pageCacheKey(data.project.id!));
-    };
+      const successHandler = () => {
+        PageCache.invalidate(pageCacheKey(data.project.id!));
+        resolve(true);
+      };
 
-    const errorHandler = (error: any) => {
-      setState(oldVal);
-      onError?.(error);
-    };
+      const errorHandler = (error: any) => {
+        setState(oldVal);
+        onError?.(error);
+        resolve(false);
+      };
 
-    setState(newVal);
+      setState(newVal);
 
-    update(newVal)
-      .then((res) => {
-        if (res === false || (typeof res === "object" && res?.success === false)) {
-          errorHandler("Update failed");
-        } else {
-          successHandler();
-        }
-      })
-      .catch(errorHandler);
+      update(newVal)
+        .then((res) => {
+          if (res === false || (typeof res === "object" && res?.success === false)) {
+            errorHandler("Update failed");
+          } else {
+            successHandler();
+          }
+        })
+        .catch(errorHandler);
+    });
   };
 
   return [state, updateState];

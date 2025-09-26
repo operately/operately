@@ -1,15 +1,13 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectRetrospectiveCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { Link, Summary } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectRetrospectiveCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -47,10 +45,12 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
+    const { comment } = content(activity);
+    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
 
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -65,8 +65,8 @@ const ProjectRetrospectiveCommented: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on the project retrospective";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Re: project retrospective";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -68,6 +68,7 @@ defmodule Operately.Groups do
   end
 
   defdelegate create_group(creator, attrs \\ %{}), to: Operately.Operations.GroupCreation, as: :run
+  defdelegate delete_group(space), to: Operately.Operations.SpaceDeleting, as: :run
 
   def update_group(%Group{} = group, attrs) do
     group

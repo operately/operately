@@ -204,6 +204,7 @@ export function MilestonePage(props: MilestonePage.Props) {
           <div className="sm:col-span-8 sm:px-4 space-y-4">
             <PageDescription
               {...state}
+              label="Notes"
               placeholder="Describe the milestone..."
               zeroStatePlaceholder="Add details about this milestone..."
               emptyTestId="description-section-empty"

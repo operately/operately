@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectClosed } from "@/api";
@@ -60,8 +59,8 @@ const ProjectClosed: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " closed this project and submitted a retrospective";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Closed this project and submitted a retrospective";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -3,7 +3,6 @@ import * as People from "@/models/people";
 import * as React from "react";
 
 import { useProfileUpdatedSignal } from "@/signals";
-import { assertPresent } from "@/utils/assertions";
 import { throttle } from "@/utils/throttle";
 
 import { usePaths } from "@/routes/paths";
@@ -82,24 +81,6 @@ export function useMentionedPersonLookupFn(): (
     ctx.peopleRefetch();
     return null;
   };
-}
-
-export function usePersonNameAndAvatar(id: string): { person?: People.Person; loading: boolean } {
-  const loading = { loading: true };
-
-  const ctx = React.useContext(CurrentCompanyContext);
-  if (!ctx) return loading;
-  if (ctx.peopleLoading) return loading;
-
-  assertPresent(ctx.people, "people must be present if peopleLoading is false");
-
-  const person = ctx.people.find((p) => p.id === id);
-  if (!person) {
-    ctx.peopleRefetch();
-    return loading;
-  }
-
-  return { person, loading: false };
 }
 
 const THREE_HOURS = 3 * 60 * 60 * 1000;

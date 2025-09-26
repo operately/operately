@@ -2,9 +2,8 @@ import React from "react";
 
 import * as Pages from "@/components/Pages";
 import * as Goals from "@/models/goals";
-import * as Editor from "@/components/Editor";
 
-import { PrimaryButton } from "turboui";
+import { Editor, PrimaryButton } from "turboui";
 import { DimmedLink } from "turboui";
 import { assertPresent } from "@/utils/assertions";
 import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "@/features/Subscriptions";
@@ -42,7 +41,7 @@ function Message({ form }: { form: FormState }) {
       <div className="font-bold mb-2">Why are you reopening this goal?</div>
 
       <div className="border border-surface-outline rounded overflow-hidden">
-        <Editor.StandardEditorForm editor={form.messageEditor.editor} />
+        <Editor editor={form.messageEditor} hideBorder padding="px-2" />
       </div>
     </div>
   );

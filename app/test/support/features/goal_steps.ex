@@ -1,10 +1,15 @@
 defmodule Operately.Support.Features.GoalSteps do
   use Operately.FeatureCase
+  @endpoint OperatelyWeb.Endpoint
 
   alias Operately.Access
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.ContextualDates.ContextualDate
+  alias OperatelyWeb.Paths
+  alias Operately.People.Person
+
+  import Phoenix.ConnTest
 
   def setup(ctx) do
     ctx
@@ -19,7 +24,7 @@ defmodule Operately.Support.Features.GoalSteps do
       reviewer: :reviewer,
       timeframe: %{
         contextual_start_date: Operately.Time.days_ago(10) |> ContextualDate.create_day_date(),
-        contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date(),
+        contextual_end_date: Operately.Time.days_from_now(10) |> ContextualDate.create_day_date()
       },
       parent_goal: :parent_goal
     )
@@ -27,6 +32,15 @@ defmodule Operately.Support.Features.GoalSteps do
     |> then(fn ctx ->
       UI.visit(ctx, Paths.goal_path(ctx.company, ctx.goal))
     end)
+  end
+
+  defp build_api_conn(person, company) do
+    person = Operately.Repo.preload(person, :account)
+    account = person.account
+
+    Phoenix.ConnTest.build_conn()
+    |> Plug.Test.init_test_session(%{})
+    |> OperatelyWeb.ConnCase.log_in_account(account, company)
   end
 
   #
@@ -145,7 +159,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.login_as(ctx.new_champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "assigned you as the champion"
+      action: "#{Person.first_name(ctx.champion)} assigned you as the champion"
     })
   end
 
@@ -212,7 +226,7 @@ defmodule Operately.Support.Features.GoalSteps do
     |> UI.login_as(ctx.new_reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "assigned you as the reviewer"
+      action: "#{Person.first_name(ctx.champion)} assigned you as the reviewer"
     })
   end
 
@@ -483,5 +497,26 @@ defmodule Operately.Support.Features.GoalSteps do
     |> Enum.each(fn target ->
       Operately.Repo.delete(target)
     end)
+  end
+
+  step :download_goal_markdown, ctx do
+    conn = build_api_conn(ctx.champion, ctx.company)
+
+    markdown =
+      conn
+      |> get(Paths.export_goal_markdown_path(ctx.company, ctx.goal))
+      |> response(200)
+
+    Map.put(ctx, :goal_markdown, markdown)
+  end
+
+  step :assert_goal_markdown_includes_details, ctx do
+    markdown = ctx.goal_markdown
+
+    assert is_binary(markdown)
+    assert String.contains?(markdown, "# #{ctx.goal.name}")
+    assert String.contains?(markdown, "Status:")
+
+    ctx
   end
 end

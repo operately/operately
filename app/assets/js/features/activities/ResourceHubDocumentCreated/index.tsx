@@ -1,11 +1,13 @@
+import React from "react";
+
 import type { ActivityContentResourceHubDocumentCreated } from "@/api";
-import { Summary } from "@/components/RichContent";
 import type { Activity } from "@/models/activities";
 import * as People from "@/models/people";
 
-import React from "react";
 import { documentLink, feedTitle, spaceLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ResourceHubDocumentCreating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -37,7 +39,10 @@ const ResourceHubDocumentCreating: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    return <Summary jsonContent={content(activity).document!.content!} characterCount={160} />;
+    const { document } = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers({ scope: People.NoneSearchScope });
+
+    return <Summary content={document?.content} characterCount={160} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -58,14 +63,13 @@ const ResourceHubDocumentCreating: ActivityHandler = {
 
     if (copiedDocument) {
       return (
-        People.firstName(activity.author!) +
-        " created a copy of " +
+        "Created a copy of " +
         copiedDocument.name +
         " and named it " +
         document.name
       );
     } else {
-      return People.firstName(activity.author!) + " added: " + document.name!;
+      return "Added: " + document.name!;
     }
   },
 

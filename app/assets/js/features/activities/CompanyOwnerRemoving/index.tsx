@@ -49,8 +49,8 @@ const CompanyOwnerRemoving: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return firstName(activity.author!) + " has revoked your account owner status";
+  NotificationTitle(_activity: { activity: Activity }) {
+    return "Revoked your account owner status";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

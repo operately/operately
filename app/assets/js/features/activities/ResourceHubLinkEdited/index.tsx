@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import React from "react";
 
 import type { ActivityContentResourceHubLinkEdited } from "@/api";
@@ -65,7 +64,7 @@ const ResourceHubLinkEdited: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " edited a link: " + content(activity).link!.name!;
+    return "Edited a link: " + content(activity).link!.name!;
   },
 
   NotificationLocation(_props: { activity: Activity }) {

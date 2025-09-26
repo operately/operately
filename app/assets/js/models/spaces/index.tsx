@@ -7,6 +7,7 @@ export {
   searchPotentialSpaceMembers,
   useAddSpaceMembers,
   useCreateSpace,
+  useDeleteSpace,
   useEditSpace,
   useEditSpaceMembersPermissions,
   useEditSpacePermissions,

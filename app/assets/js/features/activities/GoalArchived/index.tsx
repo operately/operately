@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentGoalArchived } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -53,7 +51,7 @@ const GoalArchived: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " archived the " + content(activity).goal!.name! + " goal";
+    return "Archived the " + content(activity).goal!.name! + " goal";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

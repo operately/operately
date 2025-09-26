@@ -4,8 +4,8 @@ import classNames from "../utils/classnames";
 import { match } from "ts-pattern";
 import { GoalPage } from ".";
 import { ActionList } from "../ActionList";
-import { SecondaryButton } from "../Button";
 import { Avatar } from "../Avatar";
+import { SecondaryButton } from "../Button";
 import { WarningCallout } from "../Callouts";
 import { DateField } from "../DateField";
 import { GoalField } from "../GoalField";
@@ -14,14 +14,15 @@ import { DivLink } from "../Link";
 import { PersonField } from "../PersonField";
 import { PrivacyField } from "../PrivacyField";
 import { Summary } from "../RichContent";
-import { StatusBadge } from "../StatusBadge";
 import { SidebarSection } from "../SidebarSection";
+import { StatusBadge } from "../StatusBadge";
 import { Tooltip } from "../Tooltip";
 import { durationHumanized, isOverdue } from "../utils/time";
 
 import {
   IconCircleArrowRight,
   IconCircleCheck,
+  IconFileExport,
   IconInfoCircle,
   IconRotateDot,
   IconTrash,
@@ -351,6 +352,14 @@ function Actions(props: GoalPage.State) {
       icon: IconCircleArrowRight,
       hidden: !props.canEdit,
       testId: "move-to-another-space",
+    },
+    {
+      type: "action" as const,
+      label: "Export as Markdown",
+      onClick: props.exportMarkdown,
+      icon: IconFileExport,
+      testId: "export-as-markdown",
+      hidden: !props.exportMarkdown,
     },
     {
       type: "action" as const,

@@ -1,15 +1,12 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentDiscussionCommentSubmitted } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { usePaths } from "@/routes/paths";
 import React from "react";
-import { Link } from "turboui";
+import { Link, Summary } from "turboui";
 import { feedTitle } from "../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const DiscussionCommentSubmitted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -48,9 +45,11 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const comment = content(activity).comment!;
-    const commentContent = JSON.parse(comment.content!)["message"];
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+    const { comment } = content(activity);
+    const commentContent = comment?.content ? JSON.parse(comment.content)["message"] : "";
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -66,7 +65,7 @@ const DiscussionCommentSubmitted: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " commented on: " + content(activity).discussion!.title!;
+    return "Re: " + content(activity).discussion!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

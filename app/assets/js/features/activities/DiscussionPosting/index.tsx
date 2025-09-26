@@ -1,15 +1,13 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentDiscussionPosting } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { Link, Summary } from "turboui";
 import { feedTitle, spaceLink } from "./../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const DiscussionPosting: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -47,7 +45,10 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    return <Summary jsonContent={content(activity).discussion!.body!} characterCount={200} />;
+    const { discussion } = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    return <Summary content={discussion?.body} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -63,7 +64,7 @@ const DiscussionPosting: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " posted: " + content(activity).discussion!.title!;
+    return "Posted: " + content(activity).discussion!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

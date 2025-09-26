@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectCheckInAcknowledged } from "@/api";
@@ -61,8 +60,8 @@ const ProjectCheckInAcknowledged: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " acknowledged your check-in";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Acknowledged check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

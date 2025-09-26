@@ -1,15 +1,13 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import { Activity, ActivityContentGoalClosing } from "@/api";
 
 import { usePaths } from "@/routes/paths";
-import { isContentEmpty, Link } from "turboui";
+import { isContentEmpty, Link, RichContent, Summary } from "turboui";
 import { ActivityHandler } from "../interfaces";
 
 import { feedTitle, goalLink } from "../feedItemLinks";
-
-import RichContent, { Summary } from "@/components/RichContent";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalClosing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -25,10 +23,16 @@ const GoalClosing: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <RichContent jsonContent={activity.commentThread!.message!} />
+          <RichContent
+            content={activity.commentThread.message}
+            mentionedPersonLookup={mentionedPersonLookup}
+            parseContent
+          />
         )}
       </div>
     );
@@ -51,10 +55,16 @@ const GoalClosing: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <Summary jsonContent={activity.commentThread.message!} characterCount={300} />
+          <Summary
+            content={activity.commentThread.message}
+            characterCount={300}
+            mentionedPersonLookup={mentionedPersonLookup}
+          />
         )}
       </div>
     );
@@ -73,7 +83,7 @@ const GoalClosing: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " reopened the " + content(activity).goal!.name! + " goal";
+    return "Reopened the " + content(activity).goal!.name! + " goal";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

@@ -1,4 +1,3 @@
-import * as TipTapEditor from "@/components/Editor";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Projects from "@/models/projects";
@@ -8,7 +7,8 @@ import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
 
 import Api from "@/api";
-import { DimmedLink, PrimaryButton } from "turboui";
+import { DimmedLink, PrimaryButton, Editor, useEditor } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { FormTitleInput } from "../../components/FormTitleInput";
 import { SubscribersSelector, SubscriptionsState, useSubscriptions } from "../../features/Subscriptions";
 import { usePaths } from "../../routes/paths";
@@ -92,7 +92,7 @@ function Form() {
       />
 
       <div className="mt-2 border-y border-stroke-base text-content-base font-medium ">
-        <TipTapEditor.StandardEditorForm editor={form.fields.editor.editor} />
+        <Editor editor={form.fields.editor} hideBorder padding="p-0" />
       </div>
 
       <Subscribers discussion={discussion} subscriptionsState={subscriptionsState} />
@@ -127,7 +127,7 @@ function Subscribers({
 type FormFields = {
   title: string;
   setTitle: (title: string) => void;
-  editor: TipTapEditor.EditorState;
+  editor: any;
 };
 
 interface UseFormProps {
@@ -136,16 +136,19 @@ interface UseFormProps {
 }
 
 function useForm({ discussion, subscriptionsState }: UseFormProps) {
+  assertPresent(discussion.project, "project must be present in discussion");
+
   const paths = usePaths();
   const navigate = useNavigate();
 
   const [title, setTitle] = React.useState(discussion.title || "");
 
-  const editor = TipTapEditor.useEditor({
+  const handlers = useRichEditorHandlers({ scope: {type: "project", id: discussion.project.id}})
+  const editor = useEditor({
     placeholder: "Write here...",
     className: "min-h-[350px] py-2 text-lg",
-    mentionSearchScope: { type: "project", id: discussion.project!.id! },
     content: discussion.message ? JSON.parse(discussion.message) : undefined,
+    handlers,
   });
 
   const [submitting, setSubmitting] = React.useState(false);

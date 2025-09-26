@@ -1,14 +1,13 @@
-import * as People from "@/models/people";
 import React from "react";
 
 import type { ActivityContentResourceHubLinkCommented } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
-
 import { assertPresent } from "@/utils/assertions";
 import { feedTitle, linkLink, spaceLink } from "../feedItemLinks";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ResourceHubLinkCommented: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -48,9 +47,11 @@ const ResourceHubLinkCommented: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
     const comment = content(activity).comment!;
     const commentContent = JSON.parse(comment.content!)["message"];
-    return <Summary jsonContent={commentContent} characterCount={200} />;
+
+    return <Summary content={commentContent} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
@@ -69,7 +70,7 @@ const ResourceHubLinkCommented: ActivityHandler = {
     const data = content(activity);
     assertPresent(data.link?.name, "link.name must be present in activity");
 
-    return People.firstName(activity.author!) + " commented on: " + data.link.name;
+    return "Re: " + data.link.name;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

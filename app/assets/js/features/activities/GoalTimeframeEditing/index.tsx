@@ -1,19 +1,18 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import * as Timeframes from "@/utils/timeframes";
-import { IconArrowRight, isContentEmpty } from "turboui";
+import { IconArrowRight, isContentEmpty, RichContent } from "turboui";
 
 import { Activity, ActivityContentGoalTimeframeEditing } from "@/api";
 
 import { Link } from "turboui";
 import { feedTitle, goalLink } from "../feedItemLinks";
 
-import RichContent from "@/components/RichContent";
 import { usePaths } from "@/routes/paths";
 import { assertPresent } from "@/utils/assertions";
 import { ActivityHandler } from "../interfaces";
 import { TimeframeEdited } from "./TimeframeEdited";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalTimeframeEditing: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -33,15 +32,15 @@ const GoalTimeframeEditing: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
-    const oldTimeframe = content(activity).oldTimeframe!;
-    const newTimeframe = content(activity).newTimeframe!;
+    const { newTimeframe, oldTimeframe } = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div className="mt-2">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-1 font-medium">
             <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
-              {Timeframes.getTimeframeRange(oldTimeframe)}
+              {oldTimeframe && Timeframes.getTimeframeRange(oldTimeframe)}
             </div>
           </div>
 
@@ -49,14 +48,18 @@ const GoalTimeframeEditing: ActivityHandler = {
 
           <div className="flex items-center gap-1 font-medium">
             <div className="border border-stroke-base rounded-md px-2 py-0.5 bg-surface-dimmed font-medium text-sm">
-              {Timeframes.getTimeframeRange(newTimeframe)}
+              {newTimeframe && Timeframes.getTimeframeRange(newTimeframe)}
             </div>
           </div>
         </div>
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="mt-4">
-            <RichContent jsonContent={activity.commentThread!.message!} />
+            <RichContent
+              content={activity.commentThread.message}
+              mentionedPersonLookup={mentionedPersonLookup}
+              parseContent
+            />
           </div>
         )}
       </div>
@@ -81,6 +84,7 @@ const GoalTimeframeEditing: ActivityHandler = {
 
   FeedItemContent({ activity }: { activity: Activity }) {
     const data = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     assertPresent(data.newTimeframe, "newTimeframe must be present in activity");
     assertPresent(data.oldTimeframe, "oldTimeframe must be present in activity");
@@ -91,7 +95,11 @@ const GoalTimeframeEditing: ActivityHandler = {
 
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
           <div className="my-2">
-            <RichContent jsonContent={activity.commentThread!.message!} />
+            <RichContent
+              content={activity.commentThread.message}
+              mentionedPersonLookup={mentionedPersonLookup}
+              parseContent
+            />
           </div>
         )}
       </div>
@@ -110,8 +118,8 @@ const GoalTimeframeEditing: ActivityHandler = {
     return !!activity.commentThread;
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " edited the goal's timeframe";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Edited the goal's timeframe";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

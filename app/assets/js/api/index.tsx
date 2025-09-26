@@ -1619,13 +1619,13 @@ export interface ResourceHubUploadedFile {
 }
 
 export interface ReviewAssignment {
-  resourceId?: string | null;
-  name?: string | null;
-  due?: string | null;
-  type?: string | null;
-  authorId?: string | null;
-  authorName?: string | null;
-  path?: string | null;
+  resourceId: string;
+  name: string;
+  due: string;
+  type: ReviewAssignmentTypes;
+  authorId: string | null;
+  authorName: string | null;
+  path: string;
 }
 
 export interface Space {
@@ -1658,6 +1658,7 @@ export interface SpacePermissions {
   canView?: boolean | null;
   canViewMessage?: boolean | null;
   canAddMembers?: boolean | null;
+  canDelete?: boolean | null;
 }
 
 export interface SpaceTools {
@@ -1977,6 +1978,8 @@ export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 
+export type ReviewAssignmentTypes = "goal" | "project" | "goal_update" | "check_in";
+
 export type SuccessStatus = "achieved" | "missed";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
@@ -2081,7 +2084,7 @@ export interface GetActivityResult {
 export interface GetAssignmentsInput {}
 
 export interface GetAssignmentsResult {
-  assignments?: ReviewAssignment[] | null;
+  assignments: ReviewAssignment[];
 }
 
 export interface GetAssignmentsCountInput {}
@@ -2538,6 +2541,17 @@ export interface GetWorkMapInput {
 
 export interface GetWorkMapResult {
   workMap?: WorkMapItem[] | null;
+}
+
+export interface GlobalSearchInput {
+  query: string;
+}
+
+export interface GlobalSearchResult {
+  projects: Project[];
+  goals: Goal[];
+  tasks: Task[];
+  people: Person[];
 }
 
 export interface GoalsGetCheckInsInput {
@@ -3237,6 +3251,14 @@ export interface DeleteResourceHubLinkInput {
 
 export interface DeleteResourceHubLinkResult {
   success?: boolean | null;
+}
+
+export interface DeleteSpaceInput {
+  spaceId?: Id | null;
+}
+
+export interface DeleteSpaceResult {
+  space?: Space | null;
 }
 
 export interface DisconnectGoalFromProjectInput {
@@ -4338,6 +4360,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_work_map", input);
   }
 
+  async globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+    return this.client.get("/global_search", input);
+  }
+
   async listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.client.get("/list_goal_contributors", input);
   }
@@ -4540,6 +4566,10 @@ class ApiNamespaceRoot {
 
   async deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
     return this.client.post("/delete_resource_hub_link", input);
+  }
+
+  async deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
+    return this.client.post("/delete_space", input);
   }
 
   async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
@@ -5324,6 +5354,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getWorkMap(input);
   }
 
+  globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+    return this.apiNamespaceRoot.globalSearch(input);
+  }
+
   listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
     return this.apiNamespaceRoot.listGoalContributors(input);
   }
@@ -5522,6 +5556,10 @@ export class ApiClient {
 
   deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
     return this.apiNamespaceRoot.deleteResourceHubLink(input);
+  }
+
+  deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
+    return this.apiNamespaceRoot.deleteSpace(input);
   }
 
   disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
@@ -5886,6 +5924,9 @@ export async function getUnreadNotificationCount(
 export async function getWorkMap(input: GetWorkMapInput): Promise<GetWorkMapResult> {
   return defaultApiClient.getWorkMap(input);
 }
+export async function globalSearch(input: GlobalSearchInput): Promise<GlobalSearchResult> {
+  return defaultApiClient.globalSearch(input);
+}
 export async function listGoalContributors(input: ListGoalContributorsInput): Promise<ListGoalContributorsResult> {
   return defaultApiClient.listGoalContributors(input);
 }
@@ -6054,6 +6095,9 @@ export async function deleteResourceHubFolder(
 }
 export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): Promise<DeleteResourceHubLinkResult> {
   return defaultApiClient.deleteResourceHubLink(input);
+}
+export async function deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
+  return defaultApiClient.deleteSpace(input);
 }
 export async function disconnectGoalFromProject(
   input: DisconnectGoalFromProjectInput,
@@ -6440,6 +6484,10 @@ export function useGetWorkMap(input: GetWorkMapInput): UseQueryHookResult<GetWor
   return useQuery<GetWorkMapResult>(() => defaultApiClient.getWorkMap(input));
 }
 
+export function useGlobalSearch(input: GlobalSearchInput): UseQueryHookResult<GlobalSearchResult> {
+  return useQuery<GlobalSearchResult>(() => defaultApiClient.globalSearch(input));
+}
+
 export function useListGoalContributors(
   input: ListGoalContributorsInput,
 ): UseQueryHookResult<ListGoalContributorsResult> {
@@ -6746,6 +6794,10 @@ export function useDeleteResourceHubLink(): UseMutationHookResult<
   return useMutation<DeleteResourceHubLinkInput, DeleteResourceHubLinkResult>((input) =>
     defaultApiClient.deleteResourceHubLink(input),
   );
+}
+
+export function useDeleteSpace(): UseMutationHookResult<DeleteSpaceInput, DeleteSpaceResult> {
+  return useMutation<DeleteSpaceInput, DeleteSpaceResult>((input) => defaultApiClient.deleteSpace(input));
 }
 
 export function useDisconnectGoalFromProject(): UseMutationHookResult<
@@ -7221,6 +7273,8 @@ export default {
   useGetUnreadNotificationCount,
   getWorkMap,
   useGetWorkMap,
+  globalSearch,
+  useGlobalSearch,
   listGoalContributors,
   useListGoalContributors,
   listPossibleManagers,
@@ -7319,6 +7373,8 @@ export default {
   useDeleteResourceHubFolder,
   deleteResourceHubLink,
   useDeleteResourceHubLink,
+  deleteSpace,
+  useDeleteSpace,
   disconnectGoalFromProject,
   useDisconnectGoalFromProject,
   editComment,

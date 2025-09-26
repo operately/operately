@@ -1,15 +1,15 @@
 {
-  "_vendor-BWTqscMm.js": {
-    "file": "assets/vendor-BWTqscMm.js",
+  "_vendor-DEpOJTSJ.js": {
+    "file": "assets/vendor-DEpOJTSJ.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-BQYPR4DE.js",
+    "file": "assets/app-DsOZgWb0.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-BWTqscMm.js"
+      "_vendor-DEpOJTSJ.js"
     ]
   }
 }

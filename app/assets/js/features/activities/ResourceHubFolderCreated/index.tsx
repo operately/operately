@@ -1,4 +1,3 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentResourceHubFolderCreated } from "@/api";
@@ -63,7 +62,7 @@ const ResourceHubFolderCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " created folder: " + content(activity).folder!.name!;
+    return "Created folder: " + content(activity).folder!.name!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

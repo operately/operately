@@ -1,16 +1,15 @@
-import * as People from "@/models/people";
 import * as React from "react";
 
 import type { ActivityContentProjectCheckInSubmitted } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
 
-import { Summary } from "@/components/RichContent";
 import { SmallStatusIndicator } from "@/components/status";
 
 import { usePaths } from "@/routes/paths";
-import { Link } from "turboui";
+import { Link, Summary } from "turboui";
 import { feedTitle, projectLink } from "./../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const ProjectCheckInSubmitted: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -49,12 +48,13 @@ const ProjectCheckInSubmitted: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
-    const checkIn = content(activity).checkIn!;
+    const { checkIn } = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
 
     return (
       <div className="flex flex-col gap-2">
-        <SmallStatusIndicator status={checkIn.status!} />
-        <Summary jsonContent={checkIn.description!} characterCount={200} />
+        {checkIn?.status && <SmallStatusIndicator status={checkIn?.status} />}
+        <Summary content={checkIn?.description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />
       </div>
     );
   },
@@ -71,8 +71,8 @@ const ProjectCheckInSubmitted: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " submitted a check-in";
+  NotificationTitle(_props: { activity: Activity }) {
+    return "Submitted a check-in";
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

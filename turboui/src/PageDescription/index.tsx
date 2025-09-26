@@ -8,6 +8,7 @@ interface Props {
   description: any;
   onDescriptionChange: (newDescription: any) => Promise<boolean>;
   richTextHandlers: RichEditorHandlers;
+  label: string;
   canEdit?: boolean;
   placeholder?: string;
   zeroStatePlaceholder?: string;
@@ -20,6 +21,7 @@ export function PageDescription({
   onDescriptionChange,
   richTextHandlers,
   canEdit,
+  label,
   placeholder = "Describe...",
   zeroStatePlaceholder = "Add notes...",
   testId,
@@ -38,7 +40,7 @@ export function PageDescription({
 
   return (
     <div data-test-id={testId}>
-      <SectionHeader title="Notes" startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
+      <SectionHeader title={label} startEdit={startEdit} showButtons={canEdit && mode !== "edit"} />
 
       {mode === "view" && (
         <ViewMode rawDescription={description} mentionedPersonLookup={richTextHandlers.mentionedPersonLookup} />
@@ -126,7 +128,7 @@ function EditMode({ description, richTextHandlers, onDescriptionChange, setMode,
   }, [editor, setMode, onDescriptionChange]);
 
   const cancel = useCallback(() => {
-    setMode("view");
+    setMode(isContentEmpty(description) ? "zero" : "view");
   }, [setMode]);
 
   return (
@@ -158,7 +160,8 @@ function ZeroState({ startEdit, canEdit, placeholder, testId }: ZeroStateProps) 
     <div data-test-id={testId}>
       <button
         onClick={startEdit}
-        className="text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
+        // The py-4 -my-4 is to make the clickable are larger without adding extra empty space
+        className="py-4 -my-4 w-full text-left text-content-dimmed hover:text-content-base text-sm transition-colors cursor-pointer"
       >
         {placeholder}
       </button>

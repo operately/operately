@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentResourceHubLinkCreated } from "@/api";
 import type { Activity } from "@/models/activities";
 
@@ -58,7 +56,7 @@ const ResourceHubLinkCreated: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " added a link: " + content(activity).link?.name;
+    return "Added a link: " + content(activity).link?.name;
   },
 
   NotificationLocation(_props: { activity: Activity }) {

@@ -1,16 +1,14 @@
 import React from "react";
 
 import * as PageOptions from "@/components/PaperContainer/PageOptions";
-import * as People from "@/models/people";
-
 import { Activity, ActivityContentGoalDiscussionCreation } from "@/api";
-import RichContent, { Summary } from "@/components/RichContent";
 
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { usePaths } from "@/routes/paths";
-import { Link, IconEdit, isContentEmpty } from "turboui";
+import { Link, IconEdit, isContentEmpty, RichContent, Summary } from "turboui";
 import { ActivityHandler } from "../interfaces";
 import { feedTitle, goalLink } from "./../feedItemLinks";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const GoalDiscussionCreation: ActivityHandler = {
   pageHtmlTitle(activity: Activity) {
@@ -26,10 +24,12 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   PageContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <RichContent jsonContent={activity.commentThread!.message!} />
+          <RichContent content={activity.commentThread!.message!} mentionedPersonLookup={mentionedPersonLookup} parseContent />
         )}
       </div>
     );
@@ -54,10 +54,12 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   FeedItemContent({ activity }: { activity: Activity }) {
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
     return (
       <div>
         {activity.commentThread && !isContentEmpty(activity.commentThread.message) && (
-          <Summary jsonContent={activity.commentThread.message!} characterCount={300} />
+          <Summary content={activity.commentThread.message} characterCount={300} mentionedPersonLookup={mentionedPersonLookup} />
         )}
       </div>
     );
@@ -88,7 +90,7 @@ const GoalDiscussionCreation: ActivityHandler = {
   },
 
   NotificationTitle({ activity }: { activity: Activity }) {
-    return People.firstName(activity.author!) + " posted: " + activity.commentThread!.title!;
+    return "Posted: " + activity.commentThread!.title!;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

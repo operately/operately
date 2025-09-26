@@ -1,5 +1,3 @@
-import * as People from "@/models/people";
-
 import type { ActivityContentProjectGoalConnection } from "@/api";
 import type { Activity } from "@/models/activities";
 import type { ActivityHandler } from "../interfaces";
@@ -97,7 +95,7 @@ const ProjectGoalConnection: ActivityHandler = {
     const projectName = content(activity).project!.name!;
     const goalName = content(activity).goal!.name!;
 
-    return People.firstName(activity.author!) + ` connected ${projectName} project to the ${goalName} goal`;
+    return `Connected ${projectName} project to the ${goalName} goal`;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {

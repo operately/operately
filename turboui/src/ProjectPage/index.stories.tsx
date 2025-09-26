@@ -7,9 +7,9 @@ import { ResourceManager } from "../ResourceManager";
 import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mockData";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
+import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { ProjectPage } from "./index";
-import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 
 // Helper function to create rich text content for check-ins
 function asRichText(content: string): any {
@@ -350,7 +350,7 @@ export const Default: Story = {
         closedAt={null}
         canEdit={true}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
@@ -418,10 +418,10 @@ export const ReadOnly: Story = {
         pauseLink="#"
         projectName="Mobile App Redesign"
         childrenCount={{
-           tasksCount: mockTasks.length,
-           discussionsCount: mockDiscussions.length,
-           checkInsCount: mockCheckIns.length,
-         }}
+          tasksCount: mockTasks.length,
+          discussionsCount: mockDiscussions.length,
+          checkInsCount: mockCheckIns.length,
+        }}
         description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
         space={space}
         setSpace={setSpace}
@@ -435,7 +435,7 @@ export const ReadOnly: Story = {
         closedAt={null}
         canEdit={false}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
@@ -566,7 +566,7 @@ export const EmptyTasks: Story = {
         closedAt={null}
         canEdit={true}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
@@ -667,7 +667,7 @@ export const EmptyProject: Story = {
           discussionsCount: 0,
           checkInsCount: 0,
         }}
-        description={undefined}
+        description={""}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -678,7 +678,7 @@ export const EmptyProject: Story = {
         closedAt={null}
         canEdit={true}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={[]}
         milestones={milestones}
@@ -750,7 +750,7 @@ export const EmptyProjectReadOnly: Story = {
         closedAt={null}
         canEdit={false}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
@@ -899,7 +899,7 @@ export const PausedProject: Story = {
         closedAt={null}
         canEdit={true}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
@@ -992,7 +992,7 @@ export const ClosedProject: Story = {
         retrospectiveLink="/projects/work-map-ga/retrospective"
         canEdit={false}
         updateProjectName={async () => true}
-        updateDescription={async () => true}
+        onDescriptionChange={async () => true}
         activityFeed={<div>Activity feed content</div>}
         tasks={tasks}
         milestones={milestones}
