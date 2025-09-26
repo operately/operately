@@ -19,10 +19,10 @@ const DEFAULT_MAX_AGE_MS = 1000 * 60 * 5; // 5 minutes
 export const PageCache = {
   fetch: async function getOrSetCache(attrs: FetchParams): Promise<{ data: any; cacheVersion: number }> {
     const { cacheKey, fetchFn, maxAgeMs = DEFAULT_MAX_AGE_MS, refreshCache } = attrs;
-    
+
     if (!refreshCache) {
       const cachedEntry = CacheManager.getItem(cacheKey);
-      
+
       if (cachedEntry) {
         const { data, timestamp } = cachedEntry;
         if (Date.now() - timestamp < maxAgeMs) {
@@ -34,7 +34,7 @@ export const PageCache = {
     const data = await fetchFn();
     const cacheEntry = CacheManager.createCacheEntry(data);
     const success = CacheManager.setItem(cacheKey, JSON.stringify(cacheEntry));
-    
+
     if (!success) {
       console.warn(`Failed to cache data for key "${cacheKey}" - localStorage quota may be full`);
     }
@@ -42,7 +42,10 @@ export const PageCache = {
     return { data, cacheVersion: cacheEntry.timestamp };
   },
 
-  useData: function <T>(loader: PageLoaderFn<T>, opts: { refreshCache?: boolean } = {}): T & { refresh?: () => Promise<void> } {
+  useData: function <T>(
+    loader: PageLoaderFn<T>,
+    opts: { refreshCache?: boolean } = {},
+  ): T & { refresh?: () => Promise<void> } {
     const params = useParams();
     const loadedData = useLoadedData<T>();
 
