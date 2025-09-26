@@ -1,6 +1,7 @@
 import { useLoadedData } from "@/components/Pages";
 import React from "react";
 import { useParams } from "react-router-dom";
+import { CacheManager } from "./CacheManager";
 
 type PageLoaderFn<T> = (attrs: { params: any; request?: Request; refreshCache?: boolean }) => Promise<T>;
 
@@ -18,24 +19,27 @@ const DEFAULT_MAX_AGE_MS = 1000 * 60 * 5; // 5 minutes
 export const PageCache = {
   fetch: async function getOrSetCache(attrs: FetchParams): Promise<{ data: any; cacheVersion: number }> {
     const { cacheKey, fetchFn, maxAgeMs = DEFAULT_MAX_AGE_MS, refreshCache } = attrs;
-    const cached = localStorage.getItem(cacheKey);
-
-    if (cached && !refreshCache) {
-      try {
-        const { data, timestamp } = JSON.parse(cached);
+    
+    if (!refreshCache) {
+      const cachedEntry = CacheManager.getItem(cacheKey);
+      
+      if (cachedEntry) {
+        const { data, timestamp } = cachedEntry;
         if (Date.now() - timestamp < maxAgeMs) {
           return { data, cacheVersion: timestamp };
         }
-      } catch (e) {
-        throw new Error(`Failed to parse cached data for key "${cacheKey}": ${e}`);
       }
     }
 
     const data = await fetchFn();
-    const timestamp = Date.now();
-    localStorage.setItem(cacheKey, JSON.stringify({ data, timestamp: timestamp }));
+    const cacheEntry = CacheManager.createCacheEntry(data);
+    const success = CacheManager.setItem(cacheKey, JSON.stringify(cacheEntry));
+    
+    if (!success) {
+      console.warn(`Failed to cache data for key "${cacheKey}" - localStorage quota may be full`);
+    }
 
-    return { data, cacheVersion: timestamp };
+    return { data, cacheVersion: cacheEntry.timestamp };
   },
 
   useData: function <T>(loader: PageLoaderFn<T>, opts: { refreshCache?: boolean } = {}): T & { refresh?: () => Promise<void> } {
@@ -72,6 +76,6 @@ export const PageCache = {
   },
 
   invalidate: function invalidateCache(cacheKey: string): void {
-    localStorage.removeItem(cacheKey);
+    CacheManager.removeItem(cacheKey);
   },
 };
