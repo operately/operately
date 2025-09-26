@@ -188,6 +188,9 @@ test.all: test.init
 test.mix: test.init
 	./devenv bash -c "cd app && mix test $(FILE)"
 
+test.ai.quality: test.init
+	./devenv bash -c "cd app && MIX_ENV=test mix operately.ai_quality_tester"
+
 test.ee:
 	./devenv bash -c "cd app && mix test ee/test/**/*_test.exs"
 
