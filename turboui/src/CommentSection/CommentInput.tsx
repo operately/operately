@@ -66,6 +66,7 @@ function CommentInputActive({
     editable: true,
     placeholder: "Write a comment here...",
     handlers: richTextHandlers,
+    autoFocus: true,
   });
 
   const handlePost = async () => {
