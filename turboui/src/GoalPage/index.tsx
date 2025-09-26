@@ -19,6 +19,7 @@ import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { PageHeader } from "./PageHeader";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { StatusBanner } from "../ProjectPageLayout/StatusBanner";
 
 export namespace GoalPage {
   export interface Space {
@@ -203,6 +204,15 @@ export function GoalPage(props: GoalPage.Props) {
     <>
       <PageNew title={[state.goalName]} size="fullwidth" testId="goal-page">
         <PageHeader {...state} />
+        {state.state === "closed" && (
+          <StatusBanner
+            state="closed"
+            closedAt={state.closedAt}
+            reopenLink={state.reopenLink}
+            retrospectiveLink={state.retrospective?.link}
+            entityName="goal"
+          />
+        )}
         <Tabs tabs={tabs} />
 
         <div className="flex-1 overflow-auto">
