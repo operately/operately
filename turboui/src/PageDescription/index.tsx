@@ -112,6 +112,7 @@ function EditMode({ description, richTextHandlers, onDescriptionChange, setMode,
     editable: true,
     placeholder,
     handlers: richTextHandlers,
+    autoFocus: true,
   });
 
   const save = useCallback(async () => {
