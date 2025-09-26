@@ -99,7 +99,7 @@ defmodule Operately.Features.ProjectTasksTest do
   @tag login_as: :champion
   feature "edit task name", ctx do
     new_name = "New task name"
-    feed_title = "changed the title of this task from \"some name\" to \"#{new_name}\""
+    feed_title = "changed the title of this task from \"My task\" to \"#{new_name}\""
 
     ctx
     |> Steps.given_task_exists()
@@ -159,6 +159,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.reload_task_page()
     |> Steps.assert_task_due_date(formatted_date)
     |> Steps.assert_change_in_feed(feed_title)
+    |> Steps.assert_task_due_date_change_visible_in_feed(formatted_date)
   end
 
   @tag login_as: :champion
