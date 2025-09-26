@@ -5,17 +5,25 @@ import type { DragAndDropContextValue } from "./context";
 import { useDragAndDropContext } from "./context";
 import { DRAG_DISTANCE_INERTIA } from "./constants";
 
-export function useDraggable({ id, zoneId, disabled = false }: { id: string; zoneId: string; disabled?: boolean }) {
+interface UseDraggableOptions {
+  id: string;
+  zoneId: string;
+  disabled?: boolean;
+  handle?: React.RefObject<HTMLElement | null>;
+  type?: string;
+}
+
+export function useDraggable({ id, zoneId, disabled = false, handle, type = "default" }: UseDraggableOptions) {
   const ref = React.useRef<HTMLDivElement | null>(null);
   const context = useDragAndDropContext();
 
   React.useEffect(() => {
     if (!ref.current || disabled) return;
 
-    const handler = new DraggableElement(id, ref.current!, context, zoneId);
+    const handler = new DraggableElement(id, ref.current!, context, zoneId, handle?.current || null, type);
     handler.bindEvents();
     return () => handler.unbindEvents();
-  }, [ref, id, zoneId, disabled]);
+  }, [ref, id, zoneId, disabled, handle?.current, type]);
 
   return { ref, isDragging: context.draggedId === id };
 }
@@ -60,6 +68,11 @@ class DraggableElement {
   // The DOM element (ref) that is being dragged
   private el: HTMLElement;
 
+  // Optional handle element that activates dragging
+  private handle: HTMLElement | null;
+
+  private type: string;
+
   // State of the dragging
   private isDragging = false;
   private isMouseDown = false;
@@ -69,6 +82,8 @@ class DraggableElement {
 
   // The size and position of the element when the dragging started
   private elementRect: DOMRect | null = null;
+  private dragHeight = 0;
+  private placeholder: HTMLElement | null = null;
 
   // The context of the DragAndDropProvider, used
   // to propagate the dragging state to the context
@@ -81,12 +96,21 @@ class DraggableElement {
   private mouseMove: (e: MouseEvent) => void;
   private dragStart: (e: DragEvent) => void;
 
-  constructor(id: string, el: HTMLElement, context: DragAndDropContextValue, zoneId: string) {
+  constructor(
+    id: string,
+    el: HTMLElement,
+    context: DragAndDropContextValue,
+    zoneId: string,
+    handle: HTMLElement | null,
+    type: string,
+  ) {
     this.context = context;
 
     this.id = id;
     this.el = el;
+    this.handle = handle || el;
     this.zoneId = zoneId;
+    this.type = type;
     this.mouseDownPosition = null;
 
     this.mouseDown = this.onMouseDown.bind(this);
@@ -94,21 +118,29 @@ class DraggableElement {
     this.mouseMove = this.onMouseMove.bind(this);
     this.dragStart = this.onDragStart.bind(this);
 
-    this.el.setAttribute("draggable", "true");
     this.el.setAttribute("draggable-id", this.id);
+    this.el.setAttribute("data-draggable-item", "true");
+    this.el.setAttribute("data-drag-type", this.type);
+
+    this.setDragAttributes(true);
   }
 
   bindEvents() {
-    this.el.addEventListener("dragstart", this.dragStart);
-    this.el.addEventListener("mousedown", this.mouseDown);
+    const target = this.handle || this.el;
+    target.addEventListener("dragstart", this.dragStart);
+    target.addEventListener("mousedown", this.mouseDown);
     document.addEventListener("mouseup", this.mouseUp);
     document.addEventListener("mousemove", this.mouseMove);
   }
 
   unbindEvents() {
-    this.el.removeEventListener("mousedown", this.mouseDown);
+    const target = this.handle || this.el;
+    target.removeEventListener("mousedown", this.mouseDown);
+    target.removeEventListener("dragstart", this.dragStart);
     document.removeEventListener("mouseup", this.mouseUp);
     document.removeEventListener("mousemove", this.mouseMove);
+
+    this.setDragAttributes(false);
   }
 
   onDragStart(e: DragEvent) {
@@ -147,11 +179,15 @@ class DraggableElement {
 
     this.isDragging = true;
     this.elementRect = this.el.getBoundingClientRect();
+    const handleRect = this.handle ? this.handle.getBoundingClientRect() : this.elementRect;
+    this.dragHeight = this.type === "milestone" ? Math.max(handleRect.height + 32, 64) : this.elementRect.height;
 
     this.context.setIsDragging(this.isDragging);
     this.context.setDraggedId(this.id);
-    this.context.setDraggedElementSize({ width: this.elementRect.width, height: this.elementRect.height });
+    this.context.setDraggedElementSize({ width: this.elementRect.width, height: this.dragHeight });
     this.context.setSourceZoneId(this.zoneId);
+
+    this.insertPlaceholder();
   }
 
   stopDragging() {
@@ -162,11 +198,20 @@ class DraggableElement {
     this.context.setIsDragging(false);
     this.context.setDraggedId(null);
     this.context.setDraggedElementSize({ width: 0, height: 0 });
+    this.context.setDropIndex(0);
+    this.context.setOverDropZoneId(null);
+    this.context.setSourceZoneId(null);
+    this.dragHeight = 0;
+
+    if (this.placeholder && this.placeholder.parentElement) {
+      this.placeholder.parentElement.removeChild(this.placeholder);
+    }
+    this.placeholder = null;
   }
 
   followMouse(e: MouseEvent) {
     const left = e.clientX - this.mouseDownPosition!.x + this.elementRect!.width / 2 + this.elementRect!.left;
-    const top = e.clientY - this.mouseDownPosition!.y + this.elementRect!.height / 2 + this.elementRect!.top;
+    const top = e.clientY - this.mouseDownPosition!.y + this.dragHeight / 2 + this.elementRect!.top;
 
     Object.assign(this.el.style, {
       position: "fixed",
@@ -177,7 +222,7 @@ class DraggableElement {
       userSelect: "none",
       transform: "translate(-50%, -50%)",
       width: this.el.getBoundingClientRect().width + "px",
-      height: this.el.getBoundingClientRect().height + "px",
+      height: this.dragHeight + "px",
     });
   }
 
@@ -197,5 +242,35 @@ class DraggableElement {
       const dropZone = el as HTMLElement;
       dropZone.style.minHeight = "";
     });
+  }
+
+  private setDragAttributes(enable: boolean) {
+    const target = this.handle || this.el;
+
+    if (enable) {
+      target.setAttribute("draggable", "true");
+      target.setAttribute("data-drag-handle", this.handle ? "true" : "false");
+    } else {
+      target.removeAttribute("draggable");
+      target.removeAttribute("data-drag-handle");
+      this.el.removeAttribute("data-draggable-item");
+      this.el.removeAttribute("data-drag-type");
+      this.el.removeAttribute("draggable-id");
+    }
+  }
+
+  private insertPlaceholder() {
+    const parent = this.el.parentElement;
+    if (!parent) return;
+
+    const placeholder = document.createElement(this.el.tagName.toLowerCase());
+    placeholder.setAttribute("data-drag-placeholder", "true");
+    placeholder.style.height = `${this.dragHeight}px`;
+    placeholder.style.width = "100%";
+    placeholder.style.visibility = "hidden";
+    placeholder.style.pointerEvents = "none";
+
+    parent.insertBefore(placeholder, this.el);
+    this.placeholder = placeholder;
   }
 }

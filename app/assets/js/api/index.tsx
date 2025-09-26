@@ -1276,6 +1276,7 @@ export interface Milestone {
   title: string;
   status: MilestoneStatus;
   insertedAt: string;
+  position: number;
   timeframe: Timeframe | null;
   completedAt: string;
   description?: string | null;
@@ -3940,6 +3941,15 @@ export interface ProjectsUpdateMilestoneResult {
   milestone: Milestone;
 }
 
+export interface ProjectsReorderMilestonesInput {
+  projectId: Id;
+  orderedIds: Id[];
+}
+
+export interface ProjectsReorderMilestonesResult {
+  milestones: Milestone[] | null;
+}
+
 export interface ProjectsUpdateParentGoalInput {
   projectId: Id;
   goalId: Id | null;
@@ -4940,6 +4950,12 @@ class ApiNamespaceProjects {
 
   async updateMilestone(input: ProjectsUpdateMilestoneInput): Promise<ProjectsUpdateMilestoneResult> {
     return this.client.post("/projects/update_milestone", input);
+  }
+
+  async reorderMilestones(
+    input: ProjectsReorderMilestonesInput,
+  ): Promise<ProjectsReorderMilestonesResult> {
+    return this.client.post("/projects/reorder_milestones", input);
   }
 
   async updateParentGoal(input: ProjectsUpdateParentGoalInput): Promise<ProjectsUpdateParentGoalResult> {
@@ -7657,6 +7673,13 @@ export default {
     useUpdateMilestone: () =>
       useMutation<ProjectsUpdateMilestoneInput, ProjectsUpdateMilestoneResult>(
         defaultApiClient.apiNamespaceProjects.updateMilestone,
+      ),
+
+    reorderMilestones: (input: ProjectsReorderMilestonesInput) =>
+      defaultApiClient.apiNamespaceProjects.reorderMilestones(input),
+    useReorderMilestones: () =>
+      useMutation<ProjectsReorderMilestonesInput, ProjectsReorderMilestonesResult>(
+        defaultApiClient.apiNamespaceProjects.reorderMilestones,
       ),
 
     updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),

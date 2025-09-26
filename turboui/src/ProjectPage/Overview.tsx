@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { PrimaryButton as Button, GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
 import { PieChart } from "../PieChart";
 import { ResourceManager } from "../ResourceManager";
@@ -7,11 +7,13 @@ import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { IconFlag } from "../icons";
-import classNames from "../utils/classnames";
+import { DragAndDropProvider, useDropZone } from "../utils/DragAndDrop";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
+
+const TIMELINE_DROP_ZONE_ID = "project-overview-milestones";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -61,17 +63,22 @@ function TimelineSection(props: ProjectPage.State) {
 
   const milestones = props.milestones || [];
 
-  // Filter out helper milestones and empty ones
   const validMilestones = milestones.filter(
     (m) => m.name !== "Empty Milestone" && !m.name.toLowerCase().includes("empty") && m.name.trim() !== "",
   );
 
-  // Separate upcoming and completed milestones
-  const upcomingMilestones = validMilestones.filter((m) => m.status !== "done");
-  const completedMilestones = validMilestones.filter((m) => m.status === "done");
+  const sortedMilestones = useMemo(() => [...validMilestones].sort(sortMilestones), [validMilestones]);
+  const [orderedMilestones, setOrderedMilestones] = useState(sortedMilestones);
+  const orderedRef = useRef(orderedMilestones);
 
-  const sortedUpcoming = upcomingMilestones.sort(sortByDueDate);
-  const sortedCompleted = completedMilestones.sort(sortByDueDate);
+  useEffect(() => {
+    setOrderedMilestones(sortedMilestones);
+    orderedRef.current = sortedMilestones;
+  }, [sortedMilestones]);
+
+  useEffect(() => {
+    orderedRef.current = orderedMilestones;
+  }, [orderedMilestones]);
 
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim()) return;
@@ -101,15 +108,65 @@ function TimelineSection(props: ProjectPage.State) {
     }
   };
 
-  // Calculate completion stats
   const totalMilestones = validMilestones.length;
-  const completedCount = completedMilestones.length;
+  const completedCount = validMilestones.filter((m) => m.status === "done").length;
   const completionPercentage = totalMilestones > 0 ? (completedCount / totalMilestones) * 100 : 0;
+
+  const handleMilestoneDrop = useCallback(
+    (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+      if (!props.canEdit) return false;
+      if (dropZoneId !== TIMELINE_DROP_ZONE_ID) return false;
+
+      const current = orderedRef.current;
+      const fromIndex = current.findIndex((milestone) => milestone.id === draggedId);
+      if (fromIndex === -1) return false;
+
+      const targetIndex = Math.max(0, Math.min(indexInDropZone, current.length - 1));
+      if (fromIndex === targetIndex) {
+        return false;
+      }
+
+      const nextOrder = moveItem(current, fromIndex, targetIndex);
+
+      if (nextOrder === current) return false;
+
+      setOrderedMilestones(nextOrder);
+      orderedRef.current = nextOrder;
+
+      if (props.onMilestonesReorder) {
+        const previousOrder = current;
+        props
+          .onMilestonesReorder(nextOrder.map((milestone) => milestone.id))
+          .then((success) => {
+            if (!success) {
+              setOrderedMilestones(previousOrder);
+              orderedRef.current = previousOrder;
+            }
+          })
+          .catch(() => {
+            setOrderedMilestones(previousOrder);
+            orderedRef.current = previousOrder;
+          });
+      }
+
+      return true;
+    },
+    [props],
+  );
+
+  const timelineList = (
+    <MilestoneList
+      milestones={orderedMilestones}
+      canEdit={props.canEdit}
+      onMilestoneUpdate={props.onMilestoneUpdate}
+      dropZoneId={TIMELINE_DROP_ZONE_ID}
+      dragDisabled={!props.canEdit || orderedMilestones.length <= 1}
+    />
+  );
 
   return (
     <div className="space-y-4" data-test-id="timeline-section">
-      {/* Header with inline completion stats */}
-      <div className="flex items-center gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <SectionHeader title="Milestones" />
         {totalMilestones > 0 && (
           <div className="flex items-center gap-1 text-sm text-content-accent">
@@ -119,33 +176,21 @@ function TimelineSection(props: ProjectPage.State) {
             </span>
           </div>
         )}
+
         {props.canEdit && (
-          <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
-            Add milestone
-          </SecondaryButton>
+          <div className="flex items-center gap-2 ml-auto">
+            <SecondaryButton size="xxs" onClick={() => setShowAddForm(true)} testId="add-milestone-button">
+              Add milestone
+            </SecondaryButton>
+          </div>
         )}
       </div>
 
       <div className="space-y-6">
-        {sortedUpcoming.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium text-content-accent mb-3">Upcoming</h3>
-            <MilestoneList
-              milestones={sortedUpcoming}
-              canEdit={props.canEdit}
-              onMilestoneUpdate={props.onMilestoneUpdate}
-            />
-          </div>
-        )}
-
-        {sortedCompleted.length > 0 && (
-          <CollapsibleSection title={`Show ${completedCount} completed`} defaultCollapsed>
-            <MilestoneList
-              milestones={sortedCompleted}
-              canEdit={props.canEdit}
-              onMilestoneUpdate={props.onMilestoneUpdate}
-            />
-          </CollapsibleSection>
+        {orderedMilestones.length > 0 && (
+          <DragAndDropProvider onDrop={props.canEdit ? handleMilestoneDrop : () => false}>
+            {timelineList}
+          </DragAndDropProvider>
         )}
 
         <EmptyState
@@ -200,44 +245,72 @@ interface MilestoneListProps {
   milestones: TaskBoardTypes.Milestone[];
   canEdit: boolean;
   onMilestoneUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
+  dropZoneId: string;
+  dragDisabled?: boolean;
 }
 
-function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneListProps) {
-  return (
-    <div className="space-y-2">
-      {milestones.map((milestone, index) => (
-        <MilestoneItem
-          key={milestone.id}
-          milestone={milestone}
-          canEdit={canEdit}
-          onUpdate={onMilestoneUpdate}
-          isLast={index === milestones.length - 1}
-        />
-      ))}
-    </div>
+const moveItem = <T,>(items: T[], from: number, to: number): T[] => {
+  if (from === to) return items;
+  const next = [...items];
+  const [item] = next.splice(from, 1);
+  if (item === undefined) return items;
+  next.splice(to, 0, item);
+  return next;
+};
+
+function MilestoneList({
+  milestones,
+  canEdit,
+  onMilestoneUpdate,
+  dropZoneId,
+  dragDisabled = false,
+}: MilestoneListProps) {
+  const { ref, isOver, dropIndex, draggedElementHeight } = useDropZone({
+    id: dropZoneId,
+    dependencies: [milestones.map((milestone) => milestone.id)],
+    accepts: ["milestone"],
+  });
+
+  const placeholderHeight = Math.max(draggedElementHeight ?? 72, 56);
+
+  const renderPlaceholder = (key: string) => (
+    <li
+      key={key}
+      className="list-none rounded-md border border-dashed border-content-accent/60 bg-surface-highlight/40 text-sm text-content-accent font-medium flex items-center justify-center"
+      style={{ height: `${placeholderHeight}px` }}
+    >
+      Drop milestone here
+    </li>
   );
-}
 
-interface CollapsibleSectionProps {
-  title: string;
-  children: React.ReactNode;
-  defaultCollapsed?: boolean;
-}
+  const items: React.ReactNode[] = [];
 
-function CollapsibleSection({ title, children, defaultCollapsed = false }: CollapsibleSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+  milestones.forEach((milestone, index) => {
+    if (isOver && dropIndex !== null && dropIndex === index) {
+      items.push(renderPlaceholder(`placeholder-${milestone.id}`));
+    }
+
+    items.push(
+      <MilestoneItem
+        key={milestone.id}
+        milestone={milestone}
+        canEdit={canEdit}
+        onUpdate={onMilestoneUpdate}
+        isLast={index === milestones.length - 1}
+        dragZoneId={dropZoneId}
+        draggingDisabled={dragDisabled}
+      />,
+    );
+  });
+
+  if (isOver && dropIndex !== null && dropIndex >= milestones.length) {
+    items.push(renderPlaceholder("placeholder-end"));
+  }
 
   return (
-    <div>
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="flex items-center gap-2 text-sm font-medium text-content-accent mb-3 hover:text-content-strong transition-colors"
-      >
-        <div className={classNames("transition-transform", isCollapsed ? "rotate-0" : "rotate-90")}>▶</div>
-        {title}
-      </button>
-      {!isCollapsed && children}
-    </div>
+    <ul ref={ref as React.RefObject<HTMLUListElement>} className="space-y-1.5 list-none p-0 m-0">
+      {items}
+    </ul>
   );
 }
 
@@ -319,9 +392,16 @@ function AddMilestoneForm({
   );
 }
 
-const sortByDueDate = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
-  if (!a.dueDate && !b.dueDate) return 0;
-  if (!a.dueDate) return 1;
-  if (!b.dueDate) return -1;
-  return a.dueDate.date?.getTime() - b.dueDate.date?.getTime();
+const sortMilestones = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
+  const posA = a.position ?? Number.MAX_SAFE_INTEGER;
+  const posB = b.position ?? Number.MAX_SAFE_INTEGER;
+
+  if (posA !== posB) return posA - posB;
+
+  const dateA = a.dueDate?.date?.getTime() ?? Number.MAX_SAFE_INTEGER;
+  const dateB = b.dueDate?.date?.getTime() ?? Number.MAX_SAFE_INTEGER;
+
+  if (dateA !== dateB) return dateA - dateB;
+
+  return a.name.localeCompare(b.name);
 };

@@ -12,6 +12,7 @@ import { TaskFilter, FilterBadges } from "./TaskFilter";
 import { useFilteredTasks } from "../hooks";
 import { InlineTaskCreator } from "./InlineTaskCreator";
 import { useInlineTaskCreator } from "../hooks/useInlineTaskCreator";
+import classNames from "../../utils/classnames";
 
 export namespace TaskBoard {
   export type Person = Types.Person;
@@ -68,30 +69,28 @@ export function TaskBoard({
     filters,
   );
 
-  const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
-  const milestones = useMemo(
-    () => getMilestonesWithStats(internalMilestones, internalTasks),
-    [internalMilestones, internalTasks],
-  );
-  const showNoTasksMsg = milestones.length === 0 && hiddenTasks.length === 0 && filteredTasks.length === 0;
-
-  // Check if there are any tasks without milestones in the original task list (memoized)
-  const hasTasksWithoutMilestone = useMemo(
-    () => internalTasks.some((task) => !task.milestone && !task._isHelperTask),
+  const availablePeople = useMemo(
+    () =>
+      internalTasks
+        .flatMap((task) => task.assignees || [])
+        .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id)),
     [internalTasks],
   );
 
   // Hotkey handled by useInlineTaskCreator
 
-  const handleTaskReorder = useCallback(
+  const groupedTasks = useMemo(() => groupTasksByMilestone(filteredTasks), [filteredTasks]);
+  const milestones = useMemo(
+    () => getMilestonesWithStats(internalMilestones, internalTasks),
+    [internalMilestones, internalTasks],
+  );
+  const handleDrop = useCallback(
     (dropZoneId: string, draggedId: string, indexInDropZone: number) => {
       if (onTaskMilestoneChange) {
         onTaskMilestoneChange(draggedId, dropZoneId, indexInDropZone);
       } else {
-        // Get all milestone objects for the utility function
         const allMilestones = milestones.map((m) => m.milestone);
 
-        // Use the utility function to handle reordering
         const updatedTasks = reorderTasks(
           internalTasks,
           dropZoneId,
@@ -101,13 +100,20 @@ export function TaskBoard({
           allMilestones,
         );
 
-        // Update state with the reordered tasks
         setInternalTasks(updatedTasks);
       }
 
-      return true; // Successfully handled the reorder
+      return true;
     },
-    [internalTasks, milestones, setInternalTasks],
+    [internalTasks, milestones, onTaskMilestoneChange],
+  );
+
+  const showNoTasksMsg = milestones.length === 0 && hiddenTasks.length === 0 && filteredTasks.length === 0;
+
+  // Check if there are any tasks without milestones in the original task list (memoized)
+  const hasTasksWithoutMilestone = useMemo(
+    () => internalTasks.some((task) => !task.milestone && !task._isHelperTask),
+    [internalTasks],
   );
 
   return (
@@ -119,9 +125,7 @@ export function TaskBoard({
         milestones={milestones.map((m) => m.milestone)}
         currentMilestoneId={activeTaskMilestoneId}
         searchPeople={searchPeople}
-        people={internalTasks
-          .flatMap((task) => task.assignees || [])
-          .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
+        people={availablePeople}
       />
 
       <MilestoneCreationModal
@@ -155,88 +159,68 @@ export function TaskBoard({
         data-test-id="tasks-board"
       >
         <div className="flex-1 overflow-auto">
-          <DragAndDropProvider onDrop={handleTaskReorder}>
-            <div className="overflow-x-auto">
-              <ul className="w-full list-none m-0 p-0">
-                {/* If no tasks at all */}
-                {showNoTasksMsg && (
-                  <li className="py-4 text-center text-content-subtle">
-                    No tasks yet — click 'New task' to create the first one.
-                  </li>
-                )}
+          <DragAndDropProvider onDrop={handleDrop}>
+            <div className="overflow-x-auto space-y-3">
+              <MilestoneColumns
+                milestonesWithStats={milestones}
+                groupedTasks={groupedTasks}
+                hiddenTasksByMilestone={hiddenTasksByMilestone}
+                showHiddenTasksToggle={showHiddenTasksToggle}
+                showNoTasksMsg={showNoTasksMsg}
+                onTaskCreate={onTaskCreate}
+                onTaskAssigneeChange={onTaskAssigneeChange}
+                onTaskDueDateChange={onTaskDueDateChange}
+                onTaskStatusChange={onTaskStatusChange}
+                onMilestoneUpdate={onMilestoneUpdate}
+                searchPeople={searchPeople}
+                availableMilestones={milestones.map((entry) => entry.milestone)}
+                availablePeople={availablePeople}
+              />
 
-                {/* Milestones */}
-                {milestones.map((milestoneData) => (
-                  <MilestoneCard
-                    key={milestoneData.milestone.id}
-                    milestone={milestoneData.milestone}
-                    tasks={groupedTasks[milestoneData.milestone.id] || []}
-                    hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
+              {hasTasksWithoutMilestone && (
+                <div {...noMilestoneHoverBind}>
+                  <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-content-base">No milestone</span>
+                    </div>
+                    <SecondaryButton
+                      size="xs"
+                      icon={IconPlus}
+                      onClick={openNoMilestoneCreator}
+                      testId="no-milestone-add-task"
+                    >
+                      <span className="sr-only">Add task</span>
+                    </SecondaryButton>
+                  </div>
+
+                  <TaskList
+                    tasks={groupedTasks["no_milestone"] || []}
+                    hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
                     showHiddenTasksToggle={showHiddenTasksToggle}
-                    stats={milestoneData.stats}
-                    onTaskCreate={onTaskCreate}
+                    milestoneId="no-milestone"
                     onTaskAssigneeChange={onTaskAssigneeChange}
                     onTaskDueDateChange={onTaskDueDateChange}
                     onTaskStatusChange={onTaskStatusChange}
-                    onMilestoneUpdate={onMilestoneUpdate}
                     searchPeople={searchPeople}
-                    availableMilestones={milestones.map((m) => m.milestone)}
-                    availablePeople={internalTasks
-                      .flatMap((task) => task.assignees || [])
-                      .filter((person, index, self) => index === self.findIndex((p) => p.id === person.id))}
+                    inlineCreateRow={
+                      noMilestoneCreatorOpen ? (
+                        <InlineTaskCreator
+                          ref={noMilestoneCreatorRef}
+                          milestone={null}
+                          onCreate={onTaskCreate}
+                          onRequestAdvanced={() => {
+                            setActiveTaskMilestoneId("no-milestone");
+                            setIsTaskModalOpen(true);
+                          }}
+                          onCancel={closeNoMilestoneCreator}
+                          autoFocus
+                          testId="inline-task-creator-no-milestone"
+                        />
+                      ) : undefined
+                    }
                   />
-                ))}
-
-                {/* Tasks with no milestone */}
-                {hasTasksWithoutMilestone && (
-                  <li {...noMilestoneHoverBind}>
-                    {/* No milestone header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-surface-dimmed border-b border-surface-outline">
-                      <div className="flex items-center gap-2">
-                        {/* No progress pie chart for tasks without milestone */}
-                        <span className="text-sm font-semibold text-content-base">No milestone</span>
-                        {/* No indicators for 'No milestone' header */}
-                      </div>
-                      <SecondaryButton
-                        size="xs"
-                        icon={IconPlus}
-                        onClick={openNoMilestoneCreator}
-                        testId="no-milestone-add-task"
-                      >
-                        <span className="sr-only">Add task</span>
-                      </SecondaryButton>
-                    </div>
-
-                    {/* Tasks with no milestone */}
-                    <TaskList
-                      tasks={groupedTasks["no_milestone"] || []}
-                      hiddenTasks={hiddenTasksByMilestone["no_milestone"] || []}
-                      showHiddenTasksToggle={showHiddenTasksToggle}
-                      milestoneId="no-milestone"
-                      onTaskAssigneeChange={onTaskAssigneeChange}
-                      onTaskDueDateChange={onTaskDueDateChange}
-                      onTaskStatusChange={onTaskStatusChange}
-                      searchPeople={searchPeople}
-                      inlineCreateRow={
-                        noMilestoneCreatorOpen ? (
-                          <InlineTaskCreator
-                            ref={noMilestoneCreatorRef}
-                            milestone={null}
-                            onCreate={onTaskCreate}
-                            onRequestAdvanced={() => {
-                              setActiveTaskMilestoneId("no-milestone");
-                              setIsTaskModalOpen(true);
-                            }}
-                            onCancel={closeNoMilestoneCreator}
-                            autoFocus
-                            testId="inline-task-creator-no-milestone"
-                          />
-                        ) : undefined
-                      }
-                    />
-                  </li>
-                )}
-              </ul>
+                </div>
+              )}
             </div>
           </DragAndDropProvider>
         </div>
@@ -287,6 +271,71 @@ function StickyActionBar({
       </div>
     </header>
   );
+}
+
+interface MilestoneColumnsProps {
+  milestonesWithStats: ReturnType<typeof getMilestonesWithStats>;
+  groupedTasks: Record<string, Types.Task[]>;
+  hiddenTasksByMilestone: Record<string, Types.Task[]>;
+  showHiddenTasksToggle: boolean;
+  showNoTasksMsg: boolean;
+  onTaskCreate: Types.TaskBoardProps["onTaskCreate"];
+  onTaskAssigneeChange: Types.TaskBoardProps["onTaskAssigneeChange"];
+  onTaskDueDateChange: Types.TaskBoardProps["onTaskDueDateChange"];
+  onTaskStatusChange: Types.TaskBoardProps["onTaskStatusChange"];
+  onMilestoneUpdate?: Types.TaskBoardProps["onMilestoneUpdate"];
+  searchPeople?: Types.TaskBoardProps["searchPeople"];
+  availableMilestones: Types.Milestone[];
+  availablePeople: Types.Person[];
+}
+
+function MilestoneColumns({
+  milestonesWithStats,
+  groupedTasks,
+  hiddenTasksByMilestone,
+  showHiddenTasksToggle,
+  showNoTasksMsg,
+  onTaskCreate,
+  onTaskAssigneeChange,
+  onTaskDueDateChange,
+  onTaskStatusChange,
+  onMilestoneUpdate,
+  searchPeople,
+  availableMilestones,
+  availablePeople,
+}: MilestoneColumnsProps) {
+  const items: React.ReactNode[] = [];
+
+  if (showNoTasksMsg) {
+    items.push(
+      <li key="no-tasks" className="py-4 text-center text-content-subtle">
+        No tasks yet — click 'New task' to create the first one.
+      </li>,
+    );
+  }
+
+  milestonesWithStats.forEach((milestoneData) => {
+    items.push(
+      <MilestoneCard
+        key={milestoneData.milestone.id}
+        milestone={milestoneData.milestone}
+        tasks={groupedTasks[milestoneData.milestone.id] || []}
+        hiddenTasks={hiddenTasksByMilestone[milestoneData.milestone.id] || []}
+        showHiddenTasksToggle={showHiddenTasksToggle}
+        stats={milestoneData.stats}
+        onTaskCreate={onTaskCreate}
+        onTaskAssigneeChange={onTaskAssigneeChange}
+        onTaskDueDateChange={onTaskDueDateChange}
+        onTaskStatusChange={onTaskStatusChange}
+        onMilestoneUpdate={onMilestoneUpdate}
+        searchPeople={searchPeople}
+        availableMilestones={availableMilestones}
+        availablePeople={availablePeople}
+      />,
+    );
+  });
+
+  return <ul className={classNames("w-full list-none m-0 p-0 space-y-3 transition-colors")}>{items}</ul>;
 }
 
 const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, originalTasks: Types.Task[]) => {
@@ -341,22 +390,6 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
         stats,
         hasTasks,
       };
-    })
-    .sort((a, b) => {
-      const dateA = a.milestone.dueDate?.date;
-      const dateB = b.milestone.dueDate?.date;
-
-      // If both have due dates, sort by date (earlier dates first)
-      if (dateA && dateB) {
-        return new Date(dateA).getTime() - new Date(dateB).getTime();
-      }
-
-      // If only one has a due date, prioritize the one with a due date
-      if (dateA && !dateB) return -1;
-      if (!dateA && dateB) return 1;
-
-      // If neither has a due date, sort by milestone ID for consistency
-      return a.milestone.id.localeCompare(b.milestone.id);
     });
 };
 

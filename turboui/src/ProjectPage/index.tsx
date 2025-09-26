@@ -132,6 +132,7 @@ export namespace ProjectPage {
     onTaskMilestoneChange?: (taskId: string, milestoneId: string, index: number) => void;
     onMilestoneCreate: (milestone: NewMilestonePayload) => void;
     onMilestoneUpdate: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
+    onMilestonesReorder?: (orderedIds: string[]) => Promise<boolean>;
     searchPeople: SearchFn;
     filters?: TaskBoardTypes.FilterCondition[];
     onFiltersChange?: (filters: TaskBoardTypes.FilterCondition[]) => void;
@@ -219,6 +220,7 @@ export function ProjectPage(props: ProjectPage.Props) {
               onTaskStatusChange={state.onTaskStatusChange}
               onTaskMilestoneChange={state.onTaskMilestoneChange}
               onMilestoneUpdate={state.onMilestoneUpdate}
+              onMilestonesReorder={state.onMilestonesReorder}
               searchPeople={state.searchPeople}
               filters={state.filters}
               onFiltersChange={state.onFiltersChange}

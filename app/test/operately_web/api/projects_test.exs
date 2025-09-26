@@ -1031,6 +1031,33 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     end
   end
 
+  describe "reorder milestones" do
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:projects, :reorder_milestones], %{})
+    end
+
+    test "it reorders project milestones", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      {:ok, milestone_a} = Operately.Projects.create_milestone(%{project_id: ctx.project.id, title: "First"})
+      {:ok, milestone_b} = Operately.Projects.create_milestone(%{project_id: ctx.project.id, title: "Second"})
+      {:ok, milestone_c} = Operately.Projects.create_milestone(%{project_id: ctx.project.id, title: "Third"})
+
+      ordered_ids = [Paths.milestone_id(milestone_c), Paths.milestone_id(milestone_a)]
+
+      assert {200, res} = mutation(ctx.conn, [:projects, :reorder_milestones], %{
+        project_id: Paths.project_id(ctx.project),
+        ordered_ids: ordered_ids
+      })
+
+      assert Enum.map(res.milestones, & &1.title) == ["Third", "First", "Second"]
+
+      assert Repo.reload(milestone_c).position == 1
+      assert Repo.reload(milestone_a).position == 2
+      assert Repo.reload(milestone_b).position == 3
+    end
+  end
+
   describe "delete project" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:projects, :delete], %{})

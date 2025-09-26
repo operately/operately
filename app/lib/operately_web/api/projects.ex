@@ -341,6 +341,31 @@ defmodule OperatelyWeb.Api.Projects do
     end
   end
 
+  defmodule ReorderMilestones do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :ordered_ids, list_of(:id), null: false
+    end
+
+    outputs do
+      field :milestones, list_of(:milestone), null: true
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_permissions(:can_edit_timeline)
+      |> Steps.reorder_milestones(inputs.ordered_ids)
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{milestones: OperatelyWeb.Api.Serializer.serialize(changes.updated_milestones)}
+      end)
+    end
+  end
+
   defmodule DeleteProject do
     use TurboConnect.Mutation
     use OperatelyWeb.Api.Helpers
@@ -480,7 +505,7 @@ defmodule OperatelyWeb.Api.Projects do
       Ecto.Multi.run(multi, :milestones, fn _repo, %{project: project} ->
         base_query = from(m in Operately.Projects.Milestone,
           where: m.project_id == ^project.id,
-          order_by: [asc: m.inserted_at]
+          order_by: [asc: m.position, asc: m.inserted_at]
         )
 
         query = case query do
@@ -490,6 +515,12 @@ defmodule OperatelyWeb.Api.Projects do
         end
 
         {:ok, Repo.all(query)}
+      end)
+    end
+
+    def reorder_milestones(multi, ordered_ids) do
+      Ecto.Multi.run(multi, :updated_milestones, fn repo, %{project: project} ->
+        Operately.Projects.reorder_project_milestones(project.id, ordered_ids, repo)
       end)
     end
 
