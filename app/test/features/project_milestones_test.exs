@@ -171,7 +171,7 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_activity_added_to_feed("created \"My task\"")
     end
 
-    feature "add multiple tasks with 'Create more' toggle on", ctx do
+    feature "add multiple tasks", ctx do
       ctx
       |> Steps.visit_milestone_page()
       |> Steps.add_multiple_tasks(names: ["1st task", "2nd task"])

@@ -13,6 +13,7 @@ import { QuarterSelector } from "./components/QuarterSelector";
 import { YearSelector } from "./components/YearSelector";
 import { getDateWithoutCurrentYear } from "./utils";
 import { usePopoverPositioning } from "./hooks/usePopoverPositioning";
+import { useEffect } from "react";
 
 const DATE_TYPES = [
   { value: "day" as const, label: "Day" },
@@ -94,9 +95,15 @@ export function DateField({
   const [previousSelectedDate, setPreviousSelectedDate] = useState<DateField.ContextualDate | null>(date || null);
 
   // If calendarOnly is true, we only show the calendar and only "day" is accepted
-  const [dateType, setDateType] = useState<DateField.DateType>(calendarOnly ? "day" : (date?.dateType || "day"));
+  const [dateType, setDateType] = useState<DateField.DateType>(calendarOnly ? "day" : date?.dateType || "day");
 
   const { useSidePositioning, triggerRef, side } = usePopoverPositioning({ open });
+
+  useEffect(() => {
+    setSelectedDate(date || null);
+    setPreviousSelectedDate(date || null);
+    setDateType(calendarOnly ? "day" : date?.dateType || "day");
+  }, [date]);
 
   const yearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => minYear + i);
 
@@ -105,6 +112,9 @@ export function DateField({
 
     if (isOpen && selectedDate) {
       setPreviousSelectedDate(selectedDate);
+    } else if (!isOpen && selectedDate) {
+      // When closing the popover with a selected date, behave like clicking "Confirm"
+      onDateSelect?.(selectedDate);
     }
   };
 
@@ -153,13 +163,13 @@ export function DateField({
             readonly={readonly}
             showOverdueWarning={showOverdueWarning}
             variant={variant}
-          hideCalendarIcon={hideCalendarIcon}
-          testId={testId}
-          size={size}
-          error={error}
-          ariaLabel={ariaLabel}
-          className={className}
-        />
+            hideCalendarIcon={hideCalendarIcon}
+            testId={testId}
+            size={size}
+            error={error}
+            ariaLabel={ariaLabel}
+            className={className}
+          />
         </div>
       </Popover.Trigger>
 
@@ -328,9 +338,7 @@ function DatePickerContent(props: DatePickerContentProps) {
         {selectedDate && <ClearButton onClear={onClearDate} testId={testId} />}
       </div>
 
-      {!calendarOnly && (
-        <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />
-      )}
+      {!calendarOnly && <DateTypeSelector dateType={dateType} dateTypes={DATE_TYPES} setDateType={setDateType} />}
 
       {dateType === "day" && (
         <div className="mb-3">
