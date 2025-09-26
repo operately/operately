@@ -13,7 +13,7 @@ export function PageHeader(props: GoalPage.State) {
   ];
 
   return (
-    <div className="mt-4 px-4 flex items-center gap-3">
+    <div className="mt-4 px-4 flex items-center gap-3" data-test-id="page-header">
       <IconGoal size={38} className="rounded-lg bg-red-50 dark:bg-red-900" />
 
       <div>

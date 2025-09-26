@@ -32,7 +32,7 @@ import {
 
 export function Sidebar(props: GoalPage.State) {
   return (
-    <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8">
+    <div className="sm:col-span-4 space-y-6 hidden sm:block sm:pl-8" data-test-id="sidebar">
       <Retrospective {...props} />
       <CompletedOn {...props} />
       <CheckInsSection {...props} />

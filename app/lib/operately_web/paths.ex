@@ -51,6 +51,10 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "goals", goal_id(goal), "complete"])
   end
 
+  def goal_reopening_path(company = %Company{}, goal = %Goal{}) do
+    create_path([company_id(company), "goals", goal_id(goal), "reopen"])
+  end
+
   def goal_check_in_path(company = %Company{}, update) do
     create_path([company_id(company), "goal-check-ins", goal_update_id(update)])
   end
@@ -81,6 +85,10 @@ defmodule OperatelyWeb.Paths do
 
   def work_map_path(company = %Company{}) do
     create_path([company_id(company), "work-map"])
+  end
+
+  def work_map_path(company = %Company{}, tab: tab) do
+    create_path([company_id(company), "work-map"]) <> "?tab=#{tab}"
   end
 
   def space_path(company = %Company{}, space = %Group{}) do
