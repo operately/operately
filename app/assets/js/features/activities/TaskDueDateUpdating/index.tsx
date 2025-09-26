@@ -44,23 +44,21 @@ const TaskDueDateUpdating: ActivityHandler = {
       taskElement = "a task";
     }
     
-    const projectElement = project ? ` in ${projectLink(project)}` : '';
-    
     if (newDueDate) {
       // When showing a date, need to include the DateField component after the message
       const dateField = <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon /></span>;
       
       if (props.page === "project") {
-        return feedTitle(props.activity, message, dateField, " on", taskElement);
+        return feedTitle(props.activity, message, dateField, "on", taskElement);
       } else {
-        return feedTitle(props.activity, message, dateField, " on", taskElement, projectElement);
+        return feedTitle(props.activity, message, dateField, "on", taskElement, "in", projectLink(project));
       }
     } else {
       // For cleared date, no DateField needed
       if (props.page === "project") {
-        return feedTitle(props.activity, message, " on", taskElement);
+        return feedTitle(props.activity, message, "on", taskElement);
       } else {
-        return feedTitle(props.activity, message, " on", taskElement, projectElement);
+        return feedTitle(props.activity, message, "on", taskElement, "in", projectLink(project));
       }
     }
   },
