@@ -5,7 +5,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :given_task_exists, ctx do
     ctx
     |> Factory.add_space_member(:creator, :group)
-    |> Factory.add_project_task(:task, :milestone)
+    |> Factory.add_project_task(:task, :milestone, name: "My task")
   end
 
   step :given_another_milestone_exists, ctx do
@@ -242,6 +242,34 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     # This could verify no error messages are displayed and key elements are present
     ctx
     |> UI.assert_has(testid: "task-name")
+  end
+
+  step :assert_task_due_date_change_visible_in_feed, ctx, date do
+    part1 = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to"
+    part2 = "on #{ctx.task.name} in #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> UI.assert_text(part1)
+      |> UI.assert_text(date)
+      |> UI.assert_text("on #{ctx.task.name}")
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el
+      |> UI.assert_text(part1)
+      |> UI.assert_text(date)
+      |> UI.assert_text(part2)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el
+      |> UI.assert_text(part1)
+      |> UI.assert_text(date)
+      |> UI.assert_text(part2)
+    end)
   end
 
   #

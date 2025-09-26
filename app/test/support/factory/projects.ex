@@ -318,7 +318,7 @@ defmodule Operately.Support.Factory.Projects do
       creator_id: ctx.creator.id,
       milestone_id: milestone_id,
       project_id: project_id,
-      title: Keyword.get(opts, :title, "Task #{testid}")
+      name: Keyword.get(opts, :name, "Task #{testid}")
     })
 
     task = Operately.TasksFixtures.task_fixture(attrs)

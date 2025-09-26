@@ -159,6 +159,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.reload_task_page()
     |> Steps.assert_task_due_date(formatted_date)
     |> Steps.assert_change_in_feed(feed_title)
+    |> Steps.assert_task_due_date_change_visible_in_feed(formatted_date)
   end
 
   @tag login_as: :champion
