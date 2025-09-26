@@ -125,6 +125,14 @@ defmodule Operately.Support.Features.GoalClosingSteps do
     |> UI.refute_has(testid: "reopen-goal")
   end
 
+  step :assert_goal_closed_status_banner_visible, ctx do
+    UI.assert_has(ctx, testid: "closed-status-banner")
+  end
+
+  step :assert_goal_closed_status_banner_not_visible, ctx do
+    UI.refute_has(ctx, testid: "closed-status-banner")
+  end
+
   step :assert_closed_projects_not_shown_in_warning, ctx do
     ctx
     # This project was closed and shouldn't appear
