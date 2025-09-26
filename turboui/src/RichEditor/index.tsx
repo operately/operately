@@ -38,17 +38,29 @@ export function Editor(props: EditorProps) {
 
 function EditorContent(props: EditorProps): JSX.Element {
   const handleClick = useLinkEditFormClose();
+  const editor = props.editor.editor;
+
+  const handleEditorAreaClick = (e: React.MouseEvent) => {
+    // First handle the existing link edit form close functionality
+    handleClick(e);
+
+    // Then focus the editor if it's not already focused and is editable
+    if (editor && !editor.isFocused && editor.isEditable) {
+      editor.commands.focus();
+    }
+  };
 
   const className = classNames(
     {
       "border border-surface-outline rounded-lg": !props.hideBorder,
     },
+    "cursor-pointer",
     props.className,
   );
   const contentClassName = classNames("min-h-[100px]", props.padding ?? "p-3");
 
   return (
-    <div onClick={handleClick} className={className}>
+    <div onClick={handleEditorAreaClick} className={className}>
       {!props.hideToolbar && <Toolbar />}
 
       <div className="ProseMirror text-content-accent relative">
