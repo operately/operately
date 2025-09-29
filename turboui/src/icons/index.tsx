@@ -315,6 +315,22 @@ export interface IconProps {
 
 export type { TablerIconProps };
 
+export function IconTask({ size = 16, className = "" }: IconProps) {
+  const outer = classNames(
+    "flex-shrink-0 rounded-full flex items-center justify-center",
+    "text-blue-500 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30",
+    className,
+  );
+
+  const innerSize = size - 8;
+
+  return (
+    <div className={outer} style={{ width: size, height: size }}>
+      <IconCheck size={innerSize} stroke={3} />
+    </div>
+  );
+}
+
 export function IconGoal({ size = 16, className = "" }: IconProps) {
   const outer = classNames(
     "flex-shrink-0 rounded-full flex items-center justify-center",
