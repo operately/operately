@@ -10,8 +10,8 @@ export namespace CompanySetupPage {
     projectsCompleted?: boolean;
     // Navigation functions for each action
     onInviteTeam?: () => void;
-    onCreateSpace?: () => void;
-    onBrowseWork?: () => void;
+    onCreateSpaces?: () => void;
+    onAddProject?: () => void;
   }
 }
 
@@ -26,14 +26,7 @@ interface SetupItem {
 }
 
 export function CompanySetupPage(props: CompanySetupPage.Props) {
-  const {
-    inviteTeamCompleted = false,
-    spacesCompleted = false,
-    projectsCompleted = false,
-    onInviteTeam,
-    onCreateSpace,
-    onBrowseWork,
-  } = props;
+  const { inviteTeamCompleted = false, spacesCompleted = false, projectsCompleted = false, onInviteTeam } = props;
 
   const setupItems: SetupItem[] = [
     {
@@ -41,7 +34,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
       title: "Invite your team",
       description: "Get your colleagues onboard and start collaborating together.",
       onClick: onInviteTeam,
-      buttonText: "Invite team members",
+      buttonText: "Invite Team Members",
       isCompleted: inviteTeamCompleted,
       testId: "setup-invite-team",
     },
@@ -49,8 +42,8 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
       id: "create-spaces",
       title: "Set up Spaces",
       description: "Create organized spaces for different teams, departments, or initiatives.",
-      onClick: onCreateSpace,
-      buttonText: "Create a space",
+      onClick: onCreateSpaces,
+      buttonText: "Create Spaces",
       isCompleted: spacesCompleted,
       testId: "setup-create-space",
     },
@@ -58,15 +51,15 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
       id: "add-projects",
       title: "Add your first project",
       description: "Start tracking progress on your most important work.",
-      onClick: onBrowseWork,
-      buttonText: "Browse work",
+      onClick: onAddProject,
+      buttonText: "Add First Project",
       isCompleted: projectsCompleted,
       testId: "setup-add-project",
     },
   ];
 
   return (
-    <div className="max-w-3xl mx-auto">
+    <div className="max-w-4xl mx-auto">
       <div className="p-6 border-b border-stroke-base">
         <h1 className="text-2xl font-bold text-content-accent mb-2">Let's set up your company!</h1>
         <p className="text-content-dimmed">Complete these steps to get your team organized and productive.</p>
@@ -120,5 +113,10 @@ function SetupItem({ title, description, onClick, buttonText, isCompleted, testI
     </div>
   );
 }
+function onCreateSpaces(): void {
+  throw new Error("Function not implemented.");
+}
 
-export default CompanySetupPage;
+function onAddProject(): void {
+  throw new Error("Function not implemented.");
+}
