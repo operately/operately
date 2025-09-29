@@ -8,6 +8,8 @@ defmodule Operately.TasksFixtures do
   Generate a task.
   """
   def task_fixture(attrs \\ %{}) do
+    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
+
     {:ok, task} =
       attrs
       |> Enum.into(%{
@@ -19,9 +21,15 @@ defmodule Operately.TasksFixtures do
         },
         name: "some name",
         priority: "some priority",
-        size: "some size"
+        size: "some size",
+        subscription_list_id: subscription_list.id,
       })
       |> Operately.Tasks.create_task()
+
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_type: :project_task,
+      parent_id: task.id,
+    })
 
     task
   end
