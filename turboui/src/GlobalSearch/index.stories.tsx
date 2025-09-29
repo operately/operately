@@ -1,14 +1,13 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { GlobalSearch } from "./index";
+import React from "react";
+import { GlobalSearch, SearchResults } from "./index";
 
 const meta: Meta<typeof GlobalSearch> = {
-  title: "GlobalSearch",
+  title: "Components/GlobalSearch",
   component: GlobalSearch,
   parameters: {
     layout: "centered",
   },
-  tags: ["autodocs"],
 };
 
 export default meta;
@@ -24,7 +23,7 @@ const mockSearchResults: GlobalSearch.SearchResult = {
       space: { name: "Marketing" },
     },
     {
-      id: "2", 
+      id: "2",
       name: "Mobile App Development",
       link: "/projects/2",
       champion: { fullName: "Jane Smith" },
@@ -35,13 +34,13 @@ const mockSearchResults: GlobalSearch.SearchResult = {
     {
       id: "1",
       name: "Increase User Engagement",
-      link: "/goals/1", 
+      link: "/goals/1",
       champion: { fullName: "Alice Johnson" },
       space: { name: "Product" },
     },
     {
       id: "2",
-      name: "Improve Performance Metrics", 
+      name: "Improve Performance Metrics",
       link: "/goals/2",
       champion: { fullName: "Bob Wilson" },
       space: { name: "Engineering" },
@@ -62,7 +61,7 @@ const mockSearchResults: GlobalSearch.SearchResult = {
     {
       id: "2",
       name: "Design landing page mockups",
-      link: "/tasks/2", 
+      link: "/tasks/2",
       milestone: {
         project: {
           name: "Website Redesign",
@@ -75,14 +74,14 @@ const mockSearchResults: GlobalSearch.SearchResult = {
     {
       id: "1",
       fullName: "John Doe",
-      title: "Senior Developer", 
+      title: "Senior Developer",
       link: "/people/1",
     },
     {
       id: "2",
       fullName: "Jane Smith",
       title: "Product Manager",
-      link: "/people/2", 
+      link: "/people/2",
     },
   ],
 };
@@ -97,34 +96,34 @@ const mockEmptyResults: GlobalSearch.SearchResult = {
 const mockSearch: GlobalSearch.SearchFn = async ({ query }) => {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300));
-  
+
   if (query.toLowerCase().includes("design") || query.toLowerCase().includes("dev")) {
     return mockSearchResults;
   }
-  
+
   if (query.toLowerCase().includes("empty")) {
     return mockEmptyResults;
   }
-  
+
   // Partial results based on query
   const filteredResults: GlobalSearch.SearchResult = {};
-  
+
   if (query.toLowerCase().includes("project")) {
     filteredResults.projects = mockSearchResults.projects;
   }
-  
+
   if (query.toLowerCase().includes("goal")) {
     filteredResults.goals = mockSearchResults.goals;
   }
-  
+
   if (query.toLowerCase().includes("task")) {
     filteredResults.tasks = mockSearchResults.tasks;
   }
-  
+
   if (query.toLowerCase().includes("people") || query.toLowerCase().includes("person")) {
     filteredResults.people = mockSearchResults.people;
   }
-  
+
   // Default: return a mix of results
   if (Object.keys(filteredResults).length === 0) {
     return {
@@ -133,7 +132,7 @@ const mockSearch: GlobalSearch.SearchFn = async ({ query }) => {
       people: mockSearchResults.people?.slice(0, 1),
     };
   }
-  
+
   return filteredResults;
 };
 
@@ -167,31 +166,86 @@ export const Default: Story = {
   ],
 };
 
-export const WithCustomPlaceholder: Story = {
-  args: {
-    search: mockSearch,
-    onNavigate: (link) => console.log("Navigate to:", link),
-    placeholder: "Search for anything...",
-  },
+const SearchOverlayDemo = ({
+  search,
+  onNavigate,
+  initialQuery = "dev",
+  placeholder = "Search...",
+}: {
+  search: GlobalSearch.SearchFn;
+  onNavigate: (link: string) => void;
+  initialQuery?: string;
+  placeholder?: string;
+}) => {
+  const [query, setQuery] = React.useState(initialQuery);
+  const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
+  const [isSearching, setIsSearching] = React.useState(false);
+
+  const state: GlobalSearch.State = {
+    search,
+    onNavigate,
+    placeholder,
+    testId: "global-search-demo",
+    isOpen: true,
+    setIsOpen: () => {},
+    query,
+    setQuery,
+    results,
+    setResults,
+    isSearching,
+    setIsSearching,
+  };
+
+  // Perform search when query changes
+  React.useEffect(() => {
+    if (query.trim().length < 2) {
+      setResults({});
+      return;
+    }
+
+    setIsSearching(true);
+    search({ query: query.trim() })
+      .then((searchResults) => {
+        setResults(searchResults);
+      })
+      .catch((error) => {
+        console.error("Search failed:", error);
+        setResults({});
+      })
+      .finally(() => {
+        setIsSearching(false);
+      });
+  }, [query, search]);
+
+  // Initialize with search results on mount
+  React.useEffect(() => {
+    if (initialQuery.trim().length >= 2) {
+      setIsSearching(true);
+      search({ query: initialQuery.trim() })
+        .then(setResults)
+        .catch(() => setResults({}))
+        .finally(() => setIsSearching(false));
+    }
+  }, [initialQuery, search]);
+
+  return (
+    <div className="relative w-full">
+      <div className="w-[800px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-b-lg shadow-lg">
+        <div className="overflow-y-auto">
+          <SearchResults state={state} onClose={() => {}} />
+        </div>
+      </div>
+    </div>
+  );
 };
 
-export const Loading: Story = {
+export const SearchResultsDropdown: Story = {
+  render: (args) => <SearchOverlayDemo search={args.search} onNavigate={args.onNavigate} initialQuery="design" />,
   args: {
-    search: async () => {
-      // Simulate longer loading
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      return mockSearchResults;
+    search: mockSearch,
+    onNavigate: (link) => {
+      console.log("Navigate to:", link);
+      alert(`Would navigate to: ${link}`);
     },
-    onNavigate: (link) => console.log("Navigate to:", link),
   },
-  decorators: [
-    (Story) => (
-      <div className="w-96">
-        <p className="mb-4 text-sm text-gray-600">
-          Try typing something and see the loading state (2 second delay)
-        </p>
-        <Story />
-      </div>
-    ),
-  ],
 };
