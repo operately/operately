@@ -1,7 +1,8 @@
 import * as React from "react";
 import { createPortal } from "react-dom";
 
-import { IconBriefcase, IconCheck, IconGoal, IconSearch, IconUser } from "../icons";
+import { Avatar } from "../Avatar";
+import { IconGoal, IconProject, IconSearch, IconTask } from "../icons";
 import { createTestId } from "../TestableElement";
 
 export namespace GlobalSearch {
@@ -133,7 +134,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   };
 }
 
-function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose: () => void }) {
+export function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose: () => void }) {
   const hasResults = React.useMemo(() => {
     const { projects, goals, tasks, people } = state.results;
     return (
@@ -168,7 +169,8 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
       {/* Projects */}
       {state.results.projects && state.results.projects.length > 0 && (
         <div className="mb-2">
-          <div className="px-3 py-1 text-xs font-medium text-content-subtle">PROJECTS</div>
+          <SearchResultGroupHeader title="PROJECTS" />
+
           {state.results.projects.map((project) => (
             <div
               key={project.id}
@@ -176,8 +178,9 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
               onClick={() => handleItemClick(project.link)}
               data-test-id={createTestId(state.testId, "project", project.name)}
             >
-              <div className="flex items-center gap-2">
-                <IconBriefcase size={16} className="text-content-subtle" />
+              <div className="flex items-center gap-3">
+                <IconProject size={24} />
+
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{project.name}</div>
                   {(project.champion || project.space) && (
@@ -195,7 +198,8 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
       {/* Goals */}
       {state.results.goals && state.results.goals.length > 0 && (
         <div className="mb-2">
-          <div className="px-3 py-1 text-xs font-medium text-content-subtle">GOALS</div>
+          <SearchResultGroupHeader title="GOALS" />
+
           {state.results.goals.map((goal) => (
             <div
               key={goal.id}
@@ -203,8 +207,8 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
               onClick={() => handleItemClick(goal.link)}
               data-test-id={createTestId(state.testId, "goal", goal.name)}
             >
-              <div className="flex items-center gap-2">
-                <IconGoal size={16} className="text-content-subtle" />
+              <div className="flex items-center gap-3">
+                <IconGoal size={24} />
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{goal.name}</div>
                   {(goal.champion || goal.space) && (
@@ -222,7 +226,8 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
       {/* Tasks */}
       {state.results.tasks && state.results.tasks.length > 0 && (
         <div className="mb-2">
-          <div className="px-3 py-1 text-xs font-medium text-content-subtle">TASKS</div>
+          <SearchResultGroupHeader title="TASKS" />
+
           {state.results.tasks.map((task) => (
             <div
               key={task.id}
@@ -230,8 +235,9 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
               onClick={() => handleItemClick(task.link)}
               data-test-id={createTestId(state.testId, "task", task.name)}
             >
-              <div className="flex items-center gap-2">
-                <IconCheck size={16} className="text-content-subtle" />
+              <div className="flex items-center gap-3">
+                <IconTask size={24} />
+
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{task.name}</div>
                   {task.milestone?.project && (
@@ -249,7 +255,8 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
       {/* People */}
       {state.results.people && state.results.people.length > 0 && (
         <div>
-          <div className="px-3 py-1 text-xs font-medium text-content-subtle">PEOPLE</div>
+          <SearchResultGroupHeader title="PEOPLE" />
+
           {state.results.people.map((person) => (
             <div
               key={person.id}
@@ -257,8 +264,9 @@ function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose:
               onClick={() => handleItemClick(person.link)}
               data-test-id={createTestId(state.testId, "person", person.fullName)}
             >
-              <div className="flex items-center gap-2">
-                <IconUser size={16} className="text-content-subtle" />
+              <div className="flex items-center gap-3">
+                <Avatar person={person} size={24} />
+
                 <div className="min-w-0 flex-1">
                   <div className="text-sm font-medium truncate">{person.fullName}</div>
                   {person.title && <div className="text-xs text-content-dimmed truncate">{person.title}</div>}
@@ -346,6 +354,10 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
     </div>,
     document.body,
   );
+}
+
+function SearchResultGroupHeader({ title }: { title: string }) {
+  return <div className="px-3 py-0.5 text-xs font-medium text-content-dimmed">{title}</div>;
 }
 
 function SearchActivator({ placeholder, onActivate }: { placeholder: string; onActivate: () => void }) {
