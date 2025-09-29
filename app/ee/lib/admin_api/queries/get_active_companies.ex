@@ -35,22 +35,25 @@ defmodule OperatelyEE.AdminApi.Queries.GetActiveCompanies do
     |> Company.load_spaces_count()
   end
 
-  # Define criteria for an active company
   defp is_active_company?(company) do
-    # Must have multiple members (at least 2)
-    has_multiple_members = (company.people_count || 0) >= 2
+    has_multiple_members?(company) && has_multiple_goals_and_projects?(company) && has_recent_activity?(company)
+  end
 
-    # Must have multiple goals and projects (at least 2 each)
-    has_multiple_goals = (company.goals_count || 0) >= 2
-    has_multiple_projects = (company.projects_count || 0) >= 2
+  # Has at least 2 members
+  defp has_multiple_members?(company) do
+    (company.people_count || 0) >= 2
+  end
 
-    # Must have recent activity (within last 14 days)
+  # Has at least 2 goals and/or projects
+  defp has_multiple_goals_and_projects?(company) do
+    (company.goals_count || 0) + (company.projects_count || 0) >= 2
+  end
+
+  # Was active in the last 14 days
+  defp has_recent_activity?(company) do
     last_activity_at = normalize_last_activity_at(company)
     days_since_activity = DateTime.diff(DateTime.utc_now(), last_activity_at, :day)
-    has_recent_activity = days_since_activity <= 14
-
-    # Company is active if it meets all criteria
-    has_multiple_members && has_multiple_goals && has_multiple_projects && has_recent_activity
+    days_since_activity <= 14
   end
 
   defp normalize_last_activity_at(company) do
