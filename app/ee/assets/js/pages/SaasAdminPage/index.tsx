@@ -55,7 +55,7 @@ function HeaderWithInfo() {
       <div className="font-bold text-sm mb-2">Active Company Criteria</div>
       <ul className="text-xs space-y-1">
         <li>• Have multiple team members (2 or more)</li>
-        <li>• Have multiple goals and projects (2 or more each)</li>
+        <li>• Have multiple goals and projects (2 or more)</li>
         <li>• Show recent activity within the last 14 days</li>
       </ul>
     </div>
