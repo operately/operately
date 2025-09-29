@@ -8,6 +8,8 @@ export default { name: "ReviewPageV2", loader, Page } as PageModule;
 
 function Page() {
   const data = useLoadedData();
+  const assignmentsCount = data.assignmentsCount ?? data.assignments?.length ?? 0;
 
-  return <ReviewPageV2 {...data} />;
+  // TODO: map API assignments to ReviewPageV2 once the new design is integrated with the backend.
+  return <ReviewPageV2 assignments={[]} assignmentsCount={assignmentsCount} />;
 }
