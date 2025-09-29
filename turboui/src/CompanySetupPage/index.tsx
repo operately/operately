@@ -1,5 +1,5 @@
 import React from "react";
-import { GhostButton } from "../Button";
+import { GhostButton, PrimaryButton } from "../Button";
 import { IconCheck } from "../icons";
 
 export namespace CompanySetupPage {
@@ -173,4 +173,41 @@ function onCreateSpaces(): void {
 
 function onAddProject(): void {
   throw new Error("Function not implemented.");
+}
+
+interface CompanySetupStepsReminderProps {
+  hasTeamMembers: boolean;
+  hasSpaces: boolean;
+  hasProjects: boolean;
+  continuePath: string;
+}
+
+export function CompanySetupStepsReminder({
+  hasTeamMembers,
+  hasSpaces,
+  hasProjects,
+  continuePath,
+}: CompanySetupStepsReminderProps) {
+  // Determine the next step to show
+  let nextAction = "";
+  if (!hasTeamMembers) {
+    nextAction = "Invite team members";
+  } else if (!hasSpaces) {
+    nextAction = "Create spaces";
+  } else if (!hasProjects) {
+    nextAction = "Start projects";
+  }
+
+  return (
+    <div className="-mb-8">
+      <div className="p-8 rounded-2xl border overflow-hidden backdrop-blur border-indigo-200 bg-gradient-to-br from-indigo-50/90 to-indigo-100/50 shadow-[0_4px_24px_rgba(129,140,248,0.15)]">
+        <h3 className="font-semibold text-lg">Let's finish setting up your company</h3>
+        <p className="text-content-dimmed mb-4">Next: {nextAction}</p>
+
+        <PrimaryButton linkTo={continuePath} size="sm" testId="complete-setup-button">
+          Continue Setup
+        </PrimaryButton>
+      </div>
+    </div>
+  );
 }

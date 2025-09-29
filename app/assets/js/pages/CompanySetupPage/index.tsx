@@ -42,6 +42,7 @@ function Page() {
   const paths = usePaths();
   const navigate = useNavigate();
   const me = useMe();
+
   const { company, spaces, workMap } = useLoadedData();
 
   // Determine completion status for each setup item
@@ -52,7 +53,7 @@ function Page() {
   // Navigation handlers
   const handleInviteTeam = () => navigate(paths.peoplePath());
   const handleCreateSpace = () => navigate(paths.newSpacePath());
-  const handleBrowseWork = () => navigate(paths.workMapPath());
+  const handleAddProject = () => navigate(paths.newProjectPath());
 
   return (
     <Pages.Page title={["Setup", company.name!]} testId="company-setup-page">
@@ -62,7 +63,7 @@ function Page() {
         projectsCompleted={hasProjects}
         onInviteTeam={handleInviteTeam}
         onCreateSpaces={handleCreateSpace}
-        onAddProject={handleBrowseWork}
+        onAddProject={handleAddProject}
         name={firstName(me!)}
         bookDemoUrl={window.appConfig!.bookDemoUrl}
         discordUrl={window.appConfig!.discordUrl}
