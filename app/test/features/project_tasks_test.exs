@@ -213,6 +213,33 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_task_due_date_change_visible_in_feed(formatted_date)
   end
 
+  @tag login_as: :reviewer
+  feature "edit task due date sends notification to assignee", ctx do
+    next_friday = Operately.Support.Time.next_friday()
+    formatted_date = Operately.Support.Time.format_month_day(next_friday)
+
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_assignee_exists()
+    |> Steps.visit_task_page()
+    |> Steps.edit_task_due_date(next_friday)
+    |> Steps.assert_task_due_date(formatted_date)
+    |> Steps.assert_due_date_changed_notification_sent()
+    |> Steps.assert_due_date_changed_email_sent()
+  end
+
+  @tag login_as: :reviewer
+  feature "remove task due date sends notification to assignee", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_assignee_exists()
+    |> Steps.visit_task_page()
+    |> Steps.remove_task_due_date()
+    |> Steps.assert_no_due_date()
+    |> Steps.assert_due_date_removed_notification_sent()
+    |> Steps.assert_due_date_changed_email_sent()
+  end
+
   @tag login_as: :champion
   feature "edit task milestone", ctx do
     ctx =
