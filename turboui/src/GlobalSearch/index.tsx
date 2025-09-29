@@ -2,7 +2,7 @@ import * as React from "react";
 import { createPortal } from "react-dom";
 
 import { Avatar } from "../Avatar";
-import { IconGoal, IconProject, IconSearch, IconTask } from "../icons";
+import { IconGoal, IconProject, IconSearch, IconTask, IconX } from "../icons";
 import { createTestId } from "../TestableElement";
 
 export namespace GlobalSearch {
@@ -26,12 +26,8 @@ export namespace GlobalSearch {
     id: string;
     name: string;
     link: string;
-    milestone?: {
-      project?: {
-        name: string;
-        space?: { name: string } | null;
-      } | null;
-    } | null;
+    project?: { name: string } | null;
+    space?: { name: string } | null;
   }
 
   export interface Person {
@@ -39,6 +35,7 @@ export namespace GlobalSearch {
     fullName: string;
     title?: string | null;
     link: string;
+    avatarUrl?: string | null;
   }
 
   export interface SearchResult {
@@ -69,6 +66,9 @@ export namespace GlobalSearch {
 
     isSearching: boolean;
     setIsSearching: (searching: boolean) => void;
+
+    selectedIndex: number;
+    setSelectedIndex: (index: number) => void;
   }
 }
 
@@ -77,6 +77,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [query, setQuery] = React.useState("");
   const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
   const [isSearching, setIsSearching] = React.useState(false);
+  const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
   const searchTimeoutRef = React.useRef<any>();
 
@@ -89,13 +90,16 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
       }
 
       setIsSearching(true);
+
       try {
         const searchResults = await props.search({ query: searchQuery.trim() });
         setResults(searchResults);
+        setSelectedIndex(-1); // Reset selection when results change
         setIsOpen(true);
       } catch (error) {
         console.error("Search failed:", error);
         setResults({});
+        setSelectedIndex(-1);
       } finally {
         setIsSearching(false);
       }
@@ -131,10 +135,52 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
     setResults,
     isSearching,
     setIsSearching,
+    selectedIndex,
+    setSelectedIndex,
   };
 }
 
-export function SearchResults({ state, onClose }: { state: GlobalSearch.State; onClose: () => void }) {
+interface SearchResultItemProps {
+  id: string;
+  name: string;
+  link: string;
+  icon: React.ReactNode;
+  subtitle?: string;
+  isSelected: boolean;
+  onClick: (link: string) => void;
+  testId: string;
+}
+
+function SearchResultItem({ id, name, link, icon, subtitle, isSelected, onClick, testId }: SearchResultItemProps) {
+  return (
+    <div
+      key={id}
+      className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
+        isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
+      }`}
+      onClick={() => onClick(link)}
+      data-test-id={testId}
+    >
+      <div className="flex items-center gap-3">
+        {icon}
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-medium truncate">{name}</div>
+          {subtitle && <div className="text-xs text-content-dimmed truncate">{subtitle}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export function SearchResults({
+  state,
+  onClose,
+  flatResults,
+}: {
+  state: GlobalSearch.State;
+  onClose: () => void;
+  flatResults: { type: string; item: any; link: string }[];
+}) {
   const hasResults = React.useMemo(() => {
     const { projects, goals, tasks, people } = state.results;
     return (
@@ -161,7 +207,12 @@ export function SearchResults({ state, onClose }: { state: GlobalSearch.State; o
     state.onNavigate(link);
     state.setIsOpen(false);
     state.setQuery("");
+    state.setSelectedIndex(-1);
     onClose();
+  };
+
+  const getCurrentIndex = (type: string, itemId: string) => {
+    return flatResults.findIndex((result) => result.type === type && result.item.id === itemId);
   };
 
   return (
@@ -171,27 +222,25 @@ export function SearchResults({ state, onClose }: { state: GlobalSearch.State; o
         <div className="mb-2">
           <SearchResultGroupHeader title="PROJECTS" />
 
-          {state.results.projects.map((project) => (
-            <div
-              key={project.id}
-              className="mx-1 px-2 py-2 rounded hover:bg-surface-dimmed cursor-pointer"
-              onClick={() => handleItemClick(project.link)}
-              data-test-id={createTestId(state.testId, "project", project.name)}
-            >
-              <div className="flex items-center gap-3">
-                <IconProject size={24} />
+          {state.results.projects.map((project) => {
+            const currentIndex = getCurrentIndex("project", project.id);
+            const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = [project.champion?.fullName, project.space?.name].filter(Boolean).join(" • ");
 
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium truncate">{project.name}</div>
-                  {(project.champion || project.space) && (
-                    <div className="text-xs text-content-dimmed">
-                      {[project.champion?.fullName, project.space?.name].filter(Boolean).join(" • ")}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+            return (
+              <SearchResultItem
+                key={project.id}
+                id={project.id}
+                name={project.name}
+                link={project.link}
+                icon={<IconProject size={24} />}
+                subtitle={subtitle || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "project", project.name)}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -200,26 +249,25 @@ export function SearchResults({ state, onClose }: { state: GlobalSearch.State; o
         <div className="mb-2">
           <SearchResultGroupHeader title="GOALS" />
 
-          {state.results.goals.map((goal) => (
-            <div
-              key={goal.id}
-              className="mx-1 px-2 py-2 rounded hover:bg-surface-dimmed cursor-pointer"
-              onClick={() => handleItemClick(goal.link)}
-              data-test-id={createTestId(state.testId, "goal", goal.name)}
-            >
-              <div className="flex items-center gap-3">
-                <IconGoal size={24} />
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium truncate">{goal.name}</div>
-                  {(goal.champion || goal.space) && (
-                    <div className="text-xs text-content-dimmed">
-                      {[goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ")}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+          {state.results.goals.map((goal) => {
+            const currentIndex = getCurrentIndex("goal", goal.id);
+            const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = [goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ");
+
+            return (
+              <SearchResultItem
+                key={goal.id}
+                id={goal.id}
+                name={goal.name}
+                link={goal.link}
+                icon={<IconGoal size={24} />}
+                subtitle={subtitle || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "goal", goal.name)}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -228,27 +276,25 @@ export function SearchResults({ state, onClose }: { state: GlobalSearch.State; o
         <div className="mb-2">
           <SearchResultGroupHeader title="TASKS" />
 
-          {state.results.tasks.map((task) => (
-            <div
-              key={task.id}
-              className="mx-1 px-2 py-2 rounded hover:bg-surface-dimmed cursor-pointer"
-              onClick={() => handleItemClick(task.link)}
-              data-test-id={createTestId(state.testId, "task", task.name)}
-            >
-              <div className="flex items-center gap-3">
-                <IconTask size={24} />
+          {state.results.tasks.map((task) => {
+            const currentIndex = getCurrentIndex("task", task.id);
+            const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = [task.project?.name, task.space?.name].filter(Boolean).join(" • ");
 
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium truncate">{task.name}</div>
-                  {task.milestone?.project && (
-                    <div className="text-xs text-content-dimmed">
-                      {[task.milestone.project.name, task.milestone.project.space?.name].filter(Boolean).join(" • ")}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+            return (
+              <SearchResultItem
+                key={task.id}
+                id={task.id}
+                name={task.name}
+                link={task.link}
+                icon={<IconTask size={24} />}
+                subtitle={subtitle}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "task", task.name)}
+              />
+            );
+          })}
         </div>
       )}
 
@@ -257,23 +303,24 @@ export function SearchResults({ state, onClose }: { state: GlobalSearch.State; o
         <div>
           <SearchResultGroupHeader title="PEOPLE" />
 
-          {state.results.people.map((person) => (
-            <div
-              key={person.id}
-              className="mx-1 px-2 py-2 rounded hover:bg-surface-dimmed cursor-pointer"
-              onClick={() => handleItemClick(person.link)}
-              data-test-id={createTestId(state.testId, "person", person.fullName)}
-            >
-              <div className="flex items-center gap-3">
-                <Avatar person={person} size={24} />
+          {state.results.people.map((person) => {
+            const currentIndex = getCurrentIndex("person", person.id);
+            const isSelected = currentIndex === state.selectedIndex;
 
-                <div className="min-w-0 flex-1">
-                  <div className="text-sm font-medium truncate">{person.fullName}</div>
-                  {person.title && <div className="text-xs text-content-dimmed truncate">{person.title}</div>}
-                </div>
-              </div>
-            </div>
-          ))}
+            return (
+              <SearchResultItem
+                key={person.id}
+                id={person.id}
+                name={person.fullName}
+                link={person.link}
+                icon={<Avatar person={person} size={24} />}
+                subtitle={person.title || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "person", person.fullName)}
+              />
+            );
+          })}
         </div>
       )}
     </div>
@@ -290,12 +337,54 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { query, setIsOpen, testId, setQuery } = state;
 
+  // Create flattened results for keyboard navigation
+  const flatResults = React.useMemo(() => {
+    const items: { type: string; item: any; link: string }[] = [];
+
+    if (state.results.projects) {
+      state.results.projects.forEach((project) => {
+        items.push({ type: "project", item: project, link: project.link });
+      });
+    }
+
+    if (state.results.goals) {
+      state.results.goals.forEach((goal) => {
+        items.push({ type: "goal", item: goal, link: goal.link });
+      });
+    }
+
+    if (state.results.tasks) {
+      state.results.tasks.forEach((task) => {
+        items.push({ type: "task", item: task, link: task.link });
+      });
+    }
+
+    if (state.results.people) {
+      state.results.people.forEach((person) => {
+        items.push({ type: "person", item: person, link: person.link });
+      });
+    }
+
+    return items;
+  }, [state.results]);
+
+  const hasResults = React.useMemo(() => {
+    const { projects, goals, tasks, people } = state.results;
+    return (
+      (projects && projects.length > 0) ||
+      (goals && goals.length > 0) ||
+      (tasks && tasks.length > 0) ||
+      (people && people.length > 0)
+    );
+  }, [state.results]);
+
   React.useEffect(() => {
     if (!isOpen) {
       return;
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
+      // Handle Escape key globally (in case focus is not on input)
       if (event.key === "Escape") {
         event.preventDefault();
         onClose();
@@ -304,7 +393,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
+  }, [isOpen, onClose, hasResults, flatResults, state]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -315,6 +404,44 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
       }
     }
   }, [isOpen, query, setIsOpen]);
+
+  const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    switch (event.key) {
+      case "ArrowDown":
+        if (hasResults) {
+          event.preventDefault();
+          const nextDown = state.selectedIndex + 1;
+          state.setSelectedIndex(nextDown >= flatResults.length ? 0 : nextDown);
+        }
+
+        break;
+      case "ArrowUp":
+        if (hasResults) {
+          event.preventDefault();
+          const nextUp = state.selectedIndex - 1;
+          state.setSelectedIndex(nextUp < 0 ? flatResults.length - 1 : nextUp);
+        }
+
+        break;
+      case "Enter":
+        if (hasResults && state.selectedIndex >= 0 && state.selectedIndex < flatResults.length) {
+          event.preventDefault();
+          const selectedItem = flatResults[state.selectedIndex];
+          if (selectedItem) {
+            state.onNavigate(selectedItem.link);
+            state.setIsOpen(false);
+            state.setQuery("");
+            state.setSelectedIndex(-1);
+            onClose();
+          }
+        }
+        break;
+      case "Escape":
+        event.preventDefault();
+        onClose();
+        break;
+    }
+  };
 
   if (!isOpen) {
     return null;
@@ -333,6 +460,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
               type="text"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={handleInputKeyDown}
               placeholder="Search for projects, goals, tasks, or people..."
               className="w-full pl-10 pr-12 py-2.5 text-base bg-surface-base border-b border-surface-outline focus:outline-none rounded-b-lg"
               data-test-id={testId}
@@ -342,12 +470,12 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-content-dimmed uppercase tracking-wide"
               onClick={onClose}
             >
-              Esc
+              <IconX size={16} />
             </button>
           </div>
 
           <div className="max-h-[60vh] overflow-y-auto">
-            <SearchResults state={state} onClose={onClose} />
+            <SearchResults state={state} onClose={onClose} flatResults={flatResults} />
           </div>
         </div>
       </div>
@@ -385,6 +513,7 @@ export function GlobalSearch(props: GlobalSearch.Props) {
   const closeOverlay = React.useCallback(() => {
     setOverlayOpen(false);
     state.setIsOpen(false);
+    state.setSelectedIndex(-1);
   }, [state]);
 
   React.useEffect(() => {
