@@ -7,6 +7,10 @@ import { useDevBarData } from "./useDevBarData";
 export function DevBar() {
   if (!window.appConfig.showDevBar) return;
 
+  const { pageName, loadTime, isVisible } = useDevBarData();
+
+  if (!isVisible) return;
+
   const className = classNames(
     "absolute",
     "bottom-0 left-0",
@@ -14,19 +18,18 @@ export function DevBar() {
     "hidden lg:block", // hidden on mobile, start showing on large screens
   );
 
-  const data = useDevBarData();
-  const pageLoadColor = data.loadTime < 500 ? "text-green-500" : "text-content-error";
+  const pageLoadColor = loadTime < 500 ? "text-green-500" : "text-content-error";
 
   return (
     <div className={className}>
       <div className="flex justify-between mb-1">
         <div className="w-20">Page Name:</div>
-        <div>{data.pageName}</div>
+        <div>{pageName}</div>
       </div>
 
-      <div className="flex justify-between mb-3">
+      <div className="flex justify-between mb-1">
         <div className="w-20">Load Time:</div>
-        <div className={pageLoadColor}>{data.loadTime.toFixed(0)}ms</div>
+        <div className={pageLoadColor}>{loadTime.toFixed(0)}ms</div>
       </div>
 
       <ToggleTestIds />
