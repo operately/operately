@@ -322,6 +322,8 @@ class DraggableElement {
 
   resetElementStyle() {
     this.el.removeAttribute("style");
+    // Reapply touchAction to maintain mobile drag functionality after reset
+    this.el.style.touchAction = "pan-y pinch-zoom";
   }
 
   setMinHeightForDropZones() {
