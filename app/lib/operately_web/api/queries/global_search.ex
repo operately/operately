@@ -38,9 +38,9 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       people = search_people(person, query)
 
       output = %{
-        projects: Serializer.serialize(projects, level: :essential),
+        projects: Serializer.serialize(projects, level: :full),
         goals: Serializer.serialize(goals, level: :essential),
-        tasks: Serializer.serialize(tasks, level: :essential),
+        tasks: Serializer.serialize(tasks, level: :full),
         people: Serializer.serialize(people, level: :essential)
       }
 
@@ -67,12 +67,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
         limit: @limit
       )
 
-    from(p in Project,
-      join: r in subquery(limited_projects), on: p.id == r.id,
-      preload: [:champion, :reviewer, :group],
-      order_by: [asc: r.search_rank, asc: p.id],
-      select: p
-    )
+    from(p in Project, join: r in subquery(limited_projects), on: p.id == r.id, preload: [:champion, :reviewer, :group], order_by: [asc: r.search_rank, asc: p.id], select: p)
     |> Repo.all()
   end
 
@@ -95,12 +90,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
         limit: @limit
       )
 
-    from(g in Goal,
-      join: r in subquery(limited_goals), on: g.id == r.id,
-      preload: [:champion, :reviewer, :group],
-      order_by: [asc: r.search_rank, asc: g.id],
-      select: g
-    )
+    from(g in Goal, join: r in subquery(limited_goals), on: g.id == r.id, preload: [:champion, :reviewer, :group], order_by: [asc: r.search_rank, asc: g.id], select: g)
     |> Repo.all()
   end
 
@@ -125,12 +115,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
         limit: @limit
       )
 
-    from(t in Task,
-      join: r in subquery(limited_tasks), on: t.id == r.id,
-      preload: [milestone: [project: [:group]]],
-      order_by: [asc: r.search_rank, asc: t.id],
-      select: t
-    )
+    from(t in Task, join: r in subquery(limited_tasks), on: t.id == r.id, preload: [:project, :group], order_by: [asc: r.search_rank, asc: t.id], select: t)
     |> Repo.all()
   end
 
