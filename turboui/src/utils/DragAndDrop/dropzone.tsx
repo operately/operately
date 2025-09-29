@@ -43,6 +43,8 @@ class DropZoneElement {
   // Event handlers binded to this instance.
   private mouseUp: () => void;
   private mouseMove: (e: MouseEvent) => void;
+  private touchEnd: () => void;
+  private touchMove: (e: TouchEvent) => void;
 
   private indexInDropZone: number;
 
@@ -54,6 +56,8 @@ class DropZoneElement {
 
     this.mouseUp = this.onMouseUp.bind(this);
     this.mouseMove = this.onMouseMove.bind(this);
+    this.touchEnd = this.onTouchEnd.bind(this);
+    this.touchMove = this.onTouchMove.bind(this);
 
     this.el.setAttribute("drop-zone", "true");
     this.el.id = this.id;
@@ -61,12 +65,16 @@ class DropZoneElement {
 
   bindEvents() {
     this.el.addEventListener("mouseup", this.mouseUp);
+    this.el.addEventListener("touchend", this.touchEnd);
     document.addEventListener("mousemove", this.mouseMove);
+    document.addEventListener("touchmove", this.touchMove, { passive: false });
   }
 
   unbindEvents() {
     this.el.removeEventListener("mouseup", this.mouseUp);
+    this.el.removeEventListener("touchend", this.touchEnd);
     document.removeEventListener("mousemove", this.mouseMove);
+    document.removeEventListener("touchmove", this.touchMove);
   }
 
   onMouseUp() {
@@ -80,12 +88,35 @@ class DropZoneElement {
   }
 
   onMouseMove(e: MouseEvent) {
+    this.handlePointerMove(e.clientX, e.clientY);
+  }
+
+  onTouchEnd() {
+    if (this.context.getIsDragging()) {
+      const dropSuccessful = this.context.onDrop(this.id, this.context.draggedIdRef.current!, this.indexInDropZone);
+      // Reset drag state regardless of success/failure
+      if (dropSuccessful) {
+        // Additional success handling could go here if needed
+      }
+    }
+  }
+
+  onTouchMove(e: TouchEvent) {
+    if (!this.context.getIsDragging()) return;
+    if (e.touches.length !== 1) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+
+    this.handlePointerMove(touch.clientX, touch.clientY);
+  }
+
+  private handlePointerMove(clientX: number, clientY: number) {
     if (this.context.getIsDragging()) {
       const r = this.el.getBoundingClientRect();
-      const isOver = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      const isOver = clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom;
 
       if (isOver) {
-        this.indexInDropZone = this.calculateIndexInDropZone(e.clientY);
+        this.indexInDropZone = this.calculateIndexInDropZone(clientY);
 
         this.context.setOverDropZoneId(this.id);
         this.context.setDropIndex(this.indexInDropZone);
