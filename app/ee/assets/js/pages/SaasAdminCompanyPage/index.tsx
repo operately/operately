@@ -97,7 +97,7 @@ function OwnersSection({ company }: { company: AdminApi.Company }) {
         <div key={owner.id} className="flex items-center gap-3">
           <Avatar size={54} person={owner} />
           <div>
-            <div className="text-[10px] font-bold uppercase text-content-dimmed">Owner</div>
+            <div className="text-[10px] font-bold uppercase text-content-dimmed">{owner.title}</div>
             <div className="font-semibold">{owner.fullName}</div>
             <div className="text-sm text-content-accent">{owner.email}</div>
           </div>
