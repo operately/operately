@@ -26,12 +26,8 @@ export namespace GlobalSearch {
     id: string;
     name: string;
     link: string;
-    milestone?: {
-      project?: {
-        name: string;
-        space?: { name: string } | null;
-      } | null;
-    } | null;
+    project?: { name: string } | null;
+    space?: { name: string } | null;
   }
 
   export interface Person {
@@ -39,15 +35,15 @@ export namespace GlobalSearch {
     fullName: string;
     title?: string | null;
     link: string;
+    avatarUrl?: string | null;
   }
 
-  export interface FlatResult {
-    type: 'project' | 'goal' | 'task' | 'person';
-    item: Project | Goal | Task | Person;
-    link: string;
+  export interface SearchResult {
+    projects?: Project[] | null;
+    goals?: Goal[] | null;
+    tasks?: Task[] | null;
+    people?: Person[] | null;
   }
-
-  export type SearchResult = FlatResult[];
 
   export type SearchFn = (params: { query: string }) => Promise<SearchResult>;
 
@@ -79,7 +75,7 @@ export namespace GlobalSearch {
 function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [isOpen, setIsOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState<GlobalSearch.SearchResult>([]);
+  const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
   const [isSearching, setIsSearching] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
@@ -88,7 +84,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const performSearch = React.useCallback(
     async (searchQuery: string) => {
       if (searchQuery.trim().length < 2) {
-        setResults([]);
+        setResults({});
         setIsOpen(false);
         return;
       }
@@ -102,7 +98,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
         setIsOpen(true);
       } catch (error) {
         console.error("Search failed:", error);
-        setResults([]);
+        setResults({});
         setSelectedIndex(-1);
       } finally {
         setIsSearching(false);
@@ -179,39 +175,20 @@ function SearchResultItem({ id, name, link, icon, subtitle, isSelected, onClick,
 export function SearchResults({
   state,
   onClose,
+  flatResults,
 }: {
   state: GlobalSearch.State;
   onClose: () => void;
+  flatResults: { type: string; item: any; link: string }[];
 }) {
-  const hasResults = state.results.length > 0;
-  
-  // Group flat results by type for rendering
-  const groupedResults = React.useMemo(() => {
-    const groups = {
-      projects: [] as GlobalSearch.Project[],
-      goals: [] as GlobalSearch.Goal[],
-      tasks: [] as GlobalSearch.Task[],
-      people: [] as GlobalSearch.Person[],
-    };
-    
-    state.results.forEach((result) => {
-      switch (result.type) {
-        case 'project':
-          groups.projects.push(result.item as GlobalSearch.Project);
-          break;
-        case 'goal':
-          groups.goals.push(result.item as GlobalSearch.Goal);
-          break;
-        case 'task':
-          groups.tasks.push(result.item as GlobalSearch.Task);
-          break;
-        case 'person':
-          groups.people.push(result.item as GlobalSearch.Person);
-          break;
-      }
-    });
-    
-    return groups;
+  const hasResults = React.useMemo(() => {
+    const { projects, goals, tasks, people } = state.results;
+    return (
+      (projects && projects.length > 0) ||
+      (goals && goals.length > 0) ||
+      (tasks && tasks.length > 0) ||
+      (people && people.length > 0)
+    );
   }, [state.results]);
 
   if (state.isSearching) {
@@ -235,17 +212,17 @@ export function SearchResults({
   };
 
   const getCurrentIndex = (type: string, itemId: string) => {
-    return state.results.findIndex((result) => result.type === type && result.item.id === itemId);
+    return flatResults.findIndex((result) => result.type === type && result.item.id === itemId);
   };
 
   return (
     <div className="py-1">
       {/* Projects */}
-      {groupedResults.projects.length > 0 && (
+      {state.results.projects && state.results.projects.length > 0 && (
         <div className="mb-2">
           <SearchResultGroupHeader title="PROJECTS" />
 
-          {groupedResults.projects.map((project) => {
+          {state.results.projects.map((project) => {
             const currentIndex = getCurrentIndex("project", project.id);
             const isSelected = currentIndex === state.selectedIndex;
             const subtitle = [project.champion?.fullName, project.space?.name].filter(Boolean).join(" • ");
@@ -268,11 +245,11 @@ export function SearchResults({
       )}
 
       {/* Goals */}
-      {groupedResults.goals.length > 0 && (
+      {state.results.goals && state.results.goals.length > 0 && (
         <div className="mb-2">
           <SearchResultGroupHeader title="GOALS" />
 
-          {groupedResults.goals.map((goal) => {
+          {state.results.goals.map((goal) => {
             const currentIndex = getCurrentIndex("goal", goal.id);
             const isSelected = currentIndex === state.selectedIndex;
             const subtitle = [goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ");
@@ -295,16 +272,14 @@ export function SearchResults({
       )}
 
       {/* Tasks */}
-      {groupedResults.tasks.length > 0 && (
+      {state.results.tasks && state.results.tasks.length > 0 && (
         <div className="mb-2">
           <SearchResultGroupHeader title="TASKS" />
 
-          {groupedResults.tasks.map((task) => {
+          {state.results.tasks.map((task) => {
             const currentIndex = getCurrentIndex("task", task.id);
             const isSelected = currentIndex === state.selectedIndex;
-            const subtitle = task.milestone?.project
-              ? [task.milestone.project.name, task.milestone.project.space?.name].filter(Boolean).join(" • ")
-              : undefined;
+            const subtitle = [task.project?.name, task.space?.name].filter(Boolean).join(" • ");
 
             return (
               <SearchResultItem
@@ -324,11 +299,11 @@ export function SearchResults({
       )}
 
       {/* People */}
-      {groupedResults.people.length > 0 && (
+      {state.results.people && state.results.people.length > 0 && (
         <div>
           <SearchResultGroupHeader title="PEOPLE" />
 
-          {groupedResults.people.map((person) => {
+          {state.results.people.map((person) => {
             const currentIndex = getCurrentIndex("person", person.id);
             const isSelected = currentIndex === state.selectedIndex;
 
@@ -362,9 +337,46 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { query, setIsOpen, testId, setQuery } = state;
 
-  // Results are already flat, no need to flatten them
-  const flatResults = state.results;
-  const hasResults = state.results.length > 0;
+  // Create flattened results for keyboard navigation
+  const flatResults = React.useMemo(() => {
+    const items: { type: string; item: any; link: string }[] = [];
+
+    if (state.results.projects) {
+      state.results.projects.forEach((project) => {
+        items.push({ type: "project", item: project, link: project.link });
+      });
+    }
+
+    if (state.results.goals) {
+      state.results.goals.forEach((goal) => {
+        items.push({ type: "goal", item: goal, link: goal.link });
+      });
+    }
+
+    if (state.results.tasks) {
+      state.results.tasks.forEach((task) => {
+        items.push({ type: "task", item: task, link: task.link });
+      });
+    }
+
+    if (state.results.people) {
+      state.results.people.forEach((person) => {
+        items.push({ type: "person", item: person, link: person.link });
+      });
+    }
+
+    return items;
+  }, [state.results]);
+
+  const hasResults = React.useMemo(() => {
+    const { projects, goals, tasks, people } = state.results;
+    return (
+      (projects && projects.length > 0) ||
+      (goals && goals.length > 0) ||
+      (tasks && tasks.length > 0) ||
+      (people && people.length > 0)
+    );
+  }, [state.results]);
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -463,7 +475,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
           </div>
 
           <div className="max-h-[60vh] overflow-y-auto">
-            <SearchResults state={state} onClose={onClose} />
+            <SearchResults state={state} onClose={onClose} flatResults={flatResults} />
           </div>
         </div>
       </div>

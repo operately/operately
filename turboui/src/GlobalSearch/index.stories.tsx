@@ -232,7 +232,7 @@ const SearchOverlayDemo = ({
     <div className="relative w-full">
       <div className="w-[800px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-b-lg shadow-lg">
         <div className="overflow-y-auto">
-          <SearchResults state={state} onClose={() => {}} />
+          <SearchResults state={state} onClose={() => {}} flatResults={[]} />
         </div>
       </div>
     </div>
