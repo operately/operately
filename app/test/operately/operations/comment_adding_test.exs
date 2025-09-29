@@ -784,13 +784,18 @@ defmodule Operately.Operations.CommentAddingTest do
   end
 
   describe "Commenting on a task" do
+    @action "project_task_commented"
+
     setup ctx do
       ctx
       |> Factory.setup()
       |> Factory.add_space(:space)
+      |> Factory.add_space_member(:mike, :space)
+      |> Factory.add_space_member(:bob, :space)
       |> Factory.add_project(:project, :space)
       |> Factory.add_project_milestone(:milestone, :project)
       |> Factory.add_project_task(:task, :milestone)
+      |> Factory.add_task_assignee(:assignee, :task, :bob)
       |> Factory.preload(:task, :project)
     end
 
@@ -800,6 +805,58 @@ defmodule Operately.Operations.CommentAddingTest do
       assert comment.entity_id == ctx.task.id
       assert comment.entity_type == :project_task
       assert comment.content == %{"message" => RichText.rich_text("Some comment")}
+    end
+
+    test "Commenting on task notifies creator and assginee", ctx do
+      {:ok, comment} =
+        Oban.Testing.with_testing_mode(:manual, fn ->
+          CommentAdding.run(ctx.mike, ctx.task, "project_task", RichText.rich_text("Some comment"))
+        end)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+
+      perform_job(activity.id)
+
+      assert notifications_count(action: @action) == 2
+
+      notifications = fetch_notifications(activity.id, action: @action)
+      assert Enum.find(notifications, &(&1.person_id == ctx.creator.id))
+      assert Enum.find(notifications, &(&1.person_id == ctx.bob.id))
+    end
+
+    test "Mentioned person is notified", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:project, :space, company_access_level: Binding.no_access())
+        |> Factory.add_project_milestone(:milestone, :project)
+        |> Factory.add_project_task(:task, :milestone)
+        |> Factory.preload(:task, :project)
+        |> Factory.add_company_member(:person)
+
+      content = RichText.rich_text(mentioned_people: [ctx.person]) |> Jason.decode!()
+
+      # Without permissions
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.task, "project_task", content)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 0
+      assert fetch_notifications(activity.id, action: @action) == []
+
+      # With permissions
+      {:ok, _} =
+        Groups.add_members(ctx.creator, ctx.space.id, [
+          %{id: ctx.person.id, access_level: Binding.view_access()}
+        ])
+
+      {:ok, comment} = CommentAdding.run(ctx.creator, ctx.task, "project_task", content)
+
+      activity = get_activity(comment, @action)
+
+      assert notifications_count(action: @action) == 1
+      assert fetch_notification(activity.id).person_id == ctx.person.id
     end
   end
 

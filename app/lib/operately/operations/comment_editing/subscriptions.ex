@@ -7,6 +7,7 @@ defmodule Operately.Operations.CommentEditing.Subscriptions do
   def update(multi, :goal_update, content), do: execute_update(multi, content)
   def update(multi, :message, content), do: execute_update(multi, content)
   def update(multi, :comment_thread, content), do: execute_update(multi, content)
+  def update(multi, :project_task, content), do: execute_update(multi, content)
   def update(multi, _, _), do: multi
 
   defp execute_update(multi, content) do
