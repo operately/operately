@@ -10,7 +10,7 @@ import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { usePaths } from "@/routes/paths";
-import { GhostButton } from "turboui";
+import { GhostButton, IconCheck } from "turboui";
 import { useLoadedData } from "./loader";
 
 export function Page() {
@@ -18,10 +18,107 @@ export function Page() {
     <Pages.Page title="Home" testId="company-home">
       <Paper.Root size="medium">
         <Greeting />
+        <SetupSection />
         <SpacesSection />
         <FeedSection />
       </Paper.Root>
     </Pages.Page>
+  );
+}
+
+function SetupSection() {
+  const paths = usePaths();
+  const { company, spaces, workMap } = useLoadedData();
+
+  // Determine completion status for each setup item
+  const hasTeamMembers = (company.memberCount ?? 0) > 1;
+  const hasSpaces = spaces.length > 1; // More than just the company space
+  const hasProjects = workMap.some((item) => item.type === "project");
+
+  return (
+    <div className="mt-8">
+      <Paper.Section title="Let's set up your company!">
+        <div className="space-y-4">
+          <SetupItem
+            title="Invite your team"
+            description="Get your colleagues onboard and start collaborating together."
+            linkTo={paths.peoplePath()}
+            linkText="Invite team members"
+            testId="setup-invite-team"
+            isCompleted={hasTeamMembers}
+          />
+
+          <SetupItem
+            title="Set up Spaces"
+            description="Create organized spaces for different teams, departments, or initiatives."
+            linkTo={paths.newSpacePath()}
+            linkText="Create a space"
+            testId="setup-create-space"
+            isCompleted={hasSpaces}
+          />
+
+          <SetupItem
+            title="Add your first project"
+            description="Start tracking progress on your most important work."
+            linkTo={paths.workMapPath()}
+            linkText="Browse work"
+            testId="setup-add-project"
+            isCompleted={hasProjects}
+          />
+        </div>
+      </Paper.Section>
+    </div>
+  );
+}
+
+function SetupItem({
+  title,
+  description,
+  linkTo,
+  linkText,
+  testId,
+  isCompleted = false,
+}: {
+  title: string;
+  description: string;
+  linkTo: string;
+  linkText: string;
+  testId: string;
+  isCompleted?: boolean;
+}) {
+  return (
+    <div
+      className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
+        isCompleted
+          ? "border-green-300 bg-green-50 dark:border-green-600 dark:bg-green-900/20"
+          : "border-stroke-base bg-surface-base"
+      }`}
+    >
+      <div className="flex items-start gap-3 flex-1">
+        {isCompleted && (
+          <div className="flex-shrink-0 mt-0.5">
+            <IconCheck size={20} className="text-green-600" />
+          </div>
+        )}
+        <div className="flex-1">
+          <h3
+            className={`font-semibold mb-1 ${
+              isCompleted ? "text-green-800 dark:text-green-200" : "text-content-accent"
+            }`}
+          >
+            {title}
+          </h3>
+          <p className={`text-sm ${isCompleted ? "text-green-600 dark:text-green-300" : "text-content-dimmed"}`}>
+            {description}
+          </p>
+        </div>
+      </div>
+      {!isCompleted && (
+        <GhostButton linkTo={linkTo} testId={testId} size="sm">
+          {linkText}
+        </GhostButton>
+      )}
+    </div>
   );
 }
 

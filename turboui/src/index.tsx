@@ -23,6 +23,7 @@ import RichContent from "./RichContent";
 export { InfoCallout, WarningCallout } from "./Callouts";
 export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
+export { CompanySetupPage } from "./CompanySetupPage";
 export { Conversations, useConversations } from "./Conversations";
 export { DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
