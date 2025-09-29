@@ -618,6 +618,12 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def clear_date_in_date_field(ctx, testid: testid) do
+    ctx
+    |> click(testid: testid)
+    |> click(testid: "#{testid}-clear")
+  end
+
   defp navigate_to_month(ctx, date) do
     target_month = date.month
     target_year = date.year
