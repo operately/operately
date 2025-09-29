@@ -53,6 +53,7 @@ export const Default: Story = {
     projectsCompleted: false,
     name: "John",
     bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
+    discordUrl: "https://discord.gg/operately",
   },
 };
 
@@ -63,6 +64,7 @@ export const OneCompleted: Story = {
     projectsCompleted: false,
     name: "Sarah",
     bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
+    discordUrl: "https://discord.gg/operately",
   },
 };
 
@@ -73,6 +75,7 @@ export const TwoCompleted: Story = {
     projectsCompleted: false,
     name: "Michael",
     bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
+    discordUrl: "https://discord.gg/operately",
   },
 };
 
@@ -83,6 +86,7 @@ export const AllCompleted: Story = {
     projectsCompleted: true,
     name: "Emma",
     bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
+    discordUrl: "https://discord.gg/operately",
   },
 };
 
@@ -94,6 +98,7 @@ export const MobileView: Story = {
     projectsCompleted: false,
     name: "Alex",
     bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
+    discordUrl: "https://discord.gg/operately",
   },
   parameters: {
     viewport: {

@@ -1,12 +1,10 @@
+import * as Spaces from "@/models/spaces";
 import * as Pages from "@/components/Pages";
 import * as Companies from "@/models/companies";
-import * as Spaces from "@/models/spaces";
-import * as WorkMap from "@/models/workMap";
 
 interface LoaderData {
   company: Companies.Company;
   spaces: Spaces.Space[];
-  workMap: WorkMap.WorkMapItem[];
 }
 
 export async function loader({ params }): Promise<LoaderData> {
@@ -15,7 +13,6 @@ export async function loader({ params }): Promise<LoaderData> {
     spaces: await Spaces.getSpaces({
       includeAccessLevels: true,
     }),
-    workMap: await WorkMap.getWorkMap({}).then((d) => d.workMap || []),
   };
 }
 

@@ -17,10 +17,12 @@ export namespace CompanySetupPage {
     // User personalization
     name: string;
     bookDemoUrl: string;
+    discordUrl: string;
   }
 }
 
 interface SetupItem {
+  index: number;
   id: string;
   title: string;
   description: string;
@@ -38,10 +40,12 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
     onInviteTeam,
     name,
     bookDemoUrl,
+    discordUrl,
   } = props;
 
   const setupItems: SetupItem[] = [
     {
+      index: 1,
       id: "invite-team",
       title: "Invite your team",
       description: "Get your colleagues onboard and start collaborating together.",
@@ -51,6 +55,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
       testId: "setup-invite-team",
     },
     {
+      index: 2,
       id: "create-spaces",
       title: "Set up Spaces",
       description: "Create organized spaces for different teams, departments, or initiatives.",
@@ -60,6 +65,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
       testId: "setup-create-space",
     },
     {
+      index: 3,
       id: "add-projects",
       title: "Add your first project",
       description: "Start tracking progress on your most important work.",
@@ -71,7 +77,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-6 mt-16">
       <div>
         <h1 className="text-2xl font-bold text-content-accent mb-2">Welcome to Operately, {name}!</h1>
         <p className="text-content-dimmed">Let's set up your company to get your team organized and productive.</p>
@@ -100,13 +106,17 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
           <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
             <h4 className="font-semibold mb-1">Help Center</h4>
             <p className="text-xs mb-3">Visit our Help Center for guides, tips, and tutorials.</p>
-            <GhostButton size="xs">Visit Help Center</GhostButton>
+            <GhostButton size="xs" linkTo="https://operately.com/help" linkTarget="_blank">
+              Visit Help Center
+            </GhostButton>
           </div>
 
           <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
             <h4 className="font-semibold mb-1">Discord Community</h4>
             <p className="text-xs mb-3">Join our Discord server to connect with us and other users.</p>
-            <GhostButton size="xs">Join Discord</GhostButton>
+            <GhostButton size="xs" linkTo={discordUrl} linkTarget="_blank">
+              Join Discord
+            </GhostButton>
           </div>
         </div>
       </div>
@@ -114,7 +124,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
   );
 }
 
-function SetupItem({ title, description, onClick, buttonText, isCompleted, testId }: SetupItem) {
+function SetupItem({ index, title, description, onClick, buttonText, isCompleted, testId }: SetupItem) {
   return (
     <div
       className={`flex items-center justify-between p-4 border rounded-lg shadow transition-all ${
@@ -125,9 +135,15 @@ function SetupItem({ title, description, onClick, buttonText, isCompleted, testI
       data-test-id={testId}
     >
       <div className="flex items-start gap-3 flex-1">
-        {isCompleted && (
+        {isCompleted ? (
           <div className="flex-shrink-0 mt-0.5">
             <IconCheck size={20} className="text-green-600" />
+          </div>
+        ) : (
+          <div className="flex-shrink-0 mt-0.5">
+            <div className="w-[20px] h-[20px] border-2 border-surface-outline rounded-full flex items-center justify-center text-xs">
+              {index}
+            </div>
           </div>
         )}
         <div className="flex-1">
