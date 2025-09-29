@@ -186,6 +186,12 @@ defmodule OperatelyWeb.Paths do
     create_path([company_id(company), "tasks", task_id(task)])
   end
 
+  def project_task_path(company = %Company{}, task, comment = %Comment{}) do
+    task_with_comment = task_id(task) <> "#" <> comment_id(comment)
+
+    create_path([company_id(company), "tasks", task_with_comment])
+  end
+
   def company_admin_path(company = %Company{}) do
     create_path([company_id(company), "admin"])
   end
