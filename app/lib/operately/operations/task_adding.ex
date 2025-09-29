@@ -3,12 +3,15 @@ defmodule Operately.Operations.TaskAdding do
   alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Activities
+  alias Operately.Operations.Notifications.SubscriptionList
 
   def run(creator, attrs) do
     Multi.new()
+    |> SubscriptionList.insert(%{ send_to_everyone: false, subscription_parent_type: :project_task })
     |> find_and_lock_milestone(attrs.milestone_id)
     |> insert_task(creator, attrs)
     |> update_kanban_state()
+    |> SubscriptionList.update(:task)
     |> insert_assignees(attrs.assignee_ids)
     |> insert_activity(creator)
     |> Repo.transaction()
@@ -34,6 +37,7 @@ defmodule Operately.Operations.TaskAdding do
         milestone_id: changes.milestone.id,
         creator_id: creator.id,
         project_id: changes.milestone.project_id,
+        subscription_list_id: changes.subscription_list.id,
       })
     end)
   end

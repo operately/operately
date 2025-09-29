@@ -409,6 +409,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     require Logger
     import Ecto.Query, only: [from: 2]
     use OperatelyWeb.Api.Helpers
+    alias Operately.Operations.Notifications
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -606,17 +607,20 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     def create_task(multi, inputs) do
       multi
-      |> Ecto.Multi.run(:new_task, fn _repo, %{me: me} ->
+      |> Notifications.SubscriptionList.insert(%{ send_to_everyone: false, subscription_parent_type: :project_task })
+      |> Ecto.Multi.run(:new_task, fn _repo, changes ->
         Operately.Tasks.Task.changeset(%{
           name: inputs.name,
           description: %{},
           milestone_id: inputs.milestone_id,
           project_id: inputs.project_id,
-          creator_id: me.id,
-          due_date: inputs.due_date
+          creator_id: changes.me.id,
+          due_date: inputs.due_date,
+          subscription_list_id: changes.subscription_list.id,
         })
         |> Repo.insert()
       end)
+      |> Notifications.SubscriptionList.update(:new_task)
       |> Ecto.Multi.run(:assignee, fn _repo, %{new_task: new_task} ->
         case inputs.assignee_id do
           nil -> {:ok, nil}
