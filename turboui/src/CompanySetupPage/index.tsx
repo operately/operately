@@ -8,6 +8,7 @@ export namespace CompanySetupPage {
     inviteTeamCompleted?: boolean;
     spacesCompleted?: boolean;
     projectsCompleted?: boolean;
+
     // Navigation functions for each action
     onInviteTeam?: () => void;
     onCreateSpaces?: () => void;
@@ -59,17 +60,41 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <div className="p-6 border-b border-stroke-base">
-        <h1 className="text-2xl font-bold text-content-accent mb-2">Let's set up your company!</h1>
-        <p className="text-content-dimmed">Complete these steps to get your team organized and productive.</p>
+    <div className="max-w-4xl mx-auto p-6">
+      <div>
+        <h1 className="text-2xl font-bold text-content-accent mb-2">Welcome to Operately, {name}!</h1>
+        <p className="text-content-dimmed">Let's set up your company to get your team organized and productive.</p>
       </div>
 
-      <div className="p-6">
+      <div className="mt-6">
         <div className="space-y-4">
           {setupItems.map((item) => (
             <SetupItem key={item.id} {...item} />
           ))}
+        </div>
+      </div>
+
+      <div className="mt-16">
+        <h3 className="font-semibold mb-4">Need Help Getting Started?</h3>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
+            <h4 className="font-semibold mb-1">Quick Product Tour</h4>
+            <p className="text-xs mb-3">Get most out of Operately. Schedule a personalized onboarding session.</p>
+            <GhostButton size="xs">Book a demo</GhostButton>
+          </div>
+
+          <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
+            <h4 className="font-semibold mb-1">Help Center</h4>
+            <p className="text-xs mb-3">Visit our Help Center for guides, tips, and tutorials.</p>
+            <GhostButton size="xs">Visit Help Center</GhostButton>
+          </div>
+
+          <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
+            <h4 className="font-semibold mb-1">Discord Community</h4>
+            <p className="text-xs mb-3">Join our Discord server to connect with us and other users.</p>
+            <GhostButton size="xs">Join Discord</GhostButton>
+          </div>
         </div>
       </div>
     </div>
@@ -79,7 +104,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
 function SetupItem({ title, description, onClick, buttonText, isCompleted, testId }: SetupItem) {
   return (
     <div
-      className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
+      className={`flex items-center justify-between p-4 border rounded-lg shadow transition-all ${
         isCompleted
           ? "border-green-300 bg-green-50 dark:border-green-600 dark:bg-green-900/20"
           : "border-stroke-base bg-surface-base"
