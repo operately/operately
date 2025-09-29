@@ -4,25 +4,49 @@ import { sortSubscribersByName } from "./utils";
 describe("sortSubscribersByName", () => {
   const testSubscribers: Subscriber[] = [
     {
-      person: { id: "3", fullName: "Zoe Wilson" },
+      person: { 
+        id: "3", 
+        fullName: "Zoe Wilson",
+        title: "Designer",
+        avatarUrl: null,
+        email: "zoe@example.com"
+      },
       isSubscribed: false,
       role: "Member",
       priority: false,
     },
     {
-      person: { id: "1", fullName: "Alice Johnson" },
+      person: { 
+        id: "1", 
+        fullName: "Alice Johnson",
+        title: "Manager",
+        avatarUrl: null,
+        email: "alice@example.com"
+      },
       isSubscribed: true,
       role: "Admin", 
       priority: true,
     },
     {
-      person: { id: "2", fullName: "Bob Smith" },
+      person: { 
+        id: "2", 
+        fullName: "Bob Smith",
+        title: "Developer",
+        avatarUrl: null,
+        email: "bob@example.com"
+      },
       isSubscribed: false,
       role: "Contributor",
       priority: false,
     },
     {
-      person: { id: "4", fullName: "Anna Davis" },
+      person: { 
+        id: "4", 
+        fullName: "Anna Davis",
+        title: "Product Manager",
+        avatarUrl: null,
+        email: "anna@example.com"
+      },
       isSubscribed: true,
       role: "Member",
       priority: false,
@@ -50,19 +74,37 @@ describe("sortSubscribersByName", () => {
   it("handles empty names gracefully", () => {
     const subscribersWithEmptyNames: Subscriber[] = [
       {
-        person: { id: "1", fullName: "Bob Smith" },
+        person: { 
+          id: "1", 
+          fullName: "Bob Smith",
+          title: "Developer",
+          avatarUrl: null,
+          email: "bob@example.com"
+        },
         isSubscribed: false,
         role: "Member",
         priority: false,
       },
       {
-        person: { id: "2", fullName: "" },
+        person: { 
+          id: "2", 
+          fullName: "",
+          title: "Designer",
+          avatarUrl: null,
+          email: "empty@example.com"
+        },
         isSubscribed: false,
         role: "Member", 
         priority: false,
       },
       {
-        person: { id: "3", fullName: "Alice Johnson" },
+        person: { 
+          id: "3", 
+          fullName: "Alice Johnson",
+          title: "Manager",
+          avatarUrl: null,
+          email: "alice@example.com"
+        },
         isSubscribed: false,
         role: "Member",
         priority: false,
@@ -82,7 +124,13 @@ describe("sortSubscribersByName", () => {
   it("handles undefined person objects", () => {
     const subscribersWithUndefinedPerson: Subscriber[] = [
       {
-        person: { id: "1", fullName: "Bob Smith" },
+        person: { 
+          id: "1", 
+          fullName: "Bob Smith",
+          title: "Developer",
+          avatarUrl: null,
+          email: "bob@example.com"
+        },
         isSubscribed: false,
         role: "Member",
         priority: false,
@@ -94,7 +142,13 @@ describe("sortSubscribersByName", () => {
         priority: false,
       } as any,
       {
-        person: { id: "3", fullName: "Alice Johnson" },
+        person: { 
+          id: "3", 
+          fullName: "Alice Johnson",
+          title: "Manager",
+          avatarUrl: null,
+          email: "alice@example.com"
+        },
         isSubscribed: false,
         role: "Member",
         priority: false,
@@ -117,7 +171,7 @@ describe("sortSubscribersByName", () => {
   });
 
   it("handles single subscriber", () => {
-    const singleSubscriber = [testSubscribers[0]];
+    const singleSubscriber = [testSubscribers[0]!];
     const sorted = sortSubscribersByName(singleSubscriber);
     expect(sorted).toEqual(singleSubscriber);
   });
