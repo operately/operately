@@ -41,12 +41,13 @@ export namespace GlobalSearch {
     link: string;
   }
 
-  export interface SearchResult {
-    projects?: Project[] | null;
-    goals?: Goal[] | null;
-    tasks?: Task[] | null;
-    people?: Person[] | null;
+  export interface FlatResult {
+    type: 'project' | 'goal' | 'task' | 'person';
+    item: Project | Goal | Task | Person;
+    link: string;
   }
+
+  export type SearchResult = FlatResult[];
 
   export type SearchFn = (params: { query: string }) => Promise<SearchResult>;
 
@@ -78,7 +79,7 @@ export namespace GlobalSearch {
 function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const [isOpen, setIsOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
-  const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
+  const [results, setResults] = React.useState<GlobalSearch.SearchResult>([]);
   const [isSearching, setIsSearching] = React.useState(false);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
@@ -87,7 +88,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   const performSearch = React.useCallback(
     async (searchQuery: string) => {
       if (searchQuery.trim().length < 2) {
-        setResults({});
+        setResults([]);
         setIsOpen(false);
         return;
       }
@@ -101,7 +102,7 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
         setIsOpen(true);
       } catch (error) {
         console.error("Search failed:", error);
-        setResults({});
+        setResults([]);
         setSelectedIndex(-1);
       } finally {
         setIsSearching(false);
@@ -143,23 +144,74 @@ function useGlobalSearchState(props: GlobalSearch.Props): GlobalSearch.State {
   };
 }
 
+interface SearchResultItemProps {
+  id: string;
+  name: string;
+  link: string;
+  icon: React.ReactNode;
+  subtitle?: string;
+  isSelected: boolean;
+  onClick: (link: string) => void;
+  testId: string;
+}
+
+function SearchResultItem({ id, name, link, icon, subtitle, isSelected, onClick, testId }: SearchResultItemProps) {
+  return (
+    <div
+      key={id}
+      className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
+        isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
+      }`}
+      onClick={() => onClick(link)}
+      data-test-id={testId}
+    >
+      <div className="flex items-center gap-3">
+        {icon}
+        <div className="min-w-0 flex-1">
+          <div className="text-sm font-medium truncate">{name}</div>
+          {subtitle && <div className="text-xs text-content-dimmed truncate">{subtitle}</div>}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function SearchResults({
   state,
   onClose,
-  flatResults,
 }: {
   state: GlobalSearch.State;
   onClose: () => void;
-  flatResults: { type: string; item: any; link: string }[];
 }) {
-  const hasResults = React.useMemo(() => {
-    const { projects, goals, tasks, people } = state.results;
-    return (
-      (projects && projects.length > 0) ||
-      (goals && goals.length > 0) ||
-      (tasks && tasks.length > 0) ||
-      (people && people.length > 0)
-    );
+  const hasResults = state.results.length > 0;
+  
+  // Group flat results by type for rendering
+  const groupedResults = React.useMemo(() => {
+    const groups = {
+      projects: [] as GlobalSearch.Project[],
+      goals: [] as GlobalSearch.Goal[],
+      tasks: [] as GlobalSearch.Task[],
+      people: [] as GlobalSearch.Person[],
+    };
+    
+    state.results.forEach((result) => {
+      switch (result.type) {
+        case 'project':
+          groups.projects.push(result.item as GlobalSearch.Project);
+          break;
+        case 'goal':
+          groups.goals.push(result.item as GlobalSearch.Goal);
+          break;
+        case 'task':
+          groups.tasks.push(result.item as GlobalSearch.Task);
+          break;
+        case 'person':
+          groups.people.push(result.item as GlobalSearch.Person);
+          break;
+      }
+    });
+    
+    return groups;
   }, [state.results]);
 
   if (state.isSearching) {
@@ -183,145 +235,115 @@ export function SearchResults({
   };
 
   const getCurrentIndex = (type: string, itemId: string) => {
-    return flatResults.findIndex((result) => result.type === type && result.item.id === itemId);
+    return state.results.findIndex((result) => result.type === type && result.item.id === itemId);
   };
 
   return (
     <div className="py-1">
       {/* Projects */}
-      {state.results.projects && state.results.projects.length > 0 && (
+      {groupedResults.projects.length > 0 && (
         <div className="mb-2">
           <SearchResultGroupHeader title="PROJECTS" />
 
-          {state.results.projects.map((project) => {
+          {groupedResults.projects.map((project) => {
             const currentIndex = getCurrentIndex("project", project.id);
             const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = [project.champion?.fullName, project.space?.name].filter(Boolean).join(" • ");
 
             return (
-              <div
+              <SearchResultItem
                 key={project.id}
-                className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
-                  isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
-                }`}
-                onClick={() => handleItemClick(project.link)}
-                data-test-id={createTestId(state.testId, "project", project.name)}
-              >
-                <div className="flex items-center gap-3">
-                  <IconProject size={24} />
-
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium truncate">{project.name}</div>
-                    {(project.champion || project.space) && (
-                      <div className="text-xs text-content-dimmed">
-                        {[project.champion?.fullName, project.space?.name].filter(Boolean).join(" • ")}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+                id={project.id}
+                name={project.name}
+                link={project.link}
+                icon={<IconProject size={24} />}
+                subtitle={subtitle || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "project", project.name)}
+              />
             );
           })}
         </div>
       )}
 
       {/* Goals */}
-      {state.results.goals && state.results.goals.length > 0 && (
+      {groupedResults.goals.length > 0 && (
         <div className="mb-2">
           <SearchResultGroupHeader title="GOALS" />
 
-          {state.results.goals.map((goal) => {
+          {groupedResults.goals.map((goal) => {
             const currentIndex = getCurrentIndex("goal", goal.id);
             const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = [goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ");
 
             return (
-              <div
+              <SearchResultItem
                 key={goal.id}
-                className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
-                  isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
-                }`}
-                onClick={() => handleItemClick(goal.link)}
-                data-test-id={createTestId(state.testId, "goal", goal.name)}
-              >
-                <div className="flex items-center gap-3">
-                  <IconGoal size={24} />
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium truncate">{goal.name}</div>
-                    {(goal.champion || goal.space) && (
-                      <div className="text-xs text-content-dimmed">
-                        {[goal.champion?.fullName, goal.space?.name].filter(Boolean).join(" • ")}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+                id={goal.id}
+                name={goal.name}
+                link={goal.link}
+                icon={<IconGoal size={24} />}
+                subtitle={subtitle || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "goal", goal.name)}
+              />
             );
           })}
         </div>
       )}
 
       {/* Tasks */}
-      {state.results.tasks && state.results.tasks.length > 0 && (
+      {groupedResults.tasks.length > 0 && (
         <div className="mb-2">
           <SearchResultGroupHeader title="TASKS" />
 
-          {state.results.tasks.map((task) => {
+          {groupedResults.tasks.map((task) => {
             const currentIndex = getCurrentIndex("task", task.id);
             const isSelected = currentIndex === state.selectedIndex;
+            const subtitle = task.milestone?.project
+              ? [task.milestone.project.name, task.milestone.project.space?.name].filter(Boolean).join(" • ")
+              : undefined;
 
             return (
-              <div
+              <SearchResultItem
                 key={task.id}
-                className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
-                  isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
-                }`}
-                onClick={() => handleItemClick(task.link)}
-                data-test-id={createTestId(state.testId, "task", task.name)}
-              >
-                <div className="flex items-center gap-3">
-                  <IconTask size={24} />
-
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium truncate">{task.name}</div>
-                    {task.milestone?.project && (
-                      <div className="text-xs text-content-dimmed">
-                        {[task.milestone.project.name, task.milestone.project.space?.name].filter(Boolean).join(" • ")}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
+                id={task.id}
+                name={task.name}
+                link={task.link}
+                icon={<IconTask size={24} />}
+                subtitle={subtitle}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "task", task.name)}
+              />
             );
           })}
         </div>
       )}
 
       {/* People */}
-      {state.results.people && state.results.people.length > 0 && (
+      {groupedResults.people.length > 0 && (
         <div>
           <SearchResultGroupHeader title="PEOPLE" />
 
-          {state.results.people.map((person) => {
+          {groupedResults.people.map((person) => {
             const currentIndex = getCurrentIndex("person", person.id);
             const isSelected = currentIndex === state.selectedIndex;
 
             return (
-              <div
+              <SearchResultItem
                 key={person.id}
-                className={`mx-1 px-2 py-2 rounded cursor-pointer transition-colors ${
-                  isSelected ? "bg-surface-highlight" : "hover:bg-surface-highlight"
-                }`}
-                onClick={() => handleItemClick(person.link)}
-                data-test-id={createTestId(state.testId, "person", person.fullName)}
-              >
-                <div className="flex items-center gap-3">
-                  <Avatar person={person} size={24} />
-
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium truncate">{person.fullName}</div>
-                    {person.title && <div className="text-xs text-content-dimmed truncate">{person.title}</div>}
-                  </div>
-                </div>
-              </div>
+                id={person.id}
+                name={person.fullName}
+                link={person.link}
+                icon={<Avatar person={person} size={24} />}
+                subtitle={person.title || undefined}
+                isSelected={isSelected}
+                onClick={handleItemClick}
+                testId={createTestId(state.testId, "person", person.fullName)}
+              />
             );
           })}
         </div>
@@ -340,46 +362,9 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const { query, setIsOpen, testId, setQuery } = state;
 
-  // Create flattened results for keyboard navigation
-  const flatResults = React.useMemo(() => {
-    const items: { type: string; item: any; link: string }[] = [];
-
-    if (state.results.projects) {
-      state.results.projects.forEach((project) => {
-        items.push({ type: "project", item: project, link: project.link });
-      });
-    }
-
-    if (state.results.goals) {
-      state.results.goals.forEach((goal) => {
-        items.push({ type: "goal", item: goal, link: goal.link });
-      });
-    }
-
-    if (state.results.tasks) {
-      state.results.tasks.forEach((task) => {
-        items.push({ type: "task", item: task, link: task.link });
-      });
-    }
-
-    if (state.results.people) {
-      state.results.people.forEach((person) => {
-        items.push({ type: "person", item: person, link: person.link });
-      });
-    }
-
-    return items;
-  }, [state.results]);
-
-  const hasResults = React.useMemo(() => {
-    const { projects, goals, tasks, people } = state.results;
-    return (
-      (projects && projects.length > 0) ||
-      (goals && goals.length > 0) ||
-      (tasks && tasks.length > 0) ||
-      (people && people.length > 0)
-    );
-  }, [state.results]);
+  // Results are already flat, no need to flatten them
+  const flatResults = state.results;
+  const hasResults = state.results.length > 0;
 
   React.useEffect(() => {
     if (!isOpen) {
@@ -478,7 +463,7 @@ function SearchOverlay({ state, isOpen, onClose }: SearchOverlayProps) {
           </div>
 
           <div className="max-h-[60vh] overflow-y-auto">
-            <SearchResults state={state} onClose={onClose} flatResults={flatResults} />
+            <SearchResults state={state} onClose={onClose} />
           </div>
         </div>
       </div>
