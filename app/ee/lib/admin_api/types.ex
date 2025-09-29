@@ -24,10 +24,11 @@ defmodule OperatelyEE.AdminApi.Types do
   end
 
   object :person do
-    field? :id, :string
-    field? :full_name, :string
-    field? :email, :string
-    field? :avatar_url, :string
+    field :id, :string
+    field :full_name, :string
+    field :email, :string
+    field :avatar_url, :string
+    field :title, :string
   end
 
   object :activity do

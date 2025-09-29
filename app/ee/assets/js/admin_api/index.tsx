@@ -140,10 +140,11 @@ export interface Company {
 }
 
 export interface Person {
-  id?: string;
-  fullName?: string;
-  email?: string;
-  avatarUrl?: string;
+  id: string;
+  fullName: string;
+  email: string;
+  avatarUrl: string;
+  title: string;
 }
 
 export interface GetActiveCompaniesInput {}
