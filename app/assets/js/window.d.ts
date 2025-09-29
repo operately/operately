@@ -36,6 +36,9 @@ declare global {
     };
 
     aiActions: AiConvoAction[];
+
+    discordUrl: string;
+    bookDemoUrl: string;
   }
 
   interface Window {

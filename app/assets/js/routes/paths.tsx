@@ -54,6 +54,10 @@ export class Paths {
     return this.createCompanyPath([]);
   }
 
+  setupPath() {
+    return this.createCompanyPath(["setup"]);
+  }
+
   accountPath() {
     return this.createCompanyPath(["account"]);
   }

@@ -25,6 +25,40 @@ export function Page() {
   );
 }
 
+// function SetupSteps() {
+//   const { company, spaces } = useLoadedData();
+//   const me = useMe();
+//   const workMap = useGetWorkMap({});
+//   const paths = usePaths();
+
+//   if (!workMap.data) {
+//     return null;
+//   }
+
+//   // // Check if company setup is complete
+//   const hasTeamMembers = (company.memberCount ?? 0) > 1;
+//   const hasSpaces = spaces.length > 1; // More than just the company space
+//   const hasProjects = workMap.data.workMap?.some((item) => item.type === "project") ?? false;
+
+//   // // Check if current user is an owner
+//   const isOwner = company.owners?.some((owner) => compareIds(owner.id, me?.id)) ?? false;
+//   const setupComplete = hasTeamMembers && hasSpaces && hasProjects;
+
+//   // // Only show setup message if user is owner and setup is not complete
+//   if (!isOwner || setupComplete) {
+//     return <div className="mt-8"></div>;
+//   }
+
+//   return (
+//     <CompanySetupStepsReminder
+//       hasProjects={hasProjects}
+//       hasSpaces={hasSpaces}
+//       hasTeamMembers={hasTeamMembers}
+//       continuePath={paths.setupPath()}
+//     />
+//   );
+// }
+
 function SpacesSection() {
   const { spaces } = useLoadedData();
 
