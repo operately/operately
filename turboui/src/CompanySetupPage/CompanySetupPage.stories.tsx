@@ -24,13 +24,21 @@ const meta: Meta<typeof CompanySetupPage> = {
       action: "onInviteTeam",
       description: "Callback when invite team button is clicked",
     },
-    onCreateSpace: {
+    onCreateSpaces: {
       action: "onCreateSpace",
       description: "Callback when create space button is clicked",
     },
-    onBrowseWork: {
-      action: "onBrowseWork",
+    onAddProject: {
+      action: "okinBrowseWork",
       description: "Callback when browse work button is clicked",
+    },
+    name: {
+      control: "text",
+      description: "User's name for personalized greeting",
+    },
+    bookDemoUrl: {
+      control: "text",
+      description: "Calendly URL for booking demo sessions",
     },
   },
 };
@@ -43,6 +51,8 @@ export const Default: Story = {
     inviteTeamCompleted: false,
     spacesCompleted: false,
     projectsCompleted: false,
+    name: "John",
+    bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
   },
 };
 
@@ -51,6 +61,8 @@ export const OneCompleted: Story = {
     inviteTeamCompleted: true,
     spacesCompleted: false,
     projectsCompleted: false,
+    name: "Sarah",
+    bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
   },
 };
 
@@ -59,6 +71,8 @@ export const TwoCompleted: Story = {
     inviteTeamCompleted: true,
     spacesCompleted: true,
     projectsCompleted: false,
+    name: "Michael",
+    bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
   },
 };
 
@@ -67,6 +81,8 @@ export const AllCompleted: Story = {
     inviteTeamCompleted: true,
     spacesCompleted: true,
     projectsCompleted: true,
+    name: "Emma",
+    bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
   },
 };
 
@@ -76,21 +92,12 @@ export const MobileView: Story = {
     inviteTeamCompleted: false,
     spacesCompleted: true,
     projectsCompleted: false,
+    name: "Alex",
+    bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
   },
   parameters: {
     viewport: {
       defaultViewport: "mobile1",
     },
-  },
-};
-
-export const DarkModePreview: Story = {
-  args: {
-    inviteTeamCompleted: true,
-    spacesCompleted: false,
-    projectsCompleted: false,
-  },
-  parameters: {
-    backgrounds: { default: "dark" },
   },
 };

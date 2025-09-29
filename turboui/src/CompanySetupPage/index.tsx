@@ -13,6 +13,10 @@ export namespace CompanySetupPage {
     onInviteTeam?: () => void;
     onCreateSpaces?: () => void;
     onAddProject?: () => void;
+
+    // User personalization
+    name: string;
+    bookDemoUrl: string;
   }
 }
 
@@ -27,7 +31,14 @@ interface SetupItem {
 }
 
 export function CompanySetupPage(props: CompanySetupPage.Props) {
-  const { inviteTeamCompleted = false, spacesCompleted = false, projectsCompleted = false, onInviteTeam } = props;
+  const {
+    inviteTeamCompleted = false,
+    spacesCompleted = false,
+    projectsCompleted = false,
+    onInviteTeam,
+    name,
+    bookDemoUrl,
+  } = props;
 
   const setupItems: SetupItem[] = [
     {
@@ -81,7 +92,9 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
           <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
             <h4 className="font-semibold mb-1">Quick Product Tour</h4>
             <p className="text-xs mb-3">Get most out of Operately. Schedule a personalized onboarding session.</p>
-            <GhostButton size="xs">Book a demo</GhostButton>
+            <GhostButton size="xs" linkTo={bookDemoUrl} linkTarget="_blank">
+              Book a demo
+            </GhostButton>
           </div>
 
           <div className="bg-surface-base border border-stroke-base rounded-lg p-4 shadow">
