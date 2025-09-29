@@ -1,11 +1,23 @@
 defmodule Operately.Activities.Notifications.ProjectTaskCommented do
+  @moduledoc """
+  Notifies the following people:
+  - Task creator: The person who originally created the task
+  - Task assignees: All people assigned to the task
+  - Subscribers: People who were mentioned or subscribed to notifications for this task
+
+  The person who authored the comment is excluded from notifications.
+  """
+
   alias Operately.Tasks.Task
 
   def dispatch(activity) do
     task_id = activity.content["task_id"]
     {:ok, task} = Task.get(:system, id: task_id, opts: [preload: :assignees])
 
+    # Get people who have subscribed to notifications for this task
     subscriber_ids = Operately.Tasks.Notifications.get_subscribers(task)
+
+    # Combine task creator and all assignees
     person_ids = [task.creator_id | Enum.map(task.assignees, fn a -> a.person_id end)]
 
     subscriber_ids ++ person_ids

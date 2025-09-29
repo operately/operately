@@ -1,6 +1,8 @@
 defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Support.RichText
+
   use OperatelyWeb.TurboCase
+  use Operately.Support.Notifications
 
   setup ctx do
     ctx
@@ -502,6 +504,26 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       after_count = count_activities(ctx.project.id, "task_due_date_updating")
       assert after_count == before_count + 1
+    end
+
+    test "it notifies assignee", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+      ctx = Factory.add_task_assignee(ctx, :assignee, :task, :new_champion)
+      action = "task_due_date_updating"
+
+      assert notifications_count(action: action) == 0
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_due_date], %{
+        task_id: Paths.task_id(ctx.task),
+        due_date: %{ date: "2026-06-01", date_type: "day", value: "Jun 1, 2026" }
+      })
+
+      assert notifications_count(action: action) == 1
+
+      activity = get_activity(task: ctx.task, action: action)
+      notification = fetch_notification(activity.id)
+
+      assert notification.person_id == ctx.new_champion.id
     end
   end
 
@@ -1197,5 +1219,12 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
   defp count_activities(action) do
     from(a in Operately.Activities.Activity, where: a.action == ^action)
     |> Repo.aggregate(:count)
+  end
+
+  defp get_activity(task: task, action: action) do
+    from(a in Operately.Activities.Activity,
+      where: a.action == ^action and a.content["task_id"] == ^task.id
+    )
+    |> Repo.one()
   end
 end
