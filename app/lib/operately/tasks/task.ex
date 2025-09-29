@@ -24,6 +24,7 @@ defmodule Operately.Tasks.Task do
     belongs_to :creator, Operately.People.Person
     belongs_to :milestone, Operately.Projects.Milestone
     belongs_to :project, Operately.Projects.Project
+    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
 
     has_one :group, through: [:project, :group]
     has_one :company, through: [:creator, :company]
@@ -60,9 +61,22 @@ defmodule Operately.Tasks.Task do
 
   def changeset(task, attrs) do
     task
-    |> cast(attrs, [:name, :deprecated_due_date, :description, :size, :priority, :creator_id, :status, :closed_at, :reopened_at, :milestone_id, :project_id])
+    |> cast(attrs, [
+      :name,
+      :deprecated_due_date,
+      :description,
+      :size,
+      :priority,
+      :creator_id,
+      :status,
+      :closed_at,
+      :reopened_at,
+      :milestone_id,
+      :project_id,
+      :subscription_list_id
+    ])
     |> cast_embed(:due_date)
-    |> validate_required([:name, :description, :creator_id, :project_id])
+    |> validate_required([:name, :description, :creator_id, :project_id, :subscription_list_id])
   end
 
   #

@@ -1,5 +1,5 @@
 defmodule Operately.Support.Factory.Utils do
-  @surnames [ 
+  @surnames [
     "Smith",
     "Johnson",
     "Williams",
@@ -33,9 +33,9 @@ defmodule Operately.Support.Factory.Utils do
   end
 
   def reload_all(ctx) do
-    Enum.reduce(Map.keys(ctx), ctx, fn key, ctx -> 
+    Enum.reduce(Map.keys(ctx), ctx, fn key, ctx ->
       resource = Map.fetch!(ctx, key)
-      
+
       if is_ecto_schema?(resource) do
         reload(ctx, key)
       else
