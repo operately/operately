@@ -25,7 +25,9 @@ defmodule OperatelyWeb.PageController do
       sentry: %{
         enabled: Application.get_env(:operately, :js_sentry_enabled),
         dsn: Application.get_env(:operately, :js_sentry_dsn)
-      }
+      },
+      discordUrl: "https://discord.com/invite/2ngnragJYV",
+      bookDemoUrl: "https://calendar.google.com/calendar/u/0/appointments/schedules/AcZssZ3aS205iUzxYTRPq0sO1fVMbTobKXWGpKxSp26XkALJFnx3LzfB9gcWKQ0kAmj2JoERc0CX70Hg"
     }
 
     if conn.assigns.current_account do
