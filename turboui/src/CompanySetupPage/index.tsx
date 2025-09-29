@@ -4,21 +4,66 @@ import { IconCheck } from "../icons";
 
 export namespace CompanySetupPage {
   export interface Props {
-    setupItems: SetupItem[];
-  }
-
-  export interface SetupItem {
-    id: string;
-    description: string;
-    linkTo: string;
-    linkText: string;
-    isCompleted: boolean;
-    testId?: string;
+    // Completion status for each hardcoded item
+    inviteTeamCompleted?: boolean;
+    spacesCompleted?: boolean;
+    projectsCompleted?: boolean;
+    // Navigation functions for each action
+    onInviteTeam?: () => void;
+    onCreateSpace?: () => void;
+    onBrowseWork?: () => void;
   }
 }
 
+interface SetupItem {
+  id: string;
+  title: string;
+  description: string;
+  onClick?: () => void;
+  buttonText: string;
+  isCompleted: boolean;
+  testId: string;
+}
+
 export function CompanySetupPage(props: CompanySetupPage.Props) {
-  const { setupItems } = props;
+  const {
+    inviteTeamCompleted = false,
+    spacesCompleted = false,
+    projectsCompleted = false,
+    onInviteTeam,
+    onCreateSpace,
+    onBrowseWork,
+  } = props;
+
+  const setupItems: SetupItem[] = [
+    {
+      id: "invite-team",
+      title: "Invite your team",
+      description: "Get your colleagues onboard and start collaborating together.",
+      onClick: onInviteTeam,
+      buttonText: "Invite team members",
+      isCompleted: inviteTeamCompleted,
+      testId: "setup-invite-team",
+    },
+    {
+      id: "create-spaces",
+      title: "Set up Spaces",
+      description: "Create organized spaces for different teams, departments, or initiatives.",
+      onClick: onCreateSpace,
+      buttonText: "Create a space",
+      isCompleted: spacesCompleted,
+      testId: "setup-create-space",
+    },
+    {
+      id: "add-projects",
+      title: "Add your first project",
+      description: "Start tracking progress on your most important work.",
+      onClick: onBrowseWork,
+      buttonText: "Browse work",
+      isCompleted: projectsCompleted,
+      testId: "setup-add-project",
+    },
+  ];
 
   return (
     <div className="max-w-3xl mx-auto">
@@ -38,7 +83,7 @@ export function CompanySetupPage(props: CompanySetupPage.Props) {
   );
 }
 
-function SetupItem({ title, description, linkTo, linkText, isCompleted, testId }: CompanySetupPage.SetupItem) {
+function SetupItem({ title, description, onClick, buttonText, isCompleted, testId }: SetupItem) {
   return (
     <div
       className={`flex items-center justify-between p-4 border rounded-lg transition-all ${
@@ -68,8 +113,8 @@ function SetupItem({ title, description, linkTo, linkText, isCompleted, testId }
         </div>
       </div>
       {!isCompleted && (
-        <GhostButton linkTo={linkTo} testId={testId} size="sm">
-          {linkText}
+        <GhostButton onClick={onClick} testId={testId} size="sm">
+          {buttonText}
         </GhostButton>
       )}
     </div>
