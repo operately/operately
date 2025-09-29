@@ -1,11 +1,18 @@
 defmodule Operately.Support.Features.ProjectTasksSteps do
   use Operately.FeatureCase
+
   alias Operately.Tasks.Task
+  alias Operately.Support.Features.EmailSteps
+  alias Operately.Support.Features.NotificationsSteps
 
   step :given_task_exists, ctx do
     ctx
     |> Factory.add_space_member(:creator, :group)
     |> Factory.add_project_task(:task, :milestone, name: "My task")
+  end
+
+  step :given_task_assignee_exists, ctx do
+    Factory.add_task_assignee(ctx, :assignee, :task, :champion)
   end
 
   step :given_another_milestone_exists, ctx do
@@ -143,6 +150,10 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   step :edit_task_due_date, ctx, date do
     ctx
     |> UI.select_day_in_date_field(testid: "task-due-date", date: date)
+  end
+
+  step :remove_task_due_date, ctx do
+    UI.clear_date_in_date_field(ctx, testid: "task-due-date")
   end
 
   step :edit_task_milestone, ctx, name do
@@ -323,6 +334,52 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       |> UI.assert_text(date)
       |> UI.assert_text(part2)
     end)
+  end
+
+  #
+  # Emails
+  #
+
+  step :assert_due_date_changed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "changed the due date for \"#{ctx.task.name}\""
+    })
+  end
+
+  step :assert_due_date_removed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "removed the due date for \"#{ctx.task.name}\""
+    })
+  end
+
+  #
+  # Notifications
+  #
+
+  step :assert_due_date_changed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Updated due date for #{ctx.task.name} to"
+    })
+  end
+
+  step :assert_due_date_removed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Cleared due date for #{ctx.task.name}"
+    })
   end
 
   #
