@@ -51,23 +51,15 @@ const mockSearchResults: GlobalSearch.SearchResult = {
       id: "1",
       name: "Implement user authentication",
       link: "/tasks/1",
-      milestone: {
-        project: {
-          name: "Mobile App Development",
-          space: { name: "Engineering" },
-        },
-      },
+      project: { name: "Mobile App Development" },
+      space: { name: "Engineering" },
     },
     {
       id: "2",
       name: "Design landing page mockups",
       link: "/tasks/2",
-      milestone: {
-        project: {
-          name: "Website Redesign",
-          space: { name: "Marketing" },
-        },
-      },
+      project: { name: "Website Redesign" },
+      space: { name: "Marketing" },
     },
   ],
   people: [
@@ -181,6 +173,8 @@ const SearchOverlayDemo = ({
   const [results, setResults] = React.useState<GlobalSearch.SearchResult>({});
   const [isSearching, setIsSearching] = React.useState(false);
 
+  const [selectedIndex, setSelectedIndex] = React.useState(-1);
+
   const state: GlobalSearch.State = {
     search,
     onNavigate,
@@ -194,6 +188,8 @@ const SearchOverlayDemo = ({
     setResults,
     isSearching,
     setIsSearching,
+    selectedIndex,
+    setSelectedIndex,
   };
 
   // Perform search when query changes
@@ -232,7 +228,7 @@ const SearchOverlayDemo = ({
     <div className="relative w-full">
       <div className="w-[800px] max-w-[90vw] bg-surface-base border border-surface-outline rounded-b-lg shadow-lg">
         <div className="overflow-y-auto">
-          <SearchResults state={state} onClose={() => {}} />
+          <SearchResults state={state} onClose={() => {}} flatResults={[]} />
         </div>
       </div>
     </div>
