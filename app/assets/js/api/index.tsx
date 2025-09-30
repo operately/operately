@@ -5322,6 +5322,14 @@ export class ApiClient {
     return this.apiNamespaceRoot.getInvitation(input);
   }
 
+  getInviteLink(input: GetInviteLinkInput): Promise<GetInviteLinkResult> {
+    return this.apiNamespaceRoot.getInviteLink(input);
+  }
+
+  listInviteLinks(input: ListInviteLinksInput): Promise<ListInviteLinksResult> {
+    return this.apiNamespaceRoot.listInviteLinks(input);
+  }
+
   getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
     return this.apiNamespaceRoot.getKeyResource(input);
   }
@@ -5730,6 +5738,18 @@ export class ApiClient {
 
   newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
     return this.apiNamespaceRoot.newInvitationToken(input);
+  }
+
+  createInviteLink(input: CreateInviteLinkInput): Promise<CreateInviteLinkResult> {
+    return this.apiNamespaceRoot.createInviteLink(input);
+  }
+
+  revokeInviteLink(input: RevokeInviteLinkInput): Promise<RevokeInviteLinkResult> {
+    return this.apiNamespaceRoot.revokeInviteLink(input);
+  }
+
+  joinCompanyViaInviteLink(input: JoinCompanyViaInviteLinkInput): Promise<JoinCompanyViaInviteLinkResult> {
+    return this.apiNamespaceRoot.joinCompanyViaInviteLink(input);
   }
 
   pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
