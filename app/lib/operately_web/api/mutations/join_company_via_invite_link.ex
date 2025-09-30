@@ -88,40 +88,11 @@ defmodule OperatelyWeb.Api.Mutations.JoinCompanyViaInviteLink do
         company = invite_link.company
         {:ok, %{company: company, person: person, action: :redirect}}
       
-      person.company_id != nil ->
-        # User belongs to different company
-        {:error, "You are already a member of a different company. Please contact support to switch companies."}
-      
       true ->
-        # Add user to the company
-        add_existing_user_to_company(person, invite_link)
+        # For now, return an error for simplicity
+        # In a full implementation, this would involve complex company switching logic
+        {:error, "Company joining for existing users not yet implemented. Please contact support."}
     end
-  end
-
-  defp add_existing_user_to_company(person, invite_link) do
-    # Update person's company_id
-    case Operately.People.update_person(person, %{company_id: invite_link.company_id}) do
-      {:ok, updated_person} ->
-        # Create access bindings for the user in the new company
-        add_company_access_bindings(updated_person, invite_link.company_id)
-        
-        # Increment use count
-        Operately.InviteLinks.increment_use_count(invite_link)
-        
-        {:ok, %{company: invite_link.company, person: updated_person, action: :joined}}
-      
-      {:error, _changeset} ->
-        {:error, "Failed to join company"}
-    end
-  end
-
-  defp add_company_access_bindings(person, company_id) do
-    # This is a simplified version - in practice you'd need to:
-    # 1. Get the company space
-    # 2. Add the person to the standard access group for the company space
-    # 3. Create appropriate access bindings
-    # For now, we'll leave this as a TODO since it requires more complex access management
-    :ok
   end
 
   defp serialize_result(%{handle_join: result}) do
