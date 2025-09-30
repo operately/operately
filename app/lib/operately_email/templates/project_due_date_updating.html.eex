@@ -1,0 +1,37 @@
+<%= if @new_date do %>
+  <%= if @previous_date do %>
+    <%= title("#{short_name(@author)} changed the due date for #{@project.name}") %>
+  <% else %>
+    <%= title("#{short_name(@author)} set the due date for #{@project.name}") %>
+  <% end %>
+<% else %>
+  <%= title("#{short_name(@author)} removed the due date for #{@project.name}") %>
+<% end %>
+
+<%= spacer() %>
+
+<%= if @new_date do %>
+  <%= if @previous_date do %>
+    <%= row do %>
+      The due date was changed from <%= @previous_date %> to <%= @new_date %>.
+    <% end %>
+  <% else %>
+    <%= row do %>
+      The due date is now <%= @new_date %>.
+    <% end %>
+  <% end %>
+<% else %>
+  <%= row do %>
+    <%= if @previous_date do %>
+      The due date was removed. Previously it was <%= @previous_date %>.
+    <% else %>
+      The due date was removed.
+    <% end %>
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Project") %>
+<% end %>
