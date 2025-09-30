@@ -1,4 +1,6 @@
 defmodule OperatelyWeb.Api.Invitations do
+  alias Operately.Repo
+
   defmodule GetInviteLink do
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
@@ -78,8 +80,11 @@ defmodule OperatelyWeb.Api.Invitations do
   defmodule CreateInviteLink do
     use TurboConnect.Mutation
 
+    alias OperatelyWeb.Api.Serializer
     alias Operately.Companies.Company
     alias Operately.Companies.Permissions
+
+    require Logger
 
     inputs do
     end
@@ -123,36 +128,21 @@ defmodule OperatelyWeb.Api.Invitations do
       end)
     end
 
-    defp commit(multi) do
-      Operately.Repo.commit(multi)
-    end
+    defp commit(multi), do: Repo.transaction(multi)
 
     def respond(result) do
       case result do
         {:ok, ctx} ->
-          {:ok, ctx.serialized}
+          invite_link = Repo.preload(ctx.invite_link, [:author, :company])
+          {:ok, %{invite_link: Serializer.serialize(invite_link, level: :full)}}
 
-        {:error, :company_id, _} ->
-          {:error, :bad_request, %{message: "Missing required fields: company_id"}}
-
-        {:error, :company, _} ->
-          {:error, :not_found}
-
-        {:error, :check_permissions, _} ->
+        {:error, :check_permissions, :forbidden, _} ->
           {:error, :forbidden}
 
-        {:error, :invite_link, changeset} ->
-          {:error, :bad_request, extract_error_message(changeset)}
-
-        _ ->
+        e ->
+          Logger.error("Failed to create invite link: #{inspect(e)}")
           {:error, :internal_server_error}
       end
-    end
-
-    defp extract_error_message(changeset) do
-      changeset.errors
-      |> Enum.map(fn {field, {message, _}} -> "#{field} #{message}" end)
-      |> Enum.join(", ")
     end
   end
 

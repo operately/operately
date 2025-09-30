@@ -69,11 +69,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
 
     test "creates and returns invite link for authorized person", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {200, %{invite_link: res}} =
-               mutation(ctx.conn, [:invitations, :create_invite_link], %{
-                 company_id: ctx.company.id
-               })
+      assert {200, %{invite_link: res}} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
 
       stored = InviteLinks.get_invite_link_by_token(res.token)
       assert res == Serializer.serialize(stored, level: :full)
