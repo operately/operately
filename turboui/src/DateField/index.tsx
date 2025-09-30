@@ -22,6 +22,8 @@ const DATE_TYPES = [
   { value: "year" as const, label: "Year" },
 ];
 
+export { DateDisplay } from "./DateDisplay";
+
 export namespace DateField {
   export interface Props extends TestableElement {
     onDateSelect?: (selectedDate: ContextualDate | null) => void;
