@@ -1259,6 +1259,18 @@ export interface Invitation {
   expiresAt?: string | null;
 }
 
+export interface InviteLink {
+  id?: string | null;
+  token?: string | null;
+  companyId?: string | null;
+  author?: Person | null;
+  company?: Company | null;
+  expiresAt?: string | null;
+  useCount?: number | null;
+  isActive?: boolean | null;
+  insertedAt?: string | null;
+}
+
 export interface MessagesBoard {
   id?: string | null;
   name?: string | null;
@@ -2238,6 +2250,50 @@ export interface GetInvitationInput {
 
 export interface GetInvitationResult {
   invitation?: Invitation | null;
+}
+
+export interface GetInviteLinkInput {
+  token?: string | null;
+}
+
+export interface GetInviteLinkResult {
+  inviteLink?: InviteLink | null;
+}
+
+export interface ListInviteLinksInput {
+  companyId?: string | null;
+}
+
+export interface ListInviteLinksResult {
+  inviteLinks?: InviteLink[] | null;
+}
+
+export interface CreateInviteLinkInput {
+  companyId?: string | null;
+}
+
+export interface CreateInviteLinkResult {
+  inviteLink?: InviteLink | null;
+}
+
+export interface RevokeInviteLinkInput {
+  inviteLinkId?: string | null;
+}
+
+export interface RevokeInviteLinkResult {
+  inviteLink?: InviteLink | null;
+}
+
+export interface JoinCompanyViaInviteLinkInput {
+  token?: string | null;
+  password?: string | null;
+  passwordConfirmation?: string | null;
+}
+
+export interface JoinCompanyViaInviteLinkResult {
+  company?: Company | null;
+  person?: Person | null;
+  error?: string | null;
 }
 
 export interface GetKeyResourceInput {
@@ -4258,6 +4314,14 @@ class ApiNamespaceRoot {
     return this.client.get("/get_invitation", input);
   }
 
+  async getInviteLink(input: GetInviteLinkInput): Promise<GetInviteLinkResult> {
+    return this.client.get("/get_invite_link", input);
+  }
+
+  async listInviteLinks(input: ListInviteLinksInput): Promise<ListInviteLinksResult> {
+    return this.client.get("/list_invite_links", input);
+  }
+
   async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
     return this.client.get("/get_key_resource", input);
   }
@@ -4672,6 +4736,18 @@ class ApiNamespaceRoot {
 
   async newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
     return this.client.post("/new_invitation_token", input);
+  }
+
+  async createInviteLink(input: CreateInviteLinkInput): Promise<CreateInviteLinkResult> {
+    return this.client.post("/create_invite_link", input);
+  }
+
+  async revokeInviteLink(input: RevokeInviteLinkInput): Promise<RevokeInviteLinkResult> {
+    return this.client.post("/revoke_invite_link", input);
+  }
+
+  async joinCompanyViaInviteLink(input: JoinCompanyViaInviteLinkInput): Promise<JoinCompanyViaInviteLinkResult> {
+    return this.client.post("/join_company_via_invite_link", input);
   }
 
   async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
@@ -5833,6 +5909,12 @@ export async function getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
 export async function getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
   return defaultApiClient.getInvitation(input);
 }
+export async function getInviteLink(input: GetInviteLinkInput): Promise<GetInviteLinkResult> {
+  return defaultApiClient.getInviteLink(input);
+}
+export async function listInviteLinks(input: ListInviteLinksInput): Promise<ListInviteLinksResult> {
+  return defaultApiClient.listInviteLinks(input);
+}
 export async function getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
   return defaultApiClient.getKeyResource(input);
 }
@@ -6184,6 +6266,15 @@ export async function moveProjectToSpace(input: MoveProjectToSpaceInput): Promis
 export async function newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
   return defaultApiClient.newInvitationToken(input);
 }
+export async function createInviteLink(input: CreateInviteLinkInput): Promise<CreateInviteLinkResult> {
+  return defaultApiClient.createInviteLink(input);
+}
+export async function revokeInviteLink(input: RevokeInviteLinkInput): Promise<RevokeInviteLinkResult> {
+  return defaultApiClient.revokeInviteLink(input);
+}
+export async function joinCompanyViaInviteLink(input: JoinCompanyViaInviteLinkInput): Promise<JoinCompanyViaInviteLinkResult> {
+  return defaultApiClient.joinCompanyViaInviteLink(input);
+}
 export async function pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
   return defaultApiClient.pauseProject(input);
 }
@@ -6364,6 +6455,14 @@ export function useGetGoals(input: GetGoalsInput): UseQueryHookResult<GetGoalsRe
 
 export function useGetInvitation(input: GetInvitationInput): UseQueryHookResult<GetInvitationResult> {
   return useQuery<GetInvitationResult>(() => defaultApiClient.getInvitation(input));
+}
+
+export function useGetInviteLink(input: GetInviteLinkInput): UseQueryHookResult<GetInviteLinkResult> {
+  return useQuery<GetInviteLinkResult>(() => defaultApiClient.getInviteLink(input));
+}
+
+export function useListInviteLinks(input: ListInviteLinksInput): UseQueryHookResult<ListInviteLinksResult> {
+  return useQuery<ListInviteLinksResult>(() => defaultApiClient.listInviteLinks(input));
 }
 
 export function useGetKeyResource(input: GetKeyResourceInput): UseQueryHookResult<GetKeyResourceResult> {
@@ -6963,6 +7062,21 @@ export function useMoveProjectToSpace(): UseMutationHookResult<MoveProjectToSpac
 export function useNewInvitationToken(): UseMutationHookResult<NewInvitationTokenInput, NewInvitationTokenResult> {
   return useMutation<NewInvitationTokenInput, NewInvitationTokenResult>((input) =>
     defaultApiClient.newInvitationToken(input),
+  );
+}
+export function useCreateInviteLink(): UseMutationHookResult<CreateInviteLinkInput, CreateInviteLinkResult> {
+  return useMutation<CreateInviteLinkInput, CreateInviteLinkResult>((input) =>
+    defaultApiClient.createInviteLink(input),
+  );
+}
+export function useRevokeInviteLink(): UseMutationHookResult<RevokeInviteLinkInput, RevokeInviteLinkResult> {
+  return useMutation<RevokeInviteLinkInput, RevokeInviteLinkResult>((input) =>
+    defaultApiClient.revokeInviteLink(input),
+  );
+}
+export function useJoinCompanyViaInviteLink(): UseMutationHookResult<JoinCompanyViaInviteLinkInput, JoinCompanyViaInviteLinkResult> {
+  return useMutation<JoinCompanyViaInviteLinkInput, JoinCompanyViaInviteLinkResult>((input) =>
+    defaultApiClient.joinCompanyViaInviteLink(input),
   );
 }
 

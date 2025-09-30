@@ -19,6 +19,7 @@ import { createTestId } from "@/utils/testid";
 import { Avatar } from "turboui";
 
 import { usePaths } from "@/routes/paths";
+import { InviteLinksSection } from "./InviteLinksSection";
 export default { name: "CompanyAdminManagePeoplePage", loader, Page } as PageModule;
 
 interface LoaderResult {
@@ -54,6 +55,7 @@ function Page() {
           />
 
           <InvitationList />
+          <InviteLinksSection companyId={company.id!} />
           <MemberList />
         </Paper.Body>
       </Paper.Root>
