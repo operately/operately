@@ -179,7 +179,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_change_in_feed("updated the description")
   end
 
-  @tag login_as: :champion
+  @tag login_as: :reviewer
   feature "edit task assignee", ctx do
     feed_title = "assigned this task to #{Operately.People.Person.short_name(ctx.champion)}"
 
@@ -193,6 +193,31 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.reload_task_page()
     |> Steps.assert_assignee(ctx.champion.full_name)
     |> Steps.assert_change_in_feed(feed_title)
+    |> Steps.assert_task_assignee_change_visible_in_feed()
+  end
+
+  @tag login_as: :reviewer
+  feature "edit task assignee sends notification to assignee", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.assert_no_assignee()
+    |> Steps.edit_task_assignee(ctx.champion.full_name)
+    |> Steps.assert_assignee(ctx.champion.full_name)
+    |> Steps.assert_assignee_changed_notification_sent()
+    |> Steps.assert_assignee_changed_email_sent()
+  end
+
+  @tag login_as: :reviewer
+  feature "remove task assignee sends notification to assignee", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_assignee_exists()
+    |> Steps.visit_task_page()
+    |> Steps.assert_assignee(ctx.champion.full_name)
+    |> Steps.remove_task_assignee()
+    |> Steps.assert_assignee_removed_notification_sent()
+    |> Steps.assert_assignee_removed_email_sent()
   end
 
   @tag login_as: :champion
