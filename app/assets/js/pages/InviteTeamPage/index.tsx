@@ -21,18 +21,22 @@ function Page() {
   const navigate = useNavigate();
   const company = useCurrentCompany()!;
 
-  const [createInviteLink, { loading: creating }] = Api.invitations.useCreateInviteLink();
+  const [creating, setCreating] = React.useState(false);
   const [inviteLink, setInviteLink] = React.useState<InviteLinks.InviteLink | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const handleGenerateLink = async () => {
+    setCreating(true);
+
     try {
       setError(null);
-      const result = await createInviteLink({});
+      const result = await Api.invitations.createInviteLink({});
       setInviteLink(result.inviteLink!);
     } catch (err) {
       setError("Failed to generate invite link. Please try again.");
       console.error("Error generating invite link:", err);
+    } finally {
+      setCreating(false);
     }
   };
 
