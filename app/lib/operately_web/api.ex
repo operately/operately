@@ -4,8 +4,10 @@ defmodule OperatelyWeb.Api do
   plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
       {:query, "get_invitation"},
+      {:query, "get_invite_link"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
+      {:mutation, "join_company_via_invite_link"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
@@ -135,6 +137,8 @@ defmodule OperatelyWeb.Api do
   query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
   query(:get_goals, Q.GetGoals)
   query(:get_invitation, Q.GetInvitation)
+  query(:get_invite_link, Q.GetInviteLink)
+  query(:list_invite_links, Q.ListInviteLinks)
   query(:get_key_resource, Q.GetKeyResource)
   query(:get_me, Q.GetMe)
   query(:get_milestone, Q.GetMilestone)
@@ -246,6 +250,9 @@ defmodule OperatelyWeb.Api do
   mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
   mutation(:move_project_to_space, M.MoveProjectToSpace)
   mutation(:new_invitation_token, M.NewInvitationToken)
+  mutation(:create_invite_link, M.CreateInviteLink)
+  mutation(:revoke_invite_link, M.RevokeInviteLink)
+  mutation(:join_company_via_invite_link, M.JoinCompanyViaInviteLink)
   mutation(:pause_project, M.PauseProject)
   mutation(:post_discussion, M.PostDiscussion)
   mutation(:publish_discussion, M.PublishDiscussion)
