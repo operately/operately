@@ -1,13 +1,13 @@
-import React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as InviteLinks from "@/models/inviteLinks";
-import { PageModule } from "@/routes/types";
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import React from "react";
+
 import { CopyToClipboard } from "@/components/CopyToClipboard";
+import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
-import { usePaths } from "@/routes/paths";
+import { PrimaryButton, SecondaryButton } from "turboui";
+import { useCreateInviteLink } from "../../api";
 
 export default { name: "InviteTeamPage", loader, Page } as PageModule;
 
@@ -22,12 +22,10 @@ async function loader({ params }): Promise<LoaderResult> {
 }
 
 function Page() {
-  const me = useMe();
   const navigate = useNavigate();
-  const paths = usePaths();
   const { company } = Pages.useLoadedData() as LoaderResult;
 
-  const [createInviteLink, { loading: creating }] = InviteLinks.useCreateInviteLink();
+  const [createInviteLink, { loading: creating }] = useCreateInviteLink();
   const [inviteLink, setInviteLink] = React.useState<InviteLinks.InviteLink | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
@@ -50,9 +48,7 @@ function Page() {
       <Paper.Root size="small">
         <Paper.Body>
           <div className="text-center">
-            <div className="text-content-accent text-2xl font-extrabold mb-4">
-              Invite Your Team
-            </div>
+            <div className="text-content-accent text-2xl font-extrabold mb-4">Invite Your Team</div>
             <div className="text-content-accent mb-8">
               Generate a shareable link to invite your team members to join your company.
             </div>
@@ -62,16 +58,12 @@ function Page() {
                 <PrimaryButton onClick={handleGenerateLink} loading={creating} testId="generate-invite-link">
                   Generate Invite Link
                 </PrimaryButton>
-                {error && (
-                  <div className="text-red-600 mt-4">{error}</div>
-                )}
+                {error && <div className="text-red-600 mt-4">{error}</div>}
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="text-green-600 font-medium">
-                  ✓ Invite link generated successfully!
-                </div>
-                
+                <div className="text-green-600 font-medium">✓ Invite link generated successfully!</div>
+
                 <div className="space-y-3">
                   <div className="text-left">
                     <label className="block text-sm font-medium text-content-accent mb-2">
@@ -86,9 +78,7 @@ function Page() {
                   </div>
 
                   <div className="text-left">
-                    <label className="block text-sm font-medium text-content-accent mb-2">
-                      Message Template:
-                    </label>
+                    <label className="block text-sm font-medium text-content-accent mb-2">Message Template:</label>
                     <div className="flex items-start space-x-2">
                       <div className="flex-1 text-content-primary border border-surface-outline rounded-lg px-3 py-2 text-sm bg-surface-base">
                         {copyMessage}
@@ -99,12 +89,8 @@ function Page() {
                 </div>
 
                 <div className="space-x-3">
-                  <PrimaryButton onClick={() => navigate(`/${company.id}`)}>
-                    Continue to Dashboard
-                  </PrimaryButton>
-                  <SecondaryButton onClick={() => setInviteLink(null)}>
-                    Generate Another Link
-                  </SecondaryButton>
+                  <PrimaryButton onClick={() => navigate(`/${company.id}`)}>Continue to Dashboard</PrimaryButton>
+                  <SecondaryButton onClick={() => setInviteLink(null)}>Generate Another Link</SecondaryButton>
                 </div>
               </div>
             )}
