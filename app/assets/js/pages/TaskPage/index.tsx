@@ -91,6 +91,7 @@ function Page() {
     onError: (e: string) => showErrorToast(e, "Reverted the project name to its previous value."),
     validations: [(v) => (v.trim() === "" ? "Project name cannot be empty" : null)],
     refreshPageData,
+    clearProjectCache: true,
   });
 
   const [name, setName] = usePageField({
@@ -225,9 +226,10 @@ interface usePageFieldProps<T> {
     activities: Activities.Activity[];
   }) => T;
   update: (newValue: T) => Promise<any>;
-  onError?: (error: any) => void;
+  onError: (error: any) => void;
   validations?: ((newValue: T) => string | null)[];
   refreshPageData?: () => Promise<void>;
+  clearProjectCache?: boolean;
 }
 
 function usePageField<T>({
@@ -236,6 +238,7 @@ function usePageField<T>({
   onError,
   validations,
   refreshPageData,
+  clearProjectCache,
 }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const pageData = PageCache.useData(loader);
   const { cacheVersion, data } = pageData;
@@ -263,14 +266,6 @@ function usePageField<T>({
 
     const oldVal = state;
 
-    const successHandler = () => {
-      // Invalidate the cache and refresh the data
-      PageCache.invalidate(pageCacheKey(data.task.id!));
-      if (refreshPageData) {
-        refreshPageData();
-      }
-    };
-
     const errorHandler = (error: any) => {
       setState(oldVal);
       onError?.(error);
@@ -284,7 +279,16 @@ function usePageField<T>({
           errorHandler("Update failed");
           return false;
         } else {
-          successHandler();
+          // Invalidate the cache and refresh the data
+          PageCache.invalidate(pageCacheKey(data.task.id!));
+
+          if (refreshPageData) {
+            refreshPageData();
+          }
+
+          if (clearProjectCache && data.task.project?.id) {
+            PageCache.invalidate(projectPageCacheKey(data.task.project.id));
+          }
           return true;
         }
       })
