@@ -1,0 +1,3 @@
+<%= short_name(@author) %> changed the assignee for <%= @name %>.
+
+Link: <%= @cta_url %>
