@@ -4,6 +4,7 @@ import * as React from "react";
 import { DateField } from "../DateField";
 import FormattedTime from "../FormattedTime";
 import { IconCircleX, IconExternalLink, IconFlag, IconPlus, IconSearch } from "../icons";
+import { DivLink } from "../Link";
 import classNames from "../utils/classnames";
 import { createTestId, TestableElement } from "../TestableElement";
 
@@ -25,6 +26,7 @@ interface DialogMenuOptionProps {
   label: string;
   linkTo?: string;
   onClick?: () => void;
+  testId?: string;
 }
 
 export interface MilestoneFieldProps extends TestableElement {
@@ -222,156 +224,81 @@ function Dialog({ state }: { state: State }) {
 }
 
 function DialogMenu({ state }: { state: State }) {
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
-  const itemRefs = React.useRef<(HTMLDivElement | null)[]>([]);
-  const menuRef = React.useRef<HTMLDivElement>(null);
-
-  // Build menu options array
-  const menuOptions = React.useMemo(() => {
-    const options: Array<{
-      key?: string;
-      testId?: string;
-      icon: React.ComponentType<{ size?: string | number; [key: string]: any }>;
-      label: string;
-      linkTo?: string;
-      onClick?: () => void;
-      danger?: boolean;
-    }> = [];
-
-    if (state.milestone?.link) {
-      options.push({
-        icon: IconExternalLink,
-        label: "View milestone",
-        linkTo: state.milestone.link,
-        testId: createTestId(state.testId, "view-milestone"),
-      });
-    }
-
-    if (state.milestone?.projectLink) {
-      options.push({
-        icon: IconExternalLink,
-        label: "View in project",
-        linkTo: state.milestone.projectLink,
-        testId: createTestId(state.testId, "view-in-project"),
-      });
-    }
-
-    options.push({
-      icon: IconSearch,
-      label: "Choose different milestone",
-      onClick: () => {
-        state.setSearchQuery(""); // Clear any previous search
-        state.setDialogMode("search");
-      },
-      testId: createTestId(state.testId, "change-milestone"),
-    });
-
-    state.extraDialogMenuOptions.forEach((option, index) => {
-      options.push({
-        key: `extra-${index}`,
-        icon: option.icon,
-        label: option.label,
-        onClick: () => {
-          option.onClick && option.onClick();
-          state.setIsOpen(false);
-        },
-        linkTo: option.linkTo,
-      });
-    });
-
-    options.push({
-      icon: IconCircleX,
-      label: "Clear milestone",
-      onClick: () => {
-        state.setMilestone(null);
-        state.setIsOpen(false);
-      },
-      danger: false,
-      testId: createTestId(state.testId, "clear-milestone"),
-    });
-
-    return options;
-  }, [state]);
-
-  // Focus menu when it opens
-  React.useEffect(() => {
-    if (menuRef.current) {
-      menuRef.current.focus();
-    }
-  }, []);
-
-  // Scroll selected item into view
-  React.useEffect(() => {
-    const selectedItem = itemRefs.current[selectedIndex];
-    if (selectedItem) {
-      selectedItem.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    }
-  }, [selectedIndex]);
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    switch (e.key) {
-      case "ArrowDown":
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev < menuOptions.length - 1 ? prev + 1 : prev));
-        break;
-      case "ArrowUp":
-        e.preventDefault();
-        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : prev));
-        break;
-      case "Enter":
-        e.preventDefault();
-        const selectedOption = menuOptions[selectedIndex];
-        if (selectedOption?.onClick) {
-          selectedOption.onClick();
-        } else if (selectedOption?.linkTo) {
-          window.location.assign(selectedOption.linkTo);
-          state.setIsOpen(false);
-        }
-        break;
-      case "Escape":
-        e.preventDefault();
-        e.stopPropagation();
-        state.setIsOpen(false);
-        break;
-    }
-  };
-
   return (
-    <div ref={menuRef} className="p-1" onKeyDown={handleKeyDown} tabIndex={-1}>
-      {menuOptions.map((option, index) => (
-        <div
-          key={option.key || `option-${index}`}
-          ref={(el) => (itemRefs.current[index] = el)}
-          className={classNames("flex items-center gap-2 px-1 py-1 rounded cursor-pointer", {
-            "bg-surface-dimmed": index === selectedIndex,
-            "hover:bg-surface-dimmed": index !== selectedIndex,
-            "hover:bg-red-50 hover:text-red-600": option.danger && index !== selectedIndex,
-            "bg-red-50 text-red-600": option.danger && index === selectedIndex,
-          })}
+    <div className="p-1">
+      {state.milestone?.link && (
+        <DialogMenuOption
+          testId={createTestId(state.testId, "view-milestone")}
+          icon={IconExternalLink}
+          label="View milestone"
+          linkTo={state.milestone.link}
+        />
+      )}
+
+      {state.milestone?.projectLink && (
+        <DialogMenuOption
+          testId={createTestId(state.testId, "view-in-project")}
+          icon={IconExternalLink}
+          label="View in project"
+          linkTo={state.milestone.projectLink}
+        />
+      )}
+
+      <DialogMenuOption
+        testId={createTestId(state.testId, "change-milestone")}
+        icon={IconSearch}
+        label="Choose different milestone"
+        onClick={() => {
+          state.setSearchQuery(""); // Clear any previous search
+          state.setDialogMode("search");
+        }}
+      />
+
+      {state.extraDialogMenuOptions.map((option, index) => (
+        <DialogMenuOption
+          key={index}
+          icon={option.icon}
+          label={option.label}
           onClick={() => {
-            if (option.onClick) {
-              option.onClick();
-            } else if (option.linkTo) {
-              window.location.assign(option.linkTo);
-              state.setIsOpen(false);
-            }
+            option.onClick && option.onClick();
+            state.setIsOpen(false);
           }}
-          onMouseEnter={() => setSelectedIndex(index)}
-          data-test-id={option.testId}
-        >
-          <div
-            className={classNames("flex items-center text-sm gap-2", {
-              "text-content-base": !option.danger,
-              "text-content-base hover:text-red-600": option.danger,
-            })}
-          >
-            <option.icon size={14} />
-            {option.label}
-          </div>
-        </div>
+          linkTo={option.linkTo}
+          testId={option.testId}
+        />
       ))}
+
+      <DialogMenuOption
+        testId={createTestId(state.testId, "clear-milestone")}
+        icon={IconCircleX}
+        label="Clear milestone"
+        onClick={() => {
+          state.setMilestone(null);
+          state.setIsOpen(false);
+        }}
+      />
     </div>
   );
+}
+
+function DialogMenuOption({ icon, label, linkTo, onClick, testId }: DialogMenuOptionProps) {
+  const wrapperClass = "flex items-center gap-2 px-1 py-1 rounded hover:bg-surface-dimmed cursor-pointer";
+  const Icon = icon;
+
+  const content = (
+    <div className="flex items-center text-sm gap-2">
+      <Icon size={14} />
+      {label}
+    </div>
+  );
+
+  if (linkTo) {
+    return <DivLink className={wrapperClass} to={linkTo} children={content} testId={testId} />;
+  } else if (onClick) {
+    return <div className={wrapperClass} onClick={onClick} children={content} data-test-id={testId} />;
+  } else {
+    throw new Error("Either linkTo or onClick must be provided");
+  }
 }
 
 function DialogSearch({ state }: { state: State }) {
