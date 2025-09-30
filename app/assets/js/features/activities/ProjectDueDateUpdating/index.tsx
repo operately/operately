@@ -1,6 +1,5 @@
 import type { ActivityContentProjectDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
-import { Paths } from "@/routes/paths";
 import React from "react";
 import { FormattedTime } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
@@ -11,8 +10,8 @@ const ProjectDueDateUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_paths: Paths, _activity: Activity) {
-    throw new Error("Not implemented");
+  pagePath(paths, activity: Activity) {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
