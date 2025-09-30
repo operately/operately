@@ -3,7 +3,7 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as InviteLinks from "@/models/inviteLinks";
 import { PageModule } from "@/routes/types";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { useNavigate } from "react-router-dom";
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { redirect } from "react-router-dom";

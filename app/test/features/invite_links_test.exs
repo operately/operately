@@ -8,7 +8,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> Factory.setup()
   end
 
-  @tag :current
   feature "New signup generates invite link", ctx do
     ctx
     |> Factory.log_in_person(:creator)
@@ -20,7 +19,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> assert_has(Query.text("Message Template"))
   end
 
-  @tag :current
   feature "Admin views invite links", ctx do
     # Create an invite link first
     {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
@@ -37,7 +35,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> assert_has(Query.text("Created by #{ctx.creator.full_name}"))
   end
 
-  @tag :current
   feature "Admin revokes invite link", ctx do
     # Create an invite link first
     {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
@@ -55,7 +52,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> refute_has(Query.button("Revoke"))
   end
 
-  @tag :current
   feature "New user signs up via invite link", ctx do
     # Create an invite link first
     {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
@@ -70,7 +66,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> assert_has(Query.text("Sign Up & Join"))
   end
 
-  @tag :current  
   feature "Attempting to join with expired token", ctx do
     # Create an expired invite link
     {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
@@ -86,7 +81,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> assert_has(Query.text("Please contact #{ctx.creator.full_name} for a new invite link"))
   end
 
-  @tag :current
   feature "Attempting to join with revoked token", ctx do
     # Create and revoke an invite link
     {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
@@ -102,7 +96,6 @@ defmodule Operately.Features.InviteLinksTest do
     |> assert_has(Query.text("This invite link is no longer valid"))
   end
 
-  @tag :current
   feature "Attempting to join with non-existent token", ctx do
     ctx
     |> visit_page("/join/invalid-token-123")

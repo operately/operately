@@ -4,7 +4,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as InviteLinks from "@/models/inviteLinks";
 import { PageModule } from "@/routes/types";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { PrimaryButton, SecondaryButton } from "@/components/Buttons";
+import { PrimaryButton, SecondaryButton } from "turboui";
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { useNavigate } from "react-router-dom";
 import { usePaths } from "@/routes/paths";
@@ -99,7 +99,7 @@ function Page() {
                 </div>
 
                 <div className="space-x-3">
-                  <PrimaryButton onClick={() => navigate(paths.companyPath())}>
+                  <PrimaryButton onClick={() => navigate(`/${company.id}`)}>
                     Continue to Dashboard
                   </PrimaryButton>
                   <SecondaryButton onClick={() => setInviteLink(null)}>
