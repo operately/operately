@@ -2,7 +2,7 @@ import type { ActivityContentTaskDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import React from "react";
-import { DateField } from "turboui";
+import { DateDisplay } from "turboui";
 import { feedTitle, taskLink, projectLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { parseContextualDate } from "@/models/contextualDates";
@@ -46,7 +46,7 @@ const TaskDueDateUpdating: ActivityHandler = {
     
     if (newDueDate) {
       // When showing a date, need to include the DateField component after the message
-      const dateField = <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon /></span>;
+      const dateField = <DateDisplay date={parseContextualDate(newDueDate)} />;
       
       if (props.page === "project") {
         return feedTitle(props.activity, message, dateField, "on", taskElement);
@@ -68,7 +68,7 @@ const TaskDueDateUpdating: ActivityHandler = {
 
     if (oldDueDate) {
       return (
-        <span>Previously the due date was <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(oldDueDate)} readonly hideCalendarIcon /></span></span>
+        <span>Previously the due date was <DateDisplay date={parseContextualDate(oldDueDate)} /></span>
       );
     } else {
       return <>Previously had no due date</>;
@@ -93,7 +93,7 @@ const TaskDueDateUpdating: ActivityHandler = {
     
     if (newDueDate) {
       return (
-        <span>Updated due date for {name} to <span style={{ display: "inline-flex" }}><DateField date={parseContextualDate(newDueDate)} readonly hideCalendarIcon /></span></span>
+        <span>Updated due date for {name} to <DateDisplay date={parseContextualDate(newDueDate)} /></span>
       );
     } else {
       return <span>Cleared due date for {name}</span>;
