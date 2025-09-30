@@ -25,7 +25,7 @@ export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
 export { CompanySetupPage, CompanySetupStepsReminder } from "./CompanySetupPage";
 export { Conversations, useConversations } from "./Conversations";
-export { DateField } from "./DateField";
+export { DateField, DateDisplay } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
 export { GlobalSearch } from "./GlobalSearch";
