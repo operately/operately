@@ -1,6 +1,5 @@
 import type { ActivityContentProjectDueDateUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
-import { Paths } from "@/routes/paths";
 import React from "react";
 import { FormattedTime } from "turboui";
 import { feedTitle, projectLink } from "../feedItemLinks";
@@ -11,8 +10,8 @@ const ProjectDueDateUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  pagePath(_paths: Paths, _activity: Activity) {
-    throw new Error("Not implemented");
+  pagePath(paths, activity: Activity) {
+    return paths.projectPath(content(activity).project!.id!);
   },
 
   PageTitle(_props: { activity: any }) {
@@ -69,12 +68,24 @@ const ProjectDueDateUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return <></>;
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const { project, newDueDate } = content(activity);
+    const projectName = project?.name ?? "the project";
+
+    if (newDueDate) {
+      return (
+        <>
+          Updated due date for {projectName} to <FormattedTime time={newDueDate} format="short-date" />
+        </>
+      );
+    } else {
+      return <>Cleared due date for {projectName}</>;
+    }
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    const { space } = content(activity);
+    return space?.name || null;
   },
 };
 
