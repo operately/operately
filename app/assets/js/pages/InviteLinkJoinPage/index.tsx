@@ -7,7 +7,7 @@ import * as Paper from "@/components/PaperContainer";
 import * as InviteLinks from "@/models/inviteLinks";
 import { PageModule } from "@/routes/types";
 import { redirect, useNavigate } from "react-router-dom";
-import { PrimaryButton, SecondaryButton } from "turboui";
+import { Avatar, SecondaryButton } from "turboui";
 
 export default { name: "InviteLinkJoinPage", loader, Page } as PageModule;
 
@@ -117,35 +117,33 @@ function Page() {
 
   return (
     <Pages.Page title="Join Company">
-      <Paper.Root size="small">
-        <div className="mt-24"></div>
-        <Paper.Body>
-          <div className="text-center">
-            <OperatelyLogo width="40" height="40" />
-            <div className="text-content-accent text-2xl font-extrabold mt-6 mb-4">Welcome to Operately!</div>
-            <div className="text-content-accent mb-8">
-              {inviteLink.author?.fullName} invited you to join {inviteLink.company?.name}.
-            </div>
+      <div className="">
+        <div className="flex items-center justify-center gap-2 text-xl font-bold mb-6 mt-12">
+          <OperatelyLogo width="30" height="30" /> Operately
+        </div>
 
-            <div className="space-y-4 mb-8">
-              <PrimaryButton onClick={handleJoin} loading={joining} testId="join-company">
-                Join {inviteLink.company?.name}
-              </PrimaryButton>
-
-              <div className="text-content-dimmed text-sm">Don't have an account yet?</div>
-
-              <SecondaryButton onClick={handleSignUp}>Sign Up & Join</SecondaryButton>
-            </div>
-
-            {joinError && <div className="text-red-600 mb-4">{joinError}</div>}
-
-            <div className="text-center text-content-dimmed text-sm">
-              <span className="font-bold">What happens next?</span> You will join the {inviteLink.company?.name} company
-              and get access to the Operately platform.
-            </div>
+        <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
+          <div className="text-center flex flex-col items-center mb-8">
+            <Avatar person={inviteLink.author!} size={64} className="mb-4" />
+            {inviteLink.author?.fullName} invited you to join
+            <div className="text-xl font-semibold">{inviteLink.company?.name}</div>
           </div>
-        </Paper.Body>
-      </Paper.Root>
+
+          <div className="flex items-center flex-col items-stretch">
+            <SecondaryButton onClick={handleJoin} loading={joining} testId="join-company">
+              Sign up & Join
+            </SecondaryButton>
+
+            <div className="flex items-center my-4 w-full gap-4">
+              <div className="border-t border-surface-outline flex-grow" />
+              <div className="text-content-dimmed text-sm">Or, if you've used Operately before</div>
+              <div className="border-t border-surface-outline flex-grow" />
+            </div>
+
+            <SecondaryButton onClick={handleSignUp}>Log in with your account</SecondaryButton>
+          </div>
+        </div>
+      </div>
     </Pages.Page>
   );
 }
