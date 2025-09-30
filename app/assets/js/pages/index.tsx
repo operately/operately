@@ -19,6 +19,8 @@ import CompanyManageAiAgentsPage from "./CompanyManageAiAgentsPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
 import CompanySetupPage from "./CompanySetupPage";
+import InviteTeamPage from "./InviteTeamPage";
+import InviteLinkJoinPage from "./InviteLinkJoinPage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
 import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
@@ -113,6 +115,8 @@ export default {
   CompanyPermissionsPage,
   CompanyRenamePage,
   CompanySetupPage,
+  InviteTeamPage,
+  InviteLinkJoinPage,
   CompanyWorkMapPage,
   DiscussionDraftsPage,
   DiscussionEditPage,
