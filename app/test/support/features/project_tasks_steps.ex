@@ -309,30 +309,21 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   end
 
   step :assert_task_due_date_change_visible_in_feed, ctx, date do
-    part1 = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to"
-    part2 = "on #{ctx.task.name} in #{ctx.project.name}"
+    short = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name}"
+    long = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name} in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el
-      |> UI.assert_text(part1)
-      |> UI.assert_text(date)
-      |> UI.assert_text("on #{ctx.task.name}")
+      UI.assert_text(el, short)
     end)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.find(UI.query(testid: "space-feed"), fn el ->
-      el
-      |> UI.assert_text(part1)
-      |> UI.assert_text(date)
-      |> UI.assert_text(part2)
+      UI.assert_text(el, long)
     end)
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.find(UI.query(testid: "company-feed"), fn el ->
-      el
-      |> UI.assert_text(part1)
-      |> UI.assert_text(date)
-      |> UI.assert_text(part2)
+      UI.assert_text(el, long)
     end)
   end
 
@@ -364,12 +355,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   # Notifications
   #
 
-  step :assert_due_date_changed_notification_sent, ctx do
+  step :assert_due_date_changed_notification_sent, ctx, date do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "Updated due date for #{ctx.task.name} to"
+      action: "Updated due date for #{ctx.task.name} to #{date}"
     })
   end
 

@@ -224,7 +224,7 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.visit_task_page()
     |> Steps.edit_task_due_date(next_friday)
     |> Steps.assert_task_due_date(formatted_date)
-    |> Steps.assert_due_date_changed_notification_sent()
+    |> Steps.assert_due_date_changed_notification_sent(formatted_date)
     |> Steps.assert_due_date_changed_email_sent()
   end
 
