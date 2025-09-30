@@ -1,16 +1,19 @@
 defmodule OperatelyWeb.Api do
   use TurboConnect.Api
 
-  plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
+  plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
       {:query, "get_invitation"},
+      {:query, "get_invite_link"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
+      {:mutation, "join_company_via_invite_link"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
       {:mutation, "reset_password"}
     ]
+  )
 
   use_types(OperatelyWeb.Api.Types)
 
@@ -28,7 +31,12 @@ defmodule OperatelyWeb.Api do
     mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
     mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
     mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
-    mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
+
+    mutation(
+      :edit_agent_task_execution_instructions,
+      OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions
+    )
+
     mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
     mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
     mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
@@ -103,7 +111,12 @@ defmodule OperatelyWeb.Api do
     mutation(:update_due_date, OperatelyWeb.Api.ProjectTasks.UpdateDueDate)
     mutation(:update_assignee, OperatelyWeb.Api.ProjectTasks.UpdateAssignee)
     mutation(:update_milestone, OperatelyWeb.Api.ProjectTasks.UpdateMilestone)
-    mutation(:update_milestone_and_ordering, OperatelyWeb.Api.ProjectTasks.UpdateMilestoneAndOrdering)
+
+    mutation(
+      :update_milestone_and_ordering,
+      OperatelyWeb.Api.ProjectTasks.UpdateMilestoneAndOrdering
+    )
+
     mutation(:update_description, OperatelyWeb.Api.ProjectTasks.UpdateDescription)
   end
 
@@ -120,6 +133,13 @@ defmodule OperatelyWeb.Api do
   namespace(:spaces) do
     query(:search, OperatelyWeb.Api.Spaces.Search)
   end
+
+  query(:get_invite_link, OperatelyWeb.Api.Invitations.GetInviteLink)
+  query(:list_invite_links, OperatelyWeb.Api.Invitations.ListInviteLinks)
+
+  mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
+  mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
+  mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
 
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)
