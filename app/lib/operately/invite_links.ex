@@ -55,7 +55,7 @@ defmodule Operately.InviteLinks do
     InviteLink.changeset(invite_link, attrs)
   end
 
-  def get_users_joined_via_link(invite_link_id) do
+  def get_users_joined_via_link(_invite_link_id) do
     # This will be implemented when we add the join tracking
     # For now, return empty list
     []
