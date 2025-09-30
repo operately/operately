@@ -123,6 +123,10 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     UI.select_day_in_date_field(ctx, testid: "milestone-due-date", date: due_date)
   end
 
+  step :remove_milestone_due_date, ctx do
+    UI.clear_date_in_date_field(ctx, testid: "milestone-due-date")
+  end
+
   step :mark_milestone_as_completed, ctx do
     ctx
     |> UI.find(UI.query(testid: "sidebar-status"), fn el ->
@@ -307,6 +311,13 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
   end
 
+  step :assert_no_due_date, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "sidebar"), fn el ->
+      UI.assert_text(el, "Set due date")
+    end)
+  end
+
   step :assert_task_created, ctx, name: name do
     ctx
     |> UI.find(UI.query(testid: "tasks-section"), fn el ->
@@ -324,5 +335,74 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     UI.find(ctx, UI.query(testid: "timeline-section"), fn el ->
       UI.assert_text(el, description)
     end)
+  end
+
+  #
+  # Feed
+  #
+
+  step :assert_milestone_due_date_change_visible_in_feed, ctx do
+    short = "#{Operately.People.Person.first_name(ctx.champion)} updated the due date for the #{ctx.milestone.title} milestone"
+    long = "#{Operately.People.Person.first_name(ctx.champion)} updated the due date for the #{ctx.milestone.title} milestone in #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
+  #
+  # Emails
+  #
+
+  step :assert_due_date_changed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "changed the due date for \"#{ctx.milestone.title}\""
+    })
+  end
+
+  step :assert_due_date_removed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "removed the due date for \"#{ctx.milestone.title}\""
+    })
+  end
+
+  #
+  # Notifications
+  #
+
+  step :assert_due_date_changed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "The \"#{ctx.milestone.title}\" milestone due date was updated"
+    })
+  end
+
+  step :assert_due_date_removed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "The \"#{ctx.milestone.title}\" milestone due date was removed"
+    })
   end
 end

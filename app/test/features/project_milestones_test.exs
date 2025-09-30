@@ -110,6 +110,30 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.reload_milestone_page()
       |> Steps.assert_milestone_due_date(formatted_date)
       |> Steps.assert_activity_added_to_feed("updated the milestone")
+      |> Steps.assert_milestone_due_date_change_visible_in_feed()
+    end
+
+    feature "edit milestone due date sends notification to champion", ctx do
+      next_friday = Operately.Support.Time.next_friday()
+      formatted_date = Operately.Support.Time.format_month_day(next_friday)
+
+      ctx
+      |> UI.login_as(ctx.reviewer)
+      |> Steps.visit_milestone_page()
+      |> Steps.edit_milestone_due_date(next_friday)
+      |> Steps.assert_milestone_due_date(formatted_date)
+      |> Steps.assert_due_date_changed_notification_sent()
+      |> Steps.assert_due_date_changed_email_sent()
+    end
+
+    feature "remove milestone due date sends notification to champion", ctx do
+      ctx
+      |> UI.login_as(ctx.reviewer)
+      |> Steps.visit_milestone_page()
+      |> Steps.remove_milestone_due_date()
+      |> Steps.assert_no_due_date()
+      |> Steps.assert_due_date_removed_notification_sent()
+      |> Steps.assert_due_date_changed_email_sent()
     end
 
     feature "mark milestone as completed", ctx do
