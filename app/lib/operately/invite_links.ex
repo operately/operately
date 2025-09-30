@@ -25,9 +25,9 @@ defmodule Operately.InviteLinks do
 
   def create_invite_link(attrs \\ %{}) do
     token = InviteLink.build_token()
-    
+
     attrs_with_token = Map.put(attrs, :token, token)
-    
+
     %InviteLink{}
     |> InviteLink.changeset(attrs_with_token)
     |> Repo.insert()
