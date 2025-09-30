@@ -2250,58 +2250,6 @@ export interface GetGoalsResult {
   goals?: Goal[] | null;
 }
 
-export interface GetInvitationInput {
-  token?: string | null;
-}
-
-export interface GetInvitationResult {
-  invitation?: Invitation | null;
-}
-
-export interface GetInviteLinkInput {
-  token?: string | null;
-}
-
-export interface GetInviteLinkResult {
-  inviteLink?: InviteLink | null;
-}
-
-export interface ListInviteLinksInput {
-  companyId?: string | null;
-}
-
-export interface ListInviteLinksResult {
-  inviteLinks?: InviteLink[] | null;
-}
-
-export interface CreateInviteLinkInput {
-  companyId?: string | null;
-}
-
-export interface CreateInviteLinkResult {
-  inviteLink?: InviteLink | null;
-}
-
-export interface RevokeInviteLinkInput {
-  inviteLinkId?: string | null;
-}
-
-export interface RevokeInviteLinkResult {
-  inviteLink?: InviteLink | null;
-}
-
-export interface JoinCompanyViaInviteLinkInput {
-  token?: string | null;
-  password?: string | null;
-  passwordConfirmation?: string | null;
-}
-
-export interface JoinCompanyViaInviteLinkResult {
-  company?: Company | null;
-  person?: Person | null;
-  error?: string | null;
-}
-
 export interface GetKeyResourceInput {
   id?: string | null;
 }
@@ -2638,6 +2586,30 @@ export interface GoalsParentGoalSearchInput {
 
 export interface GoalsParentGoalSearchResult {
   goals: Goal[];
+}
+
+export interface InvitationsGetInvitationInput {
+  token?: string | null;
+}
+
+export interface InvitationsGetInvitationResult {
+  invitation?: Invitation | null;
+}
+
+export interface InvitationsGetInviteLinkInput {
+  token?: string;
+}
+
+export interface InvitationsGetInviteLinkResult {
+  inviteLink?: InviteLink | null;
+}
+
+export interface InvitationsListInviteLinksInput {
+  companyId?: string;
+}
+
+export interface InvitationsListInviteLinksResult {
+  inviteLinks?: InviteLink[];
 }
 
 export interface ListGoalContributorsInput {
@@ -3704,6 +3676,42 @@ export interface GoalsUpdateTargetValueResult {
   success: boolean | null;
 }
 
+export interface InvitationsCreateInviteLinkInput {
+  companyId?: string;
+}
+
+export interface InvitationsCreateInviteLinkResult {
+  inviteLink?: InviteLink;
+}
+
+export interface InvitationsJoinCompanyViaInviteLinkInput {
+  token?: string;
+  password?: string | null;
+  passwordConfirmation?: string | null;
+}
+
+export interface InvitationsJoinCompanyViaInviteLinkResult {
+  company?: Company | null;
+  person?: Person | null;
+  error?: string | null;
+}
+
+export interface InvitationsNewInvitationTokenInput {
+  personId?: string | null;
+}
+
+export interface InvitationsNewInvitationTokenResult {
+  invitation?: Invitation | null;
+}
+
+export interface InvitationsRevokeInviteLinkInput {
+  inviteLinkId?: string;
+}
+
+export interface InvitationsRevokeInviteLinkResult {
+  inviteLink?: InviteLink;
+}
+
 export interface JoinCompanyInput {
   token?: string | null;
   password?: string | null;
@@ -3742,14 +3750,6 @@ export interface MoveProjectToSpaceInput {
 }
 
 export interface MoveProjectToSpaceResult {}
-
-export interface NewInvitationTokenInput {
-  personId?: string | null;
-}
-
-export interface NewInvitationTokenResult {
-  invitation?: Invitation | null;
-}
 
 export interface PauseProjectInput {
   projectId?: string | null;
@@ -4316,18 +4316,6 @@ class ApiNamespaceRoot {
     return this.client.get("/get_goals", input);
   }
 
-  async getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-    return this.client.get("/get_invitation", input);
-  }
-
-  async getInviteLink(input: GetInviteLinkInput): Promise<GetInviteLinkResult> {
-    return this.client.get("/get_invite_link", input);
-  }
-
-  async listInviteLinks(input: ListInviteLinksInput): Promise<ListInviteLinksResult> {
-    return this.client.get("/list_invite_links", input);
-  }
-
   async getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
     return this.client.get("/get_key_resource", input);
   }
@@ -4740,22 +4728,6 @@ class ApiNamespaceRoot {
     return this.client.post("/move_project_to_space", input);
   }
 
-  async newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
-    return this.client.post("/new_invitation_token", input);
-  }
-
-  async createInviteLink(input: CreateInviteLinkInput): Promise<CreateInviteLinkResult> {
-    return this.client.post("/create_invite_link", input);
-  }
-
-  async revokeInviteLink(input: RevokeInviteLinkInput): Promise<RevokeInviteLinkResult> {
-    return this.client.post("/revoke_invite_link", input);
-  }
-
-  async joinCompanyViaInviteLink(input: JoinCompanyViaInviteLinkInput): Promise<JoinCompanyViaInviteLinkResult> {
-    return this.client.post("/join_company_via_invite_link", input);
-  }
-
   async pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
     return this.client.post("/pause_project", input);
   }
@@ -4882,6 +4854,40 @@ class ApiNamespaceRoot {
 
   async updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
     return this.client.post("/update_task_status", input);
+  }
+}
+
+class ApiNamespaceInvitations {
+  constructor(private client: ApiClient) {}
+
+  async getInvitation(input: InvitationsGetInvitationInput): Promise<InvitationsGetInvitationResult> {
+    return this.client.get("/invitations/get_invitation", input);
+  }
+
+  async getInviteLink(input: InvitationsGetInviteLinkInput): Promise<InvitationsGetInviteLinkResult> {
+    return this.client.get("/invitations/get_invite_link", input);
+  }
+
+  async listInviteLinks(input: InvitationsListInviteLinksInput): Promise<InvitationsListInviteLinksResult> {
+    return this.client.get("/invitations/list_invite_links", input);
+  }
+
+  async createInviteLink(input: InvitationsCreateInviteLinkInput): Promise<InvitationsCreateInviteLinkResult> {
+    return this.client.post("/invitations/create_invite_link", input);
+  }
+
+  async joinCompanyViaInviteLink(
+    input: InvitationsJoinCompanyViaInviteLinkInput,
+  ): Promise<InvitationsJoinCompanyViaInviteLinkResult> {
+    return this.client.post("/invitations/join_company_via_invite_link", input);
+  }
+
+  async newInvitationToken(input: InvitationsNewInvitationTokenInput): Promise<InvitationsNewInvitationTokenResult> {
+    return this.client.post("/invitations/new_invitation_token", input);
+  }
+
+  async revokeInviteLink(input: InvitationsRevokeInviteLinkInput): Promise<InvitationsRevokeInviteLinkResult> {
+    return this.client.post("/invitations/revoke_invite_link", input);
   }
 }
 
@@ -5213,6 +5219,7 @@ export class ApiClient {
   private basePath: string;
   private headers: any;
   public apiNamespaceRoot: ApiNamespaceRoot;
+  public apiNamespaceInvitations: ApiNamespaceInvitations;
   public apiNamespaceSpaces: ApiNamespaceSpaces;
   public apiNamespaceProjectDiscussions: ApiNamespaceProjectDiscussions;
   public apiNamespaceProjectTasks: ApiNamespaceProjectTasks;
@@ -5223,6 +5230,7 @@ export class ApiClient {
 
   constructor() {
     this.apiNamespaceRoot = new ApiNamespaceRoot(this);
+    this.apiNamespaceInvitations = new ApiNamespaceInvitations(this);
     this.apiNamespaceSpaces = new ApiNamespaceSpaces(this);
     this.apiNamespaceProjectDiscussions = new ApiNamespaceProjectDiscussions(this);
     this.apiNamespaceProjectTasks = new ApiNamespaceProjectTasks(this);
@@ -5322,18 +5330,6 @@ export class ApiClient {
 
   getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
     return this.apiNamespaceRoot.getGoals(input);
-  }
-
-  getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-    return this.apiNamespaceRoot.getInvitation(input);
-  }
-
-  getInviteLink(input: GetInviteLinkInput): Promise<GetInviteLinkResult> {
-    return this.apiNamespaceRoot.getInviteLink(input);
-  }
-
-  listInviteLinks(input: ListInviteLinksInput): Promise<ListInviteLinksResult> {
-    return this.apiNamespaceRoot.listInviteLinks(input);
   }
 
   getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
@@ -5742,22 +5738,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.moveProjectToSpace(input);
   }
 
-  newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
-    return this.apiNamespaceRoot.newInvitationToken(input);
-  }
-
-  createInviteLink(input: CreateInviteLinkInput): Promise<CreateInviteLinkResult> {
-    return this.apiNamespaceRoot.createInviteLink(input);
-  }
-
-  revokeInviteLink(input: RevokeInviteLinkInput): Promise<RevokeInviteLinkResult> {
-    return this.apiNamespaceRoot.revokeInviteLink(input);
-  }
-
-  joinCompanyViaInviteLink(input: JoinCompanyViaInviteLinkInput): Promise<JoinCompanyViaInviteLinkResult> {
-    return this.apiNamespaceRoot.joinCompanyViaInviteLink(input);
-  }
-
   pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
     return this.apiNamespaceRoot.pauseProject(input);
   }
@@ -5931,15 +5911,6 @@ export async function getGoalProgressUpdate(input: GetGoalProgressUpdateInput): 
 }
 export async function getGoals(input: GetGoalsInput): Promise<GetGoalsResult> {
   return defaultApiClient.getGoals(input);
-}
-export async function getInvitation(input: GetInvitationInput): Promise<GetInvitationResult> {
-  return defaultApiClient.getInvitation(input);
-}
-export async function getInviteLink(input: GetInviteLinkInput): Promise<GetInviteLinkResult> {
-  return defaultApiClient.getInviteLink(input);
-}
-export async function listInviteLinks(input: ListInviteLinksInput): Promise<ListInviteLinksResult> {
-  return defaultApiClient.listInviteLinks(input);
 }
 export async function getKeyResource(input: GetKeyResourceInput): Promise<GetKeyResourceResult> {
   return defaultApiClient.getKeyResource(input);
@@ -6289,18 +6260,6 @@ export async function markNotificationsAsRead(
 export async function moveProjectToSpace(input: MoveProjectToSpaceInput): Promise<MoveProjectToSpaceResult> {
   return defaultApiClient.moveProjectToSpace(input);
 }
-export async function newInvitationToken(input: NewInvitationTokenInput): Promise<NewInvitationTokenResult> {
-  return defaultApiClient.newInvitationToken(input);
-}
-export async function createInviteLink(input: CreateInviteLinkInput): Promise<CreateInviteLinkResult> {
-  return defaultApiClient.createInviteLink(input);
-}
-export async function revokeInviteLink(input: RevokeInviteLinkInput): Promise<RevokeInviteLinkResult> {
-  return defaultApiClient.revokeInviteLink(input);
-}
-export async function joinCompanyViaInviteLink(input: JoinCompanyViaInviteLinkInput): Promise<JoinCompanyViaInviteLinkResult> {
-  return defaultApiClient.joinCompanyViaInviteLink(input);
-}
 export async function pauseProject(input: PauseProjectInput): Promise<PauseProjectResult> {
   return defaultApiClient.pauseProject(input);
 }
@@ -6477,18 +6436,6 @@ export function useGetGoalProgressUpdate(
 
 export function useGetGoals(input: GetGoalsInput): UseQueryHookResult<GetGoalsResult> {
   return useQuery<GetGoalsResult>(() => defaultApiClient.getGoals(input));
-}
-
-export function useGetInvitation(input: GetInvitationInput): UseQueryHookResult<GetInvitationResult> {
-  return useQuery<GetInvitationResult>(() => defaultApiClient.getInvitation(input));
-}
-
-export function useGetInviteLink(input: GetInviteLinkInput): UseQueryHookResult<GetInviteLinkResult> {
-  return useQuery<GetInviteLinkResult>(() => defaultApiClient.getInviteLink(input));
-}
-
-export function useListInviteLinks(input: ListInviteLinksInput): UseQueryHookResult<ListInviteLinksResult> {
-  return useQuery<ListInviteLinksResult>(() => defaultApiClient.listInviteLinks(input));
 }
 
 export function useGetKeyResource(input: GetKeyResourceInput): UseQueryHookResult<GetKeyResourceResult> {
@@ -7085,27 +7032,6 @@ export function useMoveProjectToSpace(): UseMutationHookResult<MoveProjectToSpac
   );
 }
 
-export function useNewInvitationToken(): UseMutationHookResult<NewInvitationTokenInput, NewInvitationTokenResult> {
-  return useMutation<NewInvitationTokenInput, NewInvitationTokenResult>((input) =>
-    defaultApiClient.newInvitationToken(input),
-  );
-}
-export function useCreateInviteLink(): UseMutationHookResult<CreateInviteLinkInput, CreateInviteLinkResult> {
-  return useMutation<CreateInviteLinkInput, CreateInviteLinkResult>((input) =>
-    defaultApiClient.createInviteLink(input),
-  );
-}
-export function useRevokeInviteLink(): UseMutationHookResult<RevokeInviteLinkInput, RevokeInviteLinkResult> {
-  return useMutation<RevokeInviteLinkInput, RevokeInviteLinkResult>((input) =>
-    defaultApiClient.revokeInviteLink(input),
-  );
-}
-export function useJoinCompanyViaInviteLink(): UseMutationHookResult<JoinCompanyViaInviteLinkInput, JoinCompanyViaInviteLinkResult> {
-  return useMutation<JoinCompanyViaInviteLinkInput, JoinCompanyViaInviteLinkResult>((input) =>
-    defaultApiClient.joinCompanyViaInviteLink(input),
-  );
-}
-
 export function usePauseProject(): UseMutationHookResult<PauseProjectInput, PauseProjectResult> {
   return useMutation<PauseProjectInput, PauseProjectResult>((input) => defaultApiClient.pauseProject(input));
 }
@@ -7349,8 +7275,6 @@ export default {
   useGetGoalProgressUpdate,
   getGoals,
   useGetGoals,
-  getInvitation,
-  useGetInvitation,
   getKeyResource,
   useGetKeyResource,
   getMe,
@@ -7551,8 +7475,6 @@ export default {
   useMarkNotificationsAsRead,
   moveProjectToSpace,
   useMoveProjectToSpace,
-  newInvitationToken,
-  useNewInvitationToken,
   pauseProject,
   usePauseProject,
   postDiscussion,
@@ -7615,6 +7537,51 @@ export default {
   useUpdateTask,
   updateTaskStatus,
   useUpdateTaskStatus,
+
+  invitations: {
+    getInviteLink: (input: InvitationsGetInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.getInviteLink(input),
+    useGetInviteLink: (input: InvitationsGetInviteLinkInput) =>
+      useQuery<InvitationsGetInviteLinkResult>(() => defaultApiClient.apiNamespaceInvitations.getInviteLink(input)),
+
+    listInviteLinks: (input: InvitationsListInviteLinksInput) =>
+      defaultApiClient.apiNamespaceInvitations.listInviteLinks(input),
+    useListInviteLinks: (input: InvitationsListInviteLinksInput) =>
+      useQuery<InvitationsListInviteLinksResult>(() => defaultApiClient.apiNamespaceInvitations.listInviteLinks(input)),
+
+    getInvitation: (input: InvitationsGetInvitationInput) =>
+      defaultApiClient.apiNamespaceInvitations.getInvitation(input),
+    useGetInvitation: (input: InvitationsGetInvitationInput) =>
+      useQuery<InvitationsGetInvitationResult>(() => defaultApiClient.apiNamespaceInvitations.getInvitation(input)),
+
+    newInvitationToken: (input: InvitationsNewInvitationTokenInput) =>
+      defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
+    useNewInvitationToken: () =>
+      useMutation<InvitationsNewInvitationTokenInput, InvitationsNewInvitationTokenResult>(
+        defaultApiClient.apiNamespaceInvitations.newInvitationToken,
+      ),
+
+    revokeInviteLink: (input: InvitationsRevokeInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.revokeInviteLink(input),
+    useRevokeInviteLink: () =>
+      useMutation<InvitationsRevokeInviteLinkInput, InvitationsRevokeInviteLinkResult>(
+        defaultApiClient.apiNamespaceInvitations.revokeInviteLink,
+      ),
+
+    createInviteLink: (input: InvitationsCreateInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.createInviteLink(input),
+    useCreateInviteLink: () =>
+      useMutation<InvitationsCreateInviteLinkInput, InvitationsCreateInviteLinkResult>(
+        defaultApiClient.apiNamespaceInvitations.createInviteLink,
+      ),
+
+    joinCompanyViaInviteLink: (input: InvitationsJoinCompanyViaInviteLinkInput) =>
+      defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
+    useJoinCompanyViaInviteLink: () =>
+      useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>(
+        defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink,
+      ),
+  },
 
   spaces: {
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),

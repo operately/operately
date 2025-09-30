@@ -19,8 +19,6 @@ import CompanyManageAiAgentsPage from "./CompanyManageAiAgentsPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
 import CompanySetupPage from "./CompanySetupPage";
-import InviteTeamPage from "./InviteTeamPage";
-import InviteLinkJoinPage from "./InviteLinkJoinPage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
 import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
@@ -39,6 +37,8 @@ import GoalDiscussionNewPage from "./GoalDiscussionNewPage";
 import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
 import HomePage from "./HomePage";
+import InviteLinkJoinPage from "./InviteLinkJoinPage";
+import InviteTeamPage from "./InviteTeamPage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
 import LoginPage from "./LoginPage";
@@ -115,8 +115,6 @@ export default {
   CompanyPermissionsPage,
   CompanyRenamePage,
   CompanySetupPage,
-  InviteTeamPage,
-  InviteLinkJoinPage,
   CompanyWorkMapPage,
   DiscussionDraftsPage,
   DiscussionEditPage,
@@ -135,6 +133,8 @@ export default {
   GoalPage,
   GoalReopenPage,
   HomePage,
+  InviteLinkJoinPage,
+  InviteTeamPage,
   JoinPage,
   LobbyPage,
   LoginPage,

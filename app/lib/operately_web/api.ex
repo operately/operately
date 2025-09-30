@@ -3,15 +3,17 @@ defmodule OperatelyWeb.Api do
 
   plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
-      {:query, "invitations.get_invitation"},
-      {:query, "invitations.get_invite_link"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
-      {:mutation, "invitations.join_company_via_invite_link"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
-      {:mutation, "reset_password"}
+      {:mutation, "reset_password"},
+
+      # invitations
+      {:query, "invitations/get_invitation"},
+      {:query, "invitations/get_invite_link"},
+      {:mutation, "invitations/join_company_via_invite_link"}
     ]
   )
 
@@ -125,13 +127,16 @@ defmodule OperatelyWeb.Api do
   end
 
   namespace(:invitations) do
-    query(:get_invitation, Q.GetInvitation)
+    # bulk invitations
     query(:get_invite_link, OperatelyWeb.Api.Invitations.GetInviteLink)
     query(:list_invite_links, OperatelyWeb.Api.Invitations.ListInviteLinks)
 
     mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
     mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
     mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
+
+    # single user invitations
+    query(:get_invitation, Q.GetInvitation)
     mutation(:new_invitation_token, M.NewInvitationToken)
   end
 
