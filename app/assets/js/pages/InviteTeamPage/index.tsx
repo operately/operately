@@ -1,41 +1,38 @@
+import Api from "@/api";
+import React from "react";
+
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as InviteLinks from "@/models/inviteLinks";
-import React from "react";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { PageModule } from "@/routes/types";
 import { useNavigate } from "react-router-dom";
 import { PrimaryButton, SecondaryButton } from "turboui";
-import { useCreateInviteLink } from "../../api";
+import { useCurrentCompany } from "../../contexts/CurrentCompanyContext";
 
 export default { name: "InviteTeamPage", loader, Page } as PageModule;
 
-interface LoaderResult {
-  company: any;
-}
-
-async function loader({ params }): Promise<LoaderResult> {
-  return {
-    company: { id: params.companyId, name: "Company" }, // Simplified for now
-  };
+async function loader(): Promise<null> {
+  return null;
 }
 
 function Page() {
   const navigate = useNavigate();
-  const { company } = Pages.useLoadedData() as LoaderResult;
+  const company = useCurrentCompany()!;
 
-  const [createInviteLink, { loading: creating }] = useCreateInviteLink();
+  const [createInviteLink, { loading: creating }] = Api.invitations.useCreateInviteLink();
   const [inviteLink, setInviteLink] = React.useState<InviteLinks.InviteLink | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const handleGenerateLink = async () => {
     try {
       setError(null);
-      const result = await createInviteLink({ companyId: company.id });
+      const result = await createInviteLink({});
       setInviteLink(result.inviteLink!);
     } catch (err) {
       setError("Failed to generate invite link. Please try again.");
+      console.error("Error generating invite link:", err);
     }
   };
 

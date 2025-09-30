@@ -1,3 +1,4 @@
+import Api from "@/api";
 import { PageModule } from "@/routes/types";
 
 import * as Pages from "@/components/Pages";
@@ -6,8 +7,8 @@ import * as Companies from "@/models/companies";
 import * as Invitations from "@/models/invitations";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
-import { IconAlertTriangle, IconId, IconRefresh, IconUserX } from "turboui";
 import * as React from "react";
+import { IconAlertTriangle, IconId, IconRefresh, IconUserX } from "turboui";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
 import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
@@ -276,7 +277,7 @@ function RemovePersonModal({ person, state }: { person: People.Person; state: Mo
 function ReissueInvitationModal(props: { person: People.Person; state: ModalState }) {
   const [isGenerated, setGenerated] = React.useState(false);
   const [url, setUrl] = React.useState("");
-  const [create, { loading }] = Companies.useNewInvitationToken();
+  const [create, { loading }] = Api.invitations.useNewInvitationToken();
 
   const generate = async () => {
     const res = await create({ personId: props.person.id! });
@@ -307,7 +308,7 @@ function ReissueInvitationModal(props: { person: People.Person; state: ModalStat
 function RenewInvitationModal(props: { person: People.Person; state: ModalState }) {
   const refresh = Pages.useRefresh();
   const [url, setUrl] = React.useState("");
-  const [create] = Companies.useNewInvitationToken();
+  const [create] = Api.invitations.useNewInvitationToken();
 
   React.useEffect(() => {
     create({ personId: props.person.id! }).then((res) => {
