@@ -69,12 +69,24 @@ const ProjectDueDateUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return <></>;
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const { project, newDueDate } = content(activity);
+    const projectName = project?.name ?? "the project";
+
+    if (newDueDate) {
+      return (
+        <>
+          Updated due date for {projectName} to <FormattedTime time={newDueDate} format="short-date" />
+        </>
+      );
+    } else {
+      return <>Cleared due date for {projectName}</>;
+    }
   },
 
-  NotificationLocation(_props: { activity: Activity }) {
-    return null;
+  NotificationLocation({ activity }: { activity: Activity }) {
+    const { space } = content(activity);
+    return space?.name || null;
   },
 };
 
