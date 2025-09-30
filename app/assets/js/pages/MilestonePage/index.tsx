@@ -105,14 +105,15 @@ function Page() {
 
   const { parsedMilestone, milestones, setMilestones, title, setTitle } = useMilestones(pageData, milestone);
 
-  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus, updateTaskMilestone } = Tasks.useTasksForTurboUi({
-    backendTasks: data.tasks,
-    projectId: milestone.project.id,
-    cacheKey: pageCacheKey(milestone.id),
-    milestones: milestones,
-    setMilestones: setMilestones,
-    refresh,
-  });
+  const { tasks, createTask, updateTaskAssignee, updateTaskDueDate, updateTaskStatus, updateTaskMilestone } =
+    Tasks.useTasksForTurboUi({
+      backendTasks: data.tasks,
+      projectId: milestone.project.id,
+      cacheKey: pageCacheKey(milestone.id),
+      milestones: milestones,
+      setMilestones: setMilestones,
+      refresh,
+    });
   const { comments, setComments, handleCreateComment, handleEditComment } = useComments(paths, milestone, () => {
     PageCache.invalidate(pageCacheKey(milestone.id));
   });
@@ -242,6 +243,9 @@ function usePageField<T>(
       if (data.milestone.id) {
         PageCache.invalidate(pageCacheKey(data.milestone.id));
       }
+      if (data.milestone.project?.id) {
+        PageCache.invalidate(projectPageCacheKey(data.milestone.project.id));
+      }
 
       // Refresh the page data if requested
       if (refreshPageData) {
@@ -324,9 +328,6 @@ function useStatusField(
       });
 
       PageCache.invalidate(pageCacheKey(milestone.id));
-      if (milestone.project?.id) {
-        PageCache.invalidate(projectPageCacheKey(milestone.project.id));
-      }
 
       setComments((prev) =>
         prev.map((c) => {
@@ -360,11 +361,11 @@ function useMilestones(pageData, milestone: Milestones.Milestone) {
     validations: [(v) => (v.trim() === "" ? "Milestone name cannot be empty" : null)],
   });
 
-  return { 
+  return {
     title,
     setTitle,
     parsedMilestone,
-    milestones, 
-    setMilestones, 
+    milestones,
+    setMilestones,
   };
 }
