@@ -77,34 +77,54 @@ defmodule OperatelyWeb.Api.Invitations do
 
   defmodule CreateInviteLink do
     use TurboConnect.Mutation
-    use OperatelyWeb.Api.Helpers
 
-    alias Operately.Companies
+    alias Operately.Companies.Company
     alias Operately.Companies.Permissions
 
     inputs do
-      field?(:company_id, :string, null: false)
     end
 
     outputs do
-      field?(:invite_link, :invite_link, null: false)
+      field :invite_link, :invite_link
     end
 
-    def call(conn, inputs) do
-      Action.new()
-      |> run(:me, fn -> find_me(conn) end)
-      |> run(:company_id, fn -> decode_id(inputs[:company_id]) end)
-      |> run(:company, fn ctx ->
-        Companies.get_company_with_access_level(ctx.me.id, id: ctx.company_id)
-      end)
-      |> run(:check_permissions, fn ctx ->
-        Permissions.check(ctx.company.requester_access_level, :can_invite_members)
-      end)
-      |> run(:invite_link, fn ctx -> create_invite_link(ctx) end)
-      |> run(:serialized, fn ctx ->
-        {:ok, %{invite_link: Serializer.serialize(ctx.invite_link, level: :full)}}
-      end)
+    def call(conn, _inputs) do
+      conn
+      |> start_transaction()
+      |> load_company(conn)
+      |> check_permissions()
+      |> create_invite_link()
+      |> commit()
       |> respond()
+    end
+
+    def start_transaction(conn) do
+      Ecto.Multi.new() |> Ecto.Multi.put(:me, conn.assigns.current_person)
+    end
+
+    def load_company(multi, conn) do
+      Ecto.Multi.run(multi, :company, fn _, %{me: me} ->
+        Company.get(me, id: conn.assigns.current_company.id)
+      end)
+    end
+
+    def check_permissions(multi) do
+      Ecto.Multi.run(multi, :check_permissions, fn _, %{company: company} ->
+        Permissions.check(company.request_info.access_level, :can_invite_members)
+      end)
+    end
+
+    defp create_invite_link(multi) do
+      Ecto.Multi.run(multi, :invite_link, fn _, %{me: me, company: company} ->
+        Operately.InviteLinks.create_invite_link(%{
+          company_id: company.id,
+          author_id: me.id
+        })
+      end)
+    end
+
+    defp commit(multi) do
+      Operately.Repo.commit(multi)
     end
 
     def respond(result) do
@@ -126,16 +146,6 @@ defmodule OperatelyWeb.Api.Invitations do
 
         _ ->
           {:error, :internal_server_error}
-      end
-    end
-
-    defp create_invite_link(ctx) do
-      with {:ok, invite_link} <-
-             Operately.InviteLinks.create_invite_link(%{
-               company_id: ctx.company_id,
-               author_id: ctx.me.id
-             }) do
-        {:ok, Repo.preload(invite_link, [:author, :company])}
       end
     end
 
@@ -256,8 +266,7 @@ defmodule OperatelyWeb.Api.Invitations do
         true ->
           # For now, return an error for simplicity
           # In a full implementation, this would involve complex company switching logic
-          {:error,
-           "Company joining for existing users not yet implemented. Please contact support."}
+          {:error, "Company joining for existing users not yet implemented. Please contact support."}
       end
     end
 

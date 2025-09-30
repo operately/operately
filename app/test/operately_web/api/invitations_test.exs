@@ -10,51 +10,42 @@ defmodule OperatelyWeb.Api.InvitationsTest do
 
   describe "get_invite_link" do
     test "returns nil when token is unknown", ctx do
-      assert {200, %{invite_link: nil}} =
-               query(ctx.conn, [:invitations, :get_invite_link], %{token: "missing-token"})
+      assert {200, %{invite_link: nil}} = query(ctx.conn, [:invitations, :get_invite_link], %{token: "missing-token"})
     end
 
     test "returns serialized invite link when token matches", ctx do
       invite_link = create_invite_link(ctx)
 
-      assert {200, %{invite_link: res}} =
-               query(ctx.conn, [:invitations, :get_invite_link], %{token: invite_link.token})
-
+      assert {200, %{invite_link: res}} = query(ctx.conn, [:invitations, :get_invite_link], %{token: invite_link.token})
       assert res == Serializer.serialize(invite_link, level: :full)
     end
   end
 
   describe "list_invite_links" do
     test "requires authentication", ctx do
-      assert {401, _} =
-               query(ctx.conn, [:invitations, :list_invite_links], %{company_id: ctx.company.id})
+      assert {401, _} = query(ctx.conn, [:invitations, :list_invite_links], %{company_id: ctx.company.id})
     end
 
     test "requires company_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, %{message: message}} =
-               query(ctx.conn, [:invitations, :list_invite_links], %{})
-
-      assert message == "Missing required fields: company_id"
+      assert {400, res} = query(ctx.conn, [:invitations, :list_invite_links], %{})
+      assert res.message.message == "Missing required fields: company_id"
     end
 
     test "returns not found when company is inaccessible", ctx do
-      ctx =
-        ctx |> Factory.add_company(:other_company, ctx.account) |> Factory.log_in_person(:creator)
+      ctx = ctx |> Factory.add_company(:other_company, ctx.account) |> Factory.log_in_person(:creator)
 
-      assert {404, _} =
-               query(ctx.conn, [:invitations, :list_invite_links], %{
-                 company_id: ctx.other_company.id
-               })
+      params = %{company_id: ctx.other_company.id}
+
+      assert {404, _} = query(ctx.conn, [:invitations, :list_invite_links], params)
     end
 
     test "returns invite links for the company", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
       invite_link = create_invite_link(ctx)
 
-      assert {200, %{invite_links: links}} =
-               query(ctx.conn, [:invitations, :list_invite_links], %{company_id: ctx.company.id})
+      assert {200, %{invite_links: links}} = query(ctx.conn, [:invitations, :list_invite_links], %{company_id: ctx.company.id})
 
       assert links == [Serializer.serialize(invite_link, level: :essential)]
     end
@@ -62,19 +53,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
 
   describe "create_invite_link" do
     test "requires authentication", ctx do
-      assert {401, _} =
-               mutation(ctx.conn, [:invitations, :create_invite_link], %{
-                 company_id: ctx.company.id
-               })
-    end
-
-    test "requires company_id", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-
-      assert {400, %{message: message}} =
-               mutation(ctx.conn, [:invitations, :create_invite_link], %{})
-
-      assert message == "Missing required fields: company_id"
+      assert {401, _} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
     end
 
     test "returns forbidden when person lacks permission", ctx do
@@ -83,10 +62,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
         |> Factory.add_company_member(:member)
         |> Factory.log_in_person(:member)
 
-      assert {403, %{message: message}} =
-               mutation(ctx.conn, [:invitations, :create_invite_link], %{
-                 company_id: ctx.company.id
-               })
+      assert {403, %{message: message}} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
 
       assert message == "You don't have permission to perform this action"
     end
@@ -203,10 +179,10 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     test "requires invite_link_id", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      assert {400, %{message: message}} =
+      assert {400, res} =
                mutation(ctx.conn, [:invitations, :revoke_invite_link], %{})
 
-      assert message == "Missing required fields: invite_link_id"
+      assert res.message.message == "Missing required fields: invite_link_id"
     end
 
     test "returns forbidden when person lacks permission", ctx do
