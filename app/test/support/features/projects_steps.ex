@@ -7,6 +7,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.Support.Features.NotificationsSteps
   alias Operately.Support.Features.FeedSteps
   alias Operately.People.Person
+  alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
 
   import Operately.CompaniesFixtures
@@ -59,8 +60,16 @@ defmodule Operately.Support.Features.ProjectSteps do
   def create_project(ctx, name: name) do
     company = company_fixture(%{name: "Test Org"})
     champion = person_fixture_with_account(%{company_id: company.id, full_name: "John Champion"})
-    reviewer = person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
-    group = group_fixture(champion, %{company_id: company.id, name: "Test Group", company_permissions: Binding.view_access()})
+
+    reviewer =
+      person_fixture_with_account(%{company_id: company.id, full_name: "Leonardo Reviewer"})
+
+    group =
+      group_fixture(champion, %{
+        company_id: company.id,
+        name: "Test Group",
+        company_permissions: Binding.view_access()
+      })
 
     params = %Operately.Operations.ProjectCreation{
       company_id: company.id,
@@ -77,7 +86,13 @@ defmodule Operately.Support.Features.ProjectSteps do
 
     {:ok, project} = Operately.Projects.create_project(params)
 
-    Map.merge(ctx, %{company: company, champion: champion, project: project, reviewer: reviewer, group: group})
+    Map.merge(ctx, %{
+      company: company,
+      champion: champion,
+      project: project,
+      reviewer: reviewer,
+      group: group
+    })
   end
 
   def login(ctx) do
@@ -217,7 +232,8 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.login_as(ctx.reviewer)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
-      action: "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
+      action:
+        "Disconnected the #{ctx.project.name} project from the Improve support first response time goal"
     })
   end
 
@@ -237,13 +253,139 @@ defmodule Operately.Support.Features.ProjectSteps do
   step :assert_project_moved_notification_sent, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
-    |> NotificationsSteps.assert_project_moved_sent(author: ctx.champion, old_space: ctx.group, new_space: ctx.new_space)
+    |> NotificationsSteps.assert_project_moved_sent(
+      author: ctx.champion,
+      old_space: ctx.group,
+      new_space: ctx.new_space
+    )
   end
 
   step :assert_project_moved_feed_item_exists, ctx do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> FeedSteps.assert_project_moved(author: ctx.champion, old_space: ctx.group, new_space: ctx.new_space)
+    |> FeedSteps.assert_project_moved(
+      author: ctx.champion,
+      old_space: ctx.group,
+      new_space: ctx.new_space
+    )
+  end
+
+  step :reload_project_page, ctx do
+    ctx |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :edit_project_due_date, ctx, date do
+    ctx
+    |> UI.select_day_in_date_field(testid: "project-due-date", date: date)
+  end
+
+  step :remove_project_due_date, ctx do
+    UI.clear_date_in_date_field(ctx, testid: "project-due-date")
+  end
+
+  step :assert_project_due_date, ctx, formatted_date do
+    ctx |> UI.assert_text(formatted_date, testid: "project-due-date")
+  end
+
+  step :assert_no_project_due_date, ctx do
+    ctx |> UI.assert_text("Set due date", testid: "project-due-date")
+  end
+
+  step :assert_project_due_date_change_visible_in_feed, ctx, date_text do
+    short = "#{Person.first_name(ctx.champion)} changed the due date to #{date_text}"
+
+    long =
+      "#{Person.first_name(ctx.champion)} changed the due date to #{date_text} on the #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
+  step :assert_project_due_date_set_email_sent_to_reviewer, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      author: ctx.champion,
+      action: "set the due date"
+    })
+  end
+
+  step :assert_project_due_date_notification_sent_to_reviewer, ctx, date_text do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Updated due date for #{ctx.project.name} to #{date_text}"
+    })
+  end
+
+  step :assert_project_due_date_changed_notification_sent, ctx, date_text do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Updated due date for #{ctx.project.name} to #{date_text}"
+    })
+  end
+
+  step :assert_project_due_date_removed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Cleared due date for #{ctx.project.name}"
+    })
+  end
+
+  step :assert_project_due_date_changed_email_sent_to_champion, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "changed the due date"
+    })
+  end
+
+  step :assert_project_due_date_removed_email_sent_to_champion, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "removed the due date"
+    })
+  end
+
+  step :given_project_due_date_exists, ctx do
+    due_date = Operately.Support.Time.next_friday()
+    contextual_end_date = ContextualDate.create_day_date(due_date)
+
+    timeframe =
+      if ctx.project.timeframe do
+        %{
+          contextual_start_date: ctx.project.timeframe.contextual_start_date,
+          contextual_end_date: contextual_end_date
+        }
+      else
+        %{contextual_start_date: nil, contextual_end_date: contextual_end_date}
+      end
+
+    {:ok, project} = Operately.Projects.update_project(ctx.project, %{timeframe: timeframe})
+
+    Map.put(ctx, :project, project)
   end
 
   #
@@ -372,11 +514,22 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_goal_connection(author: ctx.champion, goal_name: goal_name)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
+    |> FeedSteps.assert_project_goal_connection(
+      author: ctx.champion,
+      project_name: ctx.project.name,
+      goal_name: goal_name
+    )
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name, goal_name: goal_name)
+    |> FeedSteps.assert_project_goal_connection(
+      author: ctx.champion,
+      project_name: ctx.project.name,
+      goal_name: goal_name
+    )
     |> UI.visit(Paths.goal_path(ctx.company, ctx.goal, tab: "activity"))
-    |> FeedSteps.assert_project_goal_connection(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_goal_connection(
+      author: ctx.champion,
+      project_name: ctx.project.name
+    )
   end
 
   step :assert_project_description_absent, ctx do
@@ -411,8 +564,8 @@ defmodule Operately.Support.Features.ProjectSteps do
   end
 
   step :assert_champion_changed_feed_posted, ctx, champion: champion do
-    title = "assigned #{Person.short_name((champion))} as the champion"
-    title_long = "assigned #{Person.short_name((champion))} as the champion on #{ctx.project.name}"
+    title = "assigned #{Person.short_name(champion)} as the champion"
+    title_long = "assigned #{Person.short_name(champion)} as the champion on #{ctx.project.name}"
 
     assert_feed(ctx, title, title_long)
   end
@@ -469,9 +622,15 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_key_resource_added(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_key_resource_added(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_key_resource_added(
+      author: ctx.champion,
+      project_name: ctx.project.name
+    )
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_key_resource_added(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_key_resource_added(
+      author: ctx.champion,
+      project_name: ctx.project.name
+    )
   end
 
   step :assert_key_resource_added_notification_sent, ctx do
@@ -513,9 +672,15 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_key_resource_deleted(
+      author: ctx.champion,
+      project_name: ctx.project.name
+    )
     |> UI.visit(Paths.feed_path(ctx.company))
-    |> FeedSteps.assert_project_key_resource_deleted(author: ctx.champion, project_name: ctx.project.name)
+    |> FeedSteps.assert_project_key_resource_deleted(
+      author: ctx.champion,
+      project_name: ctx.project.name
+    )
   end
 
   #

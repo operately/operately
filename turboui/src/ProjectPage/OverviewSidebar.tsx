@@ -123,6 +123,7 @@ function ProjectDates(props: ProjectPage.State) {
           placeholder="Set start date"
           showOverdueWarning={false}
           useStartOfPeriod={true}
+          testId="project-start-date"
         />
       </SidebarSection>
       <SidebarSection title="Due date">
@@ -131,6 +132,7 @@ function ProjectDates(props: ProjectPage.State) {
           onDateSelect={props.setDueAt || (() => {})}
           readonly={!props.canEdit}
           placeholder="Set due date"
+          testId="project-due-date"
         />
       </SidebarSection>
     </div>
