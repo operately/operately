@@ -147,6 +147,14 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.click(testid: UI.testid(["assignee-search-result", name]))
   end
 
+  step :remove_task_assignee, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "task-sidebar"), fn el ->
+      UI.click(el, testid: "assignee")
+    end)
+    |> UI.click(testid: "assignee-clear-assignment")
+  end
+
   step :edit_task_due_date, ctx, date do
     ctx
     |> UI.select_day_in_date_field(testid: "task-due-date", date: date)
@@ -308,9 +316,32 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.assert_has(testid: "task-name")
   end
 
+  #
+  # Feed
+  #
+
   step :assert_task_due_date_change_visible_in_feed, ctx, date do
     short = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name}"
     long = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name} in #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
+  step :assert_task_assignee_change_visible_in_feed, ctx do
+    short = "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name}"
+    long = "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name} in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -351,6 +382,26 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
+  step :assert_assignee_changed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "changed the assignee for #{ctx.task.name}"
+    })
+  end
+
+  step :assert_assignee_removed_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "changed the assignee for #{ctx.task.name}"
+    })
+  end
+
   #
   # Notifications
   #
@@ -370,6 +421,24 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
       action: "Cleared due date for #{ctx.task.name}"
+    })
+  end
+
+  step :assert_assignee_changed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Task \"#{ctx.task.name}\" was assigned to #{ctx.champion.full_name}"
+    })
+  end
+
+  step :assert_assignee_removed_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Task \"#{ctx.task.name}\" was unassigned"
     })
   end
 
