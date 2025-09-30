@@ -2,13 +2,13 @@ defmodule Operately.InviteLinks.InviteLink do
   use Operately.Schema
 
   schema "invite_links" do
-    field :token, :string
-    field :expires_at, :utc_datetime
-    field :use_count, :integer, default: 0
-    field :is_active, :boolean, default: true
+    field(:token, :string)
+    field(:expires_at, :utc_datetime)
+    field(:use_count, :integer, default: 0)
+    field(:is_active, :boolean, default: true)
 
-    belongs_to :company, Operately.Companies.Company
-    belongs_to :author, Operately.People.Person
+    belongs_to(:company, Operately.Companies.Company)
+    belongs_to(:author, Operately.People.Person)
 
     timestamps()
   end
@@ -16,21 +16,30 @@ defmodule Operately.InviteLinks.InviteLink do
   def changeset(invite_link \\ %__MODULE__{}, attrs) do
     invite_link
     |> cast(attrs, [:token, :company_id, :author_id, :expires_at, :use_count, :is_active])
+    |> update_change(:expires_at, &truncate_datetime/1)
+    |> put_expires_at_if_not_set()
     |> validate_required([:token, :company_id, :author_id, :expires_at])
     |> validate_length(:token, min: 32, max: 72)
     |> unique_constraint(:token)
-    |> put_expires_at_if_not_set()
   end
 
   defp put_expires_at_if_not_set(changeset) do
     case get_field(changeset, :expires_at) do
       nil ->
-        expires_at = DateTime.add(DateTime.utc_now(), 7 * 24 * 60 * 60, :second)
+        expires_at =
+          DateTime.utc_now()
+          |> DateTime.truncate(:second)
+          |> DateTime.add(7 * 24 * 60 * 60, :second)
+
         put_change(changeset, :expires_at, expires_at)
-      _ -> 
+
+      _ ->
         changeset
     end
   end
+
+  defp truncate_datetime(nil), do: nil
+  defp truncate_datetime(datetime), do: DateTime.truncate(datetime, :second)
 
   def build_token(opts \\ []) do
     length = Keyword.get(opts, :length, 32)

@@ -1,7 +1,7 @@
 defmodule OperatelyWeb.Api do
   use TurboConnect.Api
 
-  plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
+  plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
       {:query, "get_invitation"},
       {:query, "get_invite_link"},
@@ -13,6 +13,7 @@ defmodule OperatelyWeb.Api do
       {:mutation, "request_password_reset"},
       {:mutation, "reset_password"}
     ]
+  )
 
   use_types(OperatelyWeb.Api.Types)
 
@@ -30,7 +31,12 @@ defmodule OperatelyWeb.Api do
     mutation(:edit_agent_definition, OperatelyWeb.Api.Ai.EditAgentDefinition)
     mutation(:edit_agent_sandbox_mode, OperatelyWeb.Api.Ai.EditAgentSandboxMode)
     mutation(:run_agent, OperatelyWeb.Api.Ai.RunAgent)
-    mutation(:edit_agent_task_execution_instructions, OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions)
+
+    mutation(
+      :edit_agent_task_execution_instructions,
+      OperatelyWeb.Api.Ai.EditAgentTaskExecutionInstructions
+    )
+
     mutation(:edit_agent_planning_instructions, OperatelyWeb.Api.Ai.EditAgentPlanningInstructions)
     mutation(:edit_agent_daily_run, OperatelyWeb.Api.Ai.EditAgentDailyRun)
     mutation(:edit_agent_verbosity, OperatelyWeb.Api.Ai.EditAgentVerbosity)
@@ -105,7 +111,12 @@ defmodule OperatelyWeb.Api do
     mutation(:update_due_date, OperatelyWeb.Api.ProjectTasks.UpdateDueDate)
     mutation(:update_assignee, OperatelyWeb.Api.ProjectTasks.UpdateAssignee)
     mutation(:update_milestone, OperatelyWeb.Api.ProjectTasks.UpdateMilestone)
-    mutation(:update_milestone_and_ordering, OperatelyWeb.Api.ProjectTasks.UpdateMilestoneAndOrdering)
+
+    mutation(
+      :update_milestone_and_ordering,
+      OperatelyWeb.Api.ProjectTasks.UpdateMilestoneAndOrdering
+    )
+
     mutation(:update_description, OperatelyWeb.Api.ProjectTasks.UpdateDescription)
   end
 
@@ -123,6 +134,13 @@ defmodule OperatelyWeb.Api do
     query(:search, OperatelyWeb.Api.Spaces.Search)
   end
 
+  query(:get_invite_link, OperatelyWeb.Api.Invitations.GetInviteLink)
+  query(:list_invite_links, OperatelyWeb.Api.Invitations.ListInviteLinks)
+
+  mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
+  mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
+  mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
+
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)
   query(:get_activity, Q.GetActivity)
@@ -137,8 +155,6 @@ defmodule OperatelyWeb.Api do
   query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
   query(:get_goals, Q.GetGoals)
   query(:get_invitation, Q.GetInvitation)
-  query(:get_invite_link, Q.GetInviteLink)
-  query(:list_invite_links, Q.ListInviteLinks)
   query(:get_key_resource, Q.GetKeyResource)
   query(:get_me, Q.GetMe)
   query(:get_milestone, Q.GetMilestone)
@@ -250,9 +266,6 @@ defmodule OperatelyWeb.Api do
   mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
   mutation(:move_project_to_space, M.MoveProjectToSpace)
   mutation(:new_invitation_token, M.NewInvitationToken)
-  mutation(:create_invite_link, M.CreateInviteLink)
-  mutation(:revoke_invite_link, M.RevokeInviteLink)
-  mutation(:join_company_via_invite_link, M.JoinCompanyViaInviteLink)
   mutation(:pause_project, M.PauseProject)
   mutation(:post_discussion, M.PostDiscussion)
   mutation(:publish_discussion, M.PublishDiscussion)
