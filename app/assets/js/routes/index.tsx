@@ -55,6 +55,7 @@ export function createAppRoutes() {
         pageRoute("/new", pages.NewCompanyPage),
         pageRoute("/setup", pages.SetupPage, { auth: false }),
         pageRoute("/join", pages.JoinPage, { auth: false }),
+        pageRoute("/join/:token", pages.InviteLinkJoinPage, { auth: false }),
       ],
     },
     saasAdminRoutes(),
@@ -68,6 +69,8 @@ export function createAppRoutes() {
       children: [
         pageRoute("", pages.HomePage),
         pageRoute("setup", pages.CompanySetupPage),
+        pageRoute("invite-team", pages.InviteTeamPage),
+        pageRoute("join/:token", pages.InviteLinkJoinPage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
         pageRoute("notifications", pages.NotificationsPage),
