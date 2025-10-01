@@ -5,18 +5,17 @@ export { hasFeature } from "./hasFeature";
 
 export {
   getCompany,
+  useAddCompanyAdmins,
+  useAddCompanyMember,
   useAddCompanyOwners,
-  useRemoveCompanyOwner,
+  useAddCompanyTrustedEmailDomain,
+  useAddFirstCompany,
   useEditCompany,
   useGetCompany,
-  useAddCompanyTrustedEmailDomain,
-  useRemoveCompanyTrustedEmailDomain,
   useRemoveCompanyAdmin,
-  useAddCompanyAdmins,
   useRemoveCompanyMember,
-  useAddFirstCompany,
-  useAddCompanyMember,
-  useNewInvitationToken,
+  useRemoveCompanyOwner,
+  useRemoveCompanyTrustedEmailDomain,
   useRestoreCompanyMember,
 } from "@/api";
 

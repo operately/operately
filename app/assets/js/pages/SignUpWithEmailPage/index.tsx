@@ -1,7 +1,7 @@
-import * as React from "react";
+import * as Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
-import * as Api from "@/api";
+import * as React from "react";
 
 import Forms from "@/components/Forms";
 import classNames from "classnames";
@@ -11,10 +11,10 @@ import { TosAndPrivacyPolicy } from "@/features/auth/AgreeToTosAndPp";
 import { PasswordStrength } from "@/features/auth/PasswordStrength";
 import { validatePassword } from "@/features/auth/validatePassword";
 
-import { match } from "ts-pattern";
 import { useFieldValue } from "@/components/Forms/FormContext";
 import { logIn } from "@/routes/auth";
 import { PageModule } from "@/routes/types";
+import { match } from "ts-pattern";
 
 export default { name: "SignUpWithEmailPage", loader: Pages.emptyLoader, Page } as PageModule;
 
@@ -33,10 +33,12 @@ type PageState = "form" | "code-verification";
 //
 
 function Page() {
+  const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
   const [pageState, setPageState] = React.useState<PageState>("form");
 
   const form = Forms.useForm({
     fields: {
+      inviteToken,
       email: "",
       name: "",
       password: "",
@@ -54,6 +56,7 @@ function Page() {
         setPageState("code-verification");
       } else {
         await Api.createAccount({
+          inviteToken: form.values.inviteToken,
           code: form.values.code,
           email: form.values.email,
           fullName: form.values.name,

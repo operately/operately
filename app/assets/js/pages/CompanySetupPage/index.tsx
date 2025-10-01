@@ -51,7 +51,7 @@ function Page() {
   const hasProjects = workMap.some((item) => item.type === "project");
 
   // Navigation handlers
-  const handleInviteTeam = () => navigate(paths.peoplePath());
+  const handleInviteTeam = () => navigate(`/${company.id}/invite-team`);
   const handleCreateSpace = () => navigate(paths.newSpacePath());
   const handleAddProject = () => navigate(paths.newProjectPath());
 
