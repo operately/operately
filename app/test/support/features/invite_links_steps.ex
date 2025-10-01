@@ -43,12 +43,24 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.click(testid: "submit")
     |> then(fn ctx ->
       emails = Emails.wait_for_email_for(email, attempts: 10)
-      subject = hd(emails).subject
-      code = String.split(subject, email) |> List.last()
+      email = Enum.find(emails, fn email -> String.contains?(email.subject, "Operately confirmation code:") end)
+      code = String.split(email.subject, "Operately confirmation code:") |> List.last()
 
       ctx
       |> UI.fill(testid: "code", with: code)
       |> UI.click(testid: "submit")
+    end)
+  end
+
+  step :assert_you_are_in_the_company, ctx do
+    ctx
+    |> UI.assert_has(testid: "home-page")
+    |> UI.assert_text(ctx.company.name)
+    |> then(fn ctx ->
+      members = Operately.People.list_people(ctx.company.id)
+      assert Enum.any?(members, fn member -> member.email == "hello@test.localhost" end)
+
+      ctx
     end)
   end
 
