@@ -1,7 +1,6 @@
 import React from "react";
 
 import { IconMoodSad } from "@tabler/icons-react";
-import { useNavigate } from "react-router-dom";
 import { match } from "ts-pattern";
 import { Avatar } from "../Avatar";
 import { SecondaryButton } from "../Button";
@@ -9,12 +8,10 @@ import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
 import { firstName } from "../utils/people";
 
-namespace InviteLinkJoinPage {
+export namespace InviteLinkJoinPage {
   export type PageState = "valid-token" | "expired-token" | "revoked-token" | "invalid-token";
 
   export interface Invitation {
-    id: string;
-    email: string;
     company: {
       id: string;
       name: string;
@@ -30,6 +27,9 @@ namespace InviteLinkJoinPage {
     pageState: PageState;
     invitation: Invitation | null;
     token: string | null;
+
+    handleSignUpAndJoin: () => void;
+    handleLogInAndJoin: () => void;
   }
 }
 
@@ -53,11 +53,6 @@ export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
 }
 
 function ValidTokenState(props: InviteLinkJoinPage.Props) {
-  const navigate = useNavigate();
-
-  const handleSignUpAndJoin = () => navigate(`/sign_up?invite_token=${props.token}`);
-  const handleLogInAndJoin = () => navigate(`/log_in?invite_token=${props.token}`);
-
   return (
     <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
       <div className="text-center flex flex-col items-center mb-8">
@@ -67,7 +62,7 @@ function ValidTokenState(props: InviteLinkJoinPage.Props) {
       </div>
 
       <div className="flex items-center flex-col items-stretch">
-        <SecondaryButton onClick={handleSignUpAndJoin} testId="sign-up-and-join">
+        <SecondaryButton onClick={props.handleSignUpAndJoin} testId="sign-up-and-join">
           Sign Up & Join {props.invitation?.company?.name}
         </SecondaryButton>
 
@@ -77,7 +72,7 @@ function ValidTokenState(props: InviteLinkJoinPage.Props) {
           <div className="border-t border-surface-outline flex-grow" />
         </div>
 
-        <SecondaryButton onClick={handleLogInAndJoin} testId="log-in-and-join">
+        <SecondaryButton onClick={props.handleLogInAndJoin} testId="log-in-and-join">
           Log in with your account
         </SecondaryButton>
       </div>
