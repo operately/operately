@@ -373,6 +373,12 @@ defmodule OperatelyWeb.Api.Types do
     field? :new_priority, :string, null: true
   end
 
+  object :activity_content_project_task_commented do
+    field :project, :project, null: false
+    field :task, :task, null: true
+    field :comment, :comment, null: true
+  end
+
   object :goal_editing_updated_target do
     field? :id, :string, null: true
     field? :old_name, :string, null: true

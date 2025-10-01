@@ -293,6 +293,19 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_comment("This is a comment")
     |> Steps.reload_task_page()
     |> Steps.assert_comment("This is a comment")
+    |> Steps.assert_task_comment_visible_in_feed()
+  end
+
+  @tag login_as: :reviewer
+  feature "post comment to task sends notification to assignee", ctx do
+    ctx
+    |> Steps.given_task_exists()
+    |> Steps.given_task_assignee_exists()
+    |> Steps.visit_task_page()
+    |> Steps.post_comment("This is a comment")
+    |> Steps.assert_comment("This is a comment")
+    |> Steps.assert_comment_posted_notification_sent()
+    |> Steps.assert_comment_posted_email_sent()
   end
 
   @tag login_as: :champion
