@@ -123,6 +123,7 @@ export const DISPLAYED_IN_FEED = [
   "project_resuming",
   "project_timeline_edited",
   "project_retrospective_commented",
+  "project_task_commented",
   "project_discussion_submitted",
   "task_adding",
   "task_name_updating",
@@ -225,6 +226,7 @@ import ProjectPausing from "@/features/activities/ProjectPausing";
 import ProjectRenamed from "@/features/activities/ProjectRenamed";
 import ProjectResuming from "@/features/activities/ProjectResuming";
 import ProjectRetrospectiveCommented from "@/features/activities/ProjectRetrospectiveCommented";
+import ProjectTaskCommented from "@/features/activities/ProjectTaskCommented";
 import ProjectTimelineEdited from "@/features/activities/ProjectTimelineEdited";
 import ResourceHubDocumentCommented from "@/features/activities/ResourceHubDocumentCommented";
 import ResourceHubDocumentCreated from "@/features/activities/ResourceHubDocumentCreated";
@@ -311,6 +313,7 @@ function handler(activity: Activity) {
     .with("project_renamed", () => ProjectRenamed)
     .with("project_resuming", () => ProjectResuming)
     .with("project_retrospective_commented", () => ProjectRetrospectiveCommented)
+    .with("project_task_commented", () => ProjectTaskCommented)
     .with("project_timeline_edited", () => ProjectTimelineEdited)
     .with("resource_hub_document_created", () => ResourceHubDocumentCreated)
     .with("resource_hub_document_edited", () => ResourceHubDocumentEdited)

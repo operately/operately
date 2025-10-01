@@ -667,6 +667,12 @@ export interface ActivityContentProjectStartDateUpdating {
   newStartDate: string | null;
 }
 
+export interface ActivityContentProjectTaskCommented {
+  project: Project;
+  task: Task | null;
+  comment: Comment | null;
+}
+
 export interface ActivityContentProjectTimelineEdited {
   project?: Project | null;
   oldStartDate?: string | null;
