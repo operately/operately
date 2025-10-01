@@ -18,6 +18,17 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     Map.put(ctx, :invite_link, invite_link)
   end
 
+  step :given_that_an_expired_invite_link_exists, ctx do
+    {:ok, invite_link} =
+      Operately.InviteLinks.create_invite_link(%{
+        company_id: ctx.company.id,
+        author_id: ctx.creator.id,
+        expires_at: DateTime.add(DateTime.utc_now(), -1, :day)
+      })
+
+    Map.put(ctx, :invite_link, invite_link)
+  end
+
   step :follow_invite_link, ctx do
     ctx
     |> UI.visit("/join/#{ctx.invite_link.token}")
@@ -153,12 +164,11 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   #   |> assert_has(Query.text("Sign Up & Join"))
   # end
 
-  # step :assert_expired_invite_link_message, ctx do
-  #   ctx
-  #   |> assert_has(Query.text("Invite Link Expired"))
-  #   |> assert_has(Query.text("This invite link has expired"))
-  #   |> assert_has(Query.text("Please contact #{ctx.creator.full_name} for a new invite link"))
-  # end
+  step :assert_expired_invite_link_message, ctx do
+    ctx
+    |> UI.assert_text("This invite link has expired")
+    |> UI.take_screenshot()
+  end
 
   # step :assert_revoked_invite_link_message, ctx do
   #   ctx
