@@ -108,7 +108,30 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :sign_up_with_google, ctx do
-    ctx |> UI.click(testid: "sign-up-with-google")
+    prev_signup = Application.get_env(:operately, :allow_signup_with_google)
+    prev_login = Application.get_env(:operately, :allow_login_with_google)
+
+    Application.put_env(:operately, :allow_signup_with_google, true)
+    Application.put_env(:operately, :allow_login_with_google, true)
+
+    on_exit(fn ->
+      Application.put_env(:operately, :allow_signup_with_google, prev_signup)
+      Application.put_env(:operately, :allow_login_with_google, prev_login)
+    end)
+
+    email = PeopleFixtures.unique_account_email()
+
+    ctx = Map.put(ctx, :expected_member_email, email)
+
+    ctx
+    |> UI.visit("/sign_up?invite_token=#{ctx.invite_link.token}")
+    |> UI.assert_has(testid: "sign-up-page")
+    |> UI.assert_has(testid: "sign-up-with-email")
+    |> UI.assert_has(testid: "sign-up-with-google")
+    |> UI.visit(
+      "/accounts/auth/test_google?email=#{URI.encode_www_form(email)}&invite_token=#{ctx.invite_link.token}"
+    )
+    |> UI.sleep(500)
   end
 
   step :assert_you_are_member_of_the_company, ctx do

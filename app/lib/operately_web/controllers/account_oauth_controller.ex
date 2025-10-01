@@ -110,6 +110,10 @@ defmodule OperatelyWeb.AccountOauthController do
   defp normalize_invite_token(""), do: nil
   defp normalize_invite_token(token), do: token
 
+  defp default_google_avatar do
+    "https://example.com/test-google-avatar.png"
+  end
+
   if Application.compile_env(:operately, :test_routes) do
     def test_google(conn, params) do
       verify_application_env()
@@ -120,10 +124,13 @@ defmodule OperatelyWeb.AccountOauthController do
             People.get_account!(params["account_id"])
 
           params["email"] ->
-            case People.find_or_create_account(%{
-                   email: params["email"],
-                   name: params["name"] || params["email"]
-                 }) do
+            attrs = %{
+              email: params["email"],
+              name: params["name"] || params["email"],
+              image: params["image"] || default_google_avatar()
+            }
+
+            case People.find_or_create_account(attrs) do
               {:ok, account} -> account
               {:error, reason} -> raise "Failed to create account: #{inspect(reason)}"
             end
