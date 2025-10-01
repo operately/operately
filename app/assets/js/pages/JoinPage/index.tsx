@@ -1,9 +1,11 @@
-import * as React from "react";
+import Api from "@/api";
+
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Accounts from "@/models/accounts";
 import * as Invitations from "@/models/invitations";
 import { PageModule } from "@/routes/types";
+import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { logIn } from "@/routes/auth";
@@ -22,7 +24,7 @@ async function loader({ request }): Promise<any> {
   const token = Pages.getSearchParam(request, "token");
   if (!token) return redirect("/");
 
-  const invitation = await Invitations.getInvitation({ token: token }).then((res) => res.invitation!);
+  const invitation = await Api.invitations.getInvitation({ token: token }).then((res) => res.invitation!);
   if (!invitation) return redirect("/");
 
   return { invitation, token };
