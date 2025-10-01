@@ -31,7 +31,7 @@ defmodule Operately.Features.InviteLinksTest do
   #   |> Steps.assert_invite_link_revoked()
   # end
 
-  feature "new user signs up and joins the company via invite link", ctx do
+  feature "new user signs up via email and joins the company via invite link", ctx do
     ctx
     |> Steps.given_that_an_invite_link_exists()
     |> Steps.follow_invite_link()
@@ -41,12 +41,12 @@ defmodule Operately.Features.InviteLinksTest do
     |> Steps.assert_you_are_redirected_to_company_home_page()
   end
 
-  # feature "Attempting to join with expired token", ctx do
-  #   ctx
-  #   |> Steps.create_expired_invite_link()
-  #   |> Steps.visit_invite_join_page_with_token()
-  #   |> Steps.assert_expired_invite_link_message()
-  # end
+  feature "Attempting to join with expired token", ctx do
+    ctx
+    |> Steps.given_that_an_expired_invite_link_exists()
+    |> Steps.follow_invite_link()
+    |> Steps.assert_expired_invite_link_message()
+  end
 
   # feature "Attempting to join with revoked token", ctx do
   #   ctx

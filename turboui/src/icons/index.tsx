@@ -107,6 +107,7 @@ import IconMessageCircle from "@tabler/icons-react/dist/esm/icons/IconMessageCir
 import IconMessages from "@tabler/icons-react/dist/esm/icons/IconMessages.mjs";
 import IconMinus from "@tabler/icons-react/dist/esm/icons/IconMinus.mjs";
 import IconMoodPlus from "@tabler/icons-react/dist/esm/icons/IconMoodPlus.mjs";
+import IconMoodSad from "@tabler/icons-react/dist/esm/icons/IconMoodSad.mjs";
 import IconMoon from "@tabler/icons-react/dist/esm/icons/IconMoon.mjs";
 import IconNetwork from "@tabler/icons-react/dist/esm/icons/IconNetwork.mjs";
 import IconPalette from "@tabler/icons-react/dist/esm/icons/IconPalette.mjs";
@@ -261,6 +262,7 @@ export {
   IconMessages,
   IconMinus,
   IconMoodPlus,
+  IconMoodSad,
   IconMoon,
   IconNetwork,
   IconPalette,
