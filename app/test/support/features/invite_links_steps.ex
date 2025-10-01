@@ -1,6 +1,7 @@
 defmodule Operately.Support.Features.InviteLinksSteps do
   use Operately.FeatureCase
 
+  alias Operately.PeopleFixtures
   alias Operately.Support.Factory
   alias Operately.Support.Features.UI.Emails, as: Emails
 
@@ -78,6 +79,8 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   step :sign_up_with_email, ctx do
     email = "hello@test.localhost"
 
+    ctx = Map.put(ctx, :expected_member_email, email)
+
     ctx
     |> UI.click(testid: "sign-up-with-email")
     |> UI.fill(testid: "email", with: email)
@@ -102,8 +105,15 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :assert_you_are_member_of_the_company, ctx do
+    expected_email =
+      cond do
+        Map.has_key?(ctx, :expected_member_email) -> ctx.expected_member_email
+        Map.has_key?(ctx, :invited) -> ctx.invited.email
+        true -> "hello@test.localhost"
+      end
+
     members = Operately.People.list_people(ctx.company.id)
-    assert Enum.any?(members, fn member -> member.email == "hello@test.localhost" end)
+    assert Enum.any?(members, fn member -> member.email == expected_email end)
 
     ctx
   end
@@ -116,7 +126,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :follow_log_in_and_join, ctx do
     ctx
-    |> UI.assert_text("Log In & Join")
+    |> UI.assert_text("Log in with your account")
     |> UI.click(testid: "log-in-and-join")
   end
 
@@ -125,10 +135,22 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :log_in_with_email, ctx do
+    {account, ctx} =
+      case Map.fetch(ctx, :existing_account) do
+        {:ok, account} -> {account, ctx}
+        :error ->
+          account = PeopleFixtures.account_fixture()
+          {account, Map.put(ctx, :existing_account, account)}
+      end
+
+    password = PeopleFixtures.valid_account_password()
+
+    ctx = Map.put(ctx, :expected_member_email, account.email)
+
     ctx
-    |> UI.click(testid: "log-in-with-email")
-    |> UI.fill(testid: "email", with: ctx.invited.email)
-    |> UI.fill(testid: "password", with: "password")
+    |> UI.assert_has(testid: "login-page")
+    |> UI.fill(testid: "email", with: account.email)
+    |> UI.fill(testid: "password", with: password)
     |> UI.click(testid: "submit")
     |> UI.sleep(500)
   end

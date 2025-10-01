@@ -165,6 +165,7 @@ defmodule OperatelyWeb.Api.Invitations do
       |> run(:invite_link, fn -> get_invite_link(inputs[:token]) end)
       |> run(:validate_link, fn ctx -> validate_invite_link(ctx.invite_link) end)
       |> run(:me, fn -> find_me_if_logged_in(conn) end)
+      |> run(:account, fn -> find_account_if_logged_in(conn) end)
       |> run(:handle_join, fn ctx -> handle_join(ctx, inputs) end)
       |> run(:serialized, fn ctx -> serialize_result(ctx) end)
       |> respond()
@@ -179,6 +180,9 @@ defmodule OperatelyWeb.Api.Invitations do
           {:ok, %{company: nil, person: nil, error: "Invalid invite link"}}
 
         {:error, :validate_link, %{error: error}} ->
+          {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
+
+        {:error, :handle_join, %{error: %{error: error}}} ->
           {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
 
         {:error, :handle_join, %{error: error}} ->
@@ -217,12 +221,45 @@ defmodule OperatelyWeb.Api.Invitations do
       end
     end
 
-    defp handle_join(%{me: nil, invite_link: invite_link}, inputs) do
+    defp find_account_if_logged_in(conn) do
+      try do
+        case find_account(conn) do
+          {:ok, account} -> {:ok, account}
+          {:error, _} -> {:ok, nil}
+        end
+      rescue
+        _ -> {:ok, nil}
+      end
+    end
+
+    defp handle_join(%{me: nil, account: account, invite_link: invite_link}, _inputs) when not is_nil(account) do
+      case Operately.InviteLinks.join_company_via_invite_link(account, invite_link.token) do
+        {:ok, {:person_created, person}} ->
+          {:ok, %{company: invite_link.company, person: person, action: :redirect}}
+
+        {:error, :invite_token_not_found} ->
+          {:error, %{error: "Invalid invite link"}}
+
+        {:error, :invite_token_invalid} ->
+          {:error, %{error: "This invite link is no longer valid"}}
+
+        {:error, :person_creation_failed} ->
+          {:error, %{error: "Unable to add you to this company."}}
+
+        {:error, :invite_link_update_failed} ->
+          {:error, %{error: "Something went wrong while using this invite link."}}
+
+        {:error, reason} ->
+          {:error, %{error: normalize_error(reason)}}
+      end
+    end
+
+    defp handle_join(%{me: nil, account: nil, invite_link: invite_link}, inputs) do
       # New user signup flow
       if inputs[:password] && inputs[:password_confirmation] do
         handle_new_user_signup(invite_link, inputs)
       else
-        {:error, "Password required for new users"}
+        {:error, %{error: "Password required for new users"}}
       end
     end
 
@@ -251,7 +288,7 @@ defmodule OperatelyWeb.Api.Invitations do
         true ->
           # For now, return an error for simplicity
           # In a full implementation, this would involve complex company switching logic
-          {:error, "Company joining for existing users not yet implemented. Please contact support."}
+          {:error, %{error: "Company joining for existing users not yet implemented. Please contact support."}}
       end
     end
 
@@ -264,6 +301,9 @@ defmodule OperatelyWeb.Api.Invitations do
              person: Serializer.serialize(person, level: :essential),
              error: nil
            }}
+
+        {:error, %{error: error}} ->
+          {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
 
         {:error, message} ->
           {:ok, %{company: nil, person: nil, error: normalize_error(message)}}
