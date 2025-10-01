@@ -358,6 +358,25 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     end)
   end
 
+  step :assert_task_comment_visible_in_feed, ctx do
+    short = "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name}"
+    long = "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name} in the #{ctx.project.name} project"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
   #
   # Emails
   #
@@ -402,6 +421,16 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
+  step :assert_comment_posted_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.champion,
+      author: ctx.reviewer,
+      action: "commented on: #{ctx.task.name}"
+    })
+  end
+
   #
   # Notifications
   #
@@ -439,6 +468,15 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
       action: "Task \"#{ctx.task.name}\" was unassigned"
+    })
+  end
+
+  step :assert_comment_posted_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.reviewer,
+      action: "Re: #{ctx.task.name}"
     })
   end
 
