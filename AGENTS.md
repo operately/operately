@@ -27,6 +27,12 @@
 - Components and pages: PascalCase for React components; filenames `ComponentName.tsx`. Tests: `*.spec.ts(x)`.
 - TurboUI component architecture and patterns: `turboui/AGENTS.md`.
 
+## UI Pattern Checklist
+
+- When a request references an existing screen, component, or screenshot, inspect that source in the repo before coding. Reuse its structure, typography, and spacing verbatim unless the user explicitly requests something different.
+- Treat screenshots as canonical references: find the implementation they depict (e.g., ProjectPage headers, Milestone cards) and mirror that implementation rather than improvising.
+- Prefer existing TurboUI components over hand-rolled versions. If you cannot reuse an existing piece, call it out in the summary with a brief reason.
+
 ## Testing Guidelines
 
 Read the testing guide at app/test/AGENTS.md.
