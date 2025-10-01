@@ -63,7 +63,27 @@ function Page() {
           password: form.values.password,
         });
 
-        logIn(form.values.email, form.values.password, { redirectTo: "/" });
+        const loginResult = await logIn(form.values.email, form.values.password, { redirectTo: null });
+
+        if (loginResult === "success") {
+          // If login was successful, check if user has companies and redirect appropriately
+          try {
+            const companiesResult = await Api.getCompanies({});
+            const companies = companiesResult.companies || [];
+
+            if (companies.length === 1 && companies[0]) {
+              // User has exactly one company, redirect to it
+              window.location.href = `/${companies[0].id}`;
+            } else {
+              // User has no companies or multiple companies, stay on lobby
+              window.location.href = "/";
+            }
+          } catch (error) {
+            // If there's an error fetching companies, fallback to lobby
+            console.error("Error fetching companies after signup:", error);
+            window.location.href = "/";
+          }
+        }
       }
     },
   });

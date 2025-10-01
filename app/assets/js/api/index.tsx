@@ -3074,6 +3074,7 @@ export interface CopyResourceHubFolderResult {
 }
 
 export interface CreateAccountInput {
+  inviteToken?: string | null;
   code?: string | null;
   email?: string | null;
   password?: string | null;
@@ -3670,12 +3671,10 @@ export interface GoalsUpdateTargetValueResult {
   success: boolean | null;
 }
 
-export interface InvitationsCreateInviteLinkInput {
-  companyId?: string;
-}
+export interface InvitationsCreateInviteLinkInput {}
 
 export interface InvitationsCreateInviteLinkResult {
-  inviteLink?: InviteLink;
+  inviteLink: InviteLink;
 }
 
 export interface InvitationsJoinCompanyViaInviteLinkInput {

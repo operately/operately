@@ -14,11 +14,9 @@ defmodule OperatelyWeb.Api.Invitations do
     end
 
     def call(_conn, inputs) do
-      invite_link = Operately.InviteLinks.get_invite_link_by_token(inputs[:token])
-
-      case invite_link do
-        nil -> {:ok, %{invite_link: nil}}
-        link -> {:ok, %{invite_link: Serializer.serialize(link, level: :full)}}
+      case Operately.InviteLinks.get_invite_link_by_token(inputs[:token]) do
+        {:ok, link} -> {:ok, %{invite_link: Serializer.serialize(link, level: :full)}}
+        {:error, :not_found} -> {:ok, %{invite_link: nil}}
       end
     end
   end
@@ -192,10 +190,7 @@ defmodule OperatelyWeb.Api.Invitations do
     end
 
     defp get_invite_link(token) do
-      case Operately.InviteLinks.get_invite_link_by_token(token) do
-        nil -> {:error, :not_found}
-        link -> {:ok, link}
-      end
+      Operately.InviteLinks.get_invite_link_by_token(token)
     end
 
     defp validate_invite_link(invite_link) do

@@ -50,18 +50,20 @@ defmodule Operately.Support.Features.InviteLinksSteps do
       |> UI.fill(testid: "code", with: code)
       |> UI.click(testid: "submit")
     end)
+    |> UI.sleep(500)
   end
 
-  step :assert_you_are_in_the_company, ctx do
-    ctx
-    |> UI.assert_has(testid: "home-page")
-    |> UI.assert_text(ctx.company.name)
-    |> then(fn ctx ->
-      members = Operately.People.list_people(ctx.company.id)
-      assert Enum.any?(members, fn member -> member.email == "hello@test.localhost" end)
+  step :assert_you_member_of_the_company, ctx do
+    members = Operately.People.list_people(ctx.company.id)
+    assert Enum.any?(members, fn member -> member.email == "hello@test.localhost" end)
 
-      ctx
-    end)
+    ctx
+  end
+
+  step :assert_you_are_redirected_to_company_home_page, ctx do
+    ctx
+    |> UI.assert_text(ctx.company.name)
+    |> UI.assert_has(testid: "company-home")
   end
 
   # step :create_expired_invite_link, ctx do
