@@ -8,6 +8,15 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx |> Factory.setup()
   end
 
+  step :given_the_invited_member_is_logged_in, ctx do
+    # create a new company context and log in the invited member
+    ctx2 = Factory.setup(ctx)
+    ctx2 = Factory.add_company_member(ctx2, :invited)
+    ctx2 = Factory.log_in_person(ctx2, :invited)
+
+    Map.put(ctx, :invited, ctx2.invited)
+  end
+
   step :given_that_an_invite_link_exists, ctx do
     {:ok, invite_link} =
       Operately.InviteLinks.create_invite_link(%{
@@ -54,13 +63,17 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx
     |> UI.assert_text("#{ctx.creator.full_name} invited you to join")
     |> UI.assert_text(ctx.company.name)
-    |> UI.assert_text("Sign Up & Join")
+  end
+
+  step :follow_join_button, ctx do
+    ctx |> UI.click(testid: "join-with-existing-account")
   end
 
   step :follow_sign_up_and_join, ctx do
     email = "hello@test.localhost"
 
     ctx
+    |> UI.assert_text("Sign Up & Join")
     |> UI.click(testid: "sign-up-and-join")
     |> UI.click(testid: "sign-up-with-email")
     |> UI.fill(testid: "email", with: email)
@@ -80,7 +93,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.sleep(500)
   end
 
-  step :assert_you_member_of_the_company, ctx do
+  step :assert_you_are_member_of_the_company, ctx do
     members = Operately.People.list_people(ctx.company.id)
     assert Enum.any?(members, fn member -> member.email == "hello@test.localhost" end)
 
