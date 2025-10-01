@@ -1633,6 +1633,30 @@ export interface ReviewAssignment {
   path: string;
 }
 
+export interface ReviewAssignmentOrigin {
+  id: string;
+  name: string;
+  type: ReviewAssignmentOriginTypes;
+  path: string;
+  spaceName: string | null;
+  dueDate: string | null;
+}
+
+export interface ReviewAssignmentV2 {
+  resourceId: string;
+  name: string;
+  due: string | null;
+  type: ReviewAssignmentV2Types;
+  role: ReviewAssignmentRoles;
+  actionLabel: string | null;
+  path: string;
+  origin: ReviewAssignmentOrigin;
+  taskStatus: TaskStatusTypes | null;
+  authorId: string | null;
+  authorName: string | null;
+  description: string | null;
+}
+
 export interface Space {
   id: string;
   name: string;
@@ -1983,9 +2007,17 @@ export type MilestoneStatus = "pending" | "done";
 
 export type ProjectCheckInStatus = "on_track" | "caution" | "off_track";
 
+export type ReviewAssignmentOriginTypes = "project" | "goal";
+
+export type ReviewAssignmentRoles = "owner" | "reviewer";
+
 export type ReviewAssignmentTypes = "goal" | "project" | "goal_update" | "check_in";
 
+export type ReviewAssignmentV2Types = "check_in" | "goal_update" | "project_task" | "milestone";
+
 export type SuccessStatus = "achieved" | "missed";
+
+export type TaskStatusTypes = "pending" | "todo" | "in_progress" | "done" | "canceled";
 
 export type WorkMapItemPrivacy = "public" | "internal" | "confidential" | "secret";
 
@@ -2096,6 +2128,12 @@ export interface GetAssignmentsCountInput {}
 
 export interface GetAssignmentsCountResult {
   count?: number | null;
+}
+
+export interface GetAssignmentsV2Input {}
+
+export interface GetAssignmentsV2Result {
+  assignments: ReviewAssignmentV2[];
 }
 
 export interface GetBindedPeopleInput {
@@ -4220,6 +4258,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_assignments_count", input);
   }
 
+  async getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
+    return this.client.get("/get_assignments_v2", input);
+  }
+
   async getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
     return this.client.get("/get_binded_people", input);
   }
@@ -5208,6 +5250,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getAssignmentsCount(input);
   }
 
+  getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
+    return this.apiNamespaceRoot.getAssignmentsV2(input);
+  }
+
   getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
     return this.apiNamespaceRoot.getBindedPeople(input);
   }
@@ -5806,6 +5852,9 @@ export async function getAssignments(input: GetAssignmentsInput): Promise<GetAss
 export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
   return defaultApiClient.getAssignmentsCount(input);
 }
+export async function getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
+  return defaultApiClient.getAssignmentsV2(input);
+}
 export async function getBindedPeople(input: GetBindedPeopleInput): Promise<GetBindedPeopleResult> {
   return defaultApiClient.getBindedPeople(input);
 }
@@ -6324,6 +6373,10 @@ export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResul
 
 export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
   return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
+}
+
+export function useGetAssignmentsV2(input: GetAssignmentsV2Input): UseQueryHookResult<GetAssignmentsV2Result> {
+  return useQuery<GetAssignmentsV2Result>(() => defaultApiClient.getAssignmentsV2(input));
 }
 
 export function useGetBindedPeople(input: GetBindedPeopleInput): UseQueryHookResult<GetBindedPeopleResult> {
@@ -7195,6 +7248,8 @@ export default {
   useGetAssignments,
   getAssignmentsCount,
   useGetAssignmentsCount,
+  getAssignmentsV2,
+  useGetAssignmentsV2,
   getBindedPeople,
   useGetBindedPeople,
   getComments,
