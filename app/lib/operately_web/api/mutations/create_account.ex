@@ -2,8 +2,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
   use TurboConnect.Mutation
   use OperatelyWeb.Api.Helpers
 
-  alias Operately.People.EmailActivationCode
-  alias Operately.People.Account
+  alias Operately.People.{Account, EmailActivationCode}
+  alias OperatelyWeb.Api.Serializer
+  alias Operately.Repo
 
   require Logger
 
@@ -15,6 +16,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
     field? :full_name, :string, null: true
   end
 
+  outputs do
+    field?(:company, :company, null: true)
+    field?(:person, :person, null: true)
+    field?(:error, :string, null: true)
+  end
+
   def call(_conn, inputs) do
     with(
       {:ok, :allowed} <- check_signup_allowed(),
@@ -22,9 +29,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
       {:ok, activation} <- EmailActivationCode.get(:system, email: inputs.email, code: code),
       {:ok, :valid} <- check_validity(activation),
       {:ok, account} <- Account.create(inputs.full_name, inputs.email, inputs.password),
-      {:ok, _} <- handle_invite_token(account, inputs[:invite_token])
+      {:ok, invite_context} <- handle_invite_token(account, inputs[:invite_token])
     ) do
-      {:ok, %{}}
+      {:ok, build_response(invite_context)}
     else
       {:error, error} ->
         Logger.error("Failed to create account. error: #{inspect(error)}")
@@ -68,14 +75,34 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
     end
   end
 
+  defp handle_invite_token(_account, nil), do: {:ok, %{company: nil, person: nil, error: nil}}
+
   defp handle_invite_token(account, token) do
     case Operately.InviteLinks.join_company_via_invite_link(account, token) do
-      {:ok, person} ->
-        {:ok, person}
+      {:ok, {:person_created, person}} ->
+        person = Repo.preload(person, :company)
+        {:ok, %{company: person.company, person: person, error: nil}}
 
-      {:error, _} ->
-        # ignore failure, just continue
-        {:ok, nil}
+      {:error, reason} ->
+        {:ok, %{company: nil, person: nil, error: normalize_invite_error(reason)}}
     end
   end
+
+  defp build_response(%{company: company, person: person, error: error}) do
+    %{
+      company: serialize_optional(company),
+      person: serialize_optional(person),
+      error: error
+    }
+  end
+
+  defp serialize_optional(nil), do: nil
+  defp serialize_optional(resource), do: Serializer.serialize(resource, level: :essential)
+
+  defp normalize_invite_error(:invite_token_not_found), do: "Invalid invite link"
+  defp normalize_invite_error(:invite_token_invalid), do: "This invite link is no longer valid"
+  defp normalize_invite_error(:person_creation_failed), do: "Unable to add you to this company."
+  defp normalize_invite_error(:invite_link_update_failed),
+    do: "Something went wrong while using this invite link."
+  defp normalize_invite_error(_), do: nil
 end
