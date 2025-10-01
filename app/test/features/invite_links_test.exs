@@ -37,6 +37,7 @@ defmodule Operately.Features.InviteLinksTest do
     |> Steps.follow_invite_link()
     |> Steps.assert_on_join_page_with_invitation()
     |> Steps.follow_sign_up_and_join()
+    |> Steps.assert_you_are_in_the_company()
   end
 
   # feature "Attempting to join with expired token", ctx do
