@@ -70,7 +70,6 @@ export function createAppRoutes() {
         pageRoute("", pages.HomePage),
         pageRoute("setup", pages.CompanySetupPage),
         pageRoute("invite-team", pages.InviteTeamPage),
-        pageRoute("join/:token", pages.InviteLinkJoinPage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
         pageRoute("notifications", pages.NotificationsPage),

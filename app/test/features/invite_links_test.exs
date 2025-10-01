@@ -4,33 +4,6 @@ defmodule Operately.Features.InviteLinksTest do
 
   setup ctx, do: Steps.setup(ctx)
 
-  # feature "New signup generates invite link", ctx do
-  #   ctx
-  #   |> Factory.log_in_person(:creator)
-  #   |> Steps.visit_team_invite_page()
-  #   |> Steps.assert_invite_team_page_loaded()
-  #   |> Steps.generate_invite_link()
-  #   |> Steps.assert_invite_link_generated_successfully()
-  # end
-
-  # feature "Admin views invite links", ctx do
-  #   ctx
-  #   |> Steps.create_invite_link()
-  #   |> Factory.log_in_person(:creator)
-  #   |> Steps.visit_admin_manage_people_page()
-  #   |> Steps.assert_invite_links_section_visible()
-  # end
-
-  # feature "Admin revokes invite link", ctx do
-  #   ctx
-  #   |> Steps.create_invite_link()
-  #   |> Factory.log_in_person(:creator)
-  #   |> Steps.visit_admin_manage_people_page()
-  #   |> assert_has(Query.text("Active"))
-  #   |> Steps.revoke_invite_link()
-  #   |> Steps.assert_invite_link_revoked()
-  # end
-
   feature "logged in user joins the company via invite link", ctx do
     ctx
     |> Steps.given_the_invited_member_is_logged_in()

@@ -66,7 +66,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :follow_join_button, ctx do
-    ctx |> UI.click(testid: "join-with-existing-account")
+    ctx |> UI.click(testid: "join-company")
   end
 
   step :follow_sign_up_and_join, ctx do

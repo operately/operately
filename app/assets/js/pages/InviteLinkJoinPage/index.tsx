@@ -24,6 +24,7 @@ async function loader({ params }): Promise<LoaderResult> {
   }
 
   const invite = await loadInviteLink(token);
+  const loggedIn = !!window.appConfig.account?.id;
 
   if (!invite) {
     return { invite: null, token, pageState: "invalid-token" };
@@ -31,8 +32,10 @@ async function loader({ params }): Promise<LoaderResult> {
     return { invite, token, pageState: "expired-token" };
   } else if (isInactive(invite)) {
     return { invite, token, pageState: "revoked-token" };
+  } else if (loggedIn) {
+    return { invite, token, pageState: "logged-in-user-valid-token" };
   } else {
-    return { invite, token, pageState: "valid-token" };
+    return { invite, token, pageState: "anonymous-user-valid-token" };
   }
 }
 
@@ -43,12 +46,14 @@ function Page() {
 
   const handleSignUpAndJoin = () => navigate(`/sign_up?invite_token=${token}`);
   const handleLogInAndJoin = () => navigate(`/log_in?invite_token=${token}`);
+  const handleJoin = async () => {};
 
   return (
     <InviteLinkJoinPage
       invitation={prepInvitation(invite)}
       pageState={pageState}
       token={token}
+      handleJoin={handleJoin}
       handleSignUpAndJoin={handleSignUpAndJoin}
       handleLogInAndJoin={handleLogInAndJoin}
     />
