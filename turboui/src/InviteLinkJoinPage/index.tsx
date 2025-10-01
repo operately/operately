@@ -1,15 +1,20 @@
 import React from "react";
 
-import { IconMoodSad } from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { Avatar } from "../Avatar";
 import { SecondaryButton } from "../Button";
+import { IconMoodSad } from "../icons";
 import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
 import { firstName } from "../utils/people";
 
 export namespace InviteLinkJoinPage {
-  export type PageState = "valid-token" | "expired-token" | "revoked-token" | "invalid-token";
+  export type PageState =
+    | "logged-in-user-valid-token"
+    | "anonymous-user-valid-token"
+    | "expired-token"
+    | "revoked-token"
+    | "invalid-token";
 
   export interface Invitation {
     company: {
@@ -28,6 +33,10 @@ export namespace InviteLinkJoinPage {
     invitation: Invitation | null;
     token: string | null;
 
+    // For logged in users
+    handleJoin: () => void;
+
+    // For anonymous users
     handleSignUpAndJoin: () => void;
     handleLogInAndJoin: () => void;
   }
@@ -43,7 +52,8 @@ export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
       </div>
 
       {match(props.pageState)
-        .with("valid-token", () => <ValidTokenState {...props} />)
+        .with("logged-in-user-valid-token", () => <LoggedInUserValidTokenState {...props} />)
+        .with("anonymous-user-valid-token", () => <AnonymousValidTokenState {...props} />)
         .with("expired-token", () => <ExpiredTokenState {...props} />)
         .with("revoked-token", () => <ExpiredTokenState {...props} />)
         .with("invalid-token", () => <InvalidTokenState />)
@@ -52,7 +62,25 @@ export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
   );
 }
 
-function ValidTokenState(props: InviteLinkJoinPage.Props) {
+function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
+  return (
+    <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
+      <div className="text-center flex flex-col items-center mb-8">
+        <Avatar person={props.invitation?.author!} size={64} className="mb-4" />
+        {props.invitation?.author?.fullName} invited you to join
+        <div className="text-xl font-semibold">{props.invitation?.company?.name}</div>
+      </div>
+
+      <div className="flex items-center flex-col items-stretch">
+        <SecondaryButton onClick={props.handleJoin} testId="join-company">
+          Join {props.invitation?.company?.name}
+        </SecondaryButton>
+      </div>
+    </div>
+  );
+}
+
+function AnonymousValidTokenState(props: InviteLinkJoinPage.Props) {
   return (
     <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
       <div className="text-center flex flex-col items-center mb-8">
