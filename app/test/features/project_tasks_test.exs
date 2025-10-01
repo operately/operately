@@ -285,27 +285,53 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
-  feature "post comment to task", ctx do
+  feature "delete task", ctx do
+
     ctx
     |> Steps.given_task_exists()
+    |> Steps.visit_task_page()
+    |> Steps.delete_task()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.assert_task_not_in_list()
+  end
+
+  @tag login_as: :champion
+  feature "post comment to task", ctx do
+    ctx = Steps.given_task_exists(ctx)
+
+    ctx
     |> Steps.visit_task_page()
     |> Steps.post_comment("This is a comment")
     |> Steps.assert_comment("This is a comment")
     |> Steps.reload_task_page()
     |> Steps.assert_comment("This is a comment")
-    |> Steps.assert_task_comment_visible_in_feed()
+    |> Steps.assert_task_comment_visible_in_feed(person: ctx.champion, task_name: ctx.task.name)
   end
 
   @tag login_as: :reviewer
   feature "post comment to task sends notification to assignee", ctx do
+    ctx = Steps.given_task_exists(ctx)
+
+    ctx
+    |> Steps.given_task_assignee_exists()
+    |> Steps.visit_task_page()
+    |> Steps.post_comment("This is a comment")
+    |> Steps.assert_comment("This is a comment")
+    |> Steps.assert_comment_posted_notification_sent(task_name: ctx.task.name)
+    |> Steps.assert_comment_posted_email_sent()
+  end
+
+  @tag login_as: :reviewer
+  feature "feed and notifications don't break when comment is posted and task is deleted", ctx do
     ctx
     |> Steps.given_task_exists()
     |> Steps.given_task_assignee_exists()
     |> Steps.visit_task_page()
     |> Steps.post_comment("This is a comment")
     |> Steps.assert_comment("This is a comment")
-    |> Steps.assert_comment_posted_notification_sent()
-    |> Steps.assert_comment_posted_email_sent()
+    |> Steps.delete_task()
+    |> Steps.assert_task_comment_visible_in_feed(person: ctx.reviewer, task_name: "a task")
+    |> Steps.assert_comment_posted_notification_sent(task_name: "a task")
   end
 
   @tag login_as: :champion

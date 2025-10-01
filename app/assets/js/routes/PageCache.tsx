@@ -43,30 +43,44 @@ export const PageCache = {
     const loadedData = useLoadedData<T>();
 
     const [data, setData] = React.useState<T>(loadedData);
+    const paramsRef = React.useRef(params);
     opts = { refreshCache: true, ...opts };
+
+    // Update ref when params change
+    React.useEffect(() => {
+      paramsRef.current = params;
+    }, [params]);
 
     React.useEffect(() => {
       setData(loadedData);
     }, [loadedData]);
 
+    // Use a stable key based on param values
+    const paramsKey = React.useMemo(() => JSON.stringify(params), [params]);
+
     React.useEffect(() => {
       const abortController = new AbortController();
 
-      loader({ params, refreshCache: opts.refreshCache }).then((newData) => {
+      loader({ params: paramsRef.current, refreshCache: opts.refreshCache }).then((newData) => {
         if (!abortController.signal.aborted) {
           setData(newData);
+        }
+      }).catch((error) => {
+        // Silently ignore errors if the component was unmounted
+        if (!abortController.signal.aborted) {
+          console.error("PageCache loader error:", error);
         }
       });
 
       return () => {
         abortController.abort();
       };
-    }, [params]);
+    }, [paramsKey]);
 
     const refresh = React.useCallback(async () => {
-      const newData = await loader({ params, refreshCache: true });
+      const newData = await loader({ params: paramsRef.current, refreshCache: true });
       setData(newData);
-    }, [params, loader]);
+    }, [paramsKey, loader]);
 
     return { ...data, refresh };
   },
