@@ -1,15 +1,15 @@
 import * as React from "react";
 import { IconMail } from "turboui";
 
+import { GoogleLogo } from "@/components/Brands";
 import classNames from "classnames";
 import { DivLink } from "turboui";
-import { GoogleLogo } from "@/components/Brands";
 
-export function SignUpWithEmail() {
+export function SignUpWithEmail({ inviteToken }: { inviteToken?: string | null }) {
   return (
     <SignUpButton
       title="Sign up with email"
-      link="/sign_up/email"
+      link={signupEmailPath(inviteToken)}
       icon={<IconMail size={24} className="text-content-dimmed" />}
       testId="sign-up-with-email"
     />
@@ -38,6 +38,14 @@ export function SignUpWithGoogleButton() {
       testId="sign-up-with-google"
     />
   );
+}
+
+function signupEmailPath(inviteToken?: string | null): string {
+  if (inviteToken) {
+    return `/sign_up/email?invite_token=${inviteToken}`;
+  } else {
+    return "/sign_up/email";
+  }
 }
 
 interface SignUpButtonProps {
