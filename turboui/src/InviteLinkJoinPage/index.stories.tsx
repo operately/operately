@@ -34,7 +34,7 @@ export const LoggedInUserValidTokenState: Story = {
 
 export const AnnonymousUserValidTokenState: Story = {
   args: {
-    pageState: "annonymous-user-valid-token",
+    pageState: "anonymous-user-valid-token",
     invitation: {
       company: {
         id: "1",
