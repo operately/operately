@@ -1,6 +1,6 @@
-import * as React from "react";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
+import * as React from "react";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { Link } from "turboui";
@@ -12,6 +12,8 @@ import { PageModule } from "@/routes/types";
 export default { name: "SignUpPage", loader: Pages.emptyLoader, Page } as PageModule;
 
 function Page() {
+  const inviteToken = new URLSearchParams(window.location.search).get("invite_token");
+
   return (
     <Pages.Page title={["Sign Up"]} testId="sign-up-page">
       <Paper.Root size="tiny">
@@ -21,7 +23,7 @@ function Page() {
 
             <div className="flex flex-col gap-3 mb-8">
               {window.appConfig.allowSignupWithGoogle && <SignUpWithGoogleButton />}
-              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail />}
+              {window.appConfig.allowSignupWithEmail && <SignUpWithEmail inviteToken={inviteToken} />}
             </div>
 
             <TosAndPrivacyPolicy />
