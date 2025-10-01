@@ -71,7 +71,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
       ctx = Factory.log_in_person(ctx, :creator)
       assert {200, %{invite_link: res}} = mutation(ctx.conn, [:invitations, :create_invite_link], %{})
 
-      stored = InviteLinks.get_invite_link_by_token(res.token)
+      {:ok, stored} = InviteLinks.get_invite_link_by_token(res.token)
       assert res == Serializer.serialize(stored, level: :full)
     end
   end
@@ -208,7 +208,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
 
       assert res.is_active == false
 
-      stored = InviteLinks.get_invite_link_by_token(res.token)
+      {:ok, stored} = InviteLinks.get_invite_link_by_token(res.token)
       assert stored.is_active == false
       assert res == Serializer.serialize(stored, level: :full)
     end

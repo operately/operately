@@ -101,13 +101,21 @@ defmodule Operately.InviteLinks do
         Logger.info("Successfully created person #{person.id} for company #{invite_link.company_id} via invite link")
         {:ok, {:person_created, person}}
 
+      {:error, :invite_link, :not_found, _changes} ->
+        Logger.info("Invite token not found during account creation")
+        {:error, :invite_token_not_found}
+
+      {:error, :validate_invite_link, :invite_link_invalid, _changes} ->
+        Logger.info("Invalid/expired invite token during account creation")
+        {:error, :invite_token_invalid}
+
       {:error, :person, changeset, _changes} ->
         Logger.error("Failed to create person via invite link: #{inspect(changeset)}")
-        {:ok, :person_creation_failed}
+        {:error, :person_creation_failed}
 
       {:error, :invite_link_update, reason, _changes} ->
         Logger.error("Failed to increment invite link use count: #{inspect(reason)}")
-        {:ok, :person_creation_failed}
+        {:error, :invite_link_update_failed}
     end
   end
 end

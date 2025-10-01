@@ -26,7 +26,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
         invite_token: invite_link.token,
         code: activation.code,
         email: "newuser@test.com",
-        password: "password123",
+        password: "password1234",
         full_name: "New User"
       }
 
@@ -43,7 +43,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       assert new_person.company_id == ctx.company.id
 
       # Verify invite link use count was incremented
-      updated_invite_link = InviteLinks.get_invite_link_by_token(invite_link.token)
+      {:ok, updated_invite_link} = InviteLinks.get_invite_link_by_token(invite_link.token)
       assert updated_invite_link.use_count == 1
     end
 
@@ -56,7 +56,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
         invite_token: "invalid-token-123",
         code: activation.code,
         email: "newuser2@test.com",
-        password: "password123",
+        password: "password1234",
         full_name: "New User 2"
       }
 
@@ -84,17 +84,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
         })
 
       # Create email activation code
-      {:ok, activation} =
-        Operately.People.EmailActivationCode.create(:system, %{
-          email: "newuser3@test.com"
-        })
+      {:ok, activation} = Operately.People.EmailActivationCode.create("newuser3@test.com")
 
       # Prepare inputs
       inputs = %{
         invite_token: invite_link.token,
         code: activation.code,
         email: "newuser3@test.com",
-        password: "password123",
+        password: "password1234",
         full_name: "New User 3"
       }
 
@@ -108,22 +105,19 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
       assert new_person == nil
 
       # Verify invite link use count was not incremented
-      updated_invite_link = InviteLinks.get_invite_link_by_token(invite_link.token)
+      {:ok, updated_invite_link} = InviteLinks.get_invite_link_by_token(invite_link.token)
       assert updated_invite_link.use_count == 0
     end
 
     test "creates account and no person when no invite token is provided", ctx do
       # Create email activation code
-      {:ok, activation} =
-        Operately.People.EmailActivationCode.create(:system, %{
-          email: "newuser4@test.com"
-        })
+      {:ok, activation} = Operately.People.EmailActivationCode.create("newuser4@test.com")
 
       # Prepare inputs without invite token
       inputs = %{
         code: activation.code,
         email: "newuser4@test.com",
-        password: "password123",
+        password: "password1234",
         full_name: "New User 4"
       }
 
