@@ -1,9 +1,9 @@
 import React from "react";
 
-import { IconMoodSad } from "@tabler/icons-react";
 import { match } from "ts-pattern";
 import { Avatar } from "../Avatar";
 import { SecondaryButton } from "../Button";
+import { IconMoodSad } from "../icons";
 import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
 import { firstName } from "../utils/people";
@@ -11,7 +11,7 @@ import { firstName } from "../utils/people";
 export namespace InviteLinkJoinPage {
   export type PageState =
     | "logged-in-user-valid-token"
-    | "annonymous-user-valid-token"
+    | "anonymous-user-valid-token"
     | "expired-token"
     | "revoked-token"
     | "invalid-token";
@@ -53,7 +53,7 @@ export function InviteLinkJoinPage(props: InviteLinkJoinPage.Props) {
 
       {match(props.pageState)
         .with("logged-in-user-valid-token", () => <LoggedInUserValidTokenState {...props} />)
-        .with("annonymous-user-valid-token", () => <AnnonymousValidTokenState {...props} />)
+        .with("anonymous-user-valid-token", () => <AnonymousValidTokenState {...props} />)
         .with("expired-token", () => <ExpiredTokenState {...props} />)
         .with("revoked-token", () => <ExpiredTokenState {...props} />)
         .with("invalid-token", () => <InvalidTokenState />)
@@ -80,7 +80,7 @@ function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
   );
 }
 
-function AnnonymousValidTokenState(props: InviteLinkJoinPage.Props) {
+function AnonymousValidTokenState(props: InviteLinkJoinPage.Props) {
   return (
     <div className="bg-surface-base mx-auto p-12 w-[500px] border border-stroke-base rounded-xl shadow-lg">
       <div className="text-center flex flex-col items-center mb-8">
