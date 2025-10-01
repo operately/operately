@@ -8,21 +8,34 @@ export async function logOut(): Promise<LogOutResult> {
 }
 
 interface LogInOptions {
-  redirectTo: string | null;
+  redirectTo?: string | null;
+  skipRedirect?: boolean;
+  onSuccess?: () => void | Promise<void>;
 }
 
-export async function logIn(email: string, password: string, options: LogInOptions): Promise<LogInResult> {
+export async function logIn(
+  email: string,
+  password: string,
+  options: LogInOptions = {},
+): Promise<LogInResult> {
+  const { redirectTo = null, skipRedirect = false, onSuccess } = options;
   const data = { email, password };
 
   const res = await fetch("/accounts/log_in", { method: "POST", headers: autheaders(), body: JSON.stringify(data) });
 
   if (res.status === 200) {
-    if (options.redirectTo) {
-      window.location.href = options.redirectTo;
-    } else if (res.redirected) {
-      window.location.href = res.url;
-    } else {
-      window.location.href = "/";
+    if (onSuccess) {
+      await onSuccess();
+    }
+
+    if (!skipRedirect) {
+      if (redirectTo) {
+        window.location.href = redirectTo;
+      } else if (res.redirected) {
+        window.location.href = res.url;
+      } else {
+        window.location.href = "/";
+      }
     }
 
     return "success";

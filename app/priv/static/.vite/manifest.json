@@ -1,15 +1,15 @@
 {
-  "_vendor-DJQoC7z3.js": {
-    "file": "assets/vendor-DJQoC7z3.js",
+  "_vendor-B-25Ux4L.js": {
+    "file": "assets/vendor-B-25Ux4L.js",
     "name": "vendor"
   },
   "assets/js/app.tsx": {
-    "file": "assets/app-DxxJ6lur.js",
+    "file": "assets/app-Dx5rYwQ0.js",
     "name": "app",
     "src": "assets/js/app.tsx",
     "isEntry": true,
     "imports": [
-      "_vendor-DJQoC7z3.js"
+      "_vendor-B-25Ux4L.js"
     ]
   }
 }
