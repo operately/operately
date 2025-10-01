@@ -74,9 +74,23 @@ function SignUpButton({ title, link, icon, external, testId }: SignUpButtonProps
 function getGoogleAuthUrl(): string {
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirect_to");
+  const inviteToken = params.get("invite_token");
+
+  const search = new URLSearchParams();
 
   if (redirectTo) {
-    return `/accounts/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`;
+    search.set("redirect_to", redirectTo);
   }
+
+  if (inviteToken) {
+    search.set("invite_token", inviteToken);
+  }
+
+  const query = search.toString();
+
+  if (query) {
+    return `/accounts/auth/google?${query}`;
+  }
+
   return "/accounts/auth/google";
 }
