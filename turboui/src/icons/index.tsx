@@ -129,6 +129,7 @@ import IconShieldLock from "@tabler/icons-react/dist/esm/icons/IconShieldLock.mj
 import IconSlash from "@tabler/icons-react/dist/esm/icons/IconSlash.mjs";
 import IconSparkles from "@tabler/icons-react/dist/esm/icons/IconSparkles.mjs";
 import IconSpeakerphone from "@tabler/icons-react/dist/esm/icons/IconSpeakerphone.mjs";
+import IconSquare from "@tabler/icons-react/dist/esm/icons/IconSquare.mjs";
 import IconSquareCheckFilled from "@tabler/icons-react/dist/esm/icons/IconSquareCheckFilled.mjs";
 import IconSquareChevronsLeftFilled from "@tabler/icons-react/dist/esm/icons/IconSquareChevronsLeftFilled.mjs";
 import IconStar from "@tabler/icons-react/dist/esm/icons/IconStar.mjs";
@@ -283,6 +284,7 @@ export {
   IconSlash,
   IconSparkles,
   IconSpeakerphone,
+  IconSquare,
   IconSquareCheckFilled,
   IconSquareChevronsLeftFilled,
   IconStar,

@@ -59,7 +59,8 @@ export function PageNew(props: Page.Props) {
   useHtmlTitle(props.title);
 
   const containerClass = classNames("absolute inset-0 mt-10 lg:mt-11");
-  const innerClass = classNames("absolute inset-0", "bg-surface-base", "flex flex-col");
+  const innerClass = classNames("bg-surface-base", "flex flex-col", "min-h-full");
+  const contentClass = classNames(sizeClasses[props.size || "medium"]);
 
   return (
     <div className={containerClass} data-test-id={props.testId}>
@@ -67,7 +68,7 @@ export function PageNew(props: Page.Props) {
 
       <div className={innerClass}>
         <PageOptions options={props.options} />
-        {props.children}
+        <div className={contentClass}>{props.children}</div>
       </div>
     </div>
   );
