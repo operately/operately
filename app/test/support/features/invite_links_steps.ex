@@ -137,8 +137,32 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.click(testid: "log-in-and-join")
   end
 
-  step :log_in_with_google, _ctx do
-    raise "Not implemented yet"
+  step :log_in_with_google, ctx do
+    previous = Application.get_env(:operately, :allow_login_with_google)
+    Application.put_env(:operately, :allow_login_with_google, true)
+
+    on_exit(fn ->
+      Application.put_env(:operately, :allow_login_with_google, previous)
+    end)
+
+    account =
+      case Map.fetch(ctx, :existing_google_account) do
+        {:ok, account} -> account
+        :error -> PeopleFixtures.account_fixture()
+      end
+
+    ctx =
+      ctx
+      |> Map.put(:existing_google_account, account)
+      |> Map.put(:expected_member_email, account.email)
+
+    ctx
+    |> UI.visit("/log_in?invite_token=#{ctx.invite_link.token}")
+    |> UI.assert_has(testid: "sign-in-with-google")
+    |> UI.visit(
+      "/accounts/auth/test_google?account_id=#{account.id}&invite_token=#{ctx.invite_link.token}"
+    )
+    |> UI.sleep(500)
   end
 
   step :log_in_with_email, ctx do
