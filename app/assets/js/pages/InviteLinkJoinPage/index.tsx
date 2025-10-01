@@ -40,31 +40,28 @@ function Page() {
   const navigate = useNavigate();
   const { inviteLink, token, error } = Pages.useLoadedData() as LoaderResult;
 
-  const [joinCompany, { loading: joining }] = Api.invitations.useJoinCompanyViaInviteLink();
-  const [joinError, setJoinError] = React.useState<string | null>(null);
+  // const [joinCompany, { loading: joining }] = Api.invitations.useJoinCompanyViaInviteLink();
 
-  const handleJoin = async () => {
-    try {
-      setJoinError(null);
-      const result = await joinCompany({ token });
+  // const handleJoin = async () => {
+  //   const result = await joinCompany({ token });
 
-      if (result.error) {
-        setJoinError(result.error);
-        return;
-      }
+  //   if (result.error) {
+  //     console.error("Error joining company:", result.error);
+  //     return;
+  //   }
 
-      if (result.company) {
-        // Redirect to company dashboard
-        navigate(`/${result.company.id}`);
-      }
-    } catch (err) {
-      setJoinError("Failed to join company. Please try again.");
-    }
+  //   if (result.company) {
+  //     // Redirect to company dashboard
+  //     navigate(`/${result.company.id}`);
+  //   }
+  // };
+
+  const handleSignUpAndJoin = () => {
+    navigate(`/sign_up?invite_token=${token}`);
   };
 
-  const handleSignUp = () => {
-    // Preserve the token in the signup flow
-    navigate(`/sign_up?invite_token=${token}`);
+  const handleLogInAndJoin = () => {
+    navigate(`/log_in?invite_token=${token}`);
   };
 
   if (error || !inviteLink) {
@@ -130,8 +127,8 @@ function Page() {
           </div>
 
           <div className="flex items-center flex-col items-stretch">
-            <SecondaryButton onClick={handleJoin} loading={joining} testId="join-company">
-              Sign up & Join
+            <SecondaryButton onClick={handleSignUpAndJoin} testId="sign-up-and-join">
+              Sign Up & Join {inviteLink.company?.name}
             </SecondaryButton>
 
             <div className="flex items-center my-4 w-full gap-4">
@@ -140,7 +137,9 @@ function Page() {
               <div className="border-t border-surface-outline flex-grow" />
             </div>
 
-            <SecondaryButton onClick={handleSignUp}>Log in with your account</SecondaryButton>
+            <SecondaryButton onClick={handleLogInAndJoin} testId="log-in-and-join">
+              Log in with your account
+            </SecondaryButton>
           </div>
         </div>
       </div>
