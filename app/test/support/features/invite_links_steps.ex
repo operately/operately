@@ -67,7 +67,9 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :follow_join_button, ctx do
-    ctx |> UI.click(testid: "join-company")
+    ctx
+    |> UI.click(testid: "join-company")
+    |> UI.sleep(500)
   end
 
   step :follow_sign_up_and_join, ctx do
@@ -90,7 +92,12 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.click(testid: "submit")
     |> then(fn ctx ->
       emails = Emails.wait_for_email_for(email, attempts: 10)
-      email = Enum.find(emails, fn email -> String.contains?(email.subject, "Operately confirmation code:") end)
+
+      email =
+        Enum.find(emails, fn email ->
+          String.contains?(email.subject, "Operately confirmation code:")
+        end)
+
       code = String.split(email.subject, "Operately confirmation code:") |> List.last()
 
       ctx
@@ -137,7 +144,9 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   step :log_in_with_email, ctx do
     {account, ctx} =
       case Map.fetch(ctx, :existing_account) do
-        {:ok, account} -> {account, ctx}
+        {:ok, account} ->
+          {account, ctx}
+
         :error ->
           account = PeopleFixtures.account_fixture()
           {account, Map.put(ctx, :existing_account, account)}

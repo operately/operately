@@ -88,7 +88,7 @@ defmodule OperatelyWeb.Api.Invitations do
     end
 
     outputs do
-      field :invite_link, :invite_link
+      field(:invite_link, :invite_link)
     end
 
     def call(conn, _inputs) do
@@ -232,26 +232,23 @@ defmodule OperatelyWeb.Api.Invitations do
       end
     end
 
-    defp handle_join(%{me: nil, account: account, invite_link: invite_link}, _inputs) when not is_nil(account) do
-      case Operately.InviteLinks.join_company_via_invite_link(account, invite_link.token) do
-        {:ok, {:person_created, person}} ->
+    defp handle_join(%{me: person, account: account, invite_link: invite_link}, _inputs)
+         when not is_nil(person) do
+      cond do
+        person.company_id == invite_link.company_id ->
           {:ok, %{company: invite_link.company, person: person, action: :redirect}}
 
-        {:error, :invite_token_not_found} ->
-          {:error, %{error: "Invalid invite link"}}
+        account ->
+          join_account_to_company(account, invite_link)
 
-        {:error, :invite_token_invalid} ->
-          {:error, %{error: "This invite link is no longer valid"}}
-
-        {:error, :person_creation_failed} ->
-          {:error, %{error: "Unable to add you to this company."}}
-
-        {:error, :invite_link_update_failed} ->
-          {:error, %{error: "Something went wrong while using this invite link."}}
-
-        {:error, reason} ->
-          {:error, %{error: normalize_error(reason)}}
+        true ->
+          {:error, %{error: "Unable to determine account for the current session."}}
       end
+    end
+
+    defp handle_join(%{me: nil, account: account, invite_link: invite_link}, _inputs)
+         when not is_nil(account) do
+      join_account_to_company(account, invite_link)
     end
 
     defp handle_join(%{me: nil, account: nil, invite_link: invite_link}, inputs) do
@@ -263,11 +260,6 @@ defmodule OperatelyWeb.Api.Invitations do
       end
     end
 
-    defp handle_join(%{me: person, invite_link: invite_link}, _inputs) do
-      # Existing logged-in user
-      handle_existing_user_join(person, invite_link)
-    end
-
     defp handle_new_user_signup(_invite_link, inputs) do
       if inputs[:password] != inputs[:password_confirmation] do
         {:error, "Passwords don't match"}
@@ -275,20 +267,6 @@ defmodule OperatelyWeb.Api.Invitations do
         # For new users, we'll handle this in the frontend
         # by redirecting to sign up with the token preserved
         {:error, "Please sign up first and then use this invite link"}
-      end
-    end
-
-    defp handle_existing_user_join(person, invite_link) do
-      cond do
-        person.company_id == invite_link.company_id ->
-          # Already a member, redirect to company
-          company = invite_link.company
-          {:ok, %{company: company, person: person, action: :redirect}}
-
-        true ->
-          # For now, return an error for simplicity
-          # In a full implementation, this would involve complex company switching logic
-          {:error, %{error: "Company joining for existing users not yet implemented. Please contact support."}}
       end
     end
 
@@ -316,6 +294,28 @@ defmodule OperatelyWeb.Api.Invitations do
     defp normalize_error({:error, message}) when is_binary(message), do: message
     defp normalize_error(message) when is_binary(message), do: message
     defp normalize_error(_), do: "An unexpected error occurred"
+
+    defp join_account_to_company(account, invite_link) do
+      case Operately.InviteLinks.join_company_via_invite_link(account, invite_link.token) do
+        {:ok, {:person_created, person}} ->
+          {:ok, %{company: invite_link.company, person: person, action: :redirect}}
+
+        {:error, :invite_token_not_found} ->
+          {:error, %{error: "Invalid invite link"}}
+
+        {:error, :invite_token_invalid} ->
+          {:error, %{error: "This invite link is no longer valid"}}
+
+        {:error, :person_creation_failed} ->
+          {:error, %{error: "Unable to add you to this company."}}
+
+        {:error, :invite_link_update_failed} ->
+          {:error, %{error: "Something went wrong while using this invite link."}}
+
+        {:error, reason} ->
+          {:error, %{error: normalize_error(reason)}}
+      end
+    end
   end
 
   defmodule RevokeInviteLink do
