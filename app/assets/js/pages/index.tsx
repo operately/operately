@@ -37,6 +37,8 @@ import GoalDiscussionNewPage from "./GoalDiscussionNewPage";
 import GoalPage from "./GoalPage";
 import GoalReopenPage from "./GoalReopenPage";
 import HomePage from "./HomePage";
+import InviteLinkJoinPage from "./InviteLinkJoinPage";
+import InviteTeamPage from "./InviteTeamPage";
 import JoinPage from "./JoinPage";
 import LobbyPage from "./LobbyPage";
 import LoginPage from "./LoginPage";
@@ -131,6 +133,8 @@ export default {
   GoalPage,
   GoalReopenPage,
   HomePage,
+  InviteLinkJoinPage,
+  InviteTeamPage,
   JoinPage,
   LobbyPage,
   LoginPage,
