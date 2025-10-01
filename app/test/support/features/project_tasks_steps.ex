@@ -188,6 +188,13 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :delete_task, ctx do
+    ctx
+    |> UI.click(testid: "delete-task")
+    |> UI.click_button("Delete Forever")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+  end
+
   #
   # Assertions
   #
@@ -265,6 +272,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :refute_task_description, ctx, description do
     UI.refute_text(ctx, description)
+  end
+
+  step :assert_task_not_in_list, ctx do
+    ctx
+    |> UI.click(testid: "tab-tasks")
+    |> UI.refute_text(ctx.task.name)
   end
 
   step :assert_change_in_feed, ctx, title do
@@ -358,9 +371,9 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     end)
   end
 
-  step :assert_task_comment_visible_in_feed, ctx do
-    short = "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name}"
-    long = "#{Operately.People.Person.first_name(ctx.champion)} commented on #{ctx.task.name} in the #{ctx.project.name} project"
+  step :assert_task_comment_visible_in_feed, ctx, person: person, task_name: task_name do
+    short = "#{Operately.People.Person.first_name(person)} commented on #{task_name}"
+    long = "#{Operately.People.Person.first_name(person)} commented on #{task_name} in the #{ctx.project.name} project"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -471,12 +484,12 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
-  step :assert_comment_posted_notification_sent, ctx do
+  step :assert_comment_posted_notification_sent, ctx, task_name: task_name do
     ctx
     |> UI.login_as(ctx.champion)
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.reviewer,
-      action: "Re: #{ctx.task.name}"
+      action: "Re: #{task_name}"
     })
   end
 

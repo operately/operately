@@ -194,6 +194,7 @@ function Actions(props: TaskPage.State) {
       icon: IconTrash,
       show: props.canEdit,
       danger: true,
+      testId: "delete-task",
     },
   ].filter((action) => action.show);
 
@@ -209,6 +210,7 @@ function Actions(props: TaskPage.State) {
             className={`flex items-center gap-2 text-xs hover:bg-surface-highlight rounded px-2 py-1 -mx-2 w-full text-left ${
               action.danger ? "text-content-error hover:bg-red-50" : ""
             }`}
+            data-test-id={action.testId}
           >
             <action.icon size={16} className={action.danger ? "text-content-error" : "text-content-dimmed"} />
             <span>{action.label}</span>
