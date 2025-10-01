@@ -1,7 +1,7 @@
 import * as React from "react";
 
-import { useDragAndDropContext } from "./context";
 import type { DragAndDropContextValue } from "./context";
+import { useDragAndDropContext } from "./context";
 
 interface Props {
   id: string;
@@ -82,7 +82,11 @@ class DropZoneElement {
   onMouseMove(e: MouseEvent) {
     if (this.context.getIsDragging()) {
       const r = this.el.getBoundingClientRect();
-      const isOver = e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+      const isOver =
+        e.clientX >= r.left - 500 &&
+        e.clientX <= r.right + 500 &&
+        e.clientY >= r.top - 500 &&
+        e.clientY <= r.bottom + 500;
 
       if (isOver) {
         this.indexInDropZone = this.calculateIndexInDropZone(e.clientY);

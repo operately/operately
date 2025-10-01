@@ -2,8 +2,8 @@ import * as React from "react";
 
 import type { DragAndDropContextValue } from "./context";
 
-import { useDragAndDropContext } from "./context";
 import { DRAG_DISTANCE_INERTIA } from "./constants";
+import { useDragAndDropContext } from "./context";
 
 export function useDraggable({ id, zoneId, disabled = false }: { id: string; zoneId: string; disabled?: boolean }) {
   const ref = React.useRef<HTMLDivElement | null>(null);
@@ -116,6 +116,8 @@ class DraggableElement {
   }
 
   onMouseDown(e: MouseEvent) {
+    if (e.button !== 0) return;
+
     this.isMouseDown = true;
     this.mouseDownPosition = { x: e.clientX, y: e.clientY };
   }

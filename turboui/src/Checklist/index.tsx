@@ -172,7 +172,7 @@ function ChecklistInternal(props: Checklist.InternalProps) {
 }
 
 function ChecklistItemList({ state }: { state: State }) {
-  const { ref } = useDropZone({ id: "checklist", dependencies: [state.items] });
+  const { ref } = useDropZone({ id: "checklist", dependencies: state.items });
 
   return (
     <div ref={ref} className="space-y-0">
@@ -348,17 +348,18 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
   const draggedStyle = { background: "var(--color-surface-base)" };
 
   const dragGripClass = classNames(
-    "absolute -left-5 mt-0.5 text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
+    "absolute -left-5 top-1 text-content-subtle opacity-0 group-hover:opacity-100 transition-all",
     {
       "cursor-grab": !isDragging && state.togglable,
       "cursor-grabbing": isDragging && state.togglable,
       "opacity-100": isDragging && state.togglable,
-      hidden: !state.togglable,
+      hidden: !state.togglable || isDragging,
     },
   );
 
   const groupClass = classNames("group relative flex items-start gap-2 rounded", {
     "hover:bg-surface-highlight transition-colors": state.togglable,
+    "shadow-[0_0px_10px_-1px_rgba(0,0,0,0.2)] p-1 rounded-lg": isDragging,
   });
 
   return (
@@ -369,13 +370,14 @@ function ChecklistItemView({ state, item }: { state: State; item: ChecklistItemS
       data-test-id={createTestId("checklist-item", item.name)}
     >
       <IconGripVertical size={16} className={dragGripClass} />
-      <Checkbox
-        checked={item.completed}
-        onChange={handleCheckboxChange}
-        disabled={!state.togglable}
-        className="mt-0.5"
-        testId={createTestId("checkbox", item.name)}
-      />
+      <div className="pt-0.5">
+        <Checkbox
+          checked={item.completed}
+          onChange={handleCheckboxChange}
+          disabled={!state.togglable}
+          testId={createTestId("checkbox", item.name)}
+        />
+      </div>
       <ChecklistItemName item={item} />
       {item.editButtonVisible && state.togglable && (
         <ChecklistItemEditButton state={state} item={item} isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
@@ -410,10 +412,10 @@ function ChecklistItemEditButton({
         onClick={() => setIsMenuOpen(!isMenuOpen)}
         data-test-id={createTestId("checklist-item-menu", item.id)}
       >
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <circle cx="8" cy="3" r="1" fill="currentColor" />
-          <circle cx="8" cy="8" r="1" fill="currentColor" />
-          <circle cx="8" cy="13" r="1" fill="currentColor" />
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <circle cx="7" cy="3" r="1" fill="currentColor" />
+          <circle cx="7" cy="7" r="1" fill="currentColor" />
+          <circle cx="7" cy="11" r="1" fill="currentColor" />
         </svg>
       </button>
 

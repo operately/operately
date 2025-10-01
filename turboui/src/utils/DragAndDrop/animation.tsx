@@ -1,6 +1,6 @@
 import React from "react";
-import { useDropZone } from "./dropzone";
 import { useDragAndDropContext } from "./context";
+import { useDropZone } from "./dropzone";
 
 /**
  * Provides animation styles for drag-and-drop operations within a drop zone.
@@ -39,7 +39,7 @@ export function useDraggingAnimation<T extends { id?: string | null }>(zoneId: s
 
   React.useLayoutEffect(() => {
     if (draggedId !== null) {
-      setTimeout(() => setAnimate(true), 200);
+      setTimeout(() => setAnimate(true), 100);
     } else {
       setAnimate(false);
     }
@@ -63,13 +63,13 @@ export function useDraggingAnimation<T extends { id?: string | null }>(zoneId: s
 
     return {
       transform: `translateY(${index < dropIndex! ? 0 : draggedElementHeight!}px)`,
-      transition: animate ? "transform 0.2s ease-in-out" : "",
+      transition: animate ? "transform 0.1s ease-in-out" : "",
     };
   };
 
   const containerStyle = {
     paddingBottom: isOver && !isSourceZone ? draggedElementHeight! : 0,
-    transition: animate && !isSourceZone ? "padding 0.2s ease-in-out" : "",
+    transition: animate && !isSourceZone ? "padding 0.1s ease-in-out" : "",
   };
 
   return { animate, containerStyle, itemStyle };
