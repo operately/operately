@@ -31,13 +31,24 @@ defmodule Operately.Features.InviteLinksTest do
   #   |> Steps.assert_invite_link_revoked()
   # end
 
+  feature "logged in user joins the company via invite link", ctx do
+    ctx
+    |> Steps.given_the_invited_member_is_logged_in()
+    |> Steps.given_that_an_invite_link_exists()
+    |> Steps.follow_invite_link()
+    |> Steps.assert_on_join_page_with_invitation()
+    |> Steps.follow_join_button()
+    |> Steps.assert_you_are_member_of_the_company()
+    |> Steps.assert_you_are_redirected_to_company_home_page()
+  end
+
   feature "new user signs up via email and joins the company via invite link", ctx do
     ctx
     |> Steps.given_that_an_invite_link_exists()
     |> Steps.follow_invite_link()
     |> Steps.assert_on_join_page_with_invitation()
     |> Steps.follow_sign_up_and_join()
-    |> Steps.assert_you_member_of_the_company()
+    |> Steps.assert_you_are_member_of_the_company()
     |> Steps.assert_you_are_redirected_to_company_home_page()
   end
 
