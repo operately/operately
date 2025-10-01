@@ -1,3 +1,4 @@
+import Api from "@/api";
 import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as React from "react";
@@ -16,6 +17,8 @@ export default { name: "LoginPage", loader: Pages.emptyLoader, Page } as PageMod
 
 function Page() {
   const [error, setError] = React.useState<string | null>(null);
+  const inviteToken = React.useMemo(() => new URLSearchParams(window.location.search).get("invite_token"), []);
+  const redirectTo = React.useMemo(() => getRedirectTo(), []);
 
   const form = Forms.useForm({
     fields: {
@@ -23,12 +26,38 @@ function Page() {
       password: "",
     },
     submit: async () => {
+      setError(null);
+
       const res = await logIn(form.values.email, form.values.password, {
-        redirectTo: getRedirectTo(),
+        redirectTo: inviteToken ? null : redirectTo,
+        skipRedirect: Boolean(inviteToken),
       });
 
       if (res === "failure") {
         setError("Invalid email or password");
+        return;
+      }
+
+      if (inviteToken) {
+        try {
+          const joinResult = await Api.invitations.joinCompanyViaInviteLink({ token: inviteToken });
+
+          if (joinResult.error) {
+            setError(joinResult.error);
+            return;
+          }
+
+          const companyId = joinResult.company?.id;
+
+          if (companyId) {
+            window.location.href = `/${companyId}`;
+          } else {
+            window.location.href = "/";
+          }
+        } catch (err) {
+          console.error("Failed to join company via invite link after login", err);
+          setError("Something went wrong while joining. Please try again.");
+        }
       }
     },
   });

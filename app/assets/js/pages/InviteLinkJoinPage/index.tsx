@@ -43,10 +43,45 @@ function Page() {
   const { invite, token, pageState } = Pages.useLoadedData() as LoaderResult;
 
   const navigate = useNavigate();
+  const [joining, setJoining] = React.useState(false);
+  const [joinError, setJoinError] = React.useState<string | null>(null);
 
-  const handleSignUpAndJoin = () => navigate(`/sign_up?invite_token=${token}`);
-  const handleLogInAndJoin = () => navigate(`/log_in?invite_token=${token}`);
-  const handleJoin = async () => {};
+  const handleSignUpAndJoin = () => {
+    setJoinError(null);
+    navigate(`/sign_up?invite_token=${token}`);
+  };
+  const handleLogInAndJoin = () => {
+    setJoinError(null);
+    navigate(`/log_in?invite_token=${token}`);
+  };
+  const handleJoin = React.useCallback(async () => {
+    if (!token) return;
+
+    setJoining(true);
+    setJoinError(null);
+
+    try {
+      const response = await Api.invitations.joinCompanyViaInviteLink({ token });
+
+      if (response.error) {
+        setJoinError(response.error);
+        setJoining(false);
+        return;
+      }
+
+      const companyId = response.company?.id;
+
+      if (companyId) {
+        window.location.href = `/${companyId}`;
+      } else {
+        window.location.href = "/";
+      }
+    } catch (error) {
+      console.error("Error joining company via invite link", error);
+      setJoinError("Something went wrong while joining. Please try again.");
+      setJoining(false);
+    }
+  }, [token]);
 
   return (
     <InviteLinkJoinPage
@@ -54,6 +89,8 @@ function Page() {
       pageState={pageState}
       token={token}
       handleJoin={handleJoin}
+      joining={joining}
+      joinError={joinError}
       handleSignUpAndJoin={handleSignUpAndJoin}
       handleLogInAndJoin={handleLogInAndJoin}
     />
