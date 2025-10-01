@@ -55,7 +55,7 @@ function Page() {
         await Api.createEmailActivationCode({ email: form.values.email });
         setPageState("code-verification");
       } else {
-        await Api.createAccount({
+        const result = await Api.createAccount({
           inviteToken: form.values.inviteToken,
           code: form.values.code,
           email: form.values.email,
@@ -63,7 +63,14 @@ function Page() {
           password: form.values.password,
         });
 
-        logIn(form.values.email, form.values.password, { redirectTo: "/" });
+        const companyId = result.company?.id;
+        const redirectTo = companyId ? `/${companyId}` : "/";
+
+        if (result.error) {
+          console.warn("createAccount invite join warning", result.error);
+        }
+
+        await logIn(form.values.email, form.values.password, { redirectTo });
       }
     },
   });

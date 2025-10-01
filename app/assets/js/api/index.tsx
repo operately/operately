@@ -3087,7 +3087,11 @@ export interface CreateAccountInput {
   fullName?: string | null;
 }
 
-export interface CreateAccountResult {}
+export interface CreateAccountResult {
+  company?: Company | null;
+  person?: Person | null;
+  error?: string | null;
+}
 
 export interface CreateBlobInput {
   files?: BlobCreationInput[] | null;
