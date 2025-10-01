@@ -8,6 +8,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
   require Logger
 
   inputs do
+    field? :invite_token, :string, null: true
     field? :code, :string, null: true
     field? :email, :string, null: true
     field? :password, :string, null: true
@@ -20,11 +21,12 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
       {:ok, code} <- parse_code(inputs.code),
       {:ok, activation} <- EmailActivationCode.get(:system, email: inputs.email, code: code),
       {:ok, :valid} <- check_validity(activation),
-      {:ok, _} <- Account.create(inputs.full_name, inputs.email, inputs.password)
+      {:ok, account} <- Account.create(inputs.full_name, inputs.email, inputs.password),
+      {:ok, _} <- handle_invite_token(account, inputs[:invite_token])
     ) do
       {:ok, %{}}
     else
-      {:error, error} -> 
+      {:error, error} ->
         Logger.error("Failed to create account. error: #{inspect(error)}")
         {:error, :internal_server_error}
     end
@@ -47,6 +49,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
   end
 
   defp parse_code(nil), do: {:error, :invalid_code}
+
   defp parse_code(code) do
     code = String.trim(code)
 
@@ -62,6 +65,17 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
 
       true ->
         {:error, :invalid_code}
+    end
+  end
+
+  defp handle_invite_token(account, token) do
+    case Operately.InviteLinks.join_company_via_invite_link(account, token) do
+      {:ok, person} ->
+        {:ok, person}
+
+      {:error, _} ->
+        # ignore failure, just continue
+        {:ok, nil}
     end
   end
 end
