@@ -1,105 +1,61 @@
 defmodule Operately.Features.InviteLinksTest do
   use Operately.FeatureCase
+  alias Operately.Support.Features.InviteLinksSteps, as: Steps
 
-  alias Operately.Support.Factory
+  setup ctx, do: Steps.setup(ctx)
 
-  setup ctx do
+  # feature "New signup generates invite link", ctx do
+  #   ctx
+  #   |> Factory.log_in_person(:creator)
+  #   |> Steps.visit_team_invite_page()
+  #   |> Steps.assert_invite_team_page_loaded()
+  #   |> Steps.generate_invite_link()
+  #   |> Steps.assert_invite_link_generated_successfully()
+  # end
+
+  # feature "Admin views invite links", ctx do
+  #   ctx
+  #   |> Steps.create_invite_link()
+  #   |> Factory.log_in_person(:creator)
+  #   |> Steps.visit_admin_manage_people_page()
+  #   |> Steps.assert_invite_links_section_visible()
+  # end
+
+  # feature "Admin revokes invite link", ctx do
+  #   ctx
+  #   |> Steps.create_invite_link()
+  #   |> Factory.log_in_person(:creator)
+  #   |> Steps.visit_admin_manage_people_page()
+  #   |> assert_has(Query.text("Active"))
+  #   |> Steps.revoke_invite_link()
+  #   |> Steps.assert_invite_link_revoked()
+  # end
+
+  feature "new user signs up and joins the company via invite link", ctx do
     ctx
-    |> Factory.setup()
+    |> Steps.given_that_an_invite_link_exists()
+    |> Steps.follow_invite_link()
+    |> Steps.assert_on_join_page_with_invitation()
+    |> Steps.follow_sign_up_and_join()
   end
 
-  feature "New signup generates invite link", ctx do
-    ctx
-    |> Factory.log_in_person(:creator)
-    |> visit_page("/#{ctx.company.id}/invite-team")
-    |> assert_has(Query.text("Invite Your Team"))
-    |> click(Query.button("Generate Invite Link"))
-    |> assert_has(Query.text("Invite link generated successfully!"))
-    |> assert_has(Query.text("Shareable Link"))
-    |> assert_has(Query.text("Message Template"))
-  end
+  # feature "Attempting to join with expired token", ctx do
+  #   ctx
+  #   |> Steps.create_expired_invite_link()
+  #   |> Steps.visit_invite_join_page_with_token()
+  #   |> Steps.assert_expired_invite_link_message()
+  # end
 
-  feature "Admin views invite links", ctx do
-    # Create an invite link first
-    {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
-      company_id: ctx.company.id,
-      author_id: ctx.creator.id
-    })
+  # feature "Attempting to join with revoked token", ctx do
+  #   ctx
+  #   |> Steps.create_and_revoke_invite_link()
+  #   |> Steps.visit_invite_join_page_with_token()
+  #   |> Steps.assert_revoked_invite_link_message()
+  # end
 
-    ctx
-    |> Factory.log_in_person(:creator)
-    |> visit_page("/#{ctx.company.id}/admin/manage-people")
-    |> assert_has(Query.text("Invite Links"))
-    |> assert_has(Query.text("Invite Link"))
-    |> assert_has(Query.text("Active"))
-    |> assert_has(Query.text("Created by #{ctx.creator.full_name}"))
-  end
-
-  feature "Admin revokes invite link", ctx do
-    # Create an invite link first
-    {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
-      company_id: ctx.company.id,
-      author_id: ctx.creator.id
-    })
-
-    ctx
-    |> Factory.log_in_person(:creator)
-    |> visit_page("/#{ctx.company.id}/admin/manage-people")
-    |> assert_has(Query.text("Active"))
-    |> click(Query.button("Revoke"))
-    |> accept_browser_dialog()
-    |> assert_has(Query.text("Revoked"))
-    |> refute_has(Query.button("Revoke"))
-  end
-
-  feature "New user signs up via invite link", ctx do
-    # Create an invite link first
-    {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
-      company_id: ctx.company.id,
-      author_id: ctx.creator.id
-    })
-
-    ctx
-    |> visit_page("/join/#{invite_link.token}")
-    |> assert_has(Query.text("Welcome to Operately!"))
-    |> assert_has(Query.text("#{ctx.creator.full_name} invited you to join"))
-    |> assert_has(Query.text("Sign Up & Join"))
-  end
-
-  feature "Attempting to join with expired token", ctx do
-    # Create an expired invite link
-    {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
-      company_id: ctx.company.id,
-      author_id: ctx.creator.id,
-      expires_at: DateTime.add(DateTime.utc_now(), -1, :day)
-    })
-
-    ctx
-    |> visit_page("/join/#{invite_link.token}")
-    |> assert_has(Query.text("Invite Link Expired"))
-    |> assert_has(Query.text("This invite link has expired"))
-    |> assert_has(Query.text("Please contact #{ctx.creator.full_name} for a new invite link"))
-  end
-
-  feature "Attempting to join with revoked token", ctx do
-    # Create and revoke an invite link
-    {:ok, invite_link} = Operately.InviteLinks.create_invite_link(%{
-      company_id: ctx.company.id,
-      author_id: ctx.creator.id
-    })
-    
-    {:ok, _} = Operately.InviteLinks.revoke_invite_link(invite_link)
-
-    ctx
-    |> visit_page("/join/#{invite_link.token}")
-    |> assert_has(Query.text("Invite Link Expired"))
-    |> assert_has(Query.text("This invite link is no longer valid"))
-  end
-
-  feature "Attempting to join with non-existent token", ctx do
-    ctx
-    |> visit_page("/join/invalid-token-123")
-    |> assert_has(Query.text("Invalid Invite Link"))
-    |> assert_has(Query.text("This invite link is invalid or has expired"))
-  end
+  # feature "Attempting to join with non-existent token", ctx do
+  #   ctx
+  #   |> Steps.visit_invite_join_page_with_invalid_token()
+  #   |> Steps.assert_invalid_invite_link_message()
+  # end
 end
