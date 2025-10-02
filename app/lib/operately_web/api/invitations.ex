@@ -311,9 +311,6 @@ defmodule OperatelyWeb.Api.Invitations do
 
         {:error, :invite_link_update_failed} ->
           {:error, %{error: "Something went wrong while using this invite link."}}
-
-        {:error, reason} ->
-          {:error, %{error: normalize_error(reason)}}
       end
     end
   end
