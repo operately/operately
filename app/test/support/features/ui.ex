@@ -435,6 +435,15 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def find(state, [testid: id], callback) do
+    execute("find", state, fn session ->
+      session
+      |> Browser.find(query(testid: id), fn element ->
+        callback.(%{state | session: element})
+      end)
+    end)
+  end
+
   def find(state, %Wallaby.Query{} = query, callback) do
     execute("find", state, fn session ->
       session

@@ -5,6 +5,7 @@ import { differenceInCalendarDays, isValid, startOfDay } from "date-fns";
 import { PageNew } from "../Page";
 import { IconCoffee, IconSparkles } from "../icons";
 import { parseDate } from "../utils/time";
+import { TestableElement } from "../TestableElement";
 
 import { AssignmentGroups } from "./AssignmentsList";
 
@@ -87,6 +88,7 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
             title="Due soon"
             description="Updates, tasks, and milestones that need your attention right away."
             groups={categorized.dueSoon}
+            testId="due-soon-section"
             emptyState={
               <EmptyState title="No urgent work" description="You're all caught up on immediate priorities." />
             }
@@ -96,6 +98,7 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
             title="Needs my review"
             description="Updates from others waiting for your approval or acknowledgement."
             groups={categorized.needsReview}
+            testId="needs-review-section"
             emptyState={
               <EmptyState title="Nothing to review" description="No check-ins or updates need your review." />
             }
@@ -105,6 +108,7 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
             title="My upcoming work"
             description="Work assigned to you with future due dates, sorted chronologically."
             groups={categorized.upcoming}
+            testId="upcoming-section"
             emptyState={<EmptyState title="No upcoming work" description="Nothing else is scheduled for you yet." />}
           />
         </div>
@@ -138,16 +142,16 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
   );
 }
 
-interface SectionProps {
+interface SectionProps extends TestableElement {
   title: string;
   description: string;
   groups: ReviewPageV2.AssignmentGroup[];
   emptyState: React.ReactNode;
 }
 
-function Section({ title, description, groups, emptyState }: SectionProps) {
+function Section({ title, description, groups, emptyState, testId }: SectionProps) {
   return (
-    <section className="">
+    <section data-test-id={testId}>
       <div className="px-4 py-4">
         <div className=" border-b-2 border-stroke-base mb-4">
           <div className="flex items-baseline gap-2 mb-2">
