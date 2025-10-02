@@ -1,6 +1,8 @@
 defmodule Operately.WorkMaps.GetWorkMapQuery do
   import Ecto.Query
 
+  require Logger
+
   alias Operately.Repo
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
@@ -25,15 +27,29 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
     - only_completed (optional): A boolean indicating whether to return only completed items. Defaults to false
   """
   def execute(person, args) do
-    goals_task = Task.async(fn -> get_goals(person, args) end)
-    projects_task = Task.async(fn -> get_projects(person, args) end)
+    try do
+      goals_task = Task.async(fn -> get_goals(person, args) end)
+      projects_task = Task.async(fn -> get_projects(person, args) end)
 
-    goals = Task.await(goals_task)
-    projects = Task.await(projects_task)
+      goals = Task.await(goals_task)
+      projects = Task.await(projects_task)
 
-    work_map = build_work_map(goals, projects, args)
+      work_map = build_work_map(goals, projects, args)
 
-    {:ok, work_map}
+      {:ok, work_map}
+    rescue
+      e in Ecto.Query.CastError ->
+        Logger.error("WorkMap query cast error: #{inspect(e)} - args: #{inspect(args)}")
+        {:error, :invalid_parameters}
+
+      e in ArgumentError ->
+        Logger.error("WorkMap query argument error: #{inspect(e)} - args: #{inspect(args)}")
+        {:error, :invalid_arguments}
+
+      e ->
+        Logger.error("WorkMap query failed: #{inspect(e)} - args: #{inspect(args)}")
+        {:error, :query_failed}
+    end
   end
 
   @doc """
@@ -46,15 +62,29 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   they match the filter criteria directly.
   """
   def execute(person, args, :flat) do
-    goals_task = Task.async(fn -> get_goals(person, args) end)
-    projects_task = Task.async(fn -> get_projects(person, args) end)
+    try do
+      goals_task = Task.async(fn -> get_goals(person, args) end)
+      projects_task = Task.async(fn -> get_projects(person, args) end)
 
-    goals = Task.await(goals_task)
-    projects = Task.await(projects_task)
+      goals = Task.await(goals_task)
+      projects = Task.await(projects_task)
 
-    flat_items = build_flat_work_map(goals, projects, args)
+      flat_items = build_flat_work_map(goals, projects, args)
 
-    {:ok, flat_items}
+      {:ok, flat_items}
+    rescue
+      e in Ecto.Query.CastError ->
+        Logger.error("WorkMap flat query cast error: #{inspect(e)} - args: #{inspect(args)}")
+        {:error, :invalid_parameters}
+
+      e in ArgumentError ->
+        Logger.error("WorkMap flat query argument error: #{inspect(e)} - args: #{inspect(args)}")
+        {:error, :invalid_arguments}
+
+      e ->
+        Logger.error("WorkMap flat query failed: #{inspect(e)} - args: #{inspect(args)}")
+        {:error, :query_failed}
+    end
   end
 
   defp build_flat_work_map(goals, projects, args) do
@@ -73,29 +103,43 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
   end
 
   defp get_projects(person, args) do
-    project_ids =
-      from(Project, as: :projects)
-      |> where([p], p.company_id == ^args.company_id)
-      |> filter_by_view_access(person, :projects)
-      |> select([projects: p], p.id)
-      |> Repo.all()
+    company_id = args.company_id
 
-    from(p in Project, where: p.id in ^project_ids)
-    |> preload_project_associations(args)
-    |> Repo.all()
+    if is_nil(company_id) do
+      Logger.warning("WorkMap get_projects called with nil company_id")
+      []
+    else
+      project_ids =
+        from(Project, as: :projects)
+        |> where([p], p.company_id == ^company_id)
+        |> filter_by_view_access(person, :projects)
+        |> select([projects: p], p.id)
+        |> Repo.all()
+
+      from(p in Project, where: p.id in ^project_ids)
+      |> preload_project_associations(args)
+      |> Repo.all()
+    end
   end
 
   defp get_goals(person, args) do
-    goal_ids =
-      from(Goal, as: :goal)
-      |> where([g], g.company_id == ^args.company_id)
-      |> filter_by_view_access(person, :goal)
-      |> select([goal: g], g.id)
-      |> Repo.all()
+    company_id = args.company_id
 
-    from(g in Goal, as: :goal, where: g.id in ^goal_ids)
-    |> preload_goal_associations(args)
-    |> Repo.all()
+    if is_nil(company_id) do
+      Logger.warning("WorkMap get_goals called with nil company_id")
+      []
+    else
+      goal_ids =
+        from(Goal, as: :goal)
+        |> where([g], g.company_id == ^company_id)
+        |> filter_by_view_access(person, :goal)
+        |> select([goal: g], g.id)
+        |> Repo.all()
+
+      from(g in Goal, as: :goal, where: g.id in ^goal_ids)
+      |> preload_goal_associations(args)
+      |> Repo.all()
+    end
   end
 
   defp build_work_map(goals, projects, args) do
@@ -228,5 +272,10 @@ defmodule Operately.WorkMaps.GetWorkMapQuery do
 
   defp filter_by_view_access(query, person = %Operately.People.Person{}, name) do
     Filters.filter_by_view_access(query, person.id, named_binding: name)
+  end
+
+  defp filter_by_view_access(query, person, _name) do
+    Logger.warning("Invalid person for view access filter: #{inspect(person)}")
+    where(query, [p], false)
   end
 end

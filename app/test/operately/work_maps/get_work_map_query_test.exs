@@ -778,6 +778,37 @@ defmodule Operately.WorkMaps.GetWorkMapQueryTest do
     end
   end
 
+  describe "handling edge cases" do
+    setup ctx do
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space)
+      |> Factory.add_goal(:goal, :space)
+      |> Factory.add_project(:project, :space)
+    end
+
+    test "returns empty list when company_id is nil", ctx do
+      result = GetWorkMapQuery.execute(ctx.creator, %{company_id: nil})
+
+      assert {:ok, work_map} = result
+      assert work_map == []
+    end
+
+    test "handles nil person gracefully", ctx do
+      result = GetWorkMapQuery.execute(nil, %{company_id: ctx.company.id})
+
+      assert {:ok, work_map} = result
+      assert work_map == []
+    end
+
+    test "returns empty list for non-existent company", ctx do
+      non_existent_company_id = Ecto.UUID.generate()
+      {:ok, work_map} = GetWorkMapQuery.execute(ctx.creator, %{company_id: non_existent_company_id})
+
+      assert work_map == []
+    end
+  end
+
   #
   # Helpers
   #
