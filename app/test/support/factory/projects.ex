@@ -214,7 +214,7 @@ defmodule Operately.Support.Factory.Projects do
     {:ok, _} =
       Operately.Operations.ProjectClosed.run(ctx.creator, project, %{
         retrospective: RichText.rich_text("some content"),
-        content: %{},
+        content: RichText.rich_text("some content"),
         success_status: "achieved",
         send_to_everyone: true,
         subscription_parent_type: :project_retrospective,

@@ -18,6 +18,25 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.assert_text("Nothing to review")
   end
 
+  step :assert_zero_state_message, ctx, :v2 do
+    ctx
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      el
+      |> UI.assert_text("No urgent work")
+      |> UI.assert_text("You're all caught up on immediate priorities.")
+    end)
+    |> UI.find([testid: "needs-review-section"], fn el ->
+      el
+      |> UI.assert_text("Nothing to review")
+      |> UI.assert_text("No check-ins or updates need your review.")
+    end)
+    |> UI.find([testid: "upcoming-section"], fn el ->
+      el
+      |> UI.assert_text("No upcoming work")
+      |> UI.assert_text("Nothing else is scheduled for you yet.")
+    end)
+  end
+
   step :visit_review_page, ctx do
     ctx |> UI.visit(Paths.review_path(ctx.company))
   end
@@ -38,9 +57,19 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.assert_text("Write the weekly check-in: #{ctx.project.name}")
   end
 
+  step :assert_the_due_project_is_listed, ctx, :v2 do
+    ctx
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      el
+      |> UI.assert_text(ctx.project.name)
+      |> UI.assert_text("Submit weekly check-in")
+      |> UI.assert_text("3 days overdue")
+    end)
+  end
+
   step :when_a_project_check_in_is_submitted, ctx do
     ctx
-    |> UI.click(testid: "assignment-" <> Paths.project_id(ctx.project))
+    |> UI.click(testid: UI.testid(["assignment", Paths.project_id(ctx.project)]))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-dropdown-on_track")
     |> UI.fill_rich_text("Going well")
@@ -53,6 +82,15 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
     |> UI.assert_text("All caught up!")
+  end
+
+  step :assert_the_checked_in_project_is_no_longer_displayed, ctx, :v2 do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      UI.assert_text(el, "No urgent work")
+    end)
   end
 
   step :given_there_are_due_goal_updates, ctx do
@@ -71,9 +109,19 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.assert_text("Update progress: #{ctx.goal.name}")
   end
 
+  step :assert_the_due_goal_is_listed, ctx, :v2 do
+    ctx
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      el
+      |> UI.assert_text(ctx.goal.name)
+      |> UI.assert_text("Submit goal progress update")
+      |> UI.assert_text("3 days overdue")
+    end)
+  end
+
   step :when_a_goal_update_is_submitted, ctx do
     ctx
-    |> UI.click(testid: "assignment-" <> Paths.goal_id(ctx.goal))
+    |> UI.click(testid: UI.testid(["assignment", Paths.goal_id(ctx.goal)]))
     |> UI.click(testid: "status-dropdown")
     |> UI.click(testid: "status-option-on-track")
     |> UI.fill_rich_text("Going well")
@@ -86,6 +134,15 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
     |> UI.assert_text("Nothing to review")
+  end
+
+  step :assert_the_updated_goal_is_no_longer_displayed, ctx, :v2 do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.goal.name)
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      UI.assert_text(el, "No urgent work")
+    end)
   end
 
   step :given_there_are_submitted_project_check_ins, ctx do
@@ -104,9 +161,19 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.assert_text("Review: #{ctx.project.name}")
   end
 
+  step :assert_due_project_check_in_review_is_listed, ctx do
+    ctx
+    |> UI.find([testid: "needs-review-section"], fn el ->
+      el
+      |> UI.assert_text(ctx.project.name)
+      |> UI.assert_text("Review weekly check-in")
+      |> UI.assert_text("Due today")
+    end)
+  end
+
   step :when_a_project_check_in_is_acknowledged, ctx do
     ctx
-    |> UI.click(testid: "assignment-" <> Paths.project_check_in_id(ctx.check_in))
+    |> UI.click(testid: UI.testid(["assignment", Paths.project_check_in_id(ctx.check_in)]))
     |> UI.click(testid: "acknowledge-check-in")
     |> UI.assert_text("Acknowledged")
   end
@@ -116,6 +183,15 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
     |> UI.assert_text("Nothing to review")
+  end
+
+  step :assert_the_acknowledged_project_is_no_longer_displayed, ctx, :v2 do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
+    |> UI.find([testid: "needs-review-section"], fn el ->
+      UI.assert_text(el, "Nothing to review")
+    end)
   end
 
   step :given_there_are_submitted_goal_updates, ctx do
@@ -134,9 +210,19 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.assert_text(ctx.goal.name)
   end
 
+  step :assert_due_goal_check_in_review_is_listed, ctx do
+    ctx
+    |> UI.find([testid: "needs-review-section"], fn el ->
+      el
+      |> UI.assert_text(ctx.goal.name)
+      |> UI.assert_text("Review goal progress update")
+      |> UI.assert_text("Due today")
+    end)
+  end
+
   step :when_a_goal_update_is_acknowledged, ctx do
     ctx
-    |> UI.click(testid: "assignment-" <> Paths.goal_update_id(ctx.goal_update))
+    |> UI.click(testid: UI.testid(["assignment", Paths.goal_update_id(ctx.goal_update)]))
     |> UI.click(testid: "acknowledge-check-in")
     |> UI.assert_text("Acknowledged")
   end
@@ -146,6 +232,15 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.goal.name)
     |> UI.assert_text("All caught up!")
+  end
+
+  step :assert_the_acknowledged_goal_is_no_longer_displayed, ctx, :v2 do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.goal.name)
+    |> UI.find([testid: "needs-review-section"], fn el ->
+      UI.assert_text(el, "Nothing to review")
+    end)
   end
 
   step :assert_the_review_item_count, ctx, [is: count] do
@@ -162,6 +257,15 @@ defmodule Operately.Support.Features.ReviewSteps do
     ctx
     |> UI.visit(Paths.review_path(ctx.company))
     |> UI.refute_text(ctx.project.name)
+  end
+
+  step :assert_the_closed_project_is_no_longer_displayed, ctx, :v2 do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      UI.assert_text(el, "No urgent work")
+    end)
   end
 
   #
