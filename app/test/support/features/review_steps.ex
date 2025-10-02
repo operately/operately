@@ -102,7 +102,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   #
-  # Due Milestone
+  # Due Milestones
   #
 
   step :given_there_are_due_milestones, ctx do
@@ -147,6 +147,58 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.refute_text("Complete Important Work")
     |> UI.find([testid: "due-soon-section"], fn el ->
       UI.assert_text(el, "No urgent work")
+    end)
+  end
+
+  #
+  # Due Tasks
+  #
+
+  step :given_there_are_due_tasks, ctx do
+    ctx
+    |> Factory.add_project(:project, :product_space, [
+      champion: :me,
+      reviewer: :my_manager,
+      name: "Release Dunder Mifflin Infinity"
+    ])
+    |> Factory.add_project_milestone(:milestone, :project, [
+      timeframe: %Operately.ContextualDates.Timeframe{
+        contextual_start_date: nil,
+        contextual_end_date: nil,
+      },
+    ])
+    |> Factory.add_project_task(:task, :milestone, [
+      name: "Urgent Feature",
+      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date()),
+    ])
+    |> Factory.add_task_assignee(:assignee, :task, :me)
+  end
+
+  step :assert_due_task_is_listed, ctx do
+    ctx
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      el
+      |> UI.assert_text(ctx.project.name)
+      |> UI.assert_text("Complete Urgent Feature")
+      |> UI.assert_text("3 days overdue")
+    end)
+  end
+
+  step :when_task_is_marked_as_completed, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["assignment", Paths.task_id(ctx.task)]))
+    |> UI.click_text("Not started")
+    |> UI.click_text("Done")
+    |> UI.sleep(500)
+  end
+
+  step :assert_completed_task_is_no_longer_displayed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text("Complete Urgent Feature")
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      el
+      |> UI.assert_text("No urgent work")
     end)
   end
 
