@@ -72,6 +72,7 @@ export function createAppRoutes() {
         pageRoute("invite-team", pages.InviteTeamPage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
+        pageRoute("review/v2", pages.ReviewV2Page),
         pageRoute("notifications", pages.NotificationsPage),
         pageRoute("ai", pages.AiPlaygroundPage),
 

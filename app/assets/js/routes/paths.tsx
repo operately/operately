@@ -82,6 +82,10 @@ export class Paths {
     return this.createCompanyPath(["review"]);
   }
 
+  reviewV2Path() {
+    return this.createCompanyPath(["review", "v2"]);
+  }
+
   profileEditPath(personId: string, params?: { from: ProfileEditPage.FromLocation }) {
     const path = this.createCompanyPath(["people", personId, "profile", "edit"]);
 

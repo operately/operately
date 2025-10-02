@@ -32,10 +32,10 @@ export namespace ReviewPageV2 {
     due: string | null;
     type: AssignmentType;
     role: AssignmentRole;
-    actionLabel?: string;
+    actionLabel: string | null;
     path: string;
     origin: AssignmentOrigin;
-    taskStatus?: TaskStatus;
+    taskStatus: TaskStatus | null;
     authorId?: string | null;
     authorName?: string | null;
     description?: string | null;
