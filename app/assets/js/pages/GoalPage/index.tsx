@@ -23,16 +23,16 @@ import { getWorkMap, WorkMapItem } from "../../models/workMap";
 import { assertPresent } from "../../utils/assertions";
 import { fetchAll } from "../../utils/async";
 
+import { useMe } from "@/contexts/CurrentCompanyContext";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
 import { useChecklists } from "./useChecklists";
-import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
-import { useMe } from "@/contexts/CurrentCompanyContext";
 export default { name: "GoalPage", loader, Page } as PageModule;
 
-function pageCacheKey(id: string): string {
-  return `v29-GoalPage.goal-${id}`;
+export function pageCacheKey(id: string): string {
+  return `v30-GoalPage.goal-${id}`;
 }
 
 type LoaderResult = {
@@ -384,7 +384,13 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, onSuccess, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
+function usePageField<T>({
+  value,
+  update,
+  onError,
+  onSuccess,
+  validations,
+}: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
@@ -434,14 +440,14 @@ function usePageField<T>({ value, update, onError, onSuccess, validations }: use
       setState(newVal);
 
       update(newVal)
-         .then((res) => {
-           if (res === true || (typeof res === "object" && res?.success !== false)) {
-             successHandler();
-           } else {
-             errorHandler("Network Error");
-           }
-         })
-         .catch(errorHandler);
+        .then((res) => {
+          if (res === true || (typeof res === "object" && res?.success !== false)) {
+            successHandler();
+          } else {
+            errorHandler("Network Error");
+          }
+        })
+        .catch(errorHandler);
     });
   };
 

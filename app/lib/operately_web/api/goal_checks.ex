@@ -211,7 +211,7 @@ defmodule OperatelyWeb.Api.GoalChecks do
         |> Map.get(:checks, [])
         |> Enum.sort_by(& &1.index)
         |> Enum.reject(&(&1.id == check.id))
-        |> List.insert_at(index - 1, check)
+        |> List.insert_at(index, check)
         |> Enum.with_index(1)
         |> Enum.reduce(Ecto.Multi.new(), fn {c, idx}, m ->
           Ecto.Multi.update(m, {:update_check_index, c.id}, Operately.Goals.Check.changeset(c, %{index: idx}))

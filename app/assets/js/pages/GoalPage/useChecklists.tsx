@@ -3,6 +3,8 @@ import * as React from "react";
 
 import Api from "@/api";
 import { Checklist, showErrorToast } from "turboui";
+import { pageCacheKey } from ".";
+import { PageCache } from "../../routes/PageCache";
 
 interface Checklists {
   items: Checklist.ChecklistItem[];
@@ -19,12 +21,24 @@ interface UseChecklistsParams {
 }
 
 export function useChecklists(params: UseChecklistsParams): Checklists {
-  const [items, setItems] = React.useState<Checklist.ChecklistItem[]>([]);
+  const hasUserEdits = React.useRef(false);
+  const [items, setItemsBasic] = React.useState<Checklist.ChecklistItem[]>([]);
 
   React.useEffect(() => {
+    if (hasUserEdits.current) return;
+
     const sorted = params.initialChecklist.sort((a, b) => a.index - b.index);
     setItems(sorted.map((check) => ({ ...check, mode: "view" as const })));
   }, [params.initialChecklist]);
+
+  const setItems = React.useCallback(
+    (newItems: Checklist.ChecklistItem[]) => {
+      PageCache.invalidate(pageCacheKey(params.goalId));
+      hasUserEdits.current = true;
+      setItemsBasic(newItems);
+    },
+    [params.goalId],
+  );
 
   return {
     items: items,
