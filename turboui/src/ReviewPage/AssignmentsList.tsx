@@ -8,6 +8,7 @@ import { IconTarget, IconHexagons } from "../icons";
 import { DivLink } from "../Link";
 import { FormattedTime } from "../FormattedTime";
 import classNames from "../utils/classnames";
+import { createTestId } from "../TestableElement";
 
 export function AssignmentsList({ assignments }: { assignments: ReviewPage.Assignment[] }) {
   return (
@@ -20,7 +21,7 @@ export function AssignmentsList({ assignments }: { assignments: ReviewPage.Assig
 }
 
 function AssignmentItem({ assignment }: { assignment: ReviewPage.Assignment }) {
-  const testId = `assignment-${assignment.resourceId}`;
+  const testId = createTestId("assignment", assignment.resourceId);
 
   const className = classNames(
     "flex gap-4 items-center",
