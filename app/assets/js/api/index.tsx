@@ -7560,29 +7560,29 @@ export default {
     newInvitationToken: (input: InvitationsNewInvitationTokenInput) =>
       defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
     useNewInvitationToken: () =>
-      useMutation<InvitationsNewInvitationTokenInput, InvitationsNewInvitationTokenResult>(
-        defaultApiClient.apiNamespaceInvitations.newInvitationToken,
+      useMutation<InvitationsNewInvitationTokenInput, InvitationsNewInvitationTokenResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.newInvitationToken(input),
       ),
 
     revokeInviteLink: (input: InvitationsRevokeInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.revokeInviteLink(input),
     useRevokeInviteLink: () =>
-      useMutation<InvitationsRevokeInviteLinkInput, InvitationsRevokeInviteLinkResult>(
-        defaultApiClient.apiNamespaceInvitations.revokeInviteLink,
+      useMutation<InvitationsRevokeInviteLinkInput, InvitationsRevokeInviteLinkResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.revokeInviteLink(input),
       ),
 
     createInviteLink: (input: InvitationsCreateInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.createInviteLink(input),
     useCreateInviteLink: () =>
-      useMutation<InvitationsCreateInviteLinkInput, InvitationsCreateInviteLinkResult>(
-        defaultApiClient.apiNamespaceInvitations.createInviteLink,
+      useMutation<InvitationsCreateInviteLinkInput, InvitationsCreateInviteLinkResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.createInviteLink(input),
       ),
 
     joinCompanyViaInviteLink: (input: InvitationsJoinCompanyViaInviteLinkInput) =>
       defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
     useJoinCompanyViaInviteLink: () =>
-      useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>(
-        defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink,
+      useMutation<InvitationsJoinCompanyViaInviteLinkInput, InvitationsJoinCompanyViaInviteLinkResult>((input) =>
+        defaultApiClient.apiNamespaceInvitations.joinCompanyViaInviteLink(input),
       ),
   },
 
