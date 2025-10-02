@@ -18,7 +18,7 @@ interface LoaderResult {
   assignments: ReviewAssignmentV2[];
 }
 
-export async function loader({ params }): Promise<LoaderResult> {
+async function loader({ params }): Promise<LoaderResult> {
   const paths = new Paths({ companyId: params.companyId });
   await redirectIfFeatureNotEnabled(params, { feature: "review_v2", path: paths.reviewPath() });
 
