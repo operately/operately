@@ -1,15 +1,15 @@
 import * as React from "react";
 import { IconMail } from "turboui";
 
+import { GoogleLogo } from "@/components/Brands";
 import classNames from "classnames";
 import { DivLink } from "turboui";
-import { GoogleLogo } from "@/components/Brands";
 
-export function SignUpWithEmail() {
+export function SignUpWithEmail({ inviteToken }: { inviteToken?: string | null }) {
   return (
     <SignUpButton
       title="Sign up with email"
-      link="/sign_up/email"
+      link={signupEmailPath(inviteToken)}
       icon={<IconMail size={24} className="text-content-dimmed" />}
       testId="sign-up-with-email"
     />
@@ -40,6 +40,14 @@ export function SignUpWithGoogleButton() {
   );
 }
 
+function signupEmailPath(inviteToken?: string | null): string {
+  if (inviteToken) {
+    return `/sign_up/email?invite_token=${inviteToken}`;
+  } else {
+    return "/sign_up/email";
+  }
+}
+
 interface SignUpButtonProps {
   title: string;
   link: string;
@@ -66,9 +74,23 @@ function SignUpButton({ title, link, icon, external, testId }: SignUpButtonProps
 function getGoogleAuthUrl(): string {
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirect_to");
+  const inviteToken = params.get("invite_token");
+
+  const search = new URLSearchParams();
 
   if (redirectTo) {
-    return `/accounts/auth/google?redirect_to=${encodeURIComponent(redirectTo)}`;
+    search.set("redirect_to", redirectTo);
   }
+
+  if (inviteToken) {
+    search.set("invite_token", inviteToken);
+  }
+
+  const query = search.toString();
+
+  if (query) {
+    return `/accounts/auth/google?${query}`;
+  }
+
   return "/accounts/auth/google";
 }
