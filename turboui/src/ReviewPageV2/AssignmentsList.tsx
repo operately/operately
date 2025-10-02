@@ -4,6 +4,7 @@ import { BlackLink, DivLink } from "../Link";
 import { FormattedTime } from "../FormattedTime";
 import { IconCalendar, IconChevronRight, IconFlag, IconMessage, IconSquare } from "../icons";
 import { StatusBadge } from "../StatusBadge";
+import { createTestId } from "../TestableElement";
 
 import { ReviewPageV2 } from ".";
 
@@ -56,7 +57,7 @@ function GroupHeader({ origin }: { origin: ReviewPageV2.AssignmentOrigin }) {
         <BlackLink
           to={origin.path}
           underline="hover"
-          testId={`origin-${origin.id}`}
+          testId={createTestId("origin", origin.id)}
           className="font-medium text-content-strong"
         >
           {origin.name}
@@ -80,8 +81,8 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
   return (
     <DivLink
       to={assignment.path}
-      testId={`assignment-${assignment.resourceId}`}
       className="group relative flex items-center gap-3 py-2 px-2 transition-colors hover:bg-surface-highlight rounded"
+      testId={createTestId("assignment", assignment.resourceId)}
     >
       <div className="flex h-6 w-6 items-center justify-center text-content-base">
         {renderLeadingIndicator(assignment)}
