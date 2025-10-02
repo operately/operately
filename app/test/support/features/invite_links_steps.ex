@@ -6,16 +6,41 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   alias Operately.Support.Features.UI.Emails, as: Emails
 
   step :setup, ctx do
+    prev_allow_signup_with_email = Application.get_env(:operately, :allow_signup_with_email)
+    prev_allow_login_with_email = Application.get_env(:operately, :allow_login_with_email)
+    prev_allow_signup_with_google = Application.get_env(:operately, :allow_signup_with_google)
+    prev_allow_login_with_google = Application.get_env(:operately, :allow_login_with_google)
+
+    Application.put_env(:operately, :allow_signup_with_google, true)
+    Application.put_env(:operately, :allow_login_with_google, true)
+    Application.put_env(:operately, :allow_signup_with_email, true)
+    Application.put_env(:operately, :allow_login_with_email, true)
+
+    on_exit(fn ->
+      Application.put_env(:operately, :allow_signup_with_google, prev_allow_signup_with_google)
+      Application.put_env(:operately, :allow_login_with_google, prev_allow_login_with_google)
+      Application.put_env(:operately, :allow_signup_with_email, prev_allow_signup_with_email)
+      Application.put_env(:operately, :allow_login_with_email, prev_allow_login_with_email)
+    end)
+
     ctx |> Factory.setup()
   end
 
-  step :given_the_invited_member_is_logged_in, ctx do
+  step :given_the_invited_member_has_an_account, ctx do
+    password = "keyboardCAT123"
+
     # create a new company context and log in the invited member
     ctx2 = Factory.setup(ctx)
-    ctx2 = Factory.add_company_member(ctx2, :invited)
-    ctx2 = Factory.log_in_person(ctx2, :invited)
+    ctx2 = Factory.add_company_member(ctx2, :invited, password: password)
 
-    Map.put(ctx, :invited, ctx2.invited)
+    ctx
+    |> Map.put(:invited, ctx2.invited)
+    |> Map.put(:new_member_email, ctx2.invited.email)
+    |> Map.put(:invited_member_password, password)
+  end
+
+  step :given_the_invited_member_is_logged_in, ctx do
+    ctx |> Factory.log_in_person(:invited)
   end
 
   step :given_that_an_invite_link_exists, ctx do
@@ -79,9 +104,8 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :sign_up_with_email, ctx do
-    email = "hello@test.localhost"
-
-    ctx = Map.put(ctx, :expected_member_email, email)
+    email = PeopleFixtures.unique_account_email()
+    ctx = Map.put(ctx, :new_member_email, email)
 
     ctx
     |> UI.click(testid: "sign-up-with-email")
@@ -91,59 +115,31 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.fill(testid: "confirmPassword", with: "123456789ABCder")
     |> UI.click(testid: "submit")
     |> then(fn ctx ->
-      emails = Emails.wait_for_email_for(email, attempts: 10)
-
-      email =
-        Enum.find(emails, fn email ->
-          String.contains?(email.subject, "Operately confirmation code:")
-        end)
-
-      code = String.split(email.subject, "Operately confirmation code:") |> List.last()
+      code = wait_for_signup_code(email)
 
       ctx
       |> UI.fill(testid: "code", with: code)
       |> UI.click(testid: "submit")
+      |> UI.sleep(500)
     end)
-    |> UI.sleep(500)
   end
 
   step :sign_up_with_google, ctx do
-    prev_signup = Application.get_env(:operately, :allow_signup_with_google)
-    prev_login = Application.get_env(:operately, :allow_login_with_google)
-
-    Application.put_env(:operately, :allow_signup_with_google, true)
-    Application.put_env(:operately, :allow_login_with_google, true)
-
-    on_exit(fn ->
-      Application.put_env(:operately, :allow_signup_with_google, prev_signup)
-      Application.put_env(:operately, :allow_login_with_google, prev_login)
-    end)
-
     email = PeopleFixtures.unique_account_email()
-
-    ctx = Map.put(ctx, :expected_member_email, email)
+    ctx = Map.put(ctx, :new_member_email, email)
 
     ctx
     |> UI.visit("/sign_up?invite_token=#{ctx.invite_link.token}")
     |> UI.assert_has(testid: "sign-up-page")
     |> UI.assert_has(testid: "sign-up-with-email")
     |> UI.assert_has(testid: "sign-up-with-google")
-    |> UI.visit(
-      "/accounts/auth/test_google?email=#{URI.encode_www_form(email)}&invite_token=#{ctx.invite_link.token}"
-    )
+    |> UI.visit("/accounts/auth/test_google?email=#{URI.encode_www_form(email)}&invite_token=#{ctx.invite_link.token}")
     |> UI.sleep(500)
   end
 
   step :assert_you_are_member_of_the_company, ctx do
-    expected_email =
-      cond do
-        Map.has_key?(ctx, :expected_member_email) -> ctx.expected_member_email
-        Map.has_key?(ctx, :invited) -> ctx.invited.email
-        true -> "hello@test.localhost"
-      end
-
     members = Operately.People.list_people(ctx.company.id)
-    assert Enum.any?(members, fn member -> member.email == expected_email end)
+    assert Enum.any?(members, fn member -> member.email == ctx.new_member_email end)
 
     ctx
   end
@@ -161,52 +157,20 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   end
 
   step :log_in_with_google, ctx do
-    previous = Application.get_env(:operately, :allow_login_with_google)
-    Application.put_env(:operately, :allow_login_with_google, true)
-
-    on_exit(fn ->
-      Application.put_env(:operately, :allow_login_with_google, previous)
-    end)
-
-    account =
-      case Map.fetch(ctx, :existing_google_account) do
-        {:ok, account} -> account
-        :error -> PeopleFixtures.account_fixture()
-      end
-
-    ctx =
-      ctx
-      |> Map.put(:existing_google_account, account)
-      |> Map.put(:expected_member_email, account.email)
-
     ctx
+    |> Map.put(:new_member_email, ctx.invited.email)
     |> UI.visit("/log_in?invite_token=#{ctx.invite_link.token}")
     |> UI.assert_has(testid: "sign-in-with-google")
-    |> UI.visit(
-      "/accounts/auth/test_google?account_id=#{account.id}&invite_token=#{ctx.invite_link.token}"
-    )
+    |> UI.visit("/accounts/auth/test_google?account_id=#{ctx.invited.id}&invite_token=#{ctx.invite_link.token}")
     |> UI.sleep(500)
   end
 
   step :log_in_with_email, ctx do
-    {account, ctx} =
-      case Map.fetch(ctx, :existing_account) do
-        {:ok, account} ->
-          {account, ctx}
-
-        :error ->
-          account = PeopleFixtures.account_fixture()
-          {account, Map.put(ctx, :existing_account, account)}
-      end
-
-    password = PeopleFixtures.valid_account_password()
-
-    ctx = Map.put(ctx, :expected_member_email, account.email)
-
     ctx
+    |> Map.put(:new_member_email, ctx.invited.email)
     |> UI.assert_has(testid: "login-page")
-    |> UI.fill(testid: "email", with: account.email)
-    |> UI.fill(testid: "password", with: password)
+    |> UI.fill(testid: "email", with: ctx.invited.email)
+    |> UI.fill(testid: "password", with: ctx.invited_member_password)
     |> UI.click(testid: "submit")
     |> UI.sleep(500)
   end
@@ -217,5 +181,13 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :assert_invalid_invite_link_message, ctx do
     ctx |> UI.assert_text("Invalid Link")
+  end
+
+  defp wait_for_signup_code(email) do
+    subject = "Operately confirmation code:"
+    emails = Emails.wait_for_email_for(email, attempts: 10)
+
+    email = Enum.find(emails, fn email -> String.contains?(email.subject, subject) end)
+    String.split(email.subject, subject) |> List.last()
   end
 end

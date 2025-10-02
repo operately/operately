@@ -7,6 +7,7 @@ defmodule Operately.Features.InviteLinksTest do
   describe "logged in user" do
     feature "joining the company via invite link", ctx do
       ctx
+      |> Steps.given_the_invited_member_has_an_account()
       |> Steps.given_the_invited_member_is_logged_in()
       |> Steps.given_that_an_invite_link_exists()
       |> Steps.follow_invite_link()
@@ -20,6 +21,7 @@ defmodule Operately.Features.InviteLinksTest do
   describe "existing user (not logged in)" do
     feature "logs in via email and joins the company via invite link", ctx do
       ctx
+      |> Steps.given_the_invited_member_has_an_account()
       |> Steps.given_that_an_invite_link_exists()
       |> Steps.follow_invite_link()
       |> Steps.assert_on_join_page_with_invitation()
@@ -31,6 +33,7 @@ defmodule Operately.Features.InviteLinksTest do
 
     feature "logs in via google and joins the company via invite link", ctx do
       ctx
+      |> Steps.given_the_invited_member_has_an_account()
       |> Steps.given_that_an_invite_link_exists()
       |> Steps.follow_invite_link()
       |> Steps.assert_on_join_page_with_invitation()
