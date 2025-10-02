@@ -82,6 +82,15 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_checked_in_project_is_no_longer_displayed(:v2)
     end
 
+    feature "viewing and completing due milestones", ctx do
+      ctx
+      |> Steps.given_there_are_due_milestones()
+      |> Steps.visit_review_page()
+      |> Steps.assert_the_due_milestone_is_listed()
+      |> Steps.when_a_milestone_is_marked_as_completed()
+      |> Steps.assert_completed_milestone_is_no_longer_displayed()
+    end
+
     feature "viewing and submitting due goal updates", ctx do
       ctx
       |> Steps.given_there_are_due_goal_updates()

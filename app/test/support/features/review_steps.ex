@@ -102,6 +102,55 @@ defmodule Operately.Support.Features.ReviewSteps do
   end
 
   #
+  # Due Milestone
+  #
+
+  step :given_there_are_due_milestones, ctx do
+    ctx
+    |> Factory.add_project(:project, :product_space, [
+      champion: :me,
+      reviewer: :my_manager,
+      name: "Release Dunder Mifflin Infinity"
+    ])
+    |> Factory.add_project_milestone(:milestone, :project, [
+      title: "Important Work",
+      timeframe: %Operately.ContextualDates.Timeframe{
+        contextual_start_date: nil,
+        contextual_end_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date())
+      },
+    ])
+  end
+
+  step :assert_the_due_milestone_is_listed, ctx do
+    ctx
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      el
+      |> UI.assert_text(ctx.project.name)
+      |> UI.assert_text("Complete Important Work")
+      |> UI.assert_text("3 days overdue")
+    end)
+  end
+
+  step :when_a_milestone_is_marked_as_completed, ctx do
+    ctx
+    |> UI.click(testid: UI.testid(["assignment", Paths.milestone_id(ctx.milestone)]))
+    |> UI.click_button("Mark complete")
+    |> UI.find([testid: "sidebar-status"], fn el ->
+      UI.assert_text(el, "Completed")
+    end)
+  end
+
+  step :assert_completed_milestone_is_no_longer_displayed, ctx do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.refute_text(ctx.project.name)
+    |> UI.refute_text("Complete Important Work")
+    |> UI.find([testid: "due-soon-section"], fn el ->
+      UI.assert_text(el, "No urgent work")
+    end)
+  end
+
+  #
   # Due Goal Updates
   #
 
