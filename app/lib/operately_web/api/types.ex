@@ -1243,6 +1243,18 @@ defmodule OperatelyWeb.Api.Types do
     field? :expires_at, :datetime, null: true
   end
 
+  object :invite_link do
+    field? :id, :string, null: true
+    field? :token, :string, null: true
+    field? :company_id, :string, null: true
+    field? :author, :person, null: true
+    field? :company, :company, null: true
+    field? :expires_at, :datetime, null: true
+    field? :use_count, :integer, null: true
+    field? :is_active, :boolean, null: true
+    field? :inserted_at, :datetime, null: true
+  end
+
   object :activity_event_data_milestone_create do
     field? :title, :string, null: true
   end
