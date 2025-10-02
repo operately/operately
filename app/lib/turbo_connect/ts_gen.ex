@@ -3,7 +3,16 @@ defmodule TurboConnect.TsGen do
   This module generates TypeScript code from the specs defined with TurboConnect.Specs.
   """
 
-  import TurboConnect.TsGen.Typescript, only: [ts_interface: 2, ts_sum_type: 2, ts_type_alias: 2, ts_enum: 2, ts_function_name: 1, ts_type: 1]
+  import TurboConnect.TsGen.Typescript,
+    only: [
+      ts_interface: 2,
+      ts_sum_type: 2,
+      ts_type_alias: 2,
+      ts_enum: 2,
+      ts_function_name: 1,
+      ts_type: 1
+    ]
+
   alias TurboConnect.TsGen.{Queries, Mutations}
 
   @spec generate(module) :: String.t()
@@ -49,9 +58,14 @@ defmodule TurboConnect.TsGen do
   end
 
   defp generate_namespace(api_module, namespace) do
-    queries = api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
-    mutations = api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
-    namespace_name = if namespace == nil, do: "api_namespace_root", else: "api_namespace_#{namespace}"
+    queries =
+      api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+
+    mutations =
+      api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == namespace end)
+
+    namespace_name =
+      if namespace == nil, do: "api_namespace_root", else: "api_namespace_#{namespace}"
 
     """
     class #{Macro.camelize(namespace_name)} {
@@ -222,8 +236,11 @@ defmodule TurboConnect.TsGen do
   end
 
   def generate_default_exports(api_module) do
-    root_queries = api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
-    root_mutations = api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+    root_queries =
+      api_module.__queries__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
+
+    root_mutations =
+      api_module.__mutations__() |> Enum.filter(fn {_, %{namespace: ns}} -> ns == nil end)
 
     """
     const defaultApiClient = new ApiClient();
@@ -260,7 +277,10 @@ defmodule TurboConnect.TsGen do
       |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
         fnName = ts_function_name(name)
         hookName = ts_function_name("use_#{name}")
-        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}(input)"
+
+        fnCall =
+          "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}(input)"
+
         input_type = ts_type(fullname) <> "Input"
         result_type = ts_type(fullname) <> "Result"
 
@@ -277,13 +297,16 @@ defmodule TurboConnect.TsGen do
       |> Enum.map(fn {fullname, %{name: name, namespace: ns}} ->
         fnName = ts_function_name(name)
         hookName = ts_function_name("use_#{name}")
-        fnCall = "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}"
+
+        fnCall =
+          "defaultApiClient.apiNamespace#{Macro.camelize(to_string(ns))}.#{ts_function_name(name)}"
+
         input_type = ts_type(fullname) <> "Input"
         result_type = ts_type(fullname) <> "Result"
 
         """
             #{fnName}: (input: #{input_type}) => #{fnCall}(input),
-            #{hookName}: () => useMutation<#{input_type}, #{result_type}>(#{fnCall}),
+            #{hookName}: () => useMutation<#{input_type}, #{result_type}>((input) => #{fnCall}(input)),
         """
       end)
       |> Enum.join("\n")
