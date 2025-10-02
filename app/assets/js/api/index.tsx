@@ -7499,14 +7499,14 @@ export default {
 
     edit: (input: ProjectDiscussionsEditInput) => defaultApiClient.apiNamespaceProjectDiscussions.edit(input),
     useEdit: () =>
-      useMutation<ProjectDiscussionsEditInput, ProjectDiscussionsEditResult>(
-        defaultApiClient.apiNamespaceProjectDiscussions.edit,
+      useMutation<ProjectDiscussionsEditInput, ProjectDiscussionsEditResult>((input) =>
+        defaultApiClient.apiNamespaceProjectDiscussions.edit(input),
       ),
 
     create: (input: ProjectDiscussionsCreateInput) => defaultApiClient.apiNamespaceProjectDiscussions.create(input),
     useCreate: () =>
-      useMutation<ProjectDiscussionsCreateInput, ProjectDiscussionsCreateResult>(
-        defaultApiClient.apiNamespaceProjectDiscussions.create,
+      useMutation<ProjectDiscussionsCreateInput, ProjectDiscussionsCreateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectDiscussions.create(input),
       ),
   },
 
@@ -7518,58 +7518,62 @@ export default {
     updateDueDate: (input: ProjectTasksUpdateDueDateInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateDueDate(input),
     useUpdateDueDate: () =>
-      useMutation<ProjectTasksUpdateDueDateInput, ProjectTasksUpdateDueDateResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateDueDate,
+      useMutation<ProjectTasksUpdateDueDateInput, ProjectTasksUpdateDueDateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateDueDate(input),
       ),
 
     updateMilestone: (input: ProjectTasksUpdateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateMilestone(input),
     useUpdateMilestone: () =>
-      useMutation<ProjectTasksUpdateMilestoneInput, ProjectTasksUpdateMilestoneResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateMilestone,
+      useMutation<ProjectTasksUpdateMilestoneInput, ProjectTasksUpdateMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateMilestone(input),
       ),
 
     updateName: (input: ProjectTasksUpdateNameInput) => defaultApiClient.apiNamespaceProjectTasks.updateName(input),
     useUpdateName: () =>
-      useMutation<ProjectTasksUpdateNameInput, ProjectTasksUpdateNameResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateName,
+      useMutation<ProjectTasksUpdateNameInput, ProjectTasksUpdateNameResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateName(input),
       ),
 
     create: (input: ProjectTasksCreateInput) => defaultApiClient.apiNamespaceProjectTasks.create(input),
     useCreate: () =>
-      useMutation<ProjectTasksCreateInput, ProjectTasksCreateResult>(defaultApiClient.apiNamespaceProjectTasks.create),
+      useMutation<ProjectTasksCreateInput, ProjectTasksCreateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.create(input),
+      ),
 
     updateDescription: (input: ProjectTasksUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateDescription(input),
     useUpdateDescription: () =>
-      useMutation<ProjectTasksUpdateDescriptionInput, ProjectTasksUpdateDescriptionResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateDescription,
+      useMutation<ProjectTasksUpdateDescriptionInput, ProjectTasksUpdateDescriptionResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateDescription(input),
       ),
 
     updateMilestoneAndOrdering: (input: ProjectTasksUpdateMilestoneAndOrderingInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering(input),
     useUpdateMilestoneAndOrdering: () =>
-      useMutation<ProjectTasksUpdateMilestoneAndOrderingInput, ProjectTasksUpdateMilestoneAndOrderingResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering,
+      useMutation<ProjectTasksUpdateMilestoneAndOrderingInput, ProjectTasksUpdateMilestoneAndOrderingResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateMilestoneAndOrdering(input),
       ),
 
     updateAssignee: (input: ProjectTasksUpdateAssigneeInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateAssignee(input),
     useUpdateAssignee: () =>
-      useMutation<ProjectTasksUpdateAssigneeInput, ProjectTasksUpdateAssigneeResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateAssignee,
+      useMutation<ProjectTasksUpdateAssigneeInput, ProjectTasksUpdateAssigneeResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateAssignee(input),
       ),
 
     updateStatus: (input: ProjectTasksUpdateStatusInput) =>
       defaultApiClient.apiNamespaceProjectTasks.updateStatus(input),
     useUpdateStatus: () =>
-      useMutation<ProjectTasksUpdateStatusInput, ProjectTasksUpdateStatusResult>(
-        defaultApiClient.apiNamespaceProjectTasks.updateStatus,
+      useMutation<ProjectTasksUpdateStatusInput, ProjectTasksUpdateStatusResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.updateStatus(input),
       ),
 
     delete: (input: ProjectTasksDeleteInput) => defaultApiClient.apiNamespaceProjectTasks.delete(input),
     useDelete: () =>
-      useMutation<ProjectTasksDeleteInput, ProjectTasksDeleteResult>(defaultApiClient.apiNamespaceProjectTasks.delete),
+      useMutation<ProjectTasksDeleteInput, ProjectTasksDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceProjectTasks.delete(input),
+      ),
   },
 
   project_milestones: {
@@ -7580,29 +7584,29 @@ export default {
 
     delete: (input: ProjectMilestonesDeleteInput) => defaultApiClient.apiNamespaceProjectMilestones.delete(input),
     useDelete: () =>
-      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.delete,
+      useMutation<ProjectMilestonesDeleteInput, ProjectMilestonesDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.delete(input),
       ),
 
     updateDescription: (input: ProjectMilestonesUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
     useUpdateDescription: () =>
-      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.updateDescription,
+      useMutation<ProjectMilestonesUpdateDescriptionInput, ProjectMilestonesUpdateDescriptionResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.updateDescription(input),
       ),
 
     updateDueDate: (input: ProjectMilestonesUpdateDueDateInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
     useUpdateDueDate: () =>
-      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate,
+      useMutation<ProjectMilestonesUpdateDueDateInput, ProjectMilestonesUpdateDueDateResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.updateDueDate(input),
       ),
 
     updateTitle: (input: ProjectMilestonesUpdateTitleInput) =>
       defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
     useUpdateTitle: () =>
-      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>(
-        defaultApiClient.apiNamespaceProjectMilestones.updateTitle,
+      useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
       ),
   },
 
@@ -7628,52 +7632,54 @@ export default {
     updateParentGoal: (input: ProjectsUpdateParentGoalInput) =>
       defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
     useUpdateParentGoal: () =>
-      useMutation<ProjectsUpdateParentGoalInput, ProjectsUpdateParentGoalResult>(
-        defaultApiClient.apiNamespaceProjects.updateParentGoal,
+      useMutation<ProjectsUpdateParentGoalInput, ProjectsUpdateParentGoalResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateParentGoal(input),
       ),
 
     createMilestone: (input: ProjectsCreateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjects.createMilestone(input),
     useCreateMilestone: () =>
-      useMutation<ProjectsCreateMilestoneInput, ProjectsCreateMilestoneResult>(
-        defaultApiClient.apiNamespaceProjects.createMilestone,
+      useMutation<ProjectsCreateMilestoneInput, ProjectsCreateMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.createMilestone(input),
       ),
 
     updateDueDate: (input: ProjectsUpdateDueDateInput) => defaultApiClient.apiNamespaceProjects.updateDueDate(input),
     useUpdateDueDate: () =>
-      useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>(
-        defaultApiClient.apiNamespaceProjects.updateDueDate,
+      useMutation<ProjectsUpdateDueDateInput, ProjectsUpdateDueDateResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateDueDate(input),
       ),
 
     updateStartDate: (input: ProjectsUpdateStartDateInput) =>
       defaultApiClient.apiNamespaceProjects.updateStartDate(input),
     useUpdateStartDate: () =>
-      useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>(
-        defaultApiClient.apiNamespaceProjects.updateStartDate,
+      useMutation<ProjectsUpdateStartDateInput, ProjectsUpdateStartDateResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateStartDate(input),
       ),
 
     updateReviewer: (input: ProjectsUpdateReviewerInput) => defaultApiClient.apiNamespaceProjects.updateReviewer(input),
     useUpdateReviewer: () =>
-      useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>(
-        defaultApiClient.apiNamespaceProjects.updateReviewer,
+      useMutation<ProjectsUpdateReviewerInput, ProjectsUpdateReviewerResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateReviewer(input),
       ),
 
     updateMilestone: (input: ProjectsUpdateMilestoneInput) =>
       defaultApiClient.apiNamespaceProjects.updateMilestone(input),
     useUpdateMilestone: () =>
-      useMutation<ProjectsUpdateMilestoneInput, ProjectsUpdateMilestoneResult>(
-        defaultApiClient.apiNamespaceProjects.updateMilestone,
+      useMutation<ProjectsUpdateMilestoneInput, ProjectsUpdateMilestoneResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateMilestone(input),
       ),
 
     updateChampion: (input: ProjectsUpdateChampionInput) => defaultApiClient.apiNamespaceProjects.updateChampion(input),
     useUpdateChampion: () =>
-      useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>(
-        defaultApiClient.apiNamespaceProjects.updateChampion,
+      useMutation<ProjectsUpdateChampionInput, ProjectsUpdateChampionResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.updateChampion(input),
       ),
 
     delete: (input: ProjectsDeleteInput) => defaultApiClient.apiNamespaceProjects.delete(input),
     useDelete: () =>
-      useMutation<ProjectsDeleteInput, ProjectsDeleteResult>(defaultApiClient.apiNamespaceProjects.delete),
+      useMutation<ProjectsDeleteInput, ProjectsDeleteResult>((input) =>
+        defaultApiClient.apiNamespaceProjects.delete(input),
+      ),
   },
 
   goals: {
@@ -7691,100 +7697,120 @@ export default {
 
     updateName: (input: GoalsUpdateNameInput) => defaultApiClient.apiNamespaceGoals.updateName(input),
     useUpdateName: () =>
-      useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>(defaultApiClient.apiNamespaceGoals.updateName),
+      useMutation<GoalsUpdateNameInput, GoalsUpdateNameResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateName(input),
+      ),
 
     updateTargetIndex: (input: GoalsUpdateTargetIndexInput) =>
       defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
     useUpdateTargetIndex: () =>
-      useMutation<GoalsUpdateTargetIndexInput, GoalsUpdateTargetIndexResult>(
-        defaultApiClient.apiNamespaceGoals.updateTargetIndex,
+      useMutation<GoalsUpdateTargetIndexInput, GoalsUpdateTargetIndexResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateTargetIndex(input),
       ),
 
     addTarget: (input: GoalsAddTargetInput) => defaultApiClient.apiNamespaceGoals.addTarget(input),
     useAddTarget: () =>
-      useMutation<GoalsAddTargetInput, GoalsAddTargetResult>(defaultApiClient.apiNamespaceGoals.addTarget),
+      useMutation<GoalsAddTargetInput, GoalsAddTargetResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.addTarget(input),
+      ),
 
     updateAccessLevels: (input: GoalsUpdateAccessLevelsInput) =>
       defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
     useUpdateAccessLevels: () =>
-      useMutation<GoalsUpdateAccessLevelsInput, GoalsUpdateAccessLevelsResult>(
-        defaultApiClient.apiNamespaceGoals.updateAccessLevels,
+      useMutation<GoalsUpdateAccessLevelsInput, GoalsUpdateAccessLevelsResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateAccessLevels(input),
       ),
 
     updateParentGoal: (input: GoalsUpdateParentGoalInput) => defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
     useUpdateParentGoal: () =>
-      useMutation<GoalsUpdateParentGoalInput, GoalsUpdateParentGoalResult>(
-        defaultApiClient.apiNamespaceGoals.updateParentGoal,
+      useMutation<GoalsUpdateParentGoalInput, GoalsUpdateParentGoalResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateParentGoal(input),
       ),
 
     updateTarget: (input: GoalsUpdateTargetInput) => defaultApiClient.apiNamespaceGoals.updateTarget(input),
     useUpdateTarget: () =>
-      useMutation<GoalsUpdateTargetInput, GoalsUpdateTargetResult>(defaultApiClient.apiNamespaceGoals.updateTarget),
+      useMutation<GoalsUpdateTargetInput, GoalsUpdateTargetResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateTarget(input),
+      ),
 
     addCheck: (input: GoalsAddCheckInput) => defaultApiClient.apiNamespaceGoals.addCheck(input),
     useAddCheck: () =>
-      useMutation<GoalsAddCheckInput, GoalsAddCheckResult>(defaultApiClient.apiNamespaceGoals.addCheck),
+      useMutation<GoalsAddCheckInput, GoalsAddCheckResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.addCheck(input),
+      ),
 
     deleteTarget: (input: GoalsDeleteTargetInput) => defaultApiClient.apiNamespaceGoals.deleteTarget(input),
     useDeleteTarget: () =>
-      useMutation<GoalsDeleteTargetInput, GoalsDeleteTargetResult>(defaultApiClient.apiNamespaceGoals.deleteTarget),
+      useMutation<GoalsDeleteTargetInput, GoalsDeleteTargetResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.deleteTarget(input),
+      ),
 
     updateCheckIndex: (input: GoalsUpdateCheckIndexInput) => defaultApiClient.apiNamespaceGoals.updateCheckIndex(input),
     useUpdateCheckIndex: () =>
-      useMutation<GoalsUpdateCheckIndexInput, GoalsUpdateCheckIndexResult>(
-        defaultApiClient.apiNamespaceGoals.updateCheckIndex,
+      useMutation<GoalsUpdateCheckIndexInput, GoalsUpdateCheckIndexResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateCheckIndex(input),
       ),
 
     updateDueDate: (input: GoalsUpdateDueDateInput) => defaultApiClient.apiNamespaceGoals.updateDueDate(input),
     useUpdateDueDate: () =>
-      useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>(defaultApiClient.apiNamespaceGoals.updateDueDate),
+      useMutation<GoalsUpdateDueDateInput, GoalsUpdateDueDateResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateDueDate(input),
+      ),
 
     updateCheck: (input: GoalsUpdateCheckInput) => defaultApiClient.apiNamespaceGoals.updateCheck(input),
     useUpdateCheck: () =>
-      useMutation<GoalsUpdateCheckInput, GoalsUpdateCheckResult>(defaultApiClient.apiNamespaceGoals.updateCheck),
+      useMutation<GoalsUpdateCheckInput, GoalsUpdateCheckResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateCheck(input),
+      ),
 
     updateStartDate: (input: GoalsUpdateStartDateInput) => defaultApiClient.apiNamespaceGoals.updateStartDate(input),
     useUpdateStartDate: () =>
-      useMutation<GoalsUpdateStartDateInput, GoalsUpdateStartDateResult>(
-        defaultApiClient.apiNamespaceGoals.updateStartDate,
+      useMutation<GoalsUpdateStartDateInput, GoalsUpdateStartDateResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateStartDate(input),
       ),
 
     updateDescription: (input: GoalsUpdateDescriptionInput) =>
       defaultApiClient.apiNamespaceGoals.updateDescription(input),
     useUpdateDescription: () =>
-      useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>(
-        defaultApiClient.apiNamespaceGoals.updateDescription,
+      useMutation<GoalsUpdateDescriptionInput, GoalsUpdateDescriptionResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateDescription(input),
       ),
 
     updateSpace: (input: GoalsUpdateSpaceInput) => defaultApiClient.apiNamespaceGoals.updateSpace(input),
     useUpdateSpace: () =>
-      useMutation<GoalsUpdateSpaceInput, GoalsUpdateSpaceResult>(defaultApiClient.apiNamespaceGoals.updateSpace),
+      useMutation<GoalsUpdateSpaceInput, GoalsUpdateSpaceResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateSpace(input),
+      ),
 
     toggleCheck: (input: GoalsToggleCheckInput) => defaultApiClient.apiNamespaceGoals.toggleCheck(input),
     useToggleCheck: () =>
-      useMutation<GoalsToggleCheckInput, GoalsToggleCheckResult>(defaultApiClient.apiNamespaceGoals.toggleCheck),
+      useMutation<GoalsToggleCheckInput, GoalsToggleCheckResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.toggleCheck(input),
+      ),
 
     updateTargetValue: (input: GoalsUpdateTargetValueInput) =>
       defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
     useUpdateTargetValue: () =>
-      useMutation<GoalsUpdateTargetValueInput, GoalsUpdateTargetValueResult>(
-        defaultApiClient.apiNamespaceGoals.updateTargetValue,
+      useMutation<GoalsUpdateTargetValueInput, GoalsUpdateTargetValueResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateTargetValue(input),
       ),
 
     deleteCheck: (input: GoalsDeleteCheckInput) => defaultApiClient.apiNamespaceGoals.deleteCheck(input),
     useDeleteCheck: () =>
-      useMutation<GoalsDeleteCheckInput, GoalsDeleteCheckResult>(defaultApiClient.apiNamespaceGoals.deleteCheck),
+      useMutation<GoalsDeleteCheckInput, GoalsDeleteCheckResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.deleteCheck(input),
+      ),
 
     updateChampion: (input: GoalsUpdateChampionInput) => defaultApiClient.apiNamespaceGoals.updateChampion(input),
     useUpdateChampion: () =>
-      useMutation<GoalsUpdateChampionInput, GoalsUpdateChampionResult>(
-        defaultApiClient.apiNamespaceGoals.updateChampion,
+      useMutation<GoalsUpdateChampionInput, GoalsUpdateChampionResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateChampion(input),
       ),
 
     updateReviewer: (input: GoalsUpdateReviewerInput) => defaultApiClient.apiNamespaceGoals.updateReviewer(input),
     useUpdateReviewer: () =>
-      useMutation<GoalsUpdateReviewerInput, GoalsUpdateReviewerResult>(
-        defaultApiClient.apiNamespaceGoals.updateReviewer,
+      useMutation<GoalsUpdateReviewerInput, GoalsUpdateReviewerResult>((input) =>
+        defaultApiClient.apiNamespaceGoals.updateReviewer(input),
       ),
   },
 
@@ -7818,65 +7844,69 @@ export default {
       useQuery<AiGetConversationMessagesResult>(() => defaultApiClient.apiNamespaceAi.getConversationMessages(input)),
 
     addAgent: (input: AiAddAgentInput) => defaultApiClient.apiNamespaceAi.addAgent(input),
-    useAddAgent: () => useMutation<AiAddAgentInput, AiAddAgentResult>(defaultApiClient.apiNamespaceAi.addAgent),
+    useAddAgent: () =>
+      useMutation<AiAddAgentInput, AiAddAgentResult>((input) => defaultApiClient.apiNamespaceAi.addAgent(input)),
 
     editAgentSandboxMode: (input: AiEditAgentSandboxModeInput) =>
       defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
     useEditAgentSandboxMode: () =>
-      useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>(
-        defaultApiClient.apiNamespaceAi.editAgentSandboxMode,
+      useMutation<AiEditAgentSandboxModeInput, AiEditAgentSandboxModeResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentSandboxMode(input),
       ),
 
     editAgentTaskExecutionInstructions: (input: AiEditAgentTaskExecutionInstructionsInput) =>
       defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
     useEditAgentTaskExecutionInstructions: () =>
-      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>(
-        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions,
+      useMutation<AiEditAgentTaskExecutionInstructionsInput, AiEditAgentTaskExecutionInstructionsResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentTaskExecutionInstructions(input),
       ),
 
     editAgentPlanningInstructions: (input: AiEditAgentPlanningInstructionsInput) =>
       defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
     useEditAgentPlanningInstructions: () =>
-      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>(
-        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions,
+      useMutation<AiEditAgentPlanningInstructionsInput, AiEditAgentPlanningInstructionsResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentPlanningInstructions(input),
       ),
 
     createConversation: (input: AiCreateConversationInput) => defaultApiClient.apiNamespaceAi.createConversation(input),
     useCreateConversation: () =>
-      useMutation<AiCreateConversationInput, AiCreateConversationResult>(
-        defaultApiClient.apiNamespaceAi.createConversation,
+      useMutation<AiCreateConversationInput, AiCreateConversationResult>((input) =>
+        defaultApiClient.apiNamespaceAi.createConversation(input),
       ),
 
     sendMessage: (input: AiSendMessageInput) => defaultApiClient.apiNamespaceAi.sendMessage(input),
     useSendMessage: () =>
-      useMutation<AiSendMessageInput, AiSendMessageResult>(defaultApiClient.apiNamespaceAi.sendMessage),
+      useMutation<AiSendMessageInput, AiSendMessageResult>((input) =>
+        defaultApiClient.apiNamespaceAi.sendMessage(input),
+      ),
 
     editAgentVerbosity: (input: AiEditAgentVerbosityInput) => defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
     useEditAgentVerbosity: () =>
-      useMutation<AiEditAgentVerbosityInput, AiEditAgentVerbosityResult>(
-        defaultApiClient.apiNamespaceAi.editAgentVerbosity,
+      useMutation<AiEditAgentVerbosityInput, AiEditAgentVerbosityResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentVerbosity(input),
       ),
 
     runAgent: (input: AiRunAgentInput) => defaultApiClient.apiNamespaceAi.runAgent(input),
-    useRunAgent: () => useMutation<AiRunAgentInput, AiRunAgentResult>(defaultApiClient.apiNamespaceAi.runAgent),
+    useRunAgent: () =>
+      useMutation<AiRunAgentInput, AiRunAgentResult>((input) => defaultApiClient.apiNamespaceAi.runAgent(input)),
 
     editAgentDefinition: (input: AiEditAgentDefinitionInput) =>
       defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
     useEditAgentDefinition: () =>
-      useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>(
-        defaultApiClient.apiNamespaceAi.editAgentDefinition,
+      useMutation<AiEditAgentDefinitionInput, AiEditAgentDefinitionResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentDefinition(input),
       ),
 
     editAgentProvider: (input: AiEditAgentProviderInput) => defaultApiClient.apiNamespaceAi.editAgentProvider(input),
     useEditAgentProvider: () =>
-      useMutation<AiEditAgentProviderInput, AiEditAgentProviderResult>(
-        defaultApiClient.apiNamespaceAi.editAgentProvider,
+      useMutation<AiEditAgentProviderInput, AiEditAgentProviderResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentProvider(input),
       ),
 
     editAgentDailyRun: (input: AiEditAgentDailyRunInput) => defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
     useEditAgentDailyRun: () =>
-      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>(
-        defaultApiClient.apiNamespaceAi.editAgentDailyRun,
+      useMutation<AiEditAgentDailyRunInput, AiEditAgentDailyRunResult>((input) =>
+        defaultApiClient.apiNamespaceAi.editAgentDailyRun(input),
       ),
   },
 };
