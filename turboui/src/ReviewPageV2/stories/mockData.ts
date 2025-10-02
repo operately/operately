@@ -64,6 +64,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     actionLabel: "Complete beta release",
     path: "/projects/mobile-app/milestones/beta-release",
     origin: mobileAppLaunch,
+    taskStatus: null,
   },
   {
     resourceId: "task-security-audit",
@@ -86,6 +87,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     actionLabel: "Submit weekly check-in",
     path: "/projects/mobile-app/check-ins/8",
     origin: mobileAppLaunch,
+    taskStatus: null,
   },
   {
     resourceId: "goal-update-customer-satisfaction",
@@ -96,6 +98,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     actionLabel: "Submit goal progress update",
     path: "/goals/customer-satisfaction/updates/latest",
     origin: customerSatisfaction,
+    taskStatus: null,
   },
   // Due soon
   {
@@ -129,6 +132,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     actionLabel: "Launch website MVP",
     path: "/projects/website-redesign/milestones/mvp",
     origin: websiteRedesign,
+    taskStatus: null,
   },
 ];
 
@@ -144,6 +148,7 @@ export const reviewAssignments: ReviewPageV2.Assignment[] = [
     origin: mobileAppLaunch,
     authorId: "user-123",
     authorName: "Sarah Chen",
+    taskStatus: null,
   },
   {
     resourceId: "goal-update-review-productivity",
@@ -156,6 +161,7 @@ export const reviewAssignments: ReviewPageV2.Assignment[] = [
     origin: teamProductivity,
     authorId: "user-456",
     authorName: "Alex Rodriguez",
+    taskStatus: null,
   },
   {
     resourceId: "check-in-review-website",
@@ -168,6 +174,7 @@ export const reviewAssignments: ReviewPageV2.Assignment[] = [
     origin: websiteRedesign,
     authorId: "user-789",
     authorName: "Maria Garcia",
+    taskStatus: null,
   },
 ];
 
@@ -214,6 +221,7 @@ export const upcomingAssignments: ReviewPageV2.Assignment[] = [
     actionLabel: "Launch Q4 planning",
     path: "/projects/q4-planning/milestones/kickoff",
     origin: q4Planning,
+    taskStatus: null,
   },
   {
     resourceId: "goal-update-team-productivity",
@@ -224,6 +232,7 @@ export const upcomingAssignments: ReviewPageV2.Assignment[] = [
     actionLabel: "Submit goal progress update",
     path: "/goals/team-productivity/updates/next",
     origin: teamProductivity,
+    taskStatus: null,
   },
   {
     resourceId: "task-analytics-setup",
