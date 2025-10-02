@@ -173,10 +173,13 @@ function ChecklistInternal(props: Checklist.InternalProps) {
 
 function ChecklistItemList({ state }: { state: State }) {
   const { ref } = useDropZone({ id: "checklist", dependencies: [state.items] });
+  const sorted = React.useMemo(() => {
+    return [...state.items].sort((a, b) => a.index - b.index);
+  }, [state.items]);
 
   return (
     <div ref={ref} className="space-y-0">
-      {state.items.map((item, index) => (
+      {sorted.map((item, index) => (
         <div key={item.id}>
           {index === 0 && <div className="h-2" />}
           <ChecklistItemCard state={state} item={item} />
