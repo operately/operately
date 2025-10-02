@@ -8,8 +8,8 @@ defmodule OperatelyWeb.AccountOauthController do
   alias OperatelyWeb.AccountAuth
   alias OperatelyWeb.Paths
 
-  plug(:store_redirect_in_state when action == :request)
-  plug(Ueberauth)
+  plug :store_redirect_in_state when action == :request
+  plug Ueberauth
 
   @doc """
   Stores the redirect_to parameter in the session before initiating OAuth flow.
