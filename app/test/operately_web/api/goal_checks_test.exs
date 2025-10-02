@@ -278,17 +278,17 @@ defmodule OperatelyWeb.Api.GoalChecksTest do
       inputs = %{goal_id: Paths.goal_id(ctx.goal), check_id: Paths.goal_check_id(ctx.check3)}
 
       # moving check3 to the first position
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 1))
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 0))
       assert res.success == true
       assert check_order(ctx.goal.id) == [ctx.check3.id, ctx.check1.id, ctx.check2.id]
 
       # moving check3 to the second position
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 2))
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 1))
       assert res.success == true
       assert check_order(ctx.goal.id) == [ctx.check1.id, ctx.check3.id, ctx.check2.id]
 
       # moving check3 to the last position
-      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 3))
+      assert {200, res} = mutation(ctx.conn, [:goals, :update_check_index], Map.put(inputs, :index, 2))
       assert res.success == true
       assert check_order(ctx.goal.id) == [ctx.check1.id, ctx.check2.id, ctx.check3.id]
     end
