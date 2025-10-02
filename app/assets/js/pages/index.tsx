@@ -81,6 +81,7 @@ import ResourceHubNewDocumentPage from "./ResourceHubNewDocumentPage";
 import ResourceHubNewLinkPage from "./ResourceHubNewLinkPage";
 import ResourceHubPage from "./ResourceHubPage";
 import ReviewPage from "./ReviewPage";
+import ReviewV2Page from "./ReviewV2Page";
 import SetupPage from "./SetupPage";
 import SignUpPage from "./SignUpPage";
 import SignUpWithEmailPage from "./SignUpWithEmailPage";
@@ -177,6 +178,7 @@ export default {
   ResourceHubNewLinkPage,
   ResourceHubPage,
   ReviewPage,
+  ReviewV2Page,
   SetupPage,
   SignUpPage,
   SignUpWithEmailPage,
