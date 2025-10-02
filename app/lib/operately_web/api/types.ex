@@ -261,6 +261,53 @@ defmodule OperatelyWeb.Api.Types do
     field :path, :string, null: false
   end
 
+  enum(:review_assignment_v2_types,
+    values: [
+      :check_in,
+      :goal_update,
+      :project_task,
+      :milestone
+    ]
+  )
+
+  enum(:review_assignment_roles, values: [ :owner, :reviewer ])
+
+  enum(:review_assignment_origin_types, values: [ :project, :goal ])
+
+  enum(:task_status_types,
+    values: [
+      :pending,
+      :todo,
+      :in_progress,
+      :done,
+      :canceled
+    ]
+  )
+
+  object :review_assignment_origin do
+    field :id, :string, null: false
+    field :name, :string, null: false
+    field :type, :review_assignment_origin_types, null: false
+    field :path, :string, null: false
+    field :space_name, :string, null: true
+    field :due_date, :date, null: true
+  end
+
+  object :review_assignment_v2 do
+    field :resource_id, :string, null: false
+    field :name, :string, null: false
+    field :due, :date, null: true
+    field :type, :review_assignment_v2_types, null: false
+    field :role, :review_assignment_roles, null: false
+    field :action_label, :string, null: true
+    field :path, :string, null: false
+    field :origin, :review_assignment_origin, null: false
+    field :task_status, :task_status_types, null: true
+    field :author_id, :string, null: true
+    field :author_name, :string, null: true
+    field :description, :string, null: true
+  end
+
   union(:update_content,
     types: [
       :update_content_project_created,
