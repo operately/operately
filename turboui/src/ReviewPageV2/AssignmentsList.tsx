@@ -81,9 +81,8 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
   return (
     <DivLink
       to={assignment.path}
-      testId={`assignment-${assignment.resourceId}`}
       className="group relative flex items-center gap-3 py-2 px-2 transition-colors hover:bg-surface-highlight rounded"
-      data-test-id={createTestId("assignment", assignment.resourceId)}
+      testId={createTestId("assignment", assignment.resourceId)}
     >
       <div className="flex h-6 w-6 items-center justify-center text-content-base">
         {renderLeadingIndicator(assignment)}
