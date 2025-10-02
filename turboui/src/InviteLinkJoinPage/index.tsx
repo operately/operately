@@ -35,6 +35,8 @@ export namespace InviteLinkJoinPage {
 
     // For logged in users
     handleJoin: () => void;
+    joining?: boolean;
+    joinError?: string | null;
 
     // For anonymous users
     handleSignUpAndJoin: () => void;
@@ -72,9 +74,15 @@ function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
       </div>
 
       <div className="flex items-center flex-col items-stretch">
-        <SecondaryButton onClick={props.handleJoin} testId="join-company">
+        <SecondaryButton
+          onClick={props.handleJoin}
+          testId="join-company"
+          loading={props.joining}
+          disabled={props.joining}
+        >
           Join {props.invitation?.company?.name}
         </SecondaryButton>
+        {props.joinError && <div className="text-sm text-red-500 mt-4 text-center">{props.joinError}</div>}
       </div>
     </div>
   );
