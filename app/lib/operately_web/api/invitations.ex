@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.Invitations do
   alias Operately.Repo
+  alias Operately.InviteLinks
 
   defmodule GetInviteLink do
     use TurboConnect.Query
@@ -14,7 +15,7 @@ defmodule OperatelyWeb.Api.Invitations do
     end
 
     def call(_conn, inputs) do
-      case Operately.InviteLinks.get_invite_link_by_token(inputs[:token]) do
+      case InviteLinks.get_invite_link_by_token(inputs[:token]) do
         {:ok, link} -> {:ok, %{invite_link: Serializer.serialize(link, level: :full)}}
         {:error, :not_found} -> {:ok, %{invite_link: nil}}
       end
@@ -47,7 +48,7 @@ defmodule OperatelyWeb.Api.Invitations do
         Permissions.check(ctx.company.requester_access_level, :can_invite_members)
       end)
       |> run(:invite_links, fn ctx ->
-        {:ok, Operately.InviteLinks.list_invite_links_for_company(ctx.company_id)}
+        {:ok, InviteLinks.list_invite_links_for_company(ctx.company_id)}
       end)
       |> run(:serialized, fn ctx ->
         {:ok, %{invite_links: Serializer.serialize(ctx.invite_links, level: :essential)}}
@@ -119,7 +120,7 @@ defmodule OperatelyWeb.Api.Invitations do
 
     defp create_invite_link(multi) do
       Ecto.Multi.run(multi, :invite_link, fn _, %{me: me, company: company} ->
-        Operately.InviteLinks.create_invite_link(%{
+        InviteLinks.create_invite_link(%{
           company_id: company.id,
           author_id: me.id
         })
@@ -149,157 +150,23 @@ defmodule OperatelyWeb.Api.Invitations do
     use OperatelyWeb.Api.Helpers
 
     inputs do
-      field?(:token, :string, null: false)
-      field?(:password, :string, null: true)
-      field?(:password_confirmation, :string, null: true)
+      field(:token, :string)
     end
 
     outputs do
       field?(:company, :company, null: true)
-      field?(:person, :person, null: true)
-      field?(:error, :string, null: true)
     end
 
     def call(conn, inputs) do
-      Action.new()
-      |> run(:invite_link, fn -> get_invite_link(inputs[:token]) end)
-      |> run(:validate_link, fn ctx -> validate_invite_link(ctx.invite_link) end)
-      |> run(:me, fn -> find_me_if_logged_in(conn) end)
-      |> run(:account, fn -> find_account_if_logged_in(conn) end)
-      |> run(:handle_join, fn ctx -> handle_join(ctx, inputs) end)
-      |> run(:serialized, fn ctx -> serialize_result(ctx) end)
-      |> respond()
-    end
+      with(
+        {:ok, account} <- find_account(conn),
+        {:ok, person} <- InviteLinks.join_company_via_invite_link(account, inputs.token)
+      ) do
+        company = Repo.preload(person, :company).company
+        response = %{company: Serializer.serialize(company, level: :essential)}
 
-    def respond(result) do
-      case result do
-        {:ok, ctx} ->
-          {:ok, ctx.serialized}
-
-        {:error, :invite_link, _} ->
-          {:ok, %{company: nil, person: nil, error: "Invalid invite link"}}
-
-        {:error, :validate_link, %{error: error}} ->
-          {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
-
-        {:error, :handle_join, %{error: %{error: error}}} ->
-          {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
-
-        {:error, :handle_join, %{error: error}} ->
-          {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
-
-        _ ->
-          {:error, :internal_server_error}
-      end
-    end
-
-    defp get_invite_link(token) do
-      Operately.InviteLinks.get_invite_link_by_token(token)
-    end
-
-    defp validate_invite_link(invite_link) do
-      cond do
-        not invite_link.is_active ->
-          {:error, "This invite link is no longer valid"}
-
-        Operately.InviteLinks.InviteLink.is_expired?(invite_link) ->
-          {:error, "This invite link has expired"}
-
-        true ->
-          {:ok, invite_link}
-      end
-    end
-
-    defp find_me_if_logged_in(conn) do
-      try do
-        case find_me(conn) do
-          {:ok, person} -> {:ok, person}
-          {:error, _} -> {:ok, nil}
-        end
-      rescue
-        _ -> {:ok, nil}
-      end
-    end
-
-    defp find_account_if_logged_in(conn) do
-      try do
-        case find_account(conn) do
-          {:ok, account} -> {:ok, account}
-          {:error, _} -> {:ok, nil}
-        end
-      rescue
-        _ -> {:ok, nil}
-      end
-    end
-
-    defp handle_join(%{me: person, account: account, invite_link: invite_link}, _inputs)
-         when not is_nil(person) do
-      cond do
-        person.company_id == invite_link.company_id ->
-          {:ok, %{company: invite_link.company, person: person, action: :redirect}}
-
-        account ->
-          join_account_to_company(account, invite_link)
-
-        true ->
-          {:error, %{error: "Unable to determine account for the current session."}}
-      end
-    end
-
-    defp handle_join(%{me: nil, account: account, invite_link: invite_link}, _inputs)
-         when not is_nil(account) do
-      join_account_to_company(account, invite_link)
-    end
-
-    defp handle_join(%{me: nil, account: nil, invite_link: invite_link}, inputs) do
-      # New user signup flow
-      if inputs[:password] && inputs[:password_confirmation] do
-        handle_new_user_signup(invite_link, inputs)
+        {:ok, response}
       else
-        {:error, %{error: "Password required for new users"}}
-      end
-    end
-
-    defp handle_new_user_signup(_invite_link, inputs) do
-      if inputs[:password] != inputs[:password_confirmation] do
-        {:error, "Passwords don't match"}
-      else
-        # For new users, we'll handle this in the frontend
-        # by redirecting to sign up with the token preserved
-        {:error, "Please sign up first and then use this invite link"}
-      end
-    end
-
-    defp serialize_result(%{handle_join: result}) do
-      case result do
-        %{company: company, person: person, action: _action} ->
-          {:ok,
-           %{
-             company: Serializer.serialize(company, level: :essential),
-             person: Serializer.serialize(person, level: :essential),
-             error: nil
-           }}
-
-        {:error, %{error: error}} ->
-          {:ok, %{company: nil, person: nil, error: normalize_error(error)}}
-
-        {:error, message} ->
-          {:ok, %{company: nil, person: nil, error: normalize_error(message)}}
-
-        message ->
-          {:ok, %{company: nil, person: nil, error: normalize_error(message)}}
-      end
-    end
-
-    defp normalize_error({:error, message}) when is_binary(message), do: message
-    defp normalize_error(message) when is_binary(message), do: message
-    defp normalize_error(_), do: "An unexpected error occurred"
-
-    defp join_account_to_company(account, invite_link) do
-      case Operately.InviteLinks.join_company_via_invite_link(account, invite_link.token) do
-        {:ok, {:person_created, person}} ->
-          {:ok, %{company: invite_link.company, person: person, action: :redirect}}
-
         {:error, :invite_token_not_found} ->
           {:error, %{error: "Invalid invite link"}}
 

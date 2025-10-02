@@ -83,6 +83,9 @@ defmodule Operately.Support.Features.InviteLinksSteps do
   step :given_the_invited_member_is_already_part_of_the_company, ctx do
     ctx = Factory.add_company_member(ctx, :invited)
 
+    members = Operately.People.list_people(ctx.company.id)
+    assert Enum.any?(members, fn member -> member.email == ctx.invited.email end)
+
     ctx |> Map.put(:new_member_email, ctx.invited.email)
   end
 
@@ -101,6 +104,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx
     |> UI.click(testid: "join-company")
     |> UI.sleep(500)
+    |> UI.take_screenshot()
   end
 
   step :follow_sign_up_and_join, ctx do
