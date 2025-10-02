@@ -1,16 +1,21 @@
 defmodule OperatelyWeb.Api do
   use TurboConnect.Api
 
-  plug OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
+  plug(OperatelyWeb.Api.Plugs.RequireAuthenticatedAccount,
     except: [
-      {:query, "get_invitation"},
       {:mutation, "add_first_company"},
       {:mutation, "join_company"},
       {:mutation, "create_email_activation_code"},
       {:mutation, "create_account"},
       {:mutation, "request_password_reset"},
-      {:mutation, "reset_password"}
+      {:mutation, "reset_password"},
+
+      # invitations
+      {:query, "invitations/get_invitation"},
+      {:query, "invitations/get_invite_link"},
+      {:mutation, "invitations/join_company_via_invite_link"}
     ]
+  )
 
   use_types(OperatelyWeb.Api.Types)
 
@@ -121,6 +126,20 @@ defmodule OperatelyWeb.Api do
     query(:search, OperatelyWeb.Api.Spaces.Search)
   end
 
+  namespace(:invitations) do
+    # bulk invitations
+    query(:get_invite_link, OperatelyWeb.Api.Invitations.GetInviteLink)
+    query(:list_invite_links, OperatelyWeb.Api.Invitations.ListInviteLinks)
+
+    mutation(:create_invite_link, OperatelyWeb.Api.Invitations.CreateInviteLink)
+    mutation(:revoke_invite_link, OperatelyWeb.Api.Invitations.RevokeInviteLink)
+    mutation(:join_company_via_invite_link, OperatelyWeb.Api.Invitations.JoinCompanyViaInviteLink)
+
+    # single user invitations
+    query(:get_invitation, Q.GetInvitation)
+    mutation(:new_invitation_token, M.NewInvitationToken)
+  end
+
   query(:get_account, Q.GetAccount)
   query(:get_activities, Q.GetActivities)
   query(:get_activity, Q.GetActivity)
@@ -134,7 +153,6 @@ defmodule OperatelyWeb.Api do
   query(:get_goal, Q.GetGoal)
   query(:get_goal_progress_update, Q.GetGoalProgressUpdate)
   query(:get_goals, Q.GetGoals)
-  query(:get_invitation, Q.GetInvitation)
   query(:get_key_resource, Q.GetKeyResource)
   query(:get_me, Q.GetMe)
   query(:get_milestone, Q.GetMilestone)
@@ -245,7 +263,6 @@ defmodule OperatelyWeb.Api do
   mutation(:mark_notification_as_read, M.MarkNotificationAsRead)
   mutation(:mark_notifications_as_read, M.MarkNotificationsAsRead)
   mutation(:move_project_to_space, M.MoveProjectToSpace)
-  mutation(:new_invitation_token, M.NewInvitationToken)
   mutation(:pause_project, M.PauseProject)
   mutation(:post_discussion, M.PostDiscussion)
   mutation(:publish_discussion, M.PublishDiscussion)
