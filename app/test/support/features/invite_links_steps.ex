@@ -80,6 +80,12 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     Map.put(ctx, :invite_link, %{token: "asdasdasd"})
   end
 
+  step :given_the_invited_member_is_already_part_of_the_company, ctx do
+    ctx = Factory.add_company_member(ctx, :invited)
+
+    ctx |> Map.put(:new_member_email, ctx.invited.email)
+  end
+
   step :follow_invite_link, ctx do
     ctx
     |> UI.visit("/join/#{ctx.invite_link.token}")
@@ -133,9 +139,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> UI.assert_has(testid: "sign-up-page")
     |> UI.assert_has(testid: "sign-up-with-email")
     |> UI.assert_has(testid: "sign-up-with-google")
-    |> UI.visit(
-      "/accounts/auth/test_google?email=#{URI.encode_www_form(email)}&invite_token=#{ctx.invite_link.token}"
-    )
+    |> UI.visit("/accounts/auth/test_google?email=#{URI.encode_www_form(email)}&invite_token=#{ctx.invite_link.token}")
     |> UI.sleep(500)
   end
 
@@ -165,9 +169,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     |> Map.put(:new_member_email, ctx.invited.email)
     |> UI.visit("/log_in?invite_token=#{ctx.invite_link.token}")
     |> UI.assert_has(testid: "sign-in-with-google")
-    |> UI.visit(
-      "/accounts/auth/test_google?account_id=#{account_id}&invite_token=#{ctx.invite_link.token}"
-    )
+    |> UI.visit("/accounts/auth/test_google?account_id=#{account_id}&invite_token=#{ctx.invite_link.token}")
     |> UI.sleep(500)
   end
 

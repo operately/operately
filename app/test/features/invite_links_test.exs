@@ -5,11 +5,25 @@ defmodule Operately.Features.InviteLinksTest do
   setup ctx, do: Steps.setup(ctx)
 
   describe "logged in user" do
-    feature "joining the company via invite link", ctx do
+    setup ctx do
       ctx
       |> Steps.given_the_invited_member_has_an_account()
       |> Steps.given_the_invited_member_is_logged_in()
       |> Steps.given_that_an_invite_link_exists()
+    end
+
+    feature "joining the company via invite link", ctx do
+      ctx
+      |> Steps.follow_invite_link()
+      |> Steps.assert_on_join_page_with_invitation()
+      |> Steps.follow_join_button()
+      |> Steps.assert_you_are_member_of_the_company()
+      |> Steps.assert_you_are_redirected_to_company_home_page()
+    end
+
+    feature "the invited member is already part of the company", ctx do
+      ctx
+      |> Steps.given_the_invited_member_is_already_part_of_the_company()
       |> Steps.follow_invite_link()
       |> Steps.assert_on_join_page_with_invitation()
       |> Steps.follow_join_button()
@@ -19,13 +33,17 @@ defmodule Operately.Features.InviteLinksTest do
   end
 
   describe "existing user (not logged in)" do
-    feature "logs in via email and joins the company via invite link", ctx do
+    setup ctx do
       ctx
       |> Steps.given_the_invited_member_has_an_account()
       |> Steps.given_that_an_invite_link_exists()
       |> Steps.follow_invite_link()
       |> Steps.assert_on_join_page_with_invitation()
       |> Steps.follow_log_in_and_join()
+    end
+
+    feature "logs in via email and joins the company via invite link", ctx do
+      ctx
       |> Steps.log_in_with_email()
       |> Steps.assert_you_are_member_of_the_company()
       |> Steps.assert_you_are_redirected_to_company_home_page()
@@ -33,11 +51,6 @@ defmodule Operately.Features.InviteLinksTest do
 
     feature "logs in via google and joins the company via invite link", ctx do
       ctx
-      |> Steps.given_the_invited_member_has_an_account()
-      |> Steps.given_that_an_invite_link_exists()
-      |> Steps.follow_invite_link()
-      |> Steps.assert_on_join_page_with_invitation()
-      |> Steps.follow_log_in_and_join()
       |> Steps.log_in_with_google()
       |> Steps.assert_you_are_member_of_the_company()
       |> Steps.assert_you_are_redirected_to_company_home_page()
