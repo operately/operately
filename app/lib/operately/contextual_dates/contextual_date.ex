@@ -22,6 +22,10 @@ defmodule Operately.ContextualDates.ContextualDate do
     |> validate_contextual_date()
   end
 
+  #
+  # Validation
+  #
+
   defp validate_contextual_date(changeset) do
     date_type = get_field(changeset, :date_type)
     validate_value_format(changeset, date_type)
@@ -64,6 +68,10 @@ defmodule Operately.ContextualDates.ContextualDate do
       add_error(changeset, :value, "must match the year of the date field")
     end
   end
+
+  #
+  # Helpers
+  #
 
   defp get_quarter(date) do
     case date.month do
@@ -138,4 +146,7 @@ defmodule Operately.ContextualDates.ContextualDate do
       value: value
     }
   end
+
+  def get_date(nil), do: nil
+  def get_date(date = %__MODULE__{}), do: date.date
 end
