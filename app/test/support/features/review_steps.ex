@@ -11,6 +11,14 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> Factory.log_in_person(:me)
   end
 
+  step :visit_review_page, ctx do
+    ctx |> UI.visit(Paths.review_path(ctx.company))
+  end
+
+  #
+  # Zero state
+  #
+
   step :assert_zero_state_message, ctx do
     ctx
     |> UI.assert_text("Review")
@@ -37,9 +45,9 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
-  step :visit_review_page, ctx do
-    ctx |> UI.visit(Paths.review_path(ctx.company))
-  end
+  #
+  # Due Project Check-ins
+  #
 
   step :given_there_are_due_project_check_ins, ctx do
     ctx
@@ -93,6 +101,10 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
+  #
+  # Due Goal Updates
+  #
+
   step :given_there_are_due_goal_updates, ctx do
     ctx
     |> Factory.add_goal(:goal, :product_space, [
@@ -145,6 +157,10 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
+  #
+  # Due Project Check-ins Review
+  #
+
   step :given_there_are_submitted_project_check_ins, ctx do
     ctx
     |> Factory.add_project(:project, :product_space, [
@@ -193,6 +209,10 @@ defmodule Operately.Support.Features.ReviewSteps do
       UI.assert_text(el, "Nothing to review")
     end)
   end
+
+  #
+  # Due Goal Update Review
+  #
 
   step :given_there_are_submitted_goal_updates, ctx do
     ctx
@@ -243,11 +263,9 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
-  step :assert_the_review_item_count, ctx, [is: count] do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text(Integer.to_string(count), testid: "review-link-count")
-  end
+  #
+  # Project Closing
+  #
 
   step :when_a_project_is_closed, ctx do
     ctx |> Factory.close_project(:project)
@@ -266,6 +284,16 @@ defmodule Operately.Support.Features.ReviewSteps do
     |> UI.find([testid: "due-soon-section"], fn el ->
       UI.assert_text(el, "No urgent work")
     end)
+  end
+
+  #
+  # Review Item Counter
+  #
+
+  step :assert_the_review_item_count, ctx, [is: count] do
+    ctx
+    |> UI.visit(Paths.review_path(ctx.company))
+    |> UI.assert_text(Integer.to_string(count), testid: "review-link-count")
   end
 
   #
