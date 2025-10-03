@@ -4,11 +4,14 @@ import { useAssignmentsCount, useReviewRefreshSignal } from "@/models/assignment
 
 import { IconCoffee } from "turboui";
 import { DivLink } from "turboui";
-
 import { usePaths } from "@/routes/paths";
-export function Review() {
+
+import * as Companies from "@/models/companies";
+
+
+export function Review({ company }: { company: Companies.Company }) {
   const paths = usePaths();
-  const [count, refetch] = useAssignmentsCount();
+  const [count, refetch] = useAssignmentsCount({v2: Companies.hasFeature(company, "review_v2")});
   useReviewRefreshSignal(refetch);
 
   return (
