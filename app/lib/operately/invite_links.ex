@@ -90,7 +90,7 @@ defmodule Operately.InviteLinks do
     |> Multi.run(:check_existing_person, fn _, %{company: company} ->
       case Operately.People.get_person(account, company) do
         nil -> {:ok, :no_existing_person}
-        person -> {:error, :person_already_in_company, person}
+        person -> {:error, {:person_already_in_company, person}}
       end
     end)
     |> Multi.run(:person, fn _, %{invite_link: invite_link} ->
@@ -102,7 +102,7 @@ defmodule Operately.InviteLinks do
       })
     end)
     |> Multi.run(:invite_link_update, fn _repo, %{invite_link: invite_link} ->
-      increment_use_count(invite_link)
+      __MODULE__.increment_use_count(invite_link)
     end)
     |> Repo.transaction()
     |> case do
@@ -110,9 +110,9 @@ defmodule Operately.InviteLinks do
         Logger.info("Successfully created person #{person.id} for company #{invite_link.company_id} via invite link")
         {:ok, person}
 
-      {:error, :check_existing_person, :person_already_in_company, changes} ->
+      {:error, :check_existing_person, {:person_already_in_company, person}, _changes} ->
         Logger.info("Account #{account.id} already has a person in the company for invite link")
-        {:ok, changes.person}
+        {:ok, person}
 
       {:error, :invite_link, :not_found, _changes} ->
         Logger.info("Invite token not found during account creation")
