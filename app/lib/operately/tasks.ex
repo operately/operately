@@ -8,11 +8,6 @@ defmodule Operately.Tasks do
 
   def get_task!(id), do: Repo.get!(Task, id)
 
-  def get_task_with_access_level(id, requester_id) do
-    from(t in Task, as: :resource, where: t.id == ^id)
-    |> Fetch.get_resource_with_access_level(requester_id)
-  end
-
   def create_task(attrs \\ %{}), do: Task.changeset(attrs) |> Repo.insert()
 
   def update_task(task, attrs \\ %{}), do: Task.changeset(task, attrs) |> Repo.update()
