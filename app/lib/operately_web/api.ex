@@ -233,7 +233,6 @@ defmodule OperatelyWeb.Api do
   mutation(:remove_group_member, M.RemoveGroupMember)
   mutation(:remove_key_resource, M.RemoveKeyResource)
   mutation(:remove_project_contributor, M.RemoveProjectContributor)
-  mutation(:remove_project_milestone, M.RemoveProjectMilestone)
   mutation(:remove_company_owner, M.RemoveCompanyOwner)
 
   mutation(:edit_company, M.EditCompany)
@@ -290,13 +289,9 @@ defmodule OperatelyWeb.Api do
   mutation(:resume_project, M.ResumeProject)
   mutation(:subscribe_to_notifications, M.SubscribeToNotifications)
   mutation(:unsubscribe_from_notifications, M.UnsubscribeFromNotifications)
-  mutation(:update_milestone, M.UpdateMilestone)
-  mutation(:update_milestone_description, M.UpdateMilestoneDescription)
   mutation(:update_profile, M.UpdateProfile)
   mutation(:update_project_contributor, M.UpdateProjectContributor)
   mutation(:update_project_description, M.UpdateProjectDescription)
-  mutation(:update_task, M.UpdateTask)
-  mutation(:update_task_status, M.UpdateTaskStatus)
 
   subscription(:assignments_count, S.AssignmentsCount)
   subscription(:reload_comments, S.ReloadComments)

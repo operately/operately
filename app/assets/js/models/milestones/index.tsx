@@ -6,13 +6,7 @@ import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
 export type { Milestone, MilestoneComment };
-export {
-  getMilestone,
-  useUpdateMilestone,
-  useRemoveProjectMilestone,
-  useUpdateMilestoneDescription,
-  usePostMilestoneComment,
-} from "@/api";
+export { getMilestone, usePostMilestoneComment } from "@/api";
 
 export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
   return milestones.map((m) => parseMilestoneForTurboUi(paths, m));
