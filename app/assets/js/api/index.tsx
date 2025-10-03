@@ -4134,6 +4134,7 @@ export interface RestoreCompanyMemberResult {}
 
 export interface ResumeProjectInput {
   projectId?: string | null;
+  message?: string | null;
 }
 
 export interface ResumeProjectResult {
