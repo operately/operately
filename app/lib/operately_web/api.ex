@@ -212,7 +212,6 @@ defmodule OperatelyWeb.Api do
   mutation(:create_goal_discussion, M.CreateGoalDiscussion)
   mutation(:create_space, M.CreateSpace)
   mutation(:create_project, M.CreateProject)
-  mutation(:create_task, M.CreateTask)
   mutation(:create_resource_hub, M.CreateResourceHub)
   mutation(:create_resource_hub_document, M.CreateResourceHubDocument)
   mutation(:create_resource_hub_file, M.CreateResourceHubFile)

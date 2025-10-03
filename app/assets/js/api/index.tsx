@@ -3275,17 +3275,6 @@ export interface CreateSpaceResult {
   space?: Space | null;
 }
 
-export interface CreateTaskInput {
-  name: string;
-  milestoneId: Id;
-  assigneeIds?: Id[] | null;
-  description?: string | null;
-}
-
-export interface CreateTaskResult {
-  task?: Task | null;
-}
-
 export interface DeleteGoalInput {
   goalId?: Id | null;
 }
@@ -4587,10 +4576,6 @@ class ApiNamespaceRoot {
     return this.client.post("/create_space", input);
   }
 
-  async createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-    return this.client.post("/create_task", input);
-  }
-
   async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
     return this.client.post("/delete_goal", input);
   }
@@ -5583,10 +5568,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.createSpace(input);
   }
 
-  createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-    return this.apiNamespaceRoot.createTask(input);
-  }
-
   deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
     return this.apiNamespaceRoot.deleteGoal(input);
   }
@@ -6098,9 +6079,6 @@ export async function createResourceHubLink(input: CreateResourceHubLinkInput): 
 }
 export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
   return defaultApiClient.createSpace(input);
-}
-export async function createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-  return defaultApiClient.createTask(input);
 }
 export async function deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
   return defaultApiClient.deleteGoal(input);
@@ -6752,10 +6730,6 @@ export function useCreateSpace(): UseMutationHookResult<CreateSpaceInput, Create
   return useMutation<CreateSpaceInput, CreateSpaceResult>((input) => defaultApiClient.createSpace(input));
 }
 
-export function useCreateTask(): UseMutationHookResult<CreateTaskInput, CreateTaskResult> {
-  return useMutation<CreateTaskInput, CreateTaskResult>((input) => defaultApiClient.createTask(input));
-}
-
 export function useDeleteGoal(): UseMutationHookResult<DeleteGoalInput, DeleteGoalResult> {
   return useMutation<DeleteGoalInput, DeleteGoalResult>((input) => defaultApiClient.deleteGoal(input));
 }
@@ -7323,8 +7297,6 @@ export default {
   useCreateResourceHubLink,
   createSpace,
   useCreateSpace,
-  createTask,
-  useCreateTask,
   deleteGoal,
   useDeleteGoal,
   deleteResourceHubDocument,
