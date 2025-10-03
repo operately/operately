@@ -2142,6 +2142,12 @@ export interface GetAssignmentsCountResult {
   count?: number | null;
 }
 
+export interface GetAssignmentsCountV2Input {}
+
+export interface GetAssignmentsCountV2Result {
+  count?: number | null;
+}
+
 export interface GetAssignmentsV2Input {}
 
 export interface GetAssignmentsV2Result {
@@ -4317,6 +4323,10 @@ class ApiNamespaceRoot {
     return this.client.get("/get_assignments_count", input);
   }
 
+  async getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
+    return this.client.get("/get_assignments_count_v2", input);
+  }
+
   async getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
     return this.client.get("/get_assignments_v2", input);
   }
@@ -5337,6 +5347,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.getAssignmentsCount(input);
   }
 
+  getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
+    return this.apiNamespaceRoot.getAssignmentsCountV2(input);
+  }
+
   getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
     return this.apiNamespaceRoot.getAssignmentsV2(input);
   }
@@ -5931,6 +5945,9 @@ export async function getAssignments(input: GetAssignmentsInput): Promise<GetAss
 export async function getAssignmentsCount(input: GetAssignmentsCountInput): Promise<GetAssignmentsCountResult> {
   return defaultApiClient.getAssignmentsCount(input);
 }
+export async function getAssignmentsCountV2(input: GetAssignmentsCountV2Input): Promise<GetAssignmentsCountV2Result> {
+  return defaultApiClient.getAssignmentsCountV2(input);
+}
 export async function getAssignmentsV2(input: GetAssignmentsV2Input): Promise<GetAssignmentsV2Result> {
   return defaultApiClient.getAssignmentsV2(input);
 }
@@ -6446,6 +6463,12 @@ export function useGetAssignments(input: GetAssignmentsInput): UseQueryHookResul
 
 export function useGetAssignmentsCount(input: GetAssignmentsCountInput): UseQueryHookResult<GetAssignmentsCountResult> {
   return useQuery<GetAssignmentsCountResult>(() => defaultApiClient.getAssignmentsCount(input));
+}
+
+export function useGetAssignmentsCountV2(
+  input: GetAssignmentsCountV2Input,
+): UseQueryHookResult<GetAssignmentsCountV2Result> {
+  return useQuery<GetAssignmentsCountV2Result>(() => defaultApiClient.getAssignmentsCountV2(input));
 }
 
 export function useGetAssignmentsV2(input: GetAssignmentsV2Input): UseQueryHookResult<GetAssignmentsV2Result> {
@@ -7311,6 +7334,8 @@ export default {
   useGetAssignments,
   getAssignmentsCount,
   useGetAssignmentsCount,
+  getAssignmentsCountV2,
+  useGetAssignmentsCountV2,
   getAssignmentsV2,
   useGetAssignmentsV2,
   getBindedPeople,
