@@ -154,6 +154,7 @@ function MobileSectionAction({ onClick, children, icon }) {
 function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
+
   return (
     <div className="transition-all z-50 py-1.5 bg-base border-b border-surface-outline">
       <div className="flex items-center justify-between px-4">
@@ -181,7 +182,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
           </div>
 
           <div className="border-l border-surface-outline pl-4">
-            <Review />
+            <Review company={company} />
           </div>
         </div>
 
