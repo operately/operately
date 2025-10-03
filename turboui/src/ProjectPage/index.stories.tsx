@@ -8,53 +8,9 @@ import { mockEmptyTasks, mockMilestones, mockTasks } from "../TaskBoard/tests/mo
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { genPeople, searchPeopleFn } from "../utils/storybook/genPeople";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
+import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { ProjectPage } from "./index";
-
-// Helper function to create rich text content for check-ins
-function asRichText(content: string): any {
-  return {
-    type: "doc",
-    content: [
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: content,
-          },
-        ],
-      },
-    ],
-  };
-}
-
-function asRichTextWithList(paragraphs: string[], listItems: string[] = []): any {
-  const content: any[] = paragraphs.map((text) => ({
-    type: "paragraph",
-    content: [{ type: "text", text }],
-  }));
-
-  if (listItems.length > 0) {
-    content.push({
-      type: "bulletList",
-      content: listItems.map((item) => ({
-        type: "listItem",
-        content: [
-          {
-            type: "paragraph",
-            content: [{ type: "text", text: item }],
-          },
-        ],
-      })),
-    });
-  }
-
-  return {
-    type: "doc",
-    content,
-  };
-}
 
 // Date helpers for dynamic, credible timelines
 function addDays(date: Date, days: number): Date {
