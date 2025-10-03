@@ -79,7 +79,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
 
   defp handle_invite_token(account, token) do
     case Operately.InviteLinks.join_company_via_invite_link(account, token) do
-      {:ok, {_status, person}} ->
+      {:ok, person} ->
         person = Repo.preload(person, :company)
         {:ok, %{company: person.company, person: person, error: nil}}
 
