@@ -3,6 +3,7 @@ import { TaskActivity } from "../Timeline";
 import type { TimelineItem as TimelineItemType } from "../Timeline/types";
 import { Person as TimelinePerson } from "../CommentSection/types";
 import { createContextualDate } from "../DateField/mockData";
+export { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 
 // Timeline people (with profile links)
 export const timelinePeople: TimelinePerson[] = [
@@ -125,58 +126,6 @@ export const mockMentionedPersonLookup = async (id: string) => {
   await new Promise((resolve) => setTimeout(resolve, 100)); // Simulate API delay
   return richEditorPeople.find((person) => person.id === id) || null;
 };
-
-// Helper function to convert text to rich content JSON format
-export function asRichText(content: string): any {
-  return {
-    type: "doc",
-    content: [
-      {
-        type: "paragraph",
-        content: [
-          {
-            type: "text",
-            text: content,
-          },
-        ],
-      },
-    ],
-  };
-}
-
-// Helper function for complex rich content with lists
-export function asRichTextWithList(paragraphs: string[], listItems: string[]): any {
-  const content: any[] = [];
-
-  // Add paragraphs
-  paragraphs.forEach((text) => {
-    content.push({
-      type: "paragraph",
-      content: [{ type: "text", text }],
-    });
-  });
-
-  // Add bullet list
-  if (listItems.length > 0) {
-    content.push({
-      type: "bulletList",
-      content: listItems.map((item) => ({
-        type: "listItem",
-        content: [
-          {
-            type: "paragraph",
-            content: [{ type: "text", text: item }],
-          },
-        ],
-      })),
-    });
-  }
-
-  return {
-    type: "doc",
-    content,
-  };
-}
 
 // Helper functions for creating timeline data
 export function createComment(author: TimelinePerson, content: string, timeAgo: number): TimelineItemType {

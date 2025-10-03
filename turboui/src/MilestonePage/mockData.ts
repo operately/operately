@@ -1,4 +1,5 @@
 import { genPeople } from "../utils/storybook/genPeople";
+import { asRichTextWithList } from "../utils/storybook/richContent";
 
 // Generate mock people for stories
 export const mockPeople = genPeople(4);
@@ -111,76 +112,19 @@ export const createMockTimelineItems = (): any[] => [
 ];
 
 // Mock description content shared across stories
-export const mockDescription = {
-  type: "doc",
-  content: [
-    {
-      type: "paragraph",
-      content: [
-        {
-          type: "text",
-          text: "This milestone represents our Q2 feature release, focusing on core user experience improvements and new functionality. The main goals include:",
-        },
-      ],
-    },
-    {
-      type: "bulletList",
-      content: [
-        {
-          type: "listItem",
-          content: [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: "Implement robust user authentication system",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: "listItem", 
-          content: [
-            {
-              type: "paragraph",
-              content: [
-                {
-                  type: "text",
-                  text: "Add dark mode support across the application",
-                },
-              ],
-            },
-          ],
-        },
-        {
-          type: "listItem",
-          content: [
-            {
-              type: "paragraph", 
-              content: [
-                {
-                  type: "text",
-                  text: "Improve navigation and user profile functionality",
-                },
-              ],
-            },
-          ],
-        },
-      ],
-    },
-    {
-      type: "paragraph",
-      content: [
-        {
-          type: "text",
-          text: "We expect this release to significantly improve user engagement and provide a foundation for future feature development.",
-        },
-      ],
-    },
+export const mockDescription = asRichTextWithList(
+  [
+    "This milestone represents our Q2 feature release, focusing on core user experience improvements and new functionality. The main goals include:",
   ],
-};
+  [
+    "Implement robust user authentication system",
+    "Add dark mode support across the application",
+    "Improve navigation and user profile functionality",
+  ],
+  [
+    "We expect this release to significantly improve user engagement and provide a foundation for future feature development.",
+  ],
+);
 
 // Mock search function for people
 export const mockSearchPeople = async ({ query }: { query: string }) => {
