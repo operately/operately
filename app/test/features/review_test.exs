@@ -186,5 +186,24 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.mark_task_as_canceled()
       |> Steps.assert_the_review_item_count(is: 2)
     end
+
+    feature "creating and deleting milestones updates counter", ctx do
+      ctx
+      |> Steps.given_there_are_due_project_check_ins()
+      |> Steps.assert_the_review_item_count(is: 1)
+      |> Steps.create_milestone()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.delete_milestone()
+      |> Steps.assert_the_review_item_count(is: 1)
+    end
+
+    feature "completing milestone updates counter", ctx do
+      ctx
+      |> Steps.given_there_are_due_project_check_ins()
+      |> Steps.given_there_are_due_milestones()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.complete_milestone()
+      |> Steps.assert_the_review_item_count(is: 1)
+    end
   end
 end
