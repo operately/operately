@@ -127,7 +127,20 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_acknowledged_goal_is_no_longer_displayed(:v2)
     end
 
-    feature "review item counter", ctx do
+    feature "closing a project removes the check-in from the review page", ctx do
+      ctx
+      |> Steps.given_there_are_due_project_check_ins()
+      |> Steps.visit_review_page()
+      |> Steps.assert_the_due_project_is_listed(:v2)
+      |> Steps.when_a_project_is_closed()
+      |> Steps.assert_the_closed_project_is_no_longer_displayed(:v2)
+    end
+  end
+
+  describe "navbar review counter" do
+    setup ctx, do: Factory.enable_feature(ctx, "review_v2")
+
+    feature "acknowledging items updates counter", ctx do
       ctx
       |> Steps.given_there_are_due_project_check_ins()
       |> Steps.given_there_are_due_goal_updates()
@@ -136,15 +149,42 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.assert_the_review_item_count(is: 4)
       |> Steps.when_a_project_check_in_is_acknowledged()
       |> Steps.assert_the_review_item_count(is: 3)
+      |> Steps.when_a_goal_update_is_acknowledged()
+      |> Steps.assert_the_review_item_count(is: 2)
     end
 
-    feature "closing a project removes the check-in from the review page", ctx do
+    feature "creating and deleting tasks updates counter", ctx do
       ctx
       |> Steps.given_there_are_due_project_check_ins()
-      |> Steps.visit_review_page()
-      |> Steps.assert_the_due_project_is_listed(:v2)
-      |> Steps.when_a_project_is_closed()
-      |> Steps.assert_the_closed_project_is_no_longer_displayed(:v2)
+      |> Steps.assert_the_review_item_count(is: 1)
+      |> Steps.create_task()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.delete_task()
+      |> Steps.assert_the_review_item_count(is: 1)
+    end
+
+    feature "changing task assignee updates counter", ctx do
+      ctx
+      |> Steps.given_there_are_due_project_check_ins()
+      |> Steps.given_there_are_tasks_without_assignee()
+      |> Steps.assert_the_review_item_count(is: 1)
+      |> Steps.change_task_assignee()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.clear_task_assignee()
+      |> Steps.assert_the_review_item_count(is: 1)
+    end
+
+    feature "changing task status updates counter", ctx do
+      ctx
+      |> Steps.given_there_are_due_project_check_ins()
+      |> Steps.given_there_are_due_tasks()
+      |> Steps.assert_the_review_item_count(is: 3)
+      |> Steps.mark_task_as_completed()
+      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.mark_task_as_not_started()
+      |> Steps.assert_the_review_item_count(is: 3)
+      |> Steps.mark_task_as_canceled()
+      |> Steps.assert_the_review_item_count(is: 2)
     end
   end
 end
