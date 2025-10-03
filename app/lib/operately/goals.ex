@@ -60,13 +60,7 @@ defmodule Operately.Goals do
   def get_goal(id), do: Repo.get(Goal, id, with_deleted: true)
   def get_goal!(id), do: Repo.get_by_id(Goal, id, :with_deleted)
 
-  def get_goal_with_access_level(goal_id, person_id) do
-    from(g in Goal, as: :resource, where: g.id == ^goal_id)
-    |> Fetch.get_resource_with_access_level(person_id)
-  end
-
   defdelegate create_goal(creator, attrs), to: Operately.Operations.GoalCreation, as: :run
-  defdelegate archive_goal(author, goal), to: Operately.Operations.GoalArchived, as: :run
 
   def update_goal(%Goal{} = goal, attrs) do
     goal

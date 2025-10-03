@@ -143,10 +143,6 @@ defmodule Operately.Projects do
     |> Repo.update()
   end
 
-  def delete_milestone(%Milestone{} = milestone) do
-    Repo.soft_delete(milestone)
-  end
-
   def change_milestone(%Milestone{} = milestone, attrs \\ %{}) do
     Milestone.changeset(milestone, attrs)
   end
