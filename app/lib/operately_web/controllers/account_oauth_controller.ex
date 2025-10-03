@@ -96,7 +96,7 @@ defmodule OperatelyWeb.AccountOauthController do
 
   defp maybe_handle_invite(conn, account, invite_token, params) do
     case InviteLinks.join_company_via_invite_link(account, invite_token) do
-      {:ok, {:person_created, person}} ->
+      {:ok, person} ->
         company = Companies.get_company!(person.company_id)
         path = Paths.home_path(company)
         {Map.put(params, "redirect_to", path), conn}
@@ -109,10 +109,6 @@ defmodule OperatelyWeb.AccountOauthController do
   defp normalize_invite_token(nil), do: nil
   defp normalize_invite_token(""), do: nil
   defp normalize_invite_token(token), do: token
-
-  defp default_google_avatar do
-    "https://example.com/test-google-avatar.png"
-  end
 
   if Application.compile_env(:operately, :test_routes) do
     def test_google(conn, params) do
@@ -151,6 +147,10 @@ defmodule OperatelyWeb.AccountOauthController do
       if Application.get_env(:operately, :app_env) != :test do
         raise "You are trying to use the test Google auth route in a non-test environment."
       end
+    end
+
+    defp default_google_avatar() do
+      "https://example.com/test-google-avatar.png"
     end
   end
 end

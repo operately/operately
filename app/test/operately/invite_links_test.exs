@@ -1,7 +1,11 @@
 defmodule Operately.InviteLinksTest do
   use Operately.DataCase
 
+  import Mock
+
   alias Operately.InviteLinks
+  alias Operately.InviteLinks.InviteLink
+  alias Operately.People
   alias Operately.Support.Factory
 
   setup ctx do
@@ -163,6 +167,109 @@ defmodule Operately.InviteLinksTest do
         })
 
       assert InviteLinks.InviteLink.is_valid?(invite_link) == true
+    end
+  end
+
+  describe "join_company_via_invite_link/2" do
+    test "creates a new person for a valid invite", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      assert {:ok, person} = InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token)
+      assert person.account_id == ctx.new_account.id
+      assert person.company_id == ctx.company.id
+
+      reloaded_link = Repo.get!(InviteLink, invite_link.id)
+      assert reloaded_link.use_count == 1
+
+      assert People.get_person(ctx.new_account, ctx.company).id == person.id
+    end
+
+    test "returns existing person when the account is already in the company", ctx do
+      {:ok, invite_link} = InviteLinks.create_invite_link(%{company_id: ctx.company.id, author_id: ctx.creator.id})
+
+      existing_person = People.get_person(ctx.account, ctx.company)
+      refute is_nil(existing_person)
+
+      assert {:ok, person} = InviteLinks.join_company_via_invite_link(ctx.account, invite_link.token)
+      assert person.id == existing_person.id
+
+      reloaded_link = Repo.get!(InviteLink, invite_link.id)
+      assert reloaded_link.use_count == 0
+    end
+
+    test "returns error when invite token cannot be found", ctx do
+      assert InviteLinks.join_company_via_invite_link(ctx.account, "missing-token") == {:error, :invite_token_not_found}
+    end
+
+    test "returns error when the invite link is inactive", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      {:ok, revoked_link} = InviteLinks.revoke_invite_link(invite_link)
+
+      assert InviteLinks.join_company_via_invite_link(ctx.new_account, revoked_link.token) == {:error, :invite_token_inactive}
+    end
+
+    test "returns error when the invite link is expired", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id,
+          expires_at: DateTime.add(DateTime.utc_now(), -60, :second)
+        })
+
+      assert InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token) == {:error, :invite_token_expired}
+    end
+
+    test "returns error when person creation fails", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      changeset = Operately.People.Person.changeset(%Operately.People.Person{}, %{})
+
+      with_mock Operately.People, [:passthrough], create_person: fn _attrs -> {:error, changeset} end do
+        assert InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token) == {:error, :person_creation_failed}
+        assert_called(Operately.People.create_person(:_))
+      end
+
+      reloaded_link = Repo.get!(InviteLink, invite_link.id)
+      assert reloaded_link.use_count == 0
+    end
+
+    test "returns error when updating the invite link fails", ctx do
+      ctx = Factory.add_account(ctx, :new_account)
+
+      {:ok, invite_link} =
+        InviteLinks.create_invite_link(%{
+          company_id: ctx.company.id,
+          author_id: ctx.creator.id
+        })
+
+      with_mock Operately.InviteLinks, [:passthrough], increment_use_count: fn _invite_link -> {:error, :db_error} end do
+        assert InviteLinks.join_company_via_invite_link(ctx.new_account, invite_link.token) == {:error, :invite_link_update_failed}
+        assert_called(Operately.InviteLinks.increment_use_count(:_))
+      end
+
+      reloaded_link = Repo.get!(InviteLink, invite_link.id)
+      assert reloaded_link.use_count == 0
     end
   end
 end
