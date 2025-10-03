@@ -816,7 +816,7 @@ defmodule OperatelyWeb.Api.Projects do
     def broadcast_review_count_update(result) do
       case result do
         {:ok, changes} ->
-          OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{changes.project.champion.id}")
+          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: changes.project.champion.id)
 
         _result -> :ok
       end

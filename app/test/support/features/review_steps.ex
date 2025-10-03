@@ -495,9 +495,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   #
 
   step :assert_the_review_item_count, ctx, [is: count] do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text(Integer.to_string(count), testid: "review-link-count")
+    UI.assert_text(ctx, Integer.to_string(count), testid: "review-link-count")
   end
 
   #

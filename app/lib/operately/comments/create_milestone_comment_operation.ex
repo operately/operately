@@ -78,7 +78,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     case result do
       {:ok, changes} ->
         if action in ["complete", "reopen"] and changes.project.champion do
-          OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{changes.project.champion.id}")
+          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: changes.project.champion.id)
         end
 
         if action not in ["complete", "reopen"] and changes.comment do

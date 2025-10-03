@@ -44,7 +44,7 @@ defmodule Operately.Operations.ProjectCheckIn do
     |> Repo.extract_result(:check_in)
     |> case do
       {:ok, check_in} ->
-        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{author.id}")
+        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: author.id)
         {:ok, check_in}
 
       error -> error

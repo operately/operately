@@ -287,7 +287,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       case result do
         {:ok, changes} ->
           project = Operately.Repo.preload(changes.milestone.project, :champion)
-          OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{project.champion.id}")
+          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: project.champion.id)
 
         _result -> :ok
       end
