@@ -81,8 +81,8 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
           OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: changes.project.champion.id)
         end
 
-        if action not in ["complete", "reopen"] and changes.comment do
-          OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{changes.comment.milestone_id}")
+        if action not in ["complete", "reopen"] and changes.result do
+          OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{changes.result.milestone_id}")
         end
 
       _ ->

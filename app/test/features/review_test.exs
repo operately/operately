@@ -50,6 +50,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.given_there_are_due_goal_updates()
       |> Steps.given_there_are_submitted_project_check_ins()
       |> Steps.given_there_are_submitted_goal_updates()
+      |> Steps.visit_review_page()
       |> Steps.assert_the_review_item_count(is: 4)
       |> Steps.when_a_project_check_in_is_acknowledged()
       |> Steps.assert_the_review_item_count(is: 3)
