@@ -13,7 +13,6 @@ export {
   listGoalContributors,
   useChangeGoalParent,
   useCloseGoal,
-  useConnectGoalToProject,
   useCreateGoal,
   useDeleteGoal,
   useDisconnectGoalFromProject,

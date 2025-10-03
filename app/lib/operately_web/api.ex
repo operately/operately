@@ -274,7 +274,6 @@ defmodule OperatelyWeb.Api do
   mutation(:acknowledge_project_check_in, M.AcknowledgeProjectCheckIn)
   mutation(:close_goal, M.CloseGoal)
   mutation(:close_project, M.CloseProject)
-  mutation(:connect_goal_to_project, M.ConnectGoalToProject)
 
   mutation(:request_password_reset, M.RequestPasswordReset)
   mutation(:reset_password, M.ResetPassword)

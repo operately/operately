@@ -3078,15 +3078,6 @@ export interface CloseProjectResult {
   retrospective: ProjectRetrospective;
 }
 
-export interface ConnectGoalToProjectInput {
-  projectId?: string | null;
-  goalId?: string | null;
-}
-
-export interface ConnectGoalToProjectResult {
-  project?: Project | null;
-}
-
 export interface CopyResourceHubFolderInput {
   folderName?: string | null;
   folderId?: Id | null;
@@ -4492,10 +4483,6 @@ class ApiNamespaceRoot {
     return this.client.post("/close_project", input);
   }
 
-  async connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
-    return this.client.post("/connect_goal_to_project", input);
-  }
-
   async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
     return this.client.post("/copy_resource_hub_folder", input);
   }
@@ -5476,10 +5463,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.closeProject(input);
   }
 
-  connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
-    return this.apiNamespaceRoot.connectGoalToProject(input);
-  }
-
   copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
     return this.apiNamespaceRoot.copyResourceHubFolder(input);
   }
@@ -5990,9 +5973,6 @@ export async function closeGoal(input: CloseGoalInput): Promise<CloseGoalResult>
 }
 export async function closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
   return defaultApiClient.closeProject(input);
-}
-export async function connectGoalToProject(input: ConnectGoalToProjectInput): Promise<ConnectGoalToProjectResult> {
-  return defaultApiClient.connectGoalToProject(input);
 }
 export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
   return defaultApiClient.copyResourceHubFolder(input);
@@ -6580,15 +6560,6 @@ export function useCloseGoal(): UseMutationHookResult<CloseGoalInput, CloseGoalR
 
 export function useCloseProject(): UseMutationHookResult<CloseProjectInput, CloseProjectResult> {
   return useMutation<CloseProjectInput, CloseProjectResult>((input) => defaultApiClient.closeProject(input));
-}
-
-export function useConnectGoalToProject(): UseMutationHookResult<
-  ConnectGoalToProjectInput,
-  ConnectGoalToProjectResult
-> {
-  return useMutation<ConnectGoalToProjectInput, ConnectGoalToProjectResult>((input) =>
-    defaultApiClient.connectGoalToProject(input),
-  );
 }
 
 export function useCopyResourceHubFolder(): UseMutationHookResult<
@@ -7217,8 +7188,6 @@ export default {
   useCloseGoal,
   closeProject,
   useCloseProject,
-  connectGoalToProject,
-  useConnectGoalToProject,
   copyResourceHubFolder,
   useCopyResourceHubFolder,
   createAccount,
