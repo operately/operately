@@ -677,7 +677,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
     defp broadcast(task = %Operately.Tasks.Task{}) do
       Enum.each(task.assigned_people, fn person ->
-        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{person.id}")
+        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
       end)
     end
     defp broadcast(_), do: :ok
