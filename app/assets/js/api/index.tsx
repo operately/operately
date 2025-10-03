@@ -3044,14 +3044,6 @@ export interface ArchiveMessageInput {
 
 export interface ArchiveMessageResult {}
 
-export interface ArchiveProjectInput {
-  projectId?: string | null;
-}
-
-export interface ArchiveProjectResult {
-  project?: Project | null;
-}
-
 export interface ChangeGoalParentInput {
   goalId?: string | null;
   parentGoalId?: string | null;
@@ -4496,10 +4488,6 @@ class ApiNamespaceRoot {
     return this.client.post("/archive_message", input);
   }
 
-  async archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-    return this.client.post("/archive_project", input);
-  }
-
   async changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
     return this.client.post("/change_goal_parent", input);
   }
@@ -5488,10 +5476,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.archiveMessage(input);
   }
 
-  archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-    return this.apiNamespaceRoot.archiveProject(input);
-  }
-
   changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
     return this.apiNamespaceRoot.changeGoalParent(input);
   }
@@ -6013,9 +5997,6 @@ export async function archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalR
 }
 export async function archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
   return defaultApiClient.archiveMessage(input);
-}
-export async function archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-  return defaultApiClient.archiveProject(input);
 }
 export async function changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
   return defaultApiClient.changeGoalParent(input);
@@ -6604,10 +6585,6 @@ export function useArchiveGoal(): UseMutationHookResult<ArchiveGoalInput, Archiv
 
 export function useArchiveMessage(): UseMutationHookResult<ArchiveMessageInput, ArchiveMessageResult> {
   return useMutation<ArchiveMessageInput, ArchiveMessageResult>((input) => defaultApiClient.archiveMessage(input));
-}
-
-export function useArchiveProject(): UseMutationHookResult<ArchiveProjectInput, ArchiveProjectResult> {
-  return useMutation<ArchiveProjectInput, ArchiveProjectResult>((input) => defaultApiClient.archiveProject(input));
 }
 
 export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInput, ChangeGoalParentResult> {
@@ -7257,8 +7234,6 @@ export default {
   useArchiveGoal,
   archiveMessage,
   useArchiveMessage,
-  archiveProject,
-  useArchiveProject,
   changeGoalParent,
   useChangeGoalParent,
   changePassword,

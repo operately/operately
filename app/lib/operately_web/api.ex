@@ -273,7 +273,6 @@ defmodule OperatelyWeb.Api do
   mutation(:acknowledge_goal_progress_update, M.AcknowledgeGoalProgressUpdate)
   mutation(:acknowledge_project_check_in, M.AcknowledgeProjectCheckIn)
   mutation(:archive_goal, M.ArchiveGoal)
-  mutation(:archive_project, M.ArchiveProject)
   mutation(:close_goal, M.CloseGoal)
   mutation(:close_project, M.CloseProject)
   mutation(:connect_goal_to_project, M.ConnectGoalToProject)

@@ -14,7 +14,6 @@ export {
   getProject,
   getProjectRetrospective,
   getProjects,
-  useArchiveProject,
   useCloseProject,
   useCreateProject,
   useEditProjectName,
