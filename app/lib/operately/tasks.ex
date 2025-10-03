@@ -4,7 +4,6 @@ defmodule Operately.Tasks do
 
   alias Operately.Tasks.Task
   alias Operately.Tasks.Assignee
-  alias Operately.Access.Fetch
 
   def get_task!(id), do: Repo.get!(Task, id)
 

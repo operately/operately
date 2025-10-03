@@ -284,7 +284,6 @@ defmodule OperatelyWeb.Api do
   mutation(:change_password, M.ChangePassword)
 
   mutation(:change_goal_parent, M.ChangeGoalParent)
-  mutation(:change_task_description, M.ChangeTaskDescription)
 
   mutation(:reopen_goal, M.ReopenGoal)
   mutation(:resume_project, M.ResumeProject)

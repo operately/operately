@@ -3069,15 +3069,6 @@ export interface ChangePasswordInput {
 
 export interface ChangePasswordResult {}
 
-export interface ChangeTaskDescriptionInput {
-  taskId: Id;
-  description: Json;
-}
-
-export interface ChangeTaskDescriptionResult {
-  task?: Task | null;
-}
-
 export interface CloseGoalInput {
   goalId: Id;
   success: string;
@@ -4528,10 +4519,6 @@ class ApiNamespaceRoot {
     return this.client.post("/change_password", input);
   }
 
-  async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-    return this.client.post("/change_task_description", input);
-  }
-
   async closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
     return this.client.post("/close_goal", input);
   }
@@ -5528,10 +5515,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.changePassword(input);
   }
 
-  changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-    return this.apiNamespaceRoot.changeTaskDescription(input);
-  }
-
   closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
     return this.apiNamespaceRoot.closeGoal(input);
   }
@@ -6058,9 +6041,6 @@ export async function changeGoalParent(input: ChangeGoalParentInput): Promise<Ch
 }
 export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
   return defaultApiClient.changePassword(input);
-}
-export async function changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-  return defaultApiClient.changeTaskDescription(input);
 }
 export async function closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
   return defaultApiClient.closeGoal(input);
@@ -6660,15 +6640,6 @@ export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInp
 
 export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, ChangePasswordResult> {
   return useMutation<ChangePasswordInput, ChangePasswordResult>((input) => defaultApiClient.changePassword(input));
-}
-
-export function useChangeTaskDescription(): UseMutationHookResult<
-  ChangeTaskDescriptionInput,
-  ChangeTaskDescriptionResult
-> {
-  return useMutation<ChangeTaskDescriptionInput, ChangeTaskDescriptionResult>((input) =>
-    defaultApiClient.changeTaskDescription(input),
-  );
 }
 
 export function useCloseGoal(): UseMutationHookResult<CloseGoalInput, CloseGoalResult> {
@@ -7318,8 +7289,6 @@ export default {
   useChangeGoalParent,
   changePassword,
   useChangePassword,
-  changeTaskDescription,
-  useChangeTaskDescription,
   closeGoal,
   useCloseGoal,
   closeProject,

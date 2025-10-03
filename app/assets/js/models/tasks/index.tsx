@@ -14,7 +14,6 @@ export {
   getTasks,
   useGetTasks,
   useCreateTask,
-  useChangeTaskDescription,
 } from "@/api";
 
 /**
