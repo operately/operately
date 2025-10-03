@@ -246,7 +246,6 @@ defmodule OperatelyWeb.Api do
   mutation(:edit_project_name, M.EditProjectName)
   mutation(:edit_project_permissions, M.EditProjectPermissions)
   mutation(:edit_project_retrospective, M.EditProjectRetrospective)
-  mutation(:edit_project_timeline, M.EditProjectTimeline)
   mutation(:edit_resource_hub_document, M.EditResourceHubDocument)
   mutation(:edit_resource_hub_file, M.EditResourceHubFile)
   mutation(:edit_resource_hub_link, M.EditResourceHubLink)

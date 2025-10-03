@@ -18,7 +18,6 @@ export {
   useCreateProject,
   useEditProjectName,
   useEditProjectRetrospective,
-  useEditProjectTimeline,
   useGetProjects,
   useMoveProjectToSpace,
   usePauseProject,

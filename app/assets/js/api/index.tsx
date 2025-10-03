@@ -3406,18 +3406,6 @@ export interface EditProjectRetrospectiveResult {
   retrospective: ProjectRetrospective;
 }
 
-export interface EditProjectTimelineInput {
-  projectId?: string | null;
-  projectStartDate: ContextualDate | null;
-  projectDueDate: ContextualDate | null;
-  milestoneUpdates?: EditProjectTimelineMilestoneUpdateInput[] | null;
-  newMilestones?: EditProjectTimelineNewMilestoneInput[] | null;
-}
-
-export interface EditProjectTimelineResult {
-  project?: Project | null;
-}
-
 export interface EditResourceHubDocumentInput {
   documentId?: Id | null;
   name?: string | null;
@@ -4600,10 +4588,6 @@ class ApiNamespaceRoot {
     return this.client.post("/edit_project_retrospective", input);
   }
 
-  async editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
-    return this.client.post("/edit_project_timeline", input);
-  }
-
   async editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
     return this.client.post("/edit_resource_hub_document", input);
   }
@@ -5576,10 +5560,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.editProjectRetrospective(input);
   }
 
-  editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
-    return this.apiNamespaceRoot.editProjectTimeline(input);
-  }
-
   editResourceHubDocument(input: EditResourceHubDocumentInput): Promise<EditResourceHubDocumentResult> {
     return this.apiNamespaceRoot.editResourceHubDocument(input);
   }
@@ -6067,9 +6047,6 @@ export async function editProjectRetrospective(
   input: EditProjectRetrospectiveInput,
 ): Promise<EditProjectRetrospectiveResult> {
   return defaultApiClient.editProjectRetrospective(input);
-}
-export async function editProjectTimeline(input: EditProjectTimelineInput): Promise<EditProjectTimelineResult> {
-  return defaultApiClient.editProjectTimeline(input);
 }
 export async function editResourceHubDocument(
   input: EditResourceHubDocumentInput,
@@ -6745,12 +6722,6 @@ export function useEditProjectRetrospective(): UseMutationHookResult<
   );
 }
 
-export function useEditProjectTimeline(): UseMutationHookResult<EditProjectTimelineInput, EditProjectTimelineResult> {
-  return useMutation<EditProjectTimelineInput, EditProjectTimelineResult>((input) =>
-    defaultApiClient.editProjectTimeline(input),
-  );
-}
-
 export function useEditResourceHubDocument(): UseMutationHookResult<
   EditResourceHubDocumentInput,
   EditResourceHubDocumentResult
@@ -7219,8 +7190,6 @@ export default {
   useEditProjectPermissions,
   editProjectRetrospective,
   useEditProjectRetrospective,
-  editProjectTimeline,
-  useEditProjectTimeline,
   editResourceHubDocument,
   useEditResourceHubDocument,
   editResourceHubFile,
