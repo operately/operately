@@ -7,7 +7,7 @@ import { PrivacyField } from "../PrivacyField";
 import { genPeople, genPerson, searchPeopleFn } from "../utils/storybook/genPeople";
 import { parentGoalSearchFn } from "../utils/storybook/parentGoalSearchFn";
 import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
-import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
+import { asRichText } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { storyPath } from "../utils/storybook/storypath";
 import { startOfCurrentYear } from "../utils/time";

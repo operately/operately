@@ -671,7 +671,7 @@ export const EmptyProject: Story = {
           discussionsCount: 0,
           checkInsCount: 0,
         }}
-        description={null}
+        description={asRichText("")}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -743,7 +743,7 @@ export const EmptyProjectReadOnly: Story = {
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
         }}
-        description={null}
+        description={asRichText("")}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}

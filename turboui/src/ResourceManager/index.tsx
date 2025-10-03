@@ -36,10 +36,6 @@ export function ResourceManager({
 
   const hasResources = resources.length > 0;
 
-  if (!hasResources && !canEdit) {
-    return null;
-  }
-
   const addButton = (
     <SecondaryButton size="xxs" onClick={() => setIsAddModalOpen(true)}>
       Add resource
@@ -67,7 +63,16 @@ export function ResourceManager({
             />
           ))}
         </div>
-      ) : null}
+      ) : (
+        <div className="flex items-center gap-2 text-sm text-content-dimmed">
+          <IconLink size={16} className="text-content-subtle" />
+          <span>
+            {canEdit
+              ? "Add links to external documents, tools, or websites related to this project."
+              : "Resources are links to external documents, tools, or websites related to the project."}
+          </span>
+        </div>
+      )}
 
       <AddResourceModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onAdd={onResourceAdd} />
     </div>
