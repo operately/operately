@@ -168,16 +168,22 @@ defmodule OperatelyWeb.Api.Invitations do
         {:ok, response}
       else
         {:error, :invite_token_not_found} ->
-          {:error, %{error: "Invalid invite link"}}
+          {:error, :bad_request, "Invalid invite link"}
+
+        {:error, :invite_token_inactive} ->
+          {:error, :bad_request, "This invite link is no longer valid"}
+
+        {:error, :invite_token_expired} ->
+          {:error, :bad_request, "This invite link has expired"}
 
         {:error, :invite_token_invalid} ->
-          {:error, %{error: "This invite link is no longer valid"}}
+          {:error, :bad_request, "This invite link is no longer valid"}
 
         {:error, :person_creation_failed} ->
-          {:error, %{error: "Unable to add you to this company."}}
+          {:error, :bad_request, "Unable to add you to this company."}
 
         {:error, :invite_link_update_failed} ->
-          {:error, %{error: "Something went wrong while using this invite link."}}
+          {:error, :bad_request, "Something went wrong while using this invite link."}
       end
     end
   end

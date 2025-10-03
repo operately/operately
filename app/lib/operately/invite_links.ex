@@ -69,10 +69,15 @@ defmodule Operately.InviteLinks do
   end
 
   def validate_invite_link(link) do
-    if InviteLink.is_valid?(link) do
-      {:ok, link}
-    else
-      {:error, :invite_link_invalid}
+    cond do
+      link.is_active == false ->
+        {:error, :invite_link_inactive}
+
+      InviteLink.is_expired?(link) ->
+        {:error, :invite_link_expired}
+
+      true ->
+        {:ok, link}
     end
   end
 
@@ -118,8 +123,16 @@ defmodule Operately.InviteLinks do
         Logger.info("Invite token not found during account creation")
         {:error, :invite_token_not_found}
 
-      {:error, :validate_invite_link, :invite_link_invalid, _changes} ->
-        Logger.info("Invalid/expired invite token during account creation")
+      {:error, :validate_invite_link, :invite_link_inactive, _changes} ->
+        Logger.info("Inactive invite token during account creation")
+        {:error, :invite_token_inactive}
+
+      {:error, :validate_invite_link, :invite_link_expired, _changes} ->
+        Logger.info("Expired invite token during account creation")
+        {:error, :invite_token_expired}
+
+      {:error, :validate_invite_link, _reason, _changes} ->
+        Logger.info("Invalid invite token during account creation")
         {:error, :invite_token_invalid}
 
       {:error, :person, changeset, _changes} ->

@@ -104,7 +104,6 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx
     |> UI.click(testid: "join-company")
     |> UI.sleep(500)
-    |> UI.take_screenshot()
   end
 
   step :follow_sign_up_and_join, ctx do

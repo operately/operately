@@ -96,7 +96,7 @@ defmodule OperatelyWeb.AccountOauthController do
 
   defp maybe_handle_invite(conn, account, invite_token, params) do
     case InviteLinks.join_company_via_invite_link(account, invite_token) do
-      {:ok, {:person_created, person}} ->
+      {:ok, person} ->
         company = Companies.get_company!(person.company_id)
         path = Paths.home_path(company)
         {Map.put(params, "redirect_to", path), conn}

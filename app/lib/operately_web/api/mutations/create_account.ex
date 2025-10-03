@@ -79,7 +79,7 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
 
   defp handle_invite_token(account, token) do
     case Operately.InviteLinks.join_company_via_invite_link(account, token) do
-      {:ok, {:person_created, person}} ->
+      {:ok, {_status, person}} ->
         person = Repo.preload(person, :company)
         {:ok, %{company: person.company, person: person, error: nil}}
 
@@ -101,6 +101,8 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccount do
 
   defp normalize_invite_error(:invite_token_not_found), do: "Invalid invite link"
   defp normalize_invite_error(:invite_token_invalid), do: "This invite link is no longer valid"
+  defp normalize_invite_error(:invite_token_inactive), do: "This invite link is no longer valid"
+  defp normalize_invite_error(:invite_token_expired), do: "This invite link has expired"
   defp normalize_invite_error(:person_creation_failed), do: "Unable to add you to this company."
   defp normalize_invite_error(:invite_link_update_failed), do: "Something went wrong while using this invite link."
 end
