@@ -211,7 +211,6 @@ defmodule OperatelyWeb.Api do
   mutation(:create_goal_discussion, M.CreateGoalDiscussion)
   mutation(:create_space, M.CreateSpace)
   mutation(:create_project, M.CreateProject)
-  mutation(:create_task, M.CreateTask)
   mutation(:create_resource_hub, M.CreateResourceHub)
   mutation(:create_resource_hub_document, M.CreateResourceHubDocument)
   mutation(:create_resource_hub_file, M.CreateResourceHubFile)
@@ -233,7 +232,6 @@ defmodule OperatelyWeb.Api do
   mutation(:remove_group_member, M.RemoveGroupMember)
   mutation(:remove_key_resource, M.RemoveKeyResource)
   mutation(:remove_project_contributor, M.RemoveProjectContributor)
-  mutation(:remove_project_milestone, M.RemoveProjectMilestone)
   mutation(:remove_company_owner, M.RemoveCompanyOwner)
 
   mutation(:edit_company, M.EditCompany)
@@ -273,8 +271,6 @@ defmodule OperatelyWeb.Api do
 
   mutation(:acknowledge_goal_progress_update, M.AcknowledgeGoalProgressUpdate)
   mutation(:acknowledge_project_check_in, M.AcknowledgeProjectCheckIn)
-  mutation(:archive_goal, M.ArchiveGoal)
-  mutation(:archive_project, M.ArchiveProject)
   mutation(:close_goal, M.CloseGoal)
   mutation(:close_project, M.CloseProject)
   mutation(:connect_goal_to_project, M.ConnectGoalToProject)
@@ -284,19 +280,14 @@ defmodule OperatelyWeb.Api do
   mutation(:change_password, M.ChangePassword)
 
   mutation(:change_goal_parent, M.ChangeGoalParent)
-  mutation(:change_task_description, M.ChangeTaskDescription)
 
   mutation(:reopen_goal, M.ReopenGoal)
   mutation(:resume_project, M.ResumeProject)
   mutation(:subscribe_to_notifications, M.SubscribeToNotifications)
   mutation(:unsubscribe_from_notifications, M.UnsubscribeFromNotifications)
-  mutation(:update_milestone, M.UpdateMilestone)
-  mutation(:update_milestone_description, M.UpdateMilestoneDescription)
   mutation(:update_profile, M.UpdateProfile)
   mutation(:update_project_contributor, M.UpdateProjectContributor)
   mutation(:update_project_description, M.UpdateProjectDescription)
-  mutation(:update_task, M.UpdateTask)
-  mutation(:update_task_status, M.UpdateTaskStatus)
 
   subscription(:assignments_count, S.AssignmentsCount)
   subscription(:reload_comments, S.ReloadComments)

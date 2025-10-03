@@ -3030,27 +3030,11 @@ export interface AiSendMessageResult {
   message: AgentMessage;
 }
 
-export interface ArchiveGoalInput {
-  goalId?: string | null;
-}
-
-export interface ArchiveGoalResult {
-  goal?: Goal | null;
-}
-
 export interface ArchiveMessageInput {
   messageId?: Id | null;
 }
 
 export interface ArchiveMessageResult {}
-
-export interface ArchiveProjectInput {
-  projectId?: string | null;
-}
-
-export interface ArchiveProjectResult {
-  project?: Project | null;
-}
 
 export interface ChangeGoalParentInput {
   goalId?: string | null;
@@ -3068,15 +3052,6 @@ export interface ChangePasswordInput {
 }
 
 export interface ChangePasswordResult {}
-
-export interface ChangeTaskDescriptionInput {
-  taskId: Id;
-  description: Json;
-}
-
-export interface ChangeTaskDescriptionResult {
-  task?: Task | null;
-}
 
 export interface CloseGoalInput {
   goalId: Id;
@@ -3282,17 +3257,6 @@ export interface CreateSpaceInput {
 
 export interface CreateSpaceResult {
   space?: Space | null;
-}
-
-export interface CreateTaskInput {
-  name: string;
-  milestoneId: Id;
-  assigneeIds?: Id[] | null;
-  description?: string | null;
-}
-
-export interface CreateTaskResult {
-  task?: Task | null;
 }
 
 export interface DeleteGoalInput {
@@ -4149,14 +4113,6 @@ export interface RemoveProjectContributorResult {
   projectContributor?: ProjectContributor | null;
 }
 
-export interface RemoveProjectMilestoneInput {
-  milestoneId?: string | null;
-}
-
-export interface RemoveProjectMilestoneResult {
-  milestone?: Milestone | null;
-}
-
 export interface RemoveReactionInput {
   reactionId: Id;
 }
@@ -4227,25 +4183,6 @@ export interface UnsubscribeFromNotificationsInput {
 
 export interface UnsubscribeFromNotificationsResult {}
 
-export interface UpdateMilestoneInput {
-  milestoneId: string;
-  title: string;
-  deadline: ContextualDate | null;
-}
-
-export interface UpdateMilestoneResult {
-  milestone?: Milestone | null;
-}
-
-export interface UpdateMilestoneDescriptionInput {
-  id?: string | null;
-  description?: string | null;
-}
-
-export interface UpdateMilestoneDescriptionResult {
-  milestone?: Milestone | null;
-}
-
 export interface UpdateProfileInput {
   id?: string | null;
   fullName?: string | null;
@@ -4278,26 +4215,6 @@ export interface UpdateProjectDescriptionInput {
 
 export interface UpdateProjectDescriptionResult {
   project?: Project | null;
-}
-
-export interface UpdateTaskInput {
-  taskId?: string | null;
-  name?: string | null;
-  assignedIds?: string[] | null;
-}
-
-export interface UpdateTaskResult {
-  task?: Task | null;
-}
-
-export interface UpdateTaskStatusInput {
-  taskId?: string | null;
-  status?: string | null;
-  columnIndex?: number | null;
-}
-
-export interface UpdateTaskStatusResult {
-  task?: Task | null;
 }
 
 class ApiNamespaceRoot {
@@ -4555,16 +4472,8 @@ class ApiNamespaceRoot {
     return this.client.post("/add_space_members", input);
   }
 
-  async archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-    return this.client.post("/archive_goal", input);
-  }
-
   async archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
     return this.client.post("/archive_message", input);
-  }
-
-  async archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-    return this.client.post("/archive_project", input);
   }
 
   async changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
@@ -4573,10 +4482,6 @@ class ApiNamespaceRoot {
 
   async changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
     return this.client.post("/change_password", input);
-  }
-
-  async changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-    return this.client.post("/change_task_description", input);
   }
 
   async closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
@@ -4645,10 +4550,6 @@ class ApiNamespaceRoot {
 
   async createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
     return this.client.post("/create_space", input);
-  }
-
-  async createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-    return this.client.post("/create_task", input);
   }
 
   async deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
@@ -4841,10 +4742,6 @@ class ApiNamespaceRoot {
     return this.client.post("/remove_project_contributor", input);
   }
 
-  async removeProjectMilestone(input: RemoveProjectMilestoneInput): Promise<RemoveProjectMilestoneResult> {
-    return this.client.post("/remove_project_milestone", input);
-  }
-
   async removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
     return this.client.post("/remove_reaction", input);
   }
@@ -4883,14 +4780,6 @@ class ApiNamespaceRoot {
     return this.client.post("/unsubscribe_from_notifications", input);
   }
 
-  async updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
-    return this.client.post("/update_milestone", input);
-  }
-
-  async updateMilestoneDescription(input: UpdateMilestoneDescriptionInput): Promise<UpdateMilestoneDescriptionResult> {
-    return this.client.post("/update_milestone_description", input);
-  }
-
   async updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
     return this.client.post("/update_profile", input);
   }
@@ -4901,14 +4790,6 @@ class ApiNamespaceRoot {
 
   async updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
     return this.client.post("/update_project_description", input);
-  }
-
-  async updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
-    return this.client.post("/update_task", input);
-  }
-
-  async updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
-    return this.client.post("/update_task_status", input);
   }
 }
 
@@ -5575,16 +5456,8 @@ export class ApiClient {
     return this.apiNamespaceRoot.addSpaceMembers(input);
   }
 
-  archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-    return this.apiNamespaceRoot.archiveGoal(input);
-  }
-
   archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
     return this.apiNamespaceRoot.archiveMessage(input);
-  }
-
-  archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-    return this.apiNamespaceRoot.archiveProject(input);
   }
 
   changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
@@ -5593,10 +5466,6 @@ export class ApiClient {
 
   changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
     return this.apiNamespaceRoot.changePassword(input);
-  }
-
-  changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-    return this.apiNamespaceRoot.changeTaskDescription(input);
   }
 
   closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
@@ -5665,10 +5534,6 @@ export class ApiClient {
 
   createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
     return this.apiNamespaceRoot.createSpace(input);
-  }
-
-  createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-    return this.apiNamespaceRoot.createTask(input);
   }
 
   deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
@@ -5859,10 +5724,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.removeProjectContributor(input);
   }
 
-  removeProjectMilestone(input: RemoveProjectMilestoneInput): Promise<RemoveProjectMilestoneResult> {
-    return this.apiNamespaceRoot.removeProjectMilestone(input);
-  }
-
   removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
     return this.apiNamespaceRoot.removeReaction(input);
   }
@@ -5899,14 +5760,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.unsubscribeFromNotifications(input);
   }
 
-  updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
-    return this.apiNamespaceRoot.updateMilestone(input);
-  }
-
-  updateMilestoneDescription(input: UpdateMilestoneDescriptionInput): Promise<UpdateMilestoneDescriptionResult> {
-    return this.apiNamespaceRoot.updateMilestoneDescription(input);
-  }
-
   updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
     return this.apiNamespaceRoot.updateProfile(input);
   }
@@ -5917,14 +5770,6 @@ export class ApiClient {
 
   updateProjectDescription(input: UpdateProjectDescriptionInput): Promise<UpdateProjectDescriptionResult> {
     return this.apiNamespaceRoot.updateProjectDescription(input);
-  }
-
-  updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
-    return this.apiNamespaceRoot.updateTask(input);
-  }
-
-  updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
-    return this.apiNamespaceRoot.updateTaskStatus(input);
   }
 }
 
@@ -6131,23 +5976,14 @@ export async function addReaction(input: AddReactionInput): Promise<AddReactionR
 export async function addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
   return defaultApiClient.addSpaceMembers(input);
 }
-export async function archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-  return defaultApiClient.archiveGoal(input);
-}
 export async function archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
   return defaultApiClient.archiveMessage(input);
-}
-export async function archiveProject(input: ArchiveProjectInput): Promise<ArchiveProjectResult> {
-  return defaultApiClient.archiveProject(input);
 }
 export async function changeGoalParent(input: ChangeGoalParentInput): Promise<ChangeGoalParentResult> {
   return defaultApiClient.changeGoalParent(input);
 }
 export async function changePassword(input: ChangePasswordInput): Promise<ChangePasswordResult> {
   return defaultApiClient.changePassword(input);
-}
-export async function changeTaskDescription(input: ChangeTaskDescriptionInput): Promise<ChangeTaskDescriptionResult> {
-  return defaultApiClient.changeTaskDescription(input);
 }
 export async function closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
   return defaultApiClient.closeGoal(input);
@@ -6205,9 +6041,6 @@ export async function createResourceHubLink(input: CreateResourceHubLinkInput): 
 }
 export async function createSpace(input: CreateSpaceInput): Promise<CreateSpaceResult> {
   return defaultApiClient.createSpace(input);
-}
-export async function createTask(input: CreateTaskInput): Promise<CreateTaskResult> {
-  return defaultApiClient.createTask(input);
 }
 export async function deleteGoal(input: DeleteGoalInput): Promise<DeleteGoalResult> {
   return defaultApiClient.deleteGoal(input);
@@ -6379,11 +6212,6 @@ export async function removeProjectContributor(
 ): Promise<RemoveProjectContributorResult> {
   return defaultApiClient.removeProjectContributor(input);
 }
-export async function removeProjectMilestone(
-  input: RemoveProjectMilestoneInput,
-): Promise<RemoveProjectMilestoneResult> {
-  return defaultApiClient.removeProjectMilestone(input);
-}
 export async function removeReaction(input: RemoveReactionInput): Promise<RemoveReactionResult> {
   return defaultApiClient.removeReaction(input);
 }
@@ -6417,14 +6245,6 @@ export async function unsubscribeFromNotifications(
 ): Promise<UnsubscribeFromNotificationsResult> {
   return defaultApiClient.unsubscribeFromNotifications(input);
 }
-export async function updateMilestone(input: UpdateMilestoneInput): Promise<UpdateMilestoneResult> {
-  return defaultApiClient.updateMilestone(input);
-}
-export async function updateMilestoneDescription(
-  input: UpdateMilestoneDescriptionInput,
-): Promise<UpdateMilestoneDescriptionResult> {
-  return defaultApiClient.updateMilestoneDescription(input);
-}
 export async function updateProfile(input: UpdateProfileInput): Promise<UpdateProfileResult> {
   return defaultApiClient.updateProfile(input);
 }
@@ -6437,12 +6257,6 @@ export async function updateProjectDescription(
   input: UpdateProjectDescriptionInput,
 ): Promise<UpdateProjectDescriptionResult> {
   return defaultApiClient.updateProjectDescription(input);
-}
-export async function updateTask(input: UpdateTaskInput): Promise<UpdateTaskResult> {
-  return defaultApiClient.updateTask(input);
-}
-export async function updateTaskStatus(input: UpdateTaskStatusInput): Promise<UpdateTaskStatusResult> {
-  return defaultApiClient.updateTaskStatus(input);
 }
 
 export function useGetAccount(input: GetAccountInput): UseQueryHookResult<GetAccountResult> {
@@ -6746,16 +6560,8 @@ export function useAddSpaceMembers(): UseMutationHookResult<AddSpaceMembersInput
   return useMutation<AddSpaceMembersInput, AddSpaceMembersResult>((input) => defaultApiClient.addSpaceMembers(input));
 }
 
-export function useArchiveGoal(): UseMutationHookResult<ArchiveGoalInput, ArchiveGoalResult> {
-  return useMutation<ArchiveGoalInput, ArchiveGoalResult>((input) => defaultApiClient.archiveGoal(input));
-}
-
 export function useArchiveMessage(): UseMutationHookResult<ArchiveMessageInput, ArchiveMessageResult> {
   return useMutation<ArchiveMessageInput, ArchiveMessageResult>((input) => defaultApiClient.archiveMessage(input));
-}
-
-export function useArchiveProject(): UseMutationHookResult<ArchiveProjectInput, ArchiveProjectResult> {
-  return useMutation<ArchiveProjectInput, ArchiveProjectResult>((input) => defaultApiClient.archiveProject(input));
 }
 
 export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInput, ChangeGoalParentResult> {
@@ -6766,15 +6572,6 @@ export function useChangeGoalParent(): UseMutationHookResult<ChangeGoalParentInp
 
 export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, ChangePasswordResult> {
   return useMutation<ChangePasswordInput, ChangePasswordResult>((input) => defaultApiClient.changePassword(input));
-}
-
-export function useChangeTaskDescription(): UseMutationHookResult<
-  ChangeTaskDescriptionInput,
-  ChangeTaskDescriptionResult
-> {
-  return useMutation<ChangeTaskDescriptionInput, ChangeTaskDescriptionResult>((input) =>
-    defaultApiClient.changeTaskDescription(input),
-  );
 }
 
 export function useCloseGoal(): UseMutationHookResult<CloseGoalInput, CloseGoalResult> {
@@ -6885,10 +6682,6 @@ export function useCreateResourceHubLink(): UseMutationHookResult<
 
 export function useCreateSpace(): UseMutationHookResult<CreateSpaceInput, CreateSpaceResult> {
   return useMutation<CreateSpaceInput, CreateSpaceResult>((input) => defaultApiClient.createSpace(input));
-}
-
-export function useCreateTask(): UseMutationHookResult<CreateTaskInput, CreateTaskResult> {
-  return useMutation<CreateTaskInput, CreateTaskResult>((input) => defaultApiClient.createTask(input));
 }
 
 export function useDeleteGoal(): UseMutationHookResult<DeleteGoalInput, DeleteGoalResult> {
@@ -7206,15 +6999,6 @@ export function useRemoveProjectContributor(): UseMutationHookResult<
   );
 }
 
-export function useRemoveProjectMilestone(): UseMutationHookResult<
-  RemoveProjectMilestoneInput,
-  RemoveProjectMilestoneResult
-> {
-  return useMutation<RemoveProjectMilestoneInput, RemoveProjectMilestoneResult>((input) =>
-    defaultApiClient.removeProjectMilestone(input),
-  );
-}
-
 export function useRemoveReaction(): UseMutationHookResult<RemoveReactionInput, RemoveReactionResult> {
   return useMutation<RemoveReactionInput, RemoveReactionResult>((input) => defaultApiClient.removeReaction(input));
 }
@@ -7276,19 +7060,6 @@ export function useUnsubscribeFromNotifications(): UseMutationHookResult<
   );
 }
 
-export function useUpdateMilestone(): UseMutationHookResult<UpdateMilestoneInput, UpdateMilestoneResult> {
-  return useMutation<UpdateMilestoneInput, UpdateMilestoneResult>((input) => defaultApiClient.updateMilestone(input));
-}
-
-export function useUpdateMilestoneDescription(): UseMutationHookResult<
-  UpdateMilestoneDescriptionInput,
-  UpdateMilestoneDescriptionResult
-> {
-  return useMutation<UpdateMilestoneDescriptionInput, UpdateMilestoneDescriptionResult>((input) =>
-    defaultApiClient.updateMilestoneDescription(input),
-  );
-}
-
 export function useUpdateProfile(): UseMutationHookResult<UpdateProfileInput, UpdateProfileResult> {
   return useMutation<UpdateProfileInput, UpdateProfileResult>((input) => defaultApiClient.updateProfile(input));
 }
@@ -7308,16 +7079,6 @@ export function useUpdateProjectDescription(): UseMutationHookResult<
 > {
   return useMutation<UpdateProjectDescriptionInput, UpdateProjectDescriptionResult>((input) =>
     defaultApiClient.updateProjectDescription(input),
-  );
-}
-
-export function useUpdateTask(): UseMutationHookResult<UpdateTaskInput, UpdateTaskResult> {
-  return useMutation<UpdateTaskInput, UpdateTaskResult>((input) => defaultApiClient.updateTask(input));
-}
-
-export function useUpdateTaskStatus(): UseMutationHookResult<UpdateTaskStatusInput, UpdateTaskStatusResult> {
-  return useMutation<UpdateTaskStatusInput, UpdateTaskStatusResult>((input) =>
-    defaultApiClient.updateTaskStatus(input),
   );
 }
 
@@ -7446,18 +7207,12 @@ export default {
   useAddReaction,
   addSpaceMembers,
   useAddSpaceMembers,
-  archiveGoal,
-  useArchiveGoal,
   archiveMessage,
   useArchiveMessage,
-  archiveProject,
-  useArchiveProject,
   changeGoalParent,
   useChangeGoalParent,
   changePassword,
   useChangePassword,
-  changeTaskDescription,
-  useChangeTaskDescription,
   closeGoal,
   useCloseGoal,
   closeProject,
@@ -7492,8 +7247,6 @@ export default {
   useCreateResourceHubLink,
   createSpace,
   useCreateSpace,
-  createTask,
-  useCreateTask,
   deleteGoal,
   useDeleteGoal,
   deleteResourceHubDocument,
@@ -7586,8 +7339,6 @@ export default {
   useRemoveKeyResource,
   removeProjectContributor,
   useRemoveProjectContributor,
-  removeProjectMilestone,
-  useRemoveProjectMilestone,
   removeReaction,
   useRemoveReaction,
   renameResourceHubFolder,
@@ -7606,20 +7357,12 @@ export default {
   useSubscribeToNotifications,
   unsubscribeFromNotifications,
   useUnsubscribeFromNotifications,
-  updateMilestone,
-  useUpdateMilestone,
-  updateMilestoneDescription,
-  useUpdateMilestoneDescription,
   updateProfile,
   useUpdateProfile,
   updateProjectContributor,
   useUpdateProjectContributor,
   updateProjectDescription,
   useUpdateProjectDescription,
-  updateTask,
-  useUpdateTask,
-  updateTaskStatus,
-  useUpdateTaskStatus,
 
   invitations: {
     getInviteLink: (input: InvitationsGetInviteLinkInput) =>
