@@ -159,6 +159,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       end)
       |> Steps.delete_milestone()
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn _ -> %{success: true} end)
     end
   end
@@ -280,6 +281,18 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
         e ->
           error_callback.(e)
       end
+    end
+
+    def broadcast_review_count_update(result) do
+      case result do
+        {:ok, changes} ->
+          project = Operately.Repo.preload(changes.milestone.project, :champion)
+          OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{project.champion.id}")
+
+        _result -> :ok
+      end
+
+      result
     end
 
     defp handle_error(reason) do

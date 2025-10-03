@@ -5,22 +5,24 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
   alias Operately.Updates.Comment
   alias Operately.Activities
   alias Operately.Comments.MilestoneComment
+  alias Operately.Projects.Project
 
   def run(author, milestone, action, comment_attrs) do
     Multi.new()
     |> Multi.insert(:comment, Comment.changeset(comment_attrs))
     |> insert_milestone_comment(milestone, action)
     |> apply_comment_action(milestone, action)
+    |> load_project(milestone)
     |> record_activity(author, milestone, action)
     |> Repo.transaction()
+    |> broadcast_updates(action)
     |> Repo.extract_result(:result)
-    |> case do
-      {:ok, comment} ->
-        OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{comment.milestone_id}")
-        {:ok, comment}
+  end
 
-      error -> error
-    end
+  defp load_project(multi, milestone) do
+    Multi.run(multi, :project, fn _, _ ->
+      Project.get(:system, id: milestone.project_id, opts: [preload: [:champion]])
+    end)
   end
 
   defp insert_milestone_comment(multi, milestone, action) do
@@ -61,16 +63,32 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
 
   defp record_activity(multi, author, milestone, action) do
     Activities.insert_sync(multi, author.id, :project_milestone_commented, fn changes ->
-      project = Repo.get!(Operately.Projects.Project, milestone.project_id)
-
       %{
-        company_id: project.company_id,
-        space_id: project.group_id,
-        project_id: project.id,
+        company_id: changes.project.company_id,
+        space_id: changes.project.group_id,
+        project_id: changes.project.id,
         milestone_id: milestone.id,
-        comment_id: changes[:comment].id,
+        comment_id: changes.comment.id,
         comment_action: action
       }
     end)
+  end
+
+  defp broadcast_updates(result, action) do
+    case result do
+      {:ok, changes} ->
+        if action in ["complete", "reopen"] and changes.project.champion do
+          OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{changes.project.champion.id}")
+        end
+
+        if action not in ["complete", "reopen"] and changes.comment do
+          OperatelyWeb.ApiSocket.broadcast!("api:reload_comments:#{changes.comment.milestone_id}")
+        end
+
+      _ ->
+        :ok
+    end
+
+    result
   end
 end

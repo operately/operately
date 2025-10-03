@@ -262,7 +262,7 @@ defmodule OperatelyWeb.Api.Projects do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_project(inputs.project_id)
+      |> Steps.find_project(inputs.project_id, [:champion])
       |> Steps.check_permissions(:can_edit_timeline)
       |> Ecto.Multi.run(:milestone, fn _repo, %{project: project, me: me} ->
         Operately.Projects.create_milestone(%{
@@ -285,6 +285,7 @@ defmodule OperatelyWeb.Api.Projects do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{milestone: OperatelyWeb.Api.Serializer.serialize(changes.milestone)}
       end)
@@ -810,6 +811,17 @@ defmodule OperatelyWeb.Api.Projects do
 
     def commit(multi) do
       Operately.Repo.transaction(multi)
+    end
+
+    def broadcast_review_count_update(result) do
+      case result do
+        {:ok, changes} ->
+          OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{changes.project.champion.id}")
+
+        _result -> :ok
+      end
+
+      result
     end
 
     def respond(result, ok_callback, error_callback \\ &handle_error/1) do
