@@ -29,6 +29,33 @@ function asRichText(content: string): any {
   };
 }
 
+function asRichTextWithList(paragraphs: string[], listItems: string[] = []): any {
+  const content: any[] = paragraphs.map((text) => ({
+    type: "paragraph",
+    content: [{ type: "text", text }],
+  }));
+
+  if (listItems.length > 0) {
+    content.push({
+      type: "bulletList",
+      content: listItems.map((item) => ({
+        type: "listItem",
+        content: [
+          {
+            type: "paragraph",
+            content: [{ type: "text", text: item }],
+          },
+        ],
+      })),
+    });
+  }
+
+  return {
+    type: "doc",
+    content,
+  };
+}
+
 // Date helpers for dynamic, credible timelines
 function addDays(date: Date, days: number): Date {
   const d = new Date(date);
@@ -187,6 +214,27 @@ const mockDiscussions: ProjectPage.Discussion[] = [
     commentCount: 8,
   },
 ];
+
+const mobileAppDescription = asRichText(
+  "Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.",
+);
+
+const aiAssistantDescription = asRichText(
+  "This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.",
+);
+
+const workMapsRolloutDescription = asRichTextWithList(
+  [
+    "We're going towards turning the work maps on for everyone and removing legacy UI.",
+    "Milestones (will add after bug is fixed):",
+  ],
+  [
+    "No bugs / papercuts in current work maps",
+    "My work",
+    "Profile pages that show work maps in new layout",
+    "New home section",
+  ],
+);
 
 // Mock resources data
 const mockResources: ResourceManager.Resource[] = [
@@ -422,7 +470,7 @@ export const ReadOnly: Story = {
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
         }}
-        description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
+        description={mobileAppDescription}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -553,7 +601,7 @@ export const EmptyTasks: Story = {
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
         }}
-        description="<p>Redesigning our mobile application to improve user experience and increase engagement. This project includes user research, wireframing, prototyping, and implementation.</p>"
+        description={mobileAppDescription}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -667,7 +715,7 @@ export const EmptyProject: Story = {
           discussionsCount: 0,
           checkInsCount: 0,
         }}
-        description={""}
+        description={null}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -739,7 +787,7 @@ export const EmptyProjectReadOnly: Story = {
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
         }}
-        description=""
+        description={null}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -886,7 +934,7 @@ export const PausedProject: Story = {
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
         }}
-        description="<p>This project introduces an intelligent assistant that participates in project discussions through comments. The AI will respond exclusively when team members mention it directly. It's designed to focus solely on discussion threads, without any interactions with project tasks or milestones.</p>"
+        description={aiAssistantDescription}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
@@ -978,7 +1026,7 @@ export const ClosedProject: Story = {
           discussionsCount: mockDiscussions.length,
           checkInsCount: mockCheckIns.length,
         }}
-        description="<p>We're going towards turning the work maps on for everyone and removing legacy UI.</p><p>Milestones (will add after bug is fixed):</p><ul><li>No bugs / papercuts in current work maps</li><li>My work</li><li>Profile pages that show work maps in new layout</li><li>New home section</li></ul>"
+        description={workMapsRolloutDescription}
         space={space}
         setSpace={setSpace}
         spaceSearch={spaceSearchFn}
