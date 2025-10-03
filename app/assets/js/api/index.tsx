@@ -3030,14 +3030,6 @@ export interface AiSendMessageResult {
   message: AgentMessage;
 }
 
-export interface ArchiveGoalInput {
-  goalId?: string | null;
-}
-
-export interface ArchiveGoalResult {
-  goal?: Goal | null;
-}
-
 export interface ArchiveMessageInput {
   messageId?: Id | null;
 }
@@ -4480,10 +4472,6 @@ class ApiNamespaceRoot {
     return this.client.post("/add_space_members", input);
   }
 
-  async archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-    return this.client.post("/archive_goal", input);
-  }
-
   async archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
     return this.client.post("/archive_message", input);
   }
@@ -5468,10 +5456,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.addSpaceMembers(input);
   }
 
-  archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-    return this.apiNamespaceRoot.archiveGoal(input);
-  }
-
   archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
     return this.apiNamespaceRoot.archiveMessage(input);
   }
@@ -5991,9 +5975,6 @@ export async function addReaction(input: AddReactionInput): Promise<AddReactionR
 }
 export async function addSpaceMembers(input: AddSpaceMembersInput): Promise<AddSpaceMembersResult> {
   return defaultApiClient.addSpaceMembers(input);
-}
-export async function archiveGoal(input: ArchiveGoalInput): Promise<ArchiveGoalResult> {
-  return defaultApiClient.archiveGoal(input);
 }
 export async function archiveMessage(input: ArchiveMessageInput): Promise<ArchiveMessageResult> {
   return defaultApiClient.archiveMessage(input);
@@ -6577,10 +6558,6 @@ export function useAddReaction(): UseMutationHookResult<AddReactionInput, AddRea
 
 export function useAddSpaceMembers(): UseMutationHookResult<AddSpaceMembersInput, AddSpaceMembersResult> {
   return useMutation<AddSpaceMembersInput, AddSpaceMembersResult>((input) => defaultApiClient.addSpaceMembers(input));
-}
-
-export function useArchiveGoal(): UseMutationHookResult<ArchiveGoalInput, ArchiveGoalResult> {
-  return useMutation<ArchiveGoalInput, ArchiveGoalResult>((input) => defaultApiClient.archiveGoal(input));
 }
 
 export function useArchiveMessage(): UseMutationHookResult<ArchiveMessageInput, ArchiveMessageResult> {
@@ -7230,8 +7207,6 @@ export default {
   useAddReaction,
   addSpaceMembers,
   useAddSpaceMembers,
-  archiveGoal,
-  useArchiveGoal,
   archiveMessage,
   useArchiveMessage,
   changeGoalParent,

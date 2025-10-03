@@ -11,7 +11,6 @@ export {
   getGoal,
   getGoals,
   listGoalContributors,
-  useArchiveGoal,
   useChangeGoalParent,
   useCloseGoal,
   useConnectGoalToProject,
