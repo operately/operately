@@ -256,7 +256,6 @@ defmodule OperatelyWeb.Api do
   mutation(:edit_parent_folder_in_resource_hub, M.EditParentFolderInResourceHub)
   mutation(:rename_resource_hub_folder, M.RenameResourceHubFolder)
 
-  mutation(:disconnect_goal_from_project, M.DisconnectGoalFromProject)
   mutation(:join_space, M.JoinSpace)
   mutation(:join_company, M.JoinCompany)
   mutation(:mark_all_notifications_as_read, M.MarkAllNotificationsAsRead)

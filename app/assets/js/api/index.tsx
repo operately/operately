@@ -3298,15 +3298,6 @@ export interface DeleteSpaceResult {
   space?: Space | null;
 }
 
-export interface DisconnectGoalFromProjectInput {
-  projectId?: string | null;
-  goalId?: string | null;
-}
-
-export interface DisconnectGoalFromProjectResult {
-  project?: Project | null;
-}
-
 export interface EditCommentInput {
   content: string;
   commentId: Id;
@@ -4563,10 +4554,6 @@ class ApiNamespaceRoot {
     return this.client.post("/delete_space", input);
   }
 
-  async disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
-    return this.client.post("/disconnect_goal_from_project", input);
-  }
-
   async editComment(input: EditCommentInput): Promise<EditCommentResult> {
     return this.client.post("/edit_comment", input);
   }
@@ -5543,10 +5530,6 @@ export class ApiClient {
     return this.apiNamespaceRoot.deleteSpace(input);
   }
 
-  disconnectGoalFromProject(input: DisconnectGoalFromProjectInput): Promise<DisconnectGoalFromProjectResult> {
-    return this.apiNamespaceRoot.disconnectGoalFromProject(input);
-  }
-
   editComment(input: EditCommentInput): Promise<EditCommentResult> {
     return this.apiNamespaceRoot.editComment(input);
   }
@@ -6043,11 +6026,6 @@ export async function deleteResourceHubLink(input: DeleteResourceHubLinkInput): 
 }
 export async function deleteSpace(input: DeleteSpaceInput): Promise<DeleteSpaceResult> {
   return defaultApiClient.deleteSpace(input);
-}
-export async function disconnectGoalFromProject(
-  input: DisconnectGoalFromProjectInput,
-): Promise<DisconnectGoalFromProjectResult> {
-  return defaultApiClient.disconnectGoalFromProject(input);
 }
 export async function editComment(input: EditCommentInput): Promise<EditCommentResult> {
   return defaultApiClient.editComment(input);
@@ -6699,15 +6677,6 @@ export function useDeleteSpace(): UseMutationHookResult<DeleteSpaceInput, Delete
   return useMutation<DeleteSpaceInput, DeleteSpaceResult>((input) => defaultApiClient.deleteSpace(input));
 }
 
-export function useDisconnectGoalFromProject(): UseMutationHookResult<
-  DisconnectGoalFromProjectInput,
-  DisconnectGoalFromProjectResult
-> {
-  return useMutation<DisconnectGoalFromProjectInput, DisconnectGoalFromProjectResult>((input) =>
-    defaultApiClient.disconnectGoalFromProject(input),
-  );
-}
-
 export function useEditComment(): UseMutationHookResult<EditCommentInput, EditCommentResult> {
   return useMutation<EditCommentInput, EditCommentResult>((input) => defaultApiClient.editComment(input));
 }
@@ -7228,8 +7197,6 @@ export default {
   useDeleteResourceHubLink,
   deleteSpace,
   useDeleteSpace,
-  disconnectGoalFromProject,
-  useDisconnectGoalFromProject,
   editComment,
   useEditComment,
   editCompany,

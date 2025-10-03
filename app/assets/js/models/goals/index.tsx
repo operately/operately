@@ -15,7 +15,6 @@ export {
   useCloseGoal,
   useCreateGoal,
   useDeleteGoal,
-  useDisconnectGoalFromProject,
   useEditGoalDiscussion,
   useGetGoals,
   useReopenGoal,
