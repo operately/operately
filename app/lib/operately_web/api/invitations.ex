@@ -167,6 +167,9 @@ defmodule OperatelyWeb.Api.Invitations do
 
         {:ok, response}
       else
+        {:error, :not_found} ->
+          {:error, :unauthorized, "Account not found"}
+
         {:error, :invite_token_not_found} ->
           {:error, :bad_request, "Invalid invite link"}
 

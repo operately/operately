@@ -117,7 +117,7 @@ defmodule OperatelyWeb.Api.InvitationsTest do
     end
 
     test "return company and person when already in company", ctx do
-      ctx = Factory.add_company_member(ctx, :new_account)
+      ctx = Factory.add_company_member(ctx, :member, account: :new_account)
 
       members = Operately.People.list_people(ctx.company.id)
       assert Enum.find(members, fn m -> m.account_id == ctx.new_account.id end)

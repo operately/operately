@@ -110,10 +110,6 @@ defmodule OperatelyWeb.AccountOauthController do
   defp normalize_invite_token(""), do: nil
   defp normalize_invite_token(token), do: token
 
-  defp default_google_avatar do
-    "https://example.com/test-google-avatar.png"
-  end
-
   if Application.compile_env(:operately, :test_routes) do
     def test_google(conn, params) do
       verify_application_env()
@@ -151,6 +147,10 @@ defmodule OperatelyWeb.AccountOauthController do
       if Application.get_env(:operately, :app_env) != :test do
         raise "You are trying to use the test Google auth route in a non-test environment."
       end
+    end
+
+    defp default_google_avatar() do
+      "https://example.com/test-google-avatar.png"
     end
   end
 end
