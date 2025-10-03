@@ -88,7 +88,7 @@ defmodule Operately.Operations.GoalCheckIn do
   end
 
   defp handle_result_broadcast({:ok, update}) do
-    OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{update.author_id}")
+    OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: update.author_id)
     {:ok, update}
   end
 

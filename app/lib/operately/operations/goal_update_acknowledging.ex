@@ -22,7 +22,7 @@ defmodule Operately.Operations.GoalUpdateAcknowledging do
     |> Repo.extract_result(:update)
     |> case do
       {:ok, update} ->
-        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{person.id}")
+        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: person.id)
         {:ok, update}
 
       error -> error

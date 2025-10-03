@@ -150,6 +150,43 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
+  step :create_milestone, ctx do
+    milestone_name = "Milestone For Review Counter"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.click(testid: "add-milestone-button")
+    |> UI.fill(testid: "milestone-name-input", with: milestone_name)
+    |> UI.find([testid: "add-milestone-form"], fn el ->
+      UI.click_button(el, "Add milestone")
+    end)
+    |> UI.sleep(300)
+    |> then(fn ctx ->
+      milestone = Operately.Projects.get_milestone_by_name(ctx.project, milestone_name)
+
+      Map.put(ctx, :milestone, milestone)
+    end)
+  end
+
+  step :delete_milestone, ctx do
+    ctx
+    |> UI.visit(Paths.project_milestone_path(ctx.company, ctx.milestone))
+    |> UI.find([testid: "sidebar"], fn el ->
+      UI.click_button(el, "Delete")
+    end)
+    |> UI.click(testid: "delete-milestone")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :complete_milestone, ctx do
+    ctx
+    |> UI.visit(Paths.project_milestone_path(ctx.company, ctx.milestone))
+    |> UI.find([testid: "sidebar-status"], fn el ->
+      UI.click_button(el, "Mark complete")
+    end)
+    |> UI.sleep(300)
+  end
+
   #
   # Due Tasks
   #
@@ -458,9 +495,7 @@ defmodule Operately.Support.Features.ReviewSteps do
   #
 
   step :assert_the_review_item_count, ctx, [is: count] do
-    ctx
-    |> UI.visit(Paths.review_path(ctx.company))
-    |> UI.assert_text(Integer.to_string(count), testid: "review-link-count")
+    UI.assert_text(ctx, Integer.to_string(count), testid: "review-link-count")
   end
 
   #
