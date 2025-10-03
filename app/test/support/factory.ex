@@ -15,6 +15,7 @@ defmodule Operately.Support.Factory do
 
   # accounts
   defdelegate add_account(ctx, testid), to: Factory.Accounts
+  defdelegate log_in_account(ctx, account_name), to: Factory.Accounts
   defdelegate log_in_person(ctx, person_name), to: Factory.Accounts
   defdelegate log_in_contributor(ctx, contributor_name), to: Factory.Accounts
 

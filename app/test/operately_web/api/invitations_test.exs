@@ -77,25 +77,27 @@ defmodule OperatelyWeb.Api.InvitationsTest do
   end
 
   describe "join_company_via_invite_link" do
-    test "returns error when token is unknown", ctx do
-      assert {200, %{company: nil, person: nil, error: error}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: "bad-token"
-               })
+    setup ctx do
+      ctx
+      |> Factory.add_account(:new_account)
+      |> Factory.log_in_account(:new_account)
+    end
 
-      assert error == "Invalid invite link"
+    def execute(ctx, params) do
+      mutation(ctx.conn, [:invitations, :join_company_via_invite_link], params)
+    end
+
+    test "returns error when token is unknown", ctx do
+      assert {400, res} = execute(ctx, %{token: "bad-token"})
+      assert res.message == "Invalid invite link"
     end
 
     test "returns error when invite link is inactive", ctx do
       invite_link = create_invite_link(ctx)
       {:ok, inactive} = InviteLinks.revoke_invite_link(invite_link)
 
-      assert {200, %{company: nil, person: nil, error: error}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: inactive.token
-               })
-
-      assert error == "This invite link is no longer valid"
+      assert {400, res} = execute(ctx, %{token: inactive.token})
+      assert res.message == "This invite link is no longer valid"
     end
 
     test "returns error when invite link is expired", ctx do
@@ -103,62 +105,27 @@ defmodule OperatelyWeb.Api.InvitationsTest do
       expired_at = DateTime.add(DateTime.utc_now(), -60, :second)
       {:ok, expired} = InviteLinks.update_invite_link(invite_link, %{expires_at: expired_at})
 
-      assert {200, %{company: nil, person: nil, error: error}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: expired.token
-               })
-
-      assert error == "This invite link has expired"
+      assert {400, res} = execute(ctx, %{token: expired.token})
+      assert res.message == "This invite link has expired"
     end
 
-    test "requires password for new users", ctx do
+    test "return company and person when successful", ctx do
       invite_link = create_invite_link(ctx)
 
-      assert {200, %{error: error}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: invite_link.token
-               })
-
-      assert error == "Password required for new users"
+      assert {200, res} = execute(ctx, %{token: invite_link.token})
+      assert res.company == Serializer.serialize(ctx.company, level: :essential)
     end
 
-    test "validates matching passwords for new users", ctx do
+    test "return company and person when already in company", ctx do
+      ctx = Factory.add_company_member(ctx, :member, account: :new_account)
+
+      members = Operately.People.list_people(ctx.company.id)
+      assert Enum.find(members, fn m -> m.account_id == ctx.new_account.id end)
+
       invite_link = create_invite_link(ctx)
+      assert {200, res} = execute(ctx, %{token: invite_link.token})
 
-      assert {200, %{error: error}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: invite_link.token,
-                 password: "secret",
-                 password_confirmation: "different"
-               })
-
-      assert error == "Passwords don't match"
-    end
-
-    test "asks new users to complete signup flow first", ctx do
-      invite_link = create_invite_link(ctx)
-
-      assert {200, %{error: error}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: invite_link.token,
-                 password: "secret",
-                 password_confirmation: "secret"
-               })
-
-      assert error == "Please sign up first and then use this invite link"
-    end
-
-    test "returns company and person when already a member", ctx do
-      ctx = Factory.log_in_person(ctx, :creator)
-      invite_link = create_invite_link(ctx)
-
-      assert {200, %{company: company, person: person, error: nil}} =
-               mutation(ctx.conn, [:invitations, :join_company_via_invite_link], %{
-                 token: invite_link.token
-               })
-
-      assert company == Serializer.serialize(invite_link.company, level: :essential)
-      assert person == Serializer.serialize(ctx.creator, level: :essential)
+      assert res.company == Serializer.serialize(ctx.company, level: :essential)
     end
   end
 

@@ -12,8 +12,7 @@ defmodule OperatelyWeb.Api do
 
       # invitations
       {:query, "invitations/get_invitation"},
-      {:query, "invitations/get_invite_link"},
-      {:mutation, "invitations/join_company_via_invite_link"}
+      {:query, "invitations/get_invite_link"}
     ]
   )
 

@@ -34,16 +34,24 @@ defmodule Operately.Support.Factory.Companies do
 
   def add_company_member(ctx, testid, opts \\ []) do
     name = Keyword.get(opts, :name) || Utils.testid_to_name(testid)
+    account = Keyword.get(opts, :account) && Map.fetch!(ctx, opts[:account])
 
-    attrs =
-      Enum.into(opts, %{
-        company_id: ctx.company.id,
-        full_name: name
-      })
+    if account do
+      attrs =
+        Enum.into(opts, %{
+          company_id: ctx.company.id,
+          full_name: name,
+          account_id: account.id,
+          email: account.email
+        })
 
-    person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
-
-    Map.put(ctx, testid, person)
+      person = Operately.PeopleFixtures.person_fixture(attrs)
+      Map.put(ctx, testid, person)
+    else
+      attrs = Enum.into(opts, %{company_id: ctx.company.id, full_name: name})
+      person = Operately.PeopleFixtures.person_fixture_with_account(attrs)
+      Map.put(ctx, testid, person)
+    end
   end
 
   def add_company_admin(ctx, testid, opts \\ []) do

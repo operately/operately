@@ -10,7 +10,7 @@ defmodule Operately.People do
   alias Operately.People.Account
   alias Operately.People.AccountToken
 
-  def list_people(company_id) do
+  def list_people(company_id) when is_binary(company_id) do
     Repo.all(from p in Person, where: p.company_id == ^company_id and not p.suspended)
   end
 
@@ -21,6 +21,10 @@ defmodule Operately.People do
   def get_account!(id), do: Repo.get!(Account, id)
   def get_person(id), do: Repo.get(Person, id)
   def get_person!(id), do: Repo.get!(Person, id)
+
+  def get_person(account = %Account{}, company = %Company{}) do
+    Repo.one(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)
+  end
 
   def get_person!(account = %Account{}, company = %Company{}) do
     Repo.one!(from p in Person, where: p.account_id == ^account.id and p.company_id == ^company.id)

@@ -69,10 +69,15 @@ defmodule Operately.InviteLinks do
   end
 
   def validate_invite_link(link) do
-    if InviteLink.is_valid?(link) do
-      {:ok, link}
-    else
-      {:error, :invite_link_invalid}
+    cond do
+      link.is_active == false ->
+        {:error, :invite_link_inactive}
+
+      InviteLink.is_expired?(link) ->
+        {:error, :invite_link_expired}
+
+      true ->
+        {:ok, link}
     end
   end
 
@@ -84,6 +89,15 @@ defmodule Operately.InviteLinks do
     |> Multi.run(:validate_invite_link, fn _, %{invite_link: invite_link} ->
       validate_invite_link(invite_link)
     end)
+    |> Multi.run(:company, fn _, %{invite_link: invite_link} ->
+      {:ok, Operately.Companies.get_company!(invite_link.company_id)}
+    end)
+    |> Multi.run(:check_existing_person, fn _, %{company: company} ->
+      case Operately.People.get_person(account, company) do
+        nil -> {:ok, :no_existing_person}
+        person -> {:error, {:person_already_in_company, person}}
+      end
+    end)
     |> Multi.run(:person, fn _, %{invite_link: invite_link} ->
       Operately.People.create_person(%{
         full_name: account.full_name,
@@ -93,20 +107,32 @@ defmodule Operately.InviteLinks do
       })
     end)
     |> Multi.run(:invite_link_update, fn _repo, %{invite_link: invite_link} ->
-      increment_use_count(invite_link)
+      __MODULE__.increment_use_count(invite_link)
     end)
     |> Repo.transaction()
     |> case do
       {:ok, %{person: person, invite_link: invite_link}} ->
         Logger.info("Successfully created person #{person.id} for company #{invite_link.company_id} via invite link")
-        {:ok, {:person_created, person}}
+        {:ok, person}
+
+      {:error, :check_existing_person, {:person_already_in_company, person}, _changes} ->
+        Logger.info("Account #{account.id} already has a person in the company for invite link")
+        {:ok, person}
 
       {:error, :invite_link, :not_found, _changes} ->
         Logger.info("Invite token not found during account creation")
         {:error, :invite_token_not_found}
 
-      {:error, :validate_invite_link, :invite_link_invalid, _changes} ->
-        Logger.info("Invalid/expired invite token during account creation")
+      {:error, :validate_invite_link, :invite_link_inactive, _changes} ->
+        Logger.info("Inactive invite token during account creation")
+        {:error, :invite_token_inactive}
+
+      {:error, :validate_invite_link, :invite_link_expired, _changes} ->
+        Logger.info("Expired invite token during account creation")
+        {:error, :invite_token_expired}
+
+      {:error, :validate_invite_link, _reason, _changes} ->
+        Logger.info("Invalid invite token during account creation")
         {:error, :invite_token_invalid}
 
       {:error, :person, changeset, _changes} ->
