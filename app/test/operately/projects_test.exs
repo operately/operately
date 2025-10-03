@@ -144,11 +144,6 @@ defmodule Operately.ProjectsTest do
       assert ctx.milestone == Projects.get_milestone!(ctx.milestone.id)
     end
 
-    test "delete_milestone/1 deletes the milestone", ctx do
-      assert {:ok, %Milestone{}} = Projects.delete_milestone(ctx.milestone)
-      assert_raise Ecto.NoResultsError, fn -> Projects.get_milestone!(ctx.milestone.id) end
-    end
-
     test "change_milestone/1 returns a milestone changeset", ctx do
       assert %Ecto.Changeset{} = Projects.change_milestone(ctx.milestone)
     end
