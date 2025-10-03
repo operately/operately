@@ -46,7 +46,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id)
+      |> Steps.find_task(inputs.task_id, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.update_task_status(inputs.status)
       |> MilestoneSync.sync_after_status_update()
@@ -63,6 +63,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full),
@@ -216,6 +217,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{task: OperatelyWeb.Api.Serializer.serialize(changes.updated_task, level: :full)}
       end)
@@ -356,6 +358,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
           task: OperatelyWeb.Api.Serializer.serialize(changes.task, level: :full),
@@ -381,7 +384,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     def call(conn, inputs) do
       conn
       |> Steps.start_transaction()
-      |> Steps.find_task(inputs.task_id)
+      |> Steps.find_task(inputs.task_id, [:assigned_people])
       |> Steps.check_task_permissions(:can_edit_task)
       |> Steps.delete_task()
       |> MilestoneSync.sync_after_task_delete()
@@ -396,6 +399,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{
           success: true,
@@ -658,6 +662,25 @@ defmodule OperatelyWeb.Api.ProjectTasks do
           error_callback.(e)
       end
     end
+
+    def broadcast_review_count_update(result) do
+      case result do
+        {:ok, changes} ->
+          broadcast(changes[:task])
+          broadcast(changes[:updated_task])
+
+        _result -> :ok
+      end
+
+      result
+    end
+
+    defp broadcast(task = %Operately.Tasks.Task{}) do
+      Enum.each(task.assigned_people, fn person ->
+        OperatelyWeb.ApiSocket.broadcast!("api:assignments_count:#{person.id}")
+      end)
+    end
+    defp broadcast(_), do: :ok
 
     defp handle_error(reason) do
       case reason do

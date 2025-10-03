@@ -154,6 +154,15 @@ defmodule Operately.Support.Features.ReviewSteps do
   # Due Tasks
   #
 
+  step :given_there_are_tasks_without_assignee, ctx do
+    ctx
+    |> Factory.add_project_task(:task, nil, [
+      name: "Urgent Feature",
+      project_id: ctx.project.id,
+      due_date: Operately.ContextualDates.ContextualDate.create_day_date(past_date()),
+    ])
+  end
+
   step :given_there_are_due_tasks, ctx do
     ctx
     |> Factory.add_project(:project, :product_space, [
@@ -200,6 +209,63 @@ defmodule Operately.Support.Features.ReviewSteps do
       el
       |> UI.assert_text("No urgent work")
     end)
+  end
+
+  step :create_task, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
+    |> UI.click_button("New task")
+    |> UI.fill(placeholder: "Enter task title", with: "Some Task")
+    |> UI.click(testid: "assignee")
+    |> UI.click(testid: UI.testid(["assignee-search-result", ctx.me.full_name]))
+    |> UI.click_button("Create task")
+  end
+
+  step :delete_task, ctx do
+    ctx
+    |> UI.click_text("Some Task")
+    |> UI.click(testid: "delete-task")
+    |> UI.click_button("Delete Forever")
+    |> UI.assert_page(Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :change_task_assignee, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
+    |> UI.click(testid: "person-field")
+    |> UI.click(testid: UI.testid(["person-field-search-result", ctx.me.full_name]))
+    |> UI.sleep(300)
+  end
+
+  step :clear_task_assignee, ctx do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
+    |> UI.click(testid: "person-field")
+    |> UI.click(testid: "person-field-clear-assignment")
+    |> UI.sleep(300)
+  end
+
+  step :mark_task_as_completed, ctx do
+    ctx
+    |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.click(testid: "task-quick-complete")
+    |> UI.sleep(300)
+  end
+
+  step :mark_task_as_not_started, ctx do
+    ctx
+    |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.click_button("Done")
+    |> UI.click_text("Not started")
+    |> UI.sleep(300)
+  end
+
+  step :mark_task_as_canceled, ctx do
+    ctx
+    |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
+    |> UI.click_button("Not started")
+    |> UI.click_text("Canceled")
+    |> UI.sleep(300)
   end
 
   #
