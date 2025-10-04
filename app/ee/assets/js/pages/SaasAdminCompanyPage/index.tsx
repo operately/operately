@@ -56,7 +56,12 @@ export function Page() {
             Temporarily enable elevated support access for troubleshooting issues with this company's account. You will
             view the account as if you were an owner. Only read access is granted, no changes can be made.
           </p>
-          <SecondaryButton size="xs" onClick={handleStartSupportSession} disabled={startingSupport}>
+          <SecondaryButton
+            size="xs"
+            onClick={handleStartSupportSession}
+            disabled={startingSupport}
+            testId="start-support-session"
+          >
             {startingSupport ? "Starting…" : "Start Support Session"}
           </SecondaryButton>
           {supportError && <p className="text-xs text-red-600 mt-1">{supportError}</p>}

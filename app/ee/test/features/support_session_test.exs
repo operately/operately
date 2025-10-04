@@ -1,0 +1,57 @@
+defmodule Operately.EE.Features.SupportSessionTest do
+  use Operately.FeatureCase
+
+  alias Operately.Support.Factory
+
+  setup ctx do
+    Factory.setup(ctx)
+  end
+
+  feature "starting a support session as a site admin", ctx do
+    ctx
+    |> given_that_a_site_admin_is_logged_in()
+    |> visit_the_company_page_in_admin()
+    |> start_support_session()
+    # |> assert_the_company_home_page_is_opened()
+  end
+
+  #
+  # steps
+  #
+
+  defp given_that_a_site_admin_is_logged_in(ctx) do
+    ctx
+    |> Factory.add_account(:admin)
+    |> promote_to_site_admin(:admin)
+    |> login_as_site_admin(:admin)
+  end
+
+  defp visit_the_company_page_in_admin(ctx) do
+    ctx
+    |> UI.visit("/admin/companies/#{OperatelyWeb.Paths.company_id(ctx.company)}")
+    |> UI.assert_text(ctx.company.name)
+  end
+
+  defp start_support_session(ctx) do
+    UI.click(ctx, testid: "start-support-session")
+  end
+
+  # defp assert_the_company_home_page_is_opened(ctx) do
+  #   assert redirected_to(ctx.conn) == Routes.company_home_path(ctx.conn, :index)
+  #   ctx
+  # end
+
+  defp promote_to_site_admin(ctx, account_name) do
+    account = Map.fetch!(ctx, account_name)
+    {:ok, admin} = Operately.People.Account.promote_to_admin(account)
+    Map.put(ctx, account_name, admin)
+  end
+
+  defp login_as_site_admin(ctx, account_name) do
+    account = Map.fetch!(ctx, account_name)
+    id = URI.encode_query(%{id: account.id})
+
+    UI.visit(ctx, "/accounts/auth/test_login?" <> id)
+  end
+
+end
