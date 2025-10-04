@@ -6,7 +6,7 @@ import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar, IconFlare } from "turboui";
+import { Avatar, IconFlare, SecondaryButton } from "turboui";
 
 import { useBoolState } from "@/hooks/useBoolState";
 import { useLoadedData } from "./loader";
@@ -15,6 +15,24 @@ export { loader } from "./loader";
 
 export function Page() {
   const { company } = useLoadedData();
+  const [startSupportSession, { loading: startingSupport }] = AdminApi.useStartSupportSession();
+  const [supportError, setSupportError] = React.useState<string | null>(null);
+
+  const handleStartSupportSession = React.useCallback(async () => {
+    setSupportError(null);
+
+    try {
+      const result = await startSupportSession({ companyId: company.id! });
+
+      if (result?.url) {
+        window.open(result.url, "_blank", "noopener,noreferrer");
+      } else {
+        setSupportError("Unable to start support session. Try again.");
+      }
+    } catch (_error) {
+      setSupportError("Unable to start support session. Try again.");
+    }
+  }, [company.id, startSupportSession]);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -32,6 +50,16 @@ export function Page() {
 
           <h2 className="mt-8 font-bold">Information</h2>
           <Info company={company} />
+
+          <h2 className="mt-8 font-bold">Support Mode</h2>
+          <p className="text-sm text-content-accent mb-3 mt-1 max-w-lg">
+            Temporarily enable elevated support access for troubleshooting issues with this company's account. You will
+            view the account as if you were an owner. Only read access is granted, no changes can be made.
+          </p>
+          <SecondaryButton size="xs" onClick={handleStartSupportSession} disabled={startingSupport}>
+            {startingSupport ? "Starting…" : "Start Support Session"}
+          </SecondaryButton>
+          {supportError && <p className="text-xs text-red-600 mt-1">{supportError}</p>}
 
           <h2 className="mt-8 font-bold">Activity</h2>
           <ActivitySection company={company} />

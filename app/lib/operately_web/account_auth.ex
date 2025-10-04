@@ -118,15 +118,19 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   def fetch_current_person(conn, _opts) do
-    if conn.assigns[:current_account] && conn.assigns[:current_company] do
-      account = conn.assigns[:current_account]
-      company = conn.assigns[:current_company]
+    cond do
+      support_person_available?(conn) ->
+        assign(conn, :current_person, conn.assigns[:support_person])
 
-      person = Operately.People.get_person!(account, company)
+      conn.assigns[:current_account] && conn.assigns[:current_company] ->
+        account = conn.assigns[:current_account]
+        company = conn.assigns[:current_company]
 
-      assign(conn, :current_person, person)
-    else
-      conn
+        person = Operately.People.get_person!(account, company)
+
+        assign(conn, :current_person, person)
+      true ->
+        conn
     end
   end
 
@@ -185,4 +189,12 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   defp maybe_store_return_to(conn), do: conn
+
+  defp support_person_available?(conn) do
+    support_person = conn.assigns[:support_person]
+    support_company = conn.assigns[:support_company]
+    current_company = conn.assigns[:current_company]
+
+    support_person && support_company && current_company && support_company.id == current_company.id
+  end
 end

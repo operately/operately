@@ -12,6 +12,7 @@ defmodule Operately.People.AccountToken do
   @confirm_validity_in_days 7
   @change_email_validity_in_days 7
   @session_validity_in_days 60
+  @support_session_validity_in_minutes 60
 
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -153,6 +154,37 @@ defmodule Operately.People.AccountToken do
         query =
           from token in token_and_context_query(hashed_token, context),
             where: token.inserted_at > ago(@change_email_validity_in_days, "day")
+
+        {:ok, query}
+
+      :error ->
+        :error
+    end
+  end
+
+  def build_support_session_token(account, person) do
+    token = :crypto.strong_rand_bytes(@rand_size)
+    hashed_token = :crypto.hash(@hash_algorithm, token)
+
+    {Base.url_encode64(token, padding: false),
+     %AccountToken{
+       token: hashed_token,
+       context: "support_session",
+       sent_to: person.id,
+       account_id: account.id
+     }}
+  end
+
+  def verify_support_session_token_query(token) do
+    case Base.url_decode64(token, padding: false) do
+      {:ok, decoded_token} ->
+        hashed_token = :crypto.hash(@hash_algorithm, decoded_token)
+
+        query =
+          from token in AccountToken,
+            where: token.token == ^hashed_token and token.context == "support_session",
+            where: token.inserted_at > ago(@support_session_validity_in_minutes, "minute"),
+            preload: [:account]
 
         {:ok, query}
 

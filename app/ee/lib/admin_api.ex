@@ -14,4 +14,5 @@ defmodule OperatelyEE.AdminApi do
   query :get_activities, Q.GetActivities
 
   mutation :enable_feature, M.EnableFeature
+  mutation :start_support_session, M.StartSupportSession
 end

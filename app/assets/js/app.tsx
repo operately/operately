@@ -23,6 +23,7 @@ import "./i18n";
 import "@/api/socket";
 import ReactModal from "react-modal";
 import { ToasterBar } from "turboui";
+import { SupportSessionProvider } from "@/contexts/SupportSessionContext";
 
 Api.default.setBasePath("/api/v2");
 AdminApi.default.setBasePath("/admin/api/v1");
@@ -53,8 +54,10 @@ const routes = createAppRoutes();
 
 const App: JSX.Element = (
   <React.StrictMode>
-    <ToasterBar />
-    <RouterProvider router={routes} />
+    <SupportSessionProvider config={window.appConfig.supportSession}>
+      <ToasterBar />
+      <RouterProvider router={routes} />
+    </SupportSessionProvider>
   </React.StrictMode>
 );
 

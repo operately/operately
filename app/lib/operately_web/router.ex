@@ -6,9 +6,11 @@ defmodule OperatelyWeb.Router do
   pipeline :browser do
     plug(:accepts, ["html"])
     plug(:fetch_session)
+    plug(:fetch_flash)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
     plug(:fetch_current_account)
+    plug(OperatelyWeb.Plugs.SupportSession)
     plug(:fetch_current_company)
     plug(:fetch_current_person)
   end
@@ -53,6 +55,9 @@ defmodule OperatelyWeb.Router do
     pipe_through([:browser, :require_authenticated_account])
 
     get("/blobs/:id", BlobController, :get)
+    get("/support/session/:token", SupportSessionController, :create)
+    delete("/support/session", SupportSessionController, :delete)
+    get("/support/session/end", SupportSessionController, :delete)
   end
 
   scope "/:company_id/exports/markdown", OperatelyWeb do
