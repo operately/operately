@@ -1,8 +1,8 @@
 FROM elixir:1.17.2-alpine
 
 RUN apk update && apk add --no-cache \
-  bash git openssh nodejs npm inotify-tools \
+  bash git openssh nodejs inotify-tools \
   chromium chromium-chromedriver postgresql-client \
-  make gcc musl-dev build-base htop
+  make gcc musl-dev build-base htop npm
 
 CMD ["sleep", "infinity"]

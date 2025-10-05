@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Timeline } from "./Timeline";
 import { TimelineProps, TimelineItem, TaskActivity } from "./types";
 import { Person } from "../CommentSection/types";

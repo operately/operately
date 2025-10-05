@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CommentSection } from "./CommentSection";
 import { CommentFormState, CommentItem, Person } from "./types";
 import { Page } from "../Page";

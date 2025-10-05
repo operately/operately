@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { WorkMapPage } from "../components";
 import { singleSpaceWorkMap, mockSingleItem, closedParentWithOngoingChildren } from "../tests/mockData";
 

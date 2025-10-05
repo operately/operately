@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import React from "react";
 import { GoalPage } from ".";
 import { DateField } from "../DateField";
@@ -577,10 +577,11 @@ export const ZeroStateReadOnly: Story = {
 };
 
 export const Mobile: Story = {
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "mobile2",
-    },
+      value: "mobile2",
+      isRotated: false
+    }
   },
 };
 

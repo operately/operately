@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { WorkMapTable } from "../components/WorkMapTable";
 import * as Steps from "../tests/steps";
 import { mockItems, onlyGoals, onlyProjects, onlyCompleted } from "../tests/mockData";

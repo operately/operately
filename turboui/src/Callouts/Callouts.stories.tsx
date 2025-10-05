@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { InfoCallout, WarningCallout, ErrorCallout, SuccessCallout } from "./index";
 import { Link } from "../Link"; // Assuming Link component exists for examples
 import { Page } from "../Page";

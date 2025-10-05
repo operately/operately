@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { CompanySetupPage } from "./index";
 
 const meta: Meta<typeof CompanySetupPage> = {
@@ -100,9 +100,10 @@ export const MobileView: Story = {
     bookDemoUrl: "https://calendly.com/ceo/onboarding-session",
     discordUrl: "https://discord.gg/operately",
   },
-  parameters: {
+  globals: {
     viewport: {
-      defaultViewport: "mobile1",
-    },
+      value: "mobile1",
+      isRotated: false
+    }
   },
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ProgressBar } from ".";
 import { ProgressBarStatus, ProgressBarSize } from "./types";
 
@@ -54,14 +54,16 @@ export const Default: Story = {
       <ProgressBar {...attrs} />
     </div>
   ),
-  parameters: {
-    backgrounds: { default: "light" },
-  },
   args: {
     progress: 60,
     status: "on_track",
     size: "md",
     showLabel: true,
+  },
+  globals: {
+    backgrounds: {
+      value: "light"
+    }
   },
 };
 
@@ -89,8 +91,10 @@ export const Sizes: Story = {
       </div>
     );
   },
-  parameters: {
-    backgrounds: { default: "light" },
+  globals: {
+    backgrounds: {
+      value: "light"
+    }
   },
 };
 
@@ -114,8 +118,10 @@ export const WithAndWithoutLabel: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    backgrounds: { default: "light" },
+  globals: {
+    backgrounds: {
+      value: "light"
+    }
   },
 };
 
@@ -158,8 +164,10 @@ export const StatusColors: Story = {
       </div>
     );
   },
-  parameters: {
-    backgrounds: { default: "light" },
+  globals: {
+    backgrounds: {
+      value: "light"
+    }
   },
 };
 
@@ -183,8 +191,10 @@ export const ProgressLevels: Story = {
       </div>
     );
   },
-  parameters: {
-    backgrounds: { default: "light" },
+  globals: {
+    backgrounds: {
+      value: "light"
+    }
   },
 };
 
@@ -235,7 +245,9 @@ export const ComprehensiveExamples: Story = {
       </div>
     </div>
   ),
-  parameters: {
-    backgrounds: { default: "light" },
+  globals: {
+    backgrounds: {
+      value: "light"
+    }
   },
 };

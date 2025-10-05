@@ -1,6 +1,6 @@
 import React from "react";
 import { PageBanner } from ".";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { Page } from "../Page";
 import { Link } from "../Link";
 import { SecondaryButton } from "../Button";

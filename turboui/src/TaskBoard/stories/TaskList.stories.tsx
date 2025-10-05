@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import React, { useState, useEffect } from "react";
 import { TaskList } from "../components/TaskList";
 import * as Types from "../types";
