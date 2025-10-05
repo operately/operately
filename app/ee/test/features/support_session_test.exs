@@ -12,7 +12,7 @@ defmodule Operately.EE.Features.SupportSessionTest do
     |> given_that_a_site_admin_is_logged_in()
     |> visit_the_company_page_in_admin()
     |> start_support_session()
-    # |> assert_the_company_home_page_is_opened()
+    |> assert_the_company_home_page_is_opened()
   end
 
   #
@@ -33,13 +33,16 @@ defmodule Operately.EE.Features.SupportSessionTest do
   end
 
   defp start_support_session(ctx) do
-    UI.click(ctx, testid: "start-support-session")
+    ctx
+    |> UI.click(testid: "start-support-session")
+    |> UI.sleep(500)  # wait for page reload
   end
 
-  # defp assert_the_company_home_page_is_opened(ctx) do
-  #   assert redirected_to(ctx.conn) == Routes.company_home_path(ctx.conn, :index)
-  #   ctx
-  # end
+  defp assert_the_company_home_page_is_opened(ctx) do
+    ctx
+    |> UI.assert_text(ctx.company.name)
+    |> UI.assert_has(testid: "company-home")
+  end
 
   defp promote_to_site_admin(ctx, account_name) do
     account = Map.fetch!(ctx, account_name)

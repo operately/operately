@@ -118,19 +118,15 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   def fetch_current_person(conn, _opts) do
-    cond do
-      support_person_available?(conn) ->
-        assign(conn, :current_person, conn.assigns[:support_person])
+    if conn.assigns[:current_account] && conn.assigns[:current_company] do
+      account = conn.assigns[:current_account]
+      company = conn.assigns[:current_company]
 
-      conn.assigns[:current_account] && conn.assigns[:current_company] ->
-        account = conn.assigns[:current_account]
-        company = conn.assigns[:current_company]
+      person = get_person_for_session(conn, account, company)
 
-        person = Operately.People.get_person!(account, company)
-
-        assign(conn, :current_person, person)
-      true ->
-        conn
+      assign(conn, :current_person, person)
+    else
+      conn
     end
   end
 
@@ -190,11 +186,37 @@ defmodule OperatelyWeb.AccountAuth do
 
   defp maybe_store_return_to(conn), do: conn
 
-  defp support_person_available?(conn) do
-    support_person = conn.assigns[:support_person]
-    support_company = conn.assigns[:support_company]
-    current_company = conn.assigns[:current_company]
+  defp get_person_for_session(conn, account, company) do
+    if is_support_session?(conn, account, company) do
+      # In support session: impersonate as company owner
+      owners = Operately.Companies.list_owners(company)
+      case owners do
+        [owner | _] -> owner
+        [] -> Operately.People.get_person!(account, company)  # Fallback if no owners
+      end
+    else
+      # Normal session: use the account's person
+      Operately.People.get_person!(account, company)
+    end
+  end
 
-    support_person && support_company && current_company && support_company.id == current_company.id
+  defp is_support_session?(conn, account, company) do
+    with {:ok, company_id_from_cookie} <- get_support_session_cookie(conn),
+         true <- Operately.People.Account.is_site_admin?(account),
+         company_id when is_binary(company_id) <- OperatelyWeb.Paths.company_id(company),
+         true <- company_id_from_cookie == company_id do
+      true
+    else
+      _ -> false
+    end
+  end
+
+  defp get_support_session_cookie(conn) do
+    conn = fetch_cookies(conn)
+    case conn.cookies["support_session_company_id"] do
+      nil -> {:error, :no_cookie}
+      company_id when is_binary(company_id) -> {:ok, company_id}
+      _ -> {:error, :invalid_cookie}
+    end
   end
 end

@@ -18,8 +18,8 @@ export function Page() {
 
   const handleStartSupportSession = React.useCallback(async () => {
     // Set a cookie to indicate support session is in progress for this company
-    document.cookie = `support_session_company_id=${company.id}; path=/; max-age=${60 * 60 * 24}`; // 24 hours
-    
+    document.cookie = `support_session_company_id=${company.id}; path=/; max-age=${60 * 60}`; // 1 hour
+
     // Redirect to the company's home page
     window.location.href = `/${company.id}`;
   }, [company.id]);
