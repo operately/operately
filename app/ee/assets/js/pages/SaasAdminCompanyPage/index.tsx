@@ -6,8 +6,9 @@ import * as React from "react";
 import { EnableFeatureModal } from "./EnableFeatureModal";
 
 import FormattedTime from "@/components/FormattedTime";
-import { Avatar, IconFlare } from "turboui";
+import { Avatar, IconFlare, SecondaryButton } from "turboui";
 
+import { useStartSupportSession } from "@/features/SupportSessions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useLoadedData } from "./loader";
 
@@ -15,6 +16,7 @@ export { loader } from "./loader";
 
 export function Page() {
   const { company } = useLoadedData();
+  const { startSupportSession, supportSessionStarting } = useStartSupportSession(company.id!);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -32,6 +34,21 @@ export function Page() {
 
           <h2 className="mt-8 font-bold">Information</h2>
           <Info company={company} />
+
+          <h2 className="mt-8 font-bold">Support Mode</h2>
+          <p className="text-sm text-content-accent mb-3 mt-1 max-w-lg">
+            Temporarily enable elevated support access for troubleshooting issues with this company's account. You will
+            view the account as if you were an owner.
+          </p>
+
+          <SecondaryButton
+            size="xs"
+            onClick={startSupportSession}
+            loading={supportSessionStarting}
+            testId="start-support-session"
+          >
+            Start Support Session
+          </SecondaryButton>
 
           <h2 className="mt-8 font-bold">Activity</h2>
           <ActivitySection company={company} />

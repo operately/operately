@@ -36,7 +36,10 @@ defmodule OperatelyWeb.ApiSocket do
   # performing token verification on connect.
   @impl true
   def connect(params, socket, _connect_info) do
-    with {:ok, socket} <- authenticate(params, socket) do
+    with(
+      {:ok, socket} <- authenticate(params, socket),
+      {:ok, socket} <- set_support_session_token(params, socket)
+    ) do
       {:ok, socket}
     else
       e -> e
@@ -76,6 +79,17 @@ defmodule OperatelyWeb.ApiSocket do
       {:ok, socket}
     else
       {:error, :unauthorized}
+    end
+  end
+
+  defp set_support_session_token(params, socket) do
+    token = Map.get(params, "support_session_token")
+
+    if token do
+      socket = assign(socket, :support_session_token, token)
+      {:ok, socket}
+    else
+      {:ok, socket}
     end
   end
 
@@ -140,13 +154,29 @@ defmodule OperatelyWeb.ApiSocket do
         socket = assign(socket, :company, company)
 
         if socket.assigns[:account] do
-          person = Operately.People.get_person!(socket.assigns.account, company)
-          assign(socket, :person, person)
+          case get_person(socket, company) do
+            nil ->
+              {:error, :unauthorized}
+
+            person ->
+              assign(socket, :person, person)
+          end
         else
           socket
         end
       else
         socket
+      end
+    end
+
+    defp get_person(socket, company) do
+      if socket.assigns[:support_session_token] do
+        case OperatelyEE.SupportSession.get_as_person(socket.assigns[:support_session_token], socket.assigns.account, company) do
+          {:ok, person} -> person
+          {:error, _} -> nil
+        end
+      else
+        Operately.People.get_person(socket.assigns.account, company)
       end
     end
   end
