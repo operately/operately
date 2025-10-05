@@ -187,36 +187,47 @@ defmodule OperatelyWeb.AccountAuth do
   defp maybe_store_return_to(conn), do: conn
 
   defp get_person_for_session(conn, account, company) do
-    if is_support_session?(conn, account, company) do
-      # In support session: impersonate as company owner
-      owners = Operately.Companies.list_owners(company)
-      case owners do
-        [owner | _] -> owner
-        [] -> Operately.People.get_person!(account, company)  # Fallback if no owners
-      end
-    else
-      # Normal session: use the account's person
-      Operately.People.get_person!(account, company)
+    case get_support_session_info(conn, account, company) do
+      {:ok, person_id} ->
+        # Support session: use the specific person from the cookie
+        Operately.People.get_person!(person_id)
+
+      {:error, _} ->
+        # Normal session: use the account's person
+        Operately.People.get_person!(account, company)
     end
   end
 
-  defp is_support_session?(conn, account, company) do
-    with {:ok, company_id_from_cookie} <- get_support_session_cookie(conn),
-         true <- Operately.People.Account.is_site_admin?(account),
+  defp get_support_session_info(conn, account, company) do
+    with true <- Operately.People.Account.is_site_admin?(account),
+         {:ok, %{company_id: cookie_company_id, person_id: person_id}} <- get_support_session_cookie(conn),
          company_id when is_binary(company_id) <- OperatelyWeb.Paths.company_id(company),
-         true <- company_id_from_cookie == company_id do
-      true
+         true <- cookie_company_id == company_id do
+      {:ok, person_id}
     else
-      _ -> false
+      _ -> {:error, :not_support_session}
     end
   end
 
   defp get_support_session_cookie(conn) do
     conn = fetch_cookies(conn)
-    case conn.cookies["support_session_company_id"] do
-      nil -> {:error, :no_cookie}
-      company_id when is_binary(company_id) -> {:ok, company_id}
-      _ -> {:error, :invalid_cookie}
+
+    case conn.cookies["support_session_token"] do
+      nil ->
+        {:error, :no_cookie}
+
+      encrypted_token ->
+        case Phoenix.Token.decrypt(OperatelyWeb.Endpoint, "support_session", encrypted_token) do
+          {:ok, %{expires_at: expires_at, company_id: company_id, impersonate_person_id: person_id}} ->
+            if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
+              {:ok, %{company_id: company_id, person_id: person_id}}
+            else
+              {:error, :expired}
+            end
+
+          {:error, _} ->
+            {:error, :invalid_token}
+        end
     end
   end
 end

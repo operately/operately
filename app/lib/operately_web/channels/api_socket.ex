@@ -147,13 +147,17 @@ defmodule OperatelyWeb.ApiSocket do
               if Operately.People.Account.is_site_admin?(socket.assigns.account) do
                 # For site admin, try to use the first owner if available
                 owners = Operately.Companies.list_owners(company)
+
                 case owners do
                   [owner | _] -> assign(socket, :person, owner)
-                  [] -> socket  # No owners, skip person assignment
+                  # No owners, skip person assignment
+                  [] -> socket
                 end
               else
-                socket  # Non-admin without person, skip assignment
+                # Non-admin without person, skip assignment
+                socket
               end
+
             person ->
               assign(socket, :person, person)
           end
@@ -165,8 +169,6 @@ defmodule OperatelyWeb.ApiSocket do
       end
     end
   end
-
-
 
   def broadcast!(topic) do
     OperatelyWeb.Endpoint.broadcast!(topic, "event", %{})

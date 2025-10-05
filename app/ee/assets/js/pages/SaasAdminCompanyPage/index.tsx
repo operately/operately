@@ -17,12 +17,26 @@ export function Page() {
   const { company } = useLoadedData();
 
   const handleStartSupportSession = React.useCallback(async () => {
-    // Set a cookie to indicate support session is in progress for this company
-    document.cookie = `support_session_company_id=${company.id}; path=/; max-age=${60 * 60}`; // 1 hour
+    try {
+      const response = await fetch("/admin/api/support-session/start", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ company_id: company.shortId }),
+      });
 
-    // Redirect to the company's home page
-    window.location.href = `/${company.id}`;
-  }, [company.id]);
+      if (!response.ok) {
+        throw new Error("Failed to start support session");
+      }
+
+      const data = await response.json();
+      window.location.href = data.redirect_url;
+    } catch (error) {
+      console.error("Error starting support session:", error);
+      // Handle error (show notification, etc.)
+    }
+  }, [company.shortId]);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
