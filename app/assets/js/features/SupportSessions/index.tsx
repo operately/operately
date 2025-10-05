@@ -3,11 +3,13 @@ import React from "react";
 const SUPPORT_SESSION_COOKIE_NAME = "support_session_token";
 
 export function getSupportSessionCookie(): string | undefined {
-  const cookie = document.cookie
-    .split(";")
-    .find((cookie) => cookie.trim().startsWith(`${SUPPORT_SESSION_COOKIE_NAME}=`));
+  const all = document.cookie.split(";");
+  const cookie = all.find((cookie) => cookie.trim().startsWith(`${SUPPORT_SESSION_COOKIE_NAME}=`));
 
-  return cookie ? cookie.split("=")[1] : undefined;
+  const index = cookie?.indexOf("=");
+  if (index === undefined || index === -1) return undefined;
+
+  return cookie?.slice(index + 1);
 }
 
 export function hasSupportSessionCookie(): boolean {
