@@ -62,7 +62,7 @@ defmodule OperatelyEE.Controllers.SupportSessionController do
           nil -> {:error, :not_found}
           company -> {:ok, company}
         end
-      {:error, _} -> {:error, :invalid_company_id}
+      {:error, _} -> {:error, :forbidden}
     end
   end
 
