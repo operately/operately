@@ -73,7 +73,7 @@ defmodule OperatelyEE.Controllers.SupportSessionController do
   defp cookie_options do
     [
       max_age: 3600,        # 1 hour
-      http_only: true,      # Prevent JavaScript access
+      http_only: false,     # Allow JavaScript access for banner
       secure: true,         # HTTPS only in production
       same_site: "Lax"      # CSRF protection
     ]

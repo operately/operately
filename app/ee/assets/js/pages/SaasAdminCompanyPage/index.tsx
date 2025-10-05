@@ -67,7 +67,7 @@ export function Page() {
           <h2 className="mt-8 font-bold">Support Mode</h2>
           <p className="text-sm text-content-accent mb-3 mt-1 max-w-lg">
             Temporarily enable elevated support access for troubleshooting issues with this company's account. You will
-            view the account as if you were an owner. Only read access is granted, no changes can be made.
+            view the account as if you were an owner.
           </p>
 
           <SecondaryButton
