@@ -13,17 +13,17 @@ import { useLoadedData } from "./loader";
 
 export { loader } from "./loader";
 
-export function Page() {
-  const { company } = useLoadedData();
+function useStartSupportSession(companyId: string) {
+  const [starting, setStarting] = React.useState(false);
 
-  const handleStartSupportSession = React.useCallback(async () => {
+  const start = React.useCallback(async () => {
     try {
+      setStarting(true);
+
       const response = await fetch("/admin/api/support-session/start", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ company_id: company.shortId }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ company_id: companyId }),
       });
 
       if (!response.ok) {
@@ -35,8 +35,17 @@ export function Page() {
     } catch (error) {
       console.error("Error starting support session:", error);
       // Handle error (show notification, etc.)
+    } finally {
+      setStarting(false);
     }
-  }, [company.shortId]);
+  }, [companyId]);
+
+  return { startSupportSession: start, supportSessionStarting: starting };
+}
+
+export function Page() {
+  const { company } = useLoadedData();
+  const { startSupportSession, supportSessionStarting } = useStartSupportSession(company.id!);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -61,7 +70,12 @@ export function Page() {
             view the account as if you were an owner. Only read access is granted, no changes can be made.
           </p>
 
-          <SecondaryButton size="xs" onClick={handleStartSupportSession} testId="start-support-session">
+          <SecondaryButton
+            size="xs"
+            onClick={startSupportSession}
+            loading={supportSessionStarting}
+            testId="start-support-session"
+          >
             Start Support Session
           </SecondaryButton>
 

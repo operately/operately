@@ -15,7 +15,7 @@ defmodule OperatelyEE.Controllers.SupportSessionController do
 
       conn
       |> put_resp_cookie("support_session_token", encrypted_token, cookie_options())
-      |> json(%{success: true, redirect_url: "/#{company.short_id}"})
+      |> json(%{success: true, redirect_url: OperatelyWeb.Paths.home_path(company)})
     else
       {:error, :forbidden} ->
         conn |> put_status(:forbidden) |> json(%{error: "Admin access required"})
