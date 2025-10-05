@@ -1,5 +1,6 @@
 import { Socket } from "phoenix";
 import * as React from "react";
+import { getSupportSessionCookie } from "../features/SupportSessions";
 
 type Payload = { [key: string]: any };
 
@@ -9,7 +10,12 @@ var sharedHeaders: Payload = {};
 function connect(): Socket {
   if (socket) return socket!;
 
-  let newSocket = new Socket("/api/v2/subscriptions", { params: { token: window.appConfig.api.socketToken } });
+  const params = {
+    token: window.appConfig.api.socketToken,
+    support_session_token: getSupportSessionCookie(),
+  };
+
+  let newSocket = new Socket("/api/v2/subscriptions", { params });
   newSocket.connect();
 
   socket = newSocket;

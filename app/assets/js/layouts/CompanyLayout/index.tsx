@@ -26,6 +26,7 @@ import { CompanyDropdown } from "./CompanyDropdown";
 import { HelpDropdown } from "./HelpDropdown";
 import { NewDropdown } from "./NewDropdown";
 import { Review } from "./Review";
+import { SupportSessionBanner } from "./SupportSessionBanner";
 import { User } from "./User";
 
 import { useWindowSizeBreakpoints } from "@/components/Pages";
@@ -219,6 +220,7 @@ export default function CompanyLayout() {
   return (
     <div className="flex flex-col h-screen">
       <Navigation company={company} />
+      <SupportSessionBanner />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
