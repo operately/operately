@@ -15,25 +15,6 @@ declare global {
     experimental?: boolean;
   }
 
-  interface SupportSessionCompany {
-    id: string;
-    name: string;
-    shortId: string;
-    path: string;
-  }
-
-  interface SupportSessionPerson {
-    id: string;
-    fullName: string;
-  }
-
-  interface SupportSessionConfig {
-    company: SupportSessionCompany;
-    person: SupportSessionPerson;
-    startedAt: string;
-    endPath: string;
-  }
-
   interface AppConfig {
     configured: boolean;
     environment: string;
@@ -58,8 +39,6 @@ declare global {
 
     discordUrl: string;
     bookDemoUrl: string;
-
-    supportSession?: SupportSessionConfig;
   }
 
   interface Window {

@@ -40,37 +40,9 @@ defmodule OperatelyWeb.PageController do
         },
         aiActions: ai_actions()
       })
-      |> maybe_attach_support_session(conn)
     else
       config
     end
-  end
-
-  defp maybe_attach_support_session(config, conn) do
-    case conn.assigns[:support_session] do
-      %{company: company, person: person, started_at: started_at} ->
-        Map.put(config, :supportSession, build_support_session_config(company, person, started_at))
-
-      _ ->
-        config
-    end
-  end
-
-  defp build_support_session_config(company, person, started_at) do
-    %{
-      company: %{
-        id: company.id,
-        name: company.name,
-        shortId: Operately.Companies.ShortId.encode!(company.short_id),
-        path: OperatelyWeb.Paths.home_path(company)
-      },
-      person: %{
-        id: person.id,
-        fullName: person.full_name
-      },
-      startedAt: DateTime.to_iso8601(started_at),
-      endPath: OperatelyWeb.Paths.to_url("/support/session/end")
-    }
   end
 
   defp ai_actions do

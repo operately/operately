@@ -184,15 +184,6 @@ export interface EnableFeatureResult {
   success: boolean;
 }
 
-export interface StartSupportSessionInput {
-  companyId: CompanyId;
-}
-
-export interface StartSupportSessionResult {
-  success: boolean;
-  url: string;
-}
-
 class ApiNamespaceRoot {
   constructor(private client: ApiClient) {}
 
@@ -214,10 +205,6 @@ class ApiNamespaceRoot {
 
   async enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.client.post("/enable_feature", input);
-  }
-
-  async startSupportSession(input: StartSupportSessionInput): Promise<StartSupportSessionResult> {
-    return this.client.post("/start_support_session", input);
   }
 }
 
@@ -281,10 +268,6 @@ export class ApiClient {
   enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
     return this.apiNamespaceRoot.enableFeature(input);
   }
-
-  startSupportSession(input: StartSupportSessionInput): Promise<StartSupportSessionResult> {
-    return this.apiNamespaceRoot.startSupportSession(input);
-  }
 }
 
 const defaultApiClient = new ApiClient();
@@ -303,10 +286,6 @@ export async function getCompany(input: GetCompanyInput): Promise<GetCompanyResu
 }
 export async function enableFeature(input: EnableFeatureInput): Promise<EnableFeatureResult> {
   return defaultApiClient.enableFeature(input);
-}
-
-export async function startSupportSession(input: StartSupportSessionInput): Promise<StartSupportSessionResult> {
-  return defaultApiClient.startSupportSession(input);
 }
 
 export function useGetActiveCompanies(input: GetActiveCompaniesInput): UseQueryHookResult<GetActiveCompaniesResult> {
@@ -329,12 +308,6 @@ export function useEnableFeature(): UseMutationHookResult<EnableFeatureInput, En
   return useMutation<EnableFeatureInput, EnableFeatureResult>((input) => defaultApiClient.enableFeature(input));
 }
 
-export function useStartSupportSession(): UseMutationHookResult<StartSupportSessionInput, StartSupportSessionResult> {
-  return useMutation<StartSupportSessionInput, StartSupportSessionResult>((input) =>
-    defaultApiClient.startSupportSession(input),
-  );
-}
-
 export default {
   default: defaultApiClient,
 
@@ -348,6 +321,4 @@ export default {
   useGetCompany,
   enableFeature,
   useEnableFeature,
-  startSupportSession,
-  useStartSupportSession,
 };

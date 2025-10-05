@@ -21,7 +21,6 @@ import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
 
 import { OperatelyLogo } from "@/components/OperatelyLogo";
 import { DivLink } from "turboui";
-import FormattedTime from "@/components/FormattedTime";
 import { Bell } from "./Bell";
 import { CompanyDropdown } from "./CompanyDropdown";
 import { HelpDropdown } from "./HelpDropdown";
@@ -31,7 +30,6 @@ import { User } from "./User";
 
 import { useWindowSizeBreakpoints } from "@/components/Pages";
 import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useSupportSession } from "@/contexts/SupportSessionContext";
 import { AiSidebar } from "@/features/AiSidebar";
 import { DevBar } from "@/features/DevBar";
 import { useScrollToTopOnNavigationChange } from "@/hooks/useScrollToTopOnNavigationChange";
@@ -39,22 +37,17 @@ import { Paths, usePaths } from "@/routes/paths";
 import { hasFeature } from "../../models/companies";
 import { useGlobalSearchHandler } from "./useGlobalSearch";
 
-interface NavigationProps {
-  company: Api.Company;
-  readOnly: boolean;
-}
-
-function Navigation({ company, readOnly }: NavigationProps) {
+function Navigation({ company }: { company: Api.Company }) {
   const size = useWindowSizeBreakpoints();
 
   if (size === "xs") {
-    return <MobileNavigation company={company} readOnly={readOnly} />;
+    return <MobileNavigation company={company} />;
   } else {
-    return <DesktopNavigation company={company} readOnly={readOnly} />;
+    return <DesktopNavigation company={company} />;
   }
 }
 
-function MobileNavigation({ company }: { company: Api.Company; readOnly: boolean }) {
+function MobileNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
   const [open, setOpen] = React.useState(false);
@@ -158,7 +151,7 @@ function MobileSectionAction({ onClick, children, icon }) {
   );
 }
 
-function DesktopNavigation({ company, readOnly }: { company: Api.Company; readOnly: boolean }) {
+function DesktopNavigation({ company }: { company: Api.Company }) {
   const me = useMe()!;
   const paths = usePaths();
 
@@ -197,7 +190,7 @@ function DesktopNavigation({ company, readOnly }: { company: Api.Company; readOn
           <User />
           <Bell />
           <HelpDropdown company={company} />
-          {!readOnly && <NewDropdown />}
+          <NewDropdown />
           <Search company={company} />
         </div>
       </div>
@@ -220,53 +213,18 @@ function SectionLink({ to, children, icon }) {
 export default function CompanyLayout() {
   const { company } = useLoaderData() as { company: Api.Company };
   const outletDiv = React.useRef<HTMLDivElement>(null);
-  const supportSession = useSupportSession();
-  const readOnly = supportSession.active;
 
   useScrollToTopOnNavigationChange({ outletDiv });
 
   return (
     <div className="flex flex-col h-screen">
-      <SupportSessionBanner supportSession={supportSession} />
-      <Navigation company={company} readOnly={readOnly} />
+      <Navigation company={company} />
       <div className="flex-1 overflow-y-auto" ref={outletDiv}>
         <Outlet />
       </div>
 
       <DevBar />
       <AiSidebar />
-    </div>
-  );
-}
-
-function SupportSessionBanner({
-  supportSession,
-}: {
-  supportSession: ReturnType<typeof useSupportSession>;
-}) {
-  if (!supportSession.active || !supportSession.session) return null;
-
-  const { session } = supportSession;
-
-  return (
-    <div className="bg-amber-50 border-b border-amber-200 text-amber-900 px-4 py-2 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      <div className="text-sm">
-        <span className="font-semibold">Support session active.</span>{" "}
-        <span>
-          Read-only access to {session.company.name} as {session.person.fullName}.
-        </span>
-      </div>
-
-      <div className="flex items-center gap-3 text-xs sm:text-sm">
-        <div className="flex items-center gap-1">
-          <span>Started</span>
-          <FormattedTime time={session.startedAt} format="relative" />
-        </div>
-
-        <a href={session.endPath} className="font-semibold underline hover:no-underline">
-          End session
-        </a>
-      </div>
     </div>
   );
 }

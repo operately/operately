@@ -19,9 +19,7 @@ defmodule Operately.Access.Fetch do
     |> Repo.one()
     |> case do
       nil -> {:error, :not_found}
-      {r, level} ->
-        level = maybe_limit_access(level)
-        {:ok, apply(r.__struct__, :set_requester_access_level, [r, level])}
+      {r, level} -> {:ok, apply(r.__struct__, :set_requester_access_level, [r, level])}
     end
   end
 
@@ -35,7 +33,7 @@ defmodule Operately.Access.Fetch do
     |> Repo.one()
     |> case do
       nil -> Binding.no_access()
-      level -> maybe_limit_access(level)
+      level -> level
     end
   end
 
@@ -49,14 +47,5 @@ defmodule Operately.Access.Fetch do
       where: b.access_level >= ^Binding.view_access(),
       where: m.person_id == ^person_id and is_nil(p.suspended_at)
     )
-  end
-
-  defp maybe_limit_access(nil), do: nil
-
-  defp maybe_limit_access(level) do
-    case Process.get(:support_session_access_limit) do
-      limit when is_integer(limit) -> min(level, limit)
-      _ -> level
-    end
   end
 end
