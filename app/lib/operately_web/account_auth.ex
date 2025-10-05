@@ -187,9 +187,23 @@ defmodule OperatelyWeb.AccountAuth do
   defp maybe_store_return_to(conn), do: conn
 
   defp get_person_for_session(conn, account, company) do
-    case OperatelyEE.SupportSession.get_as_person(conn, account, company) do
-      {:ok, person} -> person
-      {:error, _} -> Operately.People.get_person!(account, company)
+    token = conn.cookies["support_session_token"]
+
+    case OperatelyEE.SupportSession.get_as_person(token, account, company) do
+      {:ok, person} ->
+        person
+
+      {:error, :not_support_session} ->
+        case Operately.People.get_person(account, company) do
+          nil ->
+            raise "HTTP request rejected: account #{account.id} has no access to company #{company.id}"
+
+          person ->
+            person
+        end
+
+      {:error, reason} ->
+        raise "HTTP request rejected: invalid support session for account #{account.id}. Reason: #{reason}"
     end
   end
 end

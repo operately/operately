@@ -8,12 +8,10 @@ defmodule OperatelyEE.SupportSession do
   @doc """
   Checks if the current request is in a support session and returns the person.
   """
-  def get_as_person(conn, account, company) do
+  def get_as_person(token, account, company) do
     with(
       true <- Operately.People.Account.is_site_admin?(account),
-      {:ok, %{company_id: cookie_company_id, person_id: person_id}} <- decode_support_session_cookie(conn),
-      company_id when is_binary(company_id) <- OperatelyWeb.Paths.company_id(company),
-      true <- cookie_company_id == company_id
+      {:ok, %{person_id: person_id}} <- decode_support_session_cookie(token, company)
     ) do
       {:ok, Operately.People.get_person!(person_id)}
     else
@@ -21,36 +19,20 @@ defmodule OperatelyEE.SupportSession do
     end
   end
 
-  @doc """
-  Decodes and validates the support session cookie.
-  Returns the session data if valid and not expired.
-  """
-  def decode_support_session_cookie(conn) do
-    conn = Plug.Conn.fetch_cookies(conn)
+  def decode_support_session_cookie(nil, _), do: {:error, :no_cookie}
 
-    case conn.cookies["support_session_token"] do
-      nil ->
-        {:error, :no_cookie}
-
-      encrypted_token ->
-        case Phoenix.Token.decrypt(OperatelyWeb.Endpoint, "support_session", encrypted_token) do
-          {:ok, %{expires_at: expires_at, company_id: company_id, person_id: person_id}} ->
-            if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
-              {:ok, %{company_id: company_id, person_id: person_id}}
-            else
-              {:error, :expired}
-            end
-
-          {:error, _} ->
-            {:error, :invalid_token}
-        end
+  def decode_support_session_cookie(token, company) do
+    with(
+      {:ok, data} <- Phoenix.Token.decrypt(OperatelyWeb.Endpoint, "support_session", token),
+      {:ok, :valid} <- validate_expiry(data),
+      {:ok, :valid} <- validate_company(data, company)
+    ) do
+      {:ok, %{company_id: data.company_id, person_id: data.person_id}}
+    else
+      {:error, _} -> {:error, :invalid_token}
     end
   end
 
-  @doc """
-  Creates an encrypted support session token for the given admin and company.
-  Selects the first owner to impersonate.
-  """
   def create_support_session_token(admin_account, company) do
     # Get the first owner to impersonate during this session
     owners = Operately.Companies.list_owners(company)
@@ -72,8 +54,30 @@ defmodule OperatelyEE.SupportSession do
     end
   end
 
-  @doc """
-  Checks if support session functionality is available (EE feature).
-  """
-  def available?, do: true
+
+  def validate_expiry(%{expires_at: expires_at}) do
+    if DateTime.compare(DateTime.utc_now(), expires_at) == :lt do
+      {:ok, :valid}
+    else
+      {:error, :expired}
+    end
+  end
+
+  def validate_company(data, company) do
+    company_id = Map.get(data, :company_id)
+
+    cond do
+      company_id == nil ->
+        {:error, :invalid_company}
+
+      not is_binary(company_id) ->
+        {:error, :invalid_company}
+
+      company_id == OperatelyWeb.Paths.company_id(company) ->
+        {:ok, :valid}
+
+      true ->
+        {:error, :invalid_company}
+    end
+  end
 end

@@ -8,40 +8,11 @@ import { EnableFeatureModal } from "./EnableFeatureModal";
 import FormattedTime from "@/components/FormattedTime";
 import { Avatar, IconFlare, SecondaryButton } from "turboui";
 
+import { useStartSupportSession } from "@/features/SupportSessions";
 import { useBoolState } from "@/hooks/useBoolState";
 import { useLoadedData } from "./loader";
 
 export { loader } from "./loader";
-
-function useStartSupportSession(companyId: string) {
-  const [starting, setStarting] = React.useState(false);
-
-  const start = React.useCallback(async () => {
-    try {
-      setStarting(true);
-
-      const response = await fetch("/admin/api/support-session/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ company_id: companyId }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to start support session");
-      }
-
-      const data = await response.json();
-      window.location.href = data.redirect_url;
-    } catch (error) {
-      console.error("Error starting support session:", error);
-      // Handle error (show notification, etc.)
-    } finally {
-      setStarting(false);
-    }
-  }, [companyId]);
-
-  return { startSupportSession: start, supportSessionStarting: starting };
-}
 
 export function Page() {
   const { company } = useLoadedData();

@@ -1,48 +1,12 @@
 import React from "react";
 import { IconCircleKey, SecondaryButton } from "turboui";
+import { useEndSupportSession, useHasSupportSessionCookie } from "../../features/SupportSessions";
 
 export function SupportSessionBanner() {
-  const [isVisible, setIsVisible] = React.useState(false);
+  const handleEndSession = useEndSupportSession();
+  const hasSupportCookie = useHasSupportSessionCookie();
 
-  React.useEffect(() => {
-    // Check for support session cookie
-    const checkCookie = () => {
-      const hasSupportSessionCookie = document.cookie
-        .split(";")
-        .some((cookie) => cookie.trim().startsWith("support_session_token="));
-
-      setIsVisible(hasSupportSessionCookie);
-    };
-
-    checkCookie();
-
-    // Check periodically in case cookie expires
-    const interval = setInterval(checkCookie, 60000); // Check every minute
-
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleEndSession = async () => {
-    try {
-      const response = await fetch("/admin/api/support-session/end", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        window.location.href = data.redirect_url;
-      } else {
-        console.error("Failed to end support session");
-      }
-    } catch (error) {
-      console.error("Error ending support session:", error);
-    }
-  };
-
-  if (!isVisible) return null;
+  if (!hasSupportCookie) return null;
 
   return (
     <div
