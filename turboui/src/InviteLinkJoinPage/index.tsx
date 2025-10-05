@@ -2,7 +2,7 @@ import React from "react";
 
 import { match } from "ts-pattern";
 import { Avatar } from "../Avatar";
-import { SecondaryButton } from "../Button";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { IconMoodSad } from "../icons";
 import { OperatelyLogo } from "../Logo";
 import { useHtmlTitle } from "../Page/useHtmlTitle";
@@ -74,14 +74,14 @@ function LoggedInUserValidTokenState(props: InviteLinkJoinPage.Props) {
       </div>
 
       <div className="flex items-center flex-col items-stretch">
-        <SecondaryButton
+        <PrimaryButton
           onClick={props.handleJoin}
           testId="join-company"
           loading={props.joining}
           disabled={props.joining}
         >
           Join {props.invitation?.company?.name}
-        </SecondaryButton>
+        </PrimaryButton>
         {props.joinError && <div className="text-sm text-red-500 mt-4 text-center">{props.joinError}</div>}
       </div>
     </div>
