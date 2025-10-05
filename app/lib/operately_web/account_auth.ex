@@ -201,9 +201,6 @@ defmodule OperatelyWeb.AccountAuth do
           person ->
             person
         end
-
-      {:error, reason} ->
-        raise "HTTP request rejected: invalid support session for account #{account.id}. Reason: #{reason}"
     end
   end
 end

@@ -23,8 +23,6 @@ defmodule OperatelyEE.Controllers.SupportSessionController do
         conn |> put_status(:not_found) |> json(%{error: "Company not found"})
       {:error, :no_owners} ->
         conn |> put_status(:unprocessable_entity) |> json(%{error: "Company has no owners to impersonate"})
-      {:error, _} ->
-        conn |> put_status(:internal_server_error) |> json(%{error: "Internal error"})
     end
   end
 
@@ -62,7 +60,7 @@ defmodule OperatelyEE.Controllers.SupportSessionController do
           nil -> {:error, :not_found}
           company -> {:ok, company}
         end
-      {:error, _} -> {:error, :invalid_company_id}
+      {:error, _} -> {:error, :forbidden}
     end
   end
 
