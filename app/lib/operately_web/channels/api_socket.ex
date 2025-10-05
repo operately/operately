@@ -140,27 +140,8 @@ defmodule OperatelyWeb.ApiSocket do
         socket = assign(socket, :company, company)
 
         if socket.assigns[:account] do
-          case Operately.People.get_person(socket.assigns.account, company) do
-            nil ->
-              # Handle case where account doesn't have a person in this company
-              # This can happen with site admin accounts during support sessions
-              if Operately.People.Account.is_site_admin?(socket.assigns.account) do
-                # For site admin, try to use the first owner if available
-                owners = Operately.Companies.list_owners(company)
-
-                case owners do
-                  [owner | _] -> assign(socket, :person, owner)
-                  # No owners, skip person assignment
-                  [] -> socket
-                end
-              else
-                # Non-admin without person, skip assignment
-                socket
-              end
-
-            person ->
-              assign(socket, :person, person)
-          end
+          person = Operately.People.get_person!(socket.assigns.account, company)
+          assign(socket, :person, person)
         else
           socket
         end

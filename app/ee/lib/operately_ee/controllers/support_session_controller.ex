@@ -67,24 +67,7 @@ defmodule OperatelyEE.Controllers.SupportSessionController do
   end
 
   defp create_support_session_token(admin_account, company) do
-    # Get the first owner to impersonate during this support session
-    owners = Operately.Companies.list_owners(company)
-
-    case owners do
-      [] ->
-        {:error, :no_owners}
-      [owner | _] ->
-        data = %{
-          admin_id: admin_account.id,
-          company_id: OperatelyWeb.Paths.company_id(company),
-          impersonate_person_id: owner.id,
-          expires_at: DateTime.utc_now() |> DateTime.add(3600, :second), # 1 hour
-          session_id: Ecto.UUID.generate()
-        }
-
-        encrypted_token = Phoenix.Token.encrypt(OperatelyWeb.Endpoint, "support_session", data)
-        {:ok, encrypted_token}
-    end
+    OperatelyEE.SupportSession.create_support_session_token(admin_account, company)
   end
 
   defp cookie_options do
