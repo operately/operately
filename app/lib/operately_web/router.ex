@@ -75,6 +75,10 @@ defmodule OperatelyWeb.Router do
   scope "/admin/api" do
     pipe_through([:api])
 
+    # Support session management
+    post "/support-session/start", OperatelyEE.Controllers.SupportSessionController, :start
+    post "/support-session/end", OperatelyEE.Controllers.SupportSessionController, :end_session
+
     forward("/v1", OperatelyEE.AdminApi)
   end
 
