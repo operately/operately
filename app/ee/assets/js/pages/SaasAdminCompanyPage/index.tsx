@@ -15,24 +15,14 @@ export { loader } from "./loader";
 
 export function Page() {
   const { company } = useLoadedData();
-  const [startSupportSession, { loading: startingSupport }] = AdminApi.useStartSupportSession();
-  const [supportError, setSupportError] = React.useState<string | null>(null);
 
   const handleStartSupportSession = React.useCallback(async () => {
-    setSupportError(null);
-
-    try {
-      const result = await startSupportSession({ companyId: company.id! });
-
-      if (result?.url) {
-        window.open(result.url, "_blank", "noopener,noreferrer");
-      } else {
-        setSupportError("Unable to start support session. Try again.");
-      }
-    } catch (_error) {
-      setSupportError("Unable to start support session. Try again.");
-    }
-  }, [company.id, startSupportSession]);
+    // Set a cookie to indicate support session is in progress for this company
+    document.cookie = `support_session_company_id=${company.id}; path=/; max-age=${60 * 60 * 24}`; // 24 hours
+    
+    // Redirect to the company's home page
+    window.location.href = `/${company.id}`;
+  }, [company.id]);
 
   return (
     <Pages.Page title={"Admininstration"} testId="saas-admin-page">
@@ -56,15 +46,10 @@ export function Page() {
             Temporarily enable elevated support access for troubleshooting issues with this company's account. You will
             view the account as if you were an owner. Only read access is granted, no changes can be made.
           </p>
-          <SecondaryButton
-            size="xs"
-            onClick={handleStartSupportSession}
-            disabled={startingSupport}
-            testId="start-support-session"
-          >
-            {startingSupport ? "Starting…" : "Start Support Session"}
+
+          <SecondaryButton size="xs" onClick={handleStartSupportSession} testId="start-support-session">
+            Start Support Session
           </SecondaryButton>
-          {supportError && <p className="text-xs text-red-600 mt-1">{supportError}</p>}
 
           <h2 className="mt-8 font-bold">Activity</h2>
           <ActivitySection company={company} />
