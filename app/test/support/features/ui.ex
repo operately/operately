@@ -669,6 +669,10 @@ defmodule Operately.Support.Features.UI do
     end)
   end
 
+  def get_all_cookies(state) do
+    Browser.cookies(state.session)
+  end
+
   defp get_next_month do
     case Date.utc_today().month + 1 do
       13 -> 1

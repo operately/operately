@@ -122,7 +122,7 @@ defmodule OperatelyWeb.AccountAuth do
       account = conn.assigns[:current_account]
       company = conn.assigns[:current_company]
 
-      person = Operately.People.get_person!(account, company)
+      person = get_person_for_session(conn, account, company)
 
       assign(conn, :current_person, person)
     else
@@ -185,4 +185,22 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   defp maybe_store_return_to(conn), do: conn
+
+  defp get_person_for_session(conn, account, company) do
+    token = conn.cookies["support_session_token"]
+
+    case OperatelyEE.SupportSession.get_as_person(token, account, company) do
+      {:ok, person} ->
+        person
+
+      {:error, :not_support_session} ->
+        case Operately.People.get_person(account, company) do
+          nil ->
+            raise "HTTP request rejected: account #{account.id} has no access to company #{company.id}"
+
+          person ->
+            person
+        end
+    end
+  end
 end
