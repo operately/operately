@@ -10,9 +10,11 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   alias Operately.People
   alias Operately.People.Person
   alias Operately.Groups
+  alias Operately.Groups.Member
   alias Operately.Invitations
   alias Operately.Invitations.Invitation
   alias Operately.Activities.Activity
+  alias Operately.Companies.Company
 
   @email "john@your-company.com"
 
@@ -69,11 +71,35 @@ defmodule Operately.Operations.CompanyMemberAddingTest do
   test "CompanyMemberAdding operation creates company space member", ctx do
     company_space = Groups.get_group!(ctx.company.company_space_id)
 
-    assert length(Groups.list_members(company_space)) == 1 # company creator
+    initial_member_count = length(Groups.list_members(company_space))
 
     {:ok, _} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
 
-    assert length(Groups.list_members(company_space)) == 2 # company creator + new member
+    assert length(Groups.list_members(company_space)) == initial_member_count + 1
+  end
+
+  test "CompanyMemberAdding operation skips company space steps when the space is missing", ctx do
+    company_space_id = ctx.company.company_space_id
+
+    assert company_space_id
+
+    {:ok, _} =
+      ctx.company
+      |> Company.changeset(%{company_space_id: nil})
+      |> Repo.update()
+
+    {:ok, invitation} = Operately.Operations.CompanyMemberAdding.run(ctx.admin, @member_attrs)
+    assert invitation
+
+    person = People.get_person_by_email(ctx.company, @email)
+
+    refute Repo.get_by(Member, group_id: company_space_id, person_id: person.id)
+
+    if context = Access.get_context(group_id: company_space_id) do
+      if person_group = Access.get_group(person_id: person.id) do
+        refute Access.get_binding(context_id: context.id, group_id: person_group.id)
+      end
+    end
   end
 
   test "CompanyMemberAdding operation creates activity", ctx do

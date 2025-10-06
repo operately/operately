@@ -1,6 +1,7 @@
 defmodule Operately.People.InsertPersonIntoOperation do
   alias Ecto.Multi
   alias Operately.Access
+  alias Operately.Repo
 
   def insert(multi, callback) when is_function(callback, 1) do
     multi
@@ -38,11 +39,18 @@ defmodule Operately.People.InsertPersonIntoOperation do
 
   defp insert_company_space_member(multi) do
     multi
-    |> Multi.insert(:company_space_member, fn changes ->
-      Operately.Groups.Member.changeset(%{
-        group_id: changes.company_space.id,
-        person_id: changes.person.id,
-      })
+    |> Multi.run(:company_space_member, fn _, changes ->
+      case changes.company_space do
+        nil ->
+          {:ok, nil}
+
+        company_space ->
+          Operately.Groups.Member.changeset(%{
+            group_id: company_space.id,
+            person_id: changes.person.id,
+          })
+          |> Repo.insert()
+      end
     end)
   end
 end
