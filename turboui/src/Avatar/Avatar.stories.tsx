@@ -1,8 +1,8 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
+import React from "react";
 import { Avatar, AvatarList, AvatarWithName } from ".";
-import { AvatarProps, AvatarSize } from "./types";
 import { genPeople } from "./../utils/storybook/genPeople";
+import { AvatarProps, AvatarSize } from "./types";
 
 const meta = {
   title: "Components/Avatar",
@@ -59,7 +59,6 @@ export const WithImage: StoryObj<AvatarProps> = {
  * This demonstrates the component's built-in fallback mechanism.
  */
 export const WithoutImage: StoryObj<AvatarProps> = {
-  render: (args) => <Avatar {...args} />,
   args: {
     person: {
       id: "no_image_user",
@@ -67,6 +66,147 @@ export const WithoutImage: StoryObj<AvatarProps> = {
       avatarUrl: null,
     },
     size: "normal",
+  },
+  render: () => {
+    const singleWord = { id: "singleWord", fullName: "Madonna", avatarUrl: null };
+    const twoLetters = { id: "twoLetters", fullName: "Alex Johnson", avatarUrl: null };
+    const multiLetters = { id: "multiLetters", fullName: "John Ronald Reuel Tolkien", avatarUrl: null };
+    const lowercase = { id: "lowercase", fullName: "john ronald reuel tolkien", avatarUrl: null };
+    const japanese = { id: "japanese", fullName: "山田 太郎", avatarUrl: null };
+
+    return (
+      <div className="flex flex-col gap-12">
+        <div>
+          <h3 className="text-sm font-medium mb-2">Regular Name (2 letters)</h3>
+          <div className="flex items-end gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={twoLetters} size="tiny" />
+              <span className="text-xs">tiny</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={twoLetters} size="small" />
+              <span className="text-xs">small</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={twoLetters} size="large" />
+              <span className="text-xs">large</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={twoLetters} size="xlarge" />
+              <span className="text-xs">xlarge</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={twoLetters} size="xxlarge" />
+              <span className="text-xs">xxlarge</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium mb-2">Single Word Name (1 letter)</h3>
+          <div className="flex items-end gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={singleWord} size="tiny" />
+              <span className="text-xs">tiny</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={singleWord} size="small" />
+              <span className="text-xs">small</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={singleWord} size="large" />
+              <span className="text-xs">large</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={singleWord} size="xlarge" />
+              <span className="text-xs">xlarge</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={singleWord} size="xxlarge" />
+              <span className="text-xs">xxlarge</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium mb-2">Multi Word Name (3+ letters)</h3>
+          <div className="flex items-end gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={multiLetters} size="tiny" />
+              <span className="text-xs">tiny</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={multiLetters} size="small" />
+              <span className="text-xs">small</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={multiLetters} size="large" />
+              <span className="text-xs">large</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={multiLetters} size="xlarge" />
+              <span className="text-xs">xlarge</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={multiLetters} size="xxlarge" />
+              <span className="text-xs">xxlarge</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium mb-2">Lowercase Letters are Capitalized</h3>
+          <div className="flex items-end gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={lowercase} size="tiny" />
+              <span className="text-xs">tiny</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={lowercase} size="small" />
+              <span className="text-xs">small</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={lowercase} size="large" />
+              <span className="text-xs">large</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={lowercase} size="xlarge" />
+              <span className="text-xs">xlarge</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={lowercase} size="xxlarge" />
+              <span className="text-xs">xxlarge</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-medium mb-2">Japanese Characters</h3>
+          <div className="flex items-end gap-4">
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={japanese} size="tiny" />
+              <span className="text-xs">tiny</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={japanese} size="small" />
+              <span className="text-xs">small</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={japanese} size="large" />
+              <span className="text-xs">large</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={japanese} size="xlarge" />
+              <span className="text-xs">xlarge</span>
+            </div>
+            <div className="flex flex-col items-center gap-2">
+              <Avatar person={japanese} size="xxlarge" />
+              <span className="text-xs">xxlarge</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   },
 };
 
