@@ -1,11 +1,50 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
-import { TableRow } from "../components/TableRow";
+
+import { TableRow, SetItemExpandedFn, IsItemExpandedFn } from "../components/TableRow";
 import { TableHeader } from "../components/WorkMapTable";
 
 import * as data from "../tests/mockData";
 import * as Steps from "../tests/steps";
+
+type TableRowProps = React.ComponentProps<typeof TableRow>;
+
+function StoryTableRow({ isExpanded: _ignoredIsExpanded, setItemExpanded: _ignoredSetItemExpanded, ...rest }: TableRowProps) {
+  const [expandedState, setExpandedState] = React.useState<Record<string, boolean>>({});
+
+  const getItemExpanded = React.useCallback<IsItemExpandedFn>(
+    (id) => expandedState[id] !== false,
+    [expandedState],
+  );
+
+  const updateItemExpanded = React.useCallback<SetItemExpandedFn>((id, valueOrUpdater) => {
+    setExpandedState((previousState) => {
+      const currentValue = previousState[id] ?? true;
+      const nextValue =
+        typeof valueOrUpdater === "function"
+          ? (valueOrUpdater as (prev: boolean) => boolean)(currentValue)
+          : valueOrUpdater;
+
+      if (nextValue === true) {
+        if (currentValue === true && !(id in previousState)) {
+          return previousState;
+        }
+
+        const { [id]: _removed, ...restState } = previousState;
+        return restState;
+      }
+
+      if (currentValue === nextValue) {
+        return previousState;
+      }
+
+      return { ...previousState, [id]: nextValue };
+    });
+  }, []);
+
+  return <TableRow {...rest} isExpanded={getItemExpanded} setItemExpanded={updateItemExpanded} />;
+}
 
 const meta = {
   title: "Components/WorkMap/TableRow",
@@ -48,6 +87,8 @@ const meta = {
   },
   args: {
     showIndentation: true,
+    isExpanded: () => true,
+    setItemExpanded: () => undefined,
   },
 } satisfies Meta<typeof TableRow>;
 
@@ -62,7 +103,7 @@ export const Default: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -82,7 +123,7 @@ export const CompletedGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -107,7 +148,7 @@ export const AchievedGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -132,7 +173,7 @@ export const MissedGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -157,7 +198,7 @@ export const PausedGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -184,7 +225,7 @@ export const CautionGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -211,7 +252,7 @@ export const IssueGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -238,7 +279,8 @@ export const OutdatedGoal: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow
+        <StoryTableRow
+          {...args}
           item={data.mockGoalOutdated}
           level={0}
           isLast={false}
@@ -271,7 +313,7 @@ export const OnTrackProject: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow {...args} />
+        <StoryTableRow {...args} />
       </tbody>
     </>
   ),
@@ -323,28 +365,32 @@ export const MultipleRows: Story = {
     <>
       <TableHeader tab={args.tab} />
       <tbody>
-        <TableRow
+        <StoryTableRow
+          {...args}
           item={data.mockGoalOnTrack}
           level={0}
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
         />
-        <TableRow
+        <StoryTableRow
+          {...args}
           item={data.mockProjectOnTrack}
           level={1}
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
         />
-        <TableRow
+        <StoryTableRow
+          {...args}
           item={data.mockGoalCompleted}
           level={0}
           isLast={false}
           tab={args.tab}
           showIndentation={args.showIndentation}
         />
-        <TableRow
+        <StoryTableRow
+          {...args}
           item={data.mockProjectCompleted}
           level={0}
           isLast={true}
@@ -394,10 +440,10 @@ export const PrivacyLevels: Story = {
         <table className="w-full border-collapse">
           <TableHeader tab={args.tab} />
           <tbody>
-            <TableRow {...args} item={publicItem} isLast={false} />
-            <TableRow {...args} item={internalItem} isLast={false} />
-            <TableRow {...args} item={confidentialItem} isLast={false} />
-            <TableRow {...args} item={secretItem} isLast={true} />
+            <StoryTableRow {...args} item={publicItem} isLast={false} />
+            <StoryTableRow {...args} item={internalItem} isLast={false} />
+            <StoryTableRow {...args} item={confidentialItem} isLast={false} />
+            <StoryTableRow {...args} item={secretItem} isLast={true} />
           </tbody>
         </table>
         <div className="mt-6 p-4 bg-surface-raised rounded-md">

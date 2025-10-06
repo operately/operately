@@ -6,8 +6,9 @@ import { SpaceField } from "../../SpaceField";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle, IconPlus } from "../../icons";
 import classNames from "../../utils/classnames";
+import { useStateWithLocalStorage } from "../../utils/useStateWithLocalStorage";
 import { AddItemModal } from "./AddItemModal";
-import { TableRow } from "./TableRow";
+import { TableRow, IsItemExpandedFn, SetItemExpandedFn } from "./TableRow";
 
 interface Props {
   items: WorkMap.Item[];
@@ -17,6 +18,7 @@ interface Props {
   addItem?: WorkMap.AddNewItemFn;
   spaceSearch?: SpaceField.SearchSpaceFn;
   addItemDefaultSpace?: SpaceField.Space;
+  type?: WorkMap.WorkMapType;
 }
 
 export function WorkMapTable({
@@ -27,9 +29,50 @@ export function WorkMapTable({
   addingEnabled = false,
   spaceSearch,
   addItemDefaultSpace,
+  type = "company",
 }: Props) {
   const emptyWorkMap = items.length === 0;
   const showIndentation = React.useMemo(() => items.some((item) => item.children.length > 0), [items]);
+
+  const storageScope = React.useMemo(() => {
+    const path = typeof window !== "undefined" ? window.location.pathname : "unknown";
+    return `${type}:${path}`;
+  }, [type]);
+
+  const [expandedState, setExpandedState] = useStateWithLocalStorage<Record<string, boolean>>("workmap", storageScope, {});
+
+  const getItemExpanded = React.useCallback<IsItemExpandedFn>(
+    (id) => expandedState[id] !== false,
+    [expandedState],
+  );
+
+  const setItemExpanded = React.useCallback<SetItemExpandedFn>(
+    (id, valueOrUpdater) => {
+      setExpandedState((previousState) => {
+        const currentValue = previousState[id] ?? true;
+        const nextValue =
+          typeof valueOrUpdater === "function"
+            ? (valueOrUpdater as (prev: boolean) => boolean)(currentValue)
+            : valueOrUpdater;
+
+        if (nextValue === true) {
+          if (currentValue === true && !(id in previousState)) {
+            return previousState;
+          }
+
+          const { [id]: _removed, ...rest } = previousState;
+          return rest;
+        }
+
+        if (currentValue === nextValue) {
+          return previousState;
+        }
+
+        return { ...previousState, [id]: nextValue };
+      });
+    },
+    [setExpandedState],
+  );
 
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
@@ -57,6 +100,8 @@ export function WorkMapTable({
                   addItem={addItem}
                   addingEnabled={addingEnabled}
                   spaceSearch={spaceSearch}
+                  isExpanded={getItemExpanded}
+                  setItemExpanded={setItemExpanded}
                 />
               ))}
 

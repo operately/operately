@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 
 import { WorkMap } from "..";
 
@@ -13,6 +13,9 @@ import { RowContainer } from "./RowContainer";
 import { SpaceCell } from "./SpaceCell";
 import { StatusCell } from "./StatusCell";
 
+export type IsItemExpandedFn = (id: string) => boolean;
+export type SetItemExpandedFn = (id: string, value: boolean | ((prev: boolean) => boolean)) => void;
+
 interface Props {
   item: WorkMap.Item;
   level: number;
@@ -23,11 +26,20 @@ interface Props {
   addItem?: WorkMap.AddNewItemFn;
   addingEnabled?: boolean;
   spaceSearch?: SpaceField.SearchSpaceFn;
+  isExpanded: IsItemExpandedFn;
+  setItemExpanded: SetItemExpandedFn;
 }
 
 export function TableRow(props: Props) {
-  const { item, tab, level, columnOptions } = props;
-  const [expanded, setExpanded] = useState<boolean>(true);
+  const { item, tab, level, columnOptions, isExpanded: getItemExpanded, setItemExpanded } = props;
+  const expanded = getItemExpanded(item.id);
+
+  const handleSetExpanded = React.useCallback<React.Dispatch<React.SetStateAction<boolean>>>(
+    (valueOrUpdater) => {
+      setItemExpanded(item.id, valueOrUpdater);
+    },
+    [item.id, setItemExpanded],
+  );
 
   return (
     <>
@@ -36,7 +48,7 @@ export function TableRow(props: Props) {
           item={item}
           level={level}
           expanded={expanded}
-          setExpanded={setExpanded}
+          setExpanded={handleSetExpanded}
           showIndentation={props.showIndentation}
           canAddChildren={Boolean(props.addingEnabled) && tab !== "completed"}
           spaceSearch={props.spaceSearch}
@@ -64,7 +76,7 @@ export function TableRow(props: Props) {
         />
       </RowContainer>
 
-      <ChildRows {...props} expanded={expanded} />
+      <ChildRows {...props} expanded={expanded} isExpanded={getItemExpanded} setItemExpanded={setItemExpanded} />
     </>
   );
 }

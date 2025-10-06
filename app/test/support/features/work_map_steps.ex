@@ -108,6 +108,37 @@ defmodule Operately.Support.Features.WorkMapSteps do
     UI.click(ctx, testid: "tab-completed")
   end
 
+  step :go_to_all_tab, ctx do
+    UI.click_text(ctx, "All work")
+  end
+
+  step :collapse_work_map_goal, ctx, goal_key do
+    goal = ctx[goal_key]
+    testid = UI.testid(["chevron-icon", goal.name])
+
+    UI.click(ctx, testid: testid)
+  end
+
+  step :open_work_map_goal, ctx, goal_key do
+    goal = ctx[goal_key]
+    UI.click_link(ctx, goal.name)
+  end
+
+  step :assert_on_goal_page, ctx, goal_key do
+    goal = ctx[goal_key]
+    UI.assert_page(ctx, Paths.goal_path(ctx.company, goal))
+  end
+
+  step :assert_work_map_item_visible, ctx, item_key do
+    item = ctx[item_key]
+    UI.assert_text(ctx, item.name)
+  end
+
+  step :assert_work_map_item_hidden, ctx, item_key do
+    item = ctx[item_key]
+    UI.refute_text(ctx, item.name)
+  end
+
   step :go_to_space_work_map, ctx do
     UI.click_link(ctx, ctx.space.name)
   end
