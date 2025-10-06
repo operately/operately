@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import { PrimaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
-import { IconFlag } from "../icons";
+import { IconFlag, IconSparkles, IconTarget } from "../icons";
 
 export namespace OnboardingWizard {
   /**
@@ -307,35 +307,49 @@ function ProjectStep({ state }: { state: WizardState }) {
             title="Starter project"
             subtitle="We've created a starter project to help your team get moving with a clear, straightforward plan."
           />
-          <div className="bg-yellow-100 rounded-xl p-6 px-8">
-            <div className="flex items-center gap-4 mt-4">
-              <div>
-                <h2 className="font-semibold text-content-accent">Get Started with Operately</h2>
-                <div className="text-sm text-content-dimmed">
-                  A starter project to help your team get aligned and make progress visible.
-                </div>
-              </div>
-            </div>
+          <div className="relative overflow-hidden rounded-2xl border border-sky-300/70 bg-gradient-to-br from-sky-50 via-white to-slate-100 shadow-lg">
+            <div className="pointer-events-none absolute -top-16 -left-10 h-40 w-40 rounded-full bg-sky-300/30 blur-3xl" />
+            <div className="pointer-events-none absolute bottom-0 right-0 h-48 w-48 translate-x-1/4 translate-y-1/4 rounded-full bg-blue-200/40 blur-[90px]" />
 
-            <div>
-              <div className="mt-2 flex flex-col items-start gap-2 text-sm">
-                <div className="uppercase text-xs mt-4 font-medium">Milestones</div>
-                <div className="flex items-center gap-2">
-                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
-                  <span className="text-content-base">Map out your goals and projects</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
-                  <span className="text-content-base">Define Success Metrics</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
-                  <span className="text-content-base">Set Timeline</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
-                  <span className="text-content-base">Launch & Review</span>
-                </div>
+            <div className="relative flex flex-col gap-6 p-6 sm:p-8">
+              <span className="inline-flex items-center gap-2 self-start rounded-full bg-sky-600/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700">
+                <IconSparkles size={16} className="text-sky-500" />
+                Strategic kickoff
+              </span>
+
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold text-content-accent">Get Started with Operately</h2>
+                <p className="text-sm text-content-dimmed">
+                  Operately’s starter project gives you an organized blueprint for aligning company strategy, goals, and
+                  cross-functional execution from day one.
+                </p>
+              </div>
+
+              <div className="space-y-3 text-sm text-content-base">
+                <p className="text-xs font-semibold uppercase tracking-wide text-sky-700/80">Milestones you'll drive</p>
+                <ChecklistItem icon={<IconFlag size={18} className="text-sky-500" strokeWidth={2} />}>
+                  Define company outcomes and linked goals
+                </ChecklistItem>
+                <ChecklistItem icon={<IconFlag size={18} className="text-sky-500" strokeWidth={2} />}>
+                  Plan initiatives with accountable owners
+                </ChecklistItem>
+                <ChecklistItem icon={<IconFlag size={18} className="text-sky-500" strokeWidth={2} />}>
+                  Sequence milestones and dependencies
+                </ChecklistItem>
+                <ChecklistItem icon={<IconFlag size={18} className="text-sky-500" strokeWidth={2} />}>
+                  Set up a repeatable cadence for status, accountability, and decision-making
+                </ChecklistItem>
+                <ChecklistItem icon={<IconTarget size={18} className="text-sky-600" strokeWidth={2} />}>
+                  Rally teams around launch and review cadences
+                </ChecklistItem>
+              </div>
+
+              <div className="flex items-start gap-3 rounded-xl border border-sky-200/80 bg-white/70 px-4 py-3 text-sm text-sky-900 shadow-sm backdrop-blur">
+                <IconSparkles size={18} className="mt-0.5 text-sky-500" />
+                <p>
+                  We'll populate the project with best-practice roles, briefs, and check-in examples so you can
+                  organize, communicate, and iterate the strategy before rolling it to the team.
+                </p>
               </div>
             </div>
           </div>
@@ -343,5 +357,14 @@ function ProjectStep({ state }: { state: WizardState }) {
       }
       next={<PrimaryButton onClick={state.next}>Finish</PrimaryButton>}
     />
+  );
+}
+
+function ChecklistItem({ icon, children }: { icon: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <div className="flex items-start gap-3 leading-snug">
+      <span className="mt-0.5 text-sky-600">{icon}</span>
+      <span>{children}</span>
+    </div>
   );
 }
