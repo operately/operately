@@ -51,6 +51,7 @@ export function WorkMap({
           addingEnabled={addingEnabled}
           spaceSearch={spaceSearch}
           addItemDefaultSpace={addItemDefaultSpace}
+          type={type}
         />
       </div>
     </div>

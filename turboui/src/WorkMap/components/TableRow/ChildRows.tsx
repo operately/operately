@@ -1,7 +1,7 @@
 import React from "react";
 import { WorkMap } from "..";
 import { SpaceField } from "../../../SpaceField";
-import { TableRow } from "./index";
+import { TableRow, IsItemExpandedFn, SetItemExpandedFn } from "./index";
 
 interface Props {
   item: WorkMap.Item;
@@ -15,9 +15,11 @@ interface Props {
   addItem?: WorkMap.AddNewItemFn;
   addingEnabled?: boolean;
   spaceSearch?: SpaceField.SearchSpaceFn;
+  isExpanded: IsItemExpandedFn;
+  setItemExpanded: SetItemExpandedFn;
 }
 
-export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {
+export function ChildRows({ item, level, isLast, expanded, isExpanded, setItemExpanded, ...rest }: Props) {
   const hasChildren = Boolean(item.children && item.children.length > 0);
 
   if (!expanded || !hasChildren) {
@@ -32,6 +34,8 @@ export function ChildRows({ item, level, isLast, expanded, ...rest }: Props) {
           item={child}
           level={level + 1}
           isLast={index === item.children!.length - 1 && isLast}
+          isExpanded={isExpanded}
+          setItemExpanded={setItemExpanded}
           {...rest}
         />
       ))}
