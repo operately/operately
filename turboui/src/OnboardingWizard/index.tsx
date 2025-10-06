@@ -2,6 +2,7 @@ import React, { useCallback, useState } from "react";
 
 import { PrimaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
+import { IconFlag } from "../icons";
 
 export namespace OnboardingWizard {
   /**
@@ -298,45 +299,49 @@ function InviteStep({ state }: { state: WizardState }) {
 
 function ProjectStep({ state }: { state: WizardState }) {
   return (
-    <div className="space-y-6">
-      <StepHeading
-        step={3}
-        title="Create your first project"
-        subtitle="We'll spin up a guided project so you can explore how Operately keeps work organized."
-      />
+    <WizardStep
+      content={
+        <div className="space-y-6 p-6">
+          <StepHeading
+            step={3}
+            title="Starter project"
+            subtitle="We've created a starter project to help your team get moving with a clear, straightforward plan."
+          />
+          <div className="bg-yellow-100 rounded-xl p-6 px-8">
+            <div className="flex items-center gap-4 mt-4">
+              <div>
+                <h2 className="font-semibold text-content-accent">Get Started with Operately</h2>
+                <div className="text-sm text-content-dimmed">
+                  A starter project to help your team get aligned and make progress visible.
+                </div>
+              </div>
+            </div>
 
-      <div className="bg-surface-highlight/60 border border-surface-outline rounded-xl p-6 space-y-4">
-        <div>
-          <h2 className="text-lg font-semibold text-content-accent">"Launch New Customer Onboarding" project</h2>
-          <p className="text-sm text-content-dimmed mt-2">
-            A ready-to-use example that showcases goals, milestones, and tasks so you can learn by exploring.
-          </p>
-        </div>
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-content-accent uppercase tracking-wide">What's inside</h3>
-            <ul className="space-y-1 text-sm text-content-base list-disc list-inside">
-              <li>Clear project goal with measurable outcomes</li>
-              <li>Three suggested milestones to guide progress</li>
-              <li>Starter tasks to demonstrate ownership and updates</li>
-            </ul>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-content-accent uppercase tracking-wide">Tips included</h3>
-            <ul className="space-y-1 text-sm text-content-base list-disc list-inside">
-              <li>Best practices for weekly check-ins</li>
-              <li>Guidance on assigning project roles</li>
-              <li>Examples of progress updates your team will love</li>
-            </ul>
+            <div>
+              <div className="mt-2 flex flex-col items-start gap-2 text-sm">
+                <div className="uppercase text-xs mt-4 font-medium">Milestones</div>
+                <div className="flex items-center gap-2">
+                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
+                  <span className="text-content-base">Map out your goals and projects</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
+                  <span className="text-content-base">Define Success Metrics</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
+                  <span className="text-content-base">Set Timeline</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IconFlag size={18} className="text-yellow-500" strokeWidth={2} />
+                  <span className="text-content-base">Launch & Review</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <PrimaryButton onClick={state.next}>Finish</PrimaryButton>
-        </div>
-      </div>
-    </div>
+      }
+      next={<PrimaryButton onClick={state.next}>Finish</PrimaryButton>}
+    />
   );
 }
