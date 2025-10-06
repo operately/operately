@@ -5,6 +5,8 @@ defmodule Operately.PeopleTest do
   alias Operately.People.Person
   alias Operately.Blobs.Blob
   alias Operately.Companies.Company
+  alias Operately.Groups.Member
+  alias Operately.Access
 
   describe "people" do
     import Operately.PeopleFixtures
@@ -48,15 +50,18 @@ defmodule Operately.PeopleTest do
         |> Repo.insert()
 
       valid_person_attrs = Map.put(@valid_person_attrs, :company_id, company.id)
+
       {:ok, person} =
         %Person{}
         |> Person.changeset(valid_person_attrs)
         |> Repo.insert()
 
-      valid_blob_attrs = Map.merge(@valid_blob_attrs, %{
-        author_id: person.id,
-        company_id: company.id
-      })
+      valid_blob_attrs =
+        Map.merge(@valid_blob_attrs, %{
+          author_id: person.id,
+          company_id: company.id
+        })
+
       {:ok, blob} =
         %Blob{}
         |> Blob.changeset(valid_blob_attrs)
@@ -80,6 +85,33 @@ defmodule Operately.PeopleTest do
 
     test "create_person/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = People.create_person(@invalid_attrs)
+    end
+
+    test "create_person/1 skips general space operations when the company's general space is missing", ctx do
+      company = Operately.Companies.get_company!(ctx.person.company_id)
+      general_space_id = company.company_space_id
+
+      assert general_space_id
+
+      {:ok, _} =
+        company
+        |> Company.changeset(%{company_space_id: nil})
+        |> Repo.update()
+
+      valid_attrs = %{
+        full_name: "general space missing",
+        title: "some title",
+        company_id: company.id,
+        avatar_blob_id: ctx.blob.id
+      }
+
+      assert {:ok, %Person{} = person} = People.create_person(valid_attrs)
+      refute Repo.get_by(Member, group_id: general_space_id, person_id: person.id)
+
+      context = Access.get_context(group_id: general_space_id)
+      person_group = Access.get_group(person_id: person.id)
+
+      refute Access.get_binding(context_id: context.id, group_id: person_group.id)
     end
 
     test "update_person/2 with valid data updates the person", ctx do
