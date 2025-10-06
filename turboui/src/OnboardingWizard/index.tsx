@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from 
 
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
-import { IconCheck, IconChevronLeft, IconCopy } from "../icons";
+import { IconChevronLeft } from "../icons";
 
 export namespace OnboardingWizard {
   /**
@@ -454,6 +454,7 @@ function SpacesStep({ headingRef, headingId, selectedSpaces, onToggleSpace, onCo
               );
             })}
           </div>
+
           <div className="mt-8 text-xs text-content-dimmed">You can always edit spaces later or add new ones.</div>
         </div>
       }
@@ -477,53 +478,46 @@ type InviteStepProps = {
   copyStatus: "idle" | "copied";
 };
 
-function InviteStep({
-  headingRef,
-  headingId,
-  invitationLink,
-  onContinue,
-  onSkip,
-  onBack,
-  onCopy,
-  copyStatus,
-}: InviteStepProps) {
+function InviteStep({ headingRef, headingId, invitationLink, onContinue, onCopy, copyStatus }: InviteStepProps) {
   return (
-    <div className="space-y-6">
-      <StepHeading
-        headingId={headingId}
-        headingRef={headingRef}
-        title="Invite teammates"
-        subtitle="Bring your teammates into the workspace so you can start collaborating right away."
-      />
-
-      <div className="space-y-3">
-        <label className="text-sm font-medium text-content-accent" htmlFor="onboarding-invite-link">
-          Share this invitation link
-        </label>
-        <div className="flex flex-col sm:flex-row gap-3">
-          <input
-            id="onboarding-invite-link"
-            value={invitationLink}
-            readOnly
-            className="flex-1 min-w-0 px-3 py-2 border border-surface-outline rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
-            aria-label="Invitation link"
+    <WizardStep
+      content={
+        <div className="p-6">
+          <StepHeading
+            step={2}
+            headingId={headingId}
+            headingRef={headingRef}
+            title="Invite your team"
+            subtitle="Share this link to get your team on board with Operately."
           />
-          <PrimaryButton icon={copyStatus === "copied" ? IconCheck : IconCopy} onClick={onCopy}>
-            {copyStatus === "copied" ? "Copied" : "Copy link"}
-          </PrimaryButton>
-        </div>
-      </div>
 
-      <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <SecondaryButton icon={IconChevronLeft} onClick={onBack}>
-          Back
-        </SecondaryButton>
-        <div className="flex items-center gap-3">
-          <GhostButton onClick={onSkip}>Skip for now</GhostButton>
-          <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>
+          <div className="space-y-1 mt-6">
+            <label className="text-sm font-bold text-content-accent" htmlFor="onboarding-invite-link">
+              Your invitation link
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                id="onboarding-invite-link"
+                value={invitationLink}
+                readOnly
+                className="flex-1 min-w-0 px-3 py-2 border border-surface-outline bg-surface-dimmed rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
+                aria-label="Invitation link"
+              />
+              <PrimaryButton onClick={onCopy}>{copyStatus === "copied" ? "Copied" : "Copy link"}</PrimaryButton>
+            </div>
+          </div>
+
+          <div className="mt-8 text-xs text-content-dimmed">
+            You can always find this link later in Home -&gt; Invite People
+          </div>
         </div>
-      </div>
-    </div>
+      }
+      next={
+        <PrimaryButton onClick={onContinue} size="sm">
+          Next -&gt;
+        </PrimaryButton>
+      }
+    />
   );
 }
 
