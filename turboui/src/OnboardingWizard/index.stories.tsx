@@ -3,8 +3,6 @@ import React from "react";
 
 import { OnboardingWizard } from ".";
 
-const STORAGE_KEY = "operately:company-onboarding-wizard:v1";
-
 const meta = {
   title: "Components/Onboarding/CompanyCreatorWizard",
   component: OnboardingWizard,
@@ -21,7 +19,17 @@ const meta = {
     onComplete: () => {},
     onDismiss: () => {},
   },
+  decorators: [
+    (Story) => (
+      <div>
+        <MockWorkspacePage />
+        <Story />
+      </div>
+    ),
+  ],
 } satisfies Meta<typeof OnboardingWizard>;
+
+type Story = StoryObj<typeof meta>;
 
 export default meta;
 
@@ -29,34 +37,24 @@ export const Welcome: Story = {
   args: {
     __initialStep: "welcome",
   },
-  render: ({ invitationLink }) => <WizardStoryShell />,
 };
 
 export const SpacesStep: Story = {
   args: {
     __initialStep: "spaces",
   },
-  render: ({ invitationLink }) => (
-    <WizardStoryShell
-      invitationLink={invitationLink}
-      initialStep="spaces"
-      spacesInput="Engineering, Product, Marketing, Design"
-    />
-  ),
 };
 
 export const InviteStep: Story = {
   args: {
     __initialStep: "invite",
   },
-  render: ({ invitationLink }) => <WizardStoryShell invitationLink={invitationLink} />,
 };
 
 export const ProjectStep: Story = {
   args: {
     __initialStep: "project",
   },
-  render: ({ invitationLink }) => <WizardStoryShell invitationLink={invitationLink} />,
 };
 
 //
@@ -153,25 +151,6 @@ function MockWorkspacePage() {
           </article>
         </section>
       </div>
-    </div>
-  );
-}
-
-type Story = StoryObj<typeof meta>;
-
-const WizardStoryShell: React.FC<OnboardingWizard.Props> = (props) => {
-  return (
-    <StoryBackdrop>
-      <OnboardingWizard {...props} />
-    </StoryBackdrop>
-  );
-};
-
-function StoryBackdrop({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative min-h-screen bg-gradient-to-br from-surface-subtle via-surface-base to-surface-subtle text-content-base">
-      <MockWorkspacePage />
-      {children}
     </div>
   );
 }

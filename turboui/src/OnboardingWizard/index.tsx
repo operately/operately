@@ -32,9 +32,7 @@ type WizardState = {
 
 const PROFILE_IMAGE_URL = "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg";
 const PROFILE_IMAGE_ALT = "Marko Anastasov profile photo";
-const STORAGE_KEY = "operately:company-onboarding-wizard:v1";
 const STEP_SEQUENCE: Step[] = ["welcome", "spaces", "invite", "project"];
-const PROGRESS_STEPS: Step[] = ["spaces", "invite", "project"];
 const FOCUSABLE_SELECTOR =
   'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -62,24 +60,6 @@ function sanitizeSpaceNames(input: string): string[] {
   return result;
 }
 
-function persistWizardState(state: WizardState) {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-  } catch {
-    // Swallow storage errors silently.
-  }
-}
-
-function clearWizardState() {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    // Ignore storage errors.
-  }
-}
-
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   const nodes = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
   return nodes.filter((node) => !node.hasAttribute("disabled") && node.getAttribute("aria-hidden") !== "true");
@@ -102,10 +82,6 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
   const copyTimeoutRef = useRef<number | null>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
   const sanitizedSpaces = useMemo(() => sanitizeSpaceNames(state.spacesInput), [state.spacesInput]);
-
-  useEffect(() => {
-    persistWizardState(state);
-  }, [state]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !containerRef.current) return;
@@ -221,12 +197,10 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
   }, [goToStep, state.currentStep]);
 
   const completeWizard = useCallback(() => {
-    clearWizardState();
     props.onComplete({ spaces: sanitizedSpaces });
   }, [props.onComplete, sanitizedSpaces]);
 
   const handleSkip = useCallback(() => {
-    clearWizardState();
     props.onComplete({ spaces: sanitizedSpaces });
   }, [props.onComplete, sanitizedSpaces]);
 
@@ -258,9 +232,6 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
       setCopyStatus("idle");
     }
   }, [props.invitationLink]);
-
-  const currentStepIndex = PROGRESS_STEPS.indexOf(state.currentStep);
-  const progressPercentage = currentStepIndex >= 0 ? ((currentStepIndex + 1) / PROGRESS_STEPS.length) * 100 : 0;
 
   return (
     <div
