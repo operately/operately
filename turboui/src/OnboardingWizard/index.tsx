@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 
-import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
+import { PrimaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
-import { IconChevronLeft } from "../icons";
 
 export namespace OnboardingWizard {
   /**
@@ -15,7 +14,8 @@ export namespace OnboardingWizard {
   }
 
   export interface Props {
-    __initialStep?: "welcome" | "spaces" | "invite" | "project"; // Defaults to "welcome", for testing purposes only.
+    // Defaults to "welcome", for testing purposes only.
+    __initialStep?: "welcome" | "spaces" | "invite" | "project";
 
     invitationLink: string;
 
@@ -24,16 +24,11 @@ export namespace OnboardingWizard {
   }
 }
 
-type Step = "welcome" | "spaces" | "invite" | "project";
-
-type WizardState = {
-  currentStep: Step;
-  selectedSpaces: string[];
-};
-
 const PROFILE_IMAGE_URL = "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg";
 const PROFILE_IMAGE_ALT = "Marko Anastasov profile photo";
+
 const STEP_SEQUENCE: Step[] = ["welcome", "spaces", "invite", "project"];
+
 const SPACE_OPTIONS = [
   "Marketing",
   "Sales",
@@ -47,265 +42,69 @@ const SPACE_OPTIONS = [
   "Legal",
 ];
 
-const FOCUSABLE_SELECTOR =
-  'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+type Step = "welcome" | "spaces" | "invite" | "project";
 
-function sanitizeSpaceNames(input: string | string[]): string[] {
-  const taken = new Set<string>();
-  const result: string[] = [];
-
-  const parts = (Array.isArray(input) ? input : input.split(/[\n,]/))
-    .map((piece) => piece.trim())
-    .filter((piece) => piece.length > 0);
-
-  for (const part of parts) {
-    const normalized = part.toLocaleLowerCase();
-    if (normalized === "general") continue;
-    if (part.length > 100) continue;
-    if (taken.has(normalized)) continue;
-
-    taken.add(normalized);
-    result.push(part);
-
-    if (result.length === 10) break;
-  }
-
-  return result;
+interface WizardState {
+  step: Step;
+  next: () => void;
+  selectedSpaces: string[];
+  toggleSpace: (space: string, nextChecked: boolean) => void;
+  invitationLink: string;
 }
 
-function getFocusableElements(container: HTMLElement): HTMLElement[] {
-  const nodes = Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
-  return nodes.filter((node) => !node.hasAttribute("disabled") && node.getAttribute("aria-hidden") !== "true");
-}
+function useOnboardingWizardState(props: OnboardingWizard.Props): WizardState {
+  const [step, setStep] = useState<Step>(props.__initialStep || "welcome");
+  const [selectedSpaces, setSelectedSpaces] = useState<string[]>([]);
 
-export function OnboardingWizard(props: OnboardingWizard.Props) {
-  const [state, setState] = useState<WizardState>(() => {
-    return {
-      currentStep: props.__initialStep || "welcome",
-      selectedSpaces: [],
-    };
-  });
+  const next = useCallback(() => {
+    setStep((prev) => {
+      const currentIndex = STEP_SEQUENCE.indexOf(prev);
 
-  const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
-
-  const headingId = useId();
-  const descriptionId = useId();
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const headingRef = useRef<HTMLHeadingElement | null>(null);
-  const copyTimeoutRef = useRef<number | null>(null);
-  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const sanitizedSpaces = useMemo(() => sanitizeSpaceNames(state.selectedSpaces), [state.selectedSpaces]);
-
-  useEffect(() => {
-    if (typeof window === "undefined" || !containerRef.current) return;
-
-    const container = containerRef.current;
-    const body = document.body;
-    previouslyFocusedRef.current = document.activeElement as HTMLElement | null;
-    const previousOverflow = body.style.overflow;
-
-    const focusFirst = () => {
-      const focusable = getFocusableElements(container);
-      const first = focusable[0];
-      if (first) {
-        first.focus();
-      } else {
-        container.focus();
-      }
-    };
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && !event.defaultPrevented) {
-        event.preventDefault();
-        props.onDismiss();
-        return;
+      if (currentIndex >= 0 && currentIndex < STEP_SEQUENCE.length - 1) {
+        return STEP_SEQUENCE[currentIndex + 1]!;
       }
 
-      if (event.key !== "Tab") return;
-
-      const focusable = getFocusableElements(container);
-      if (focusable.length === 0) {
-        event.preventDefault();
-        return;
-      }
-
-      const first = focusable[0]!;
-      const last = focusable[focusable.length - 1]!;
-      const current = document.activeElement as HTMLElement | null;
-
-      if (event.shiftKey) {
-        if (!current || current === first) {
-          event.preventDefault();
-          last.focus();
-        }
-      } else {
-        if (!current || current === last) {
-          event.preventDefault();
-          first.focus();
-        }
-      }
-    };
-
-    const handleFocusIn = (event: FocusEvent) => {
-      if (!container.contains(event.target as Node)) {
-        focusFirst();
-      }
-    };
-
-    window.requestAnimationFrame(focusFirst);
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("focusin", handleFocusIn);
-    body.style.overflow = "hidden";
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("focusin", handleFocusIn);
-      body.style.overflow = previousOverflow;
-      window.requestAnimationFrame(() => previouslyFocusedRef.current?.focus?.());
-    };
-  }, [props.onDismiss]);
-
-  useEffect(() => {
-    if (headingRef.current) {
-      headingRef.current.focus();
-    }
-  }, [state.currentStep]);
-
-  useEffect(() => {
-    return () => {
-      if (copyTimeoutRef.current) {
-        window.clearTimeout(copyTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const goToStep = useCallback((step: Step) => {
-    setState((prev) => ({ ...prev, currentStep: step }));
-  }, []);
-
-  const handleStart = useCallback(() => {
-    goToStep("spaces");
-  }, [goToStep]);
-
-  const handleToggleSpace = useCallback((space: string, nextChecked: boolean) => {
-    setState((prev) => {
-      const filtered = prev.selectedSpaces.filter((item) => item !== space);
-      const nextSelection = nextChecked ? [...filtered, space] : filtered;
-      const orderedSelection = SPACE_OPTIONS.filter((option) => nextSelection.includes(option));
-      return { ...prev, selectedSpaces: orderedSelection };
+      return prev;
     });
   }, []);
 
-  const handleSpacesContinue = useCallback(() => {
-    goToStep("invite");
-  }, [goToStep]);
-
-  const handleInviteContinue = useCallback(() => {
-    goToStep("project");
-  }, [goToStep]);
-
-  const handleBack = useCallback(() => {
-    const currentIndex = STEP_SEQUENCE.indexOf(state.currentStep);
-    if (currentIndex > 0) {
-      const previousStep = STEP_SEQUENCE[currentIndex - 1];
-      if (previousStep) {
-        goToStep(previousStep);
-      }
-    }
-  }, [goToStep, state.currentStep]);
-
-  const completeWizard = useCallback(() => {
-    props.onComplete({ spaces: sanitizedSpaces });
-  }, [props.onComplete, sanitizedSpaces]);
-
-  const handleSkip = useCallback(() => {
-    props.onComplete({ spaces: sanitizedSpaces });
-  }, [props.onComplete, sanitizedSpaces]);
-
-  const handleDismiss = useCallback(() => {
-    props.onDismiss();
-  }, [props.onDismiss]);
-
-  const handleCopy = useCallback(async () => {
-    try {
-      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(props.invitationLink);
+  const toggleSpace = useCallback((space: string, nextChecked: boolean) => {
+    setSelectedSpaces((prev) => {
+      if (nextChecked) {
+        if (prev.includes(space)) return prev;
+        if (prev.length >= 10) return prev;
+        return [...prev, space];
       } else {
-        const fallbackInput = document.createElement("input");
-        fallbackInput.value = props.invitationLink;
-        document.body.appendChild(fallbackInput);
-        fallbackInput.select();
-        document.execCommand("copy");
-        document.body.removeChild(fallbackInput);
+        return prev.filter((s) => s !== space);
       }
-      setCopyStatus("copied");
-      if (copyTimeoutRef.current) {
-        window.clearTimeout(copyTimeoutRef.current);
-      }
-      copyTimeoutRef.current = window.setTimeout(() => {
-        setCopyStatus("idle");
-        copyTimeoutRef.current = null;
-      }, 2000);
-    } catch {
-      setCopyStatus("idle");
-    }
-  }, [props.invitationLink]);
+    });
+  }, []);
+
+  return {
+    step,
+    next,
+    selectedSpaces,
+    toggleSpace,
+    invitationLink: props.invitationLink,
+  };
+}
+
+export function OnboardingWizard(props: OnboardingWizard.Props) {
+  const state = useOnboardingWizardState(props);
 
   return (
-    <div
-      className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-8 bg-black/50 backdrop-blur-sm"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          handleDismiss();
-        }
-      }}
-    >
+    <div className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-8 bg-black/50 backdrop-blur-sm">
       <div
-        ref={containerRef}
         className="w-full max-w-2xl bg-surface-base border border-surface-outline/60 rounded-2xl shadow-2xl focus:outline-none"
         role="dialog"
         aria-modal="true"
-        aria-labelledby={headingId}
-        aria-describedby={descriptionId}
-        tabIndex={-1}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="mx-auto w-full max-w-2xl" id={descriptionId}>
-          {state.currentStep === "welcome" && <WelcomeStep onGetStarted={handleStart} />}
-
-          {state.currentStep === "spaces" && (
-            <SpacesStep
-              headingRef={headingRef}
-              headingId={headingId}
-              selectedSpaces={state.selectedSpaces}
-              onToggleSpace={handleToggleSpace}
-              onContinue={handleSpacesContinue}
-              onSkip={handleSkip}
-            />
-          )}
-
-          {state.currentStep === "invite" && (
-            <InviteStep
-              headingRef={headingRef}
-              headingId={headingId}
-              invitationLink={props.invitationLink}
-              onContinue={handleInviteContinue}
-              onSkip={handleSkip}
-              onBack={handleBack}
-              onCopy={handleCopy}
-              copyStatus={copyStatus}
-            />
-          )}
-
-          {state.currentStep === "project" && (
-            <ProjectStep
-              headingRef={headingRef}
-              headingId={headingId}
-              onFinish={completeWizard}
-              onSkip={handleSkip}
-              onBack={handleBack}
-            />
-          )}
+        <div className="mx-auto w-full max-w-2xl">
+          {state.step === "welcome" && <WelcomeStep state={state} />}
+          {state.step === "spaces" && <SpacesStep state={state} />}
+          {state.step === "invite" && <InviteStep state={state} />}
+          {state.step === "project" && <ProjectStep state={state} />}
         </div>
       </div>
     </div>
@@ -314,32 +113,21 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
 
 type StepHeadingProps = {
   step: number;
-  headingRef: React.MutableRefObject<HTMLHeadingElement | null>;
-  headingId: string;
   title: string;
   subtitle?: React.ReactNode;
 };
 
-function StepHeading({ step, headingId, headingRef, title, subtitle }: StepHeadingProps) {
+function StepHeading({ step, title, subtitle }: StepHeadingProps) {
   return (
     <div className="max-w-2xl">
       <div className="uppercase text-xs mb-4">Step {step} of 3</div>
-      <h1
-        id={headingId}
-        ref={headingRef}
-        className="text-2xl sm:text-2xl font-semibold text-content-accent focus:outline-none"
-        tabIndex={-1}
-      >
+      <h1 className="text-2xl sm:text-2xl font-semibold text-content-accent focus:outline-none" tabIndex={-1}>
         {title}
       </h1>
       {subtitle && <p className="mt-1 text-content-dimmed">{subtitle}</p>}
     </div>
   );
 }
-
-type WelcomeStepProps = {
-  onGetStarted: () => void;
-};
 
 function WizardStep({
   content,
@@ -361,7 +149,7 @@ function WizardStep({
   );
 }
 
-function WelcomeStep({ onGetStarted }: WelcomeStepProps) {
+function WelcomeStep({ state }: { state: WizardState }) {
   return (
     <WizardStep
       content={
@@ -394,29 +182,18 @@ function WelcomeStep({ onGetStarted }: WelcomeStepProps) {
           </div>
         </div>
       }
-      next={<PrimaryButton onClick={onGetStarted}>Let's get started</PrimaryButton>}
+      next={<PrimaryButton onClick={state.next}>Let's get started</PrimaryButton>}
     />
   );
 }
 
-type SpacesStepProps = {
-  headingRef: React.MutableRefObject<HTMLHeadingElement | null>;
-  headingId: string;
-  selectedSpaces: string[];
-  onToggleSpace: (space: string, nextChecked: boolean) => void;
-  onContinue: () => void;
-  onSkip: () => void;
-};
-
-function SpacesStep({ headingRef, headingId, selectedSpaces, onToggleSpace, onContinue, onSkip }: SpacesStepProps) {
+function SpacesStep({ state }: { state: WizardState }) {
   return (
     <WizardStep
       content={
         <div className="p-6">
           <StepHeading
             step={1}
-            headingId={headingId}
-            headingRef={headingRef}
             title="Set up spaces"
             subtitle={
               <>
@@ -429,23 +206,14 @@ function SpacesStep({ headingRef, headingId, selectedSpaces, onToggleSpace, onCo
 
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
             {SPACE_OPTIONS.map((space) => {
-              const checked = selectedSpaces.includes(space);
-              const handleToggle = (nextChecked: boolean) => onToggleSpace(space, nextChecked);
-
-              const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
-                if (event.key === " " || event.key === "Enter") {
-                  event.preventDefault();
-                  onToggleSpace(space, !checked);
-                }
-              };
+              const checked = state.selectedSpaces.includes(space);
+              const handleToggle = (nextChecked: boolean) => state.toggleSpace(space, nextChecked);
 
               return (
                 <div
                   role="checkbox"
                   aria-checked={checked}
-                  tabIndex={0}
-                  onClick={() => onToggleSpace(space, !checked)}
-                  onKeyDown={handleKeyDown}
+                  onClick={() => handleToggle(!checked)}
                   className="flex items-center gap-3"
                 >
                   <Checkbox checked={checked} onChange={handleToggle} />
@@ -459,7 +227,7 @@ function SpacesStep({ headingRef, headingId, selectedSpaces, onToggleSpace, onCo
         </div>
       }
       next={
-        <PrimaryButton onClick={onContinue} size="sm">
+        <PrimaryButton onClick={state.next} size="sm">
           Next -&gt;
         </PrimaryButton>
       }
@@ -467,26 +235,33 @@ function SpacesStep({ headingRef, headingId, selectedSpaces, onToggleSpace, onCo
   );
 }
 
-type InviteStepProps = {
-  headingRef: React.MutableRefObject<HTMLHeadingElement | null>;
-  headingId: string;
-  invitationLink: string;
-  onContinue: () => void;
-  onSkip: () => void;
-  onBack: () => void;
-  onCopy: () => void;
-  copyStatus: "idle" | "copied";
-};
+function InviteStep({ state }: { state: WizardState }) {
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+  const handleCopy = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(state.invitationLink);
+      } else {
+        const fallbackInput = document.createElement("input");
+        fallbackInput.value = state.invitationLink;
+        document.body.appendChild(fallbackInput);
+        fallbackInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(fallbackInput);
+      }
+      setCopyStatus("copied");
+      setTimeout(() => setCopyStatus("idle"), 2000);
+    } catch {
+      setCopyStatus("idle");
+    }
+  };
 
-function InviteStep({ headingRef, headingId, invitationLink, onContinue, onCopy, copyStatus }: InviteStepProps) {
   return (
     <WizardStep
       content={
         <div className="p-6">
           <StepHeading
             step={2}
-            headingId={headingId}
-            headingRef={headingRef}
             title="Invite your team"
             subtitle="Share this link to get your team on board with Operately."
           />
@@ -498,12 +273,12 @@ function InviteStep({ headingRef, headingId, invitationLink, onContinue, onCopy,
             <div className="flex flex-col sm:flex-row gap-3">
               <input
                 id="onboarding-invite-link"
-                value={invitationLink}
+                value={state.invitationLink}
                 readOnly
                 className="flex-1 min-w-0 px-3 py-2 border border-surface-outline bg-surface-dimmed rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
                 aria-label="Invitation link"
               />
-              <PrimaryButton onClick={onCopy}>{copyStatus === "copied" ? "Copied" : "Copy link"}</PrimaryButton>
+              <PrimaryButton onClick={handleCopy}>{copyStatus === "copied" ? "Copied" : "Copy link"}</PrimaryButton>
             </div>
           </div>
 
@@ -513,7 +288,7 @@ function InviteStep({ headingRef, headingId, invitationLink, onContinue, onCopy,
         </div>
       }
       next={
-        <PrimaryButton onClick={onContinue} size="sm">
+        <PrimaryButton onClick={state.next} size="sm">
           Next -&gt;
         </PrimaryButton>
       }
@@ -521,20 +296,11 @@ function InviteStep({ headingRef, headingId, invitationLink, onContinue, onCopy,
   );
 }
 
-type ProjectStepProps = {
-  headingRef: React.MutableRefObject<HTMLHeadingElement | null>;
-  headingId: string;
-  onFinish: () => void;
-  onSkip: () => void;
-  onBack: () => void;
-};
-
-function ProjectStep({ headingRef, headingId, onFinish, onSkip, onBack }: ProjectStepProps) {
+function ProjectStep({ state }: { state: WizardState }) {
   return (
     <div className="space-y-6">
       <StepHeading
-        headingId={headingId}
-        headingRef={headingRef}
+        step={3}
         title="Create your first project"
         subtitle="We'll spin up a guided project so you can explore how Operately keeps work organized."
       />
@@ -567,12 +333,8 @@ function ProjectStep({ headingRef, headingId, onFinish, onSkip, onBack }: Projec
       </div>
 
       <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-        <SecondaryButton icon={IconChevronLeft} onClick={onBack}>
-          Back
-        </SecondaryButton>
         <div className="flex items-center gap-3">
-          <GhostButton onClick={onSkip}>Skip for now</GhostButton>
-          <PrimaryButton onClick={onFinish}>Finish setup</PrimaryButton>
+          <PrimaryButton onClick={state.next}>Finish</PrimaryButton>
         </div>
       </div>
     </div>
