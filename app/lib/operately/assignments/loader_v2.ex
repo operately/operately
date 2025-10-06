@@ -96,6 +96,7 @@ defmodule Operately.Assignments.LoaderV2 do
       where: assignee.person_id == ^person.id,
       where: t.status in ["pending", "todo", "in_progress"],
       where: is_nil(project.deleted_at),
+      where: project.status == "active" and is_nil(project.closed_at),
       preload: [project: {project, group: space}]
     )
   end
@@ -136,8 +137,8 @@ defmodule Operately.Assignments.LoaderV2 do
       join: space in assoc(project, :group),
       where: m.status == :pending,
       where: champion.id == ^person.id,
-      where: is_nil(project.deleted_at),
-      where: is_nil(m.deleted_at),
+      where: is_nil(project.deleted_at) and is_nil(m.deleted_at),
+      where: project.status == "active" and is_nil(project.closed_at),
       preload: [project: {project, group: space}]
     )
   end

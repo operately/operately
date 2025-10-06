@@ -25,7 +25,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       |> Factory.log_in_person(:person)
     end
 
-    test "get_pending_project_check_ins", ctx do
+    test "gets pending project check-ins", ctx do
       today_project = create_project(ctx, DateTime.utc_now(), %{name: "today"})
       due_project = create_project(ctx, past_date(), %{name: "3 days ago"})
       create_project(ctx, upcoming_date())
@@ -59,7 +59,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert p2.role == "owner"
     end
 
-    test "get_pending_project_check_ins ignores closed projects", ctx do
+    test "ignores pending check-ins of closed projects", ctx do
       create_project(ctx, upcoming_date())
       create_project(ctx, past_date()) |> close_project()
       due_project = create_project(ctx, past_date(), %{name: "single project"})
@@ -78,7 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert p.role == "owner"
     end
 
-    test "get_pending_goal_updates", ctx do
+    test "get pending goal check-ins", ctx do
       today_goal = create_goal(ctx.person, ctx.company, DateTime.utc_now(), %{name: "today"})
       due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "3 days ago"})
       create_goal(ctx.person, ctx.company, upcoming_date())
@@ -111,7 +111,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert g2.role == "owner"
     end
 
-    test "get_pending_goal_updates ignores closed goals", ctx do
+    test "ignores pending check-ins of closed goals", ctx do
       create_goal(ctx.person, ctx.company, upcoming_date())
       create_goal(ctx.person, ctx.company, past_date()) |> close_goal()
       due_goal = create_goal(ctx.person, ctx.company, past_date(), %{name: "single goal"})
@@ -130,7 +130,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert g.role == "owner"
     end
 
-    test "get_pending_project_check_in_acknowledgements", ctx do
+    test "get pending project check-in acknowledgements", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
       project =
         create_project(ctx, upcoming_date(), %{
@@ -156,7 +156,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert c.origin.type == "project"
     end
 
-    test "get_pending_project_check_in_acknowledgements ignores own check-ins", ctx do
+    test "ignores pending acknowledgements of own project check-ins", ctx do
       project = create_project(ctx, upcoming_date())
       create_check_in(project)
 
@@ -165,7 +165,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert length(assignments) == 0
     end
 
-    test "get_pending_goal_update_acknowledgements", ctx do
+    test "get pending goal check-in acknowledgements", ctx do
       another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
       goal =
         create_goal(another_person, ctx.company, upcoming_date(), %{
@@ -190,7 +190,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert u.origin.type == "goal"
     end
 
-    test "get_pending_goal_update_acknowledgements ignores own updates", ctx do
+    test "ignores pending acknowledgements of own goal check-ins", ctx do
       goal = create_goal(ctx.person, ctx.company, upcoming_date())
       create_update(ctx.person, goal)
 
@@ -199,7 +199,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert length(assignments) == 0
     end
 
-    test "get_pending_tasks", ctx do
+    test "get pending tasks", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
       task1 = create_task(project, ctx.person, %{
@@ -254,7 +254,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert t2.task_status == "in_progress"
     end
 
-    test "get_pending_tasks ignores tasks from deleted projects", ctx do
+    test "ignores tasks from deleted projects", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "Project"})
 
       create_task(project, ctx.person, %{
@@ -271,7 +271,26 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert length(task_assignments) == 0
     end
 
-    test "get_pending_milestones", ctx do
+    test "ignores tasks from closed projects", ctx do
+      project = create_project(ctx, upcoming_date(), %{name: "Project"})
+
+      create_task(project, ctx.person, %{
+        name: "Task",
+        status: "todo",
+        due_date: ContextualDate.create_day_date(past_date_as_date())
+      })
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert length(assignments) == 1
+
+      Map.put(ctx, :project, project)
+      |> Factory.close_project(:project)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert length(assignments) == 0
+    end
+
+    test "get pending milestones", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "My Project"})
 
       milestone1 = create_milestone(project, %{
@@ -318,7 +337,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert m2.name == "Milestone 2"
     end
 
-    test "get_pending_milestones ignores milestones from deleted projects", ctx do
+    test "ignores milestones from deleted projects", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "Project"})
 
       create_milestone(project, %{
@@ -335,7 +354,25 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert length(milestone_assignments) == 0
     end
 
-    test "get_pending_milestones for project champion only", ctx do
+    test "ignores milestones from closed projects", ctx do
+      project = create_project(ctx, upcoming_date(), %{name: "Project"})
+
+      create_milestone(project, %{
+        title: "Milestone",
+        status: :pending
+      })
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert length(assignments) == 1
+
+      Map.put(ctx, :project, project)
+      |> Factory.close_project(:project)
+
+      assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments_v2, %{})
+      assert length(assignments) == 0
+    end
+
+    test "get pending milestones for project champion only", ctx do
       another_person = person_fixture_with_account(%{company_id: ctx.company.id})
       project = create_project(ctx, upcoming_date(), %{
         creator_id: another_person.id,
@@ -353,7 +390,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsV2Test do
       assert length(milestone_assignments) == 0
     end
 
-    test "get_pending_milestones ignores deleted milestones", ctx do
+    test "ignores deleted milestones", ctx do
       project = create_project(ctx, upcoming_date(), %{name: "Project"})
 
       create_milestone(project, %{
