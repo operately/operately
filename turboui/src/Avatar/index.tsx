@@ -73,6 +73,7 @@ function initials(fullName?: string | null): string {
     if (!fullName) return "";
 
     const firstLeters = fullName
+      .toUpperCase()
       .split(" ")
       .filter((e) => e !== "")
       .map((n) => n[0]);
