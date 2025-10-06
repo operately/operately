@@ -3,26 +3,28 @@ defmodule Operately.Operations.CompanyMemberAdding do
   alias Operately.{Access, Repo}
 
   def run(admin, attrs, skip_invitation \\ false) do
-    result = Multi.new()
-    |> insert_account(attrs)
-    |> insert_person(admin, attrs, skip_invitation)
-    |> insert_membership_with_company_space_group()
-    |> insert_binding_to_company_space()
-    |> insert_invitation(admin, skip_invitation)
-    |> insert_activity(admin)
-    |> Repo.transaction()
-    |> Repo.extract_result(:invitation)
+    result =
+      Multi.new()
+      |> insert_account(attrs)
+      |> insert_person(admin, attrs, skip_invitation)
+      |> insert_membership_with_company_space_group()
+      |> insert_binding_to_company_space()
+      |> insert_invitation(admin, skip_invitation)
+      |> insert_activity(admin)
+      |> Repo.transaction()
+      |> Repo.extract_result(:invitation)
 
     case result do
       {:ok, result} ->
         {:ok, result}
+
       {:error, _, changeset, _} ->
         {:error, format_errors(changeset)}
     end
   end
 
   defp insert_account(multi, attrs) do
-    password = :crypto.strong_rand_bytes(64) |> Base.encode64 |> binary_part(0, 64)
+    password = :crypto.strong_rand_bytes(64) |> Base.encode64() |> binary_part(0, 64)
 
     Multi.run(multi, :account, fn repo, _changes ->
       case repo.get_by(Operately.People.Account, email: attrs.email) do
@@ -55,7 +57,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
         full_name: attrs.full_name,
         email: attrs.email,
         title: attrs.title,
-        has_open_invitation: not skip_invitation,
+        has_open_invitation: not skip_invitation
       })
     end)
   end
@@ -68,7 +70,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     |> Multi.insert(:space_access_membership, fn changes ->
       Access.GroupMembership.changeset(%{
         group_id: changes.space_access_group.id,
-        person_id: changes.person.id,
+        person_id: changes.person.id
       })
     end)
   end
@@ -81,7 +83,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
       Access.create_binding(%{
         group_id: changes.person_access_group.id,
         context_id: context.id,
-        access_level: Access.Binding.edit_access(),
+        access_level: Access.Binding.edit_access()
       })
     end)
   end
@@ -95,7 +97,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
       Operately.Invitations.Invitation.changeset(%{
         member_id: changes[:person].id,
         admin_id: admin.id,
-        admin_name: admin.full_name,
+        admin_name: admin.full_name
       })
     end)
   end
@@ -107,7 +109,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
         invitatition_id: changes[:invitation] && changes[:invitation].id,
         name: changes[:person].full_name,
         email: changes[:person].email,
-        title: changes[:person].title,
+        title: changes[:person].title
       }
     end)
   end
@@ -117,7 +119,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     |> Enum.map(fn {field, {message, _opts}} ->
       %{
         field: field,
-        message: message,
+        message: message
       }
     end)
   end
