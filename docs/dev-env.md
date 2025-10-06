@@ -8,6 +8,7 @@ This document describes how to set up a development environment for the Operatel
 - [Clone the Repository](#1-clone-the-repository)
 - [Build the development environment](#2-build-the-development-environment)
 - [Start the Phoenix server](#3-start-the-phoenix-server)
+- [Advanced Topics: Multiple Local LLM Agents](#advanced-topics-multiple-local-llm-agents)
 
 ## 0. Pre-requisites
 
@@ -19,21 +20,21 @@ Make sure you have both installed on your machine.
 
 Test if you have Docker installed:
 
-``` bash
+```bash
 $ docker --version
 Docker version 24.0.0, build 24.0.0-6
 ```
 
 Test if your Docker version has the `compose` plugin installed:
 
-``` bash
+```bash
 $ docker compose version
 Docker Compose version v2.20.0
 ```
 
 Test if you have Make installed:
 
-``` bash
+```bash
 $ make --version
 GNU Make 4.3
 Built for aarch64-unknown-linux-gnu
@@ -47,13 +48,13 @@ There is NO WARRANTY, to the extent permitted by law.
 
 Clone the repository to your local machine:
 
-``` bash
+```bash
 git clone https://github.com/operately/operately.git
 ```
 
 Change to the project directory:
 
-``` bash
+```bash
 cd operately
 ```
 
@@ -61,7 +62,7 @@ cd operately
 
 To set up the development environment:
 
-``` bash
+```bash
 make dev.build
 ```
 
@@ -73,9 +74,16 @@ migrations.
 
 To start the Phoenix server, run the following command:
 
-``` bash
+```bash
 make dev.server
 ```
 
 The Phoenix server will start at [http://localhost:4000](http://localhost:4000).
 Enter the email and password you used to create the development user to log in.
+
+## Advanced Topics: Multiple Local LLM Agents
+
+If you need to run multiple LLM agents simultaneously to build Operately, follow
+[Advanced: Running Multiple Development Instances](./dev-env-multi-instance.md) for
+instructions on combining git worktrees with the `PORT_OFFSET` configuration to
+support multi LLM Agents.
