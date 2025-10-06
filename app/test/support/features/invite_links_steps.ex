@@ -157,7 +157,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :assert_you_are_member_of_the_general_space, ctx do
     general_space = Companies.get_company_space!(ctx.company.id)
-    members = Operately.Groups.list_members(general_space)
+    members = Groups.list_members(general_space)
 
     assert Enum.any?(members, fn member -> member.email == ctx.new_member_email end)
 
