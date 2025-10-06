@@ -3,7 +3,9 @@ defmodule Operately.People do
 
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Companies
   alias Operately.Companies.Company
+  alias Operately.Groups.Member
   alias Operately.People.{Person, Account}
   alias Operately.Access.Binding
   alias Operately.Access.Fetch
@@ -81,7 +83,9 @@ defmodule Operately.People do
          {:ok, group} <- Access.create_group(%{person_id: person.id}),
          {:ok, _} <- Access.create_group_membership(%{group_id: group.id, person_id: person.id}),
          company_group <- Access.get_group(company_id: person.company_id, tag: :standard),
-         {:ok, _} <- Access.create_group_membership(%{group_id: company_group.id, person_id: person.id}) do
+         {:ok, _} <- Access.create_group_membership(%{group_id: company_group.id, person_id: person.id}),
+         company_space <- Companies.get_company_space!(person.company_id),
+         {:ok, _} <- Repo.insert(Member.changeset(%Member{}, %{group_id: company_space.id, person_id: person.id})) do
       {:ok, person}
     else
       error -> error

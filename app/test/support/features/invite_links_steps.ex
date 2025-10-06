@@ -1,6 +1,8 @@
 defmodule Operately.Support.Features.InviteLinksSteps do
   use Operately.FeatureCase
 
+  alias Operately.Companies
+  alias Operately.Groups
   alias Operately.PeopleFixtures
   alias Operately.Support.Factory
   alias Operately.Support.Features.UI.Emails, as: Emails
@@ -148,6 +150,15 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :assert_you_are_member_of_the_company, ctx do
     members = Operately.People.list_people(ctx.company.id)
+    assert Enum.any?(members, fn member -> member.email == ctx.new_member_email end)
+
+    ctx
+  end
+
+  step :assert_you_are_member_of_the_general_space, ctx do
+    general_space = Companies.get_company_space!(ctx.company.id)
+    members = Operately.Groups.list_members(general_space)
+
     assert Enum.any?(members, fn member -> member.email == ctx.new_member_email end)
 
     ctx
