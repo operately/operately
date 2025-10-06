@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 
 import { GhostButton, PrimaryButton, SecondaryButton } from "../Button";
+import { Checkbox } from "../Checkbox";
 import { IconCheck, IconChevronLeft, IconCopy } from "../icons";
 
 export namespace OnboardingWizard {
@@ -27,21 +28,33 @@ type Step = "welcome" | "spaces" | "invite" | "project";
 
 type WizardState = {
   currentStep: Step;
-  spacesInput: string;
+  selectedSpaces: string[];
 };
 
 const PROFILE_IMAGE_URL = "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg";
 const PROFILE_IMAGE_ALT = "Marko Anastasov profile photo";
 const STEP_SEQUENCE: Step[] = ["welcome", "spaces", "invite", "project"];
+const SPACE_OPTIONS = [
+  "Marketing",
+  "Sales",
+  "Engineering",
+  "Product",
+  "Design",
+  "HR",
+  "Finance",
+  "Customer Success",
+  "Operations",
+  "Legal",
+];
+
 const FOCUSABLE_SELECTOR =
   'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-function sanitizeSpaceNames(input: string): string[] {
+function sanitizeSpaceNames(input: string | string[]): string[] {
   const taken = new Set<string>();
   const result: string[] = [];
 
-  const parts = input
-    .split(/[\n,]/)
+  const parts = (Array.isArray(input) ? input : input.split(/[\n,]/))
     .map((piece) => piece.trim())
     .filter((piece) => piece.length > 0);
 
@@ -69,7 +82,7 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
   const [state, setState] = useState<WizardState>(() => {
     return {
       currentStep: props.__initialStep || "welcome",
-      spacesInput: "",
+      selectedSpaces: [],
     };
   });
 
@@ -81,7 +94,7 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
   const headingRef = useRef<HTMLHeadingElement | null>(null);
   const copyTimeoutRef = useRef<number | null>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
-  const sanitizedSpaces = useMemo(() => sanitizeSpaceNames(state.spacesInput), [state.spacesInput]);
+  const sanitizedSpaces = useMemo(() => sanitizeSpaceNames(state.selectedSpaces), [state.selectedSpaces]);
 
   useEffect(() => {
     if (typeof window === "undefined" || !containerRef.current) return;
@@ -174,8 +187,13 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
     goToStep("spaces");
   }, [goToStep]);
 
-  const handleSpacesInputChange = useCallback((value: string) => {
-    setState((prev) => ({ ...prev, spacesInput: value }));
+  const handleToggleSpace = useCallback((space: string, nextChecked: boolean) => {
+    setState((prev) => {
+      const filtered = prev.selectedSpaces.filter((item) => item !== space);
+      const nextSelection = nextChecked ? [...filtered, space] : filtered;
+      const orderedSelection = SPACE_OPTIONS.filter((option) => nextSelection.includes(option));
+      return { ...prev, selectedSpaces: orderedSelection };
+    });
   }, []);
 
   const handleSpacesContinue = useCallback(() => {
@@ -259,11 +277,10 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
             <SpacesStep
               headingRef={headingRef}
               headingId={headingId}
-              spacesInput={state.spacesInput}
-              onChange={handleSpacesInputChange}
+              selectedSpaces={state.selectedSpaces}
+              onToggleSpace={handleToggleSpace}
               onContinue={handleSpacesContinue}
               onSkip={handleSkip}
-              sanitizedSpaces={sanitizedSpaces}
             />
           )}
 
@@ -296,24 +313,26 @@ export function OnboardingWizard(props: OnboardingWizard.Props) {
 }
 
 type StepHeadingProps = {
+  step: number;
   headingRef: React.MutableRefObject<HTMLHeadingElement | null>;
   headingId: string;
   title: string;
-  subtitle?: string;
+  subtitle?: React.ReactNode;
 };
 
-function StepHeading({ headingId, headingRef, title, subtitle }: StepHeadingProps) {
+function StepHeading({ step, headingId, headingRef, title, subtitle }: StepHeadingProps) {
   return (
     <div className="max-w-2xl">
+      <div className="uppercase text-xs mb-4">Step {step} of 3</div>
       <h1
         id={headingId}
         ref={headingRef}
-        className="text-2xl sm:text-3xl font-semibold text-content-accent focus:outline-none"
+        className="text-2xl sm:text-2xl font-semibold text-content-accent focus:outline-none"
         tabIndex={-1}
       >
         {title}
       </h1>
-      {subtitle && <p className="mt-2 text-base text-content-dimmed">{subtitle}</p>}
+      {subtitle && <p className="mt-1 text-content-dimmed">{subtitle}</p>}
     </div>
   );
 }
@@ -332,7 +351,7 @@ function WizardStep({
   next?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col">
       <div className="p-6">{content}</div>
       <div className="flex flex-col sm:flex-row gap-3 border-t py-4 px-6 w-full sm:justify-end">
         {skip}
@@ -346,7 +365,7 @@ function WelcomeStep({ onGetStarted }: WelcomeStepProps) {
   return (
     <WizardStep
       content={
-        <div className="p-6 pt-10 flex flex-col items-center text-center">
+        <div className="p-6 pt-10 flex flex-col items-center text-center mx-auto">
           <img
             src={PROFILE_IMAGE_URL}
             alt={PROFILE_IMAGE_ALT}
@@ -383,68 +402,66 @@ function WelcomeStep({ onGetStarted }: WelcomeStepProps) {
 type SpacesStepProps = {
   headingRef: React.MutableRefObject<HTMLHeadingElement | null>;
   headingId: string;
-  spacesInput: string;
-  sanitizedSpaces: string[];
-  onChange: (value: string) => void;
+  selectedSpaces: string[];
+  onToggleSpace: (space: string, nextChecked: boolean) => void;
   onContinue: () => void;
   onSkip: () => void;
 };
 
-function SpacesStep({
-  headingRef,
-  headingId,
-  spacesInput,
-  sanitizedSpaces,
-  onChange,
-  onContinue,
-  onSkip,
-}: SpacesStepProps) {
+function SpacesStep({ headingRef, headingId, selectedSpaces, onToggleSpace, onContinue, onSkip }: SpacesStepProps) {
   return (
     <WizardStep
       content={
-        <>
+        <div className="p-6">
           <StepHeading
+            step={1}
             headingId={headingId}
             headingRef={headingRef}
             title="Set up spaces"
-            subtitle="Spaces help your teams, departments, and initiatives stay organized. Create the ones you need to get started."
+            subtitle={
+              <>
+                Spaces help you organize work by team or department.
+                <br />
+                Do you have any of these teams in your company?
+              </>
+            }
           />
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-content-accent" htmlFor="onboarding-spaces-input">
-              Which spaces should we create for you?
-            </label>
-            <textarea
-              id="onboarding-spaces-input"
-              value={spacesInput}
-              onChange={(event) => onChange(event.target.value)}
-              placeholder="Engineering, Product, Marketing"
-              rows={3}
-              className="w-full border border-surface-outline rounded-lg px-3 py-2 bg-surface-base text-sm text-content-base focus:outline-none focus:ring-2 focus:ring-brand-1"
-            />
+          <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
+            {SPACE_OPTIONS.map((space) => {
+              const checked = selectedSpaces.includes(space);
+              const handleToggle = (nextChecked: boolean) => onToggleSpace(space, nextChecked);
+
+              const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+                if (event.key === " " || event.key === "Enter") {
+                  event.preventDefault();
+                  onToggleSpace(space, !checked);
+                }
+              };
+
+              return (
+                <div
+                  role="checkbox"
+                  aria-checked={checked}
+                  tabIndex={0}
+                  onClick={() => onToggleSpace(space, !checked)}
+                  onKeyDown={handleKeyDown}
+                  className="flex items-center gap-3"
+                >
+                  <Checkbox checked={checked} onChange={handleToggle} />
+                  <span>{space}</span>
+                </div>
+              );
+            })}
           </div>
-
-          <p className="text-sm text-content-dimmed">
-            Separate each space with a comma. We'll save up to 10 unique names, ignore blanks or "General", and skip
-            anything longer than 100 characters.
-          </p>
-
-          {sanitizedSpaces.length > 0 && (
-            <div>
-              <div className="text-sm font-medium text-content-accent mb-2">We'll create these spaces:</div>
-              <div className="flex flex-wrap gap-2">
-                {sanitizedSpaces.map((space) => (
-                  <span key={space} className="px-3 py-1 rounded-full bg-brand-1/10 text-brand-1 text-sm">
-                    {space}
-                  </span>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+          <div className="mt-8 text-xs text-content-dimmed">You can always edit spaces later or add new ones.</div>
+        </div>
       }
-      skip={<GhostButton onClick={onSkip}>Skip for now</GhostButton>}
-      next={<PrimaryButton onClick={onContinue}>Continue</PrimaryButton>}
+      next={
+        <PrimaryButton onClick={onContinue} size="sm">
+          Next -&gt;
+        </PrimaryButton>
+      }
     />
   );
 }
