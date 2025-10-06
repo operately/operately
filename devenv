@@ -58,12 +58,57 @@ esac
 
 FIRST_ARG=$1
 
+#
+# Profile:
+# 
+# Determine if we are running in CI or locally and set the docker compose profile
+# accordingly. In CI, we want to run the "ci" profile which does not include services
+# like pgweb and mailhog. Locally, we want to run the "dev"
+#
+
 if [ "$CI" = "true" ]; then
   PROFILE="ci"
 else
   PROFILE="dev"
 fi
 
+#
+# PORT OFFSET:
+#
+# We want to be able to run multiple instances of the app on the same machine
+# without port conflicts. To do this, we will use a PORT_OFFSET environment variable
+# that will be added to the base port numbers for each service. The PORT_OFFSET
+# can be set in a .env file in the root of the project. If the PORT_OFFSET is not
+# set, it will default to 4000.
+#
+if [ -f .env ]; then
+  PORT_OFFSET=$(grep '^PORT_OFFSET=' .env | cut -d '=' -f2)
+  if [ -z "$PORT_OFFSET" ]; then
+    PORT_OFFSET=4000
+  fi
+else
+  PORT_OFFSET=4000
+fi
+
+export PORT_DEV_SERVER=$((PORT_OFFSET + 0))
+export PORT_TEST_SERVER=$((PORT_OFFSET + 2))
+export PORT_STORYBOOK_SERVER=$((PORT_OFFSET + 3))
+export PORT_SCREENSHOTS=$((PORT_OFFSET + 4))
+export PORT_VITE_SERVER=$((PORT_OFFSET + 5))
+export PORT_PGWEB=$((PORT_OFFSET + 6))
+export PORT_S3MOCK=$((PORT_OFFSET + 7))
+export PORT_MAILHOG_UI=$((PORT_OFFSET + 8))
+
+#
+# Main entry point
+#
+# - devenv shell - start a shell in the app container
+# - devenv up    - start the app container
+# - devenv stop  - stop the app container
+# - devenv down  - stop and remove the app container
+# - devenv restart - restart the app container
+# - devenv <command> - run a command in the running app container
+#
 if [ "$FIRST_ARG" = "shell" ]; then
   docker compose exec app bash
 elif [ "$FIRST_ARG" = "up" ]; then
