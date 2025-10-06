@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
 import { OnboardingWizard } from ".";
 
@@ -25,97 +25,43 @@ const meta = {
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
-
-type WizardView = "open" | "completed" | "dismissed";
-
-type StepForStory = "welcome" | "spaces" | "invite" | "project";
-
-interface WizardStoryShellProps {
-  initialStep: StepForStory;
-  spacesInput?: string;
-  initialView?: WizardView;
-  invitationLink: string;
-}
-
-const WizardStoryShell: React.FC<WizardStoryShellProps> = ({
-  initialStep,
-  spacesInput = "",
-  initialView = "open",
-  invitationLink,
-}) => {
-  const [view, setView] = useState<WizardView>(initialView);
-  const [result, setResult] = useState<OnboardingWizard.OnCompleteData | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    if (initialView === "open") {
-      window.localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify({ currentStep: initialStep, spacesInput }),
-      );
-    }
-
-    return () => {
-      if (typeof window !== "undefined") {
-        window.localStorage.removeItem(STORAGE_KEY);
-      }
-    };
-  }, [initialStep, spacesInput, initialView]);
-
-  if (view === "completed") {
-    return (
-      <StoryBackdrop>
-        <div className="absolute inset-0 z-[80] flex items-center justify-center px-6">
-          <div className="max-w-md space-y-4 rounded-2xl border border-surface-outline/70 bg-surface-base/90 p-8 text-center shadow-2xl">
-            <h2 className="text-2xl font-semibold text-content-accent">Onboarding complete</h2>
-            <p className="text-content-base">
-              Wizard finished with the following spaces: {" "}
-              {result && result.spaces.length > 0 ? result.spaces.join(", ") : "no spaces provided"}.
-            </p>
-          </div>
-        </div>
-      </StoryBackdrop>
-    );
-  }
-
-  if (view === "dismissed") {
-    return (
-      <StoryBackdrop>
-        <div className="absolute inset-0 z-[80] flex items-center justify-center px-6">
-          <div className="max-w-md space-y-4 rounded-2xl border border-surface-outline/70 bg-surface-base/90 p-8 text-center shadow-2xl">
-            <h2 className="text-2xl font-semibold text-content-accent">Wizard dismissed</h2>
-            <p className="text-content-base">The onboarding wizard was closed. Progress remains saved locally.</p>
-          </div>
-        </div>
-      </StoryBackdrop>
-    );
-  }
-
-  return (
-    <StoryBackdrop>
-      <OnboardingWizard
-        invitationLink={invitationLink}
-        onComplete={(data) => {
-          setResult(data);
-          setView("completed");
-        }}
-        onDismiss={() => setView("dismissed")}
-      />
-    </StoryBackdrop>
-  );
+export const Welcome: Story = {
+  args: {
+    __initialStep: "welcome",
+  },
+  render: ({ invitationLink }) => <WizardStoryShell />,
 };
 
-function StoryBackdrop({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="relative min-h-screen bg-gradient-to-br from-surface-subtle via-surface-base to-surface-subtle text-content-base">
-      <MockWorkspacePage />
-      {children}
-    </div>
-  );
-}
+export const SpacesStep: Story = {
+  args: {
+    __initialStep: "spaces",
+  },
+  render: ({ invitationLink }) => (
+    <WizardStoryShell
+      invitationLink={invitationLink}
+      initialStep="spaces"
+      spacesInput="Engineering, Product, Marketing, Design"
+    />
+  ),
+};
 
+export const InviteStep: Story = {
+  args: {
+    __initialStep: "invite",
+  },
+  render: ({ invitationLink }) => <WizardStoryShell invitationLink={invitationLink} />,
+};
+
+export const ProjectStep: Story = {
+  args: {
+    __initialStep: "project",
+  },
+  render: ({ invitationLink }) => <WizardStoryShell invitationLink={invitationLink} />,
+};
+
+//
+// Just a mock page to show behind the wizard
+//
 function MockWorkspacePage() {
   return (
     <div className="pointer-events-none">
@@ -124,8 +70,8 @@ function MockWorkspacePage() {
           <p className="text-sm uppercase tracking-[0.4em] text-content-subtle">Workspace overview</p>
           <h1 className="text-3xl font-semibold text-content-accent">Q1 Strategic Initiatives</h1>
           <p className="max-w-2xl text-content-dimmed">
-            Track your most impactful workstreams and keep every team aligned. This dashboard highlights the key projects
-            driving momentum across your company.
+            Track your most impactful workstreams and keep every team aligned. This dashboard highlights the key
+            projects driving momentum across your company.
           </p>
         </header>
 
@@ -186,13 +132,19 @@ function MockWorkspacePage() {
                 <div key={date} className="flex items-start gap-4 rounded-lg bg-surface-highlight/60 px-4 py-3">
                   <div className="rounded-md bg-brand-1/15 px-3 py-1 text-xs font-semibold text-brand-1">{date}</div>
                   <div>
-                    <p className="font-semibold">{index === 0 ? "Beta access announcement" : index === 1 ? "Revenue sync workshop" : "Customer advisory board"}</p>
+                    <p className="font-semibold">
+                      {index === 0
+                        ? "Beta access announcement"
+                        : index === 1
+                        ? "Revenue sync workshop"
+                        : "Customer advisory board"}
+                    </p>
                     <p className="text-content-dimmed">
                       {index === 0
                         ? "Prep the comms plan and align marketing with product leads."
                         : index === 1
-                          ? "Align GTM and product leadership on the updated funnel."
-                          : "Share roadmap learnings and collect feedback from top accounts."}
+                        ? "Align GTM and product leadership on the updated funnel."
+                        : "Share roadmap learnings and collect feedback from top accounts."}
                     </p>
                   </div>
                 </div>
@@ -205,54 +157,21 @@ function MockWorkspacePage() {
   );
 }
 
-export const Welcome: Story = {
-  render: ({ invitationLink }) => <WizardStoryShell invitationLink={invitationLink} initialStep="welcome" />,
-  args: {
-    invitationLink: "https://operately.com/invite/sample-onboarding",
-  },
+type Story = StoryObj<typeof meta>;
+
+const WizardStoryShell: React.FC<OnboardingWizard.Props> = (props) => {
+  return (
+    <StoryBackdrop>
+      <OnboardingWizard {...props} />
+    </StoryBackdrop>
+  );
 };
 
-export const SpacesStep: Story = {
-  render: ({ invitationLink }) => (
-    <WizardStoryShell
-      invitationLink={invitationLink}
-      initialStep="spaces"
-      spacesInput="Engineering, Product, Marketing, Design"
-    />
-  ),
-  args: {
-    invitationLink: "https://operately.com/invite/sample-onboarding",
-  },
-};
-
-export const InviteStep: Story = {
-  render: ({ invitationLink }) => (
-    <WizardStoryShell invitationLink={invitationLink} initialStep="invite" spacesInput="Engineering,Product" />
-  ),
-  args: {
-    invitationLink: "https://operately.com/invite/team-setup",
-  },
-};
-
-export const ProjectStep: Story = {
-  render: ({ invitationLink }) => (
-    <WizardStoryShell invitationLink={invitationLink} initialStep="project" spacesInput="Operations, Growth" />
-  ),
-  args: {
-    invitationLink: "https://operately.com/invite/product-launch",
-  },
-};
-
-export const CompletedState: Story = {
-  render: ({ invitationLink }) => (
-    <WizardStoryShell
-      invitationLink={invitationLink}
-      initialStep="project"
-      spacesInput="Sales, Marketing"
-      initialView="completed"
-    />
-  ),
-  args: {
-    invitationLink: "https://operately.com/invite/product-launch",
-  },
-};
+function StoryBackdrop({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative min-h-screen bg-gradient-to-br from-surface-subtle via-surface-base to-surface-subtle text-content-base">
+      <MockWorkspacePage />
+      {children}
+    </div>
+  );
+}

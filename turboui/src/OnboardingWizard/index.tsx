@@ -14,6 +14,8 @@ export namespace OnboardingWizard {
   }
 
   export interface Props {
+    __initialStep?: "welcome" | "spaces" | "invite" | "project"; // Defaults to "welcome", for testing purposes only.
+
     invitationLink: string;
 
     onComplete: (data: OnCompleteData) => void;
@@ -33,7 +35,6 @@ const PROFILE_IMAGE_ALT = "Marko Anastasov profile photo";
 const STORAGE_KEY = "operately:company-onboarding-wizard:v1";
 const STEP_SEQUENCE: Step[] = ["welcome", "spaces", "invite", "project"];
 const PROGRESS_STEPS: Step[] = ["spaces", "invite", "project"];
-const DEFAULT_STATE: WizardState = { currentStep: "welcome", spacesInput: "" };
 const FOCUSABLE_SELECTOR =
   'a[href], area[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -61,30 +62,6 @@ function sanitizeSpaceNames(input: string): string[] {
   return result;
 }
 
-function loadWizardState(): WizardState {
-  if (typeof window === "undefined") return DEFAULT_STATE;
-
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return DEFAULT_STATE;
-
-    const parsed = JSON.parse(raw) as Partial<WizardState> | null;
-    if (!parsed || typeof parsed !== "object") return DEFAULT_STATE;
-
-    const storedStep = STEP_SEQUENCE.includes(parsed.currentStep as Step)
-      ? (parsed.currentStep as Step)
-      : DEFAULT_STATE.currentStep;
-    const storedInput = typeof parsed.spacesInput === "string" ? parsed.spacesInput : DEFAULT_STATE.spacesInput;
-
-    return {
-      currentStep: storedStep,
-      spacesInput: storedInput,
-    };
-  } catch {
-    return DEFAULT_STATE;
-  }
-}
-
 function persistWizardState(state: WizardState) {
   if (typeof window === "undefined") return;
   try {
@@ -109,8 +86,15 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
 }
 
 export function OnboardingWizard(props: OnboardingWizard.Props) {
-  const [state, setState] = useState<WizardState>(() => loadWizardState());
+  const [state, setState] = useState<WizardState>(() => {
+    return {
+      currentStep: props.__initialStep || "welcome",
+      spacesInput: "",
+    };
+  });
+
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+
   const headingId = useId();
   const descriptionId = useId();
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -367,42 +351,61 @@ type WelcomeStepProps = {
   onGetStarted: () => void;
 };
 
-function WelcomeStep({ onGetStarted }: WelcomeStepProps) {
+function WizardStep({
+  content,
+  skip,
+  next,
+}: {
+  content: React.ReactNode;
+  skip?: React.ReactNode;
+  next?: React.ReactNode;
+}) {
   return (
-    <div className="flex flex-col items-center text-center">
-      <div className="pt-12 pb-10 flex flex-col items-center">
-        <img
-          src={PROFILE_IMAGE_URL}
-          alt={PROFILE_IMAGE_ALT}
-          className="w-[130px] h-[130px] rounded-full object-cover shadow-lg"
-        />
-        <div className="mt-6 max-w-lg text-left text-content-base space-y-4 text-center">
-          <h1 className="font-semibold text-2xl">Thanks for joining Operately!</h1>
-          <p>
-            I'm thrilled to have you here. We built Operately to help teams work better together — to stay aligned, make
-            progress visible, and keep everyone moving in the same direction.
-          </p>
-          <p>
-            We'll walk you through a quick setup to get your workspace ready. It takes a few minutes, and you can always
-            come back to this later.
-          </p>
-          <p className="italic">
-            If you ever need help, reach out at support@operately.com. <br /> We're here for you.
-          </p>
-          <p>
-            Best,
-            <br />
-            <span className="font-semibold">Marko Anastasov</span>
-            <br />
-            CEO & Founder, Operately
-          </p>
-        </div>
-      </div>
-
+    <div className="flex flex-col items-center">
+      <div className="p-6">{content}</div>
       <div className="flex flex-col sm:flex-row gap-3 border-t py-4 px-6 w-full sm:justify-end">
-        <PrimaryButton onClick={onGetStarted}>Let's get started</PrimaryButton>
+        {skip}
+        {next}
       </div>
     </div>
+  );
+}
+
+function WelcomeStep({ onGetStarted }: WelcomeStepProps) {
+  return (
+    <WizardStep
+      content={
+        <div className="p-6 pt-10 flex flex-col items-center text-center">
+          <img
+            src={PROFILE_IMAGE_URL}
+            alt={PROFILE_IMAGE_ALT}
+            className="w-[120px] h-[120px] rounded-full object-cover shadow-lg"
+          />
+          <div className="mt-6 max-w-lg text-left text-content-base space-y-4 text-center">
+            <h1 className="font-semibold text-2xl">Thanks for joining Operately!</h1>
+            <p>
+              I'm thrilled to have you here. We built Operately to help teams work better together — to stay aligned,
+              make progress visible, and keep everyone moving in the same direction.
+            </p>
+            <p>
+              We'll walk you through a quick setup to get your workspace ready. It takes a few minutes, and you can
+              always come back to this later.
+            </p>
+            <p className="italic">
+              If you ever need help, reach out at support@operately.com. <br /> We're here for you.
+            </p>
+            <p>
+              Best,
+              <br />
+              <span className="font-semibold">Marko Anastasov</span>
+              <br />
+              CEO & Founder, Operately
+            </p>
+          </div>
+        </div>
+      }
+      next={<PrimaryButton onClick={onGetStarted}>Let's get started</PrimaryButton>}
+    />
   );
 }
 
@@ -426,53 +429,52 @@ function SpacesStep({
   onSkip,
 }: SpacesStepProps) {
   return (
-    <div className="space-y-6">
-      <StepHeading
-        headingId={headingId}
-        headingRef={headingRef}
-        title="Set up spaces"
-        subtitle="Spaces help your teams, departments, and initiatives stay organized. Create the ones you need to get started."
-      />
+    <WizardStep
+      content={
+        <>
+          <StepHeading
+            headingId={headingId}
+            headingRef={headingRef}
+            title="Set up spaces"
+            subtitle="Spaces help your teams, departments, and initiatives stay organized. Create the ones you need to get started."
+          />
 
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-content-accent" htmlFor="onboarding-spaces-input">
-          Which spaces should we create for you?
-        </label>
-        <textarea
-          id="onboarding-spaces-input"
-          value={spacesInput}
-          onChange={(event) => onChange(event.target.value)}
-          placeholder="Engineering, Product, Marketing"
-          rows={3}
-          className="w-full border border-surface-outline rounded-lg px-3 py-2 bg-surface-base text-sm text-content-base focus:outline-none focus:ring-2 focus:ring-brand-1"
-        />
-      </div>
-
-      <p className="text-sm text-content-dimmed">
-        Separate each space with a comma. We'll save up to 10 unique names, ignore blanks or "General", and skip
-        anything longer than 100 characters.
-      </p>
-
-      {sanitizedSpaces.length > 0 && (
-        <div>
-          <div className="text-sm font-medium text-content-accent mb-2">We'll create these spaces:</div>
-          <div className="flex flex-wrap gap-2">
-            {sanitizedSpaces.map((space) => (
-              <span key={space} className="px-3 py-1 rounded-full bg-brand-1/10 text-brand-1 text-sm">
-                {space}
-              </span>
-            ))}
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-content-accent" htmlFor="onboarding-spaces-input">
+              Which spaces should we create for you?
+            </label>
+            <textarea
+              id="onboarding-spaces-input"
+              value={spacesInput}
+              onChange={(event) => onChange(event.target.value)}
+              placeholder="Engineering, Product, Marketing"
+              rows={3}
+              className="w-full border border-surface-outline rounded-lg px-3 py-2 bg-surface-base text-sm text-content-base focus:outline-none focus:ring-2 focus:ring-brand-1"
+            />
           </div>
-        </div>
-      )}
 
-      <div className="pt-4 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
-        <div className="flex items-center justify-end gap-3 w-full sm:w-auto">
-          <GhostButton onClick={onSkip}>Skip for now</GhostButton>
-          <PrimaryButton onClick={onContinue}>Continue</PrimaryButton>
-        </div>
-      </div>
-    </div>
+          <p className="text-sm text-content-dimmed">
+            Separate each space with a comma. We'll save up to 10 unique names, ignore blanks or "General", and skip
+            anything longer than 100 characters.
+          </p>
+
+          {sanitizedSpaces.length > 0 && (
+            <div>
+              <div className="text-sm font-medium text-content-accent mb-2">We'll create these spaces:</div>
+              <div className="flex flex-wrap gap-2">
+                {sanitizedSpaces.map((space) => (
+                  <span key={space} className="px-3 py-1 rounded-full bg-brand-1/10 text-brand-1 text-sm">
+                    {space}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
+      }
+      skip={<GhostButton onClick={onSkip}>Skip for now</GhostButton>}
+      next={<PrimaryButton onClick={onContinue}>Continue</PrimaryButton>}
+    />
   );
 }
 
