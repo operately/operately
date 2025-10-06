@@ -130,5 +130,24 @@ defmodule Operately.Features.WorkMapTest do
       |> Steps.go_to_space_work_map()
       |> Steps.assert_page_is_space_work_map()
     end
+
+    feature "Collapsed goals persist after navigation", ctx do
+      ctx
+      |> Steps.setup_company_work_map()
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_work_map_item_visible(:company_child_project1)
+      |> Steps.assert_work_map_item_visible(:company_child_project2)
+      |> Steps.collapse_work_map_goal(:company_goal1)
+      |> Steps.assert_work_map_item_hidden(:company_child_project1)
+      |> Steps.go_to_goals_tab()
+      |> Steps.assert_work_map_item_hidden(:company_child_project1)
+      |> Steps.go_to_all_tab()
+      |> Steps.collapse_work_map_goal(:company_goal2)
+      |> Steps.open_work_map_goal(:company_goal1)
+      |> Steps.assert_on_goal_page(:company_goal1)
+      |> Steps.visit_company_work_map()
+      |> Steps.assert_work_map_item_hidden(:company_child_project1)
+      |> Steps.assert_work_map_item_hidden(:company_child_project2)
+    end
   end
 end
