@@ -18,6 +18,7 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_on_join_page_with_invitation()
       |> Steps.follow_join_button()
       |> Steps.assert_you_are_member_of_the_company()
+      |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
 
@@ -46,6 +47,7 @@ defmodule Operately.Features.InviteLinksTest do
       ctx
       |> Steps.log_in_with_email()
       |> Steps.assert_you_are_member_of_the_company()
+      |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
 
@@ -53,6 +55,7 @@ defmodule Operately.Features.InviteLinksTest do
       ctx
       |> Steps.log_in_with_google()
       |> Steps.assert_you_are_member_of_the_company()
+      |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
   end
@@ -66,6 +69,7 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.follow_sign_up_and_join()
       |> Steps.sign_up_with_email()
       |> Steps.assert_you_are_member_of_the_company()
+      |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
 
@@ -77,6 +81,7 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.follow_sign_up_and_join()
       |> Steps.sign_up_with_google()
       |> Steps.assert_you_are_member_of_the_company()
+      |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
   end
