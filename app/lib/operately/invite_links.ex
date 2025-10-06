@@ -107,7 +107,7 @@ defmodule Operately.InviteLinks do
       })
     end)
     |> Multi.run(:invite_link_update, fn _repo, %{invite_link: invite_link} ->
-      __MODULE__.increment_use_count(invite_link)
+      increment_use_count(invite_link)
     end)
     |> Repo.transaction()
     |> case do

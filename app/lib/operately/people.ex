@@ -1,9 +1,12 @@
 defmodule Operately.People do
   import Ecto.Query, warn: false
 
+  alias Ecto.Multi
   alias Operately.Repo
   alias Operately.Access
+  alias Operately.Companies
   alias Operately.Companies.Company
+  alias Operately.Groups.Member
   alias Operately.People.{Person, Account}
   alias Operately.Access.Binding
   alias Operately.Access.Fetch
@@ -75,15 +78,39 @@ defmodule Operately.People do
   defdelegate insert_person(multi, callback), to: Operately.People.InsertPersonIntoOperation, as: :insert
 
   def create_person(attrs \\ %{}) do
-    changeset = Person.changeset(%Person{}, attrs)
+    Multi.new()
+    |> Multi.insert(:person, Person.changeset(%Person{}, attrs))
+    |> Multi.run(:group, fn _, %{person: person} ->
+      Access.create_group(%{person_id: person.id})
+    end)
+    |> Multi.run(:self_membership, fn _, %{person: person, group: group} ->
+      Access.create_group_membership(%{group_id: group.id, person_id: person.id})
+    end)
+    |> Multi.run(:company_membership, fn _, %{person: person} ->
+      company_group = Access.get_group(company_id: person.company_id, tag: :standard)
+      Access.create_group_membership(%{group_id: company_group.id, person_id: person.id})
+    end)
+    |> Multi.run(:general_space, fn _, %{person: person} ->
+      {:ok, Companies.get_company_space!(person.company_id)}
+    end)
+    |> Multi.insert(:general_space_membership, fn %{person: person, general_space: general_space} ->
+      Member.changeset(%Member{}, %{
+        group_id: general_space.id,
+        person_id: person.id
+      })
+    end)
+    |> Multi.run(:add_to_general_space, fn _, %{group: group, general_space: general_space} ->
+      context = Access.get_context!(group_id: general_space.id)
 
-    with {:ok, person} <- Repo.insert(changeset),
-         {:ok, group} <- Access.create_group(%{person_id: person.id}),
-         {:ok, _} <- Access.create_group_membership(%{group_id: group.id, person_id: person.id}),
-         company_group <- Access.get_group(company_id: person.company_id, tag: :standard),
-         {:ok, _} <- Access.create_group_membership(%{group_id: company_group.id, person_id: person.id}) do
-      {:ok, person}
-    else
+      Access.create_binding(%{
+        group_id: group.id,
+        context_id: context.id,
+        access_level: Access.Binding.edit_access()
+      })
+    end)
+    |> Repo.transaction()
+    |> case do
+      {:ok, %{person: person}} -> {:ok, person}
       error -> error
     end
   end
