@@ -401,6 +401,27 @@ defmodule Operately.Support.Features.SpacesSteps do
     |> Factory.add_document(:document_to_delete, :hub_to_delete, name: "Runbook")
   end
 
+  step :delete_general_space, ctx do
+    ctx
+    |> UI.click_text("General")
+    |> UI.click(testid: "options-button")
+    |> UI.click(testid: "delete-space")
+  end
+
+  step :assert_general_space_deleted, ctx do
+    ctx
+    |> UI.assert_page(Paths.home_path(ctx.company))
+    |> UI.refute_text("General")
+  end
+
+  step :assert_company_work_map_loads, ctx do
+    ctx
+    |> UI.click(testid: "company-work-map-link")
+    |> UI.assert_page(Paths.work_map_path(ctx.company))
+    |> UI.assert_text("#{ctx.company.name} Work Map")
+    |> UI.refute_text("500")
+  end
+
   step :request_space_deletion, ctx do
     ctx
     |> UI.click(testid: "options-button")

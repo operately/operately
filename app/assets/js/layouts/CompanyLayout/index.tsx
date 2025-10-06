@@ -173,7 +173,7 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
               Home
             </SectionLink>
 
-            <SectionLink to={paths.workMapPath()} icon={IconBuildingEstate}>
+            <SectionLink to={paths.workMapPath()} icon={IconBuildingEstate} testId="company-work-map-link">
               Company
             </SectionLink>
 
@@ -199,13 +199,21 @@ function DesktopNavigation({ company }: { company: Api.Company }) {
   );
 }
 
-function SectionLink({ to, children, icon }) {
+interface SectionLinkProps {
+  to: string;
+  icon: React.ComponentType<{ size?: number }>;
+  children: React.ReactNode;
+  testId?: string;
+}
+
+function SectionLink({ to, children, icon: Icon, testId }: SectionLinkProps) {
   return (
     <DivLink
       to={to}
       className="font-semibold flex items-center gap-1 cursor-pointer group hover:bg-surface-base px-1.5 py-0.5 rounded"
+      testId={testId}
     >
-      {React.createElement(icon, { size: 16 })}
+      <Icon size={16} />
       {children}
     </DivLink>
   );
