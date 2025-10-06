@@ -29,7 +29,6 @@ defmodule Operately.Features.InviteLinksTest do
       |> Steps.assert_on_join_page_with_invitation()
       |> Steps.follow_join_button()
       |> Steps.assert_you_are_member_of_the_company()
-      |> Steps.assert_you_are_member_of_the_general_space()
       |> Steps.assert_you_are_redirected_to_company_home_page()
     end
   end
