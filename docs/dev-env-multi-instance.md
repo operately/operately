@@ -1,4 +1,4 @@
-# Running multiple local development instaces to support multiple LLM agents
+# Running multiple local development instances to support multiple LLM agents
 
 This guide describes how to run multiple Operately development instances.
 The main motivation is to be able to run multiple local LLM agents to write code.
