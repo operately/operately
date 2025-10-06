@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import * as Spaces from "@/models/spaces";
 import { useSpaceSearch } from "@/models/spaces";
 import { WorkMapPage } from "turboui";
 import { convertToWorkMapItems, useWorkMapItems } from "../../models/workMap";
@@ -22,11 +23,7 @@ export function Page() {
       addItem={addItem}
       spaceSearch={spaceSearch}
       addingEnabled={true}
-      addItemDefaultSpace={{
-        id: company.generalSpace!.id,
-        name: company.generalSpace!.name,
-        link: paths.spacePath(company.generalSpace!.id),
-      }}
+      addItemDefaultSpace={company.generalSpace && Spaces.parseSpaceForTurboUI(paths, company.generalSpace)}
     />
   );
 }
