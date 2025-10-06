@@ -60,6 +60,7 @@ dev.build:
 	$(MAKE) test.db.migrate
 
 dev.server:
+	./devenv bash -c "scripts/kill_vite_servers.sh" # prevent multiple vite servers running
 	./devenv bash -c "cd app && iex -S mix phx.server"
 
 turboui.storybook:
