@@ -7,7 +7,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
     |> insert_account(attrs)
     |> insert_person(admin, attrs, skip_invitation)
     |> insert_membership_with_company_space_group()
-    |> insert_binding_to_company_space()
+    |> add_person_to_general_space()
     |> insert_invitation(admin, skip_invitation)
     |> insert_activity(admin)
     |> Repo.transaction()
@@ -46,7 +46,7 @@ defmodule Operately.Operations.CompanyMemberAdding do
 
     multi
     |> Multi.run(:company_space, fn _, _ ->
-      {:ok, Operately.Companies.get_company_space!(admin.company_id)}
+      {:ok, Operately.Companies.get_company_space(admin.company_id)}
     end)
     |> Operately.People.insert_person(fn changes ->
       Operately.People.Person.changeset(%{
@@ -63,26 +63,29 @@ defmodule Operately.Operations.CompanyMemberAdding do
   defp insert_membership_with_company_space_group(multi) do
     multi
     |> Multi.run(:space_access_group, fn _, %{company_space: space} ->
-      {:ok, Access.get_group!(group_id: space.id, tag: :standard)}
+      case space do
+        nil -> {:ok, nil}
+        space -> {:ok, Access.get_group(group_id: space.id, tag: :standard)}
+      end
     end)
-    |> Multi.insert(:space_access_membership, fn changes ->
-      Access.GroupMembership.changeset(%{
-        group_id: changes.space_access_group.id,
-        person_id: changes.person.id,
-      })
+    |> Multi.run(:space_access_membership, fn _, %{space_access_group: access_group, person: person} ->
+      case access_group do
+        nil ->
+          {:ok, nil}
+
+        access_group ->
+          Access.GroupMembership.changeset(%{
+            group_id: access_group.id,
+            person_id: person.id,
+          })
+          |> Repo.insert()
+      end
     end)
   end
 
-  defp insert_binding_to_company_space(multi) do
-    multi
-    |> Multi.run(:binding_to_space_group, fn _, changes ->
-      context = Access.get_context!(group_id: changes.company_space.id)
-
-      Access.create_binding(%{
-        group_id: changes.person_access_group.id,
-        context_id: context.id,
-        access_level: Access.Binding.edit_access(),
-      })
+  defp add_person_to_general_space(multi) do
+    Multi.run(multi, :add_to_general_space, fn _, %{person: person} ->
+      Operately.Companies.add_person_to_general_space(person)
     end)
   end
 
