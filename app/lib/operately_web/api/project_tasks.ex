@@ -414,6 +414,8 @@ defmodule OperatelyWeb.Api.ProjectTasks do
     import Ecto.Query, only: [from: 2]
     use OperatelyWeb.Api.Helpers
     alias Operately.Operations.Notifications
+    alias Operately.Access.Binding
+    alias Operately.Projects.Contributor
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -547,6 +549,7 @@ defmodule OperatelyWeb.Api.ProjectTasks do
 
         {:ok, updated_task}
       end)
+      |> maybe_add_assignee_contributor(new_assignee_id)
     end
 
     def delete_task(multi) do
@@ -633,11 +636,43 @@ defmodule OperatelyWeb.Api.ProjectTasks do
             |> Repo.insert()
         end
       end)
+      |> maybe_add_assignee_contributor(inputs.assignee_id)
       |> Ecto.Multi.run(:task, fn _repo, %{new_task: new_task, validate_milestone: milestone} ->
         task = Repo.preload(new_task, :assigned_people) |> Map.put(:milestone, milestone)
 
         {:ok, task}
       end)
+    end
+
+    defp maybe_add_assignee_contributor(multi, nil), do: multi
+
+    defp maybe_add_assignee_contributor(multi, assignee_id) do
+      Ecto.Multi.run(multi, :assignee_contributor, fn _repo, %{project: project} ->
+        ensure_project_contributor(project, assignee_id)
+      end)
+    end
+
+    defp ensure_project_contributor(project, assignee_id) do
+      case Operately.Repo.get_by(Contributor, project_id: project.id, person_id: assignee_id) do
+        nil ->
+          access_group = Operately.Access.get_group!(person_id: assignee_id)
+
+          Ecto.Multi.new()
+          |> Ecto.Multi.insert(:contributor, Contributor.changeset( %{
+            project_id: project.id,
+            person_id: assignee_id,
+            responsibility: "contributor",
+          }))
+          |> Ecto.Multi.run(:context, fn _, _ ->
+            {:ok, Operately.Access.get_context!(project_id: project.id)}
+          end)
+          |> Operately.Access.insert_binding(:contributor_binding, access_group, Binding.edit_access())
+          |> Operately.Repo.transaction()
+          |> Operately.Repo.extract_result(:contributor)
+
+        contributor ->
+          {:ok, contributor}
+      end
     end
 
     def save_activity(multi, activity_type, callback) do

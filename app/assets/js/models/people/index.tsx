@@ -7,6 +7,7 @@ export type Person = api.Person;
 
 export { getPeople, getPerson, updateProfile, useGetMe, useGetPeople } from "@/api";
 export { usePersonFieldSearch } from "./usePersonFieldSearch";
+export { usePersonFieldSpaceMembersSearch } from "./usePersonFieldSpaceMembersSearch";
 export { useMentionedPersonSearch } from "./useMentionedPersonSearch";
 
 export type SearchScope =

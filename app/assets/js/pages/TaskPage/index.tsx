@@ -18,7 +18,6 @@ import { PageModule } from "../../routes/types";
 import { PageCache } from "@/routes/PageCache";
 import { fetchAll } from "@/utils/async";
 import { assertPresent } from "@/utils/assertions";
-import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { projectPageCacheKey } from "../ProjectPage";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -158,8 +157,8 @@ function Page() {
     }
   };
 
-  const assigneeSearch = usePersonFieldContributorsSearch({
-    projectId: task.project.id,
+  const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
+    spaceId: task.space.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
   const searchMilestones = useMilestonesSearch(task.project.id);
