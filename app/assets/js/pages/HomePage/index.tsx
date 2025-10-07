@@ -24,7 +24,7 @@ interface LoaderData {
   ownerIds: string[];
 }
 
-export async function loader({ params }): Promise<LoaderData> {
+async function loader({ params }): Promise<LoaderData> {
   const company = await Companies.getCompany({
     id: params.companyId,
     includeOwners: true,
@@ -43,11 +43,11 @@ export async function loader({ params }): Promise<LoaderData> {
   };
 }
 
-export function useLoadedData(): LoaderData {
+function useLoadedData(): LoaderData {
   return Pages.useLoadedData() as LoaderData;
 }
 
-export function Page() {
+function Page() {
   return (
     <Pages.Page title="Home" testId="company-home">
       <Paper.Root size="medium">
