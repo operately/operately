@@ -120,6 +120,31 @@ defmodule Operately.Features.ProjectTasksTest do
   end
 
   @tag login_as: :champion
+  feature "assigning a space member to a task adds them as a project contributor", ctx do
+    ctx =
+      ctx
+      |> Steps.given_space_member_exists()
+
+    attrs = %{
+      name: "Task for space member",
+      assignee: ctx.space_member.full_name,
+      due_date: nil,
+      milestone: ctx.milestone.title
+    }
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.assert_person_is_not_project_contributor()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.go_to_task_page()
+    |> Steps.assert_assignee(attrs.assignee)
+    |> Steps.visit_project_page()
+    |> Steps.assert_person_is_project_contributor()
+  end
+
+  @tag login_as: :champion
   feature "add multiple tasks with 'Create more' toggle on", ctx do
     ctx
     |> Steps.visit_project_page()
