@@ -18,7 +18,6 @@ import CompanyAdminTrustedEmailDomainsPage from "./CompanyAdminTrustedEmailDomai
 import CompanyManageAiAgentsPage from "./CompanyManageAiAgentsPage";
 import CompanyPermissionsPage from "./CompanyPermissionsPage";
 import CompanyRenamePage from "./CompanyRenamePage";
-import CompanySetupPage from "./CompanySetupPage";
 import CompanyWorkMapPage from "./CompanyWorkMapPage";
 import DiscussionDraftsPage from "./DiscussionDraftsPage";
 import DiscussionEditPage from "./DiscussionEditPage";
@@ -115,7 +114,6 @@ export default {
   CompanyManageAiAgentsPage,
   CompanyPermissionsPage,
   CompanyRenamePage,
-  CompanySetupPage,
   CompanyWorkMapPage,
   DiscussionDraftsPage,
   DiscussionEditPage,
