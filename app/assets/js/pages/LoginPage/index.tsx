@@ -41,12 +41,6 @@ function Page() {
       if (inviteToken) {
         try {
           const joinResult = await Api.invitations.joinCompanyViaInviteLink({ token: inviteToken });
-
-          if (joinResult.error) {
-            setError(joinResult.error);
-            return;
-          }
-
           const companyId = joinResult.company?.id;
 
           if (companyId) {
