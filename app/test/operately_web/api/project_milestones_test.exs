@@ -934,6 +934,9 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
       ctx = Factory.log_in_person(ctx, :creator)
       milestone_id = ctx.milestone.id
 
+      project_before = Repo.reload(ctx.project)
+      assert project_before.milestones_ordering_state == [Paths.milestone_id(ctx.milestone)]
+
       assert {200, res} = mutation(ctx.conn, [:project_milestones, :delete], %{
         milestone_id: Paths.milestone_id(ctx.milestone)
       })
@@ -942,6 +945,9 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
 
       # Verify milestone is deleted
       assert Repo.get(Operately.Projects.Milestone, milestone_id) == nil
+
+      project_after = Repo.reload(project_before)
+      assert project_after.milestones_ordering_state == []
     end
 
     test "it deletes the milestone for space members with edit access", ctx do

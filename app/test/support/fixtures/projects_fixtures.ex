@@ -2,6 +2,7 @@ defmodule Operately.ProjectsFixtures do
   alias Operately.Support.RichText
   alias Operately.Access.Binding
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.Projects.OrderingState
 
   @moduledoc """
   This module defines test helpers for creating
@@ -44,6 +45,15 @@ defmodule Operately.ProjectsFixtures do
       })
 
     {:ok, milestone} = Operately.Projects.create_milestone(attrs)
+
+    project = Operately.Repo.preload(milestone, :project).project
+
+    updated_state =
+      project.milestones_ordering_state
+      |> OrderingState.load()
+      |> OrderingState.add_milestone(milestone)
+
+    {:ok, _} = Operately.Projects.update_project(project, %{milestones_ordering_state: updated_state})
 
     milestone
   end
