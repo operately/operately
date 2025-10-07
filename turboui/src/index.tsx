@@ -25,22 +25,17 @@ export { Checkbox } from "./Checkbox";
 export { Checklist } from "./Checklist";
 export { CompanySetupPage, CompanySetupStepsReminder } from "./CompanySetupPage";
 export { Conversations, useConversations } from "./Conversations";
-export { DateField, DateDisplay } from "./DateField";
+export { DateDisplay, DateField } from "./DateField";
 export { FloatingActionButton } from "./FloatingActionButton";
 export { FormattedTime } from "./FormattedTime";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
-export {
-  CompanyCreatorOnboardingWizard,
-  CompanyMemberOnboardingWizard,
-  MemberOnboardingWizard,
-  OnboardingWizard,
-} from "./OnboardingWizard";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { Modal } from "./Modal";
+export { CompanyCreatorOnboardingWizard, CompanyMemberOnboardingWizard } from "./OnboardingWizard";
 export { PrivacyField } from "./PrivacyField";
 export { ProfilePage } from "./ProfilePage";
 export { ProjectPage } from "./ProjectPage";
