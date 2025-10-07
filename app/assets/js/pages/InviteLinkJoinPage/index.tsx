@@ -62,13 +62,6 @@ function Page() {
 
     try {
       const response = await Api.invitations.joinCompanyViaInviteLink({ token });
-
-      if (response.error) {
-        setJoinError(response.error);
-        setJoining(false);
-        return;
-      }
-
       const companyId = response.company?.id;
 
       if (companyId) {
@@ -79,6 +72,7 @@ function Page() {
     } catch (error) {
       console.error("Error joining company via invite link", error);
       setJoinError("Something went wrong while joining. Please try again.");
+    } finally {
       setJoining(false);
     }
   }, [token]);
