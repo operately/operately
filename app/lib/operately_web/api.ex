@@ -123,6 +123,7 @@ defmodule OperatelyWeb.Api do
 
   namespace(:spaces) do
     query(:search, OperatelyWeb.Api.Spaces.Search)
+    query(:list_members, OperatelyWeb.Api.Spaces.ListMembers)
   end
 
   namespace(:invitations) do

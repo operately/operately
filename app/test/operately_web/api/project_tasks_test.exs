@@ -1,5 +1,6 @@
 defmodule OperatelyWeb.Api.ProjectTasksTest do
   alias Operately.Support.RichText
+  alias Operately.Projects.Contributor
 
   use OperatelyWeb.TurboCase
   use Operately.Support.Notifications
@@ -163,6 +164,29 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
       task = Operately.Tasks.Task.get!(:system, id: id, opts: [preload: [:assigned_people]])
       assert length(task.assigned_people) == 1
       assert hd(task.assigned_people).id == ctx.creator.id
+    end
+
+    test "it adds a contributor when creating a task with a new assignee", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :create], %{
+        project_id: Paths.project_id(ctx.project),
+        milestone_id: Paths.milestone_id(ctx.milestone),
+        name: "Task with assignee",
+        assignee_id: Paths.person_id(ctx.space_member),
+        due_date: nil
+      })
+
+      contributor = Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
+
+      assert contributor
+      assert contributor.responsibility == "contributor"
+      assert contributor.role == :contributor
     end
 
     test "it creates a task with due date", ctx do
@@ -601,6 +625,26 @@ defmodule OperatelyWeb.Api.ProjectTasksTest do
 
       after_count = count_activities(ctx.project.id, "task_assignee_updating")
       assert after_count == before_count + 1
+    end
+
+    test "it adds a contributor when assigning a space member", ctx do
+      ctx =
+        ctx
+        |> Factory.add_space_member(:space_member, :engineering)
+        |> Factory.log_in_person(:creator)
+
+      refute Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
+
+      assert {200, _} = mutation(ctx.conn, [:project_tasks, :update_assignee], %{
+        task_id: Paths.task_id(ctx.task),
+        assignee_id: Paths.person_id(ctx.space_member)
+      })
+
+      contributor = Operately.Repo.get_by(Contributor, project_id: ctx.project.id, person_id: ctx.space_member.id)
+
+      assert contributor
+      assert contributor.responsibility == "contributor"
+      assert contributor.role == :contributor
     end
   end
 

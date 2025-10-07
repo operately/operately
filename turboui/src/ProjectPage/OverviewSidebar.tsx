@@ -22,7 +22,7 @@ import { ProjectPage } from ".";
 
 export function OverviewSidebar(props: ProjectPage.State) {
   return (
-    <div className="sm:col-span-4 sm:pl-8">
+    <div className="sm:col-span-4 sm:pl-8" data-test-id="overview-sidebar">
       <div className="space-y-6">
         <CheckInsSection {...props} />
         <ParentGoal {...props} />
