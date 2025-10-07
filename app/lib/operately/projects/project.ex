@@ -52,6 +52,7 @@ defmodule Operately.Projects.Project do
     field :status, :string, default: "active"
     field :closed_at, :utc_datetime
     field :success_status, Ecto.Enum, values: [:achieved, :missed]
+    field :milestones_ordering_state, {:array, :string}, default: Operately.Projects.OrderingState.initialize()
 
     # populated with after load hooks
     field :next_milestone, :any, virtual: true
@@ -91,7 +92,8 @@ defmodule Operately.Projects.Project do
       :last_check_in_status,
       :next_update_scheduled_at,
       :started_at,
-      :deadline
+      :deadline,
+      :milestones_ordering_state
     ])
     |> cast_embed(:timeframe)
     |> validate_required([

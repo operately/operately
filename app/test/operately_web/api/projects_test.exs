@@ -893,6 +893,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it creates a milestone", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
+      project_before = Repo.reload(ctx.project)
+      assert project_before.milestones_ordering_state == [Paths.milestone_id(ctx.milestone)]
+
       assert {200, res} = mutation(ctx.conn, [:projects, :create_milestone], %{
         project_id: Paths.project_id(ctx.project),
         name: "Release v1.0",
@@ -904,6 +907,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
 
       assert milestone.title == "Release v1.0"
       assert milestone.project_id == ctx.project.id
+
+      project_after = Repo.reload(project_before)
+      assert project_after.milestones_ordering_state == [Paths.milestone_id(ctx.milestone), res.milestone.id]
     end
 
     test "it creates a milestone with a date", ctx do
