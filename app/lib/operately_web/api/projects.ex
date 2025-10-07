@@ -275,6 +275,7 @@ defmodule OperatelyWeb.Api.Projects do
           }
         })
       end)
+      |> Steps.add_milestone_to_ordering_state()
       |> Steps.save_activity(:project_milestone_creation, fn changes ->
         %{
           company_id: changes.project.company_id,
@@ -424,6 +425,7 @@ defmodule OperatelyWeb.Api.Projects do
   defmodule SharedMultiSteps do
     require Logger
     import Ecto.Query, only: [from: 2]
+    alias Operately.Projects.{Contributor, OrderingState}
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -764,6 +766,20 @@ defmodule OperatelyWeb.Api.Projects do
     def update_task_due_date(multi, new_due_date) do
       Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
         Operately.Tasks.Task.changeset(task, %{due_date: new_due_date})
+      end)
+    end
+
+    def add_milestone_to_ordering_state(multi) do
+      Ecto.Multi.run(multi, :updated_project_ordering_state, fn _, changes ->
+        project = Map.fetch!(changes, :project)
+        milestone = Map.fetch!(changes, :milestone)
+
+        updated_state =
+          project.milestones_ordering_state
+          |> OrderingState.load()
+          |> OrderingState.add_milestone(milestone)
+
+        Operately.Projects.update_project(project, %{milestones_ordering_state: updated_state})
       end)
     end
 

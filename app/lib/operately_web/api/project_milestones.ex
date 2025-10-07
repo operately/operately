@@ -158,6 +158,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
         }
       end)
       |> Steps.delete_milestone()
+      |> Steps.remove_milestone_from_ordering_state()
       |> Steps.commit()
       |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn _ -> %{success: true} end)
@@ -167,6 +168,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   defmodule SharedMultiSteps do
     import Ecto.Query, only: [from: 2]
     require Logger
+    alias Operately.Projects.OrderingState
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -244,6 +246,20 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           {:ok, deleted_milestone} -> {:ok, deleted_milestone}
           {:error, changeset} -> {:error, changeset}
         end
+      end)
+    end
+
+    def remove_milestone_from_ordering_state(multi) do
+      Ecto.Multi.run(multi, :updated_project_ordering_state, fn _, changes ->
+        project = Map.fetch!(changes, :project)
+        milestone = Map.fetch!(changes, :delete_milestone)
+
+        updated_state =
+          project.milestones_ordering_state
+          |> OrderingState.load()
+          |> OrderingState.remove_milestone(milestone)
+
+        Operately.Projects.update_project(project, %{milestones_ordering_state: updated_state})
       end)
     end
 
