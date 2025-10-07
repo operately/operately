@@ -30,7 +30,7 @@ const TaskStatusUpdating: ActivityHandler = {
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
     const { project, task, newStatus, name } = content(activity);
-    const status = newStatus.replace("_", " ");
+    const status = newStatus.replace(/_/g, " ");
     const taskName = task ? taskLink(task) : `the "${name}" task`
 
     const message = ["marked", taskName, "as", status]
