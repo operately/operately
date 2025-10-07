@@ -1,15 +1,15 @@
 <% if @new_date do %>
-<%   if @previous_date do %>
+  <% if @previous_date do %>
 <%= short_name(@author) %> changed the due date for <%= @project.name %> from <%= @previous_date %> to <%= @new_date %>.
-<%   else %>
+  <% else %>
 <%= short_name(@author) %> set the due date for <%= @project.name %> to <%= @new_date %>.
-<%   end %>
+  <% end %>
 <% else %>
-<%   if @previous_date do %>
+  <% if @previous_date do %>
 <%= short_name(@author) %> removed the due date for <%= @project.name %>. It was previously <%= @previous_date %>.
-<%   else %>
+  <% else %>
 <%= short_name(@author) %> removed the due date for <%= @project.name %>.
-<%   end %>
+  <% end %>
 <% end %>
 
 Link: <%= @cta_url %>
