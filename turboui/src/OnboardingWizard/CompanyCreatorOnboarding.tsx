@@ -1,8 +1,11 @@
 import React, { useCallback, useState } from "react";
 
+import { match } from "ts-pattern";
 import { PrimaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
 import { IconFlag, IconSparkles } from "../icons";
+import { WelcomeStep } from "./WelcomeStep";
+import { useWizardState, WizardState } from "./WizadState";
 import { WizardHeading, WizardModal, WizardStep } from "./WizardLayout";
 
 export namespace CompanyCreatorOnboardingWizard {
@@ -14,7 +17,7 @@ export namespace CompanyCreatorOnboardingWizard {
     __initialStep?: Step;
 
     invitationLink: string;
-    profileImageUrl: string;
+    markoImageUrl: string;
 
     onComplete: (data: OnCompleteData) => void;
     onDismiss: () => void;
@@ -23,7 +26,9 @@ export namespace CompanyCreatorOnboardingWizard {
   export type Step = "welcome" | "spaces" | "invite" | "project";
 }
 
-const STEP_SEQUENCE: CompanyCreatorOnboardingWizard.Step[] = ["welcome", "spaces", "invite", "project"];
+type Step = CompanyCreatorOnboardingWizard.Step;
+
+const STEPS: Step[] = ["welcome", "spaces", "invite", "project"];
 
 const SPACE_OPTIONS = [
   "Marketing",
@@ -38,30 +43,16 @@ const SPACE_OPTIONS = [
   "Legal",
 ];
 
-interface WizardState {
-  step: CompanyCreatorOnboardingWizard.Step;
-  next: () => void;
+interface State extends WizardState<Step> {
+  // Which spaces are selected
   selectedSpaces: string[];
   toggleSpace: (space: string, nextChecked: boolean) => void;
-  invitationLink: string;
-  profileImageUrl: string;
 }
 
-function useOnboardingWizardState(props: CompanyCreatorOnboardingWizard.Props): WizardState {
-  const [step, setStep] = useState<CompanyCreatorOnboardingWizard.Step>(props.__initialStep || "welcome");
+function useOnboardingState(props: CompanyCreatorOnboardingWizard.Props): State {
+  const initialState = props.__initialStep || "welcome";
+  const wizardState = useWizardState<Step>(initialState, STEPS, props.onDismiss);
   const [selectedSpaces, setSelectedSpaces] = useState<string[]>([]);
-
-  const next = useCallback(() => {
-    setStep((prev) => {
-      const currentIndex = STEP_SEQUENCE.indexOf(prev);
-
-      if (currentIndex >= 0 && currentIndex < STEP_SEQUENCE.length - 1) {
-        return STEP_SEQUENCE[currentIndex + 1]!;
-      }
-
-      return prev;
-    });
-  }, []);
 
   const toggleSpace = useCallback((space: string, nextChecked: boolean) => {
     setSelectedSpaces((prev) => {
@@ -76,68 +67,29 @@ function useOnboardingWizardState(props: CompanyCreatorOnboardingWizard.Props): 
   }, []);
 
   return {
-    step,
-    next,
+    ...wizardState,
+
     selectedSpaces,
     toggleSpace,
-    invitationLink: props.invitationLink,
-    profileImageUrl: props.profileImageUrl,
   };
 }
 
 export function CompanyCreatorOnboardingWizard(props: CompanyCreatorOnboardingWizard.Props) {
-  const state = useOnboardingWizardState(props);
+  const state = useOnboardingState(props);
 
   return (
     <WizardModal labelledBy="company-creator-onboarding-heading" onDismiss={props.onDismiss}>
-      {state.step === "welcome" && <WelcomeStep state={state} />}
-      {state.step === "spaces" && <SpacesStep state={state} />}
-      {state.step === "invite" && <InviteStep state={state} />}
-      {state.step === "project" && <ProjectStep state={state} onComplete={props.onComplete} />}
+      {match(state.currentStep)
+        .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="workspace" />)
+        .with("spaces", () => <SpacesStep state={state} />)
+        .with("invite", () => <InviteStep state={state} invitationLink={props.invitationLink} />)
+        .with("project", () => <ProjectStep state={state} />)
+        .run()}
     </WizardModal>
   );
 }
 
-function WelcomeStep({ state }: { state: WizardState }) {
-  return (
-    <WizardStep
-      footer={<PrimaryButton onClick={state.next}>Let's get started</PrimaryButton>}
-    >
-      <div className="p-6 pt-10 flex flex-col items-center text-center mx-auto">
-        <img
-          src={state.profileImageUrl}
-          alt={"Marko Anastasov profile photo"}
-          className="w-[120px] h-[120px] rounded-full object-cover shadow-lg"
-        />
-        <div className="mt-6 max-w-lg text-left text-content-base space-y-4 text-center">
-          <h1 className="font-semibold text-2xl" id="company-creator-onboarding-heading">
-            Thanks for joining Operately!
-          </h1>
-          <p>
-            I'm thrilled to have you here. We built Operately to help teams work better together — to stay aligned, make
-            progress visible, and keep everyone moving in the same direction.
-          </p>
-          <p>
-            We'll walk you through a quick setup to get your workspace ready. It takes a few minutes, and you can always
-            come back to this later.
-          </p>
-          <p className="italic">
-            If you ever need help, reach out at support@operately.com. <br /> We're here for you.
-          </p>
-          <p>
-            Best,
-            <br />
-            <span className="font-semibold">Marko Anastasov</span>
-            <br />
-            CEO & Founder, Operately
-          </p>
-        </div>
-      </div>
-    </WizardStep>
-  );
-}
-
-function SpacesStep({ state }: { state: WizardState }) {
+function SpacesStep({ state }: { state: State }) {
   return (
     <WizardStep
       footer={
@@ -187,20 +139,13 @@ function SpacesStep({ state }: { state: WizardState }) {
   );
 }
 
-function InviteStep({ state }: { state: WizardState }) {
+function InviteStep({ state, invitationLink }: { state: State; invitationLink: string }) {
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+
   const handleCopy = async () => {
     try {
-      if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(state.invitationLink);
-      } else {
-        const fallbackInput = document.createElement("input");
-        fallbackInput.value = state.invitationLink;
-        document.body.appendChild(fallbackInput);
-        fallbackInput.select();
-        document.execCommand("copy");
-        document.body.removeChild(fallbackInput);
-      }
+      await navigator.clipboard.writeText(invitationLink);
+
       setCopyStatus("copied");
       setTimeout(() => setCopyStatus("idle"), 2000);
     } catch {
@@ -232,11 +177,12 @@ function InviteStep({ state }: { state: WizardState }) {
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               id="onboarding-invite-link"
-              value={state.invitationLink}
+              value={invitationLink}
               readOnly
               className="flex-1 min-w-0 px-3 py-2 border border-surface-outline bg-surface-dimmed rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
               aria-label="Invitation link"
             />
+
             <PrimaryButton onClick={handleCopy}>{copyStatus === "copied" ? "Copied" : "Copy link"}</PrimaryButton>
           </div>
         </div>
@@ -249,17 +195,11 @@ function InviteStep({ state }: { state: WizardState }) {
   );
 }
 
-function ProjectStep({ state, onComplete }: { state: WizardState; onComplete: (data: CompanyCreatorOnboardingWizard.OnCompleteData) => void }) {
-  const handleFinish = () => {
-    onComplete({
-      spaces: state.selectedSpaces,
-    });
-  };
-
+function ProjectStep({ state }: { state: State }) {
   return (
     <WizardStep
       footer={
-        <PrimaryButton onClick={handleFinish} size="sm">
+        <PrimaryButton onClick={state.next} size="sm">
           Finish setup
         </PrimaryButton>
       }

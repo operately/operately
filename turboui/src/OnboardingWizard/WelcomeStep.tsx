@@ -5,7 +5,7 @@ import { WizardState } from "./WizadState";
 import { WizardStep } from "./WizardLayout";
 
 export interface WelcomeStepProps {
-  state: WizardState;
+  state: WizardState<any>;
   imageUrl: string;
   whatReady: "profile" | "workspace";
 }
@@ -31,7 +31,10 @@ export function WelcomeStep({ state, imageUrl, whatReady }: WelcomeStepProps) {
             We'll walk you through a quick setup to get your {whatReady} ready. It takes just a few minutes, and you can
             always come back to this later.
           </p>
-          <p className="italic">If you ever need help, reach out at support@operately.com — we're here for you.</p>
+          <p className="italic">
+            If you ever need help, reach out at support@operately.com.
+            <br /> We're here for you.
+          </p>
           <p>
             Best regards,
             <br />

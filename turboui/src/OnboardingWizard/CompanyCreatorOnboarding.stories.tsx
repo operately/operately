@@ -11,7 +11,7 @@ const meta = {
   },
   args: {
     invitationLink: "https://operately.com/invite/sample-onboarding",
-    profileImageUrl: "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg",
+    markoImageUrl: "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg",
     onComplete: () => {},
     onDismiss: () => {},
   },

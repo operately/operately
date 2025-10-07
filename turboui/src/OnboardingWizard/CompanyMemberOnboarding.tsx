@@ -31,37 +31,41 @@ export namespace CompanyMemberOnboardingWizard {
 
     onComplete: (data: OnCompleteData) => void;
     onDismiss: () => void;
-    initialAvatarUrl?: string | null;
-    profileImageUrl: string;
-  }
-
-  export interface State extends WizardState {
-    role: string;
-    setRole: (role: string) => void;
-
-    avatar: CompanyMemberOnboardingWizard.AvatarData | null;
-    setAvatar: (avatar: CompanyMemberOnboardingWizard.AvatarData | null) => void;
-
-    complete: () => void;
-    canProceedFromRole: boolean;
-    canFinish: boolean;
-    profileImageUrl: string;
+    markoImageUrl: string;
   }
 }
 
-const STEP_SEQUENCE: CompanyMemberOnboardingWizard.Step[] = ["welcome", "role", "avatar"];
+type AvatarData = CompanyMemberOnboardingWizard.AvatarData;
+type Step = CompanyMemberOnboardingWizard.Step;
 
-function generateId(prefix: string) {
-  return `${prefix}-${Math.random().toString(36).slice(2, 10)}`;
+const STEPS = ["welcome", "role", "avatar"] as Step[];
+
+interface State extends WizardState<Step> {
+  // Your role in the company
+  role: string;
+  setRole: (role: string) => void;
+
+  // Your profile picture
+  avatar: CompanyMemberOnboardingWizard.AvatarData | null;
+  setAvatar: (avatar: CompanyMemberOnboardingWizard.AvatarData | null) => void;
+}
+
+function useOnboardingState(initialStep: Step, onDismiss: () => void): State {
+  const wizardState = useWizardState<Step>(initialStep, STEPS, onDismiss);
+
+  const [role, setRole] = useState("");
+  const [avatar, setAvatar] = useState<AvatarData | null>(null);
+
+  return { ...wizardState, role, setRole, avatar, setAvatar };
 }
 
 export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWizard.Props) {
-  const state = useWizardState(props.__initialStep || "welcome", STEP_SEQUENCE, props.onDismiss);
+  const state = useOnboardingState(props.__initialStep || "welcome", props.onDismiss);
 
   return (
     <WizardModal labelledBy="company-member-onboarding-heading" onDismiss={props.onDismiss}>
       {match(state.currentStep)
-        .with("welcome", () => <WelcomeStep state={state} imageUrl={props.profileImageUrl} whatReady="profile" />)
+        .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="profile" />)
         .with("role", () => <RoleStep state={state} />)
         .with("avatar", () => <AvatarStep state={state} />)
         .run()}
@@ -69,7 +73,7 @@ export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWiza
   );
 }
 
-function RoleStep({ state }: { state: WizardState }) {
+function RoleStep({ state }: { state: State }) {
   const [validRole, setValidRole] = useState(false);
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -114,7 +118,7 @@ function RoleStep({ state }: { state: WizardState }) {
   );
 }
 
-function AvatarStep({ state }: { state: WizardState }) {
+function AvatarStep({ state }: { state: State }) {
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -138,7 +142,7 @@ function AvatarStep({ state }: { state: WizardState }) {
     const dataUrl = await readFileAsDataURL(file);
 
     state.setAvatar({
-      id: generateId("avatar"),
+      id: "avatar-upload",
       name: file.name,
       url: dataUrl,
       size: file.size,
@@ -165,13 +169,7 @@ function AvatarStep({ state }: { state: WizardState }) {
   }, [state.avatar, state.role]);
 
   return (
-    <WizardStep
-      footer={
-        <PrimaryButton onClick={state.complete} disabled={!state.canFinish}>
-          Finish
-        </PrimaryButton>
-      }
-    >
+    <WizardStep footer={<PrimaryButton onClick={state.next}>Finish</PrimaryButton>}>
       <div className="space-y-6">
         <WizardHeading
           stepNumber={2}

@@ -1,14 +1,14 @@
 import { useCallback, useState } from "react";
 
-export interface WizardState {
-  currentStep: string;
-  steps: string[];
+export interface WizardState<T> {
+  currentStep: T;
+  steps: T[];
   next: () => void;
   back: () => void;
   dismiss: () => void;
 }
 
-export function useWizardState(initialStep: string, steps: string[], onDismiss: () => void): WizardState {
+export function useWizardState<T>(initialStep: T, steps: T[], onDismiss: () => void): WizardState<T> {
   const [currentStep, setCurrentStep] = useState(initialStep);
 
   const next = useCallback(() => {

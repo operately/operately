@@ -12,7 +12,7 @@ const meta = {
   args: {
     onComplete: () => {},
     onDismiss: () => {},
-    profileImageUrl: "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg",
+    markoImageUrl: "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg",
   },
   decorators: [withMockWorkspaceBackdrop],
 } satisfies Meta<typeof CompanyMemberOnboardingWizard>;
@@ -42,6 +42,5 @@ export const AvatarEmpty: Story = {
 export const AvatarPrefilled: Story = {
   args: {
     __initialStep: "avatar",
-    initialAvatarUrl: "https://i.pravatar.cc/300?img=5",
   },
 };
