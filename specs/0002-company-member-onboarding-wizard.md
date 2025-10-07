@@ -20,23 +20,23 @@
 - UI-only scope implemented in the TurboUI library (`/turboui/src/`).
 - Create a dedicated `OnboardingWizard` component that composes existing TurboUI primitives and aligns with the current onboarding wizard structure.
 - No server or data layer changes are required; all inputs are managed locally and returned to the host via callbacks.
-- Provide Storybook coverage for the member onboarding flow at `/turboui/src/OnboardingWizard/index.stories.tsx`.
+- Provide Storybook coverage for the member onboarding flow at `/turboui/src/OnboardingWizard/CompanyMemberOnboarding.stories.tsx`.
 - Follow existing affordances for modal accessibility, focus management, and responsive layout.
 
 ### Implementation Path
 
-- Place the component implementation at: `turboui/src/OnboardingWizard/index.tsx`.
+- Place the component implementation at: `turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx`.
 - Export typed callbacks for completion and dismissal, returning the selected role and avatar metadata.
-- Create Storybook stories in: `turboui/src/OnboardingWizard/index.stories.tsx`.
+- Create Storybook stories in: `turboui/src/OnboardingWizard/CompanyMemberOnboarding.stories.tsx`.
 
 ### Component Skeleton
 
 ```tsx
-// turboui/src/MemberOnboardingWizard/index.tsx
+// turboui/src/OnboardingWizard/CompanyMemberOnboarding.tsx
 
 import React from "react";
 
-export namespace MemberOnboardingWizard {
+export namespace CompanyMemberOnboardingWizard {
   export interface OnCompleteData {
     /**
      * The role text the member selected or entered (trimmed).
@@ -54,7 +54,7 @@ export namespace MemberOnboardingWizard {
     } | null;
   }
 
-  export interface Props {
+export interface Props {
     onComplete: (data: OnCompleteData) => void;
     onDismiss: () => void;
     defaultRole?: string;
@@ -62,7 +62,7 @@ export namespace MemberOnboardingWizard {
   }
 }
 
-export function MemberOnboardingWizard(props: MemberOnboardingWizard.Props) {
+export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWizard.Props) {
   return <div>{/* Wizard UI goes here */}</div>;
 }
 ```
