@@ -17,7 +17,6 @@ import { fetchAll } from "../../utils/async";
 
 import { parseMilestoneForTurboUi, parseMilestonesForTurboUi } from "@/models/milestones";
 import { parseCheckInsForTurboUi, ProjectCheckIn } from "@/models/projectCheckIns";
-import { usePersonFieldContributorsSearch } from "@/models/projectContributors";
 import { parseSpaceForTurboUI } from "@/models/spaces";
 import { Paths, usePaths } from "@/routes/paths";
 import { useAiSidebar } from "../../features/AiSidebar";
@@ -103,8 +102,9 @@ function Page() {
   });
 
   const [description, setDescription] = usePageField({
-    value: (data: {project: Projects.Project}) => data.project.description && JSON.parse(data.project.description),
-    update: (v) => Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
+    value: (data: { project: Projects.Project }) => data.project.description && JSON.parse(data.project.description),
+    update: (v) =>
+      Api.updateProjectDescription({ projectId: project.id!, description: JSON.stringify(v) }).then(() => true),
     onError: () => showErrorToast("Network Error", "Reverted the description to its previous value."),
   });
 
@@ -179,8 +179,8 @@ function Page() {
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
-  const assigneeSearch = usePersonFieldContributorsSearch({
-    projectId: project.id,
+  const assigneeSearch = People.usePersonFieldSpaceMembersSearch({
+    spaceId: project.space.id,
     transformResult: (p) => People.parsePersonForTurboUi(paths, p)!,
   });
 
@@ -301,7 +301,12 @@ interface usePageFieldProps<T> {
   validations?: ((newValue: T) => string | null)[];
 }
 
-function usePageField<T>({ value, update, onError, validations }: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
+function usePageField<T>({
+  value,
+  update,
+  onError,
+  validations,
+}: usePageFieldProps<T>): [T, (v: T) => Promise<boolean>] {
   const { data, cacheVersion } = PageCache.useData(loader, { refreshCache: false });
 
   const [state, setState] = React.useState<T>(() => value(data));
