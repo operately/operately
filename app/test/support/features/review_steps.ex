@@ -4,10 +4,10 @@ defmodule Operately.Support.Features.ReviewSteps do
   step :setup, ctx do
     ctx
     |> Factory.setup()
-    |> Factory.add_company_member(:me, [name: "Michael Scott"])
-    |> Factory.add_company_member(:my_manager, [name: "David Wallace"])
-    |> Factory.add_company_member(:my_report, [name: "Dwight Schrute"])
     |> Factory.add_space(:product_space)
+    |> Factory.add_space_member(:me, :product_space, [name: "Michael Scott"])
+    |> Factory.add_space_member(:my_manager, :product_space, [name: "David Wallace"])
+    |> Factory.add_space_member(:my_report, :product_space, [name: "Dwight Schrute"])
     |> Factory.log_in_person(:me)
   end
 
