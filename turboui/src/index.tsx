@@ -31,6 +31,12 @@ export { FormattedTime } from "./FormattedTime";
 export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
+export {
+  CompanyCreatorOnboardingWizard,
+  CompanyMemberOnboardingWizard,
+  MemberOnboardingWizard,
+  OnboardingWizard,
+} from "./OnboardingWizard";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
 export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";

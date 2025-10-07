@@ -43,20 +43,20 @@
   other flows.
 
 - Storybook stories will be created in TurboUI to showcase and test the onboarding
-  wizard component (`/turboui/src/OnboardingWizard/index.stories.tsx`)
+  wizard component (`/turboui/src/OnboardingWizard/CompanyCreatorOnboarding.stories.tsx`)
 
 - All design and interaction patterns should follow TurboUI conventions and leverage
   existing TurboUI primitives.
 
 ### Implementation Path
 
-- The onboarding wizard component will be created at: `turboui/src/OnboardingWizard/index.tsx`
-- Storybook stories for the component will be created at: `turboui/src/OnboardingWizard/index.tsx`
+- The onboarding wizard component will be created at: `turboui/src/OnboardingWizard/CompanyCreatorOnboarding.tsx`
+- Storybook stories for the component will be created at: `turboui/src/OnboardingWizard/CompanyCreatorOnboarding.stories.tsx`
 
 ### Component Skeleton
 
 ```tsx
-// turboui/src/OnboardingWizard/index.tsx
+// turboui/src/OnboardingWizard/CompanyCreatorOnboarding.tsx
 
 import React from "react";
 
