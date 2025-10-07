@@ -54,6 +54,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     ranked_projects_query =
       from(p in Project, as: :project)
       |> Project.scope_company(person.company_id)
+      |> where([p], p.status != "closed")
       |> where([p], ilike(p.name, ^ilike_query))
       |> filter_by_view_access(person.id)
       |> select([p], %{
@@ -77,6 +78,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
     ranked_goals_query =
       from(g in Goal, as: :goal)
       |> Goal.scope_company(person.company_id)
+      |> where([g], is_nil(g.closed_at))
       |> where([g], ilike(g.name, ^ilike_query))
       |> filter_by_view_access(person.id)
       |> select([g], %{
@@ -102,6 +104,7 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearch do
       |> join(:inner, [t], m in assoc(t, :milestone))
       |> join(:inner, [t, m], p in assoc(m, :project), as: :project)
       |> Task.scope_company(person.company_id)
+      |> where([_t, _m, p], p.status != "closed")
       |> where([t], ilike(t.name, ^ilike_query))
       |> filter_by_view_access(person.id, named_binding: :project)
       |> select([t], %{

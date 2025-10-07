@@ -37,6 +37,17 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
       assert List.first(res.projects).name == "Website Redesign"
     end
 
+    test "does not return closed projects", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_project(:website, :marketing, name: "Website Redesign")
+        |> Factory.close_project(:website)
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "Website")
+      assert res.projects == []
+    end
+
     test "searches goals by name", ctx do
       ctx =
         ctx
@@ -48,6 +59,17 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
 
       assert length(res.goals) == 1
       assert List.first(res.goals).name == "Increase User Engagement"
+    end
+
+    test "does not return closed goals", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_goal(:user_engagement, :marketing, name: "Increase User Engagement")
+        |> Factory.close_goal(:user_engagement)
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "User")
+      assert res.goals == []
     end
 
     test "searches tasks by name", ctx do
@@ -63,6 +85,19 @@ defmodule OperatelyWeb.Api.Queries.GlobalSearchTest do
 
       assert length(res.tasks) == 1
       assert List.first(res.tasks).name == "Implement authentication"
+    end
+
+    test "does not return tasks that belong to closed projects", ctx do
+      ctx =
+        ctx
+        |> log_in()
+        |> Factory.add_project(:website, :marketing, name: "Website Redesign")
+        |> Factory.add_project_milestone(:launch, :website)
+        |> Factory.add_project_task(:auth_task, :launch, name: "Implement authentication")
+        |> Factory.close_project(:website)
+
+      assert {200, res} = query(ctx.conn, :global_search, query: "authentication")
+      assert res.tasks == []
     end
 
     test "searches people by name", ctx do
