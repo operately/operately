@@ -2,6 +2,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   use Operately.FeatureCase
 
   alias Operately.Tasks.Task
+  alias Operately.Projects
   alias Operately.Support.Features.EmailSteps
   alias Operately.Support.Features.NotificationsSteps
 
@@ -9,6 +10,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     ctx
     |> Factory.add_space_member(:creator, :group)
     |> Factory.add_project_task(:task, :milestone, name: "My task")
+  end
+
+  step :given_space_member_exists, ctx, opts \\ [] do
+    ctx
+    |> Factory.add_space_member(:space_member, :group, opts)
   end
 
   step :given_task_assignee_exists, ctx do
@@ -206,6 +212,33 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       |> UI.assert_text("Set due date", testid: "task-due-date")
       |> UI.assert_text("Select assignee", testid: "assignee")
     end)
+  end
+
+  step :assert_person_is_not_project_contributor, ctx do
+    ctx
+    |> UI.refute_text(ctx.space_member.full_name)
+
+    contributors = Projects.list_project_contributors(ctx.project)
+    refute Enum.any?(contributors, fn contributor -> contributor.person_id == ctx.space_member.id end)
+
+    ctx
+  end
+
+  step :assert_person_is_project_contributor, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "overview-sidebar"), fn el ->
+      UI.assert_text(el, ctx.space_member.full_name)
+    end)
+
+    contributor =
+      ctx.project
+      |> Projects.list_project_contributors()
+      |> Enum.find(fn contributor -> contributor.person_id == ctx.space_member.id end)
+
+    assert contributor.role == :contributor
+    assert contributor.responsibility == "contributor"
+
+    ctx
   end
 
   step :assert_task_added, ctx, title do
