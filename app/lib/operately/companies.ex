@@ -1,12 +1,10 @@
 defmodule Operately.Companies do
   import Ecto.Query, warn: false
   alias Operately.Repo
-  alias Ecto.Multi
 
-  alias Operately.Companies.Company
+  alias Operately.Companies.{AddPersonToGeneralSpace, Company}
   alias Operately.Tenets.Tenet
   alias Operately.Access.Fetch
-  alias Operately.Groups.Member
 
   def list_companies do
     Repo.all(from c in Company, order_by: [desc: c.inserted_at])
@@ -149,37 +147,6 @@ defmodule Operately.Companies do
   end
 
   def add_person_to_general_space(%Operately.People.Person{} = person) do
-    space = get_company_space(person.company_id)
-
-    cond do
-      space == nil ->
-        # Company has no general space
-        {:ok, nil}
-
-      already_member_of_general_space?(person.id, space.id) ->
-        # Person is already a member of the general space
-        {:ok, nil}
-
-      true ->
-        Multi.new()
-        |> Multi.run(:member, fn _, _ ->
-          Member.changeset(%{group_id: space.id, person_id: person.id}) |> Repo.insert()
-        end)
-        |> Multi.run(:binding, fn _, _ ->
-          group = Operately.Access.get_group(person_id: person.id)
-          context = Operately.Access.get_context!(group_id: space.id)
-
-          Operately.Access.create_binding(%{
-            group_id: group.id,
-            context_id: context.id,
-            access_level: Operately.Access.Binding.edit_access()
-          })
-        end)
-        |> Repo.transaction()
-    end
-  end
-
-  defp already_member_of_general_space?(person_id, group_id) do
-    Repo.exists?(from m in Member, where: m.person_id == ^person_id and m.group_id == ^group_id)
+    AddPersonToGeneralSpace.run(person)
   end
 end
