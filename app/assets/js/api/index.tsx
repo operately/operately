@@ -909,13 +909,8 @@ export interface ActivityContentTaskStatusChange {
 }
 
 export interface ActivityContentTaskStatusUpdating {
-  companyId: string;
-  company: Company;
-  spaceId: string;
-  space: Space;
-  projectId: string;
   project: Project;
-  taskId: string;
+  task: Task;
   oldStatus: string;
   newStatus: string;
   name: string;
@@ -3666,15 +3661,11 @@ export interface InvitationsCreateInviteLinkResult {
 }
 
 export interface InvitationsJoinCompanyViaInviteLinkInput {
-  token?: string;
-  password?: string | null;
-  passwordConfirmation?: string | null;
+  token: string;
 }
 
 export interface InvitationsJoinCompanyViaInviteLinkResult {
   company?: Company | null;
-  person?: Person | null;
-  error?: string | null;
 }
 
 export interface InvitationsNewInvitationTokenInput {
