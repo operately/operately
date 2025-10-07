@@ -3,7 +3,7 @@ import React from "react";
 import type { ActivityContentTaskStatusUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
-import { feedTitle, projectLink } from "../feedItemLinks";
+import { feedTitle, projectLink, taskLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
 import { StatusSelector } from "turboui";
 
@@ -29,14 +29,16 @@ const TaskStatusUpdating: ActivityHandler = {
   },
 
   FeedItemTitle({ activity, page }: { activity: Activity; page: string }) {
-    const { project, newStatus, name } = content(activity);
-    const statusText = newStatus === "done" ? "completed" : `marked as ${newStatus}`;
-    const message = `${statusText} task "${name}"`;
+    const { project, task, newStatus, name } = content(activity);
+    const status = newStatus.replace(/_/g, " ");
+    const taskName = task ? taskLink(task) : `the "${name}" task`
+
+    const message = ["marked", taskName, "as", status]
 
     if (page === "project") {
-      return feedTitle(activity, message);
+      return feedTitle(activity, ...message);
     } else {
-      return feedTitle(activity, message, "in", projectLink(project));
+      return feedTitle(activity, ...message, "in", projectLink(project));
     }
   },
 
