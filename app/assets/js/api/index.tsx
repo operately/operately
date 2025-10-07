@@ -2803,6 +2803,16 @@ export interface SpacesSearchResult {
   spaces: Space[];
 }
 
+export interface SpacesListMembersInput {
+  spaceId: Id;
+  query?: string | null;
+  ignoredIds?: Id[] | null;
+}
+
+export interface SpacesListMembersResult {
+  people?: Person[] | null;
+}
+
 export interface AcknowledgeGoalProgressUpdateInput {
   id?: string | null;
 }
@@ -4781,6 +4791,10 @@ class ApiNamespaceSpaces {
 
   async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
     return this.client.get("/spaces/search", input);
+  }
+
+  async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
+    return this.client.get("/spaces/list_members", input);
   }
 }
 
@@ -7309,6 +7323,9 @@ export default {
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+    listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
+    useListMembers: (input: SpacesListMembersInput) =>
+      useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
   },
 
   project_discussions: {
