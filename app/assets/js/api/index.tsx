@@ -3661,11 +3661,15 @@ export interface InvitationsCreateInviteLinkResult {
 }
 
 export interface InvitationsJoinCompanyViaInviteLinkInput {
-  token: string;
+  token?: string;
+  password?: string | null;
+  passwordConfirmation?: string | null;
 }
 
 export interface InvitationsJoinCompanyViaInviteLinkResult {
   company?: Company | null;
+  person?: Person | null;
+  error?: string | null;
 }
 
 export interface InvitationsNewInvitationTokenInput {
