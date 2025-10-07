@@ -10,7 +10,7 @@ import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { usePaths } from "@/routes/paths";
-import { GhostButton } from "turboui";
+import { GhostButton, PrimaryButton } from "turboui";
 import { useLoadedData } from "./loader";
 
 export function Page() {
@@ -25,40 +25,6 @@ export function Page() {
   );
 }
 
-// function SetupSteps() {
-//   const { company, spaces } = useLoadedData();
-//   const me = useMe();
-//   const workMap = useGetWorkMap({});
-//   const paths = usePaths();
-
-//   if (!workMap.data) {
-//     return null;
-//   }
-
-//   // // Check if company setup is complete
-//   const hasTeamMembers = (company.memberCount ?? 0) > 1;
-//   const hasSpaces = spaces.length > 1; // More than just the company space
-//   const hasProjects = workMap.data.workMap?.some((item) => item.type === "project") ?? false;
-
-//   // // Check if current user is an owner
-//   const isOwner = company.owners?.some((owner) => compareIds(owner.id, me?.id)) ?? false;
-//   const setupComplete = hasTeamMembers && hasSpaces && hasProjects;
-
-//   // // Only show setup message if user is owner and setup is not complete
-//   if (!isOwner || setupComplete) {
-//     return <div className="mt-8"></div>;
-//   }
-
-//   return (
-//     <CompanySetupStepsReminder
-//       hasProjects={hasProjects}
-//       hasSpaces={hasSpaces}
-//       hasTeamMembers={hasTeamMembers}
-//       continuePath={paths.setupPath()}
-//     />
-//   );
-// }
-
 function SpacesSection() {
   const { spaces } = useLoadedData();
 
@@ -67,7 +33,12 @@ function SpacesSection() {
       <Paper.Section
         title="Your Operately Spaces"
         subtitle="Manage projects, track goals, and organize your team's work."
-        actions={<AddSpaceButton />}
+        actions={
+          <div className="flex gap-2">
+            <InvitePeopleButton />
+            <AddSpaceButton />
+          </div>
+        }
       >
         <SpaceGrid spaces={spaces} />
       </Paper.Section>
@@ -145,8 +116,18 @@ function AddSpaceButton() {
   const paths = usePaths();
 
   return (
-    <GhostButton linkTo={paths.newSpacePath()} testId="add-space" size="sm">
+    <PrimaryButton linkTo={paths.newSpacePath()} testId="add-space" size="sm">
       Add Space
+    </PrimaryButton>
+  );
+}
+
+function InvitePeopleButton() {
+  const paths = usePaths();
+
+  return (
+    <GhostButton linkTo={paths.companyManagePeoplePath()} testId="invite-people" size="sm">
+      Invite People
     </GhostButton>
   );
 }
