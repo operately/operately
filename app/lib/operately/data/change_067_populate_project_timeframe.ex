@@ -1,7 +1,7 @@
 defmodule Operately.Data.Change067PopulateProjectTimeframe do
   alias Operately.Repo
-  alias Operately.Projects.Project
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
+  alias __MODULE__.Project
 
   def run do
     projects = Repo.all(Project)
@@ -39,8 +39,26 @@ defmodule Operately.Data.Change067PopulateProjectTimeframe do
   defp update_project_timeframe(project) do
     timeframe = build_timeframe(project)
 
-    project
-    |> Ecto.Changeset.change(%{timeframe: timeframe})
+    Project.changeset(project, %{timeframe: timeframe})
     |> Repo.update!()
+  end
+
+  defmodule Project do
+    use Operately.Schema
+
+    schema "projects" do
+      field :started_at, :utc_datetime
+      field :deadline, :utc_datetime
+
+      embeds_one :timeframe, Operately.ContextualDates.Timeframe, on_replace: :delete
+
+      timestamps()
+    end
+
+    def changeset(project, attrs) do
+      project
+      |> cast(attrs, [:started_at, :deadline])
+      |> cast_embed(:timeframe)
+    end
   end
 end
