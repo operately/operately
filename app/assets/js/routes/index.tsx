@@ -68,7 +68,6 @@ export function createAppRoutes() {
       shouldRevalidate: companyShouldRevalidate,
       children: [
         pageRoute("", pages.HomePage),
-        pageRoute("setup", pages.CompanySetupPage),
         pageRoute("invite-team", pages.InviteTeamPage),
         pageRoute("feed", pages.FeedPage),
         pageRoute("review", pages.ReviewPage),
