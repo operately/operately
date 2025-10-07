@@ -1,67 +1,13 @@
-import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
 
-import { OnboardingWizard } from ".";
+export const withMockWorkspaceBackdrop = (Story: React.ComponentType) => (
+  <div>
+    <MockWorkspacePage />
+    <Story />
+  </div>
+);
 
-const meta = {
-  title: "Components/Onboarding/CompanyCreatorWizard",
-  component: OnboardingWizard,
-  parameters: {
-    layout: "fullscreen",
-  },
-  argTypes: {
-    invitationLink: {
-      control: "text",
-    },
-  },
-  args: {
-    invitationLink: "https://operately.com/invite/sample-onboarding",
-    profileImageUrl: "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg",
-    onComplete: () => {},
-    onDismiss: () => {},
-  },
-  decorators: [
-    (Story) => (
-      <div>
-        <MockWorkspacePage />
-        <Story />
-      </div>
-    ),
-  ],
-} satisfies Meta<typeof OnboardingWizard>;
-
-type Story = StoryObj<typeof meta>;
-
-export default meta;
-
-export const Welcome: Story = {
-  args: {
-    __initialStep: "welcome",
-  },
-};
-
-export const SpacesStep: Story = {
-  args: {
-    __initialStep: "spaces",
-  },
-};
-
-export const InviteStep: Story = {
-  args: {
-    __initialStep: "invite",
-  },
-};
-
-export const ProjectStep: Story = {
-  args: {
-    __initialStep: "project",
-  },
-};
-
-//
-// Just a mock page to show behind the wizard
-//
-function MockWorkspacePage() {
+export function MockWorkspacePage() {
   return (
     <div className="pointer-events-none">
       <div className="max-w-6xl mx-auto px-6 py-16 space-y-12">
