@@ -13,13 +13,6 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-  decorators: [
-    (Story) => (
-      <div className="sm:mt-12">
-        <Story />
-      </div>
-    ),
-  ],
   argTypes: {
     items: { control: "object" },
   },

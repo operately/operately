@@ -11,14 +11,13 @@ export function Page() {
   const paths = usePaths();
 
   const { workMap, space } = useLoadedData().data;
-  const title = `${space.name} Work Map`;
 
   const [items, addItem] = useWorkMapItems(workMap);
   const spaceSearch = useSpaceSearch();
 
   return (
     <WorkMapPage
-      title={title}
+      title="Work Map"
       addingEnabled={true}
       items={convertToWorkMapItems(paths, items)}
       addItem={addItem}

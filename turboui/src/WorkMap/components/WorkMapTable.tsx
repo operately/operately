@@ -8,7 +8,7 @@ import { IconInfoCircle, IconPlus } from "../../icons";
 import classNames from "../../utils/classnames";
 import { useStateWithLocalStorage } from "../../utils/useStateWithLocalStorage";
 import { AddItemModal } from "./AddItemModal";
-import { TableRow, IsItemExpandedFn, SetItemExpandedFn } from "./TableRow";
+import { IsItemExpandedFn, SetItemExpandedFn, TableRow } from "./TableRow";
 
 interface Props {
   items: WorkMap.Item[];
@@ -39,12 +39,13 @@ export function WorkMapTable({
     return `${type}:${path}`;
   }, [type]);
 
-  const [expandedState, setExpandedState] = useStateWithLocalStorage<Record<string, boolean>>("workmap", storageScope, {});
-
-  const getItemExpanded = React.useCallback<IsItemExpandedFn>(
-    (id) => expandedState[id] !== false,
-    [expandedState],
+  const [expandedState, setExpandedState] = useStateWithLocalStorage<Record<string, boolean>>(
+    "workmap",
+    storageScope,
+    {},
   );
+
+  const getItemExpanded = React.useCallback<IsItemExpandedFn>((id) => expandedState[id] !== false, [expandedState]);
 
   const setItemExpanded = React.useCallback<SetItemExpandedFn>(
     (id, valueOrUpdater) => {

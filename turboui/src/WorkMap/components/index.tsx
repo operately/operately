@@ -1,10 +1,12 @@
 import React from "react";
 
-import { Page } from "../../Page";
 import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 import { DateField } from "../../DateField";
+import { IconChevronRight } from "../../icons";
+import { BlackLink } from "../../Link";
+import { PageNew } from "../../Page";
 import { SpaceField } from "../../SpaceField";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { AddItemModal } from "./AddItemModal";
@@ -15,9 +17,9 @@ export { WorkMapTable };
 
 export function WorkMapPage(props: WorkMap.Props) {
   return (
-    <Page title={props.title} size="fullwidth" navigation={props.navigation}>
+    <PageNew title={props.title} size="fullwidth">
       <WorkMap {...props} />
-    </Page>
+    </PageNew>
   );
 }
 
@@ -31,18 +33,24 @@ export function WorkMap({
   addingEnabled = false,
   spaceSearch,
   addItemDefaultSpace,
+  navigation,
 }: WorkMap.Props) {
   const { filteredItems, tabsState, tab } = useWorkMapTab({ rawItems: items, type, opts: { tabOptions } });
 
   return (
     <div className="flex flex-col w-full bg-surface-base rounded-lg">
-      <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-4 sm:px-6 py-3 border-b border-surface-outline">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
+      <header className="px-4 py-3 border-b border-surface-outline">
+        <Breadcrumbs navigation={navigation || []} />
+
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <h1 className="text-sm sm:text-base font-bold text-content-accent">{title}</h1>
+          </div>
         </div>
       </header>
+
+      <WorkMapNavigation tabsState={tabsState} />
       <div className="flex-1 overflow-auto">
-        <WorkMapNavigation tabsState={tabsState} />
         <WorkMapTable
           items={filteredItems}
           tab={tab}
@@ -54,6 +62,23 @@ export function WorkMap({
           type={type}
         />
       </div>
+    </div>
+  );
+}
+
+function Breadcrumbs({ navigation }: { navigation: { to: string; label: string }[] }) {
+  return (
+    <div>
+      <nav className="flex items-center space-x-0.5 mt-1">
+        {navigation.map((item, index) => (
+          <React.Fragment key={index}>
+            <BlackLink to={item.to} className="text-xs text-content-dimmed leading-snug" underline="hover">
+              {item.label}
+            </BlackLink>
+            {index < navigation.length - 1 && <IconChevronRight size={10} className="text-content-dimmed" />}
+          </React.Fragment>
+        ))}
+      </nav>
     </div>
   );
 }
