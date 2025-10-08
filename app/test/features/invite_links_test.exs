@@ -4,6 +4,38 @@ defmodule Operately.Features.InviteLinksTest do
 
   setup ctx, do: Steps.setup(ctx)
 
+  describe "company admin manages invite links" do
+    setup ctx do
+      ctx
+      |> Steps.given_i_am_company_admin()
+      |> Steps.assert_no_active_invite_links()
+    end
+
+    feature "enables and disables invite links from manage team page", ctx do
+      ctx
+      |> Steps.open_manage_people_page()
+      |> Steps.assert_invite_link_section_visible()
+      |> Steps.assert_invite_link_toggle_disabled()
+      |> Steps.enable_invite_link_toggle()
+      |> Steps.assert_invite_link_toggle_enabled()
+      |> Steps.disable_invite_link_toggle()
+      |> Steps.assert_invite_link_toggle_disabled()
+      |> Steps.assert_no_active_invite_links()
+    end
+
+    feature "generates a fresh invite link", ctx do
+      ctx
+      |> Steps.given_that_an_invite_link_exists()
+      |> Steps.open_manage_people_page()
+      |> Steps.assert_invite_link_section_visible()
+      |> Steps.assert_invite_link_toggle_enabled()
+      |> Steps.assert_active_invite_link_exists()
+      |> Steps.generate_new_invite_link()
+      |> Steps.assert_new_invite_link_replaces_old()
+      |> Steps.assert_invite_link_toggle_enabled()
+    end
+  end
+
   describe "logged in user" do
     setup ctx do
       ctx

@@ -3,7 +3,10 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   alias Operately.Companies
   alias Operately.Groups
+  alias Operately.InviteLinks
+  alias Operately.InviteLinks.InviteLink
   alias Operately.PeopleFixtures
+  alias Operately.Repo
   alias Operately.Support.Factory
   alias Operately.Support.Features.UI.Emails, as: Emails
 
@@ -47,7 +50,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :given_that_an_invite_link_exists, ctx do
     {:ok, invite_link} =
-      Operately.InviteLinks.create_invite_link(%{
+      InviteLinks.create_invite_link(%{
         company_id: ctx.company.id,
         author_id: ctx.creator.id
       })
@@ -57,7 +60,7 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :given_that_an_expired_invite_link_exists, ctx do
     {:ok, invite_link} =
-      Operately.InviteLinks.create_invite_link(%{
+      InviteLinks.create_invite_link(%{
         company_id: ctx.company.id,
         author_id: ctx.creator.id,
         expires_at: DateTime.add(DateTime.utc_now(), -1, :day)
@@ -68,12 +71,12 @@ defmodule Operately.Support.Features.InviteLinksSteps do
 
   step :given_that_a_revoked_invite_link_exists, ctx do
     {:ok, invite_link} =
-      Operately.InviteLinks.create_invite_link(%{
+      InviteLinks.create_invite_link(%{
         company_id: ctx.company.id,
         author_id: ctx.creator.id
       })
 
-    {:ok, revoked_link} = Operately.InviteLinks.revoke_invite_link(invite_link)
+    {:ok, revoked_link} = InviteLinks.revoke_invite_link(invite_link)
 
     Map.put(ctx, :invite_link, revoked_link)
   end
@@ -205,11 +208,130 @@ defmodule Operately.Support.Features.InviteLinksSteps do
     ctx |> UI.assert_text("Invalid Link")
   end
 
+  step :given_i_am_company_admin, ctx do
+    ctx
+    |> Factory.add_company_admin(:admin, name: "Admin Adminson")
+    |> Factory.log_in_person(:admin)
+  end
+
+  step :open_manage_people_page, ctx do
+    ctx
+    |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.click(testid: "manage-team-members")
+    |> UI.assert_has(testid: "manage-people-page")
+  end
+
+  step :assert_invite_link_section_visible, ctx do
+    ctx
+    |> UI.assert_has(testid: "invite-link-section")
+    |> UI.assert_text("Invite link to add members")
+  end
+
+  step :assert_invite_link_toggle_disabled, ctx do
+    ctx
+    |> UI.assert_has(css: "[data-test-id='invite-link-toggle'] [role='switch'][data-state='unchecked']")
+    |> UI.refute_has(testid: "invite-link-copy")
+  end
+
+  step :assert_invite_link_toggle_enabled, ctx do
+    ctx
+    |> UI.assert_has(css: "[data-test-id='invite-link-toggle'] [role='switch'][data-state='checked']")
+    |> UI.assert_has(testid: "invite-link-copy")
+  end
+
+  step :assert_active_invite_link_exists, ctx do
+    Process.sleep(100)
+
+    active_link = fetch_active_invite_link(ctx.company.id)
+    assert active_link
+
+    Map.put(ctx, :active_invite_link, active_link)
+  end
+
+  step :assert_no_active_invite_links, ctx do
+    Process.sleep(100)
+
+    assert_no_active_invite_links_for_company(ctx.company.id)
+    Map.put(ctx, :active_invite_link, nil)
+  end
+
+  step :enable_invite_link_toggle, ctx do
+    ctx =
+      ctx
+      |> UI.click(testid: "invite-link-toggle-label")
+      |> UI.assert_has(css: "[data-test-id='invite-link-toggle'] [role='switch'][data-state='checked']")
+      |> UI.assert_has(testid: "invite-link-copy")
+
+    Process.sleep(100)
+
+    active_link = fetch_active_invite_link(ctx.company.id)
+    assert active_link
+
+    Map.put(ctx, :active_invite_link, active_link)
+  end
+
+  step :disable_invite_link_toggle, ctx do
+    ctx =
+      ctx
+      |> UI.click(testid: "invite-link-toggle-label")
+      |> UI.assert_has(css: "[data-test-id='invite-link-toggle'] [role='switch'][data-state='unchecked']")
+      |> UI.refute_has(testid: "invite-link-copy")
+
+    Process.sleep(100)
+
+    assert_no_active_invite_links_for_company(ctx.company.id)
+
+    if link = ctx[:active_invite_link] do
+      reloaded = Repo.get!(InviteLink, link.id)
+      refute InviteLink.is_valid?(reloaded)
+    end
+
+    Map.put(ctx, :active_invite_link, nil)
+  end
+
+  step :generate_new_invite_link, ctx do
+    ctx =
+      ctx
+      |> UI.click(testid: "invite-link-generate-new")
+      |> UI.assert_has(testid: "invite-link-copy")
+
+    Process.sleep(100)
+
+    ctx
+  end
+
+  step :assert_new_invite_link_replaces_old, ctx do
+    Process.sleep(100)
+
+    new_active = fetch_active_invite_link(ctx.company.id)
+    assert new_active
+
+    previous = ctx[:invite_link] || ctx[:active_invite_link]
+    assert previous
+    refute new_active.id == previous.id
+
+    reloaded_previous = Repo.get!(InviteLink, previous.id)
+    refute InviteLink.is_valid?(reloaded_previous)
+
+    Map.put(ctx, :active_invite_link, new_active)
+  end
+
   defp wait_for_signup_code(email) do
     subject = "Operately confirmation code:"
     emails = Emails.wait_for_email_for(email, attempts: 10)
 
     email = Enum.find(emails, fn email -> String.contains?(email.subject, subject) end)
     String.split(email.subject, subject) |> List.last()
+  end
+
+  defp fetch_active_invite_link(company_id) do
+    company_id
+    |> InviteLinks.list_invite_links_for_company()
+    |> Enum.find(&InviteLink.is_valid?/1)
+  end
+
+  defp assert_no_active_invite_links_for_company(company_id) do
+    links = InviteLinks.list_invite_links_for_company(company_id)
+    refute Enum.any?(links, &InviteLink.is_valid?/1)
   end
 end

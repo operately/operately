@@ -5,13 +5,14 @@ import * as Pages from "@/components/Pages";
 import * as Paper from "@/components/PaperContainer";
 import * as Companies from "@/models/companies";
 import * as Invitations from "@/models/invitations";
+import * as InviteLinks from "@/models/inviteLinks";
 import * as People from "@/models/people";
 import * as Time from "@/utils/time";
 import * as React from "react";
-import { IconAlertTriangle, IconId, IconRefresh, IconUserX } from "turboui";
+import { IconAlertTriangle, IconId, IconRefresh, IconUserX, SwitchToggle } from "turboui";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
+import { BlackLink, GhostButton, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
 
 import Modal, { ModalState, useModalState } from "@/components/Modal";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -26,17 +27,38 @@ interface LoaderResult {
   company: Companies.Company;
   invitedPeople: People.Person[];
   currentMembers: People.Person[];
+  inviteLinks: InviteLinks.InviteLink[];
 }
 
 async function loader({ params }): Promise<LoaderResult> {
-  const company = await Companies.getCompany({ id: params.companyId }).then((res) => res.company!);
+  const company = await Companies.getCompany({ id: params.companyId, includePermissions: true }).then((res) => res.company!);
   const people = await People.getPeople({ includeManager: true, includeInvitations: true }).then((res) => res.people!);
+  const inviteLinks = await loadInviteLinks(company);
 
   return {
     company: company,
     invitedPeople: People.sortByName(people!.filter((person) => person!.hasOpenInvitation)),
     currentMembers: People.sortByName(people!.filter((person) => !person!.hasOpenInvitation)),
+    inviteLinks,
   };
+}
+
+async function loadInviteLinks(company: Companies.Company): Promise<InviteLinks.InviteLink[]> {
+  const canInvite = company.permissions?.canInviteMembers;
+  const companyId = company.id;
+
+  if (!canInvite || !companyId) {
+    return [];
+  }
+
+  try {
+    const result = await Api.invitations.listInviteLinks({ companyId });
+    const links = result.inviteLinks ?? [];
+    return links.filter((link): link is InviteLinks.InviteLink => Boolean(link));
+  } catch (error) {
+    console.error("Failed to load invite links", error);
+    return [];
+  }
 }
 
 function Page() {
@@ -54,6 +76,7 @@ function Page() {
             actions={<AddMemberButton />}
           />
 
+          <InviteLinkSection />
           <InvitationList />
           <MemberList />
         </Paper.Body>
@@ -74,6 +97,221 @@ function AddMemberButton() {
       Add Team Member
     </PrimaryButton>
   );
+}
+
+function InviteLinkSection() {
+  const { company, inviteLinks } = Pages.useLoadedData() as LoaderResult;
+  const canInvite = company.permissions?.canInviteMembers;
+
+  const [links, setLinks] = React.useState(inviteLinks);
+  const [error, setError] = React.useState<string | null>(null);
+  const [copyState, setCopyState] = React.useState<"idle" | "copied">("idle");
+  const copyTimeoutRef = React.useRef<number | null>(null);
+
+  const [createInviteLink, { loading: creating }] = Api.invitations.useCreateInviteLink();
+  const [revokeInviteLink, { loading: revoking }] = Api.invitations.useRevokeInviteLink();
+
+  React.useEffect(() => {
+    setLinks(inviteLinks);
+  }, [inviteLinks]);
+
+  React.useEffect(() => {
+    return () => {
+      if (copyTimeoutRef.current !== null) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const activeLink = React.useMemo(() => links.find(isInviteLinkActive), [links]);
+  const isEnabled = Boolean(activeLink);
+  const inviteUrl = isEnabled && activeLink?.token ? InviteLinks.createInvitationUrl(activeLink.token) : "";
+  const actionLoading = creating || revoking;
+
+  React.useEffect(() => {
+    setCopyState("idle");
+  }, [inviteUrl]);
+
+  if (!canInvite) {
+    return null;
+  }
+
+  const upsertLink = (link: InviteLinks.InviteLink) => {
+    setLinks((prev) => {
+      const filtered = prev.filter((item) => item.id !== link.id);
+      return [link, ...filtered];
+    });
+  };
+
+  const updateLink = (link: InviteLinks.InviteLink) => {
+    setLinks((prev) => prev.map((item) => (item.id === link.id ? link : item)));
+  };
+
+  const removeLinkById = (id?: string | null) => {
+    if (!id) return;
+    setLinks((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  const handleToggle = async (nextValue: boolean) => {
+    if (nextValue === isEnabled || actionLoading) return;
+
+    setError(null);
+
+    if (nextValue) {
+      try {
+        const result = await createInviteLink({});
+        if (result.inviteLink) {
+          upsertLink(result.inviteLink);
+        }
+      } catch (err) {
+        console.error("Failed to create invite link", err);
+        setError("We couldn't create an invite link. Please try again.");
+      }
+      return;
+    }
+
+    if (activeLink?.id) {
+      try {
+        const result = await revokeInviteLink({ inviteLinkId: activeLink.id });
+        if (result.inviteLink) {
+          updateLink(result.inviteLink);
+        } else {
+          removeLinkById(activeLink.id);
+        }
+      } catch (err) {
+        console.error("Failed to disable invite link", err);
+        setError("We couldn't disable the invite link. Please try again.");
+      }
+    }
+  };
+
+  const handleGenerateNewLink = async () => {
+    if (actionLoading) return;
+
+    setError(null);
+
+    if (!activeLink?.id) {
+      await handleToggle(true);
+      return;
+    }
+
+    try {
+      const created = await createInviteLink({});
+      if (created.inviteLink) {
+        upsertLink(created.inviteLink);
+      }
+
+      try {
+        const revoked = await revokeInviteLink({ inviteLinkId: activeLink.id });
+        if (revoked.inviteLink) {
+          updateLink(revoked.inviteLink);
+        } else {
+          removeLinkById(activeLink.id);
+        }
+      } catch (revokeError) {
+        console.error("Failed to revoke previous invite link", revokeError);
+        setError("A new link is active, but the previous one is still enabled. Please revoke it manually if needed.");
+      }
+    } catch (error) {
+      console.error("Failed to generate a new invite link", error);
+      setError("We couldn't generate a new invite link. Please try again.");
+    }
+  };
+
+  const handleCopy = async () => {
+    if (!inviteUrl || actionLoading) return;
+
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(inviteUrl);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = inviteUrl;
+        textarea.setAttribute("readonly", "");
+        textarea.style.position = "absolute";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
+
+      setCopyState("copied");
+      if (copyTimeoutRef.current !== null) {
+        window.clearTimeout(copyTimeoutRef.current);
+      }
+      copyTimeoutRef.current = window.setTimeout(() => {
+        setCopyState("idle");
+      }, 2000);
+    } catch (error) {
+      console.error("Failed to copy invite link", error);
+      setError("We couldn't copy the invite link. Please try again.");
+    }
+  };
+
+  return (
+    <div className="border-t border-b border-stroke-dimmed py-6 mt-6" data-test-id="invite-link-section">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <div className="text-content-accent text-lg font-semibold">Invite link to add members</div>
+          <p className="text-sm text-content-dimmed mt-1">
+            Only people with permission to invite members can see this.
+            {isEnabled && (
+              <>
+                {" "}You can also{" "}
+                <button
+                  className="underline text-link-base disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleGenerateNewLink}
+                  disabled={actionLoading}
+                  data-test-id="invite-link-generate-new"
+                >
+                  generate a new link
+                </button>
+                .
+              </>
+            )}
+          </p>
+          {error && <p className="text-sm text-content-error mt-2">{error}</p>}
+        </div>
+
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          {isEnabled && (
+            <GhostButton
+              size="sm"
+              onClick={handleCopy}
+              disabled={actionLoading || !inviteUrl}
+              testId="invite-link-copy"
+            >
+              {copyState === "copied" ? "Copied" : "Copy link"}
+            </GhostButton>
+          )}
+          <div
+            data-test-id="invite-link-toggle"
+            className={actionLoading ? "opacity-50 pointer-events-none" : ""}
+          >
+            <SwitchToggle
+              label="Toggle invite link"
+              labelHidden
+              value={isEnabled}
+              setValue={(value) => {
+                void handleToggle(value);
+              }}
+              testId="invite-link-toggle-label"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function isInviteLinkActive(link: InviteLinks.InviteLink | null | undefined): boolean {
+  if (!link || link.isActive === false) return false;
+
+  const expiresAt = Time.parse(link.expiresAt);
+  if (!expiresAt) return true;
+
+  return expiresAt.getTime() > Date.now();
 }
 
 function InvitationList() {
