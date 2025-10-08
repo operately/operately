@@ -886,6 +886,110 @@ defmodule OperatelyWeb.Api.ProjectMilestonesTest do
     end
   end
 
+  describe "update ordering" do
+    setup ctx do
+      ctx
+      |> Factory.add_project_milestone(:milestone2, :project)
+      |> Factory.add_project_milestone(:milestone3, :project)
+    end
+
+    test "it requires authentication", ctx do
+      assert {401, _} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{})
+    end
+
+    test "it requires a project_id", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{ordering_state: []})
+
+      assert res.message == "Missing required fields: project_id"
+    end
+
+    test "it returns not found for non-existent project", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      fake_project = %Operately.Projects.Project{id: Ecto.UUID.generate(), name: "Missing"}
+
+      assert {404, _} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+        project_id: Paths.project_id(fake_project),
+        ordering_state: []
+      })
+    end
+
+    test "it returns forbidden for members without edit access", ctx do
+      ctx =
+        ctx
+        |> Factory.edit_project_company_members_access(:project, :no_access)
+        |> Factory.edit_project_space_members_access(:project, :view_access)
+        |> Factory.log_in_person(:space_member)
+
+      assert {403, _} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+        project_id: Paths.project_id(ctx.project),
+        ordering_state: []
+      })
+    end
+
+    test "it rejects milestones from other projects", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:other_project, :engineering)
+        |> Factory.add_project_milestone(:other_milestone, :other_project)
+        |> Factory.log_in_person(:creator)
+
+      assert {400, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+        project_id: Paths.project_id(ctx.project),
+        ordering_state: [
+          Paths.milestone_id(ctx.milestone),
+          Paths.milestone_id(ctx.other_milestone)
+        ]
+      })
+
+      assert res.message == "Some milestone IDs do not belong to this project"
+    end
+
+    test "it appends missing milestone ids when saving", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      partial_state = [Paths.milestone_id(ctx.milestone3)]
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+        project_id: Paths.project_id(ctx.project),
+        ordering_state: partial_state
+      })
+
+      project_after = Repo.reload(ctx.project)
+
+      expected_order = [
+        Paths.milestone_id(ctx.milestone3),
+        Paths.milestone_id(ctx.milestone),
+        Paths.milestone_id(ctx.milestone2)
+      ]
+
+      assert project_after.milestones_ordering_state == expected_order
+      assert res.project.milestones_ordering_state == expected_order
+    end
+
+    test "it reorders milestones and returns updated ordering", ctx do
+      ctx = Factory.log_in_person(ctx, :creator)
+
+      new_order = [
+        Paths.milestone_id(ctx.milestone2),
+        Paths.milestone_id(ctx.milestone3),
+        Paths.milestone_id(ctx.milestone)
+      ]
+
+      assert {200, res} = mutation(ctx.conn, [:project_milestones, :update_ordering], %{
+        project_id: Paths.project_id(ctx.project),
+        ordering_state: new_order
+      })
+
+      project_after = Repo.reload(ctx.project)
+
+      assert project_after.milestones_ordering_state == new_order
+      assert res.project.milestones_ordering_state == new_order
+    end
+  end
+
   describe "delete" do
     test "it requires authentication", ctx do
       assert {401, _} = mutation(ctx.conn, [:project_milestones, :delete], %{})
