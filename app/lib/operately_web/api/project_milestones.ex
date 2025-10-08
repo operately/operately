@@ -241,7 +241,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     def validate_ordering_state(multi, ordering_state) do
       Ecto.Multi.run(multi, :validated_ordering_state, fn _repo, %{project: project} ->
         project_ids = milestone_short_ids(project)
-        provided_ids = dedupe_preserving_order(ordering_state)
+        provided_ids = Enum.uniq(ordering_state || [])
 
         case Enum.reject(provided_ids, &(&1 in project_ids)) do
           [] ->
@@ -397,21 +397,6 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       project
       |> Map.get(:milestones, [])
       |> Enum.map(&Paths.milestone_id/1)
-    end
-
-    defp dedupe_preserving_order(nil), do: []
-
-    defp dedupe_preserving_order(ids) do
-      {reversed, _} =
-        Enum.reduce(ids, {[], MapSet.new()}, fn id, {acc, seen} ->
-          if MapSet.member?(seen, id) do
-            {acc, seen}
-          else
-            {[id | acc], MapSet.put(seen, id)}
-          end
-        end)
-
-      Enum.reverse(reversed)
     end
 
     defp append_missing(base, candidates) do
