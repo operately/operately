@@ -1,1 +1,13 @@
-<%= raise "HTML Email for TaskAdding not implemented" %>
+<%= title("#{short_name(@author)} added the task \"#{@task_name}\"") %>
+
+<%= spacer() %>
+
+<%= row do %>
+  A new task named <%= @task_name %> was created in this project.
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Task") %>
+<% end %>
