@@ -467,6 +467,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :access_levels, :access_levels, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :milestones_ordering_state, list_of(:string), null: true
   end
 
   object :project_children_count do
