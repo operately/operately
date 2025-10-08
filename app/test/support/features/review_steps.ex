@@ -1,6 +1,8 @@
 defmodule Operately.Support.Features.ReviewSteps do
   use Operately.FeatureCase
 
+  alias Operately.{Goals, Projects}
+
   step :setup, ctx do
     ctx
     |> Factory.setup()
@@ -473,6 +475,22 @@ defmodule Operately.Support.Features.ReviewSteps do
 
   step :when_a_project_is_closed, ctx do
     ctx |> Factory.close_project(:project)
+  end
+
+  step :when_a_goal_is_closed, ctx do
+    ctx |> Factory.close_goal(:goal)
+  end
+
+  step :when_a_project_is_deleted, ctx do
+    {:ok, _project} = Projects.delete_project(ctx.project)
+
+    ctx
+  end
+
+  step :when_a_goal_is_deleted, ctx do
+    {:ok, _goal} = Goals.delete_goal(ctx.goal)
+
+    ctx
   end
 
   step :assert_the_closed_project_is_no_longer_displayed, ctx do
