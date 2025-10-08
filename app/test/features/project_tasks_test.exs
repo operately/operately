@@ -375,13 +375,20 @@ defmodule Operately.Features.ProjectTasksTest do
       ctx
       |> Steps.given_task_exists()
       |> Steps.given_space_member_exists()
+      |> Steps.visit_task_page()
+      |> Steps.post_comment("This is a comment without mentions")
 
     ctx
+    |> Steps.assert_space_member_not_notified()
+
+    ctx
+    |> Steps.login_as_champion()
     |> Steps.visit_task_page()
-    |> Steps.post_comment("This is a comment without mentions")
-    |> Steps.assert_space_member_not_mentioned()
     |> Steps.post_comment_mentioning(ctx.space_member)
-    |> Steps.assert_space_member_mentioned()
+
+    ctx
+    |> Steps.assert_space_member_notified()
+    |> Steps.assert_space_member_mentioned_email_sent()
   end
 
   @tag login_as: :reviewer

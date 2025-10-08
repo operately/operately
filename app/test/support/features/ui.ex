@@ -117,10 +117,17 @@ defmodule Operately.Support.Features.UI do
 
   def mention_person_in_rich_text(state, person_or_name) do
     name = mention_name(person_or_name)
+    query = Query.css(".ProseMirror[contenteditable=true]")
 
-    state
-    |> send_keys(["@", name])
-    |> send_keys([:enter])
+    execute("mention_person_in_rich_text", state, fn session ->
+      session
+      |> Browser.find(query, fn element ->
+        element
+        |> Browser.send_keys(["@", name])
+        |> sleep(500)
+        |> Browser.send_keys([:enter])
+      end)
+    end)
   end
 
   defp mention_name(%Person{} = person), do: Person.first_name(person)
