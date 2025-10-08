@@ -4,7 +4,10 @@ defmodule OperatelyWeb.PageController do
   def index(conn, _params) do
     config = app_config(conn)
 
-    conn |> assign(:app_config, config) |> render(:page)
+    conn
+    |> assign(:app_config, config)
+    |> assign(:vite_url, vite_url())
+    |> render(:page)
   end
 
   def development_mode? do
@@ -55,5 +58,14 @@ defmodule OperatelyWeb.PageController do
         experimental: action.experimental || false
       }
     end)
+  end
+
+  defp vite_url do
+    "http://localhost:#{vite_port()}"
+  end
+
+  defp vite_port do
+    offset = System.get_env("PORT_OFFSET") || "4000"
+    String.to_integer(offset) + 5
   end
 end
