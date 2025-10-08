@@ -80,7 +80,7 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.refute_has(testid: "add-task-form")
   end
 
- step :add_multiple_tasks, ctx, names: names do
+  step :add_multiple_tasks, ctx, names: names do
     ctx
     |> UI.click_button("New task")
     |> UI.click(testid: "add-more-switch")
@@ -219,7 +219,10 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.refute_text(ctx.space_member.full_name)
 
     contributors = Projects.list_project_contributors(ctx.project)
-    refute Enum.any?(contributors, fn contributor -> contributor.person_id == ctx.space_member.id end)
+
+    refute Enum.any?(contributors, fn contributor ->
+             contributor.person_id == ctx.space_member.id
+           end)
 
     ctx
   end
@@ -346,7 +349,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
     {:ok, _activity} =
       Ecto.Multi.new()
-      |> Operately.Activities.insert_sync(ctx.champion.id, :task_milestone_updating, fn _changes -> activity_attrs end)
+      |> Operately.Activities.insert_sync(
+        ctx.champion.id,
+        :task_milestone_updating,
+        fn _changes -> activity_attrs end
+      )
       |> Operately.Repo.transaction()
 
     # Delete the milestone to simulate the scenario where activity references a deleted milestone
@@ -367,8 +374,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   #
 
   step :assert_task_due_date_change_visible_in_feed, ctx, date do
-    short = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name}"
-    long = "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name} in #{ctx.project.name}"
+    short =
+      "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name}"
+
+    long =
+      "#{Operately.People.Person.first_name(ctx.champion)} changed the due date to #{date} on #{ctx.task.name} in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -386,8 +396,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
   end
 
   step :assert_task_assignee_change_visible_in_feed, ctx do
-    short = "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name}"
-    long = "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name} in #{ctx.project.name}"
+    short =
+      "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name}"
+
+    long =
+      "#{Operately.People.Person.first_name(ctx.reviewer)} assigned to #{ctx.champion.full_name} the task #{ctx.task.name} in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -406,7 +419,9 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
   step :assert_task_comment_visible_in_feed, ctx, person: person, task_name: task_name do
     short = "#{Operately.People.Person.first_name(person)} commented on #{task_name}"
-    long = "#{Operately.People.Person.first_name(person)} commented on #{task_name} in the #{ctx.project.name} project"
+
+    long =
+      "#{Operately.People.Person.first_name(person)} commented on #{task_name} in the #{ctx.project.name} project"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -477,6 +492,29 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
+  step :assert_task_added_email_sent, ctx, opts do
+    to = Keyword.fetch!(opts, :to)
+    author = Keyword.fetch!(opts, :author)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: to,
+      author: author,
+      action: "added the task \"#{ctx.task.name}\""
+    })
+  end
+
+  step :refute_task_added_email_sent, ctx, opts do
+    to = Keyword.fetch!(opts, :to)
+    author = Keyword.fetch!(opts, :author)
+
+    subject =
+      "(#{ctx.project.name}) #{Operately.People.Person.short_name(author)} added the task \"#{ctx.task.name}\""
+
+    ctx |> UI.refute_email_sent(subject, to: to.email)
+  end
+
   #
   # Notifications
   #
@@ -524,6 +562,27 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       author: ctx.reviewer,
       action: "Re: #{task_name}"
     })
+  end
+
+  step :assert_task_added_notification_sent, ctx, opts do
+    recipient = Keyword.fetch!(opts, :to)
+    author = Keyword.fetch!(opts, :author)
+
+    ctx
+    |> UI.login_as(recipient)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: author,
+      action: "New task \"#{ctx.task.name}\" was created"
+    })
+  end
+
+  step :refute_task_added_notification_sent, ctx, opts do
+    recipient = Keyword.fetch!(opts, :recipient)
+
+    ctx
+    |> UI.login_as(recipient)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.refute_text("New task \"#{ctx.task.name}\" was created")
   end
 
   #
