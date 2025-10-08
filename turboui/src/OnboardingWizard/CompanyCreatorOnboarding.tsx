@@ -3,7 +3,6 @@ import React, { useCallback, useState } from "react";
 import { match } from "ts-pattern";
 import { PrimaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
-import { IconFlag, IconSparkles } from "../icons";
 import { WelcomeStep } from "./WelcomeStep";
 import { useWizardState, WizardState } from "./WizadState";
 import { WizardHeading, WizardModal, WizardStep } from "./WizardLayout";
@@ -23,12 +22,12 @@ export namespace CompanyCreatorOnboardingWizard {
     onDismiss: () => void;
   }
 
-  export type Step = "welcome" | "spaces" | "invite" | "project";
+  export type Step = "welcome" | "spaces" | "invite";
 }
 
 type Step = CompanyCreatorOnboardingWizard.Step;
 
-const STEPS: Step[] = ["welcome", "spaces", "invite", "project"];
+const STEPS: Step[] = ["welcome", "spaces", "invite"];
 
 const SPACE_OPTIONS = [
   "Marketing",
@@ -83,7 +82,6 @@ export function CompanyCreatorOnboardingWizard(props: CompanyCreatorOnboardingWi
         .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="workspace" />)
         .with("spaces", () => <SpacesStep state={state} />)
         .with("invite", () => <InviteStep state={state} invitationLink={props.invitationLink} />)
-        .with("project", () => <ProjectStep state={state} />)
         .run()}
     </WizardModal>
   );
@@ -101,7 +99,7 @@ function SpacesStep({ state }: { state: State }) {
       <div className="p-6">
         <WizardHeading
           stepNumber={1}
-          totalSteps={3}
+          totalSteps={2}
           title="Set up spaces"
           subtitle={
             <>
@@ -157,14 +155,14 @@ function InviteStep({ state, invitationLink }: { state: State; invitationLink: s
     <WizardStep
       footer={
         <PrimaryButton onClick={state.next} size="sm">
-          Next -&gt;
+          Finish Setup
         </PrimaryButton>
       }
     >
       <div className="p-6">
         <WizardHeading
           stepNumber={2}
-          totalSteps={3}
+          totalSteps={2}
           title="Invite your team"
           subtitle="Share this link to get your team on board with Operately."
           id="company-creator-onboarding-heading"
@@ -192,72 +190,5 @@ function InviteStep({ state, invitationLink }: { state: State; invitationLink: s
         </div>
       </div>
     </WizardStep>
-  );
-}
-
-function ProjectStep({ state }: { state: State }) {
-  return (
-    <WizardStep
-      footer={
-        <PrimaryButton onClick={state.next} size="sm">
-          Finish setup
-        </PrimaryButton>
-      }
-    >
-      <div className="space-y-6 p-6">
-        <WizardHeading
-          stepNumber={3}
-          totalSteps={3}
-          title="Starter project"
-          subtitle="We've created a starter project to help your team get moving with a clear, straightforward plan."
-          id="company-creator-onboarding-heading"
-        />
-        <div className="relative overflow-hidden rounded-2xl border border-sky-300/70 bg-gradient-to-br from-sky-50 via-white to-slate-100 shadow-lg">
-          <div className="pointer-events-none absolute -top-16 -left-10 h-40 w-40 rounded-full bg-sky-300/30 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-0 h-48 w-48 translate-x-1/4 translate-y-1/4 rounded-full bg-blue-200/40 blur-[90px]" />
-
-          <div className="relative flex flex-col gap-6 p-6 sm:p-8">
-            <span className="inline-flex items-center gap-2 self-start rounded-full bg-sky-600/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-sky-700">
-              <IconSparkles size={16} className="text-sky-500" />
-              Guided kickoff
-            </span>
-
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold text-content-accent">Get Started with Operately</h2>
-              <p className="text-sm text-content-dimmed">
-                The starter project gives you a blueprint for aligning company strategy, goals, and execution from day
-                one.
-              </p>
-            </div>
-
-            <div className="space-y-3 text-sm text-content-base">
-              <p className="text-xs font-semibold uppercase tracking-wide text-sky-700/80">Milestones we'll drive</p>
-              <MilestoneItem>Onboard your team and set clear roles and responsibilities</MilestoneItem>
-              <MilestoneItem>Define and communicate your company's goals and strategy</MilestoneItem>
-              <MilestoneItem>Plan initiatives and projects with accountable owners</MilestoneItem>
-              <MilestoneItem>Set up a cadence for status, accountability, and decision-making</MilestoneItem>
-            </div>
-
-            <div className="flex items-start gap-3 border-t border-sky-200/80 bg-white/70 pt-3 text-sm text-sky-900">
-              <p>
-                We'll populate the project with best-practices, examples and templates to help you quickly roll-out to
-                your team.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </WizardStep>
-  );
-}
-
-function MilestoneItem({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-3 leading-snug">
-      <span className="mt-0.5 text-sky-600">
-        <IconFlag size={18} className="text-sky-500" strokeWidth={2} />
-      </span>
-      <span>{children}</span>
-    </div>
   );
 }
