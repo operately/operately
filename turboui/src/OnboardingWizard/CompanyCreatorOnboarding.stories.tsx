@@ -39,9 +39,3 @@ export const Invite: Story = {
     __initialStep: "invite",
   },
 };
-
-export const Project: Story = {
-  args: {
-    __initialStep: "project",
-  },
-};
