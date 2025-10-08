@@ -405,7 +405,12 @@ export interface ActivityContentGoalTimeframeEditing {
 }
 
 export interface ActivityContentGroupEdited {
-  exampleField?: string | null;
+  company: Company;
+  space: Space;
+  oldName: string;
+  newName: string;
+  oldMission: string | null;
+  newMission: string | null;
 }
 
 export interface ActivityContentMessageArchiving {
@@ -2795,14 +2800,6 @@ export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
 }
 
-export interface SpacesSearchInput {
-  query: string;
-}
-
-export interface SpacesSearchResult {
-  spaces: Space[];
-}
-
 export interface SpacesListMembersInput {
   spaceId: Id;
   query?: string | null;
@@ -2810,7 +2807,15 @@ export interface SpacesListMembersInput {
 }
 
 export interface SpacesListMembersResult {
-  people?: Person[] | null;
+  people: Person[] | null;
+}
+
+export interface SpacesSearchInput {
+  query: string;
+}
+
+export interface SpacesSearchResult {
+  spaces: Space[];
 }
 
 export interface AcknowledgeGoalProgressUpdateInput {
@@ -4789,12 +4794,12 @@ class ApiNamespaceInvitations {
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
 
-  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
-    return this.client.get("/spaces/search", input);
-  }
-
   async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
     return this.client.get("/spaces/list_members", input);
+  }
+
+  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
+    return this.client.get("/spaces/search", input);
   }
 }
 
@@ -7323,6 +7328,7 @@ export default {
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
