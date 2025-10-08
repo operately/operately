@@ -1,0 +1,3 @@
+<%= short_name(@author) %> added the task "<%= @task_name %>".
+
+Link: <%= @cta_url %>

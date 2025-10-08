@@ -119,6 +119,45 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_task_milestone(attrs.milestone)
   end
 
+  @tag login_as: :reviewer
+  feature "creating a task notifies the champion and assignee", ctx do
+    ctx = Steps.given_space_member_exists(ctx)
+
+    attrs = %{
+      name: "Task with notifications",
+      assignee: ctx.space_member.full_name,
+      due_date: nil,
+      milestone: ctx.milestone.title
+    }
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.assert_task_added_notification_sent(to: ctx.champion, author: ctx.reviewer)
+    |> Steps.assert_task_added_notification_sent(to: ctx.space_member, author: ctx.reviewer)
+    |> Steps.assert_task_added_email_sent(to: ctx.champion, author: ctx.reviewer)
+    |> Steps.assert_task_added_email_sent(to: ctx.space_member, author: ctx.reviewer)
+  end
+
+  @tag login_as: :champion
+  feature "creating a task does not notify the author", ctx do
+    attrs = %{
+      name: "Task created by champion",
+      assignee: ctx.champion.full_name,
+      due_date: nil,
+      milestone: ctx.milestone.title
+    }
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.go_to_tasks_tab()
+    |> Steps.add_task_from_tasks_board(attrs)
+    |> Steps.assert_task_added(attrs.name)
+    |> Steps.refute_task_added_notification_sent(recipient: ctx.champion)
+  end
+
   @tag login_as: :champion
   feature "assigning a space member to a task adds them as a project contributor", ctx do
     ctx = Steps.given_space_member_exists(ctx)
@@ -309,7 +348,6 @@ defmodule Operately.Features.ProjectTasksTest do
 
   @tag login_as: :champion
   feature "delete task", ctx do
-
     ctx
     |> Steps.given_task_exists()
     |> Steps.visit_task_page()
