@@ -40,6 +40,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "space_members_permissions_edited",
     "space_members_added",
     "space_member_removed",
+    "group_edited",
 
     "goal_archived",
 
@@ -53,9 +54,6 @@ defmodule Operately.Activities.ContextAutoAssigner do
     "task_priority_change",
     "task_reopening",
     "task_size_change",
-
-    # exceptions
-    "group_edited",
   ]
 
   @project_actions [
@@ -166,12 +164,7 @@ defmodule Operately.Activities.ContextAutoAssigner do
   end
 
   defp fetch_space_context(activity) do
-    space_id = case activity.action do
-      "group_edited" ->
-        activity.content.space_id
-      _ ->
-        activity.content.space_id
-    end
+    space_id = activity.content.space_id
 
     from(c in Context,
       where: c.group_id == ^space_id,
