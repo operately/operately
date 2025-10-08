@@ -1,10 +1,10 @@
 import React from "react";
 
-import { Page } from "../../Page";
 import { Navigation } from "../../Page/Navigation";
 import { PrivacyIndicator } from "../../PrivacyIndicator";
 
 import { DateField } from "../../DateField";
+import { PageNew } from "../../Page";
 import { SpaceField } from "../../SpaceField";
 import { useWorkMapTab } from "../hooks/useWorkMapTab";
 import { AddItemModal } from "./AddItemModal";
@@ -15,9 +15,9 @@ export { WorkMapTable };
 
 export function WorkMapPage(props: WorkMap.Props) {
   return (
-    <Page title={props.title} size="fullwidth" navigation={props.navigation}>
+    <PageNew title={props.title}>
       <WorkMap {...props} />
-    </Page>
+    </PageNew>
   );
 }
 
