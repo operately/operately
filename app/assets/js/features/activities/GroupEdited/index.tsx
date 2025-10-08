@@ -63,12 +63,12 @@ const GroupEdited: ActivityHandler = {
       <div className="flex flex-col gap-1 text-sm">
         {nameChanged && (
           <div>
-            <span className="text-content-subtle">Name:</span> {oldName} → {newName}
+            <span className="font-semibold">Name:</span> {oldName} → {newName}
           </div>
         )}
         {missionChanged && (
           <div>
-            <span className="text-content-subtle">Purpose:</span> {oldMission} → {newMission}
+            <span className="font-semibold">Purpose:</span> {oldMission} → {newMission}
           </div>
         )}
       </div>
