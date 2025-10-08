@@ -1642,6 +1642,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :id, :string, null: true
     field? :name, :string, null: true
     field? :mission, :string, null: true
+    field? :setup_completed, :boolean, null: true
     field? :trusted_email_domains, list_of(:string), null: true
     field? :enabled_experimental_features, list_of(:string), null: true
     field? :company_space_id, :string, null: true
@@ -1660,6 +1661,11 @@ defmodule OperatelyWeb.Api.Types do
     field? :can_create_space, :boolean, null: true
     field? :can_manage_admins, :boolean, null: true
     field? :can_manage_owners, :boolean, null: true
+  end
+
+  object :space_setup_input do
+    field :name, :string
+    field :description, :string
   end
 
   object :activity_content_goal_timeframe_editing do
