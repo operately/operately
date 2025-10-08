@@ -15,7 +15,7 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpace do
   end
 
   defp list_companies do
-    from(c in Company, preload: :people)
+    from(c in Company, select: [:id], preload: :people)
     |> Repo.all()
   end
 
@@ -36,13 +36,15 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpace do
   defp create_binding(group_id, context_id) do
     case Access.get_binding(group_id: group_id, context_id: context_id) do
       nil ->
-        {:ok, _} = Access.create_binding(%{
-          group_id: group_id,
-          context_id: context_id,
-          access_level: Binding.edit_access()
-        })
+        {:ok, _} =
+          Access.create_binding(%{
+            group_id: group_id,
+            context_id: context_id,
+            access_level: Binding.edit_access()
+          })
 
-      _ -> :ok
+      _ ->
+        :ok
     end
   end
 
@@ -62,12 +64,14 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpace do
   defp create_membership(person_id, group_id) do
     case Access.get_group_membership(person_id: person_id, group_id: group_id) do
       nil ->
-        {:ok, _} = Access.create_group_membership(%{
-          person_id: person_id,
-          group_id: group_id,
-        })
+        {:ok, _} =
+          Access.create_group_membership(%{
+            person_id: person_id,
+            group_id: group_id
+          })
 
-      _ -> :ok
+      _ ->
+        :ok
     end
   end
 end

@@ -17,6 +17,7 @@ defmodule Operately.Companies.Company do
     field :enabled_experimental_features, {:array, :string}, default: []
     field :company_space_id, :binary_id
     field :short_id, :integer
+    field :setup_completed, :boolean, default: false
 
     # loaded with hooks
     field :member_count, :integer, virtual: true
@@ -43,7 +44,7 @@ defmodule Operately.Companies.Company do
   @doc false
   def changeset(company, attrs) do
     company
-    |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features, :company_space_id, :short_id])
+    |> cast(attrs, [:name, :mission, :trusted_email_domains, :enabled_experimental_features, :company_space_id, :short_id, :setup_completed])
     |> validate_required([:name])
     |> validate_length(:name, min: 3)
   end

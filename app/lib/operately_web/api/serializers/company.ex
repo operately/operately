@@ -2,7 +2,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
   def serialize(company, level: :essential) do
     %{
       id: OperatelyWeb.Paths.company_id(company),
-      name: company.name
+      name: company.name,
+      setup_completed: company.setup_completed
     }
   end
 
@@ -10,6 +11,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Companies.Company do
     %{
       id: OperatelyWeb.Paths.company_id(company),
       name: company.name,
+      setup_completed: company.setup_completed,
       member_count: company.member_count,
       trusted_email_domains: company.trusted_email_domains,
       enabled_experimental_features: company.enabled_experimental_features,

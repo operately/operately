@@ -197,6 +197,7 @@ defmodule OperatelyWeb.Api do
   mutation(:add_company_owners, M.AddCompanyOwners)
   mutation(:add_company_trusted_email_domain, M.AddCompanyTrustedEmailDomain)
   mutation(:add_first_company, M.AddFirstCompany)
+  mutation(:complete_company_setup, M.CompleteCompanySetup)
   mutation(:add_space_members, M.AddSpaceMembers)
   mutation(:add_key_resource, M.AddKeyResource)
   mutation(:add_project_contributor, M.AddProjectContributor)
