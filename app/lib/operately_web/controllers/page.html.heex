@@ -48,15 +48,15 @@
     -->
     <%= if OperatelyWeb.PageController.development_mode?() do %>
       <script type="module">
-        import RefreshRuntime from 'http://localhost:4005/@react-refresh'
+        import RefreshRuntime from '<%= @vite_url %>/@react-refresh'
         RefreshRuntime.injectIntoGlobalHook(window)
         window.$RefreshReg$ = () => {}
         window.$RefreshSig$ = () => (type) => type
         window.__vite_plugin_react_preamble_installed__ = true
       </script>
 
-      <script type="module" src={"http://localhost:4005" <> "/@vite/client"}></script>
-      <script type="module" src={"http://localhost:4005" <> "/assets/js/app.tsx"}></script>
+      <script type="module" src={"#{@vite_url}/@vite/client"}></script>
+      <script type="module" src={"#{@vite_url}/assets/js/app.tsx"}></script>
     <% else %>
       <%= for asset_path <- js_files() do %>
         <script type="module" src={asset_path}></script>
