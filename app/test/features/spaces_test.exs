@@ -89,6 +89,7 @@ defmodule Operately.Features.SpacesTest do
     |> Steps.click_edit_space()
     |> Steps.change_space_name_and_purpose()
     |> Steps.assert_space_name_and_purpose_changed()
+    |> Steps.assert_space_edit_visible_in_activity_feed()
   end
 
   feature "adding space members", ctx do

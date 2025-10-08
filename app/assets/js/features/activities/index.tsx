@@ -153,6 +153,7 @@ export const DISPLAYED_IN_FEED = [
   "resource_hub_link_edited",
   "resource_hub_link_deleted",
   "resource_hub_link_commented",
+  "group_edited",
   "space_added",
   "space_joining",
   "space_member_removed",
@@ -244,6 +245,7 @@ import ResourceHubLinkCommented from "@/features/activities/ResourceHubLinkComme
 import ResourceHubLinkCreated from "@/features/activities/ResourceHubLinkCreated";
 import ResourceHubLinkDeleted from "@/features/activities/ResourceHubLinkDeleted";
 import ResourceHubLinkEdited from "@/features/activities/ResourceHubLinkEdited";
+import GroupEdited from "@/features/activities/GroupEdited";
 import SpaceAdded from "@/features/activities/SpaceAdded";
 import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
@@ -331,6 +333,7 @@ function handler(activity: Activity) {
     .with("resource_hub_link_edited", () => ResourceHubLinkEdited)
     .with("resource_hub_link_deleted", () => ResourceHubLinkDeleted)
     .with("resource_hub_link_commented", () => ResourceHubLinkCommented)
+    .with("group_edited", () => GroupEdited)
     .with("space_added", () => SpaceAdded)
     .with("space_joining", () => SpaceJoining)
     .with("space_member_removed", () => SpaceMemberRemoved)

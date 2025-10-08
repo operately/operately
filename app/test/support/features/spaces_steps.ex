@@ -269,17 +269,32 @@ defmodule Operately.Support.Features.SpacesSteps do
   end
 
   step :change_space_name_and_purpose, ctx do
+    updated_attrs = %{name: "Marketing 2", mission: "Let the world know about our products 2"}
+
     ctx
-    |> UI.fill(testid: "name", with: "Marketing 2")
-    |> UI.fill(testid: "purpose", with: "Let the world know about our products 2")
+    |> UI.fill(testid: "name", with: updated_attrs.name)
+    |> UI.fill(testid: "purpose", with: updated_attrs.mission)
     |> UI.click(testid: "submit")
     |> UI.assert_has(testid: "space-page")
+    |> Map.put(:updated_space_attrs, updated_attrs)
   end
 
   step :assert_space_name_and_purpose_changed, ctx do
     ctx
-    |> UI.assert_text("Marketing 2")
-    |> UI.assert_text("Let the world know about our products 2")
+    |> UI.assert_text(ctx.updated_space_attrs.name)
+    |> UI.assert_text(ctx.updated_space_attrs.mission)
+  end
+
+  step :assert_space_edit_visible_in_activity_feed, ctx do
+    updated = ctx.updated_space_attrs
+
+    ctx
+    |> UI.visit(Paths.space_path(ctx.company, ctx.marketing))
+    |> UI.assert_feed_item(ctx.creator, "updated this space", "Name: #{ctx.marketing.name} → #{updated.name}")
+    |> UI.assert_text("Purpose: #{ctx.marketing.mission} → #{updated.mission}")
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "updated the #{updated.name} space", "Name: #{ctx.marketing.name} → #{updated.name}")
+    |> UI.assert_text("Purpose: #{ctx.marketing.mission} → #{updated.mission}")
   end
 
   step :given_a_completed_project_exists, ctx do

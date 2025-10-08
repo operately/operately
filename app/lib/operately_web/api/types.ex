@@ -1203,7 +1203,12 @@ defmodule OperatelyWeb.Api.Types do
   )
 
   object :activity_content_group_edited do
-    field? :example_field, :string, null: true
+    field :company, :company
+    field :space, :space
+    field :old_name, :string
+    field :new_name, :string
+    field :old_mission, :string, null: true
+    field :new_mission, :string, null: true
   end
 
   object :activity_content_project_review_request_submitted do
