@@ -194,6 +194,52 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :post_comment_mentioning, ctx, person do
+    ctx
+    |> UI.find(UI.query(testid: "task-activity-section"), fn el ->
+      el
+      |> UI.click_text("Write a comment here...")
+      |> UI.mention_person_in_rich_text(person)
+      |> UI.send_keys(" Thanks for your help!")
+      |> UI.click_button("Post")
+    end)
+    |> UI.sleep(300)
+  end
+
+  step :assert_space_member_not_mentioned, ctx do
+    ctx =
+      ctx
+      |> UI.login_as(ctx.space_member)
+      |> NotificationsSteps.assert_no_unread_notifications()
+      |> UI.login_as(ctx.champion)
+      |> UI.visit(Paths.project_task_path(ctx.company, ctx.task))
+
+    emails = UI.list_sent_emails(ctx)
+
+    refute Enum.any?(emails, fn email -> ctx.space_member.email in email.to end)
+
+    ctx
+  end
+
+  step :assert_space_member_mentioned, ctx do
+    ctx =
+      ctx
+      |> UI.login_as(ctx.space_member)
+      |> NotificationsSteps.assert_activity_notification(%{
+        author: ctx.champion,
+        action: "Re: #{ctx.task.name}"
+      })
+      |> UI.login_as(ctx.champion)
+
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "commented on: #{ctx.task.name}"
+    })
+  end
+
   step :delete_task, ctx do
     ctx
     |> UI.click(testid: "delete-task")
