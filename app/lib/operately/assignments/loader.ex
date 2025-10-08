@@ -53,7 +53,7 @@ defmodule Operately.Assignments.Loader do
       left_join: champion in assoc(project, :champion),
       left_join: reviewer in assoc(project, :reviewer),
       where: is_nil(c.acknowledged_by_id),
-      where: is_nil(project.deleted_at),
+      where: project.status == "active" and is_nil(project.deleted_at),
       where: (reviewer.id == ^person.id and author.id != reviewer.id) or (champion.id == ^person.id and author.id != champion.id),
       preload: [project: {project, reviewer: reviewer}, author: author]
     )
@@ -102,7 +102,7 @@ defmodule Operately.Assignments.Loader do
     from(u in Update,
       join: goal in assoc(u, :goal),
       join: author in assoc(u, :author),
-      where: is_nil(goal.deleted_at),
+      where: is_nil(goal.closed_at) and is_nil(goal.deleted_at),
       where: is_nil(u.acknowledged_by_id),
       where: (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or (goal.champion_id == ^person.id and author.id != goal.champion_id),
       preload: [goal: goal, author: author]
