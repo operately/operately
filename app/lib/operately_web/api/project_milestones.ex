@@ -2,7 +2,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
   alias __MODULE__.SharedMultiSteps, as: Steps
   alias OperatelyWeb.Api.Serializer
 
-   defmodule ListTasks do
+  defmodule ListTasks do
     use TurboConnect.Query
 
     inputs do
@@ -51,7 +51,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           project_id: changes.project.id,
           milestone_id: changes.milestone.id,
           old_title: changes.milestone.title,
-          new_title: changes.updated_milestone.title,
+          new_title: changes.updated_milestone.title
         }
       end)
       |> Steps.commit()
@@ -122,7 +122,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           milestone_id: changes.milestone.id,
           milestone_name: changes.milestone.title,
           old_due_date: changes.milestone.timeframe && changes.milestone.timeframe.contextual_end_date,
-          new_due_date: inputs.due_date,
+          new_due_date: inputs.due_date
         }
       end)
       |> Steps.commit()
@@ -154,7 +154,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           space_id: changes.project.group_id,
           project_id: changes.project.id,
           milestone_id: changes.milestone.id,
-          milestone_name: changes.milestone.title,
+          milestone_name: changes.milestone.title
         }
       end)
       |> Steps.delete_milestone()
@@ -165,16 +165,52 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     end
   end
 
+  defmodule UpdateOrdering do
+    use TurboConnect.Mutation
+
+    inputs do
+      field :project_id, :id, null: false
+      field :ordering_state, list_of(:string), null: false
+    end
+
+    outputs do
+      field :project, :project
+    end
+
+    def call(conn, inputs) do
+      conn
+      |> Steps.start_transaction()
+      |> Steps.find_project(inputs.project_id)
+      |> Steps.check_project_permissions(:can_edit_timeline)
+      |> Steps.validate_ordering_state(inputs.ordering_state)
+      |> Steps.update_project_ordering_state()
+      |> Steps.commit()
+      |> Steps.respond(fn changes ->
+        %{project: Serializer.serialize(changes.updated_project, level: :full)}
+      end)
+    end
+  end
+
   defmodule SharedMultiSteps do
     import Ecto.Query, only: [from: 2]
     require Logger
     alias Operately.Projects.OrderingState
+    alias OperatelyWeb.Paths
 
     def start_transaction(conn) do
       Ecto.Multi.new()
       |> Ecto.Multi.put(:conn, conn)
       |> Ecto.Multi.run(:me, fn _repo, %{conn: conn} ->
         {:ok, conn.assigns.current_person}
+      end)
+    end
+
+    def find_project(multi, project_id) do
+      Ecto.Multi.run(multi, :project, fn _repo, %{me: me} ->
+        case Operately.Projects.Project.get(me, id: project_id, opts: [preload: [:access_context, :milestones]]) do
+          {:ok, project} -> {:ok, project}
+          {:error, _} -> {:error, {:not_found, "Project not found"}}
+        end
       end)
     end
 
@@ -193,6 +229,46 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
     def check_permissions(multi, permission) do
       Ecto.Multi.run(multi, :permissions, fn _repo, %{milestone: milestone} ->
         Operately.Projects.Permissions.check(milestone.request_info.access_level, permission)
+      end)
+    end
+
+    def check_project_permissions(multi, permission) do
+      Ecto.Multi.run(multi, :permissions, fn _repo, %{project: project} ->
+        Operately.Projects.Permissions.check(project.request_info.access_level, permission)
+      end)
+    end
+
+    def validate_ordering_state(multi, ordering_state) do
+      Ecto.Multi.run(multi, :validated_ordering_state, fn _repo, %{project: project} ->
+        project_ids = milestone_short_ids(project)
+        provided_ids = dedupe_preserving_order(ordering_state)
+
+        case Enum.reject(provided_ids, &(&1 in project_ids)) do
+          [] ->
+            existing_ids =
+              project.milestones_ordering_state
+              |> OrderingState.load()
+              |> Enum.filter(&(&1 in project_ids))
+
+            completed_state =
+              provided_ids
+              |> append_missing(existing_ids)
+              |> append_missing(project_ids)
+
+            {:ok, completed_state}
+
+          _invalid ->
+            {:error, {:bad_request, "Some milestone IDs do not belong to this project"}}
+        end
+      end)
+    end
+
+    def update_project_ordering_state(multi) do
+      Ecto.Multi.run(multi, :updated_project, fn _repo, %{
+        project: project,
+        validated_ordering_state: ordering_state
+      } ->
+        Operately.Projects.update_project(project, %{milestones_ordering_state: ordering_state})
       end)
     end
 
@@ -278,7 +354,9 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
 
     def save_activity(multi, activity_type, callback) do
       Ecto.Multi.merge(multi, fn changes ->
-        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ -> callback.(changes) end)
+        Operately.Activities.insert_sync(Ecto.Multi.new(), changes.me.id, activity_type, fn _ ->
+          callback.(changes)
+        end)
       end)
     end
 
@@ -303,12 +381,47 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
       case result do
         {:ok, changes} ->
           project = Operately.Repo.preload(changes.milestone.project, :champion)
-          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: project.champion.id)
 
-        _result -> :ok
+          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(
+            person_id: project.champion.id
+          )
+
+        _result ->
+          :ok
       end
 
       result
+    end
+
+    defp milestone_short_ids(project) do
+      project
+      |> Map.get(:milestones, [])
+      |> Enum.map(&Paths.milestone_id/1)
+    end
+
+    defp dedupe_preserving_order(nil), do: []
+
+    defp dedupe_preserving_order(ids) do
+      {reversed, _} =
+        Enum.reduce(ids, {[], MapSet.new()}, fn id, {acc, seen} ->
+          if MapSet.member?(seen, id) do
+            {acc, seen}
+          else
+            {[id | acc], MapSet.put(seen, id)}
+          end
+        end)
+
+      Enum.reverse(reversed)
+    end
+
+    defp append_missing(base, candidates) do
+      Enum.reduce(candidates, base, fn id, acc ->
+        if id in acc do
+          acc
+        else
+          acc ++ [id]
+        end
+      end)
     end
 
     defp handle_error(reason) do
@@ -321,6 +434,9 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
 
         {:error, _failed_operation, :forbidden, _changes} ->
           {:error, :forbidden}
+
+        {:error, _failed_operation, {:bad_request, message}, _changes} when is_binary(message) ->
+          {:error, :bad_request, message}
 
         {:error, :validate_title, message, _changes} when is_binary(message) ->
           {:error, :bad_request, message}

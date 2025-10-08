@@ -27,6 +27,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       reviewer: OperatelyWeb.Api.Serializer.serialize(project.reviewer),
       goal: OperatelyWeb.Api.Serializer.serialize(project.goal),
       milestones: OperatelyWeb.Api.Serializer.serialize(project.milestones),
+      milestones_ordering_state: Operately.Projects.OrderingState.load(project.milestones_ordering_state),
       contributors: OperatelyWeb.Api.Serializer.serialize(sort_contribs(exclude_suspended(project))),
       last_check_in: OperatelyWeb.Api.Serializer.serialize(project.last_check_in),
       next_milestone: OperatelyWeb.Api.Serializer.serialize(project.next_milestone),
