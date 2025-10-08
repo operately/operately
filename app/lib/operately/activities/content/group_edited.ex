@@ -3,7 +3,7 @@ defmodule Operately.Activities.Content.GroupEdited do
 
   embedded_schema do
     belongs_to :company, Operately.Companies.Company
-    belongs_to :group, Operately.Groups.Group
+    belongs_to :space, Operately.Groups.Group
 
     field :old_name, :string
     field :old_mission, :string

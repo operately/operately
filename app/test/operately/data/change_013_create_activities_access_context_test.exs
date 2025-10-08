@@ -261,7 +261,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContextTest do
         action: "group_edited",
         author_id: ctx.author.id,
         content: %{
-          group_id: ctx.group.id,
+          space_id: ctx.group.id,
         }
       }
 

@@ -83,7 +83,7 @@ defmodule Operately.Groups do
     |> Multi.update(:group, changeset)
     |> Activities.insert_sync(author.id, :group_edited, fn _ -> %{
       company_id: group.company_id,
-      group_id: group.id,
+      space_id: group.id,
       old_name: group.name,
       old_mission: group.mission,
       new_name: attrs.name,

@@ -125,7 +125,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
   defp assign_space_context(activity) do
     space_id = case activity.action do
       "group_edited" ->
-        activity.content.group_id
+        activity.content.space_id
       _ ->
         activity.content.space_id
     end
