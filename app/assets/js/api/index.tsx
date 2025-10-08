@@ -405,7 +405,12 @@ export interface ActivityContentGoalTimeframeEditing {
 }
 
 export interface ActivityContentGroupEdited {
-  exampleField?: string | null;
+  company: Company;
+  space: Space;
+  oldName: string;
+  newName: string;
+  oldMission?: string | null;
+  newMission?: string | null;
 }
 
 export interface ActivityContentMessageArchiving {
