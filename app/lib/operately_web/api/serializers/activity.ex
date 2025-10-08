@@ -162,10 +162,6 @@ defmodule OperatelyWeb.Api.Serializers.Activity do
     }
   end
 
-  def serialize_content("group_edited", content) do
-    Serializer.serialize(content, level: :essential)
-  end
-
   def serialize_content("password_first_time_changed", _content) do
     %{}
   end
