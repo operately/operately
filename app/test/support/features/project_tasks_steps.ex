@@ -194,6 +194,21 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :post_comment_mentioning, ctx, person do
+    ctx
+    |> UI.find(UI.query(testid: "task-activity-section"), fn el ->
+      el
+      |> UI.click_text("Write a comment here...")
+      |> UI.mention_person_in_rich_text(person)
+      |> UI.click_button("Post")
+    end)
+    |> UI.sleep(300)
+  end
+
+  step :login_as_champion, ctx do
+    UI.login_as(ctx, ctx.champion)
+  end
+
   step :delete_task, ctx do
     ctx
     |> UI.click(testid: "delete-task")
@@ -501,6 +516,16 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
+  step :assert_space_member_mentioned_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "commented on: #{ctx.task.name}"
+    })
+  end
+
   #
   # Notifications
   #
@@ -569,6 +594,23 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.login_as(recipient)
     |> NotificationsSteps.visit_notifications_page()
     |> UI.refute_text("New task \"#{ctx.task.name}\" was created")
+  end
+
+  step :assert_space_member_not_notified, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> UI.visit(Paths.home_path(ctx.company))
+    |> UI.click(testid: "notifications-bell")
+    |> UI.refute_text("Re: #{ctx.task.name}")
+  end
+
+  step :assert_space_member_notified, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Re: #{ctx.task.name}"
+    })
   end
 
   #

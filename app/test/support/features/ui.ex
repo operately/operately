@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.UI do
   alias Wallaby.Query
 
   alias Wallaby.{Browser, Element}
+  alias Operately.People.Person
 
   def init_ctx(ctx, state \\ %{}) do
     Map.merge(ctx, state)
@@ -112,6 +113,28 @@ defmodule Operately.Support.Features.UI do
     execute("send_keys", state, fn session ->
       session |> Browser.send_keys(keys)
     end)
+  end
+
+  def mention_person_in_rich_text(state, person_or_name) do
+    name = mention_name(person_or_name)
+    query = Query.css(".ProseMirror[contenteditable=true]")
+
+    execute("mention_person_in_rich_text", state, fn session ->
+      session
+      |> Browser.find(query, fn element ->
+        element
+        |> Browser.send_keys(["@", name])
+        |> sleep(500)
+        |> Browser.send_keys([:enter])
+      end)
+    end)
+  end
+
+  defp mention_name(%Person{} = person), do: Person.first_name(person)
+  defp mention_name(name) when is_binary(name), do: name
+
+  defp mention_name(value) do
+    raise ArgumentError, "Unsupported mention target: #{inspect(value)}"
   end
 
   def assert_has(state, testid: id) do

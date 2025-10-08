@@ -369,6 +369,28 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_task_comment_visible_in_feed(person: ctx.champion, task_name: ctx.task.name)
   end
 
+  @tag login_as: :champion
+  feature "mentioning a person in a task comment sends notification and email", ctx do
+    ctx =
+      ctx
+      |> Steps.given_task_exists()
+      |> Steps.given_space_member_exists()
+      |> Steps.visit_task_page()
+      |> Steps.post_comment("This is a comment without mentions")
+
+    ctx
+    |> Steps.assert_space_member_not_notified()
+
+    ctx
+    |> Steps.login_as_champion()
+    |> Steps.visit_task_page()
+    |> Steps.post_comment_mentioning(ctx.space_member)
+
+    ctx
+    |> Steps.assert_space_member_notified()
+    |> Steps.assert_space_member_mentioned_email_sent()
+  end
+
   @tag login_as: :reviewer
   feature "post comment to task sends notification to assignee", ctx do
     ctx = Steps.given_task_exists(ctx)
