@@ -1,7 +1,6 @@
 import React from "react";
 
 import { WorkMap } from "..";
-import { PrimaryButton } from "../../Button";
 import { SpaceField } from "../../SpaceField";
 import { Tooltip } from "../../Tooltip";
 import { IconInfoCircle, IconPlus } from "../../icons";
@@ -9,6 +8,7 @@ import classNames from "../../utils/classnames";
 import { useStateWithLocalStorage } from "../../utils/useStateWithLocalStorage";
 import { AddItemModal } from "./AddItemModal";
 import { IsItemExpandedFn, SetItemExpandedFn, TableRow } from "./TableRow";
+import { ZeroState } from "./ZeroState";
 
 interface Props {
   items: WorkMap.Item[];
@@ -77,47 +77,45 @@ export function WorkMapTable({
 
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
-      <table className="min-w-full divide-y divide-surface-outline">
-        <TableHeader tab={tab} columnOptions={columnOptions} />
-        <tbody>
-          {emptyWorkMap ? (
-            <ZeroState
-              addingEnabled={addingEnabled}
-              spaceSearch={spaceSearch!}
-              addItem={addItem!}
-              addItemDefaultSpace={addItemDefaultSpace!}
-            />
-          ) : (
-            <>
-              {items.map((item, idx) => (
-                <TableRow
-                  key={item.id}
-                  item={item}
-                  level={0}
-                  isLast={idx === items.length - 1}
-                  tab={tab}
-                  columnOptions={columnOptions}
-                  showIndentation={showIndentation}
-                  addItem={addItem}
-                  addingEnabled={addingEnabled}
-                  spaceSearch={spaceSearch}
-                  isExpanded={getItemExpanded}
-                  setItemExpanded={setItemExpanded}
-                />
-              ))}
+      {emptyWorkMap ? (
+        <ZeroState
+          addingEnabled={addingEnabled}
+          spaceSearch={spaceSearch!}
+          addItem={addItem!}
+          addItemDefaultSpace={addItemDefaultSpace!}
+        />
+      ) : (
+        <table className="min-w-full divide-y divide-surface-outline">
+          <TableHeader tab={tab} columnOptions={columnOptions} />
+          <tbody>
+            {items.map((item, idx) => (
+              <TableRow
+                key={item.id}
+                item={item}
+                level={0}
+                isLast={idx === items.length - 1}
+                tab={tab}
+                columnOptions={columnOptions}
+                showIndentation={showIndentation}
+                addItem={addItem}
+                addingEnabled={addingEnabled}
+                spaceSearch={spaceSearch}
+                isExpanded={getItemExpanded}
+                setItemExpanded={setItemExpanded}
+              />
+            ))}
 
-              {addingEnabled && (
-                <AddNewRow
-                  addingEnabled={addingEnabled}
-                  spaceSearch={spaceSearch!}
-                  addItem={addItem!}
-                  addItemDefaultSpace={addItemDefaultSpace!}
-                />
-              )}
-            </>
-          )}
-        </tbody>
-      </table>
+            {addingEnabled && (
+              <AddNewRow
+                addingEnabled={addingEnabled}
+                spaceSearch={spaceSearch!}
+                addItem={addItem!}
+                addItemDefaultSpace={addItemDefaultSpace!}
+              />
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }
@@ -197,57 +195,6 @@ function NextStepHeaderCell({ hide }: { hide?: boolean }) {
         </Tooltip>
       </div>
     </HeaderCell>
-  );
-}
-
-function ZeroState({
-  addingEnabled,
-  spaceSearch,
-  addItem,
-  addItemDefaultSpace,
-}: {
-  addingEnabled: boolean;
-  spaceSearch: SpaceField.SearchSpaceFn;
-  addItem: WorkMap.AddNewItemFn;
-  addItemDefaultSpace: SpaceField.Space;
-}) {
-  if (!addingEnabled) {
-    return (
-      <tr>
-        <td colSpan={7} className="py-32 text-center">
-          <div className="mb-4">Nothing here yet.</div>
-        </td>
-      </tr>
-    );
-  }
-
-  const [isOpen, setIsOpen] = React.useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
-
-  return (
-    <tr>
-      <td colSpan={7} className="py-32 text-center">
-        <div className="mb-4">
-          There's nothing here yet.
-          <br />
-          Start by adding your first goal to get things moving.
-        </div>
-
-        <PrimaryButton size="sm" onClick={open} testId="add-work-item">
-          Add your first item
-        </PrimaryButton>
-
-        <AddItemModal
-          isOpen={isOpen}
-          close={close}
-          parentGoal={null}
-          spaceSearch={spaceSearch}
-          save={addItem}
-          space={addItemDefaultSpace}
-        />
-      </td>
-    </tr>
   );
 }
 
