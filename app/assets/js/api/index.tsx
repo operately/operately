@@ -434,6 +434,13 @@ export interface ActivityContentMilestoneDescriptionUpdating {
   description: string | null;
 }
 
+export interface ActivityContentProjectDescriptionChanged {
+  project: Project | null;
+  projectName: string;
+  hasDescription: boolean;
+  description: string | null;
+}
+
 export interface ActivityContentMilestoneDueDateUpdating {
   project: Project;
   milestone: Milestone | null;
@@ -1935,6 +1942,7 @@ export type ActivityContent =
   | ActivityContentProjectGoalConnection
   | ActivityContentProjectGoalDisconnection
   | ActivityContentProjectMilestoneCommented
+  | ActivityContentProjectDescriptionChanged
   | ActivityContentMilestoneDescriptionUpdating
   | ActivityContentProjectMoved
   | ActivityContentProjectPausing

@@ -77,6 +77,7 @@ defmodule Operately.Data.Change013CreateActivitiesAccessContext do
     "project_goal_connection",
     "project_goal_disconnection",
     "project_milestone_commented",
+    "project_description_changed",
     "project_moved",
     "project_pausing",
     "project_renamed",

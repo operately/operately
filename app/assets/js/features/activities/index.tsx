@@ -73,6 +73,7 @@ export const DISPLAYED_IN_FEED = [
   "project_start_date_updating",
   "project_milestone_creation",
   "project_milestone_updating",
+  "project_description_changed",
   "goal_target_updating",
   "goal_target_deleting",
   "goal_target_adding",
@@ -205,6 +206,7 @@ import ProjectContributorRemoved from "@/features/activities/ProjectContributorR
 import ProjectContributorsAddition from "@/features/activities/ProjectContributorsAddition";
 import ProjectCreated from "@/features/activities/ProjectCreated";
 import ProjectDiscussionSubmitted from "@/features/activities/ProjectDiscussionSubmitted";
+import ProjectDescriptionChanged from "@/features/activities/ProjectDescriptionChanged";
 import TaskAdding from "@/features/activities/TaskAdding";
 import TaskNameUpdating from "@/features/activities/TaskNameUpdating";
 import TaskStatusUpdating from "@/features/activities/TaskStatusUpdating";
@@ -366,6 +368,7 @@ function handler(activity: Activity) {
     .with("project_start_date_updating", () => ProjectStartDateUpdating)
     .with("project_milestone_creation", () => ProjectMilestoneCreation)
     .with("project_milestone_updating", () => ProjectMilestoneUpdating)
+    .with("project_description_changed", () => ProjectDescriptionChanged)
     .with("goal_check_adding", () => GoalCheckAdding)
     .with("goal_check_removing", () => GoalCheckRemoving)
     .with("goal_check_toggled", () => GoalCheckToggled)
