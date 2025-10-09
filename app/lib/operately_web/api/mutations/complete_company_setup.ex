@@ -112,7 +112,9 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetup do
     Enum.reduce_while(spaces, {:ok, []}, fn space, {:ok, created} ->
       attrs = %{
         name: space.name,
-        mission: space.description
+        mission: space.description,
+        company_permissions: 70,
+        public_permissions: 0
       }
 
       case GroupCreation.run(owner, attrs) do
