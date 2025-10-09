@@ -1050,6 +1050,7 @@ export interface Company {
   id?: string | null;
   name?: string | null;
   mission?: string | null;
+  setupCompleted?: boolean | null;
   trustedEmailDomains?: string[] | null;
   enabledExperimentalFeatures?: string[] | null;
   companySpaceId?: string | null;
@@ -1381,6 +1382,7 @@ export interface Project {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  milestonesOrderingState?: string[] | null;
 }
 
 export interface ProjectCheckIn {
@@ -1695,6 +1697,11 @@ export interface SpacePermissions {
   canViewMessage?: boolean | null;
   canAddMembers?: boolean | null;
   canDelete?: boolean | null;
+}
+
+export interface SpaceSetupInput {
+  name: string;
+  description: string;
 }
 
 export interface SpaceTools {
@@ -2795,14 +2802,6 @@ export interface SearchProjectContributorCandidatesResult {
   people?: Person[] | null;
 }
 
-export interface SpacesSearchInput {
-  query: string;
-}
-
-export interface SpacesSearchResult {
-  spaces: Space[];
-}
-
 export interface SpacesListMembersInput {
   spaceId: Id;
   query?: string | null;
@@ -2810,7 +2809,15 @@ export interface SpacesListMembersInput {
 }
 
 export interface SpacesListMembersResult {
-  people?: Person[] | null;
+  people: Person[] | null;
+}
+
+export interface SpacesSearchInput {
+  query: string;
+}
+
+export interface SpacesSearchResult {
+  spaces: Space[];
 }
 
 export interface AcknowledgeGoalProgressUpdateInput {
@@ -3082,6 +3089,12 @@ export interface CloseProjectInput {
 export interface CloseProjectResult {
   retrospective: ProjectRetrospective;
 }
+
+export interface CompleteCompanySetupInput {
+  spaces: SpaceSetupInput[];
+}
+
+export interface CompleteCompanySetupResult {}
 
 export interface CopyResourceHubFolderInput {
   folderName?: string | null;
@@ -3840,6 +3853,15 @@ export interface ProjectMilestonesUpdateDueDateResult {
   milestone: Milestone;
 }
 
+export interface ProjectMilestonesUpdateOrderingInput {
+  projectId: Id;
+  orderingState: string[];
+}
+
+export interface ProjectMilestonesUpdateOrderingResult {
+  project: Project;
+}
+
 export interface ProjectMilestonesUpdateTitleInput {
   milestoneId: Id;
   title: string;
@@ -4463,6 +4485,10 @@ class ApiNamespaceRoot {
     return this.client.post("/close_project", input);
   }
 
+  async completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
+    return this.client.post("/complete_company_setup", input);
+  }
+
   async copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
     return this.client.post("/copy_resource_hub_folder", input);
   }
@@ -4789,12 +4815,12 @@ class ApiNamespaceInvitations {
 class ApiNamespaceSpaces {
   constructor(private client: ApiClient) {}
 
-  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
-    return this.client.get("/spaces/search", input);
-  }
-
   async listMembers(input: SpacesListMembersInput): Promise<SpacesListMembersResult> {
     return this.client.get("/spaces/list_members", input);
+  }
+
+  async search(input: SpacesSearchInput): Promise<SpacesSearchResult> {
+    return this.client.get("/spaces/search", input);
   }
 }
 
@@ -4883,6 +4909,10 @@ class ApiNamespaceProjectMilestones {
 
   async updateDueDate(input: ProjectMilestonesUpdateDueDateInput): Promise<ProjectMilestonesUpdateDueDateResult> {
     return this.client.post("/project_milestones/update_due_date", input);
+  }
+
+  async updateOrdering(input: ProjectMilestonesUpdateOrderingInput): Promise<ProjectMilestonesUpdateOrderingResult> {
+    return this.client.post("/project_milestones/update_ordering", input);
   }
 
   async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
@@ -5439,6 +5469,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.closeProject(input);
   }
 
+  completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
+    return this.apiNamespaceRoot.completeCompanySetup(input);
+  }
+
   copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
     return this.apiNamespaceRoot.copyResourceHubFolder(input);
   }
@@ -5941,6 +5975,9 @@ export async function closeGoal(input: CloseGoalInput): Promise<CloseGoalResult>
 }
 export async function closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
   return defaultApiClient.closeProject(input);
+}
+export async function completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
+  return defaultApiClient.completeCompanySetup(input);
 }
 export async function copyResourceHubFolder(input: CopyResourceHubFolderInput): Promise<CopyResourceHubFolderResult> {
   return defaultApiClient.copyResourceHubFolder(input);
@@ -6520,6 +6557,15 @@ export function useCloseGoal(): UseMutationHookResult<CloseGoalInput, CloseGoalR
 
 export function useCloseProject(): UseMutationHookResult<CloseProjectInput, CloseProjectResult> {
   return useMutation<CloseProjectInput, CloseProjectResult>((input) => defaultApiClient.closeProject(input));
+}
+
+export function useCompleteCompanySetup(): UseMutationHookResult<
+  CompleteCompanySetupInput,
+  CompleteCompanySetupResult
+> {
+  return useMutation<CompleteCompanySetupInput, CompleteCompanySetupResult>((input) =>
+    defaultApiClient.completeCompanySetup(input),
+  );
 }
 
 export function useCopyResourceHubFolder(): UseMutationHookResult<
@@ -7133,6 +7179,8 @@ export default {
   useCloseGoal,
   closeProject,
   useCloseProject,
+  completeCompanySetup,
+  useCompleteCompanySetup,
   copyResourceHubFolder,
   useCopyResourceHubFolder,
   createAccount,
@@ -7323,6 +7371,7 @@ export default {
     search: (input: SpacesSearchInput) => defaultApiClient.apiNamespaceSpaces.search(input),
     useSearch: (input: SpacesSearchInput) =>
       useQuery<SpacesSearchResult>(() => defaultApiClient.apiNamespaceSpaces.search(input)),
+
     listMembers: (input: SpacesListMembersInput) => defaultApiClient.apiNamespaceSpaces.listMembers(input),
     useListMembers: (input: SpacesListMembersInput) =>
       useQuery<SpacesListMembersResult>(() => defaultApiClient.apiNamespaceSpaces.listMembers(input)),
@@ -7447,6 +7496,13 @@ export default {
     useUpdateTitle: () =>
       useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>((input) =>
         defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
+      ),
+
+    updateOrdering: (input: ProjectMilestonesUpdateOrderingInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateOrdering(input),
+    useUpdateOrdering: () =>
+      useMutation<ProjectMilestonesUpdateOrderingInput, ProjectMilestonesUpdateOrderingResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.updateOrdering(input),
       ),
   },
 

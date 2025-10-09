@@ -1,6 +1,7 @@
 import * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
+export { useProjectMilestoneOrdering } from "./useProjectMilestoneOrdering";
 
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;

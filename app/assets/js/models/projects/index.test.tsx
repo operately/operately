@@ -1,4 +1,5 @@
 import { isOverdue, isMilestoneOverdue, Milestone, Project } from "./index";
+import { __testExports } from "./useProjectMilestoneOrdering";
 
 import * as Time from "../../utils/time";
 
@@ -117,5 +118,51 @@ describe(".isOverdue", () => {
     // Specifically, deadline on today should NOT be overdue
     expect(isOverdue(todayProject)).toBe(false);
     expect(isMilestoneOverdue(todayMilestone)).toBe(false);
+  });
+});
+
+describe("project milestone ordering helpers", () => {
+  const { normalizeMilestoneOrdering, moveMilestoneId, reorderMilestonesByIds } = __testExports;
+
+  it("normalizes ordering by appending missing milestones", () => {
+    const milestones = [
+      { id: "m1", name: "Milestone 1", status: "pending" as const },
+      { id: "m2", name: "Milestone 2", status: "pending" as const },
+      { id: "m3", name: "Milestone 3", status: "pending" as const },
+    ];
+
+    const ordering = normalizeMilestoneOrdering(["m2"], milestones);
+
+    expect(ordering).toEqual(["m2", "m1", "m3"]);
+  });
+
+  it("removes unknown or duplicate ids while preserving order", () => {
+    const milestones = [
+      { id: "m1", name: "Milestone 1", status: "pending" as const },
+      { id: "m2", name: "Milestone 2", status: "pending" as const },
+      { id: "m3", name: "Milestone 3", status: "pending" as const },
+    ];
+
+    const ordering = normalizeMilestoneOrdering(["m2", "m2", "unknown", "m1"], milestones);
+
+    expect(ordering).toEqual(["m2", "m1", "m3"]);
+  });
+
+  it("reorders ids within bounds", () => {
+    expect(moveMilestoneId(["a", "b", "c"], "a", 2)).toEqual(["b", "c", "a"]);
+    expect(moveMilestoneId(["a", "b", "c"], "c", 0)).toEqual(["c", "a", "b"]);
+    expect(moveMilestoneId(["a", "b", "c"], "x", 1)).toBeNull();
+  });
+
+  it("reorders milestone objects based on ordering state", () => {
+    const milestones = [
+      { id: "m1", name: "A", status: "pending" as const },
+      { id: "m2", name: "B", status: "pending" as const },
+      { id: "m3", name: "C", status: "pending" as const },
+    ];
+
+    const ordered = reorderMilestonesByIds(milestones, ["m3", "m1"]);
+
+    expect(ordered.map((m) => m.id)).toEqual(["m3", "m1", "m2"]);
   });
 });
