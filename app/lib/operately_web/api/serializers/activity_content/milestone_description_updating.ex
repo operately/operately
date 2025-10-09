@@ -1,5 +1,4 @@
-defimpl OperatelyWeb.Api.Serializable,
-  for: Operately.Activities.Content.MilestoneDescriptionUpdating do
+defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.MilestoneDescriptionUpdating do
   alias OperatelyWeb.Api.Serializer
 
   def serialize(content, level: :essential) do
