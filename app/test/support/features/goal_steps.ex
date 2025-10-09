@@ -8,6 +8,7 @@ defmodule Operately.Support.Features.GoalSteps do
   alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
   alias Operately.People.Person
+  alias Wallaby.QueryError
 
   import Phoenix.ConnTest
 
@@ -50,6 +51,64 @@ defmodule Operately.Support.Features.GoalSteps do
   step :change_goal_name, ctx do
     ctx
     |> UI.fill_text_field(testid: "goal-name-field", with: "New Goal Name")
+  end
+
+  step :given_space_member_exists, ctx, opts \\ [] do
+    ctx
+    |> Factory.add_space_member(:space_member, :product, opts)
+  end
+
+  #
+  # Description
+  #
+
+  step :edit_goal_description, ctx, description do
+    ctx
+    |> open_goal_description_editor()
+    |> UI.fill_rich_text(description)
+    |> submit_goal_description()
+  end
+
+  step :edit_goal_description_mentioning, ctx, person do
+    ctx
+    |> open_goal_description_editor()
+    |> UI.mention_person_in_rich_text(person)
+    |> submit_goal_description()
+  end
+
+  step :assert_goal_description, ctx, description do
+    ctx
+    |> UI.assert_text(description)
+  end
+
+  step :refute_goal_description, ctx, description do
+    ctx
+    |> UI.refute_text(description)
+  end
+
+  step :assert_goal_description_feed_posted, ctx do
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.creator, "updated goal #{ctx.goal.name} description")
+  end
+
+  step :assert_space_member_goal_description_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.goal.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "updated the goal description"
+    })
+  end
+
+  step :assert_space_member_goal_description_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Goal \"#{ctx.goal.name}\" description was updated"
+    })
   end
 
   step :assert_goal_name_changed, ctx do
@@ -490,6 +549,23 @@ defmodule Operately.Support.Features.GoalSteps do
 
       assert company_binding.access_level == 0
     end)
+  end
+
+  defp open_goal_description_editor(ctx) do
+    try do
+      ctx
+      |> UI.click_text("Describe the goal to provide context and clarity.")
+    rescue
+      QueryError ->
+        ctx
+        |> UI.click_button("Edit")
+    end
+  end
+
+  defp submit_goal_description(ctx) do
+    ctx
+    |> UI.click_button("Save")
+    |> UI.sleep(300)
   end
 
   defp remove_all_targets(ctx) do
