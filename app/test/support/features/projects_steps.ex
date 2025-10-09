@@ -555,6 +555,13 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.assert_text(description)
   end
 
+  step :assert_project_description_feed_item, ctx, snippet: snippet do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "updated the project description", snippet)
+    |> UI.refute_text("TEXT END MARKER <- this is the end of the text", attempts: [50, 100, 200, 500])
+  end
+
   step :assert_champion_changed, ctx, name: name do
     ctx
     |> UI.assert_text(name, testid: "champion-field")
