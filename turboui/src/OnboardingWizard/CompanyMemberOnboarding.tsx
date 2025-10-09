@@ -63,7 +63,7 @@ export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWiza
   const state = useOnboardingState(props.__initialStep || "welcome", props.onDismiss);
 
   return (
-    <WizardModal labelledBy="company-member-onboarding-heading" onDismiss={props.onDismiss}>
+    <WizardModal labelledBy="company-member-onboarding-heading">
       {match(state.currentStep)
         .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="profile" />)
         .with("role", () => <RoleStep state={state} />)
