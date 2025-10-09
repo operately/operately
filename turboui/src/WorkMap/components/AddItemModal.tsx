@@ -24,6 +24,7 @@ export namespace AddItemModal {
     parentGoal: { id: string; name: string } | null;
     spaceSearch: SpaceField.SearchSpaceFn;
     save: (props: SaveProps) => Promise<{ id: string }>;
+    initialItemType?: ItemType;
   }
 
   export type ItemType = "goal" | "project";
@@ -129,7 +130,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 }
 
 function useAddItemModalState(props: AddItemModal.Props) {
-  const [itemType, setItemType] = React.useState<"goal" | "project">("goal");
+  const [itemType, setItemType] = React.useState<"goal" | "project">(props.initialItemType || "goal");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
@@ -142,6 +143,12 @@ function useAddItemModalState(props: AddItemModal.Props) {
   });
 
   const [submitting, setSubmitting] = React.useState(false);
+
+  React.useEffect(() => {
+    if (props.isOpen) {
+      setItemType(props.initialItemType || "goal");
+    }
+  }, [props.isOpen, props.initialItemType]);
 
   const validate = (): boolean => {
     let ok = true;
