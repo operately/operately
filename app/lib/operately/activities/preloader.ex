@@ -153,10 +153,14 @@ defmodule Operately.Activities.Preloader do
   end
 
   defp is_field_an_embed(object, key, value) when is_map(value) do
-    value_type = value.__struct__
-    embeds = object.__struct__.__schema__(:embeds)
+    if Map.has_key?(value, :__struct__) do
+      value_type = value.__struct__
+      embeds = object.__struct__.__schema__(:embeds)
 
-    key in embeds && object.__struct__.__schema__(:embed, key).related == value_type
+      key in embeds && object.__struct__.__schema__(:embed, key).related == value_type
+    else
+      false
+    end
   end
 
   #

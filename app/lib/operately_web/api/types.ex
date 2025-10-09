@@ -846,6 +846,7 @@ defmodule OperatelyWeb.Api.Types do
     field :task, :task, null: true
     field :project_name, :string, null: false
     field :has_description, :boolean, null: false
+    field :description, :string, null: true
   end
 
   object :activity_content_task_due_date_updating do

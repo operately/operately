@@ -145,6 +145,14 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     |> UI.sleep(300)
   end
 
+  step :edit_task_description_mentioning, ctx, person do
+    ctx
+    |> UI.click_text("Add notes about this task...")
+    |> UI.mention_person_in_rich_text(person)
+    |> UI.click_button("Save")
+    |> UI.sleep(300)
+  end
+
   step :edit_task_assignee, ctx, name do
     ctx
     |> UI.find(UI.query(testid: "task-sidebar"), fn el ->
@@ -236,8 +244,8 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     contributors = Projects.list_project_contributors(ctx.project)
 
     refute Enum.any?(contributors, fn contributor ->
-      contributor.person_id == ctx.space_member.id
-    end)
+             contributor.person_id == ctx.space_member.id
+           end)
 
     ctx
   end
@@ -364,7 +372,11 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
 
     {:ok, _activity} =
       Ecto.Multi.new()
-      |> Operately.Activities.insert_sync(ctx.champion.id, :task_milestone_updating, fn _changes -> activity_attrs end)
+      |> Operately.Activities.insert_sync(
+        ctx.champion.id,
+        :task_milestone_updating,
+        fn _changes -> activity_attrs end
+      )
       |> Operately.Repo.transaction()
 
     # Delete the milestone to simulate the scenario where activity references a deleted milestone
@@ -526,6 +538,16 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
     })
   end
 
+  step :assert_space_member_task_description_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "updated the description for \"#{ctx.task.name}\""
+    })
+  end
+
   #
   # Notifications
   #
@@ -611,6 +633,22 @@ defmodule Operately.Support.Features.ProjectTasksSteps do
       author: ctx.champion,
       action: "Re: #{ctx.task.name}"
     })
+  end
+
+  step :assert_space_member_task_description_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Updated the description of: #{ctx.task.name}"
+    })
+  end
+
+  step :assert_space_member_task_description_not_notified, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.visit_notifications_page()
+    |> UI.refute_text("Updated the description of: #{ctx.task.name}")
   end
 
   #
