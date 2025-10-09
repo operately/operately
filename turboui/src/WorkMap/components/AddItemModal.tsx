@@ -24,6 +24,8 @@ export namespace AddItemModal {
     parentGoal: { id: string; name: string } | null;
     spaceSearch: SpaceField.SearchSpaceFn;
     save: (props: SaveProps) => Promise<{ id: string }>;
+    initialItemType?: ItemType;
+    hideTypeSelector?: boolean;
   }
 
   export type ItemType = "goal" | "project";
@@ -47,80 +49,84 @@ export function AddItemModal(props: AddItemModal.Props) {
   const state = useAddItemModalState(props);
 
   return (
-    <Modal isOpen={props.isOpen} onClose={props.close} size="medium" closeOnBackdropClick={false}>
-      <h1 className="font-bold text-xl w-52">Add new {state.itemType === "goal" ? "goal" : "project"}</h1>
+    <Modal isOpen={props.isOpen} onClose={props.close} size="large" closeOnBackdropClick={false}>
+      <div className="p-4">
+        <h1 className="font-bold text-xl w-52">Add {state.itemType === "goal" ? "goal" : "project"}</h1>
 
-      <div className="mb-2">
-        {props.parentGoal && (
-          <div className="text-xs text-content-dimmed mb-1">
-            Adding under <span className="font-medium">{props.parentGoal.name}</span>
-          </div>
-        )}
-      </div>
-
-      <RadioGroup
-        options={[
-          {
-            value: "goal",
-            label: "Goal",
-            description: "big-picture outcome",
-          },
-          {
-            value: "project",
-            label: "Project",
-            description: "concrete actions or deliverables",
-          },
-        ]}
-        value={state.itemType}
-        onChange={state.setItemType}
-      />
-
-      <div>
-        <div className="flex flex-col gap-4 mt-4">
-          <TextField
-            autofocus
-            label="Name"
-            variant="form-field"
-            placeholder={
-              state.itemType === "goal" ? "e.g. Increase user acquisition" : "e.g. Implement new website design"
-            }
-            text={state.name}
-            onChange={state.setName}
-            error={state.nameError}
-            testId="item-name"
-          />
-
-          <SpaceField
-            label="Space"
-            space={state.space}
-            setSpace={state.setSpace}
-            search={state.spaceSearch}
-            variant="form-field"
-            testId="space-field"
-            error={state.spaceError}
-          />
-
-          <PrivacyField
-            accessLevels={state.accessLevels}
-            setAccessLevels={state.setAccessLevels}
-            resourceType={state.itemType}
-            variant="form-field"
-            label="Privacy"
-          />
+        <div className="mb-2">
+          {props.parentGoal && (
+            <div className="text-xs text-content-dimmed mb-1">
+              Adding under <span className="font-medium">{props.parentGoal.name}</span>
+            </div>
+          )}
         </div>
 
-        <div className="flex items-center mt-6">
-          <SwitchToggle value={state.createMore} setValue={state.setCreateMore} label="Create more" />
+        {!props.hideTypeSelector && (
+          <RadioGroup
+            options={[
+              {
+                value: "goal",
+                label: "Goal",
+                description: "big-picture outcome",
+              },
+              {
+                value: "project",
+                label: "Project",
+                description: "concrete actions or deliverables",
+              },
+            ]}
+            value={state.itemType}
+            onChange={state.setItemType}
+          />
+        )}
 
-          <div className="flex-1"></div>
-          <div className="flex space-x-3">
-            <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
-              Cancel
-            </SecondaryButton>
+        <div>
+          <div className="flex flex-col gap-4 mt-6">
+            <TextField
+              autofocus
+              label="Name"
+              variant="form-field"
+              placeholder={
+                state.itemType === "goal" ? "e.g. Increase user acquisition" : "e.g. Implement new website design"
+              }
+              text={state.name}
+              onChange={state.setName}
+              error={state.nameError}
+              testId="item-name"
+            />
 
-            <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
-              Add {state.itemType === "goal" ? "Goal" : "Project"}
-            </PrimaryButton>
+            <SpaceField
+              label="Space"
+              space={state.space}
+              setSpace={state.setSpace}
+              search={state.spaceSearch}
+              variant="form-field"
+              testId="space-field"
+              error={state.spaceError}
+            />
+
+            <PrivacyField
+              accessLevels={state.accessLevels}
+              setAccessLevels={state.setAccessLevels}
+              resourceType={state.itemType}
+              variant="form-field"
+              label="Privacy"
+            />
+          </div>
+
+          <div className="flex items-center mt-8">
+            <SwitchToggle value={state.createMore} setValue={state.setCreateMore} label="Create more" />
+
+            <div className="flex-1"></div>
+            <div className="flex space-x-3">
+              <SecondaryButton type="button" data-testid="cancel" size="sm" onClick={props.close}>
+                Cancel
+              </SecondaryButton>
+
+              <PrimaryButton onClick={state.submit} loading={state.submitting} testId="submit" size="sm">
+                Add {state.itemType === "goal" ? "Goal" : "Project"}
+              </PrimaryButton>
+            </div>
           </div>
         </div>
       </div>
@@ -129,7 +135,7 @@ export function AddItemModal(props: AddItemModal.Props) {
 }
 
 function useAddItemModalState(props: AddItemModal.Props) {
-  const [itemType, setItemType] = React.useState<"goal" | "project">("goal");
+  const [itemType, setItemType] = React.useState<"goal" | "project">(props.initialItemType || "goal");
   const [name, setName] = React.useState("");
   const [space, setSpace] = React.useState<SpaceField.Space | null>(props.space || null);
   const [nameError, setNameError] = React.useState<string | undefined>(undefined);
@@ -142,6 +148,12 @@ function useAddItemModalState(props: AddItemModal.Props) {
   });
 
   const [submitting, setSubmitting] = React.useState(false);
+
+  React.useEffect(() => {
+    if (props.isOpen) {
+      setItemType(props.initialItemType || "goal");
+    }
+  }, [props.isOpen, props.initialItemType]);
 
   const validate = (): boolean => {
     let ok = true;
