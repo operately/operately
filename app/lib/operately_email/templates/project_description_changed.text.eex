@@ -1,0 +1,9 @@
+<%= short_name(@author) %> updated the "<%= @project_name %>" project description.
+
+<%= if @description do %>
+View the project to read the updated details.
+<% else %>
+The description was cleared.
+<% end %>
+
+View Project: <%= @cta_url %>

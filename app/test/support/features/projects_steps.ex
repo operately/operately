@@ -9,6 +9,7 @@ defmodule Operately.Support.Features.ProjectSteps do
   alias Operately.People.Person
   alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
+  alias Wallaby.QueryError
 
   import Operately.CompaniesFixtures
   import Operately.GroupsFixtures
@@ -55,6 +56,11 @@ defmodule Operately.Support.Features.ProjectSteps do
       })
 
     Map.put(ctx, :goal, goal)
+  end
+
+  step :given_space_member_exists, ctx, opts \\ [] do
+    ctx
+    |> Factory.add_space_member(:space_member, :group, opts)
   end
 
   def create_project(ctx, name: name) do
@@ -543,6 +549,14 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.click_button("Save")
   end
 
+  step :submit_project_description_mentioning, ctx, person do
+    ctx
+    |> open_project_description_editor()
+    |> UI.mention_person_in_rich_text(person)
+    |> UI.send_keys([" updated the project description."])
+    |> save_project_description()
+  end
+
   step :expand_project_description, ctx do
     ctx
     |> UI.find(UI.query(testid: "description-section"), fn el ->
@@ -559,6 +573,32 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> FeedSteps.assert_feed_item_exists(ctx.champion, "updated the project description", description)
+  end
+
+  step :assert_space_member_project_description_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Project \"#{ctx.project.name}\" description was updated"
+    })
+  end
+
+  step :assert_space_member_project_description_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "updated the project description"
+    })
+  end
+
+  step :assert_author_not_notified_about_project_description, ctx do
+    ctx
+    |> UI.login_as(ctx.champion)
+    |> NotificationsSteps.visit_notifications_page()
+    |> NotificationsSteps.assert_no_unread_notifications()
   end
 
   step :assert_champion_changed, ctx, name: name do
@@ -607,6 +647,14 @@ defmodule Operately.Support.Features.ProjectSteps do
       |> UI.click_button("Save")
       |> UI.sleep(200)
     end)
+  end
+
+  step :edit_project_description_mentioning, ctx, person do
+    ctx
+    |> open_project_description_editor()
+    |> UI.mention_person_in_rich_text(person)
+    |> UI.send_keys([" updated the project description."])
+    |> save_project_description()
   end
 
   step :add_link_as_key_resource, ctx do
@@ -816,5 +864,26 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert String.contains?(markdown, "Status:")
 
     ctx
+  end
+
+  defp open_project_description_editor(ctx) do
+    ctx =
+      try do
+        UI.click_text(ctx, "Add a project description...")
+      rescue
+        QueryError ->
+          ctx
+          |> UI.find(UI.query(testid: "description-section"), fn el ->
+            UI.click_button(el, "Edit")
+          end)
+      end
+
+    UI.sleep(ctx, 200)
+  end
+
+  defp save_project_description(ctx) do
+    ctx
+    |> UI.click_button("Save")
+    |> UI.sleep(200)
   end
 end
