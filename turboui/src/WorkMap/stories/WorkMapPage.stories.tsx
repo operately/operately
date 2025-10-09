@@ -1,7 +1,26 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import React from "react";
-import { WorkMapPage } from "../components";
+import { WorkMapPage, WorkMap } from "../components";
 import { closedParentWithOngoingChildren, mockItems, mockSingleItem } from "../tests/mockData";
+
+const mockSpaces = [
+  { id: "space1", name: "Space 1", link: "/spaces/space1" },
+  { id: "space2", name: "Space 2", link: "/spaces/space2" },
+];
+
+const mockSpaceSearch = async ({ query }: { query: string }) => {
+  return mockSpaces.filter((space) => space.name.toLowerCase().includes(query));
+};
+
+const mockAddItem: WorkMap.AddNewItemFn = async (props) => {
+  console.log("Saving new item:", props);
+
+  return new Promise<{ id: string }>((resolve) => {
+    setTimeout(() => {
+      resolve({ id: "new-item-id" });
+    }, 1000);
+  });
+};
 
 /**
  * WorkMapPage is a comprehensive page for displaying and interacting with
@@ -30,20 +49,9 @@ export const Default: Story = {
     title: "Company Work Map",
     items: mockItems,
     addingEnabled: true,
-    spaceSearch: async ({ query }) => {
-      return [
-        { id: "space1", name: "Space 1", link: "/spaces/space1" },
-        { id: "space2", name: "Space 2", link: "/spaces/space2" },
-      ].filter((space) => space.name.toLowerCase().includes(query));
-    },
-    addItem: async (props) => {
-      console.log("Saving new item:", props);
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({ id: "new-item-id" });
-        }, 1000);
-      });
-    },
+    spaceSearch: mockSpaceSearch,
+    addItem: mockAddItem,
+    addItemDefaultSpace: mockSpaces[0]!,
   },
 };
 
@@ -66,6 +74,10 @@ export const Empty: Story = {
   args: {
     title: "Company Work Map",
     items: [],
+    addingEnabled: true,
+    spaceSearch: mockSpaceSearch,
+    addItem: mockAddItem,
+    addItemDefaultSpace: mockSpaces[0]!,
   },
 };
 

@@ -23,6 +23,25 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+const mockSpaces = [
+  { id: "space1", name: "Space 1", link: "/spaces/space1" },
+  { id: "space2", name: "Space 2", link: "/spaces/space2" },
+];
+
+const mockSpaceSearch = async ({ query }: { query: string }) => {
+  return mockSpaces.filter((space) => space.name.toLowerCase().includes(query));
+};
+
+const mockAddItem: WorkMap.AddNewItemFn = async (props) => {
+  console.log("Saving new item:", props);
+
+  return new Promise<{ id: string }>((resolve) => {
+    setTimeout(() => {
+      resolve({ id: "new-item-id" });
+    }, 1000);
+  });
+};
+
 /**
  * Default view of the WorkMap with multiple items and children
  */
@@ -39,21 +58,9 @@ export const Default: Story = {
     title: "Company Work Map",
     items: mockItems,
     addingEnabled: true,
-    spaceSearch: async ({ query: query }) => {
-      return [
-        { id: "space1", name: "Space 1", link: "/spaces/space1" },
-        { id: "space2", name: "Space 2", link: "/spaces/space2" },
-      ].filter((space) => space.name.toLowerCase().includes(query));
-    },
-    addItem: async (props) => {
-      console.log("Saving new item:", props);
-
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({ id: "new-item-id" });
-        }, 1000);
-      });
-    },
+    spaceSearch: mockSpaceSearch,
+    addItem: mockAddItem,
+    addItemDefaultSpace: mockSpaces[0]!,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 15);
@@ -98,6 +105,10 @@ export const Empty: Story = {
   args: {
     title: "Company Work Map",
     items: [],
+    addingEnabled: true,
+    spaceSearch: mockSpaceSearch,
+    addItem: mockAddItem,
+    addItemDefaultSpace: mockSpaces[0]!,
   },
   play: async ({ canvasElement, step }) => {
     await Steps.assertRowsNumber(canvasElement, step, 1);

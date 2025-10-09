@@ -123,10 +123,10 @@ export const assertChildrenHidden = async (canvasElement, step, names) => {
 };
 
 export const assertZeroState = async (canvasElement, step) => {
-  await step("Assert that 'Nothing here' text is present", async () => {
+  await step("Assert that the zero state guidance is visible", async () => {
     const canvas = within(canvasElement);
-    const emptyStateText = canvas.getByText("Nothing here yet.");
-    expect(emptyStateText).toBeInTheDocument();
+    const headline = canvas.getByText("Track company goals and projects");
+    expect(headline).toBeInTheDocument();
   });
 };
 
