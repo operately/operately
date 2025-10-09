@@ -9,12 +9,6 @@ defmodule Operately.Support.Features.CompaniesSteps do
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
 
-  step :given_a_user_is_logged_in, ctx do
-    ctx = Factory.add_account(ctx, :account)
-
-    UI.visit(ctx, "/accounts/auth/test_google?account_id=#{ctx.account.id}")
-  end
-
   step :given_a_user_is_logged_in_that_belongs_to_a_company, ctx do
     company = company_fixture(%{name: "Test Org"})
     person = person_fixture_with_account(%{full_name: "Kevin Kernel", company_id: company.id})
@@ -26,10 +20,7 @@ defmodule Operately.Support.Features.CompaniesSteps do
   end
 
   step :navigate_to_the_loby, ctx do
-    ctx
-    |> UI.visit("/")
-    |> UI.sleep(500)
-    |> UI.take_screenshot()
+    ctx |> UI.visit("/")
   end
 
   step :click_on_the_add_company_button, ctx do
@@ -56,17 +47,12 @@ defmodule Operately.Support.Features.CompaniesSteps do
   end
 
   step :select_a_few_spaces_to_create, ctx do
-    spaces = ["Marketing", "Engineering"]
-
-    ctx = ctx |> UI.assert_has(testid: "company-creator-step-spaces")
-
-    ctx =
-      Enum.reduce(spaces, ctx, fn space, acc ->
-        acc |> UI.click(testid: "company-creator-space-" <> space_testid(space))
-      end)
-      |> UI.click(testid: "company-creator-next")
-
-    Map.put(ctx, :selected_spaces, spaces)
+    ctx
+    |> UI.assert_has(testid: "company-creator-step-spaces")
+    |> UI.click(testid: "company-creator-space-marketing")
+    |> UI.click(testid: "company-creator-space-engineering")
+    |> UI.click(testid: "company-creator-next")
+    |> Map.put(:selected_spaces, ["Marketing", "Engineering"])
   end
 
   step :assert_i_get_an_invitation_token, ctx do
@@ -89,17 +75,18 @@ defmodule Operately.Support.Features.CompaniesSteps do
   end
 
   step :assert_spaces_are_created, ctx do
-    spaces = Map.get(ctx, :selected_spaces, [])
-    assert spaces != []
+    # assert created in DB
+    Enum.map(ctx.selected_spaces, fn space ->
+      group = Repo.get_by(Group, name: space, company_id: ctx.company.id)
+      assert group, "Expected space \"#{space}\" to be created"
+    end)
 
-    Enum.each(spaces, fn space_name ->
-      group = Repo.get_by(Group, name: space_name, company_id: ctx.company.id)
-      assert group, "Expected space \"#{space_name}\" to be created"
+    # assert visible on page
+    Enum.map(ctx.selected_spaces, fn space ->
+      UI.assert_text(ctx, space)
     end)
 
     ctx
-    |> UI.sleep(500)
-    |> ensure_spaces_visible(spaces)
   end
 
   step :assert_company_is_created, ctx do
@@ -131,21 +118,5 @@ defmodule Operately.Support.Features.CompaniesSteps do
     ctx
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.assert_feed_item(ctx.person, "created this company")
-  end
-
-  defp ensure_spaces_visible(ctx, []), do: ctx
-
-  defp ensure_spaces_visible(ctx, [space | rest]) do
-    ctx
-    |> UI.assert_text(space)
-    |> ensure_spaces_visible(rest)
-  end
-
-  defp space_testid(name) do
-    name
-    |> String.trim()
-    |> String.downcase()
-    |> String.replace(~r/[^a-z0-9]+/, "-")
-    |> String.trim("-")
   end
 end
