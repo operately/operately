@@ -290,6 +290,14 @@ export interface ActivityContentGoalCreated {
   goal?: Goal | null;
 }
 
+export interface ActivityContentGoalDescriptionChanged {
+  goal: Goal | null;
+  goalName: string;
+  hasDescription: boolean;
+  oldDescription: string | null;
+  newDescription: string | null;
+}
+
 export interface ActivityContentGoalDiscussionCreation {
   companyId?: string | null;
   goalId?: string | null;
@@ -336,14 +344,6 @@ export interface ActivityContentGoalNameUpdating {
   goal: Goal;
   oldName: string;
   newName: string;
-}
-
-export interface ActivityContentGoalDescriptionChanged {
-  goal?: Goal | null;
-  goalName: string;
-  hasDescription: boolean;
-  oldDescription?: string | null;
-  newDescription?: string | null;
 }
 
 export interface ActivityContentGoalReopening {
@@ -542,6 +542,13 @@ export interface ActivityContentProjectContributorsAddition {
 export interface ActivityContentProjectCreated {
   projectId?: string | null;
   project?: Project | null;
+}
+
+export interface ActivityContentProjectDescriptionChanged {
+  project: Project;
+  projectName: string;
+  hasDescription: boolean;
+  description: string | null;
 }
 
 export interface ActivityContentProjectDiscussionSubmitted {
@@ -1924,7 +1931,6 @@ export type ActivityContent =
   | ActivityContentGoalDiscussionCreation
   | ActivityContentGoalDiscussionEditing
   | ActivityContentGoalEditing
-  | ActivityContentGoalDescriptionChanged
   | ActivityContentGoalReopening
   | ActivityContentGoalReparent
   | ActivityContentGoalTimeframeEditing
@@ -1944,7 +1950,9 @@ export type ActivityContent =
   | ActivityContentProjectGoalConnection
   | ActivityContentProjectGoalDisconnection
   | ActivityContentProjectMilestoneCommented
+  | ActivityContentProjectDescriptionChanged
   | ActivityContentMilestoneDescriptionUpdating
+  | ActivityContentGoalDescriptionChanged
   | ActivityContentProjectMoved
   | ActivityContentProjectPausing
   | ActivityContentProjectRenamed
@@ -4218,12 +4226,12 @@ export interface UpdateProjectContributorResult {
 }
 
 export interface UpdateProjectDescriptionInput {
-  projectId?: string | null;
-  description?: string | null;
+  projectId: Id;
+  description: Json;
 }
 
 export interface UpdateProjectDescriptionResult {
-  project?: Project | null;
+  project: Project;
 }
 
 class ApiNamespaceRoot {
