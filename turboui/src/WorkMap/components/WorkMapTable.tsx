@@ -77,47 +77,45 @@ export function WorkMapTable({
 
   return (
     <div className="overflow-x-auto bg-surface-base rounded-b-lg">
-      <table className="min-w-full divide-y divide-surface-outline">
-        <TableHeader tab={tab} columnOptions={columnOptions} />
-        <tbody>
-          {emptyWorkMap ? (
-            <ZeroState
-              addingEnabled={addingEnabled}
-              spaceSearch={spaceSearch!}
-              addItem={addItem!}
-              addItemDefaultSpace={addItemDefaultSpace!}
-            />
-          ) : (
-            <>
-              {items.map((item, idx) => (
-                <TableRow
-                  key={item.id}
-                  item={item}
-                  level={0}
-                  isLast={idx === items.length - 1}
-                  tab={tab}
-                  columnOptions={columnOptions}
-                  showIndentation={showIndentation}
-                  addItem={addItem}
-                  addingEnabled={addingEnabled}
-                  spaceSearch={spaceSearch}
-                  isExpanded={getItemExpanded}
-                  setItemExpanded={setItemExpanded}
-                />
-              ))}
+      {emptyWorkMap ? (
+        <ZeroState
+          addingEnabled={addingEnabled}
+          spaceSearch={spaceSearch!}
+          addItem={addItem!}
+          addItemDefaultSpace={addItemDefaultSpace!}
+        />
+      ) : (
+        <table className="min-w-full divide-y divide-surface-outline">
+          <TableHeader tab={tab} columnOptions={columnOptions} />
+          <tbody>
+            {items.map((item, idx) => (
+              <TableRow
+                key={item.id}
+                item={item}
+                level={0}
+                isLast={idx === items.length - 1}
+                tab={tab}
+                columnOptions={columnOptions}
+                showIndentation={showIndentation}
+                addItem={addItem}
+                addingEnabled={addingEnabled}
+                spaceSearch={spaceSearch}
+                isExpanded={getItemExpanded}
+                setItemExpanded={setItemExpanded}
+              />
+            ))}
 
-              {addingEnabled && (
-                <AddNewRow
-                  addingEnabled={addingEnabled}
-                  spaceSearch={spaceSearch!}
-                  addItem={addItem!}
-                  addItemDefaultSpace={addItemDefaultSpace!}
-                />
-              )}
-            </>
-          )}
-        </tbody>
-      </table>
+            {addingEnabled && (
+              <AddNewRow
+                addingEnabled={addingEnabled}
+                spaceSearch={spaceSearch!}
+                addItem={addItem!}
+                addItemDefaultSpace={addItemDefaultSpace!}
+              />
+            )}
+          </tbody>
+        </table>
+      )}
     </div>
   );
 }

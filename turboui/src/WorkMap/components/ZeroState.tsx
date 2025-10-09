@@ -35,48 +35,44 @@ export function ZeroState({ addingEnabled, spaceSearch, addItem, addItemDefaultS
   const close = () => setModalState((state) => ({ ...state, isOpen: false }));
 
   return (
-    <tr>
-      <td colSpan={7} className="px-4 py-16 sm:py-20">
-        <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h2 className="text-base font-semibold text-content-strong sm:text-xl">
-            Start tracking company goals and projects
-          </h2>
-          <p className="mt-2 text-sm text-content-dimmed">
-            See what you and your team are working on, with progress and deadlines.
-          </p>
+    <div className="py-12 relative">
+      <div className="mx-auto flex max-w-3xl flex-col items-center text-center relative z-10">
+        <h2 className="text-base font-semibold text-content-strong sm:text-xl">Start by adding a goal or project</h2>
+        <p className="mt-2 text-content-dimmed">
+          See what you and your team are working on, with progress and deadlines.
+        </p>
 
-          <div className="mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-6">
-            <ZeroStateCard
-              icon={<IconGoal size={30} className="rounded-lg bg-red-50 dark:bg-red-900" />}
-              title="Create a goal"
-              description="Long-term outcomes you're working toward. Track overall progress and impact."
-              onClick={open("goal")}
-              testId="add-work-item"
-            />
-            <ZeroStateCard
-              icon={<IconProject size={30} className="rounded-lg bg-blue-50 dark:bg-blue-900" />}
-              title="Create a project"
-              description="Concrete steps and tasks with specific deliverables. Get things done."
-              onClick={open("project")}
-            />
-          </div>
-
-          <p className="mt-8 text-xs text-content-dimmed sm:text-sm">
-            Not sure? Start with a project - you can always set goals later.
-          </p>
+        <div className="mt-8 grid w-full gap-4 sm:grid-cols-2 sm:gap-6">
+          <ZeroStateCard
+            icon={<IconGoal size={40} className="p-2 rounded-lg bg-red-50 dark:bg-red-900" />}
+            title="Add a goal"
+            description="Long-term outcomes you're working toward. Track overall progress and impact."
+            onClick={open("goal")}
+            testId="add-work-item"
+          />
+          <ZeroStateCard
+            icon={<IconProject size={40} className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900" />}
+            title="Add a project"
+            description="Concrete steps and tasks with specific deliverables. Get things done."
+            onClick={open("project")}
+          />
         </div>
 
-        <AddItemModal
-          isOpen={modalState.isOpen}
-          close={close}
-          parentGoal={null}
-          spaceSearch={spaceSearch}
-          save={addItem}
-          space={addItemDefaultSpace}
-          initialItemType={modalState.type}
-        />
-      </td>
-    </tr>
+        <p className="mt-8 text-xs text-content-dimmed sm:text-sm">
+          Not sure? Start with a project - you can always set goals later.
+        </p>
+      </div>
+
+      <AddItemModal
+        isOpen={modalState.isOpen}
+        close={close}
+        parentGoal={null}
+        spaceSearch={spaceSearch}
+        save={addItem}
+        space={addItemDefaultSpace}
+        initialItemType={modalState.type}
+      />
+    </div>
   );
 }
 
@@ -95,7 +91,7 @@ function ZeroStateCard({
 }) {
   return (
     <div
-      className="h-full rounded-2xl border border-stroke-base bg-surface-base px-6 py-6 text-left shadow-sm hover:shadow hover:-translate-y-1 cursor-pointer"
+      className="h-full rounded-2xl border border-stroke-base bg-surface-base px-6 py-6 text-left shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
       onClick={onClick}
       data-testid={testId}
     >
