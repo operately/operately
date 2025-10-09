@@ -1,8 +1,11 @@
+import React from "react";
 import type { ActivityContentMilestoneDescriptionUpdating } from "@/api";
 import type { Activity } from "@/models/activities";
 import { Paths } from "@/routes/paths";
 import { feedTitle, milestoneLink, projectLink } from "../feedItemLinks";
 import type { ActivityHandler } from "../interfaces";
+import { Summary } from "turboui";
+import { useRichEditorHandlers } from "@/hooks/useRichEditorHandlers";
 
 const MilestoneDescriptionUpdating: ActivityHandler = {
   pageHtmlTitle(_activity: Activity) {
@@ -10,7 +13,13 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
   },
 
   pagePath(paths: Paths, activity: Activity) {
-    return paths.projectPath(content(activity).project!.id!);
+    const { milestone } = content(activity);
+
+    if (milestone) {
+      return paths.projectMilestonePath(milestone.id);
+    } else {
+      return paths.homePath();
+    }
   },
 
   PageTitle(_props: { activity: any }) {
@@ -29,8 +38,8 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     const { project, milestone, milestoneName, hasDescription } = content(activity);
     const title = milestone ? milestoneLink(milestone, milestoneName) : `"${milestoneName}"`;
 
-    const message = hasDescription 
-      ? ["updated milestone", title, "description"] 
+    const message = hasDescription
+      ? ["updated milestone", title, "description"]
       : ["removed description from milestone", title];
 
     if (page === "project") {
@@ -40,12 +49,22 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
     }
   },
 
-  FeedItemContent(_props: { activity: Activity; page: any }) {
-    return null;
+  FeedItemContent({ activity }: { activity: Activity; page: any }) {
+    const data = content(activity);
+    const { mentionedPersonLookup } = useRichEditorHandlers();
+
+    const rawDescription = data.description ?? data.milestone?.description;
+    if (!rawDescription) return null;
+
+    const description = typeof rawDescription === "string" ? safeParseDescription(rawDescription) : rawDescription;
+
+    if (!description) return null;
+
+    return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
 
   feedItemAlignment(_activity: Activity): "items-start" | "items-center" {
-    return "items-center";
+    return "items-start";
   },
 
   commentCount(_activity: Activity): number {
@@ -73,6 +92,14 @@ const MilestoneDescriptionUpdating: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentMilestoneDescriptionUpdating {
   return activity.content as ActivityContentMilestoneDescriptionUpdating;
+}
+
+function safeParseDescription(description: string) {
+  try {
+    return JSON.parse(description);
+  } catch (_err) {
+    return null;
+  }
 }
 
 export default MilestoneDescriptionUpdating;

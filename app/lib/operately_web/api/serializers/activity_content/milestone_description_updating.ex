@@ -6,7 +6,8 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Activities.Content.Milesto
       project: Serializer.serialize(content.project, level: :essential),
       milestone: Serializer.serialize(content.milestone, level: :essential),
       milestone_name: content.milestone_name,
-      has_description: content.has_description
+      has_description: content.has_description,
+      description: Jason.encode!(content["description"]),
     }
   end
 end
