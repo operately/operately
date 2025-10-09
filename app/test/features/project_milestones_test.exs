@@ -136,6 +136,19 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_due_date_changed_email_sent()
     end
 
+    feature "mentioning a person in a milestone description sends notification and email", ctx do
+      ctx = Steps.given_space_member_exists(ctx)
+
+      ctx
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_empty_description()
+      |> Steps.edit_milestone_description_mentioning(ctx.space_member)
+
+      ctx
+      |> Steps.assert_space_member_milestone_description_notification_sent()
+      |> Steps.assert_space_member_milestone_description_email_sent()
+    end
+
     feature "mark milestone as completed", ctx do
       ctx
       |> Steps.visit_milestone_page()
