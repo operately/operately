@@ -1386,6 +1386,7 @@ export interface Project {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  milestonesOrderingState?: string[] | null;
 }
 
 export interface ProjectCheckIn {
@@ -3854,6 +3855,15 @@ export interface ProjectMilestonesUpdateTitleResult {
   milestone: Milestone;
 }
 
+export interface ProjectMilestonesUpdateOrderingInput {
+  projectId: Id;
+  orderingState: string[];
+}
+
+export interface ProjectMilestonesUpdateOrderingResult {
+  project: Project;
+}
+
 export interface ProjectTasksCreateInput {
   projectId: Id;
   milestoneId: Id | null;
@@ -4892,6 +4902,12 @@ class ApiNamespaceProjectMilestones {
 
   async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
     return this.client.post("/project_milestones/update_title", input);
+  }
+
+  async updateOrdering(
+    input: ProjectMilestonesUpdateOrderingInput,
+  ): Promise<ProjectMilestonesUpdateOrderingResult> {
+    return this.client.post("/project_milestones/update_ordering", input);
   }
 }
 
@@ -7453,6 +7469,13 @@ export default {
     useUpdateTitle: () =>
       useMutation<ProjectMilestonesUpdateTitleInput, ProjectMilestonesUpdateTitleResult>((input) =>
         defaultApiClient.apiNamespaceProjectMilestones.updateTitle(input),
+      ),
+
+    updateOrdering: (input: ProjectMilestonesUpdateOrderingInput) =>
+      defaultApiClient.apiNamespaceProjectMilestones.updateOrdering(input),
+    useUpdateOrdering: () =>
+      useMutation<ProjectMilestonesUpdateOrderingInput, ProjectMilestonesUpdateOrderingResult>((input) =>
+        defaultApiClient.apiNamespaceProjectMilestones.updateOrdering(input),
       ),
   },
 

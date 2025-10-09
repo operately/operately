@@ -1,6 +1,11 @@
-import * as api from "@/api";
+import Api, * as api from "@/api";
 import { assertPresent } from "@/utils/assertions";
 import * as Time from "@/utils/time";
+export type {
+  UseProjectMilestoneOrderingOptions,
+  UseProjectMilestoneOrderingResult,
+} from "./useProjectMilestoneOrdering";
+export { useProjectMilestoneOrdering, __testExports } from "./useProjectMilestoneOrdering";
 
 export type Project = api.Project;
 export type ProjectContributor = api.ProjectContributor;
@@ -26,6 +31,12 @@ export {
   useUpdateProjectContributor,
   useUpdateProjectDescription,
 } from "@/api";
+
+export const updateProjectMilestoneOrdering = (
+  input: api.ProjectMilestonesUpdateOrderingInput,
+) => Api.project_milestones.updateOrdering(input);
+
+export const useUpdateProjectMilestoneOrdering = Api.project_milestones.useUpdateOrdering;
 
 export function isOverdue(project: Pick<Project, "timeframe">) {
   assertPresent(project.timeframe, "project timeline must be defined");
