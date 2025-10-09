@@ -78,6 +78,7 @@ export const DISPLAYED_IN_FEED = [
   "goal_target_adding",
   "goal_space_updating",
   "goal_name_updating",
+  "goal_description_changed",
   "goal_due_date_updating",
   "goal_start_date_updating",
   "goal_reviewer_updating",
@@ -251,6 +252,7 @@ import SpaceJoining from "@/features/activities/SpaceJoining";
 import SpaceMemberRemoved from "@/features/activities/SpaceMemberRemoved";
 import SpaceMembersAdded from "@/features/activities/SpaceMembersAdded";
 import GoalChampionUpdating from "./GoalChampionUpdating";
+import GoalDescriptionChanged from "./GoalDescriptionChanged";
 import GoalDueDateUpdating from "./GoalDueDateUpdating";
 import GoalStartDateUpdating from "./GoalStartDateUpdating";
 import GoalReviewerUpdating from "./GoalReviewerUpdating";
@@ -343,6 +345,7 @@ function handler(activity: Activity) {
     .with("goal_due_date_updating", () => GoalDueDateUpdating)
     .with("goal_start_date_updating", () => GoalStartDateUpdating)
     .with("goal_name_updating", () => GoalNameUpdating)
+    .with("goal_description_changed", () => GoalDescriptionChanged)
     .with("goal_space_updating", () => GoalSpaceUpdating)
     .with("goal_target_adding", () => GoalTargetAdding)
     .with("goal_target_deleting", () => GoalTargetDeleting)
