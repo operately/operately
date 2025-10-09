@@ -5,10 +5,9 @@ export interface WizardState<T> {
   steps: T[];
   next: () => void;
   back: () => void;
-  dismiss: () => void;
 }
 
-export function useWizardState<T>(initialStep: T, steps: T[], onDismiss: () => void): WizardState<T> {
+export function useWizardState<T>(initialStep: T, steps: T[]): WizardState<T> {
   const [currentStep, setCurrentStep] = useState(initialStep);
 
   const next = useCallback(() => {
@@ -40,6 +39,5 @@ export function useWizardState<T>(initialStep: T, steps: T[], onDismiss: () => v
     steps,
     next,
     back,
-    dismiss: onDismiss,
   };
 }

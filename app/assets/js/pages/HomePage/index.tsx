@@ -1,4 +1,3 @@
-import Api from "@/api";
 import React from "react";
 
 import { PageModule } from "@/routes/types";
@@ -13,12 +12,11 @@ export default { name: "HomePage", loader, Page } as PageModule;
 
 import { SpaceCardGrid, SpaceCardLink } from "@/features/spaces/SpaceCards";
 
-const MARKO_IMAGE_URL = ""; //new URL("../../../static/marko.jpg", import.meta.url).toString();
-
 import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
-import { CompanyCreatorOnboardingWizard, GhostButton, PrimaryButton } from "turboui";
+import { GhostButton, PrimaryButton } from "turboui";
+import { Onboarding } from "./Onboarding";
 
 interface LoaderData {
   company: Companies.Company;
@@ -51,114 +49,13 @@ function useLoadedData(): LoaderData {
 }
 
 function Page() {
-  const { company, ownerIds } = useLoadedData();
-  const me = useMe();
-  const refresh = Pages.useRefresh();
-  const [completeSetup, completeStatus] = Companies.useCompleteCompanySetup();
-
-  const [hasDismissed, setHasDismissed] = React.useState(false);
-  const [wizardOpen, setWizardOpen] = React.useState(false);
-  const [invitationLink, setInvitationLink] = React.useState<string | null>(null);
-  const [inviteLoading, setInviteLoading] = React.useState(false);
-  const [inviteAttempted, setInviteAttempted] = React.useState(false);
-  const [wizardError, setWizardError] = React.useState<string | null>(null);
-
-  const isOwner = React.useMemo(() => includesId(ownerIds, me!.id), [ownerIds, me]);
+  const { company } = useLoadedData();
+  const isOwner = useIsOwner();
   const shouldPromptOnboarding = isOwner && !company.setupCompleted;
-
-  React.useEffect(() => {
-    setHasDismissed(false);
-    setInvitationLink(null);
-    setInviteAttempted(false);
-  }, [company.id]);
-
-  const fetchInviteLink = React.useCallback(async () => {
-    setInviteLoading(true);
-
-    try {
-      setWizardError(null);
-
-      const response = await Api.invitations.createInviteLink({});
-      const token = response.inviteLink?.token;
-
-      if (!token) {
-        throw new Error("Missing invitation token");
-      }
-
-      setInvitationLink(Companies.createInvitationUrl(token));
-    } catch (error) {
-      console.error("Failed to create invite link", error);
-      setWizardError("We couldn't generate an invitation link. Please try again.");
-    } finally {
-      setInviteLoading(false);
-    }
-  }, [company.id]);
-
-  React.useEffect(() => {
-    setWizardOpen(shouldPromptOnboarding && !hasDismissed);
-  }, [shouldPromptOnboarding, hasDismissed]);
-
-  React.useEffect(() => {
-    if (!wizardOpen) {
-      setWizardError(null);
-      setInvitationLink(null);
-      setInviteAttempted(false);
-      return;
-    }
-  }, [wizardOpen]);
-
-  React.useEffect(() => {
-    if (!wizardOpen) return;
-    if (invitationLink || inviteLoading || inviteAttempted) return;
-
-    setInviteAttempted(true);
-    fetchInviteLink();
-  }, [wizardOpen, invitationLink, inviteLoading, inviteAttempted, fetchInviteLink]);
-
-  const handleWizardDismiss = React.useCallback(() => {
-    setHasDismissed(true);
-    setWizardOpen(false);
-  }, []);
-
-  const handleWizardComplete = React.useCallback(
-    async (data: CompanyCreatorOnboardingWizard.OnCompleteData) => {
-      if (completeStatus.loading) return;
-
-      try {
-        setWizardError(null);
-
-        await completeSetup({ spaces: data.spaces });
-
-        setHasDismissed(true);
-        setWizardOpen(false);
-        refresh();
-      } catch (error) {
-        console.error("Failed to complete company setup", error);
-        setWizardError("We couldn't finish setting up your workspace. Please try again.");
-      }
-    },
-    [completeStatus.loading, completeSetup, refresh],
-  );
 
   return (
     <Pages.Page title="Home" testId="company-home">
-      {wizardOpen && (
-        <>
-          <CompanyCreatorOnboardingWizard
-            invitationLink={invitationLink}
-            markoImageUrl={MARKO_IMAGE_URL}
-            onComplete={handleWizardComplete}
-            onDismiss={handleWizardDismiss}
-            isCompleting={completeStatus.loading}
-          />
-
-          {wizardError && (
-            <div className="fixed inset-x-0 top-4 z-[80] flex justify-center px-4">
-              <div className="max-w-xl rounded-lg bg-red-500 px-4 py-2 text-white shadow-lg">{wizardError}</div>
-            </div>
-          )}
-        </>
-      )}
+      {shouldPromptOnboarding && <Onboarding company={company} />}
 
       <Paper.Root size="medium">
         <Greeting />
@@ -320,4 +217,11 @@ function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
       ))}
     </SpaceCardGrid>
   );
+}
+
+function useIsOwner() {
+  const { ownerIds } = useLoadedData();
+
+  const me = useMe();
+  return includesId(ownerIds, me!.id);
 }

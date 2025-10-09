@@ -1,42 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 export interface WizardModalProps {
   children: React.ReactNode;
   labelledBy: string;
-  onDismiss?: () => void;
   testId?: string;
 }
 
 export function WizardModal(props: WizardModalProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const { onDismiss } = props;
-
-  useEffect(() => {
-    if (!onDismiss) return;
-
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onDismiss();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeydown);
-    return () => window.removeEventListener("keydown", handleKeydown);
-  }, [onDismiss]);
-
-  const handleOverlayMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!onDismiss) return;
-    if (!dialogRef.current) return;
-    if (dialogRef.current.contains(event.target as Node)) return;
-
-    onDismiss();
-  };
 
   return (
     <div
       className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-8 bg-black/50 backdrop-blur-sm"
       role="presentation"
-      onMouseDown={handleOverlayMouseDown}
     >
       <div
         ref={dialogRef}

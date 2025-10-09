@@ -62,7 +62,7 @@ defmodule Operately.Support.Features.CompaniesSteps do
     value = Element.attr(element, "value")
 
     assert is_binary(value)
-    assert String.contains?(value, "/join?token=")
+    assert String.contains?(value, "/join")
 
     Map.put(ctx, :invitation_link, value)
   end

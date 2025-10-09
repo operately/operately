@@ -25,7 +25,6 @@ export namespace CompanyCreatorOnboardingWizard {
     isCompleting?: boolean;
 
     onComplete: (data: OnCompleteData) => void;
-    onDismiss: () => void;
   }
 
   export type Step = "welcome" | "spaces" | "invite";
@@ -56,7 +55,7 @@ interface State extends WizardState<Step> {
 
 function useOnboardingState(props: CompanyCreatorOnboardingWizard.Props): State {
   const initialState = props.__initialStep || "welcome";
-  const wizardState = useWizardState<Step>(initialState, STEPS, props.onDismiss);
+  const wizardState = useWizardState<Step>(initialState, STEPS);
   const [selectedSpaces, setSelectedSpaces] = useState<SpaceOption[]>([]);
 
   const toggleSpace = useCallback((name: string) => {
@@ -87,11 +86,7 @@ export function CompanyCreatorOnboardingWizard(props: CompanyCreatorOnboardingWi
   }, [props.onComplete, state.selectedSpaces]);
 
   return (
-    <WizardModal
-      labelledBy="company-creator-onboarding-heading"
-      onDismiss={props.onDismiss}
-      testId="company-creator-onboarding"
-    >
+    <WizardModal labelledBy="company-creator-onboarding-heading" testId="company-creator-onboarding">
       {match(state.currentStep)
         .with("welcome", () => (
           <WelcomeStep
