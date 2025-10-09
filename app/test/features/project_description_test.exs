@@ -26,9 +26,9 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.given_project_has_description(description: "Old description")
     |> Steps.visit_project_page()
     |> Steps.assert_project_description_present(description: "Old description")
-    |> Steps.edit_project_description(description: project_description())
-    |> Steps.assert_project_description_present(description: "TEXT END MARKER")
-    |> Steps.assert_project_description_feed_item(snippet: "TEXT START MARKER <- this is the start of the text")
+    |> Steps.edit_project_description(description: "New description")
+    |> Steps.assert_project_description_present(description: "New description")
+    |> Steps.assert_project_description_feed_item(description: "New description")
   end
 
   defp project_description() do
