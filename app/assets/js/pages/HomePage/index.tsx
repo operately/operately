@@ -16,6 +16,7 @@ import { useMe } from "@/contexts/CurrentCompanyContext";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { includesId, usePaths } from "@/routes/paths";
 import { GhostButton, PrimaryButton } from "turboui";
+import { Onboarding } from "./Onboarding";
 
 interface LoaderData {
   company: Companies.Company;
@@ -48,8 +49,14 @@ function useLoadedData(): LoaderData {
 }
 
 function Page() {
+  const { company } = useLoadedData();
+  const isOwner = useIsOwner();
+  const shouldPromptOnboarding = isOwner && !company.setupCompleted;
+
   return (
     <Pages.Page title="Home" testId="company-home">
+      {shouldPromptOnboarding && <Onboarding company={company} />}
+
       <Paper.Root size="medium">
         <Greeting />
         <SpacesSection />
@@ -210,4 +217,11 @@ function SpaceGrid({ spaces }: { spaces: Spaces.Space[] }) {
       ))}
     </SpaceCardGrid>
   );
+}
+
+function useIsOwner() {
+  const { ownerIds } = useLoadedData();
+
+  const me = useMe();
+  return includesId(ownerIds, me!.id);
 }

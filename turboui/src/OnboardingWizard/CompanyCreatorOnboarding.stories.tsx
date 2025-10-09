@@ -13,7 +13,6 @@ const meta = {
     invitationLink: "https://operately.com/invite/sample-onboarding",
     markoImageUrl: "https://pbs.twimg.com/profile_images/1631277097246179330/IpGRsar1_400x400.jpg",
     onComplete: () => {},
-    onDismiss: () => {},
   },
   decorators: [withMockWorkspaceBackdrop],
 } satisfies Meta<typeof CompanyCreatorOnboardingWizard>;
