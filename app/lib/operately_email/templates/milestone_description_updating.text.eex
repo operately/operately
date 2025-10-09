@@ -1,0 +1,9 @@
+<%= short_name(@author) %> updated the description for "<%= @milestone_name %>".
+
+<%= if @description do %>
+View the milestone to read the updated details.
+<% else %>
+The description was cleared.
+<% end %>
+
+View Milestone: <%= @cta_url %>
