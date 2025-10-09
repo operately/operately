@@ -110,8 +110,10 @@ defmodule OperatelyWeb.Api.Goals do
           company_id: changes.goal.company_id,
           space_id: changes.goal.group_id,
           goal_id: changes.goal.id,
+          goal_name: changes.goal.name,
           old_description: changes.goal.description,
-          new_description: inputs.description
+          new_description: inputs.description,
+          has_description: Operately.RichContent.empty?(inputs.description)
         }
       end)
       |> Steps.commit()

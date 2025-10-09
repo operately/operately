@@ -120,6 +120,17 @@ defmodule Operately.Features.GoalTest do
     |> Steps.assert_access_level_changed()
   end
 
+  feature "mentioning a person in a goal description sends notification and email", ctx do
+    ctx = Steps.given_space_member_exists(ctx)
+
+    ctx
+    |> Steps.edit_goal_description_mentioning(ctx.space_member)
+
+    ctx
+    |> Steps.assert_space_member_goal_description_notification_sent()
+    |> Steps.assert_space_member_goal_description_email_sent()
+  end
+
   describe "deletion" do
     feature "deleting a goal with no subitems", ctx do
       ctx
