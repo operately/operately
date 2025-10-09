@@ -306,7 +306,7 @@ function useMilestonesSearch(projectId): TaskPage.Props["searchMilestones"] {
   return async ({ query }: { query: string }): Promise<TaskPage.Milestone[]> => {
     const data = await Api.projects.getMilestones({ projectId: projectId, query: query.trim() });
 
-    return parseMilestonesForTurboUi(paths, data.milestones || []);
+    return parseMilestonesForTurboUi(paths, data.milestones || []).orderedMilestones;
   };
 }
 
