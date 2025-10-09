@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import { match } from "ts-pattern";
 import { PrimaryButton, SecondaryButton } from "../Button";
@@ -31,6 +31,7 @@ export namespace CompanyCreatorOnboardingWizard {
   export type Step = "welcome" | "spaces" | "invite";
 }
 
+type SpaceOption = CompanyCreatorOnboardingWizard.SpaceOption;
 type Step = CompanyCreatorOnboardingWizard.Step;
 
 const STEPS: Step[] = ["welcome", "spaces", "invite"];
@@ -49,24 +50,24 @@ const SPACE_OPTIONS: CompanyCreatorOnboardingWizard.SpaceOption[] = [
 ];
 
 interface State extends WizardState<Step> {
-  // Which spaces are selected
-  selectedSpaces: string[];
-  toggleSpace: (space: string, nextChecked: boolean) => void;
+  selectedSpaces: SpaceOption[];
+  toggleSpace: (space: string) => void;
 }
 
 function useOnboardingState(props: CompanyCreatorOnboardingWizard.Props): State {
   const initialState = props.__initialStep || "welcome";
   const wizardState = useWizardState<Step>(initialState, STEPS, props.onDismiss);
-  const [selectedSpaces, setSelectedSpaces] = useState<string[]>([]);
+  const [selectedSpaces, setSelectedSpaces] = useState<SpaceOption[]>([]);
 
-  const toggleSpace = useCallback((space: string, nextChecked: boolean) => {
+  const toggleSpace = useCallback((name: string) => {
     setSelectedSpaces((prev) => {
-      if (nextChecked) {
-        if (prev.includes(space)) return prev;
-        if (prev.length >= 10) return prev;
-        return [...prev, space];
+      const found = prev.some((o) => o.name === name);
+
+      if (found) {
+        return prev.filter((o) => o.name !== name);
       } else {
-        return prev.filter((s) => s !== space);
+        const a = SPACE_OPTIONS.find((s) => s.name === name)!;
+        return [...prev, a];
       }
     });
   }, []);
@@ -117,8 +118,6 @@ export function CompanyCreatorOnboardingWizard(props: CompanyCreatorOnboardingWi
 }
 
 function SpacesStep({ state }: { state: State }) {
-  const selections = useMemo(() => new Set(state.selectedSpaces), [state.selectedSpaces]);
-
   return (
     <WizardStep
       testId="company-creator-step-spaces"
@@ -145,15 +144,15 @@ function SpacesStep({ state }: { state: State }) {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
           {SPACE_OPTIONS.map((space) => {
-            const checked = selections.has(space.name);
-            const handleToggle = (nextChecked: boolean) => state.toggleSpace(space.name, nextChecked);
+            const checked = state.selectedSpaces.some((o) => o.name == space.name);
+            const handleToggle = () => state.toggleSpace(space.name);
 
             return (
               <div
                 key={space.name}
                 role="checkbox"
                 aria-checked={checked}
-                onClick={() => handleToggle(!checked)}
+                onClick={() => handleToggle()}
                 className="flex items-center gap-3 cursor-pointer rounded-lg px-2 py-1 hover:bg-surface-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-1"
                 data-test-id={`company-creator-space-${toTestId(space.name)}`}
               >
