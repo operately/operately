@@ -885,6 +885,7 @@ defmodule OperatelyWeb.Api.Types do
     field :milestone, :milestone, null: true
     field :milestone_name, :string, null: false
     field :has_description, :boolean, null: false
+    field :description, :string, null: true
   end
 
   object :activity_content_task_adding do
