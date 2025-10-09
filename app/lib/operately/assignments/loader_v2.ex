@@ -9,6 +9,8 @@ defmodule Operately.Assignments.LoaderV2 do
   alias Operately.ContextualDates.{ContextualDate, Timeframe}
   alias OperatelyWeb.Paths
 
+  @due_soon_window_in_days 1
+
   defmodule AssignmentOrigin do
     @enforce_keys [:id, :name, :type, :path]
     defstruct [:id, :name, :type, :path, :space_name, :due_date]
@@ -45,7 +47,7 @@ defmodule Operately.Assignments.LoaderV2 do
     |> List.flatten()
   end
 
-  def count(person) do
+  def count(person, _company) do
     [
       Task.async(fn -> count_pending_project_check_ins(person) end),
       Task.async(fn -> count_pending_project_check_in_acknowledgements(person) end),
@@ -83,11 +85,6 @@ defmodule Operately.Assignments.LoaderV2 do
     end)
   end
 
-  defp count_pending_tasks(person) do
-    pending_tasks_query(person)
-    |> Repo.aggregate(:count, :id)
-  end
-
   defp pending_tasks_query(person) do
     from(t in ProjectTask,
       join: assignee in assoc(t, :assignees),
@@ -99,6 +96,23 @@ defmodule Operately.Assignments.LoaderV2 do
       where: project.status == "active" and is_nil(project.closed_at),
       preload: [project: {project, group: space}]
     )
+  end
+
+  defp count_pending_tasks(person) do
+    due_cutoff = Date.add(Date.utc_today(), @due_soon_window_in_days)
+
+    from(t in ProjectTask,
+      join: assignee in assoc(t, :assignees),
+      join: project in assoc(t, :project),
+      where: assignee.person_id == ^person.id,
+      where: t.status in ["pending", "todo", "in_progress"],
+      where: is_nil(project.deleted_at),
+      where: project.status == "active" and is_nil(project.closed_at),
+      where: fragment("(?->>'date')::date <= ?", t.due_date, ^due_cutoff),
+      select: count(t.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   #
@@ -125,11 +139,6 @@ defmodule Operately.Assignments.LoaderV2 do
     end)
   end
 
-  defp count_pending_milestones(person) do
-    pending_milestones_query(person)
-    |> Repo.aggregate(:count, :id)
-  end
-
   defp pending_milestones_query(person) do
     from(m in Milestone,
       join: project in assoc(m, :project),
@@ -141,6 +150,23 @@ defmodule Operately.Assignments.LoaderV2 do
       where: project.status == "active" and is_nil(project.closed_at),
       preload: [project: {project, group: space}]
     )
+  end
+
+  defp count_pending_milestones(person) do
+    due_cutoff = Date.add(Date.utc_today(), @due_soon_window_in_days)
+
+    from(m in Milestone,
+      join: project in assoc(m, :project),
+      join: champion in assoc(project, :champion),
+      where: m.status == :pending,
+      where: champion.id == ^person.id,
+      where: is_nil(project.deleted_at) and is_nil(m.deleted_at),
+      where: project.status == "active" and is_nil(project.closed_at),
+      where: fragment("(?->'contextual_end_date'->>'date')::date <= ?", m.timeframe, ^due_cutoff),
+      select: count(m.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   #
@@ -166,11 +192,6 @@ defmodule Operately.Assignments.LoaderV2 do
     end)
   end
 
-  defp count_pending_project_check_ins(person) do
-    pending_project_check_ins_query(person)
-    |> Repo.aggregate(:count, :id)
-  end
-
   defp pending_project_check_ins_query(person) do
     from(p in Project,
       join: champion in assoc(p, :champion),
@@ -181,6 +202,19 @@ defmodule Operately.Assignments.LoaderV2 do
       where: is_nil(p.deleted_at),
       preload: [champion: champion, group: space]
     )
+  end
+
+  defp count_pending_project_check_ins(person) do
+    from(p in Project,
+      join: champion in assoc(p, :champion),
+      where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
+      where: p.status == "active",
+      where: champion.id == ^person.id,
+      where: is_nil(p.deleted_at),
+      select: count(p.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   #
@@ -208,11 +242,6 @@ defmodule Operately.Assignments.LoaderV2 do
     end)
   end
 
-  defp count_pending_project_check_in_acknowledgements(person) do
-    pending_project_check_in_acknowledgements_query(person)
-    |> Repo.aggregate(:count, :id)
-  end
-
   defp pending_project_check_in_acknowledgements_query(person) do
     from(c in CheckIn,
       join: project in assoc(c, :project),
@@ -227,6 +256,23 @@ defmodule Operately.Assignments.LoaderV2 do
           (champion.id == ^person.id and author.id != champion.id),
       preload: [project: {project, reviewer: reviewer, group: space}, author: author]
     )
+  end
+
+  defp count_pending_project_check_in_acknowledgements(person) do
+    from(c in CheckIn,
+      join: project in assoc(c, :project),
+      join: author in assoc(c, :author),
+      left_join: champion in assoc(project, :champion),
+      left_join: reviewer in assoc(project, :reviewer),
+      where: is_nil(c.acknowledged_by_id),
+      where: project.status == "active" and is_nil(project.deleted_at),
+      where:
+        (reviewer.id == ^person.id and author.id != reviewer.id) or
+          (champion.id == ^person.id and author.id != champion.id),
+      select: count(c.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   #
@@ -252,11 +298,6 @@ defmodule Operately.Assignments.LoaderV2 do
     end)
   end
 
-  defp count_pending_goal_updates(person) do
-    pending_goal_updates_query(person)
-    |> Repo.aggregate(:count, :id)
-  end
-
   defp pending_goal_updates_query(person) do
     from(g in Goal,
       left_join: space in assoc(g, :group),
@@ -270,6 +311,22 @@ defmodule Operately.Assignments.LoaderV2 do
         ),
       preload: [group: space]
     )
+  end
+
+  defp count_pending_goal_updates(person) do
+    from(g in Goal,
+      where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
+      where: is_nil(g.closed_at),
+      where: g.champion_id == ^person.id,
+      where:
+        fragment(
+          "(g0.timeframe->'contextual_start_date'->>'date' <= ? OR g0.timeframe->'contextual_start_date'->>'date' IS NULL)",
+          ^to_string(Date.utc_today())
+        ),
+      select: count(g.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   #
@@ -297,11 +354,6 @@ defmodule Operately.Assignments.LoaderV2 do
     end)
   end
 
-  defp count_pending_goal_update_acknowledgements(person) do
-    pending_goal_update_acknowledgements_query(person)
-    |> Repo.aggregate(:count, :id)
-  end
-
   defp pending_goal_update_acknowledgements_query(person) do
     from(u in Update,
       join: goal in assoc(u, :goal),
@@ -315,6 +367,48 @@ defmodule Operately.Assignments.LoaderV2 do
       preload: [goal: {goal, group: space}, author: author]
     )
   end
+
+  defp count_pending_goal_update_acknowledgements(person) do
+    from(u in Update,
+      join: goal in assoc(u, :goal),
+      join: author in assoc(u, :author),
+      where: is_nil(goal.closed_at) and is_nil(goal.deleted_at),
+      where: is_nil(u.acknowledged_by_id),
+      where:
+        (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
+          (goal.champion_id == ^person.id and author.id != goal.champion_id),
+      select: count(u.id)
+    )
+    |> Repo.one()
+    |> default_zero()
+  end
+
+  defp urgent_assignment?(%AssignmentV2{role: :reviewer}), do: true
+
+  defp urgent_assignment?(%AssignmentV2{role: :owner, due: due}) do
+    due_within_urgent_window?(due)
+  end
+
+  defp due_within_urgent_window?(nil), do: false
+
+  defp due_within_urgent_window?(%Date{} = date) do
+    Date.diff(date, Date.utc_today()) <= @due_soon_window_in_days
+  end
+
+  defp due_within_urgent_window?(%DateTime{} = datetime) do
+    datetime
+    |> DateTime.to_date()
+    |> due_within_urgent_window?()
+  end
+
+  defp due_within_urgent_window?(%NaiveDateTime{} = datetime) do
+    datetime
+    |> NaiveDateTime.to_date()
+    |> due_within_urgent_window?()
+  end
+
+  defp default_zero(nil), do: 0
+  defp default_zero(count), do: count
 
   #
   # Helpers
