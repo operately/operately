@@ -26,6 +26,8 @@ defmodule Operately.RichContent do
     end
   end
 
+  def find_mentioned_ids(nil), do: []
+
   def find_mentioned_ids(document) do
     extract_mentions_from_node(document) |> Enum.uniq()
   end
