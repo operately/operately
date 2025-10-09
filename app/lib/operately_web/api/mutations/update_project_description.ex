@@ -4,29 +4,25 @@ defmodule OperatelyWeb.Api.Mutations.UpdateProjectDescription do
 
   alias Operately.Projects
   alias Operately.Projects.Permissions
+  alias Operately.Operations.ProjectDescriptionUpdating
 
   inputs do
-    field? :project_id, :string, null: true
-    field? :description, :string, null: true
+    field :project_id, :id, null: false
+    field :description, :json, null: false
   end
 
   outputs do
-    field? :project, :project, null: true
+    field :project, :project, null: false
   end
 
   def call(conn, inputs) do
     Action.new()
     |> run(:me, fn -> find_me(conn) end)
-    |> run(:project_id, fn -> decode_id(inputs.project_id) end)
-    |> run(:project, fn ctx -> Projects.get_project_with_access_level(ctx.project_id, ctx.me.id) end)
+    |> run(:project, fn ctx -> Projects.get_project_with_access_level(inputs.project_id, ctx.me.id) end)
     |> run(:check_permissions, fn ctx -> Permissions.check(ctx.project.requester_access_level, :can_edit_description) end)
-    |> run(:operation, fn ctx -> update_project_description(ctx.project, inputs) end)
+    |> run(:operation, fn ctx -> ProjectDescriptionUpdating.run(ctx.me, ctx.project, inputs.description) end)
     |> run(:serialized, fn ctx -> {:ok, %{project: Serializer.serialize(ctx.operation)}} end)
     |> respond()
-  end
-
-  def update_project_description(project, inputs) do
-    Operately.Projects.update_project(project, %{description: Jason.decode!(inputs.description)})
   end
 
   def respond(result) do
