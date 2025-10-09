@@ -555,6 +555,12 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx |> UI.assert_text(description)
   end
 
+  step :assert_project_description_feed_item, ctx, description: description do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> FeedSteps.assert_feed_item_exists(ctx.champion, "updated the project description", description)
+  end
+
   step :assert_champion_changed, ctx, name: name do
     ctx
     |> UI.assert_text(name, testid: "champion-field")
