@@ -6,8 +6,10 @@ defmodule Operately.Activities.Content.GoalDescriptionChanged do
     belongs_to :space, Operately.Groups.Group
     belongs_to :goal, Operately.Goals.Goal
 
+    field :goal_name, :string
     field :old_description, :map
     field :new_description, :map
+    field :has_description, :boolean
   end
 
   def changeset(attrs) do
