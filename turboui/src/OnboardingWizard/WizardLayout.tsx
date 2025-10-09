@@ -1,41 +1,18 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 
 export interface WizardModalProps {
   children: React.ReactNode;
   labelledBy: string;
-  onDismiss?: () => void;
+  testId?: string;
 }
 
 export function WizardModal(props: WizardModalProps) {
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const { onDismiss } = props;
-
-  useEffect(() => {
-    if (!onDismiss) return;
-
-    const handleKeydown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        onDismiss();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeydown);
-    return () => window.removeEventListener("keydown", handleKeydown);
-  }, [onDismiss]);
-
-  const handleOverlayMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
-    if (!onDismiss) return;
-    if (!dialogRef.current) return;
-    if (dialogRef.current.contains(event.target as Node)) return;
-
-    onDismiss();
-  };
 
   return (
     <div
       className="fixed inset-0 z-[70] flex items-center justify-center px-4 py-8 bg-black/50 backdrop-blur-sm"
       role="presentation"
-      onMouseDown={handleOverlayMouseDown}
     >
       <div
         ref={dialogRef}
@@ -43,6 +20,7 @@ export function WizardModal(props: WizardModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={props.labelledBy}
+        data-test-id={props.testId}
       >
         {props.children}
       </div>
@@ -50,9 +28,9 @@ export function WizardModal(props: WizardModalProps) {
   );
 }
 
-export function WizardStep(props: { children: React.ReactNode; footer?: React.ReactNode }) {
+export function WizardStep(props: { children: React.ReactNode; footer?: React.ReactNode; testId?: string }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-test-id={props.testId}>
       <div className="p-6 sm:p-8">{props.children}</div>
       {props.footer && (
         <div className="flex flex-col sm:flex-row gap-3 border-t py-4 px-6 w-full sm:justify-end">{props.footer}</div>
