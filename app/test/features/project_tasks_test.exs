@@ -241,6 +241,22 @@ defmodule Operately.Features.ProjectTasksTest do
     |> Steps.assert_change_in_feed("updated the description")
   end
 
+  @tag login_as: :champion
+  feature "mentioning a person in a task description sends notification and email", ctx do
+    ctx =
+      ctx
+      |> Steps.given_task_exists()
+      |> Steps.given_space_member_exists()
+      |> Steps.assert_space_member_task_description_not_notified()
+      |> Steps.login_as_champion()
+      |> Steps.visit_task_page()
+      |> Steps.edit_task_description_mentioning(ctx.space_member)
+
+    ctx
+    |> Steps.assert_space_member_task_description_notification_sent()
+    |> Steps.assert_space_member_task_description_email_sent()
+  end
+
   @tag login_as: :reviewer
   feature "edit task assignee", ctx do
     feed_title = "assigned this task to #{Operately.People.Person.short_name(ctx.champion)}"
