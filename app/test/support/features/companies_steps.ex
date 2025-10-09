@@ -1,8 +1,19 @@
 defmodule Operately.Support.Features.CompaniesSteps do
   use Operately.FeatureCase
 
+  alias Operately.{Companies, Repo}
+  alias Operately.Groups.Group
+  alias Operately.Support.Features.UI
+  alias Wallaby.{Browser, Element}
+
   import Operately.CompaniesFixtures
   import Operately.PeopleFixtures
+
+  step :given_a_user_is_logged_in, ctx do
+    ctx = Factory.add_account(ctx, :account)
+
+    UI.visit(ctx, "/accounts/auth/test_google?account_id=#{ctx.account.id}")
+  end
 
   step :given_a_user_is_logged_in_that_belongs_to_a_company, ctx do
     company = company_fixture(%{name: "Test Org"})
@@ -15,7 +26,10 @@ defmodule Operately.Support.Features.CompaniesSteps do
   end
 
   step :navigate_to_the_loby, ctx do
-    ctx |> UI.visit("/")
+    ctx
+    |> UI.visit("/")
+    |> UI.sleep(500)
+    |> UI.take_screenshot()
   end
 
   step :click_on_the_add_company_button, ctx do
@@ -30,25 +44,108 @@ defmodule Operately.Support.Features.CompaniesSteps do
     |> UI.assert_text("Acme Co.")
   end
 
-  step :assert_company_is_created, ctx do
-    company = Operately.Companies.get_company_by_name("Acme Co.")
-    assert company != nil
+  step :assert_welcome_from_marko_is_shown, ctx do
+    ctx
+    |> UI.assert_has(testid: "company-creator-onboarding")
+    |> UI.assert_has(testid: "company-creator-step-welcome")
+    |> UI.assert_text("Thanks for joining Operately!")
+  end
 
-    person = Ecto.assoc(company, :people) |> Repo.all() |> hd()
-    assert person != nil
-    assert person.title == "System Administrator"
-    assert person.account_id == ctx.person.account_id
+  step :click_lets_start, ctx do
+    ctx |> UI.click(testid: "company-creator-lets-start")
+  end
+
+  step :select_a_few_spaces_to_create, ctx do
+    spaces = ["Marketing", "Engineering"]
+
+    ctx = ctx |> UI.assert_has(testid: "company-creator-step-spaces")
+
+    ctx =
+      Enum.reduce(spaces, ctx, fn space, acc ->
+        acc |> UI.click(testid: "company-creator-space-" <> space_testid(space))
+      end)
+      |> UI.click(testid: "company-creator-next")
+
+    Map.put(ctx, :selected_spaces, spaces)
+  end
+
+  step :assert_i_get_an_invitation_token, ctx do
+    ctx = ctx |> UI.assert_has(testid: "company-creator-step-invite")
+
+    element = Browser.find(ctx.session, UI.query(testid: "company-creator-invite-link"))
+    value = Element.attr(element, "value")
+
+    assert is_binary(value)
+    assert String.contains?(value, "/join?token=")
+
+    Map.put(ctx, :invitation_link, value)
+  end
+
+  step :complete_onboarding, ctx do
+    ctx
+    |> UI.click(testid: "company-creator-finish")
+    |> UI.sleep(1000)
+    |> UI.refute_has(testid: "company-creator-onboarding")
+  end
+
+  step :assert_spaces_are_created, ctx do
+    spaces = Map.get(ctx, :selected_spaces, [])
+    assert spaces != []
+
+    Enum.each(spaces, fn space_name ->
+      group = Repo.get_by(Group, name: space_name, company_id: ctx.company.id)
+      assert group, "Expected space \"#{space_name}\" to be created"
+    end)
 
     ctx
+    |> UI.sleep(500)
+    |> ensure_spaces_visible(spaces)
+  end
+
+  step :assert_company_is_created, ctx do
+    company = Companies.get_company_by_name("Acme Co.")
+    assert company != nil
+
+    target_account_id =
+      cond do
+        match?(%{person: %{account_id: _}}, ctx) and ctx.person -> ctx.person.account_id
+        Map.has_key?(ctx, :account) -> ctx.account.id
+        true -> flunk("Missing account context for company creator")
+      end
+
+    person =
+      company
+      |> Ecto.assoc(:people)
+      |> Repo.all()
+      |> Enum.find(fn person -> person.account_id == target_account_id end)
+
+    assert person != nil
+    assert person.title == "System Administrator"
+
+    ctx
+    |> Map.put(:company, company)
+    |> Map.put(:person, person)
   end
 
   step :assert_feed_displays_company_creation, ctx do
-    company = Operately.Companies.get_company_by_name("Acme Co.")
-    person = Ecto.assoc(company, :people) |> Repo.all() |> hd()
-
-    ctx 
-    |> UI.visit(Paths.feed_path(company))
-    |> UI.assert_feed_item(person, "created this company")
+    ctx
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.assert_feed_item(ctx.person, "created this company")
   end
 
+  defp ensure_spaces_visible(ctx, []), do: ctx
+
+  defp ensure_spaces_visible(ctx, [space | rest]) do
+    ctx
+    |> UI.assert_text(space)
+    |> ensure_spaces_visible(rest)
+  end
+
+  defp space_testid(name) do
+    name
+    |> String.trim()
+    |> String.downcase()
+    |> String.replace(~r/[^a-z0-9]+/, "-")
+    |> String.trim("-")
+  end
 end

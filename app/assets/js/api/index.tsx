@@ -1688,6 +1688,17 @@ export interface Space {
   notifications?: Notification[] | null;
 }
 
+export interface SpaceSetupInput {
+  name: string;
+  description: string;
+}
+
+export interface CompleteCompanySetupInput {
+  spaces?: SpaceSetupInput[] | null;
+}
+
+export interface CompleteCompanySetupResult {}
+
 export interface SpacePermissions {
   canCreateGoal?: boolean | null;
   canCreateProject?: boolean | null;
@@ -4487,6 +4498,10 @@ class ApiNamespaceRoot {
     return this.client.post("/close_goal", input);
   }
 
+  async completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
+    return this.client.post("/complete_company_setup", input);
+  }
+
   async closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
     return this.client.post("/close_project", input);
   }
@@ -5471,6 +5486,10 @@ export class ApiClient {
     return this.apiNamespaceRoot.closeGoal(input);
   }
 
+  completeCompanySetup(input: CompleteCompanySetupInput): Promise<CompleteCompanySetupResult> {
+    return this.apiNamespaceRoot.completeCompanySetup(input);
+  }
+
   closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
     return this.apiNamespaceRoot.closeProject(input);
   }
@@ -5978,6 +5997,11 @@ export async function changePassword(input: ChangePasswordInput): Promise<Change
 }
 export async function closeGoal(input: CloseGoalInput): Promise<CloseGoalResult> {
   return defaultApiClient.closeGoal(input);
+}
+export async function completeCompanySetup(
+  input: CompleteCompanySetupInput,
+): Promise<CompleteCompanySetupResult> {
+  return defaultApiClient.completeCompanySetup(input);
 }
 export async function closeProject(input: CloseProjectInput): Promise<CloseProjectResult> {
   return defaultApiClient.closeProject(input);
@@ -6559,6 +6583,15 @@ export function useChangePassword(): UseMutationHookResult<ChangePasswordInput, 
 
 export function useCloseGoal(): UseMutationHookResult<CloseGoalInput, CloseGoalResult> {
   return useMutation<CloseGoalInput, CloseGoalResult>((input) => defaultApiClient.closeGoal(input));
+}
+
+export function useCompleteCompanySetup(): UseMutationHookResult<
+  CompleteCompanySetupInput,
+  CompleteCompanySetupResult
+> {
+  return useMutation<CompleteCompanySetupInput, CompleteCompanySetupResult>((input) =>
+    defaultApiClient.completeCompanySetup(input),
+  );
 }
 
 export function useCloseProject(): UseMutationHookResult<CloseProjectInput, CloseProjectResult> {
@@ -7183,6 +7216,8 @@ export default {
   useChangePassword,
   closeGoal,
   useCloseGoal,
+  completeCompanySetup,
+  useCompleteCompanySetup,
   closeProject,
   useCloseProject,
   completeCompanySetup,

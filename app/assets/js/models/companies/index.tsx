@@ -10,6 +10,8 @@ export {
   useAddCompanyOwners,
   useAddCompanyTrustedEmailDomain,
   useAddFirstCompany,
+  completeCompanySetup,
+  useCompleteCompanySetup,
   useEditCompany,
   useGetCompany,
   useRemoveCompanyAdmin,

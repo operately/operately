@@ -4,6 +4,7 @@ export interface WizardModalProps {
   children: React.ReactNode;
   labelledBy: string;
   onDismiss?: () => void;
+  testId?: string;
 }
 
 export function WizardModal(props: WizardModalProps) {
@@ -43,6 +44,7 @@ export function WizardModal(props: WizardModalProps) {
         role="dialog"
         aria-modal="true"
         aria-labelledby={props.labelledBy}
+        data-test-id={props.testId}
       >
         {props.children}
       </div>
@@ -50,9 +52,9 @@ export function WizardModal(props: WizardModalProps) {
   );
 }
 
-export function WizardStep(props: { children: React.ReactNode; footer?: React.ReactNode }) {
+export function WizardStep(props: { children: React.ReactNode; footer?: React.ReactNode; testId?: string }) {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col" data-test-id={props.testId}>
       <div className="p-6 sm:p-8">{props.children}</div>
       {props.footer && (
         <div className="flex flex-col sm:flex-row gap-3 border-t py-4 px-6 w-full sm:justify-end">{props.footer}</div>
