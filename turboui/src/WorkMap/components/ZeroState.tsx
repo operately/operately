@@ -48,13 +48,14 @@ export function ZeroState({ addingEnabled, spaceSearch, addItem, addItemDefaultS
             title="Add a goal"
             description="Long-term outcomes you're working toward. Track overall progress and impact."
             onClick={open("goal")}
-            testId="add-work-item"
+            testId="add-goal"
           />
           <ZeroStateCard
             icon={<IconProject size={40} className="p-2 rounded-lg bg-blue-50 dark:bg-blue-900" />}
             title="Add a project"
             description="Concrete steps and tasks with specific deliverables. Get things done."
             onClick={open("project")}
+            testId="add-project"
           />
         </div>
 
@@ -71,6 +72,7 @@ export function ZeroState({ addingEnabled, spaceSearch, addItem, addItemDefaultS
         save={addItem}
         space={addItemDefaultSpace}
         initialItemType={modalState.type}
+        hideTypeSelector={true}
       />
     </div>
   );
@@ -93,7 +95,7 @@ function ZeroStateCard({
     <div
       className="h-full rounded-2xl border border-stroke-base bg-surface-base px-6 py-6 text-left shadow-sm hover:shadow-lg hover:-translate-y-1 cursor-pointer transition"
       onClick={onClick}
-      data-testid={testId}
+      data-test-id={testId}
     >
       {icon}
 
