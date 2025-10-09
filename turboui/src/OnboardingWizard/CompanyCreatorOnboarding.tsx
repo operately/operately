@@ -36,16 +36,16 @@ type Step = CompanyCreatorOnboardingWizard.Step;
 const STEPS: Step[] = ["welcome", "spaces", "invite"];
 
 const SPACE_OPTIONS: CompanyCreatorOnboardingWizard.SpaceOption[] = [
-  { name: "Marketing", description: "All go-to-market work." },
-  { name: "Sales", description: "Sales and revenue operations." },
-  { name: "Engineering", description: "Product development and engineering." },
-  { name: "Product", description: "Product management and strategy." },
-  { name: "Design", description: "Brand and product design." },
-  { name: "HR", description: "People operations and HR." },
-  { name: "Finance", description: "Finance, budgeting, and accounting." },
-  { name: "Customer Success", description: "Customer onboarding and support." },
-  { name: "Operations", description: "Business operations and processes." },
-  { name: "Legal", description: "Legal, contracts, and compliance." },
+  { name: "Marketing", description: "Tell our story, build awareness, and bring in qualified leads" },
+  { name: "Sales", description: "Talk to prospects, close deals, and grow revenue" },
+  { name: "Engineering", description: "Build, ship, and maintain the software that customers use" },
+  { name: "Product", description: "Figure out what to build next and why it matters" },
+  { name: "Design", description: "Make the product beautiful, intuitive, and a joy to use" },
+  { name: "HR", description: "Recruit talented people, support the team, and build a great culture" },
+  { name: "Finance", description: "Manage the books, plan the budget, and keep finances healthy" },
+  { name: "Customer Success", description: "Help customers succeed with the product and stick around" },
+  { name: "Operations", description: "Handle the day-to-day so everyone else can focus on their work" },
+  { name: "Legal", description: "Review contracts, manage risk, and keep the company protected" },
 ];
 
 interface State extends WizardState<Step> {
