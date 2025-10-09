@@ -1,66 +1,72 @@
 import React, { useCallback, useState } from "react";
 
 import { match } from "ts-pattern";
-import { PrimaryButton } from "../Button";
+import { PrimaryButton, SecondaryButton } from "../Button";
 import { Checkbox } from "../Checkbox";
 import { WelcomeStep } from "./WelcomeStep";
 import { useWizardState, WizardState } from "./WizadState";
 import { WizardHeading, WizardModal, WizardStep } from "./WizardLayout";
 
 export namespace CompanyCreatorOnboardingWizard {
+  export interface SpaceOption {
+    name: string;
+    description: string;
+  }
+
   export interface OnCompleteData {
-    spaces: string[];
+    spaces: SpaceOption[];
   }
 
   export interface Props {
     __initialStep?: Step;
 
-    invitationLink: string;
+    invitationLink: string | null;
     markoImageUrl: string;
+    isCompleting?: boolean;
 
     onComplete: (data: OnCompleteData) => void;
-    onDismiss: () => void;
   }
 
   export type Step = "welcome" | "spaces" | "invite";
 }
 
+type SpaceOption = CompanyCreatorOnboardingWizard.SpaceOption;
 type Step = CompanyCreatorOnboardingWizard.Step;
 
 const STEPS: Step[] = ["welcome", "spaces", "invite"];
 
-const SPACE_OPTIONS = [
-  "Marketing",
-  "Sales",
-  "Engineering",
-  "Product",
-  "Design",
-  "HR",
-  "Finance",
-  "Customer Success",
-  "Operations",
-  "Legal",
+const SPACE_OPTIONS: CompanyCreatorOnboardingWizard.SpaceOption[] = [
+  { name: "Marketing", description: "Tell our story, build awareness, and bring in qualified leads" },
+  { name: "Sales", description: "Talk to prospects, close deals, and grow revenue" },
+  { name: "Engineering", description: "Build, ship, and maintain the software that customers use" },
+  { name: "Product", description: "Figure out what to build next and why it matters" },
+  { name: "Design", description: "Make the product beautiful, intuitive, and a joy to use" },
+  { name: "HR", description: "Recruit talented people, support the team, and build a great culture" },
+  { name: "Finance", description: "Manage the books, plan the budget, and keep finances healthy" },
+  { name: "Customer Success", description: "Help customers succeed with the product and stick around" },
+  { name: "Operations", description: "Handle the day-to-day so everyone else can focus on their work" },
+  { name: "Legal", description: "Review contracts, manage risk, and keep the company protected" },
 ];
 
 interface State extends WizardState<Step> {
-  // Which spaces are selected
-  selectedSpaces: string[];
-  toggleSpace: (space: string, nextChecked: boolean) => void;
+  selectedSpaces: SpaceOption[];
+  toggleSpace: (space: string) => void;
 }
 
 function useOnboardingState(props: CompanyCreatorOnboardingWizard.Props): State {
   const initialState = props.__initialStep || "welcome";
-  const wizardState = useWizardState<Step>(initialState, STEPS, props.onDismiss);
-  const [selectedSpaces, setSelectedSpaces] = useState<string[]>([]);
+  const wizardState = useWizardState<Step>(initialState, STEPS);
+  const [selectedSpaces, setSelectedSpaces] = useState<SpaceOption[]>([]);
 
-  const toggleSpace = useCallback((space: string, nextChecked: boolean) => {
+  const toggleSpace = useCallback((name: string) => {
     setSelectedSpaces((prev) => {
-      if (nextChecked) {
-        if (prev.includes(space)) return prev;
-        if (prev.length >= 10) return prev;
-        return [...prev, space];
+      const found = prev.some((o) => o.name === name);
+
+      if (found) {
+        return prev.filter((o) => o.name !== name);
       } else {
-        return prev.filter((s) => s !== space);
+        const a = SPACE_OPTIONS.find((s) => s.name === name)!;
+        return [...prev, a];
       }
     });
   }, []);
@@ -75,13 +81,32 @@ function useOnboardingState(props: CompanyCreatorOnboardingWizard.Props): State 
 
 export function CompanyCreatorOnboardingWizard(props: CompanyCreatorOnboardingWizard.Props) {
   const state = useOnboardingState(props);
+  const handleComplete = useCallback(() => {
+    props.onComplete({ spaces: state.selectedSpaces });
+  }, [props.onComplete, state.selectedSpaces]);
 
   return (
-    <WizardModal labelledBy="company-creator-onboarding-heading" onDismiss={props.onDismiss}>
+    <WizardModal labelledBy="company-creator-onboarding-heading" testId="company-creator-onboarding">
       {match(state.currentStep)
-        .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="workspace" />)
+        .with("welcome", () => (
+          <WelcomeStep
+            state={state}
+            imageUrl={props.markoImageUrl}
+            whatReady="workspace"
+            headingId="company-creator-onboarding-heading"
+            stepTestId="company-creator-step-welcome"
+            startTestId="company-creator-lets-start"
+          />
+        ))
         .with("spaces", () => <SpacesStep state={state} />)
-        .with("invite", () => <InviteStep state={state} invitationLink={props.invitationLink} />)
+        .with("invite", () => (
+          <InviteStep
+            state={state}
+            invitationLink={props.invitationLink}
+            isCompleting={props.isCompleting}
+            onComplete={handleComplete}
+          />
+        ))
         .run()}
     </WizardModal>
   );
@@ -90,8 +115,9 @@ export function CompanyCreatorOnboardingWizard(props: CompanyCreatorOnboardingWi
 function SpacesStep({ state }: { state: State }) {
   return (
     <WizardStep
+      testId="company-creator-step-spaces"
       footer={
-        <PrimaryButton onClick={state.next} size="sm">
+        <PrimaryButton onClick={state.next} size="sm" testId="company-creator-next">
           Next -&gt;
         </PrimaryButton>
       }
@@ -113,19 +139,20 @@ function SpacesStep({ state }: { state: State }) {
 
         <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2" role="list">
           {SPACE_OPTIONS.map((space) => {
-            const checked = state.selectedSpaces.includes(space);
-            const handleToggle = (nextChecked: boolean) => state.toggleSpace(space, nextChecked);
+            const checked = state.selectedSpaces.some((o) => o.name == space.name);
+            const handleToggle = () => state.toggleSpace(space.name);
 
             return (
               <div
-                key={space}
+                key={space.name}
                 role="checkbox"
                 aria-checked={checked}
-                onClick={() => handleToggle(!checked)}
-                className="flex items-center gap-3"
+                onClick={() => handleToggle()}
+                className="flex items-center gap-3 cursor-pointer rounded-lg px-2 py-1 hover:bg-surface-accent focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-1"
+                data-test-id={`company-creator-space-${toTestId(space.name)}`}
               >
                 <Checkbox checked={checked} onChange={handleToggle} />
-                <span>{space}</span>
+                <span>{space.name}</span>
               </div>
             );
           })}
@@ -137,12 +164,37 @@ function SpacesStep({ state }: { state: State }) {
   );
 }
 
-function InviteStep({ state, invitationLink }: { state: State; invitationLink: string }) {
+function InviteStep({
+  state,
+  invitationLink,
+  onComplete,
+  isCompleting,
+}: {
+  state: State;
+  invitationLink: string | null;
+  onComplete: () => void;
+  isCompleting?: boolean;
+}) {
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+  const linkReady = Boolean(invitationLink);
 
   const handleCopy = async () => {
+    if (!invitationLink) return;
+
     try {
-      await navigator.clipboard.writeText(invitationLink);
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(invitationLink);
+      } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = invitationLink;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textarea);
+      }
 
       setCopyStatus("copied");
       setTimeout(() => setCopyStatus("idle"), 2000);
@@ -153,10 +205,22 @@ function InviteStep({ state, invitationLink }: { state: State; invitationLink: s
 
   return (
     <WizardStep
+      testId="company-creator-step-invite"
       footer={
-        <PrimaryButton onClick={state.next} size="sm">
-          Finish Setup
-        </PrimaryButton>
+        <>
+          <SecondaryButton onClick={state.back} size="sm" testId="company-creator-back">
+            Back
+          </SecondaryButton>
+          <PrimaryButton
+            onClick={onComplete}
+            size="sm"
+            testId="company-creator-finish"
+            disabled={isCompleting || !linkReady}
+            loading={isCompleting}
+          >
+            Finish Setup
+          </PrimaryButton>
+        </>
       }
     >
       <div className="p-6">
@@ -175,13 +239,17 @@ function InviteStep({ state, invitationLink }: { state: State; invitationLink: s
           <div className="flex flex-col sm:flex-row gap-3">
             <input
               id="onboarding-invite-link"
-              value={invitationLink}
+              value={invitationLink ?? ""}
               readOnly
               className="flex-1 min-w-0 px-3 py-2 border border-surface-outline bg-surface-dimmed rounded-lg bg-surface-base text-sm text-content-accent focus:outline-none focus:ring-2 focus:ring-brand-1"
               aria-label="Invitation link"
+              placeholder={linkReady ? undefined : "Generating invite link..."}
+              data-test-id="company-creator-invite-link"
             />
 
-            <PrimaryButton onClick={handleCopy}>{copyStatus === "copied" ? "Copied" : "Copy link"}</PrimaryButton>
+            <PrimaryButton onClick={handleCopy} disabled={!linkReady} testId="company-creator-copy-link" size="sm">
+              {copyStatus === "copied" ? "Copied" : "Copy link"}
+            </PrimaryButton>
           </div>
         </div>
 
@@ -191,4 +259,12 @@ function InviteStep({ state, invitationLink }: { state: State; invitationLink: s
       </div>
     </WizardStep>
   );
+}
+
+function toTestId(value: string) {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }

@@ -50,8 +50,8 @@ interface State extends WizardState<Step> {
   setAvatar: (avatar: CompanyMemberOnboardingWizard.AvatarData | null) => void;
 }
 
-function useOnboardingState(initialStep: Step, onDismiss: () => void): State {
-  const wizardState = useWizardState<Step>(initialStep, STEPS, onDismiss);
+function useOnboardingState(initialStep: Step): State {
+  const wizardState = useWizardState<Step>(initialStep, STEPS);
 
   const [role, setRole] = useState("");
   const [avatar, setAvatar] = useState<AvatarData | null>(null);
@@ -60,10 +60,10 @@ function useOnboardingState(initialStep: Step, onDismiss: () => void): State {
 }
 
 export function CompanyMemberOnboardingWizard(props: CompanyMemberOnboardingWizard.Props) {
-  const state = useOnboardingState(props.__initialStep || "welcome", props.onDismiss);
+  const state = useOnboardingState(props.__initialStep || "welcome");
 
   return (
-    <WizardModal labelledBy="company-member-onboarding-heading" onDismiss={props.onDismiss}>
+    <WizardModal labelledBy="company-member-onboarding-heading">
       {match(state.currentStep)
         .with("welcome", () => <WelcomeStep state={state} imageUrl={props.markoImageUrl} whatReady="profile" />)
         .with("role", () => <RoleStep state={state} />)

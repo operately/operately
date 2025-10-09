@@ -10,7 +10,8 @@ defmodule Operately.Support.Factory.Companies do
       company_name: name,
       mission: mission,
       title: creator_title,
-      trusted_email_domains: []
+      trusted_email_domains: [],
+      setup_completed: true
     }
 
     {:ok, company} = Operately.Companies.create_company(attrs, account)
