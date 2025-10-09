@@ -60,8 +60,8 @@ defmodule Operately.Support.Features.GoalCreationTestSteps do
     ctx |> UI.visit(Paths.work_map_path(ctx.company))
   end
 
-  step :click_add_button, ctx do
-    ctx |> UI.click(testid: "add-work-item")
+  step :click_add_goal_button, ctx do
+    ctx |> UI.click(testid: "add-goal")
   end
 
   step :fill_in_work_item_form, ctx, name do
