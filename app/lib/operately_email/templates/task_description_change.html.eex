@@ -1,1 +1,19 @@
-<%= raise "HTML Email for TaskDescriptionChange not implemented" %>
+<%= title("#{short_name(@author)} updated the description for \"#{@task_name}\"") %>
+
+<%= spacer() %>
+
+<%= if @description do %>
+  <%= row do %>
+    <%= rich_text(@description) %>
+  <% end %>
+<% else %>
+  <%= row do %>
+    The description was cleared.
+  <% end %>
+<% end %>
+
+<%= spacer() %>
+
+<%= row do %>
+  <%= cta_button(@cta_url, "View Task") %>
+<% end %>

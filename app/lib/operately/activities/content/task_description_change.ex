@@ -11,12 +11,22 @@ defmodule Operately.Activities.Content.TaskDescriptionChange do
     field :task_name, :string
     field :project_name, :string
     field :has_description, :boolean
+    field :description, :map
   end
 
   def changeset(attrs) do
     %__MODULE__{}
     |> cast(attrs, __schema__(:fields))
-    |> validate_required([:company_id, :space_id, :project_id, :task_id, :task_name, :project_name, :has_description])
+    |> validate_required([
+      :company_id,
+      :space_id,
+      :project_id,
+      :task_id,
+      :task_name,
+      :project_name,
+      :has_description,
+      :description
+    ])
   end
 
   def build(params) do
