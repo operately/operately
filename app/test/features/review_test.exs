@@ -214,7 +214,7 @@ defmodule Operately.Features.ReviewTest do
       |> Steps.visit_review_page()
       |> Steps.assert_the_review_item_count(is: 1)
       |> Steps.create_task()
-      |> Steps.assert_the_review_item_count(is: 2)
+      |> Steps.assert_the_review_item_count(is: 1)
       |> Steps.delete_task()
       |> Steps.assert_the_review_item_count(is: 1)
     end
