@@ -1,0 +1,9 @@
+<%= short_name(@author) %> updated the description for "<%= @goal_name %>".
+
+<%= if @description do %>
+View the goal to read the updated details.
+<% else %>
+The description was cleared.
+<% end %>
+
+View Goal: <%= @cta_url %>

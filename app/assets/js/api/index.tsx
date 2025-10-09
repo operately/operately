@@ -338,6 +338,14 @@ export interface ActivityContentGoalNameUpdating {
   newName: string;
 }
 
+export interface ActivityContentGoalDescriptionChanged {
+  goal?: Goal | null;
+  goalName: string;
+  hasDescription: boolean;
+  oldDescription?: string | null;
+  newDescription?: string | null;
+}
+
 export interface ActivityContentGoalReopening {
   companyId?: string | null;
   goalId?: string | null;
@@ -1916,6 +1924,7 @@ export type ActivityContent =
   | ActivityContentGoalDiscussionCreation
   | ActivityContentGoalDiscussionEditing
   | ActivityContentGoalEditing
+  | ActivityContentGoalDescriptionChanged
   | ActivityContentGoalReopening
   | ActivityContentGoalReparent
   | ActivityContentGoalTimeframeEditing
