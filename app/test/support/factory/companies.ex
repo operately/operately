@@ -14,6 +14,7 @@ defmodule Operately.Support.Factory.Companies do
     }
 
     {:ok, company} = Operately.Companies.create_company(attrs, account)
+    {:ok, company} = Operately.Companies.update_company(company, %{setup_completed: true})
 
     Map.put(ctx, testid, company)
   end
