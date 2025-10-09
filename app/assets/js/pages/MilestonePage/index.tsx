@@ -349,7 +349,7 @@ function useStatusField(
 function useMilestones(pageData, milestone: Milestones.Milestone) {
   const paths = usePaths();
   const [milestones, setMilestones] = React.useState<MilestonePage.Milestone[]>(
-    Milestones.parseMilestonesForTurboUi(paths, [milestone]),
+    Milestones.parseMilestonesForTurboUi(paths, [milestone]).orderedMilestones,
   );
 
   const parsedMilestone = milestones[0]!;
