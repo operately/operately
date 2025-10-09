@@ -52,7 +52,7 @@ function Navigation() {
       <Paper.Navigation
         items={[
           { label: "Company Administration", to: paths.companyAdminPath() },
-          { label: "Manage Team Members", to: paths.companyManagePeoplePath() },
+          { label: "Manage Team Members", to: paths.companyManagePeopleListPath() },
         ]}
       />
     );
@@ -97,7 +97,7 @@ function ProfileForm({ person }: { person: People.Person }) {
       if (me.id === person.id) {
         navigate(paths.accountPath());
       } else {
-        navigate(paths.companyManagePeoplePath());
+        navigate(paths.companyManagePeopleListPath());
       }
     },
   });

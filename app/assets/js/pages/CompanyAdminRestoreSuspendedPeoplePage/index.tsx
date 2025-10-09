@@ -63,7 +63,7 @@ function NoSuspenedPeopleMessage() {
         description={
           <p>
             There are no deactivated people in {company.name}. To remove access for departing team members, visit the{" "}
-            <Link to={paths.companyManagePeoplePath()}>Manage People</Link> page.
+            <Link to={paths.companyManagePeopleListPath()}>Manage People</Link> page.
           </p>
         }
       />

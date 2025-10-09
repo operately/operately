@@ -77,7 +77,8 @@ export function createAppRoutes() {
 
         pageRoute("admin", pages.CompanyAdminPage),
         pageRoute("admin/manage-admins", pages.CompanyAdminManageAdminsPage),
-        pageRoute("admin/manage-people", pages.CompanyAdminManagePeoplePage),
+        pageRoute("admin/manage-people", pages.InvitePeoplePage),
+        pageRoute("admin/manage-people/list", pages.CompanyAdminManagePeoplePage),
         pageRoute("admin/manage-people/add", pages.CompanyAdminAddPeoplePage),
         pageRoute("admin/manage-ai-agents", pages.CompanyManageAiAgentsPage),
         pageRoute("admin/manage-ai-agents/:id", pages.AgentPage),

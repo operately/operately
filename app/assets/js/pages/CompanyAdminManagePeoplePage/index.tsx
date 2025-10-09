@@ -11,7 +11,7 @@ import * as React from "react";
 import { IconAlertTriangle, IconId, IconRefresh, IconUserX } from "turboui";
 
 import { CopyToClipboard } from "@/components/CopyToClipboard";
-import { BlackLink, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
+import { BlackLink, GhostButton, Menu, MenuActionItem, MenuLinkItem, PrimaryButton, SecondaryButton } from "turboui";
 
 import Modal, { ModalState, useModalState } from "@/components/Modal";
 import { useMe } from "@/contexts/CurrentCompanyContext";
@@ -51,7 +51,12 @@ function Page() {
           <Paper.Header
             title="Manage Team Members"
             subtitle="Add new team members, update profiles, or remove access as needed."
-            actions={<AddMemberButton />}
+            actions={
+              <div className="flex gap-2">
+                <InviteWithLinkButton />
+                <AddMemberButton />
+              </div>
+            }
           />
 
           <InvitationList />
@@ -64,13 +69,30 @@ function Page() {
 
 function Navigation() {
   const paths = usePaths();
-  return <Paper.Navigation items={[{ to: paths.companyAdminPath(), label: "Company Administration" }]} />;
+  return (
+    <Paper.Navigation
+      items={[
+        { to: paths.companyAdminPath(), label: "Company Administration" },
+        { to: paths.companyManagePeoplePath(), label: "Invite People" },
+      ]}
+    />
+  );
+}
+
+function InviteWithLinkButton() {
+  const paths = usePaths();
+
+  return (
+    <GhostButton linkTo={paths.companyManagePeoplePath()} testId="view-invite-link" size="sm">
+      Share Invite Link
+    </GhostButton>
+  );
 }
 
 function AddMemberButton() {
   const paths = usePaths();
   return (
-    <PrimaryButton linkTo={paths.companyManagePeopleAddPeoplePath()} testId="add-person">
+    <PrimaryButton linkTo={paths.companyManagePeopleAddPeoplePath()} testId="add-person" size="sm">
       Add Team Member
     </PrimaryButton>
   );

@@ -176,7 +176,7 @@ function Navigation() {
     <Paper.Navigation
       items={[
         { to: paths.companyAdminPath(), label: "Company Administration" },
-        { to: paths.companyManagePeoplePath(), label: "Manage People" },
+        { to: paths.companyManagePeoplePath(), label: "Invite People" },
       ]}
     />
   );

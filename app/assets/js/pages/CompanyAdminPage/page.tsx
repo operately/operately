@@ -70,7 +70,7 @@ function AdminsMenu() {
   return (
     <Paper.Section title="As an admin or owner, you can:">
       <div>
-        <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Manage team members" />
+        <OptionsMenuItem linkTo={managePeople} icon={IconUsers} title="Invite people" />
 
         {hasFeature(company, "ai") && (
           <OptionsMenuItem linkTo={manageAgents} icon={IconRobotFace} title="Manage AI agents" />

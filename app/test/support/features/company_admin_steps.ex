@@ -31,7 +31,10 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   step :open_company_team_page, ctx do
     ctx
     |> UI.visit(Paths.company_admin_path(ctx.company))
+    |> UI.click(testid: "invite-people")
+    |> UI.assert_has(testid: "invite-people-page")
     |> UI.click(testid: "manage-team-members")
+    |> UI.assert_has(testid: "manage-people-page")
   end
 
   step :open_company_admins_page, ctx do
@@ -163,7 +166,11 @@ defmodule Operately.Support.Features.CompanyAdminSteps do
   end
 
   step :click_on_add_remove_people, ctx do
-    ctx |> UI.click(testid: "manage-team-members")
+    ctx
+    |> UI.click(testid: "invite-people")
+    |> UI.assert_has(testid: "invite-people-page")
+    |> UI.click(testid: "manage-team-members")
+    |> UI.assert_has(testid: "manage-people-page")
   end
 
   step :assert_company_member_is_listed, ctx do
