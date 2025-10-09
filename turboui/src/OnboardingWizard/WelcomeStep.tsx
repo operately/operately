@@ -8,11 +8,23 @@ export interface WelcomeStepProps {
   state: WizardState<any>;
   imageUrl: string;
   whatReady: "profile" | "workspace";
+  headingId?: string;
+  stepTestId?: string;
+  startTestId?: string;
 }
 
-export function WelcomeStep({ state, imageUrl, whatReady }: WelcomeStepProps) {
+export function WelcomeStep({ state, imageUrl, whatReady, headingId, stepTestId, startTestId }: WelcomeStepProps) {
+  const resolvedHeadingId = headingId ?? defaultHeadingId(whatReady);
+
   return (
-    <WizardStep footer={<PrimaryButton onClick={state.next}>Let's get started</PrimaryButton>}>
+    <WizardStep
+      testId={stepTestId}
+      footer={
+        <PrimaryButton onClick={state.next} testId={startTestId}>
+          Let's get started
+        </PrimaryButton>
+      }
+    >
       <div className="flex flex-col items-center text-center mx-auto pt-8 pb-4 px-4">
         <img
           src={imageUrl}
@@ -20,7 +32,7 @@ export function WelcomeStep({ state, imageUrl, whatReady }: WelcomeStepProps) {
           className="w-[120px] h-[120px] rounded-full object-cover shadow-lg"
         />
         <div className="mt-6 max-w-lg text-content-base space-y-4">
-          <h1 className="font-semibold text-2xl" id="company-member-onboarding-heading">
+          <h1 className="font-semibold text-2xl" id={resolvedHeadingId}>
             Thanks for joining Operately!
           </h1>
           <p>
@@ -46,4 +58,12 @@ export function WelcomeStep({ state, imageUrl, whatReady }: WelcomeStepProps) {
       </div>
     </WizardStep>
   );
+}
+
+function defaultHeadingId(whatReady: WelcomeStepProps["whatReady"]) {
+  if (whatReady === "workspace") {
+    return "company-creator-onboarding-heading";
+  }
+
+  return "company-member-onboarding-heading";
 }
