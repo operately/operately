@@ -853,6 +853,7 @@ export interface ActivityContentTaskDescriptionChange {
   task: Task | null;
   projectName: string;
   hasDescription: boolean;
+  description: Record<string, unknown> | string | null;
 }
 
 export interface ActivityContentTaskDueDateUpdating {

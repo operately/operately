@@ -47,10 +47,11 @@ const TaskDescriptionChange: ActivityHandler = {
     const data = content(activity);
     const { mentionedPersonLookup } = useRichEditorHandlers();
 
-    if (!data.task?.description) return null;
+    const rawDescription = data.task?.description ?? data.description;
 
-    const description =
-      typeof data.task.description === "string" ? JSON.parse(data.task.description) : data.task.description;
+    if (!rawDescription) return null;
+
+    const description = typeof rawDescription === "string" ? JSON.parse(rawDescription) : rawDescription;
 
     return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
   },
