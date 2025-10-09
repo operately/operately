@@ -431,6 +431,7 @@ export interface ActivityContentMilestoneDescriptionUpdating {
   milestone: Milestone | null;
   milestoneName: string;
   hasDescription: boolean;
+  description: string | null;
 }
 
 export interface ActivityContentMilestoneDueDateUpdating {

@@ -13,6 +13,7 @@ defmodule Operately.Activities.Notifications.TaskDescriptionChange do
 
     people
     |> Enum.reject(&(&1 == activity.author_id))
+    |> Enum.uniq()
     |> Enum.map(fn person_id ->
       %{
         person_id: person_id,

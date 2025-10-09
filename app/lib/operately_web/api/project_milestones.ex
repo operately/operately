@@ -86,7 +86,8 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
           project_id: changes.project.id,
           milestone_id: changes.milestone.id,
           milestone_name: changes.milestone.title,
-          has_description: Operately.RichContent.empty?(inputs.description)
+          has_description: Operately.RichContent.empty?(inputs.description),
+          description: inputs.description
         }
       end)
       |> Steps.commit()

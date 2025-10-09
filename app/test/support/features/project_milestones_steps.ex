@@ -4,6 +4,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   alias Operately.Support.Features.{EmailSteps, NotificationsSteps, FeedSteps}
   alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
+  alias Wallaby.QueryError
 
   step :given_that_a_milestone_exists, ctx, title do
     {:ok, milestone} = Operately.Projects.create_milestone(%{
@@ -30,6 +31,11 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     ctx
     |> Map.put(:creator, ctx.champion)
     |> Factory.add_comment(:comment, :milestone)
+  end
+
+  step :given_space_member_exists, ctx, opts \\ [] do
+    ctx
+    |> Factory.add_space_member(:space_member, :group, opts)
   end
 
   step :visit_milestone_page, ctx do
@@ -65,7 +71,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :add_first_milestone, ctx, name: name do
-     ctx
+    ctx
     |> UI.click_button("Add your first milestone")
     |> UI.fill(testid: "milestone-name-input", with: name)
     |> UI.find(UI.query(testid: "add-milestone-form"), fn el ->
@@ -125,6 +131,20 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :remove_milestone_due_date, ctx do
     UI.clear_date_in_date_field(ctx, testid: "milestone-due-date")
+  end
+
+  step :edit_milestone_description, ctx, description do
+    ctx
+    |> open_milestone_description_editor()
+    |> UI.fill_rich_text(description)
+    |> submit_milestone_description()
+  end
+
+  step :edit_milestone_description_mentioning, ctx, person do
+    ctx
+    |> open_milestone_description_editor()
+    |> UI.mention_person_in_rich_text(person)
+    |> submit_milestone_description()
   end
 
   step :mark_milestone_as_completed, ctx do
@@ -204,26 +224,39 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
     |> UI.find(UI.query(testid: "project-feed"), fn el ->
       el
-      |> FeedSteps.assert_project_milestone_commented(author: ctx.champion, milestone_tile: ctx.milestone.title, comment: comment)
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: comment
+      )
     end)
     |> UI.visit(Paths.space_path(ctx.company, ctx.group))
     |> UI.find(UI.query(testid: "space-feed"), fn el ->
       el
-      |> FeedSteps.assert_project_milestone_commented(author: ctx.champion, milestone_tile: ctx.milestone.title, comment: comment)
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: comment
+      )
     end)
     |> UI.visit(Paths.feed_path(ctx.company))
     |> UI.find(UI.query(testid: "company-feed"), fn el ->
       el
-      |> FeedSteps.assert_project_milestone_commented(author: ctx.champion, milestone_tile: ctx.milestone.title, comment: comment)
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: comment
+      )
     end)
   end
 
   step :assert_comment_email_sent_to_project_reviewer, ctx do
-    ctx |> EmailSteps.assert_activity_email_sent(%{
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
       where: ctx.project.name,
       to: ctx.reviewer,
       action: "commented on the #{ctx.milestone.title} milestone",
-      author: ctx.champion,
+      author: ctx.champion
     })
   end
 
@@ -342,8 +375,11 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   #
 
   step :assert_milestone_due_date_change_visible_in_feed, ctx do
-    short = "#{Operately.People.Person.first_name(ctx.champion)} updated the due date for the #{ctx.milestone.title} milestone"
-    long = "#{Operately.People.Person.first_name(ctx.champion)} updated the due date for the #{ctx.milestone.title} milestone in #{ctx.project.name}"
+    short =
+      "#{Operately.People.Person.first_name(ctx.champion)} updated the due date for the #{ctx.milestone.title} milestone"
+
+    long =
+      "#{Operately.People.Person.first_name(ctx.champion)} updated the due date for the #{ctx.milestone.title} milestone in #{ctx.project.name}"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -384,6 +420,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     })
   end
 
+  step :assert_space_member_milestone_description_email_sent, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      author: ctx.champion,
+      action: "updated the description for \"#{ctx.milestone.title}\""
+    })
+  end
+
   #
   # Notifications
   #
@@ -404,5 +450,38 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       author: ctx.reviewer,
       action: "The \"#{ctx.milestone.title}\" milestone due date was removed"
     })
+  end
+
+  step :assert_space_member_milestone_description_notification_sent, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Milestone \"#{ctx.milestone.title}\" description was updated"
+    })
+  end
+
+  #
+  # Helpers
+  #
+
+  defp open_milestone_description_editor(ctx) do
+    try do
+      ctx
+      |> UI.find(UI.query(testid: "description-section-empty"), fn el ->
+        el
+        |> UI.click_text("Add details about this milestone...")
+      end)
+    rescue
+      QueryError ->
+        ctx
+        |> UI.click_button("Edit")
+    end
+  end
+
+  defp submit_milestone_description(ctx) do
+    ctx
+    |> UI.click_button("Save")
+    |> UI.sleep(300)
   end
 end

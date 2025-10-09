@@ -8,12 +8,29 @@ defmodule Operately.Activities.Content.MilestoneDescriptionUpdating do
     belongs_to :milestone, Operately.Projects.Milestone
     field :milestone_name, :string
     field :has_description, :boolean
+    field :description, :map
   end
 
   def changeset(attrs) do
     %__MODULE__{}
-    |> cast(attrs, [:company_id, :space_id, :project_id, :milestone_id, :milestone_name, :has_description])
-    |> validate_required([:company_id, :space_id, :project_id, :milestone_id, :milestone_name, :has_description])
+    |> cast(attrs, [
+      :company_id,
+      :space_id,
+      :project_id,
+      :milestone_id,
+      :milestone_name,
+      :has_description,
+      :description
+    ])
+    |> validate_required([
+      :company_id,
+      :space_id,
+      :project_id,
+      :milestone_id,
+      :milestone_name,
+      :has_description,
+      :description
+    ])
   end
 
   def build(params) do
