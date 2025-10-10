@@ -1,10 +1,10 @@
 import React from "react";
 
-import { IconLogs, IconEye, IconClipboardCheck, IconUserCircle, IconCircleCheck } from "../icons";
+import { IconCircleCheck, IconClipboardCheck, IconEye, IconLogs, IconUserCircle } from "../icons";
 
-import { Page } from "../Page";
+import { PageNew } from "../Page";
 import { Tabs, useTabs } from "../Tabs";
-import { Colleagues, PageHeader, Contact } from "./components";
+import { Colleagues, Contact, PageHeader } from "./components";
 
 import { WorkMap, WorkMapTable } from "../WorkMap";
 import { processPersonalItems } from "../WorkMap/utils/itemProcessor";
@@ -30,9 +30,11 @@ export namespace ProfilePage {
 
     workMap: WorkMap.Item[];
     reviewerWorkMap: WorkMap.Item[];
-    options: Page.Option[];
 
     activityFeed: React.ReactNode;
+
+    editProfilePath: string;
+    canEditProfile: boolean;
   }
 
   export type TabOptions = "assigned" | "reviewing" | "completed" | "activity" | "about";
@@ -42,8 +44,8 @@ export function ProfilePage(props: ProfilePage.Props) {
   const { tabs, items } = useTabsWithItems(props.workMap, props.reviewerWorkMap);
 
   return (
-    <Page title={props.title} size="fullwidth" options={props.options}>
-      <PageHeader person={props.person} />
+    <PageNew title={props.title} size="fullwidth">
+      <PageHeader {...props} />
       <Tabs tabs={tabs} />
 
       {["assigned", "reviewing", "completed"].includes(tabs.active) && (
@@ -51,7 +53,7 @@ export function ProfilePage(props: ProfilePage.Props) {
       )}
       {tabs.active === "activity" && <ActivityFeed {...props} />}
       {tabs.active === "about" && <About {...props} />}
-    </Page>
+    </PageNew>
   );
 }
 
