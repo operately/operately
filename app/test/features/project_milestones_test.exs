@@ -40,6 +40,17 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_created(name: "2nd milestone")
     end
 
+    feature "add milestone to project that doesn't have a champion", ctx do
+      ctx
+      |> Steps.given_that_milestone_project_doesnt_have_champion()
+      |> Steps.visit_project_page()
+      |> Steps.add_milestone(name: "My milestone")
+      |> Steps.assert_add_milestone_form_closed()
+      |> Steps.assert_milestone_created(name: "My milestone")
+      |> Steps.reload_project_page()
+      |> Steps.assert_milestone_created(name: "My milestone")
+    end
+
     feature "add multiple milestone with 'Create more' toggle on", ctx do
       ctx
       |> Steps.visit_project_page()
@@ -111,6 +122,19 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_due_date(formatted_date)
       |> Steps.assert_activity_added_to_feed("updated the milestone")
       |> Steps.assert_milestone_due_date_change_visible_in_feed()
+    end
+
+    feature "edit milestone due date when project doesn't have a champion", ctx do
+      next_friday = Operately.Support.Time.next_friday()
+      formatted_date = Operately.Support.Time.format_month_day(next_friday)
+
+      ctx
+      |> Steps.given_that_milestone_project_doesnt_have_champion()
+      |> Steps.visit_milestone_page()
+      |> Steps.edit_milestone_due_date(next_friday)
+      |> Steps.assert_milestone_due_date(formatted_date)
+      |> Steps.reload_milestone_page()
+      |> Steps.assert_milestone_due_date(formatted_date)
     end
 
     feature "edit milestone due date sends notification to champion", ctx do
