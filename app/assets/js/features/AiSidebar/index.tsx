@@ -2,8 +2,7 @@ import * as Time from "@/utils/time";
 import * as React from "react";
 
 import Api, { AgentConversation, AgentMessage } from "@/api";
-import { useMe } from "@/contexts/CurrentCompanyContext";
-import { useCurrentCompany } from "@/contexts/CurrentCompanyContext";
+import { useCurrentCompany, useMe } from "@/contexts/CurrentCompanyContext";
 
 import { Conversations, FloatingActionButton, IconRobotFace } from "turboui";
 import { useNewAgentMessageSignal } from "../../signals";
@@ -28,7 +27,7 @@ export function useAiSidebar(props: AiSidebarProps) {
 export function AiSidebar() {
   const ctx = useAiSidebarContext();
 
-  if (ctx.enabled && ctx.conversationContext) {
+  if (ctx.conversationContext) {
     return <AiSidebarElements />;
   } else {
     return null;
@@ -96,13 +95,13 @@ function useAvailableActions(conversationContext: Conversations.ContextAttachmen
 
   return React.useMemo(() => {
     const allActions = window.appConfig.aiActions.filter((a) => a.context === conversationContext?.type);
-    
+
     // Filter out experimental actions if the experimental AI feature is not enabled
     return allActions.filter((action) => {
       if (!action.experimental) return true;
-      
+
       if (!company?.enabledExperimentalFeatures) return false;
-      
+
       return company.enabledExperimentalFeatures.includes("experimental-ai");
     });
   }, [conversationContext?.type, company?.enabledExperimentalFeatures]);

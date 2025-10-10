@@ -284,7 +284,6 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
-      |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:convo, fn _repo, %{me: me} ->
         AgentConvo.create(me, inputs.action_id, inputs.context_type, inputs.context_id)
       end)
@@ -311,7 +310,6 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
-      |> Steps.verify_feature_enabled()
       |> Steps.get_conversation(inputs.conversation_id)
       |> Ecto.Multi.run(:message, fn _repo, %{conversation: convo} ->
         Operately.People.AgentMessage.create(convo, inputs.message)
@@ -339,7 +337,6 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
-      |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:messages, fn _repo, %{me: me} ->
         Operately.People.AgentConvo.get(me, id: inputs.convo_id)
       end)
@@ -367,7 +364,6 @@ defmodule OperatelyWeb.Api.Ai do
     def call(conn, inputs) do
       conn
       |> Steps.start()
-      |> Steps.verify_feature_enabled()
       |> Ecto.Multi.run(:convos, fn _repo, %{me: me} ->
         {:ok, Operately.People.AgentConvo.list(me, inputs.context_type, inputs.context_id)}
       end)
