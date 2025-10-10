@@ -1,6 +1,11 @@
+import { CacheManager } from "@/routes/CacheManager";
+
 export function useLocalStorage(key: string) {
   const setItem = (value) => {
-    localStorage.setItem(key, JSON.stringify(value));
+    const success = CacheManager.setItem(key, JSON.stringify(value));
+    if (!success) {
+      console.warn(`Failed to store value in localStorage for key: ${key}`);
+    }
   };
 
   const getItem = () => {
@@ -9,7 +14,7 @@ export function useLocalStorage(key: string) {
   };
 
   const removeItem = () => {
-    localStorage.removeItem(key);
+    CacheManager.removeItem(key);
   };
 
   return { setItem, getItem, removeItem };
