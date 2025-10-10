@@ -398,6 +398,7 @@ const EMOJI_DATA = [
   
   // Special
   { emoji: "🫡", keywords: ["salute", "respect", "yes sir", "military"] },
+  { emoji: "🍀", keywords: ["clover", "four leaf clover", "luck", "lucky", "shamrock"] },
   { emoji: "🤝", keywords: ["handshake", "agreement", "deal"] },
   { emoji: "❗", keywords: ["exclamation", "important", "warning", "alert"] },
   { emoji: "❓", keywords: ["question", "help", "what", "confused"] },
