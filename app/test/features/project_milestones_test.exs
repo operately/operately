@@ -40,6 +40,17 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_created(name: "2nd milestone")
     end
 
+    feature "add milestone to project that doesn't have a champion", ctx do
+      ctx
+      |> Steps.given_that_milestone_project_doesnt_have_champion()
+      |> Steps.visit_project_page()
+      |> Steps.add_milestone(name: "My milestone")
+      |> Steps.assert_add_milestone_form_closed()
+      |> Steps.assert_milestone_created(name: "My milestone")
+      |> Steps.reload_project_page()
+      |> Steps.assert_milestone_created(name: "My milestone")
+    end
+
     feature "add multiple milestone with 'Create more' toggle on", ctx do
       ctx
       |> Steps.visit_project_page()
