@@ -830,11 +830,13 @@ defmodule OperatelyWeb.Api.Projects do
     end
 
     def broadcast_review_count_update(result) do
-      case result do
-        {:ok, changes} ->
-          OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: changes.project.champion.id)
-
-        _result -> :ok
+      with {:ok, changes} <- result,
+           project = Operately.Repo.preload(changes.milestone.project, :champion),
+           %Operately.People.Person{id: champion_id} <- project.champion
+      do
+        OperatelyWeb.Api.Subscriptions.AssignmentsCount.broadcast(person_id: champion_id)
+      else
+        _ -> :ok
       end
 
       result
