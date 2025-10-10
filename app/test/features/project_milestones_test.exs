@@ -124,6 +124,19 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_milestone_due_date_change_visible_in_feed()
     end
 
+    feature "edit milestone due date when project doesn't have a champion", ctx do
+      next_friday = Operately.Support.Time.next_friday()
+      formatted_date = Operately.Support.Time.format_month_day(next_friday)
+
+      ctx
+      |> Steps.given_that_milestone_project_doesnt_have_champion()
+      |> Steps.visit_milestone_page()
+      |> Steps.edit_milestone_due_date(next_friday)
+      |> Steps.assert_milestone_due_date(formatted_date)
+      |> Steps.reload_milestone_page()
+      |> Steps.assert_milestone_due_date(formatted_date)
+    end
+
     feature "edit milestone due date sends notification to champion", ctx do
       next_friday = Operately.Support.Time.next_friday()
       formatted_date = Operately.Support.Time.format_month_day(next_friday)
