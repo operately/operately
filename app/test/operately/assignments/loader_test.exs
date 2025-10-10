@@ -43,6 +43,25 @@ defmodule Operately.Assignments.LoaderTest do
       assignments = Loader.load(ctx.champion, ctx.company)
       assert length(assignments) == 0
     end
+
+    test "when the project is closed or paused, does not return as assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:closed_project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.add_project(:paused_project, :space, champion: :champion, reviewer: :reviewer)
+        |> set_next_check_in_date(:closed_project, days_ago(3))
+        |> set_next_check_in_date(:paused_project, days_ago(3))
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(assignments) == 2
+
+      ctx
+      |> Factory.close_project(:closed_project)
+      |> Factory.pause_project(:paused_project)
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(assignments) == 0
+    end
   end
 
   describe "project check-in acknowledgements" do
@@ -63,6 +82,25 @@ defmodule Operately.Assignments.LoaderTest do
       acknowledge_check_in(ctx, :check_in, :reviewer)
 
       assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(assignments) == 0
+    end
+
+    test "when the check-in is not acknowledged, but the project is closed or paused, does not return as assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_project(:closed_project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.add_project(:paused_project, :space, champion: :champion, reviewer: :reviewer)
+        |> Factory.add_project_check_in(:check_in1, :closed_project, :champion)
+        |> Factory.add_project_check_in(:check_in2, :paused_project, :champion)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+      assert length(assignments) == 2
+
+      ctx
+      |> Factory.close_project(:closed_project)
+      |> Factory.pause_project(:paused_project)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
       assert length(assignments) == 0
     end
 
@@ -88,6 +126,19 @@ defmodule Operately.Assignments.LoaderTest do
 
       assert length(assignments) == 1
       assert Enum.at(assignments, 0).resource_id == Paths.goal_update_id(ctx.update)
+    end
+
+    test "when there's an unacknowledged goal update, but the goal is closed, does not return as assignment", ctx do
+      ctx = Factory.add_goal(ctx, :goal, :space, champion: :champion, reviewer: :reviewer)
+      ctx = Factory.add_goal_update(ctx, :update, :goal, :champion)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+      assert length(assignments) == 1
+
+      Factory.close_goal(ctx, :goal)
+
+      assignments = Loader.load(ctx.reviewer, ctx.company)
+      assert length(assignments) == 0
     end
 
     test "when the goal update is acknowledged, does not return as assignment", ctx do
@@ -140,6 +191,21 @@ defmodule Operately.Assignments.LoaderTest do
       ctx = Factory.add_goal(ctx, :goal, :space, champion: :champion, reviewer: :reviewer)
 
       set_next_goal_update_date(ctx, :goal, days_from_now(3))
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(assignments) == 0
+    end
+
+    test "when the goal is closed, does not return as assignment", ctx do
+      ctx =
+        ctx
+        |> Factory.add_goal(:goal, :space, champion: :champion, reviewer: :reviewer)
+        |> set_next_goal_update_date(:goal, days_ago(3))
+
+      assignments = Loader.load(ctx.champion, ctx.company)
+      assert length(assignments) == 1
+
+      Factory.close_goal(ctx, :goal)
 
       assignments = Loader.load(ctx.champion, ctx.company)
       assert length(assignments) == 0

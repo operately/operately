@@ -146,11 +146,13 @@ defmodule Operately.Support.Factory.Projects do
 
   def add_project_milestone(ctx, testid, project_name, opts \\ []) do
     project = Map.fetch!(ctx, project_name)
+    status = Keyword.get(opts, :status, :pending)
 
     attrs =
       %{
         project_id: project.id,
-        title: Keyword.get(opts, :title, "Milestone #{testid}")
+        title: Keyword.get(opts, :title, "Milestone #{testid}"),
+        status: status
       }
       |> maybe_add_key(:deadline_at, Keyword.get(opts, :deadline_at))
       |> maybe_add_key(:timeframe, Keyword.get(opts, :timeframe))
