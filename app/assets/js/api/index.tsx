@@ -3895,6 +3895,15 @@ export interface ProjectMilestonesUpdateTitleResult {
   milestone: Milestone;
 }
 
+export interface ProjectMilestonesUpdateOrderingInput {
+  projectId: Id;
+  orderingState: string[];
+}
+
+export interface ProjectMilestonesUpdateOrderingResult {
+  project: Project;
+}
+
 export interface ProjectTasksCreateInput {
   projectId: Id;
   milestoneId: Id | null;
@@ -4941,6 +4950,12 @@ class ApiNamespaceProjectMilestones {
 
   async updateTitle(input: ProjectMilestonesUpdateTitleInput): Promise<ProjectMilestonesUpdateTitleResult> {
     return this.client.post("/project_milestones/update_title", input);
+  }
+
+  async updateOrdering(
+    input: ProjectMilestonesUpdateOrderingInput,
+  ): Promise<ProjectMilestonesUpdateOrderingResult> {
+    return this.client.post("/project_milestones/update_ordering", input);
   }
 }
 

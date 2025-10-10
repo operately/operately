@@ -64,7 +64,7 @@ export function useTasksForTurboUi({ backendTasks, projectId, cacheKey, mileston
 
       // Handle multiple milestones update (takes precedence)
       if (updatedMilestones && updatedMilestones.length > 0) {
-        const parsedMilestones = Milestones.parseMilestonesForTurboUi(paths, updatedMilestones); 
+        const parsedMilestones = Milestones.parseMilestonesForTurboUi(paths, updatedMilestones).orderedMilestones;
 
         parsedMilestones.forEach(updatedMilestone => {
           const index = newMilestones.findIndex(m => compareIds(m.id, updatedMilestone.id));

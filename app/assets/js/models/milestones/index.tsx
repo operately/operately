@@ -5,11 +5,38 @@ import { CommentSection } from "turboui";
 import { Paths } from "@/routes/paths";
 import { parseContextualDate } from "../contextualDates";
 
+export interface ParsedMilestonesForTurboUi {
+  orderedMilestones: ReturnType<typeof parseMilestoneForTurboUi>[];
+  milestonesById: Record<string, ReturnType<typeof parseMilestoneForTurboUi>>;
+  orderingState: string[];
+}
+
 export type { Milestone, MilestoneComment };
 export { getMilestone, usePostMilestoneComment } from "@/api";
 
-export function parseMilestonesForTurboUi(paths: Paths, milestones: Milestone[]) {
-  return milestones.map((m) => parseMilestoneForTurboUi(paths, m));
+export function parseMilestonesForTurboUi(
+  paths: Paths,
+  milestones: Milestone[],
+  orderingState: string[] = [],
+): ParsedMilestonesForTurboUi {
+  const parsedMilestones = milestones.map((m) => parseMilestoneForTurboUi(paths, m));
+  const milestonesById: Record<string, ReturnType<typeof parseMilestoneForTurboUi>> = {};
+
+  parsedMilestones.forEach((milestone) => {
+    milestonesById[milestone.id] = milestone;
+  });
+
+  const normalizedOrdering = normalizeOrderingState(orderingState, parsedMilestones.map((milestone) => milestone.id));
+
+  const orderedMilestones = normalizedOrdering
+    .map((id) => milestonesById[id])
+    .filter((milestone): milestone is ReturnType<typeof parseMilestoneForTurboUi> => Boolean(milestone));
+
+  return {
+    orderedMilestones,
+    milestonesById,
+    orderingState: normalizedOrdering,
+  };
 }
 
 export function parseMilestoneForTurboUi(paths: Paths, milestone: Milestone) {
@@ -62,4 +89,31 @@ export function splitByStatus(milestones: Milestone[]) {
     pending: milestones.filter((m) => m.status === "pending"),
     done: milestones.filter((m) => m.status === "done"),
   };
+}
+
+function normalizeOrderingState(orderingState: string[], milestoneIds: string[]): string[] {
+  if (milestoneIds.length === 0) {
+    return [];
+  }
+
+  const knownMilestoneIds = new Set(milestoneIds);
+  const seen = new Set<string>();
+  const normalized: string[] = [];
+
+  (orderingState || []).forEach((id) => {
+    if (!knownMilestoneIds.has(id)) return;
+    if (seen.has(id)) return;
+
+    normalized.push(id);
+    seen.add(id);
+  });
+
+  milestoneIds.forEach((id) => {
+    if (seen.has(id)) return;
+
+    normalized.push(id);
+    seen.add(id);
+  });
+
+  return normalized;
 }
