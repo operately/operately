@@ -253,7 +253,7 @@ const EMOJI_DATA = [
   { emoji: "👌", keywords: ["ok", "okay", "perfect", "good"] },
   { emoji: "🎯", keywords: ["target", "goal", "bullseye", "accuracy", "hit"] },
   { emoji: "💡", keywords: ["idea", "light", "bulb", "think", "smart"] },
-  
+
   // Smileys and faces
   { emoji: "😊", keywords: ["smile", "happy", "glad", "pleased"] },
   { emoji: "😂", keywords: ["laugh", "lol", "haha", "funny", "joy"] },
@@ -269,12 +269,12 @@ const EMOJI_DATA = [
   { emoji: "🙂", keywords: ["smile", "slight smile", "happy"] },
   { emoji: "🙃", keywords: ["upside down", "silly", "sarcasm"] },
   { emoji: "😉", keywords: ["wink", "flirt", "playful"] },
-  
+
   // Thinking and curious
   { emoji: "🤔", keywords: ["think", "thinking", "hmm", "wonder", "consider"] },
   { emoji: "🧐", keywords: ["monocle", "examine", "inspect", "curious"] },
   { emoji: "💭", keywords: ["thought", "thinking", "bubble", "idea"] },
-  
+
   // Negative reactions
   { emoji: "👎", keywords: ["thumbs down", "dislike", "no", "bad", "disapprove"] },
   { emoji: "😢", keywords: ["cry", "sad", "tear", "upset"] },
@@ -289,13 +289,13 @@ const EMOJI_DATA = [
   { emoji: "😡", keywords: ["angry", "mad", "rage", "furious"] },
   { emoji: "😠", keywords: ["angry", "mad", "upset"] },
   { emoji: "🤬", keywords: ["curse", "swear", "mad", "angry"] },
-  
+
   // Surprised and amazed
   { emoji: "😮", keywords: ["wow", "surprised", "amazed", "oh"] },
   { emoji: "😲", keywords: ["shocked", "astonished", "gasp"] },
   { emoji: "🤯", keywords: ["mind blown", "exploding head", "shocked", "amazed"] },
   { emoji: "😳", keywords: ["flushed", "embarrassed", "shocked"] },
-  
+
   // Playful and silly
   { emoji: "😜", keywords: ["tongue", "wink", "playful", "silly"] },
   { emoji: "😝", keywords: ["tongue", "playful", "silly", "closed eyes"] },
@@ -304,7 +304,7 @@ const EMOJI_DATA = [
   { emoji: "🤭", keywords: ["giggle", "shy", "oops", "hand over mouth"] },
   { emoji: "🤫", keywords: ["shh", "quiet", "secret", "silence"] },
   { emoji: "🥳", keywords: ["party", "celebrate", "birthday", "hat"] },
-  
+
   // Neutral and tired
   { emoji: "😐", keywords: ["neutral", "meh", "blank"] },
   { emoji: "😑", keywords: ["expressionless", "blank", "deadpan"] },
@@ -313,18 +313,18 @@ const EMOJI_DATA = [
   { emoji: "😴", keywords: ["sleep", "tired", "sleepy", "zzz"] },
   { emoji: "🥱", keywords: ["yawn", "tired", "bored"] },
   { emoji: "😪", keywords: ["sleepy", "tired", "exhausted"] },
-  
+
   // Sick and injured
   { emoji: "🤢", keywords: ["sick", "nauseated", "ill", "gross"] },
   { emoji: "🤮", keywords: ["vomit", "sick", "puke", "throw up"] },
   { emoji: "🤒", keywords: ["sick", "ill", "fever", "thermometer"] },
   { emoji: "🤕", keywords: ["hurt", "injured", "bandage", "pain"] },
-  
+
   // Special expressions
   { emoji: "🥺", keywords: ["pleading", "puppy eyes", "beg", "please"] },
   { emoji: "😬", keywords: ["grimace", "awkward", "nervous"] },
   { emoji: "🤐", keywords: ["zipper mouth", "secret", "quiet", "sealed"] },
-  
+
   // Hand gestures
   { emoji: "👋", keywords: ["wave", "hello", "hi", "bye", "goodbye"] },
   { emoji: "🤝", keywords: ["handshake", "deal", "agreement", "shake"] },
@@ -336,7 +336,7 @@ const EMOJI_DATA = [
   { emoji: "✊", keywords: ["fist", "power", "solidarity", "punch"] },
   { emoji: "👐", keywords: ["open hands", "jazz hands"] },
   { emoji: "🙌", keywords: ["raising hands", "celebrate", "yay", "hooray"] },
-  
+
   // Work and productivity
   { emoji: "💼", keywords: ["briefcase", "work", "business", "professional"] },
   { emoji: "📊", keywords: ["chart", "graph", "stats", "data", "analytics"] },
@@ -352,7 +352,7 @@ const EMOJI_DATA = [
   { emoji: "⌛", keywords: ["hourglass", "time", "waiting"] },
   { emoji: "📅", keywords: ["calendar", "date", "schedule"] },
   { emoji: "🗓️", keywords: ["calendar", "planning", "schedule"] },
-  
+
   // Objects and symbols
   { emoji: "💰", keywords: ["money", "bag", "dollar", "cash", "rich"] },
   { emoji: "💸", keywords: ["money", "flying", "spend", "loss"] },
@@ -378,7 +378,7 @@ const EMOJI_DATA = [
   { emoji: "🔒", keywords: ["lock", "secure", "private", "locked"] },
   { emoji: "🔓", keywords: ["unlock", "open", "unlocked"] },
   { emoji: "🔑", keywords: ["key", "unlock", "access", "password"] },
-  
+
   // Food and drinks
   { emoji: "☕", keywords: ["coffee", "tea", "hot", "drink", "cafe"] },
   { emoji: "🍕", keywords: ["pizza", "food", "slice"] },
@@ -387,7 +387,7 @@ const EMOJI_DATA = [
   { emoji: "🍻", keywords: ["beers", "cheers", "drinks", "celebrate", "toast"] },
   { emoji: "🍾", keywords: ["champagne", "celebrate", "bottle", "party"] },
   { emoji: "🥂", keywords: ["cheers", "toast", "glasses", "celebrate"] },
-  
+
   // Fashion and style
   { emoji: "👔", keywords: ["tie", "formal", "business", "professional"] },
   { emoji: "👗", keywords: ["dress", "fashion", "clothing"] },
@@ -395,7 +395,7 @@ const EMOJI_DATA = [
   { emoji: "👓", keywords: ["glasses", "eyeglasses", "nerd"] },
   { emoji: "🕶️", keywords: ["sunglasses", "cool", "shades"] },
   { emoji: "👑", keywords: ["crown", "king", "queen", "royalty", "best"] },
-  
+
   // Special
   { emoji: "🫡", keywords: ["salute", "respect", "yes sir", "military"] },
   { emoji: "🍀", keywords: ["clover", "four leaf clover", "luck", "lucky", "shamrock"] },
@@ -418,12 +418,6 @@ const EMOJI_DATA = [
   { emoji: "🆓", keywords: ["free", "gratis"] },
 ];
 
-// Create the palette grid from emoji data (8 emojis per row)
-const PALLETE = [];
-for (let i = 0; i < EMOJI_DATA.length; i += 8) {
-  PALLETE.push(EMOJI_DATA.slice(i, i + 8).map((item) => item.emoji));
-}
-
 function ReactionPallete({ size, close, onSelected }) {
   const [searchQuery, setSearchQuery] = React.useState("");
 
@@ -442,7 +436,8 @@ function ReactionPallete({ size, close, onSelected }) {
 
   // Create rows of 8 emojis each for display
   const emojiRows = React.useMemo(() => {
-    const rows = [];
+    const rows: (typeof filteredEmojis)[] = [];
+
     for (let i = 0; i < filteredEmojis.length; i += 8) {
       rows.push(filteredEmojis.slice(i, i + 8));
     }
