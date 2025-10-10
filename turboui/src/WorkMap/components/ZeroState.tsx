@@ -1,5 +1,6 @@
 import React from "react";
 
+import { IconGrowth } from "@tabler/icons-react";
 import { WorkMap } from "..";
 import { SpaceField } from "../../SpaceField";
 import { IconGoal, IconProject } from "../../icons";
@@ -12,17 +13,27 @@ interface ZeroStateProps {
   addItemDefaultSpace: SpaceField.Space;
 }
 
-export function ZeroState({ addingEnabled, spaceSearch, addItem, addItemDefaultSpace }: ZeroStateProps) {
-  if (!addingEnabled) {
-    return (
-      <tr>
-        <td colSpan={7} className="py-32 text-center">
-          <div className="mb-4">Nothing here yet.</div>
-        </td>
-      </tr>
-    );
+export function ZeroState(props: ZeroStateProps) {
+  if (props.addingEnabled) {
+    return <ZeroStateCanAdd {...props} />;
+  } else {
+    return <ZeroStateCannotAdd />;
   }
+}
 
+function ZeroStateCannotAdd() {
+  return (
+    <div className="py-12 relative">
+      <div className="mx-auto flex max-w-2xl flex-col items-center text-center relative z-10">
+        <IconGrowth size={60} className="text-lime-500 my-4" stroke={1} />
+        Nothing here yet. <br />
+        Assigned goals and projects will appear here.
+      </div>
+    </div>
+  );
+}
+
+export function ZeroStateCanAdd({ spaceSearch, addItem, addItemDefaultSpace }: ZeroStateProps) {
   const [modalState, setModalState] = React.useState<{
     isOpen: boolean;
     type: AddItemModal.ItemType;
