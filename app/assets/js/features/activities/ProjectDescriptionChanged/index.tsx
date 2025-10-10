@@ -53,10 +53,7 @@ const ProjectDescriptionChanged: ActivityHandler = {
     const data = content(activity);
     const { mentionedPersonLookup } = useRichEditorHandlers();
 
-    const rawDescription = data.description ?? data.project?.description;
-    if (!rawDescription) return null;
-
-    const description = typeof rawDescription === "string" ? safeParseDescription(rawDescription) : rawDescription;
+    const description = decodeDescription(data.description ?? data.project?.description);
     if (!description) return null;
 
     return <Summary content={description} characterCount={200} mentionedPersonLookup={mentionedPersonLookup} />;
@@ -79,8 +76,8 @@ const ProjectDescriptionChanged: ActivityHandler = {
     const name = project?.name ?? projectName;
 
     return hasDescription
-      ? `Updated the "${name}" project description`
-      : `Removed the "${name}" project description`;
+      ? `Project "${name}" description was updated`
+      : `Project "${name}" description was removed`;
   },
 
   NotificationLocation({ activity }: { activity: Activity }) {
@@ -90,6 +87,20 @@ const ProjectDescriptionChanged: ActivityHandler = {
 
 function content(activity: Activity): ActivityContentProjectDescriptionChanged {
   return activity.content as ActivityContentProjectDescriptionChanged;
+}
+
+function decodeDescription(description?: unknown) {
+  if (!description) return null;
+
+  if (typeof description === "string") {
+    return safeParseDescription(description);
+  }
+
+  if (typeof description === "object") {
+    return description;
+  }
+
+  return null;
 }
 
 function safeParseDescription(description: string) {

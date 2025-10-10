@@ -31,6 +31,21 @@ defmodule Operately.Features.ProjectsDescriptionTest do
     |> Steps.assert_project_description_feed_item(description: "New description")
   end
 
+  @tag login_as: :champion
+  feature "mentioning a person in a project description sends notification and email", ctx do
+    ctx = Steps.given_space_member_exists(ctx)
+
+    ctx
+    |> Steps.visit_project_page()
+    |> Steps.assert_project_description_absent()
+    |> Steps.submit_project_description_mentioning(ctx.space_member)
+
+    ctx
+    |> Steps.assert_space_member_project_description_notification_sent()
+    |> Steps.assert_space_member_project_description_email_sent()
+    |> Steps.assert_author_not_notified_about_project_description()
+  end
+
   defp project_description() do
     """
     SuperPace is an innovative project designed to track and quantify DevOps
