@@ -4,6 +4,7 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
   alias Operately.Repo
   alias Operately.Goals.Goal
   alias Operately.Projects.Project
+  alias Operately.ContextualDates.ContextualDate
 
   describe "security" do
     test "it requires authentication", ctx do
@@ -31,11 +32,20 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
 
       # 3. Pending task
       project_for_task = create_project(ctx, upcoming_date())
-      create_task(project_for_task, ctx.person, %{status: "todo"})
+      create_task(project_for_task, ctx.person, %{
+        status: "todo",
+        due_date: ContextualDate.create_day_date(Date.utc_today())
+      })
 
       # 4. Pending milestone
       project_for_milestone = create_project(ctx, upcoming_date())
-      create_milestone(project_for_milestone, %{status: :pending})
+      create_milestone(project_for_milestone, %{
+        status: :pending,
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(Date.utc_today())
+        }
+      })
 
       # 5. Pending check-in acknowledgement
       reviewer_project = create_project(ctx, upcoming_date(), %{reviewer_id: ctx.person.id, creator_id: ctx.another_person.id})
@@ -56,6 +66,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2Test do
       create_task(project_for_task, ctx.person, %{status: "done"})
       # Completed milestone
       create_milestone(project_for_milestone, %{status: :done})
+      # Upcoming task
+      create_task(project_for_task, ctx.person, %{
+        status: "todo",
+        due_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
+      })
+      # Upcoming milestone
+      create_milestone(project_for_milestone, %{
+        status: :pending,
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(Date.add(Date.utc_today(), 5))
+        }
+      })
       # Assignment for another person
       create_goal(ctx.another_person, ctx.company, past_date())
 
