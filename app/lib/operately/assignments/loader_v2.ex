@@ -47,7 +47,7 @@ defmodule Operately.Assignments.LoaderV2 do
     |> List.flatten()
   end
 
-  def count(person, _company) do
+  def count(person) do
     [
       Task.async(fn -> count_pending_project_check_ins(person) end),
       Task.async(fn -> count_pending_project_check_in_acknowledgements(person) end),

@@ -9,10 +9,8 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsCountV2 do
   end
 
   def call(conn, _inputs) do
-    company = company(conn)
-    me = me(conn)
+    count = LoaderV2.count(me(conn))
 
-    count = LoaderV2.count(me, company)
     {:ok, %{count: count}}
   end
 end
