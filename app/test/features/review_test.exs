@@ -209,12 +209,14 @@ defmodule Operately.Features.ReviewTest do
     end
 
     feature "creating and deleting tasks updates counter", ctx do
+      today = DateTime.utc_now()
+
       ctx
       |> Steps.given_there_are_due_project_check_ins()
       |> Steps.visit_review_page()
       |> Steps.assert_the_review_item_count(is: 1)
-      |> Steps.create_task()
-      |> Steps.assert_the_review_item_count(is: 1)
+      |> Steps.create_task(today)
+      |> Steps.assert_the_review_item_count(is: 2)
       |> Steps.delete_task()
       |> Steps.assert_the_review_item_count(is: 1)
     end

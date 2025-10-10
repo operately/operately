@@ -250,11 +250,18 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
-  step :create_task, ctx do
+  step :create_task, ctx, date \\ nil do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
     |> UI.click_button("New task")
     |> UI.fill(placeholder: "Enter task title", with: "Some Task")
+    |> then(fn ctx ->
+      if date do
+        UI.select_day_in_date_field(ctx, testid: "task-due-date", date: date)
+      else
+        ctx
+      end
+    end)
     |> UI.click(testid: "assignee")
     |> UI.click(testid: UI.testid(["assignee-search-result", ctx.me.full_name]))
     |> UI.click_button("Create task")
