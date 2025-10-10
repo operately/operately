@@ -152,13 +152,20 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
-  step :create_milestone, ctx do
+  step :create_milestone, ctx, date \\ nil do
     milestone_name = "Milestone For Review Counter"
 
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project))
     |> UI.click(testid: "add-milestone-button")
     |> UI.fill(testid: "milestone-name-input", with: milestone_name)
+    |> then(fn ctx ->
+      if date do
+        UI.select_day_in_date_field(ctx, testid: "new-milestone-due-date", date: date)
+      else
+        ctx
+      end
+    end)
     |> UI.find([testid: "add-milestone-form"], fn el ->
       UI.click_button(el, "Add milestone")
     end)
@@ -250,11 +257,18 @@ defmodule Operately.Support.Features.ReviewSteps do
     end)
   end
 
-  step :create_task, ctx do
+  step :create_task, ctx, date \\ nil do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "tasks"))
     |> UI.click_button("New task")
     |> UI.fill(placeholder: "Enter task title", with: "Some Task")
+    |> then(fn ctx ->
+      if date do
+        UI.select_day_in_date_field(ctx, testid: "task-due-date", date: date)
+      else
+        ctx
+      end
+    end)
     |> UI.click(testid: "assignee")
     |> UI.click(testid: UI.testid(["assignee-search-result", ctx.me.full_name]))
     |> UI.click_button("Create task")
@@ -513,7 +527,11 @@ defmodule Operately.Support.Features.ReviewSteps do
   #
 
   step :assert_the_review_item_count, ctx, [is: count] do
-    UI.assert_text(ctx, Integer.to_string(count), testid: "review-link-count")
+    if count == 0 do
+      UI.refute_has(ctx, testid: "review-link-count")
+    else
+      UI.assert_text(ctx, Integer.to_string(count), testid: "review-link-count")
+    end
   end
 
   #
