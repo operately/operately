@@ -9,6 +9,8 @@ defmodule Operately.Assignments.LoaderV2 do
   alias Operately.ContextualDates.{ContextualDate, Timeframe}
   alias OperatelyWeb.Paths
 
+  @due_soon_window_in_days 1
+
   defmodule AssignmentOrigin do
     @enforce_keys [:id, :name, :type, :path]
     defstruct [:id, :name, :type, :path, :space_name, :due_date]
@@ -63,7 +65,12 @@ defmodule Operately.Assignments.LoaderV2 do
   #
 
   defp load_pending_tasks(company, person) do
-    pending_tasks_query(person)
+    base_query = pending_tasks_query(person)
+
+    from([project: p] in base_query,
+      join: space in assoc(p, :group),
+      preload: [project: {p, group: space}]
+    )
     |> Repo.all()
     |> Enum.map(fn task ->
       origin = build_project_origin(company, task.project)
@@ -84,20 +91,25 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp count_pending_tasks(person) do
-    pending_tasks_query(person)
-    |> Repo.aggregate(:count, :id)
+    due_cutoff = Date.add(Date.utc_today(), @due_soon_window_in_days)
+    base_query = pending_tasks_query(person)
+
+    from([task: t] in base_query,
+      where: fragment("(?->>'date')::date <= ?", t.due_date, ^due_cutoff),
+      select: count(t.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   defp pending_tasks_query(person) do
-    from(t in ProjectTask,
+    from(t in ProjectTask, as: :task,
       join: assignee in assoc(t, :assignees),
-      join: project in assoc(t, :project),
-      join: space in assoc(project, :group),
+      join: project in assoc(t, :project), as: :project,
       where: assignee.person_id == ^person.id,
       where: t.status in ["pending", "todo", "in_progress"],
       where: is_nil(project.deleted_at),
-      where: project.status == "active" and is_nil(project.closed_at),
-      preload: [project: {project, group: space}]
+      where: project.status == "active" and is_nil(project.closed_at)
     )
   end
 
@@ -106,7 +118,12 @@ defmodule Operately.Assignments.LoaderV2 do
   #
 
   defp load_pending_milestones(company, person) do
-    pending_milestones_query(person)
+    base_query = pending_milestones_query(person)
+
+    from([project: p] in base_query,
+      join: space in assoc(p, :group),
+      preload: [project: {p, group: space}]
+    )
     |> Repo.all()
     |> Enum.map(fn milestone ->
       origin = build_project_origin(company, milestone.project)
@@ -126,20 +143,25 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp count_pending_milestones(person) do
-    pending_milestones_query(person)
-    |> Repo.aggregate(:count, :id)
+    due_cutoff = Date.add(Date.utc_today(), @due_soon_window_in_days)
+    base_query = pending_milestones_query(person)
+
+    from([milestone: m] in base_query,
+      where: fragment("(?->'contextual_end_date'->>'date')::date <= ?", m.timeframe, ^due_cutoff),
+      select: count(m.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   defp pending_milestones_query(person) do
-    from(m in Milestone,
-      join: project in assoc(m, :project),
+    from(m in Milestone, as: :milestone,
+      join: project in assoc(m, :project), as: :project,
       join: champion in assoc(project, :champion),
-      join: space in assoc(project, :group),
       where: m.status == :pending,
       where: champion.id == ^person.id,
       where: is_nil(project.deleted_at) and is_nil(m.deleted_at),
-      where: project.status == "active" and is_nil(project.closed_at),
-      preload: [project: {project, group: space}]
+      where: project.status == "active" and is_nil(project.closed_at)
     )
   end
 
@@ -148,7 +170,12 @@ defmodule Operately.Assignments.LoaderV2 do
   #
 
   defp load_pending_project_check_ins(company, person) do
-    pending_project_check_ins_query(person)
+    base_query = pending_project_check_ins_query(person)
+
+    from([project: p, champion: c] in base_query,
+      join: space in assoc(p, :group),
+      preload: [champion: c, group: space]
+    )
     |> Repo.all()
     |> Enum.map(fn project ->
       origin = build_project_origin(company, project)
@@ -167,19 +194,22 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp count_pending_project_check_ins(person) do
-    pending_project_check_ins_query(person)
-    |> Repo.aggregate(:count, :id)
+    base_query = pending_project_check_ins_query(person)
+
+    from([project: p] in base_query,
+      select: count(p.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   defp pending_project_check_ins_query(person) do
-    from(p in Project,
-      join: champion in assoc(p, :champion),
-      join: space in assoc(p, :group),
+    from(p in Project, as: :project,
+      join: champion in assoc(p, :champion), as: :champion,
       where: p.next_check_in_scheduled_at <= ^DateTime.utc_now(),
       where: p.status == "active",
       where: champion.id == ^person.id,
-      where: is_nil(p.deleted_at),
-      preload: [champion: champion, group: space]
+      where: is_nil(p.deleted_at)
     )
   end
 
@@ -188,7 +218,12 @@ defmodule Operately.Assignments.LoaderV2 do
   #
 
   defp load_pending_project_check_in_acknowledgements(company, person) do
-    pending_project_check_in_acknowledgements_query(person)
+    base_query = pending_project_check_in_acknowledgements_query(person)
+
+    from([project: p, author: a, reviewer: r] in base_query,
+      join: space in assoc(p, :group),
+      preload: [project: {p, reviewer: r, group: space}, author: a]
+    )
     |> Repo.all()
     |> Enum.map(fn check_in ->
       origin = build_project_origin(company, check_in.project)
@@ -209,23 +244,26 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp count_pending_project_check_in_acknowledgements(person) do
-    pending_project_check_in_acknowledgements_query(person)
-    |> Repo.aggregate(:count, :id)
+    base_query = pending_project_check_in_acknowledgements_query(person)
+
+    from([check_in: c] in base_query,
+      select: count(c.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   defp pending_project_check_in_acknowledgements_query(person) do
-    from(c in CheckIn,
-      join: project in assoc(c, :project),
-      join: space in assoc(project, :group),
-      join: author in assoc(c, :author),
+    from(c in CheckIn, as: :check_in,
+      join: project in assoc(c, :project), as: :project,
+      join: author in assoc(c, :author), as: :author,
       left_join: champion in assoc(project, :champion),
-      left_join: reviewer in assoc(project, :reviewer),
+      left_join: reviewer in assoc(project, :reviewer), as: :reviewer,
       where: is_nil(c.acknowledged_by_id),
       where: project.status == "active" and is_nil(project.deleted_at),
       where:
         (reviewer.id == ^person.id and author.id != reviewer.id) or
-          (champion.id == ^person.id and author.id != champion.id),
-      preload: [project: {project, reviewer: reviewer, group: space}, author: author]
+          (champion.id == ^person.id and author.id != champion.id)
     )
   end
 
@@ -234,7 +272,12 @@ defmodule Operately.Assignments.LoaderV2 do
   #
 
   defp load_pending_goal_updates(company, person) do
-    pending_goal_updates_query(person)
+    base_query = pending_goal_updates_query(person)
+
+    from([goal: g] in base_query,
+      join: space in assoc(g, :group),
+      preload: [group: space]
+    )
     |> Repo.all()
     |> Enum.map(fn goal ->
       origin = build_goal_origin(company, goal)
@@ -253,13 +296,17 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp count_pending_goal_updates(person) do
-    pending_goal_updates_query(person)
-    |> Repo.aggregate(:count, :id)
+    base_query = pending_goal_updates_query(person)
+
+    from([goal: g] in base_query,
+      select: count(g.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   defp pending_goal_updates_query(person) do
-    from(g in Goal,
-      left_join: space in assoc(g, :group),
+    from(g in Goal, as: :goal,
       where: g.next_update_scheduled_at <= ^DateTime.utc_now(),
       where: is_nil(g.closed_at),
       where: g.champion_id == ^person.id,
@@ -267,8 +314,7 @@ defmodule Operately.Assignments.LoaderV2 do
         fragment(
           "(g0.timeframe->'contextual_start_date'->>'date' <= ? OR g0.timeframe->'contextual_start_date'->>'date' IS NULL)",
           ^to_string(Date.utc_today())
-        ),
-      preload: [group: space]
+        )
     )
   end
 
@@ -277,7 +323,12 @@ defmodule Operately.Assignments.LoaderV2 do
   #
 
   defp load_pending_goal_update_acknowledgements(company, person) do
-    pending_goal_update_acknowledgements_query(person)
+    base_query = pending_goal_update_acknowledgements_query(person)
+
+    from([goal: g, author: a] in base_query,
+      join: space in assoc(g, :group),
+      preload: [goal: {g, group: space}, author: a]
+    )
     |> Repo.all()
     |> Enum.map(fn update ->
       origin = build_goal_origin(company, update.goal)
@@ -298,27 +349,33 @@ defmodule Operately.Assignments.LoaderV2 do
   end
 
   defp count_pending_goal_update_acknowledgements(person) do
-    pending_goal_update_acknowledgements_query(person)
-    |> Repo.aggregate(:count, :id)
+    base_query = pending_goal_update_acknowledgements_query(person)
+
+    from([update: u] in base_query,
+      select: count(u.id)
+    )
+    |> Repo.one()
+    |> default_zero()
   end
 
   defp pending_goal_update_acknowledgements_query(person) do
-    from(u in Update,
-      join: goal in assoc(u, :goal),
-      join: author in assoc(u, :author),
-      left_join: space in assoc(goal, :group),
+    from(u in Update, as: :update,
+      join: goal in assoc(u, :goal), as: :goal,
+      join: author in assoc(u, :author), as: :author,
       where: is_nil(goal.closed_at) and is_nil(goal.deleted_at),
       where: is_nil(u.acknowledged_by_id),
       where:
         (goal.reviewer_id == ^person.id and author.id != goal.reviewer_id) or
-          (goal.champion_id == ^person.id and author.id != goal.champion_id),
-      preload: [goal: {goal, group: space}, author: author]
+          (goal.champion_id == ^person.id and author.id != goal.champion_id)
     )
   end
 
   #
   # Helpers
   #
+
+  defp default_zero(nil), do: 0
+  defp default_zero(count), do: count
 
   defp build_project_origin(company, project) do
     %AssignmentOrigin{
