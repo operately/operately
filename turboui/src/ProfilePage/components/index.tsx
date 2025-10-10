@@ -1,21 +1,29 @@
 import React from "react";
 
 import { Avatar } from "../../Avatar";
-import { ProfilePage } from "../index";
+import { SecondaryButton } from "../../Button";
 import { IconMail } from "../../icons";
+import { ProfilePage } from "../index";
 
 export { Colleagues } from "./Colleagues";
 
-export function PageHeader({ person }: { person: ProfilePage.Person }) {
+export function PageHeader(props: ProfilePage.Props) {
   return (
-    <div className="mt-4 px-4 flex items-center gap-4">
-      <Avatar person={person} size={72} />
-      <div className="flex flex-col">
-        <div className="flex items-center gap-2">
-          <div className="text-xl font-bold">{person.fullName}</div>
+    <div className="my-5 px-4 mr-3 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Avatar person={props.person} size={52} />
+
+        <div className="flex flex-col">
+          <div className="text-lg font-bold">{props.person.fullName!}</div>
+          <div className="font-medium text-sm">{props.person.title}</div>
         </div>
-        <div className="font-medium">{person.title}</div>
       </div>
+
+      {props.canEditProfile && (
+        <SecondaryButton size="sm" linkTo={props.editProfilePath}>
+          Edit Profile
+        </SecondaryButton>
+      )}
     </div>
   );
 }

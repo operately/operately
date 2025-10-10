@@ -6,7 +6,7 @@ import { toPersonWithLink } from "@/models/people";
 import { Feed, useItemsQuery } from "@/features/Feed";
 import { PageModule } from "@/routes/types";
 import { assertPresent } from "@/utils/assertions";
-import { IconPencil, ProfilePage } from "turboui";
+import { ProfilePage } from "turboui";
 
 import { loader, useLoadedData } from "./loader";
 
@@ -32,15 +32,9 @@ function Page() {
 
     workMap: convertToWorkMapItems(paths, workMap),
     reviewerWorkMap: convertToWorkMapItems(paths, reviewerWorkMap),
-    options: [
-      {
-        type: "link" as const,
-        icon: IconPencil,
-        label: "Edit",
-        link: paths.profileEditPath(person.id!),
-        hidden: !person.permissions.canEditProfile,
-      },
-    ],
+
+    canEditProfile: !!person.permissions.canEditProfile,
+    editProfilePath: paths.profileEditPath(person.id!),
 
     activityFeed: <ActivityFeed personId={person.id!} />,
   };
