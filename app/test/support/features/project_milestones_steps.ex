@@ -1,6 +1,8 @@
 defmodule Operately.Support.Features.ProjectMilestonesSteps do
   use Operately.FeatureCase
 
+  import Ecto.Query, only: [from: 2]
+
   alias Operately.Support.Features.{EmailSteps, NotificationsSteps, FeedSteps}
   alias Operately.ContextualDates.ContextualDate
   alias OperatelyWeb.Paths
@@ -34,10 +36,13 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :given_that_milestone_project_doesnt_have_champion, ctx do
-    {:ok, _} =
-      ctx.project
-      |> Operately.Projects.get_champion()
-      |> Operately.Projects.delete_contributor()
+    from(c in Operately.Projects.Contributor,
+      where: c.project_id == ^ctx.project.id,
+      where: c.role == :champion,
+      limit: 1
+    )
+    |> Operately.Repo.one!()
+    |> Operately.Projects.delete_contributor()
 
     ctx
   end
@@ -237,6 +242,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
 
   step :assert_milestone_deleted, ctx do
     ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "overview"))
     |> UI.assert_text("No milestones yet")
     |> UI.assert_text("Add milestones to track key deliverables and deadlines")
   end
