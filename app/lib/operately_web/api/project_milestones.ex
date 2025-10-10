@@ -127,6 +127,7 @@ defmodule OperatelyWeb.Api.ProjectMilestones do
         }
       end)
       |> Steps.commit()
+      |> Steps.broadcast_review_count_update()
       |> Steps.respond(fn changes ->
         %{milestone: Serializer.serialize(changes.updated_milestone)}
       end)
