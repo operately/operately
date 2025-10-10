@@ -33,6 +33,15 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> Factory.add_comment(:comment, :milestone)
   end
 
+  step :given_that_milestone_project_doesnt_have_champion, ctx do
+    {:ok, _} =
+      ctx.project
+      |> Operately.Projects.get_champion()
+      |> Operately.Projects.delete_contributor()
+
+    ctx
+  end
+
   step :given_space_member_exists, ctx, opts \\ [] do
     ctx
     |> Factory.add_space_member(:space_member, :group, opts)
@@ -208,66 +217,35 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.sleep(300)
   end
 
+  step :delete_milestone, ctx do
+    ctx
+    |> UI.find(UI.query(testid: "sidebar"), fn el ->
+      UI.click_button(el, "Delete")
+    end)
+    |> UI.assert_text("This action cannot be undone")
+    |> UI.click_button("Delete Forever")
+    |> UI.sleep(300)
+  end
+
   #
   # Assertions
   #
+
+  step :assert_redirected_to_project_page, ctx do
+    UI.assert_page(ctx, Paths.project_path(ctx.company, ctx.project))
+  end
+
+  step :assert_milestone_deleted, ctx do
+    ctx
+    |> UI.assert_text("No milestones yet")
+    |> UI.assert_text("Add milestones to track key deliverables and deadlines")
+  end
 
   step :assert_comment, ctx, comment do
     ctx
     |> UI.find(UI.query(testid: "timeline-section"), fn el ->
       UI.assert_text(el, comment)
     end)
-  end
-
-  step :assert_comment_visible_in_feed, ctx, comment do
-    ctx
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
-    |> UI.find(UI.query(testid: "project-feed"), fn el ->
-      el
-      |> FeedSteps.assert_project_milestone_commented(
-        author: ctx.champion,
-        milestone_tile: ctx.milestone.title,
-        comment: comment
-      )
-    end)
-    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
-    |> UI.find(UI.query(testid: "space-feed"), fn el ->
-      el
-      |> FeedSteps.assert_project_milestone_commented(
-        author: ctx.champion,
-        milestone_tile: ctx.milestone.title,
-        comment: comment
-      )
-    end)
-    |> UI.visit(Paths.feed_path(ctx.company))
-    |> UI.find(UI.query(testid: "company-feed"), fn el ->
-      el
-      |> FeedSteps.assert_project_milestone_commented(
-        author: ctx.champion,
-        milestone_tile: ctx.milestone.title,
-        comment: comment
-      )
-    end)
-  end
-
-  step :assert_comment_email_sent_to_project_reviewer, ctx do
-    ctx
-    |> EmailSteps.assert_activity_email_sent(%{
-      where: ctx.project.name,
-      to: ctx.reviewer,
-      action: "commented on the #{ctx.milestone.title} milestone",
-      author: ctx.champion
-    })
-  end
-
-  step :assert_comment_notification_sent_to_project_reviewer, ctx do
-    ctx
-    |> UI.login_as(ctx.reviewer)
-    |> UI.visit(Paths.notifications_path(ctx.company))
-    |> NotificationsSteps.assert_activity_notification(%{
-      author: ctx.champion,
-      action: "Re: #{ctx.milestone.title}"
-    })
   end
 
   step :assert_project_milestones_zero_state, ctx do
@@ -396,6 +374,59 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     end)
   end
 
+  step :assert_comment_visible_in_feed, ctx, comment do
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: comment
+      )
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: comment
+      )
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      el
+      |> FeedSteps.assert_project_milestone_commented(
+        author: ctx.champion,
+        milestone_tile: ctx.milestone.title,
+        comment: comment
+      )
+    end)
+  end
+
+  step :assert_milestone_deleted_visible_in_feed, ctx do
+    short =
+      "#{Operately.People.Person.first_name(ctx.champion)} deleted the \"#{ctx.milestone.title}\" milestone"
+
+    long =
+      "#{Operately.People.Person.first_name(ctx.champion)} deleted the \"#{ctx.milestone.title}\" milestone in #{ctx.project.name}"
+
+    ctx
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
+    |> UI.find(UI.query(testid: "project-feed"), fn el ->
+      UI.assert_text(el, short)
+    end)
+    |> UI.visit(Paths.space_path(ctx.company, ctx.group))
+    |> UI.find(UI.query(testid: "space-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+    |> UI.visit(Paths.feed_path(ctx.company))
+    |> UI.find(UI.query(testid: "company-feed"), fn el ->
+      UI.assert_text(el, long)
+    end)
+  end
+
   #
   # Emails
   #
@@ -430,6 +461,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     })
   end
 
+  step :assert_comment_email_sent_to_project_reviewer, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.reviewer,
+      action: "commented on the #{ctx.milestone.title} milestone",
+      author: ctx.champion
+    })
+  end
+
   #
   # Notifications
   #
@@ -458,6 +499,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
       action: "Milestone \"#{ctx.milestone.title}\" description was updated"
+    })
+  end
+
+  step :assert_comment_notification_sent_to_project_reviewer, ctx do
+    ctx
+    |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.notifications_path(ctx.company))
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Re: #{ctx.milestone.title}"
     })
   end
 

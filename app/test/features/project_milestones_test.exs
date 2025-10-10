@@ -250,6 +250,24 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.reload_milestone_page()
       |> Steps.assert_comment(new_comment)
     end
+
+    feature "delete milestone", ctx do
+      ctx
+      |> Steps.visit_milestone_page()
+      |> Steps.delete_milestone()
+      |> Steps.assert_redirected_to_project_page()
+      |> Steps.assert_milestone_deleted()
+      |> Steps.assert_milestone_deleted_visible_in_feed()
+    end
+
+    feature "delete milestone when project doesn't have champion", ctx do
+      ctx
+      |> Steps.given_that_milestone_project_doesnt_have_champion()
+      |> Steps.visit_milestone_page()
+      |> Steps.delete_milestone()
+      |> Steps.assert_redirected_to_project_page()
+      |> Steps.assert_milestone_deleted()
+    end
   end
 
   defp get_milestone_due_date(milestone) do
