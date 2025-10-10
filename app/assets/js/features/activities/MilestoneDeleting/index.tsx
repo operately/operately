@@ -30,9 +30,9 @@ const MilestoneDeleting: ActivityHandler = {
     const { milestoneName, project } = content(props.activity);
 
     if (props.page === "project") {
-      return feedTitle(props.activity, `deleted milestone "${milestoneName}"`);
+      return feedTitle(props.activity, `deleted the "${milestoneName}" milestone`);
     } else {
-      return feedTitle(props.activity, `deleted milestone "${milestoneName}"`, "on", projectLink(project));
+      return feedTitle(props.activity, `deleted the "${milestoneName}" milestone in`, projectLink(project));
     }
   },
 
