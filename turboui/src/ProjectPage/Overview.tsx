@@ -7,11 +7,11 @@ import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { IconFlag } from "../icons";
-import classNames from "../utils/classnames";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
+import { DragAndDropProvider, useDropZone, useDraggingAnimation } from "../utils/DragAndDrop";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -65,13 +65,19 @@ function TimelineSection(props: ProjectPage.State) {
   const validMilestones = milestones.filter(
     (m) => m.name !== "Empty Milestone" && !m.name.toLowerCase().includes("empty") && m.name.trim() !== "",
   );
+  const dropZoneId = "project-timeline-milestones";
+  const canReorder = Boolean(props.canEdit && props.onMilestoneReorder);
 
-  // Separate upcoming and completed milestones
-  const upcomingMilestones = validMilestones.filter((m) => m.status !== "done");
-  const completedMilestones = validMilestones.filter((m) => m.status === "done");
+  const handleDrop = React.useCallback(
+    (zoneId: string, draggedId: string, indexInDropZone: number) => {
+      if (zoneId !== dropZoneId) return false;
+      if (!canReorder || !props.onMilestoneReorder) return false;
 
-  const sortedUpcoming = upcomingMilestones.sort(sortByDueDate);
-  const sortedCompleted = completedMilestones.sort(sortByDueDate);
+      props.onMilestoneReorder(draggedId, indexInDropZone);
+      return true;
+    },
+    [canReorder, props.onMilestoneReorder],
+  );
 
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim()) return;
@@ -103,7 +109,7 @@ function TimelineSection(props: ProjectPage.State) {
 
   // Calculate completion stats
   const totalMilestones = validMilestones.length;
-  const completedCount = completedMilestones.length;
+  const completedCount = validMilestones.filter((m) => m.status === "done").length;
   const completionPercentage = totalMilestones > 0 ? (completedCount / totalMilestones) * 100 : 0;
 
   return (
@@ -127,25 +133,16 @@ function TimelineSection(props: ProjectPage.State) {
       </div>
 
       <div className="space-y-6">
-        {sortedUpcoming.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium text-content-accent mb-3">Upcoming</h3>
+        {validMilestones.length > 0 && (
+          <DragAndDropProvider onDrop={handleDrop}>
             <MilestoneList
-              milestones={sortedUpcoming}
+              milestones={validMilestones}
               canEdit={props.canEdit}
               onMilestoneUpdate={props.onMilestoneUpdate}
+              dropZoneId={dropZoneId}
+              canReorder={canReorder}
             />
-          </div>
-        )}
-
-        {sortedCompleted.length > 0 && (
-          <CollapsibleSection title={`Show ${completedCount} completed`} defaultCollapsed>
-            <MilestoneList
-              milestones={sortedCompleted}
-              canEdit={props.canEdit}
-              onMilestoneUpdate={props.onMilestoneUpdate}
-            />
-          </CollapsibleSection>
+          </DragAndDropProvider>
         )}
 
         <EmptyState
@@ -200,11 +197,17 @@ interface MilestoneListProps {
   milestones: TaskBoardTypes.Milestone[];
   canEdit: boolean;
   onMilestoneUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
+  dropZoneId: string;
+  canReorder: boolean;
 }
 
-function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneListProps) {
+function MilestoneList({ milestones, canEdit, onMilestoneUpdate, dropZoneId, canReorder }: MilestoneListProps) {
+  const milestoneIdsKey = React.useMemo(() => milestones.map((milestone) => milestone.id).join("-"), [milestones]);
+  const { ref } = useDropZone({ id: dropZoneId, dependencies: [milestoneIdsKey] });
+  const { containerStyle, itemStyle } = useDraggingAnimation(dropZoneId, milestones);
+
   return (
-    <div className="space-y-2">
+    <div ref={ref} style={containerStyle} className="space-y-2">
       {milestones.map((milestone, index) => (
         <MilestoneItem
           key={milestone.id}
@@ -212,31 +215,11 @@ function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneList
           canEdit={canEdit}
           onUpdate={onMilestoneUpdate}
           isLast={index === milestones.length - 1}
+          dragStyle={itemStyle(milestone.id)}
+          dragZoneId={dropZoneId}
+          canDrag={canReorder}
         />
       ))}
-    </div>
-  );
-}
-
-interface CollapsibleSectionProps {
-  title: string;
-  children: React.ReactNode;
-  defaultCollapsed?: boolean;
-}
-
-function CollapsibleSection({ title, children, defaultCollapsed = false }: CollapsibleSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-
-  return (
-    <div>
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="flex items-center gap-2 text-sm font-medium text-content-accent mb-3 hover:text-content-strong transition-colors"
-      >
-        <div className={classNames("transition-transform", isCollapsed ? "rotate-0" : "rotate-90")}>▶</div>
-        {title}
-      </button>
-      {!isCollapsed && children}
     </div>
   );
 }
@@ -319,9 +302,3 @@ function AddMilestoneForm({
   );
 }
 
-const sortByDueDate = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
-  if (!a.dueDate && !b.dueDate) return 0;
-  if (!a.dueDate) return 1;
-  if (!b.dueDate) return -1;
-  return a.dueDate.date?.getTime() - b.dueDate.date?.getTime();
-};

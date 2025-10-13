@@ -1,20 +1,32 @@
 import React, { useState } from "react";
 import { PrimaryButton as Button, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
-import { IconFlag, IconFlagFilled } from "../icons";
+import { IconFlag, IconFlagFilled, IconGripVertical } from "../icons";
 import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import classNames from "../utils/classnames";
 import { createTestId } from "../TestableElement";
+import { useDraggable } from "../utils/DragAndDrop";
 
 interface MilestoneItemProps {
   milestone: TaskBoardTypes.Milestone;
   canEdit: boolean;
   onUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
   isLast?: boolean;
+  dragStyle?: React.CSSProperties;
+  dragZoneId?: string;
+  canDrag?: boolean;
 }
 
-export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: MilestoneItemProps) {
+export function MilestoneItem({
+  milestone,
+  canEdit,
+  onUpdate,
+  isLast = false,
+  dragStyle,
+  dragZoneId,
+  canDrag,
+}: MilestoneItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(milestone.name);
   const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate || null);
@@ -40,10 +52,29 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
   };
 
   const isCompleted = milestone.status === "done";
+  const effectiveZoneId = dragZoneId ?? "project-timeline-milestones";
+  const draggable = Boolean(canDrag && dragZoneId);
+  const { ref, isDragging } = useDraggable({
+    id: milestone.id,
+    zoneId: effectiveZoneId,
+    disabled: !draggable || isEditing,
+  });
+
+  const testId = isEditing ? editFormTestId : milestoneTestId;
+  const handleClass = classNames(
+    "absolute -left-6 top-2 text-content-subtle transition-opacity",
+    {
+      hidden: !draggable || isEditing,
+      "opacity-0 group-hover:opacity-100": draggable && !isDragging,
+      "cursor-grab": draggable && !isDragging,
+      "cursor-grabbing opacity-100": draggable && isDragging,
+    },
+  );
 
   if (isEditing) {
     return (
-      <div className="flex items-start gap-3" data-test-id={editFormTestId}>
+      <div className="relative flex items-start gap-3" ref={ref} style={dragStyle} data-test-id={testId}>
+        <IconGripVertical size={16} className={handleClass} />
         {/* Timeline flag icon as marker */}
         <div className="flex flex-col items-center mt-1">
           {isCompleted ? (
@@ -86,7 +117,8 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
   }
 
   return (
-    <div className="flex items-start gap-3 group" data-test-id={milestoneTestId}>
+    <div className="relative flex items-start gap-3 group" ref={ref} style={dragStyle} data-test-id={testId}>
+      <IconGripVertical size={16} className={handleClass} />
       {/* Timeline flag icon as marker */}
       <div className="flex flex-col items-center mt-1">
         {isCompleted ? (
