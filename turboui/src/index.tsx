@@ -31,6 +31,7 @@ export { GlobalSearch } from "./GlobalSearch";
 export { GoalAddPage } from "./GoalAddForm";
 export { GoalPage } from "./GoalPage";
 export { InviteLinkJoinPage } from "./InviteLinkJoinPage";
+export { InvitePeoplePage } from "./InvitePeoplePage";
 export { MilestonePage } from "./MilestonePage";
 export { MiniWorkMap } from "./MiniWorkMap";
 export { Modal } from "./Modal";
