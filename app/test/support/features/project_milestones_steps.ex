@@ -140,7 +140,9 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   end
 
   step :edit_milestone_due_date, ctx, due_date do
-    UI.select_day_in_date_field(ctx, testid: "milestone-due-date", date: due_date)
+    ctx
+    |> UI.select_day_in_date_field(testid: "milestone-due-date", date: due_date)
+    |> UI.sleep(300)
   end
 
   step :remove_milestone_due_date, ctx do
