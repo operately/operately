@@ -1,8 +1,11 @@
 import React, { useCallback, useState } from "react";
 
-import { PrimaryButton, SecondaryButton } from "../Button";
+import { SecondaryButton } from "../Button";
 import { IconCopy, IconUserPlus, IconUsers } from "../icons";
 import { PageNew } from "../Page";
+import { SwitchToggle } from "../SwitchToggle";
+import { TextField } from "../TextField";
+import classNames from "../utils/classnames";
 
 export namespace InvitePeoplePage {
   export interface Props {
@@ -13,19 +16,41 @@ export namespace InvitePeoplePage {
     onInviteIndividually?: () => void;
 
     onCopyLink?: (link: string) => void | Promise<void>;
+    onResetLink?: () => void | Promise<void>;
+    isResettingLink?: boolean;
+    linkEnabled?: boolean;
+    onToggleLink?: (enabled: boolean) => void;
+    domainRestriction?: DomainRestrictionControls;
     testId?: string;
   }
 
   export type CopyState = "idle" | "copied" | "error";
+
+  export interface DomainRestrictionControls {
+    enabled: boolean;
+    value: string;
+    onToggle?: (enabled: boolean) => void;
+    onChange?: (value: string) => void;
+    toggleLabel?: string;
+    label?: string;
+    helperText?: string;
+    placeholder?: string;
+    error?: string;
+    testId?: string;
+  }
 }
 
 export function InvitePeoplePage(props: InvitePeoplePage.Props) {
   const [copyState, setCopyState] = useState<InvitePeoplePage.CopyState>("idle");
-  const canCopy = Boolean(props.invitationLink);
+  const [resettingLink, setResettingLink] = useState(false);
+  const [internalLinkEnabled, setInternalLinkEnabled] = useState(props.linkEnabled ?? true);
+  const linkEnabled = props.linkEnabled ?? internalLinkEnabled;
+  const canCopy = Boolean(props.invitationLink) && linkEnabled;
   const canInviteIndividually = Boolean(props.inviteIndividuallyHref || props.onInviteIndividually);
+  const isResettingLink = props.isResettingLink ?? resettingLink;
 
   const handleCopyLink = useCallback(async () => {
-    if (!props.invitationLink) return;
+    if (!props.invitationLink || !linkEnabled) return;
 
     try {
       await copyToClipboard(props.invitationLink);
@@ -39,52 +64,95 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     if (props.onCopyLink) {
       Promise.resolve(props.onCopyLink(props.invitationLink)).catch(() => undefined);
     }
-  }, [props.invitationLink, props.onCopyLink]);
+  }, [props.invitationLink, props.onCopyLink, linkEnabled]);
+
+  const handleResetLink = useCallback(async () => {
+    if (!props.onResetLink || isResettingLink || !linkEnabled) return;
+
+    setResettingLink(true);
+    try {
+      await props.onResetLink();
+    } finally {
+      setResettingLink(false);
+    }
+  }, [props.onResetLink, isResettingLink, linkEnabled]);
+
+  const handleLinkToggle = useCallback(
+    (enabled: boolean) => {
+      props.onToggleLink?.(enabled);
+      if (props.linkEnabled === undefined) {
+        setInternalLinkEnabled(enabled);
+      }
+    },
+    [props.onToggleLink, props.linkEnabled],
+  );
+
+  const handleDomainToggle = useCallback(
+    (enabled: boolean) => {
+      props.domainRestriction?.onToggle?.(enabled);
+    },
+    [props.domainRestriction],
+  );
+
+  const handleDomainChange = useCallback(
+    (value: string) => {
+      props.domainRestriction?.onChange?.(value);
+    },
+    [props.domainRestriction],
+  );
 
   return (
     <PageNew title="Invite People" size="medium" testId={props.testId}>
-      <div className="px-6 py-10 md:w-[700px]">
+      <div className="px-6 py-10 md:w-[760px]">
         <header className="text-center">
           <div className="flex items-center justify-center gap-3 text-content-dimmed">
             <IconUsers size={14} />
             <span className="text-xs font-medium uppercase tracking-wide">Invite to {props.companyName}</span>
           </div>
-          <h1 className="mt-3 text-3xl font-semibold text-content-strong">Bring your team on board</h1>
-          <p className="mt-2 text-content-dimmed text-base">Share one link with everyone, or invite them one by one.</p>
+          <h1 className="mt-3 text-3xl font-semibold text-content-strong">Invite your team</h1>
+          <p className="mt-2 text-content-dimmed text-base">Share a link or send personal invitations.</p>
         </header>
 
-        <div className="mt-8">
-          <section className="rounded-xl border border-surface-outline bg-surface-base p-12 shadow-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-brand-1">
-                <IconCopy size={18} />
-              </div>
+        <div className="mt-8 space-y-6">
+          <section className="rounded-2xl border border-surface-outline bg-surface-base p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-lg font-semibold text-content-strong">Share one link</h2>
-                <p className="text-sm text-content-dimmed">
-                  Drop it in Slack, email, or wherever your team talks currently.
+                <h2 className="text-xl font-semibold text-content-strong">Share a link</h2>
+                <p className="mt-1 text-sm text-content-dimmed">
+                  Drop it in Slack, email, or wherever your team gathers.
                 </p>
               </div>
+              <SwitchToggle
+                value={linkEnabled}
+                setValue={handleLinkToggle}
+                label="Enable invite link"
+                labelHidden
+                testId="invite-people-link-toggle"
+              />
             </div>
 
-            <div className="mt-5 space-y-3">
+            <div className="mt-6 space-y-3">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
                 <input
-                  className="flex-1 rounded-lg border border-surface-outline bg-surface-base px-3 py-2 text-sm text-content-base focus:border-brand-1 focus:outline-none"
-                  value={props.invitationLink ?? ""}
-                  placeholder="Generating invite link…"
+                  className={classNames(
+                    "flex-1 rounded-lg border border-surface-outline bg-surface-raised px-3 py-2 text-sm text-content-base focus:border-brand-1 focus:outline-none",
+                    !linkEnabled && "opacity-60",
+                  )}
+                  value={linkEnabled ? props.invitationLink ?? "" : ""}
+                  placeholder={linkEnabled ? "Generating invite link…" : "Invite link disabled"}
                   readOnly
+                  disabled={!linkEnabled}
                   onFocus={(event) => event.currentTarget.select()}
                 />
-                <PrimaryButton
+                <SecondaryButton
                   onClick={handleCopyLink}
                   disabled={!canCopy}
                   size="sm"
                   icon={IconCopy}
                   testId="invite-people-copy-link"
                 >
-                  {copyState === "copied" ? "Copied" : "Copy link"}
-                </PrimaryButton>
+                  {copyState === "copied" ? "Copied" : "Copy"}
+                </SecondaryButton>
               </div>
 
               {copyState === "error" && (
@@ -93,39 +161,86 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                 </div>
               )}
 
-              <p className="text-xs text-content-dimmed">Anyone with this link can join {props.companyName}.</p>
+              <p className="text-xs text-content-dimmed">
+                {linkEnabled
+                  ? (
+                    <>
+                      Anyone with this link can join {props.companyName}.{" "}
+                      {props.onResetLink && (
+                        <button
+                          type="button"
+                          className="font-medium text-brand-1 underline-offset-2 hover:text-brand-2 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+                          onClick={handleResetLink}
+                          disabled={isResettingLink}
+                          data-test-id="invite-people-reset-link"
+                        >
+                          {isResettingLink ? "Generating…" : "Generate a new link"}
+                        </button>
+                      )}
+                    </>
+                  )
+                  : "Joining via link is disabled. Turn it back on when you want to share one link with your team."}
+              </p>
             </div>
-
-            <div className="flex items-center gap-4 my-8">
-              <div className="h-px flex-1 bg-surface-outline" />
-              <span className="text-xs text-content-dimmed uppercase">or</span>
-              <div className="h-px flex-1 bg-surface-outline" />
-            </div>
-
-            <div>
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-brand-1">
-                    <IconUserPlus size={18} />
-                  </div>
+            {linkEnabled && props.domainRestriction && (
+              <div className="mt-8 border-t border-surface-outline pt-8">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <div className="text-sm font-semibold text-content-strong">Invite people one by one</div>
-                    <p className="mt-1 text-xs text-content-dimmed">
-                      Prefer personal invites? Send them one at a time.
+                    <h3 className="text-lg font-semibold text-content-strong">
+                      {props.domainRestriction.label ?? "Restrict by email domain"}
+                    </h3>
+                    <p className="mt-1 text-sm text-content-dimmed">
+                      {props.domainRestriction.helperText ??
+                        "Limit who can use the link. Personal invites work for anyone."}
                     </p>
                   </div>
+                  <SwitchToggle
+                    value={props.domainRestriction.enabled}
+                    setValue={handleDomainToggle}
+                    label={props.domainRestriction.toggleLabel ?? "Restrict domains"}
+                    labelHidden
+                    testId={props.domainRestriction.testId ?? "invite-people-domain-toggle"}
+                  />
                 </div>
-                <SecondaryButton
-                  linkTo={props.inviteIndividuallyHref}
-                  onClick={props.inviteIndividuallyHref ? undefined : props.onInviteIndividually}
-                  size="xs"
-                  icon={IconUserPlus}
-                  testId="invite-people-individual"
-                  disabled={!canInviteIndividually}
-                >
-                  Invite one by one
-                </SecondaryButton>
+
+                {props.domainRestriction.enabled && (
+                  <div className="mt-6 space-y-2">
+                    <TextField
+                      variant="form-field"
+                      text={props.domainRestriction.value}
+                      onChange={handleDomainChange}
+                      placeholder={props.domainRestriction.placeholder ?? "e.g. acme.com, example.org"}
+                      label="Allowed domains"
+                      error={props.domainRestriction.error}
+                      className="sm:max-w-md"
+                      testId="invite-people-domain-input"
+                      readonly={!props.domainRestriction.onChange}
+                    />
+                    <p className="text-xs text-content-dimmed">
+                      Separate multiple domains with commas. Leave empty to allow any domain while the link is on.
+                    </p>
+                  </div>
+                )}
               </div>
+            )}
+          </section>
+
+          <section className="rounded-2xl border border-surface-outline bg-surface-base p-8">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-xl font-semibold text-content-strong">Send personal invites</h2>
+                <p className="mt-1 text-sm text-content-dimmed">Invite people one at a time by email.</p>
+              </div>
+              <SecondaryButton
+                linkTo={props.inviteIndividuallyHref}
+                onClick={props.inviteIndividuallyHref ? undefined : props.onInviteIndividually}
+                size="sm"
+                icon={IconUserPlus}
+                testId="invite-people-individual"
+                disabled={!canInviteIndividually}
+              >
+                Invite
+              </SecondaryButton>
             </div>
           </section>
         </div>
