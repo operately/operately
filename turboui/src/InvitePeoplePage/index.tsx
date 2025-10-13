@@ -6,6 +6,7 @@ import { PageNew } from "../Page";
 import { SwitchToggle } from "../SwitchToggle";
 import { TextField } from "../TextField";
 import classNames from "../utils/classnames";
+import { ActionLink } from "../Link";
 
 export namespace InvitePeoplePage {
   export interface Props {
@@ -110,17 +111,15 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             <span className="text-xs font-medium uppercase tracking-wide">Invite to {props.companyName}</span>
           </div>
           <h1 className="mt-3 text-3xl font-semibold text-content-strong">Invite your team</h1>
-          <p className="mt-2 text-content-dimmed text-base">Share a link or send personal invitations.</p>
+          <p className="mt-2 text-content-dimmed text-base">Invite everyone at once or send personal invitations.</p>
         </header>
 
         <div className="mt-8 space-y-6">
           <section className="rounded-2xl border border-surface-outline bg-surface-base p-8">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-content-strong">Share a link</h2>
-                <p className="mt-1 text-sm text-content-dimmed">
-                  Drop it in Slack, email, or wherever your team gathers.
-                </p>
+                <h2 className="text-xl font-semibold text-content-strong">Invite everyone at once</h2>
+                <p className="mt-1 text-sm text-content-dimmed">Share it in Slack, email, or wherever your crew hangs out.</p>
               </div>
               <SwitchToggle
                 value={linkEnabled}
@@ -167,15 +166,14 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                     <>
                       Anyone with this link can join {props.companyName}.{" "}
                       {props.onResetLink && (
-                        <button
-                          type="button"
-                          className="font-medium text-brand-1 underline-offset-2 hover:text-brand-2 hover:underline disabled:cursor-not-allowed disabled:opacity-60"
+                        <ActionLink
                           onClick={handleResetLink}
-                          disabled={isResettingLink}
-                          data-test-id="invite-people-reset-link"
+                          underline="hover"
+                          className={classNames("font-medium", isResettingLink && "pointer-events-none opacity-60")}
+                          testId="invite-people-reset-link"
                         >
                           {isResettingLink ? "Generating…" : "Generate a new link"}
-                        </button>
+                        </ActionLink>
                       )}
                     </>
                   )
