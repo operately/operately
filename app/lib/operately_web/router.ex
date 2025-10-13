@@ -88,6 +88,12 @@ defmodule OperatelyWeb.Router do
     forward("/v2", OperatelyWeb.Api)
   end
 
+  scope "/mcp" do
+    pipe_through([:api])
+    
+    forward("/", Hermes.Server.Transport.StreamableHTTP.Plug, init_opts: [server: Operately.MCP.Server])
+  end
+
   scope "/analytics/beacons" do
     forward("/", OperatelyEE.BeaconCollector)
   end
