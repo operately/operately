@@ -2,11 +2,11 @@ import React, { useCallback, useState } from "react";
 
 import { SecondaryButton } from "../Button";
 import { IconCopy, IconUserPlus, IconUsers } from "../icons";
+import { ActionLink } from "../Link";
 import { PageNew } from "../Page";
 import { SwitchToggle } from "../SwitchToggle";
 import { TextField } from "../TextField";
 import classNames from "../utils/classnames";
-import { ActionLink } from "../Link";
 
 export namespace InvitePeoplePage {
   export interface Props {
@@ -114,12 +114,14 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
           <p className="mt-2 text-content-dimmed text-base">Invite everyone at once or send personal invitations.</p>
         </header>
 
-        <div className="mt-8 space-y-6">
-          <section className="rounded-2xl border border-surface-outline bg-surface-base p-8">
+        <div className="mt-8 space-y-8">
+          <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-content-strong">Invite everyone at once</h2>
-                <p className="mt-1 text-sm text-content-dimmed">Share it in Slack, email, or wherever your crew hangs out.</p>
+                <p className="mt-1 text-sm text-content-dimmed">
+                  Share it in Slack, email, or wherever your crew hangs out.
+                </p>
               </div>
               <SwitchToggle
                 value={linkEnabled}
@@ -161,23 +163,23 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
               )}
 
               <p className="text-xs text-content-dimmed">
-                {linkEnabled
-                  ? (
-                    <>
-                      Anyone with this link can join {props.companyName}.{" "}
-                      {props.onResetLink && (
-                        <ActionLink
-                          onClick={handleResetLink}
-                          underline="hover"
-                          className={classNames("font-medium", isResettingLink && "pointer-events-none opacity-60")}
-                          testId="invite-people-reset-link"
-                        >
-                          {isResettingLink ? "Generating…" : "Generate a new link"}
-                        </ActionLink>
-                      )}
-                    </>
-                  )
-                  : "Joining via link is disabled. Turn it back on when you want to share one link with your team."}
+                {linkEnabled ? (
+                  <>
+                    Anyone with this link can join {props.companyName}.{" "}
+                    {props.onResetLink && (
+                      <ActionLink
+                        onClick={handleResetLink}
+                        underline="hover"
+                        className={classNames("font-medium", isResettingLink && "pointer-events-none opacity-60")}
+                        testId="invite-people-reset-link"
+                      >
+                        {isResettingLink ? "Generating…" : "Generate a new link"}
+                      </ActionLink>
+                    )}
+                  </>
+                ) : (
+                  "Joining via link is disabled. Turn it back on when you want to share one link with your team."
+                )}
               </p>
             </div>
             {linkEnabled && props.domainRestriction && (
@@ -223,7 +225,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             )}
           </section>
 
-          <section className="rounded-2xl border border-surface-outline bg-surface-base p-8">
+          <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-content-strong">Send personal invites</h2>
