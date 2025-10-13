@@ -2,6 +2,7 @@ defmodule Operately.Demo.Projects do
   alias Operately.Demo.Resources
   alias Operately.Projects.Milestone
   alias Operately.ContextualDates.ContextualDate
+  alias Operately.Repo
 
   def create_projects(resources, data) do
     Resources.create(resources, data, fn {resources, data, _index} ->
@@ -34,6 +35,7 @@ defmodule Operately.Demo.Projects do
     }
 
     {:ok, project} = Operately.Operations.ProjectCreation.run(params)
+    project = Repo.preload(project, :subscription_list)
     {:ok, project} = set_description(project, data[:description])
     {:ok, project} = set_project_timeline(champion, project)
 
