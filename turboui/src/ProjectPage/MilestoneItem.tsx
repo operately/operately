@@ -1,23 +1,32 @@
 import React, { useState } from "react";
 import { PrimaryButton as Button, SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
-import { IconFlag, IconFlagFilled } from "../icons";
+import { IconFlag, IconFlagFilled, IconGripVertical } from "../icons";
 import { Link } from "../Link";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import classNames from "../utils/classnames";
 import { createTestId } from "../TestableElement";
+import { useDraggable } from "../utils/DragAndDrop";
 
 interface MilestoneItemProps {
   milestone: TaskBoardTypes.Milestone;
   canEdit: boolean;
   onUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
   isLast?: boolean;
+  isDraggable?: boolean;
+  itemStyle?: (id: string) => React.CSSProperties;
 }
 
-export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: MilestoneItemProps) {
+export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false, isDraggable = false, itemStyle }: MilestoneItemProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(milestone.name);
   const [editDueDate, setEditDueDate] = useState<DateField.ContextualDate | null>(milestone.dueDate || null);
+
+  const { ref: draggableRef, isDragging } = useDraggable({
+    id: milestone.id,
+    zoneId: "milestone-list",
+    disabled: !isDraggable,
+  });
 
   const milestoneTestId = createTestId("milestone", milestone.name);
   const editBtnTestId = createTestId("edit-btn", milestone.name);
@@ -86,7 +95,23 @@ export function MilestoneItem({ milestone, canEdit, onUpdate, isLast = false }: 
   }
 
   return (
-    <div className="flex items-start gap-3 group" data-test-id={milestoneTestId}>
+    <div
+      ref={draggableRef}
+      style={itemStyle?.(milestone.id)}
+      className={classNames(
+        "flex items-start gap-3 group",
+        isDragging && "opacity-50",
+        isDraggable && "cursor-grab active:cursor-grabbing",
+      )}
+      data-test-id={milestoneTestId}
+    >
+      {/* Drag handle - shown on hover when draggable */}
+      {isDraggable && (
+        <div className="flex items-center mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+          <IconGripVertical size={16} className="text-content-subtle" />
+        </div>
+      )}
+
       {/* Timeline flag icon as marker */}
       <div className="flex flex-col items-center mt-1">
         {isCompleted ? (

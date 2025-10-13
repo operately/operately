@@ -12,6 +12,7 @@ import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
 import { PageDescription } from "../PageDescription";
+import { DragAndDropProvider, useDropZone, useDraggingAnimation } from "../utils/DragAndDrop";
 
 export function Overview(props: ProjectPage.State) {
   return (
@@ -70,8 +71,8 @@ function TimelineSection(props: ProjectPage.State) {
   const upcomingMilestones = validMilestones.filter((m) => m.status !== "done");
   const completedMilestones = validMilestones.filter((m) => m.status === "done");
 
-  const sortedUpcoming = upcomingMilestones.sort(sortByDueDate);
-  const sortedCompleted = completedMilestones.sort(sortByDueDate);
+  const sortedUpcoming = upcomingMilestones;
+  const sortedCompleted = completedMilestones;
 
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim()) return;
@@ -134,6 +135,7 @@ function TimelineSection(props: ProjectPage.State) {
               milestones={sortedUpcoming}
               canEdit={props.canEdit}
               onMilestoneUpdate={props.onMilestoneUpdate}
+              onMilestoneReorder={props.onMilestoneReorder}
             />
           </div>
         )}
@@ -144,6 +146,7 @@ function TimelineSection(props: ProjectPage.State) {
               milestones={sortedCompleted}
               canEdit={props.canEdit}
               onMilestoneUpdate={props.onMilestoneUpdate}
+              onMilestoneReorder={props.onMilestoneReorder}
             />
           </CollapsibleSection>
         )}
@@ -200,11 +203,53 @@ interface MilestoneListProps {
   milestones: TaskBoardTypes.Milestone[];
   canEdit: boolean;
   onMilestoneUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
+  onMilestoneReorder?: (sourceId: string, destinationIndex: number) => Promise<void>;
 }
 
-function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneListProps) {
+function MilestoneList({ milestones, canEdit, onMilestoneUpdate, onMilestoneReorder }: MilestoneListProps) {
+  const handleDrop = React.useCallback(
+    (_dropZoneId: string, draggedId: string, indexInDropZone: number) => {
+      if (onMilestoneReorder) {
+        onMilestoneReorder(draggedId, indexInDropZone);
+        return true;
+      }
+      return false;
+    },
+    [onMilestoneReorder],
+  );
+
+  const isDraggingEnabled = !!(onMilestoneReorder && canEdit);
+
   return (
-    <div className="space-y-2">
+    <DragAndDropProvider onDrop={handleDrop}>
+      <MilestoneListInner
+        milestones={milestones}
+        canEdit={canEdit}
+        onMilestoneUpdate={onMilestoneUpdate}
+        isDraggingEnabled={isDraggingEnabled}
+      />
+    </DragAndDropProvider>
+  );
+}
+
+interface MilestoneListInnerProps {
+  milestones: TaskBoardTypes.Milestone[];
+  canEdit: boolean;
+  onMilestoneUpdate?: (milestoneId: string, updates: TaskBoardTypes.UpdateMilestonePayload) => void;
+  isDraggingEnabled: boolean;
+}
+
+function MilestoneListInner({ milestones, canEdit, onMilestoneUpdate, isDraggingEnabled }: MilestoneListInnerProps) {
+  // Add indices to milestones for proper drop zone calculations
+  const milestonesWithIndex = React.useMemo(() => milestones.map((m, index) => ({ ...m, index })), [milestones]);
+
+  const { ref: dropZoneRef } = useDropZone({ id: "milestone-list", dependencies: [milestonesWithIndex] });
+
+  // Get animation styles for smooth drag-and-drop feedback
+  const { containerStyle, itemStyle } = useDraggingAnimation("milestone-list", milestonesWithIndex);
+
+  return (
+    <div ref={dropZoneRef} className="space-y-2" style={containerStyle}>
       {milestones.map((milestone, index) => (
         <MilestoneItem
           key={milestone.id}
@@ -212,6 +257,8 @@ function MilestoneList({ milestones, canEdit, onMilestoneUpdate }: MilestoneList
           canEdit={canEdit}
           onUpdate={onMilestoneUpdate}
           isLast={index === milestones.length - 1}
+          isDraggable={isDraggingEnabled}
+          itemStyle={itemStyle}
         />
       ))}
     </div>
@@ -318,10 +365,3 @@ function AddMilestoneForm({
     </div>
   );
 }
-
-const sortByDueDate = (a: TaskBoardTypes.Milestone, b: TaskBoardTypes.Milestone) => {
-  if (!a.dueDate && !b.dueDate) return 0;
-  if (!a.dueDate) return 1;
-  if (!b.dueDate) return -1;
-  return a.dueDate.date?.getTime() - b.dueDate.date?.getTime();
-};

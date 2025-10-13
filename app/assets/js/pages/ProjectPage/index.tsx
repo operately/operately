@@ -149,7 +149,11 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
-  const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project, refresh);
+  const { milestones, setMilestones, createMilestone, updateMilestone, reorderMilestones } = useMilestones(
+    paths,
+    project,
+    refresh,
+  );
   const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
@@ -263,6 +267,7 @@ function Page() {
     milestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
+    onMilestoneReorder: reorderMilestones,
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
@@ -503,7 +508,14 @@ function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => 
       });
   };
 
-  return { milestones, setMilestones, createMilestone, updateMilestone, reorderMilestones, orderingState };
+  return {
+    milestones,
+    setMilestones,
+    createMilestone,
+    updateMilestone,
+    reorderMilestones,
+    orderingState,
+  };
 }
 
 function useResources(project: Projects.Project) {
