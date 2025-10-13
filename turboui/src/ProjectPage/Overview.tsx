@@ -7,7 +7,6 @@ import { SwitchToggle } from "../SwitchToggle";
 import * as TaskBoardTypes from "../TaskBoard/types";
 import { SectionHeader } from "../TaskPage/SectionHeader";
 import { IconFlag } from "../icons";
-import classNames from "../utils/classnames";
 import { MilestoneItem } from "./MilestoneItem";
 import { OverviewSidebar } from "./OverviewSidebar";
 import { ProjectPage } from "./index";
@@ -67,12 +66,6 @@ function TimelineSection(props: ProjectPage.State) {
     (m) => m.name !== "Empty Milestone" && !m.name.toLowerCase().includes("empty") && m.name.trim() !== "",
   );
 
-  // Separate upcoming and completed milestones
-  const upcomingMilestones = validMilestones.filter((m) => m.status !== "done");
-  const completedMilestones = validMilestones.filter((m) => m.status === "done");
-
-  const sortedUpcoming = upcomingMilestones;
-  const sortedCompleted = completedMilestones;
 
   const handleAddMilestone = () => {
     if (!newMilestoneName.trim()) return;
@@ -104,7 +97,7 @@ function TimelineSection(props: ProjectPage.State) {
 
   // Calculate completion stats
   const totalMilestones = validMilestones.length;
-  const completedCount = completedMilestones.length;
+  const completedCount = validMilestones.filter((m) => m.status === "done").length;
   const completionPercentage = totalMilestones > 0 ? (completedCount / totalMilestones) * 100 : 0;
 
   return (
@@ -128,27 +121,13 @@ function TimelineSection(props: ProjectPage.State) {
       </div>
 
       <div className="space-y-6">
-        {sortedUpcoming.length > 0 && (
-          <div>
-            <h3 className="text-sm font-medium text-content-accent mb-3">Upcoming</h3>
-            <MilestoneList
-              milestones={sortedUpcoming}
-              canEdit={props.canEdit}
-              onMilestoneUpdate={props.onMilestoneUpdate}
-              onMilestoneReorder={props.onMilestoneReorder}
-            />
-          </div>
-        )}
-
-        {sortedCompleted.length > 0 && (
-          <CollapsibleSection title={`Show ${completedCount} completed`} defaultCollapsed>
-            <MilestoneList
-              milestones={sortedCompleted}
-              canEdit={props.canEdit}
-              onMilestoneUpdate={props.onMilestoneUpdate}
-              onMilestoneReorder={props.onMilestoneReorder}
-            />
-          </CollapsibleSection>
+        {validMilestones.length > 0 && (
+          <MilestoneList
+            milestones={validMilestones}
+            canEdit={props.canEdit}
+            onMilestoneUpdate={props.onMilestoneUpdate}
+            onMilestoneReorder={props.onMilestoneReorder}
+          />
         )}
 
         <EmptyState
@@ -261,29 +240,6 @@ function MilestoneListInner({ milestones, canEdit, onMilestoneUpdate, isDragging
           itemStyle={itemStyle}
         />
       ))}
-    </div>
-  );
-}
-
-interface CollapsibleSectionProps {
-  title: string;
-  children: React.ReactNode;
-  defaultCollapsed?: boolean;
-}
-
-function CollapsibleSection({ title, children, defaultCollapsed = false }: CollapsibleSectionProps) {
-  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
-
-  return (
-    <div>
-      <button
-        onClick={() => setIsCollapsed(!isCollapsed)}
-        className="flex items-center gap-2 text-sm font-medium text-content-accent mb-3 hover:text-content-strong transition-colors"
-      >
-        <div className={classNames("transition-transform", isCollapsed ? "rotate-0" : "rotate-90")}>▶</div>
-        {title}
-      </button>
-      {!isCollapsed && children}
     </div>
   );
 }
