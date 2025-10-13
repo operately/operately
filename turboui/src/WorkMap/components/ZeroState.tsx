@@ -1,9 +1,8 @@
 import React from "react";
 
-import { IconGrowth } from "@tabler/icons-react";
 import { WorkMap } from "..";
 import { SpaceField } from "../../SpaceField";
-import { IconGoal, IconProject } from "../../icons";
+import { IconGoal, IconGrowth, IconProject } from "../../icons";
 import { AddItemModal } from "./AddItemModal";
 
 interface ZeroStateProps {
