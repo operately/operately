@@ -159,7 +159,7 @@ defmodule Operately.Support.Factory.Projects do
 
 
     milestone = Operately.ProjectsFixtures.milestone_fixture(attrs)
-    milestone = Repo.preload(milestone, :project)
+    milestone = Repo.preload(milestone, [:project, :subscription_list])
 
     Map.put(ctx, testid, milestone)
   end
@@ -353,15 +353,18 @@ defmodule Operately.Support.Factory.Projects do
   end
 
   defp set_timeframe(project, opts) do
-    if opts[:timeframe] do
-      {:ok, project} =
-        Operately.Projects.update_project(project, %{
-          timeframe: Keyword.get(opts, :timeframe)
-        })
+    project =
+      if opts[:timeframe] do
+        {:ok, project} =
+          Operately.Projects.update_project(project, %{
+            timeframe: Keyword.get(opts, :timeframe)
+          })
 
-      project
-    else
-      project
-    end
+        project
+      else
+        project
+      end
+
+    Operately.Repo.preload(project, :subscription_list)
   end
 end

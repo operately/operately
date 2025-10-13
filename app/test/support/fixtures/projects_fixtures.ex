@@ -28,7 +28,7 @@ defmodule Operately.ProjectsFixtures do
 
     {:ok, project} = Operately.Projects.create_project(attrs)
 
-    project
+    Operately.Repo.preload(project, :subscription_list)
   end
 
   @doc """
@@ -46,7 +46,8 @@ defmodule Operately.ProjectsFixtures do
 
     {:ok, milestone} = Operately.Projects.create_milestone(attrs)
 
-    project = Operately.Repo.preload(milestone, :project).project
+    milestone = Operately.Repo.preload(milestone, [:project, :subscription_list])
+    project = milestone.project
 
     updated_state =
       project.milestones_ordering_state
