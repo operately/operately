@@ -44,7 +44,7 @@ export function WelcomeStep({ state, imageUrl, whatReady, headingId, stepTestId,
             always come back to this later.
           </p>
           <p className="italic">
-            If you ever need help, reach out at support@operately.com.
+            If you ever need help, reach out at marko@operately.com.
             <br /> We're here for you.
           </p>
           <p>
