@@ -263,6 +263,8 @@ function Page() {
     milestones,
     onMilestoneCreate: createMilestone,
     onMilestoneUpdate: updateMilestone,
+    onMilestoneReorder: (milestoneId: string, destinationIndex: number) =>
+      reorderMilestones({ sourceId: milestoneId, destinationIndex }),
     contributors: prepareContributors(paths, project.contributors),
     checkIns: parseCheckInsForTurboUi(paths, checkIns),
     discussions: prepareDiscussions(paths, discussions),
