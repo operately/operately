@@ -14,32 +14,25 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const LinkDisabled: Story = {
   args: {
     companyName: "Acme Widgets",
     invitationLink: "https://app.operately.com/invite/acme-widgets",
     inviteIndividuallyHref: "/people/new",
-    onCopyLink: () => {},
   },
   render: (args) => {
-    const [link, setLink] = useState(args.invitationLink);
-    const [restrict, setRestrict] = useState(true);
+    const [linkEnabled, setLinkEnabled] = useState(false);
+    const [domainsEnabled, setDomainsEnabled] = useState(false);
     const [domains, setDomains] = useState("operately.com, example.org");
-    const [linkEnabled, setLinkEnabled] = useState(true);
 
     return (
       <InvitePeoplePage
         {...args}
-        invitationLink={link}
         linkEnabled={linkEnabled}
         onToggleLink={setLinkEnabled}
-        onResetLink={async () => {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          setLink("https://app.operately.com/invite/acme-widgets-new");
-        }}
         domainRestriction={{
-          enabled: restrict,
-          onToggle: setRestrict,
+          enabled: domainsEnabled,
+          onToggle: setDomainsEnabled,
           value: domains,
           onChange: setDomains,
         }}
@@ -48,25 +41,64 @@ export const Default: Story = {
   },
 };
 
-export const GeneratingLink: Story = {
+export const LinkEnabledNoRestrictions: Story = {
   args: {
     companyName: "Acme Widgets",
-    invitationLink: null,
-    onInviteIndividually: () => {},
+    invitationLink: "https://app.operately.com/invite/acme-widgets",
+    inviteIndividuallyHref: "/people/new",
   },
   render: (args) => {
-    const [restrict, setRestrict] = useState(false);
+    const [linkEnabled, setLinkEnabled] = useState(true);
+    const [domainsEnabled, setDomainsEnabled] = useState(false);
     const [domains, setDomains] = useState("");
-    const [linkEnabled, setLinkEnabled] = useState(false);
+    const [link, setLink] = useState(args.invitationLink);
 
     return (
       <InvitePeoplePage
         {...args}
+        invitationLink={link}
         linkEnabled={linkEnabled}
         onToggleLink={setLinkEnabled}
+        onResetLink={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          setLink("https://app.operately.com/invite/acme-widgets-new");
+        }}
         domainRestriction={{
-          enabled: restrict,
-          onToggle: setRestrict,
+          enabled: domainsEnabled,
+          onToggle: setDomainsEnabled,
+          value: domains,
+          onChange: setDomains,
+        }}
+      />
+    );
+  },
+};
+
+export const LinkEnabledRestricted: Story = {
+  args: {
+    companyName: "Acme Widgets",
+    invitationLink: "https://app.operately.com/invite/acme-widgets",
+    inviteIndividuallyHref: "/people/new",
+  },
+  render: (args) => {
+    const [linkEnabled, setLinkEnabled] = useState(true);
+    const [domainsEnabled, setDomainsEnabled] = useState(true);
+    const [domains, setDomains] = useState("operately.com, example.org");
+    const [link, setLink] = useState(args.invitationLink);
+
+    return (
+      <InvitePeoplePage
+        {...args}
+        invitationLink={link}
+        linkEnabled={linkEnabled}
+        onToggleLink={setLinkEnabled}
+        onResetLink={async () => {
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          setLink("https://app.operately.com/invite/acme-widgets-updated");
+        }}
+        domainRestriction={{
+          enabled: domainsEnabled,
+          onToggle: setDomainsEnabled,
           value: domains,
           onChange: setDomains,
         }}

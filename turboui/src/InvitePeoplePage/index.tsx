@@ -229,7 +229,9 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h2 className="text-xl font-semibold text-content-strong">Send personal invites</h2>
-                <p className="mt-1 text-sm text-content-dimmed">Invite people one at a time by email.</p>
+                <p className="mt-1 text-sm text-content-dimmed">
+                  Generate a personal invite link for someone specific.
+                </p>
               </div>
               <SecondaryButton
                 linkTo={props.inviteIndividuallyHref}
