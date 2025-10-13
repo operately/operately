@@ -245,6 +245,9 @@ test.seed.env:
 test.elixir.warnings:
 	./devenv bash -c "cd app && MIX_ENV=test mix compile --warnings-as-errors --all-warnings"
 
+test.icons.check:
+	bash scripts/icon-linting.sh
+
 
 #
 # Building a docker image

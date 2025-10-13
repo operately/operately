@@ -86,6 +86,7 @@ blocks:
             - make test.tsc.lint
             - make test.elixir.warnings
             - make test.pr.name
+            - make test.icons.check
 
         - name: Dialyzer
           commands:

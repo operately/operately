@@ -75,6 +75,7 @@ import IconFlagX from "@tabler/icons-react/dist/esm/icons/IconFlagX.mjs";
 import IconFlare from "@tabler/icons-react/dist/esm/icons/IconFlare.mjs";
 import IconFolderFilled from "@tabler/icons-react/dist/esm/icons/IconFolderFilled.mjs";
 import IconGripVertical from "@tabler/icons-react/dist/esm/icons/IconGripVertical.mjs";
+import IconGrowth from "@tabler/icons-react/dist/esm/icons/IconGrowth.mjs";
 import IconH1 from "@tabler/icons-react/dist/esm/icons/IconH1.mjs";
 import IconH2 from "@tabler/icons-react/dist/esm/icons/IconH2.mjs";
 import IconHash from "@tabler/icons-react/dist/esm/icons/IconHash.mjs";
@@ -231,6 +232,7 @@ export {
   IconFlare,
   IconFolderFilled,
   IconGripVertical,
+  IconGrowth,
   IconH1,
   IconH2,
   IconHash,
