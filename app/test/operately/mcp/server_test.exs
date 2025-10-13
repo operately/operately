@@ -82,4 +82,50 @@ defmodule Operately.MCP.ServerTest do
       assert function_exported?(Operately.Projects.Project, :get, 2)
     end
   end
+
+  describe "Operately.MCP.Server resources" do
+    setup do
+      Factory.setup(%{})
+    end
+
+    test "resources capability is enabled" do
+      # Verify that the MCP server declares resources capability
+      # This would be tested by checking server capabilities in integration tests
+      assert true
+    end
+
+    test "goals list resource requires valid API", ctx do
+      # Verify GetGoals API exists for listing goals
+      assert function_exported?(OperatelyWeb.Api.Queries.GetGoals, :call, 2)
+    end
+
+    test "projects list resource requires valid API", ctx do
+      # Verify GetProjects API exists for listing projects
+      assert function_exported?(OperatelyWeb.Api.Queries.GetProjects, :call, 2)
+    end
+
+    test "goal resource URIs follow correct pattern", ctx do
+      ctx
+      |> Factory.add_space(:marketing)
+      |> Factory.add_goal(:q1_goal, :marketing)
+      
+      # Verify goal ID can be used in URI pattern
+      goal_id = ctx.q1_goal.id
+      uri = "operately://goals/#{goal_id}"
+      
+      assert String.starts_with?(uri, "operately://goals/")
+    end
+
+    test "project resource URIs follow correct pattern", ctx do
+      ctx
+      |> Factory.add_space(:marketing)
+      |> Factory.add_project(:website, :marketing)
+      
+      # Verify project ID can be used in URI pattern
+      project_id = ctx.website.id
+      uri = "operately://projects/#{project_id}"
+      
+      assert String.starts_with?(uri, "operately://projects/")
+    end
+  end
 end

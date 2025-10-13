@@ -1,18 +1,27 @@
 defmodule Operately.MCP.Server do
   @moduledoc """
-  MCP server that exposes Operately tools to AI agents.
+  MCP server that exposes Operately data to AI agents.
   
-  Provides the following tools:
+  Provides the following capabilities:
+  
+  ## Tools
   - switch_organization: Sets the internal context of the conversation
   - get_work_map: Returns the work map from the current organization 
   - get_goal: Returns information about a goal
   - get_project: Returns information about a project
+  
+  ## Resources
+  Resources provide a way to discover and fetch Operately data using URIs:
+  - operately://goals - List all goals in the current organization
+  - operately://goals/{id} - Fetch a specific goal
+  - operately://projects - List all projects in the current organization
+  - operately://projects/{id} - Fetch a specific project
   """
   
   use Hermes.Server,
     name: "Operately MCP Server",
     version: "1.0.0",
-    capabilities: [:tools]
+    capabilities: [:tools, :resources]
 
   require Logger
 
@@ -24,7 +33,8 @@ defmodule Operately.MCP.Server do
       |> register_switch_organization_tool()
       |> register_get_work_map_tool() 
       |> register_get_goal_tool()
-      |> register_get_project_tool()}
+      |> register_get_project_tool()
+      |> register_resources()}
   end
 
   @impl true
@@ -240,5 +250,148 @@ defmodule Operately.MCP.Server do
         ]
       ]
     )
+  end
+
+  # Resources implementation
+  
+  defp register_resources(frame) do
+    frame
+    |> register_resource("operately://goals",
+      name: "Goals List",
+      description: "List all goals in the current organization",
+      mime_type: "application/json"
+    )
+    |> register_resource("operately://goals/*",
+      name: "Goal Details",
+      description: "Get details of a specific goal by ID",
+      mime_type: "text/markdown"
+    )
+    |> register_resource("operately://projects",
+      name: "Projects List",
+      description: "List all projects in the current organization",
+      mime_type: "application/json"
+    )
+    |> register_resource("operately://projects/*",
+      name: "Project Details",
+      description: "Get details of a specific project by ID",
+      mime_type: "text/markdown"
+    )
+  end
+
+  @impl true
+  def handle_resource_read("operately://goals", frame) do
+    case get_current_context(frame) do
+      {:ok, person, company} ->
+        conn = %{assigns: %{current_person: person}}
+        
+        case OperatelyWeb.Api.Queries.GetGoals.call(conn, %{}) do
+          {:ok, data} ->
+            goals = Enum.map(data.goals, fn goal ->
+              %{
+                id: goal.id,
+                name: goal.name,
+                uri: "operately://goals/#{goal.id}"
+              }
+            end)
+            
+            {:reply, %{goals: goals}, frame}
+            
+          {:error, error} ->
+            Logger.error("Error fetching goals list: #{inspect(error)}")
+            {:error, %{code: -32603, message: "Failed to fetch goals"}, frame}
+        end
+        
+      {:error, error} ->
+        {:error, %{code: -32002, message: error}, frame}
+    end
+  end
+
+  @impl true
+  def handle_resource_read("operately://goals/" <> goal_id, frame) do
+    case get_current_context(frame) do
+      {:ok, person, _company} ->
+        conn = %{assigns: %{current_person: person}}
+        
+        with {:ok, decoded_id} <- OperatelyWeb.Api.Helpers.decode_id(goal_id) do
+          args = %{
+            id: decoded_id,
+            include_champion: true,
+            include_closed_by: true,
+            include_last_check_in: true,
+            include_permissions: true,
+            include_projects: true,
+            include_reviewer: true,
+            include_space: true,
+            include_privacy: true,
+            include_retrospective: true,
+            include_markdown: true
+          }
+          
+          case OperatelyWeb.Api.Queries.GetGoal.call(conn, args) do
+            {:ok, data} ->
+              {:reply, data.markdown, frame}
+              
+            {:error, error} ->
+              Logger.error("Error fetching goal: #{inspect(error)}")
+              {:error, %{code: -32603, message: "Failed to fetch goal"}, frame}
+          end
+        else
+          {:error, _} ->
+            {:error, %{code: -32602, message: "Invalid goal ID format"}, frame}
+        end
+        
+      {:error, error} ->
+        {:error, %{code: -32002, message: error}, frame}
+    end
+  end
+
+  @impl true
+  def handle_resource_read("operately://projects", frame) do
+    case get_current_context(frame) do
+      {:ok, person, _company} ->
+        conn = %{assigns: %{current_person: person}}
+        
+        case OperatelyWeb.Api.Queries.GetProjects.call(conn, %{}) do
+          {:ok, data} ->
+            projects = Enum.map(data.projects, fn project ->
+              %{
+                id: project.id,
+                name: project.name,
+                uri: "operately://projects/#{project.id}"
+              }
+            end)
+            
+            {:reply, %{projects: projects}, frame}
+            
+          {:error, error} ->
+            Logger.error("Error fetching projects list: #{inspect(error)}")
+            {:error, %{code: -32603, message: "Failed to fetch projects"}, frame}
+        end
+        
+      {:error, error} ->
+        {:error, %{code: -32002, message: error}, frame}
+    end
+  end
+
+  @impl true
+  def handle_resource_read("operately://projects/" <> project_id, frame) do
+    case get_current_context(frame) do
+      {:ok, person, _company} ->
+        with {:ok, decoded_id} <- OperatelyWeb.Api.Helpers.decode_id(project_id),
+             {:ok, project} <- get_project_details(person, decoded_id) do
+          
+          markdown = Operately.MD.Project.render(project)
+          {:reply, markdown, frame}
+        else
+          {:error, reason} when is_binary(reason) ->
+            {:error, %{code: -32603, message: "Unable to access project: #{reason}"}, frame}
+            
+          {:error, reason} ->
+            {:error, %{code: -32602, message: "Invalid project ID: #{inspect(reason)}"}, frame}
+        end
+        
+      {:error, error} ->
+        {:error, %{code: -32002, message: error}, frame}
+    end
   end
 end
