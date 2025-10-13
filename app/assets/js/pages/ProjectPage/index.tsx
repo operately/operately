@@ -149,7 +149,7 @@ function Page() {
     onError: () => showErrorToast("Network Error", "Reverted the started date to its previous value."),
   });
 
-  const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project);
+  const { milestones, setMilestones, createMilestone, updateMilestone } = useMilestones(paths, project, refresh);
   const { resources, createResource, updateResource, removeResource } = useResources(project);
 
   const { tasks, createTask, updateTaskDueDate, updateTaskAssignee, updateTaskStatus, updateTaskMilestone } =
@@ -437,11 +437,21 @@ function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
   };
 }
 
-function useMilestones(paths: Paths, project: Projects.Project) {
+function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
   assertPresent(project.milestones);
-  const [milestones, setMilestones] = React.useState<ProjectPage.Milestone[]>(
-    parseMilestonesForTurboUi(paths, project.milestones),
+  const parsedMilestones = parseMilestonesForTurboUi(
+    paths,
+    project.milestones,
+    project.milestonesOrderingState || [],
   );
+
+  const { milestones, setMilestones, reorderMilestones, orderingState } = Projects.useProjectMilestoneOrdering({
+    projectId: project.id,
+    cacheKey: pageCacheKey(project.id),
+    refresh,
+    initialMilestones: parsedMilestones.orderedMilestones,
+    initialOrderingState: parsedMilestones.orderingState,
+  });
 
   const createMilestone = async (milestone: ProjectPage.NewMilestonePayload) => {
     return Api.projects
@@ -493,7 +503,7 @@ function useMilestones(paths: Paths, project: Projects.Project) {
       });
   };
 
-  return { milestones, setMilestones, createMilestone, updateMilestone };
+  return { milestones, setMilestones, createMilestone, updateMilestone, reorderMilestones, orderingState };
 }
 
 function useResources(project: Projects.Project) {
