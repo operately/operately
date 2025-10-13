@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import Api, * as api from "@/api";
+import Api from "@/api";
 import { PageCache } from "@/routes/PageCache";
 import { showErrorToast, TaskBoard } from "turboui";
 
@@ -16,9 +16,7 @@ interface UseProjectMilestoneOrderingResult {
   milestones: TaskBoard.Milestone[];
   setMilestones: React.Dispatch<React.SetStateAction<TaskBoard.Milestone[]>>;
   orderingState: string[];
-  reorderMilestones: (
-    params: { sourceId: string; destinationIndex: number },
-  ) => Promise<{ success: boolean; project?: api.Project }>;
+  reorderMilestones: (sourceId: string, destinationIndex: number) => Promise<void>;
 }
 
 // useProjectMilestoneOrdering does the following: 
@@ -70,19 +68,24 @@ export function useProjectMilestoneOrdering({
   []);
 
   const reorderMilestones = React.useCallback(
-    async ({ sourceId, destinationIndex }: { sourceId: string; destinationIndex: number }) => {
+    async (sourceId: string, destinationIndex: number) => {
       const currentOrder = orderingRef.current;
       const updatedOrder = moveMilestoneId(currentOrder, sourceId, destinationIndex);
 
       if (!updatedOrder) {
-        return { success: false };
+        return;
       }
 
+      // Capture snapshots before optimistic update
       const snapshotOrder = currentOrder.slice();
-      const snapshotMilestones = milestones.slice();
+      let snapshotMilestones: TaskBoard.Milestone[] = [];
 
+      // Optimistically update ordering and milestones
       setOrderingState(updatedOrder);
-      setMilestonesState((prev) => reorderMilestonesByIds(prev, updatedOrder));
+      setMilestonesState((prev) => {
+        snapshotMilestones = prev.slice();
+        return reorderMilestonesByIds(prev, updatedOrder);
+      });
 
       try {
         const response = await Api.project_milestones.updateOrdering({
@@ -103,16 +106,13 @@ export function useProjectMilestoneOrdering({
         if (refresh) {
           await refresh();
         }
-
-        return { success: true, project: response.project };
       } catch (error) {
         showErrorToast("Error", "Failed to reorder milestones");
         setOrderingState(snapshotOrder);
         setMilestonesState(snapshotMilestones);
-        return { success: false };
       }
     },
-    [cacheKey, milestones, projectId, refresh],
+    [cacheKey, projectId, refresh],
   );
 
   return {
