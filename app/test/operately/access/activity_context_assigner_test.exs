@@ -158,7 +158,8 @@ defmodule Operately.AccessActivityContextAssignerTest do
           project_name: "-",
           task_id: "-",
           task_name: "-",
-          has_description: false
+          has_description: false,
+          description: %{}
         }
       }
 
