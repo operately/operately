@@ -6,6 +6,13 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
   alias Operately.Support.Factory
 
   setup ctx do
+    original_value = Application.get_env(:operately, :allow_signup_with_email)
+    Application.put_env(:operately, :allow_signup_with_email, true)
+
+    on_exit(fn ->
+      Application.put_env(:operately, :allow_signup_with_email, original_value)
+    end)
+
     ctx |> Factory.setup()
   end
 
@@ -32,13 +39,14 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
 
       # Call the mutation
       assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
-      assert result == %{}
+      assert result.error == nil
+      assert result.person.email == "newuser@test.com"
+      assert result.person.full_name == "New User"
 
       # Verify person was created
       people = People.list_people(ctx.company.id)
       new_person = Enum.find(people, fn p -> p.email == "newuser@test.com" end)
 
-      assert new_person != nil
       assert new_person.full_name == "New User"
       assert new_person.company_id == ctx.company.id
 
@@ -62,7 +70,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
 
       # Call the mutation
       assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
-      assert result == %{}
+      assert result.error == "Invalid invite link"
+      assert result.company == nil
+      assert result.person == nil
 
       # Verify no person was created in the company
       people = People.list_people(ctx.company.id)
@@ -97,7 +107,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
 
       # Call the mutation
       assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
-      assert result == %{}
+      assert result.error == "This invite link has expired"
+      assert result.company == nil
+      assert result.person == nil
 
       # Verify no person was created in the company
       people = People.list_people(ctx.company.id)
@@ -123,7 +135,9 @@ defmodule OperatelyWeb.Api.Mutations.CreateAccountTest do
 
       # Call the mutation
       assert {200, result} = mutation(ctx.conn, [:create_account], inputs)
-      assert result == %{}
+      assert result.error == nil
+      assert result.company == nil
+      assert result.person == nil
 
       # Verify no person was created in the company
       people = People.list_people(ctx.company.id)

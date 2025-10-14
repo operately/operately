@@ -1,6 +1,6 @@
 defmodule OperatelyLocalMediaStorage.PlugTest do
   use ExUnit.Case, async: true
-  use Plug.Test
+  import Plug.Test
 
   alias Operately.Blobs.Tokens
 

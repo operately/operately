@@ -9,6 +9,7 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpaceTest
     |> Factory.add_company_member(:bob)
     |> Factory.add_company_member(:mike)
     |> Factory.add_company_member(:emily)
+    |> delete_bindings()
   end
 
   #
@@ -69,5 +70,19 @@ defmodule Operately.Data.Change050CreateBindingsBetweenPeopleAndCompanySpaceTest
     |> Enum.each(fn p ->
       assert Access.get_group_membership(group_id: group.id, person_id: p.id)
     end)
+  end
+
+  defp delete_bindings(ctx) do
+    space = Companies.get_company_space!(ctx.company.id)
+    context = Access.get_context!(group_id: space.id)
+
+    [ctx.bob, ctx.mike, ctx.emily]
+    |> Enum.each(fn p ->
+      group = Access.get_group!(person_id: p.id)
+      binding = Access.get_binding!(context_id: context.id, group_id: group.id)
+      Access.delete_binding(binding)
+    end)
+
+    ctx
   end
 end

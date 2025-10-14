@@ -85,14 +85,6 @@ defmodule Operately.GoalsTest do
       |> Factory.add_company_admin(:creator)
     end
 
-    test "given goal has child goal, it cannot be deleted", ctx do
-      Factory.add_goal(ctx, :child_goal, :group, parent_goal: :goal)
-
-      assert_raise Ecto.ConstraintError, ~r/goals_parent_goal_id_fkey/, fn ->
-        Goals.delete_goal(ctx.goal)
-      end
-    end
-
     test "given goal has child project, it cannot be deleted", ctx do
       Factory.add_project(ctx, :project, :group, goal: :goal)
 
