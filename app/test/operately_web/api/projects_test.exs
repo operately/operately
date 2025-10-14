@@ -1,5 +1,5 @@
 defmodule OperatelyWeb.Api.ProjectsTest do
-  alias Operately.ContextualDates.Timeframe
+  alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
   use OperatelyWeb.TurboCase
 
@@ -953,10 +953,12 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # First create a milestone
-      {:ok, milestone} = Operately.Projects.create_milestone(%{
-        title: "Release v1.0",
-        project_id: ctx.project.id
+      milestone = Operately.ProjectsFixtures.milestone_fixture(%{
+        project_id: ctx.project.id,
+        name: "Release v1.0",
       })
+
+
 
       assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
         project_id: Paths.project_id(ctx.project),
@@ -975,9 +977,9 @@ defmodule OperatelyWeb.Api.ProjectsTest do
       ctx = Factory.log_in_person(ctx, :creator)
 
       # First create a milestone with no date
-      {:ok, milestone} = Operately.Projects.create_milestone(%{
-        title: "Release v1.0",
-        project_id: ctx.project.id
+      milestone = Operately.ProjectsFixtures.milestone_fixture(%{
+        project_id: ctx.project.id,
+        name: "Release v1.0",
       })
 
       contextual_date = %{
@@ -1002,16 +1004,11 @@ defmodule OperatelyWeb.Api.ProjectsTest do
     test "it updates both name and date", ctx do
       ctx = Factory.log_in_person(ctx, :creator)
 
-      {:ok, milestone} = Operately.Projects.create_milestone(%{
-        title: "Release v1.0",
+      milestone = Operately.ProjectsFixtures.milestone_fixture(%{
         project_id: ctx.project.id,
         timeframe: %{
           contextual_start_date: nil,
-          contextual_end_date: %{
-            date: "2025-12-31",
-            date_type: "day",
-            value: "Dec 31, 2025"
-          }
+          contextual_end_date: ContextualDate.create_day_date(~D[2025-12-31]),
         }
       })
 
