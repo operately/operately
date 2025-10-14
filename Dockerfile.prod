@@ -10,7 +10,7 @@
 #   - https://hub.docker.com/_/debian?tab=tags&page=1&name=bullseye-20221004-slim - for the release image
 #   - https://pkgs.org/ - resource for finding needed packages
 #
-ARG ELIXIR_VERSION=1.17.2
+ARG ELIXIR_VERSION=1.18.0
 ARG OTP_VERSION=27.0.1
 ARG DEBIAN_VERSION=bookworm-20240904-slim
 
