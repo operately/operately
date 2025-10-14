@@ -1,6 +1,7 @@
 defmodule OperatelyWeb.Api.Plugs.RequireAuthenticatedAccountTest do
   use ExUnit.Case
-  use Plug.Test
+  import Plug.Test
+  import Plug.Conn
 
   test "it returns 401 if the current account is nil" do
     conn = conn(:get, "/")
