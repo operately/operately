@@ -262,10 +262,17 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     end
 
     test "project check-ins", ctx do
-      p1 = create_project(ctx, upcoming_date(), %{reviewer_id: ctx.person.id})
+      another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+      p1 = create_project(ctx, upcoming_date(), %{
+        reviewer_id: ctx.person.id,
+        champion_id: another_person.id,
+      })
       create_check_in(p1)
       create_check_in(p1)
-      p2 = create_project(ctx, upcoming_date(), %{reviewer_id: ctx.person.id})
+      p2 = create_project(ctx, upcoming_date(), %{
+        reviewer_id: ctx.person.id,
+        champion_id: another_person.id,
+      })
       create_check_in(p2)
       create_check_in(p2)
 
@@ -284,12 +291,19 @@ defmodule OperatelyWeb.Api.Queries.GetAssignmentsTest do
     end
 
     test "goal updates", ctx do
-      g1 = create_goal(ctx.person, ctx.company, upcoming_date())
-      create_update(ctx.person, g1)
-      create_update(ctx.person, g1)
-      g2 = create_goal(ctx.person, ctx.company, upcoming_date())
-      create_update(ctx.person, g2)
-      create_update(ctx.person, g2)
+      another_person = person_fixture_with_account(%{full_name: "champion", company_id: ctx.company.id})
+      g1 = create_goal(ctx.person, ctx.company, upcoming_date(), %{
+        reviewer_id: ctx.person.id,
+        champion_id: another_person.id,
+      })
+      create_update(another_person, g1)
+      create_update(another_person, g1)
+      g2 = create_goal(ctx.person, ctx.company, upcoming_date(), %{
+        reviewer_id: ctx.person.id,
+        champion_id: another_person.id,
+      })
+      create_update(another_person, g2)
+      create_update(another_person, g2)
 
       assert {200, %{assignments: assignments} = _res} = query(ctx.conn, :get_assignments, %{})
       assert length(assignments) == 4

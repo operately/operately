@@ -1,6 +1,6 @@
 defmodule TurboConnect.ApiTest do
   use ExUnit.Case
-  use Plug.Test
+  import Plug.Test
 
   defmodule ExampleTypes do
     use TurboConnect.Types

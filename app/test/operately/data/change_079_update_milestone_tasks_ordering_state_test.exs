@@ -113,7 +113,6 @@ defmodule Operately.Data.Change079UpdateMilestoneTasksOrderingStateTest do
       project_id: milestone.project_id
     }
 
-    {:ok, task} = Operately.Tasks.create_task(attrs)
-    task
+    Operately.TasksFixtures.task_fixture(attrs)
   end
 end
