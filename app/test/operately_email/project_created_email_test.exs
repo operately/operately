@@ -1,5 +1,6 @@
 defmodule OperatelyEmail.ProjectCreatedEmailTest do
   use Operately.DataCase
+
   import Swoosh.TestAssertions
 
   import Operately.PeopleFixtures
