@@ -467,6 +467,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :access_levels, :access_levels, null: true
     field? :potential_subscribers, list_of(:subscriber), null: true
     field? :notifications, list_of(:notification), null: true
+    field? :subscription_list, :subscription_list, null: true
     field? :milestones_ordering_state, list_of(:string), null: true
   end
 
@@ -1650,6 +1651,7 @@ defmodule OperatelyWeb.Api.Types do
     field? :tasks_kanban_state, :string, null: true
     field? :tasks_ordering_state, list_of(:string), null: true
     field? :permissions, :project_permissions, null: true
+    field? :subscription_list, :subscription_list, null: true
     field? :space, :space, null: true
   end
 

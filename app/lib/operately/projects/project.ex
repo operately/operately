@@ -30,6 +30,8 @@ defmodule Operately.Projects.Project do
     has_one :champion, through: [:champion_contributor, :person]
     has_one :reviewer, through: [:reviewer_contributor, :person]
 
+    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+
     field :description, :map
     field :name, :string
     field :private, :boolean, default: false
@@ -93,14 +95,16 @@ defmodule Operately.Projects.Project do
       :next_update_scheduled_at,
       :started_at,
       :deadline,
-      :milestones_ordering_state
+      :milestones_ordering_state,
+      :subscription_list_id
     ])
     |> cast_embed(:timeframe)
     |> validate_required([
       :name,
       :company_id,
       :group_id,
-      :creator_id
+      :creator_id,
+      :subscription_list_id
     ])
   end
 
