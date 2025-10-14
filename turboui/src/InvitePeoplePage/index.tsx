@@ -106,18 +106,16 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     <PageNew title="Invite People" size="medium" testId={props.testId}>
       <div className="px-6 py-10 md:w-[760px]">
         <header className="text-center">
-          <h1 className="text-3xl font-semibold text-content-strong">Bring your team on board</h1>
-          <p className="mt-2 text-content-dimmed text-base">Share one link with everyone or create individual invitations.</p>
+          <h1 className="text-3xl font-semibold">Bring your team on board</h1>
+          <p className="mt-2 text-base">Share one link with everyone or create individual invitations.</p>
         </header>
 
         <div className="mt-8 space-y-8">
           <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-content-strong">Share one link with everyone</h2>
-                <p className="mt-1 text-sm text-content-dimmed">
-                  Share it in Slack, email, or wherever your crew hangs out.
-                </p>
+                <h2 className="text-xl font-semibold">Share one link with everyone</h2>
+                <p className="mt-1 text-sm">Share it in group chat, via email, or wherever your team is.</p>
               </div>
               <SwitchToggle
                 value={linkEnabled}
@@ -182,7 +180,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
               <div className="mt-8 border-t border-surface-outline pt-8">
                 <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="text-lg font-semibold text-content-strong">
+                    <h3 className="text-lg font-semibold">
                       {props.domainRestriction.label ?? "Restrict by email domain"}
                     </h3>
                     <p className="mt-1 text-sm text-content-dimmed">
@@ -224,7 +222,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
           <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-content-strong">Create individual invitations</h2>
+                <h2 className="text-xl font-semibold">Create individual invitations</h2>
                 <p className="mt-1 text-sm text-content-dimmed">
                   Generate a personal invite link for someone specific.
                 </p>
