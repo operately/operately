@@ -4,7 +4,6 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
   import Operately.GroupsFixtures
   import Operately.PeopleFixtures
 
-  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.Support.RichText
   alias Operately.Messages.Message
@@ -18,10 +17,11 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
 
   describe "company permissions" do
     setup ctx do
-      ctx = register_and_log_in_account(ctx)
-      space = Operately.Groups.get_group!(ctx.company.company_space_id)
-
-      Map.merge(ctx, %{space: space})
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space, company_permissions: Binding.view_access())
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
     end
 
     test "company member can see only their company", ctx do
@@ -31,24 +31,24 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
       assert res.message == "The requested resource was not found"
     end
 
-    # test "company members without edit access can't create discussion", ctx do
-    #   assert {403, res} = request(ctx.conn, ctx.space)
-    #   assert res.message == "You don't have permission to perform this action"
-    # end
+    test "company members without edit access can't create discussion", ctx do
+      assert {403, res} = request(ctx.conn, ctx.space)
+      assert res.message == "You don't have permission to perform this action"
+    end
 
     test "company members with edit access can create discussion", ctx do
-      give_person_edit_access(ctx)
+      ctx = Factory.add_space(ctx, :space, company_permissions: Binding.edit_access())
 
       assert {200, res} = request(ctx.conn, ctx.space)
       assert_discussion_created(res)
     end
 
     test "company owners can create discussion", ctx do
-      # # Not owner
-      # assert {403, _} = request(ctx.conn, ctx.space)
+      # Not owner
+      assert {403, _} = request(ctx.conn, ctx.space)
 
       # Owner
-      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
+      {:ok, _} = Operately.Companies.add_owner(ctx.creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx.space)
       assert_discussion_created(res)
@@ -225,14 +225,6 @@ defmodule OperatelyWeb.Api.Mutations.PostDiscussionTest do
     {:ok, list} = SubscriptionList.get(:system, parent_id: id, opts: [preload: :subscriptions])
 
     list.subscriptions
-  end
-
-  defp give_person_edit_access(ctx) do
-    group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    context = Access.get_context!(group_id: ctx.company.company_space_id)
-
-    Access.get_binding!(group_id: group.id, context_id: context.id)
-    |> Access.update_binding(%{access_level: Binding.edit_access()})
   end
 
   defp add_person_to_space(ctx, access_level) do
