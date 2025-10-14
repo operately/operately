@@ -264,17 +264,7 @@ defmodule OperatelyWeb.Api.Projects do
       |> Steps.start_transaction()
       |> Steps.find_project(inputs.project_id, [:champion])
       |> Steps.check_permissions(:can_edit_timeline)
-      |> Ecto.Multi.run(:milestone, fn _repo, %{project: project, me: me} ->
-        Operately.Projects.create_milestone(%{
-          title: inputs.name,
-          project_id: project.id,
-          creator_id: me.id,
-          timeframe: %{
-            contextual_start_date: nil,
-            contextual_end_date: inputs.due_date
-          }
-        })
-      end)
+      |> Steps.create_milestone(inputs)
       |> Steps.add_milestone_to_ordering_state()
       |> Steps.save_activity(:project_milestone_creation, fn changes ->
         %{
@@ -426,6 +416,7 @@ defmodule OperatelyWeb.Api.Projects do
     require Logger
     import Ecto.Query, only: [from: 2]
     alias Operately.Projects.{Contributor, OrderingState}
+    alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
 
     def start_transaction(conn) do
       Ecto.Multi.new()
@@ -714,6 +705,24 @@ defmodule OperatelyWeb.Api.Projects do
       end)
     end
 
+    def create_milestone(multi, inputs) do
+      multi
+      |> SubscriptionListOps.insert(%{ send_to_everyone: false, subscription_parent_type: :project_milestone })
+      |> Ecto.Multi.run(:milestone, fn _repo, changes ->
+        Operately.Projects.create_milestone(%{
+          title: inputs.name,
+          project_id: changes.project.id,
+          creator_id: changes.me.id,
+          timeframe: %{
+            contextual_start_date: nil,
+            contextual_end_date: inputs.due_date
+          },
+          subscription_list_id: changes.subscription_list.id,
+        })
+      end)
+      |> SubscriptionListOps.update(:milestone)
+    end
+
     def delete_discussions(multi, project_id) do
       Ecto.Multi.run(multi, :discussions, fn _, _ ->
         {_count, discussions} = Operately.Projects.delete_project_discussions(project_id)
@@ -754,18 +763,6 @@ defmodule OperatelyWeb.Api.Projects do
     def delete_project(multi) do
       Ecto.Multi.run(multi, :deleted_project, fn _, changes ->
         Operately.Projects.delete_project(changes.project)
-      end)
-    end
-
-    def update_task_status(multi, new_status) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, %{status: new_status})
-      end)
-    end
-
-    def update_task_due_date(multi, new_due_date) do
-      Ecto.Multi.update(multi, :updated_task, fn %{task: task} ->
-        Operately.Tasks.Task.changeset(task, %{due_date: new_due_date})
       end)
     end
 

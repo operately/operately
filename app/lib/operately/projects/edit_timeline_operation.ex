@@ -3,6 +3,7 @@ defmodule Operately.Projects.EditTimelineOperation do
   alias Ecto.Multi
 
   alias Operately.Activities
+  alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
   alias Operately.Projects.{Project, Milestone}
   alias Operately.ContextualDates.{Timeframe, ContextualDate}
 
@@ -45,19 +46,30 @@ defmodule Operately.Projects.EditTimelineOperation do
     attrs.new_milestones
     |> Enum.with_index()
     |> Enum.reduce(multi, fn {milestone, index}, multi ->
-      changeset = Milestone.changeset(%{
-        project_id: project.id,
-        creator_id: author.id,
-        title: milestone.title,
-        description: milestone.description,
-        tasks_kanban_state: Operately.Tasks.KanbanState.initialize(),
-        timeframe: %{
-          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-          contextual_end_date: milestone.due_date,
-        }
-      })
+      subscription_key = String.to_atom("subscription_list_#{index}")
+      milestone_key = "new_milestone_#{index}"
+      update_key = String.to_atom("updated_subscription_list_#{index}")
 
-      multi |> Multi.insert("new_milestone_#{index}", changeset)
+      multi
+      |> SubscriptionListOps.insert(%{subscription_parent_type: :project_milestone}, key: subscription_key)
+      |> Multi.insert(milestone_key, fn changes ->
+        Milestone.changeset(%{
+          project_id: project.id,
+          creator_id: author.id,
+          title: milestone.title,
+          description: milestone.description,
+          tasks_kanban_state: Operately.Tasks.KanbanState.initialize(),
+          timeframe: %{
+            contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+            contextual_end_date: milestone.due_date,
+          },
+          subscription_list_id: changes[subscription_key].id
+        })
+      end)
+      |> SubscriptionListOps.update(milestone_key,
+        subscription_list_key: subscription_key,
+        update_key: update_key
+      )
     end)
   end
 

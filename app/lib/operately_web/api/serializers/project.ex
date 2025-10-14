@@ -37,6 +37,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Project do
       potential_subscribers: OperatelyWeb.Api.Serializer.serialize(project.potential_subscribers),
       notifications: OperatelyWeb.Api.Serializer.serialize(project.notifications),
       state: Operately.Projects.Project.state(project) |> Atom.to_string(),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(project.subscription_list),
     })
   end
 

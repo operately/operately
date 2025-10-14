@@ -12,6 +12,8 @@ defmodule Operately.Projects.Milestone do
 
     has_many :tasks, Operately.Tasks.Task
 
+    belongs_to :subscription_list, Operately.Notifications.SubscriptionList, foreign_key: :subscription_list_id
+
     field :title, :string
     field :status, Ecto.Enum, values: @valid_statuses, default: :pending
     field :phase, Ecto.Enum, values: [:concept, :planning, :execution, :control], default: :concept
@@ -45,9 +47,21 @@ defmodule Operately.Projects.Milestone do
 
   def changeset(milestone, attrs) do
     milestone
-    |> cast(attrs, [:title, :project_id, :creator_id, :deadline_at, :status, :completed_at, :deleted_at, :description, :tasks_kanban_state, :tasks_ordering_state])
+    |> cast(attrs, [
+      :title,
+      :project_id,
+      :creator_id,
+      :deadline_at,
+      :status,
+      :completed_at,
+      :deleted_at,
+      :description,
+      :tasks_kanban_state,
+      :tasks_ordering_state,
+      :subscription_list_id
+    ])
     |> cast_embed(:timeframe)
-    |> validate_required([:title, :tasks_kanban_state, :project_id])
+    |> validate_required([:title, :tasks_kanban_state, :project_id, :subscription_list_id])
   end
 
   def set_status(milestone, :pending) do

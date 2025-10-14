@@ -149,12 +149,9 @@ defmodule Operately.AccessContextsTest do
   end
 
   defp create_project_without_context(attrs) do
-    {:ok, project} = Operately.Projects.Project.changeset(
+    Operately.ProjectsFixtures.project_fixture(
       Map.merge(attrs, %{name: "some name"})
     )
-    |> Repo.insert()
-
-    project
   end
 
   defp create_goal_without_context(creator, attrs) do

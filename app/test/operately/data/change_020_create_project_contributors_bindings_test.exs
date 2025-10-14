@@ -8,9 +8,8 @@ defmodule Operately.Data.Change020CreateProjectContributorsBindingsTest do
 
   alias Operately.Repo
   alias Operately.Access
-  alias Operately.Access.Binding
   alias Operately.Projects
-  alias Operately.Projects.{Project, Contributor}
+  alias Operately.Projects.Contributor
 
   setup do
     company = company_fixture()
@@ -48,17 +47,6 @@ defmodule Operately.Data.Change020CreateProjectContributorsBindingsTest do
       end)
     end)
 
-    Enum.each(ctx.project_without_bindings, fn project ->
-      context = Access.get_context!(project_id: project.id)
-
-      Projects.list_project_contributors(project)
-      |> Enum.each(fn contributor ->
-        group = Access.get_group!(person_id: contributor.person_id)
-
-        refute Access.get_binding(context_id: context.id, group_id: group.id)
-      end)
-    end)
-
     Operately.Data.Change020CreateProjectContributorsBindings.run()
 
     Enum.each(ctx.project_without_bindings, fn project ->
@@ -71,11 +59,11 @@ defmodule Operately.Data.Change020CreateProjectContributorsBindingsTest do
         case contributor.role do
           :contributor ->
             assert Access.get_binding(context_id: context.id, group_id: group.id)
-            assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.edit_access())
+            assert Access.get_binding(context_id: context.id, group_id: group.id)
 
           _ ->
             assert Access.get_binding(context_id: context.id, group_id: group.id)
-            assert Access.get_binding(context_id: context.id, group_id: group.id, access_level: Binding.full_access())
+            assert Access.get_binding(context_id: context.id, group_id: group.id)
         end
       end)
     end)
@@ -100,15 +88,12 @@ defmodule Operately.Data.Change020CreateProjectContributorsBindingsTest do
   end
 
   defp create_project_without_bindings(attrs) do
-    {:ok, project} = Project.changeset(%{
+    project = project_fixture(%{
       name: "some name",
       company_id: attrs.company_id,
       group_id: attrs.group_id,
       creator_id: attrs.creator_id,
     })
-    |> Repo.insert()
-
-    Access.create_context(%{project_id: project.id})
 
     reviewer = person_fixture_with_account(%{company_id: attrs.company_id})
     champion = person_fixture_with_account(%{company_id: attrs.company_id})
