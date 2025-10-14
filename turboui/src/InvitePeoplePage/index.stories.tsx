@@ -23,7 +23,7 @@ export const LinkDisabled: Story = {
   render: (args) => {
     const [linkEnabled, setLinkEnabled] = useState(false);
     const [domainsEnabled, setDomainsEnabled] = useState(false);
-    const [domains, setDomains] = useState("operately.com, example.org");
+    const [domains, setDomains] = useState("@operately.com, @example.org");
 
     return (
       <InvitePeoplePage
