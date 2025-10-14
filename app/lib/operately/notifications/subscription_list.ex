@@ -14,6 +14,8 @@ defmodule Operately.Notifications.SubscriptionList do
       :resource_hub_link,
       :comment_thread,
       :project_task,
+      :project_milestone,
+      :project,
     ]
     field :send_to_everyone, :boolean, default: false
 

@@ -70,13 +70,15 @@ defmodule Operately.Data.Change009CreateProjectsAccessContextTest do
   end
 
   def create_project(attrs) do
-    {:ok, project} = Project.changeset(%{
+    project = project_fixture(%{
       name: "some name",
       company_id: attrs.company_id,
       group_id: attrs.group_id,
       creator_id: attrs.creator_id,
     })
-    |> Repo.insert()
+
+    Access.get_context!(project_id: project.id)
+    |> Access.delete_context()
 
     project
   end

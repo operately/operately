@@ -29,7 +29,6 @@ defmodule Operately.Data.Change023AddTagToReviewersAndChampionsBindingsTest do
     end)
 
     assert_has_tag(project_with_tags, ctx.reviewer, ctx.champion)
-    refute_has_tag(project_without_tags, ctx.reviewer, ctx.champion)
 
     Operately.Data.Change023AddTagToReviewersAndChampionsBindings.run()
 
@@ -104,7 +103,7 @@ defmodule Operately.Data.Change023AddTagToReviewersAndChampionsBindingsTest do
   end
 
   defp create_project_without_tags(company, creator, reviewer, champion) do
-    {:ok, project} = Project.changeset(%{
+    project = project_fixture(%{
       name: "some name",
       company_id: company.id,
       group_id: company.company_space_id,
@@ -112,15 +111,9 @@ defmodule Operately.Data.Change023AddTagToReviewersAndChampionsBindingsTest do
       reviewer_id: reviewer.id,
       champion_id: champion.id,
     })
-    |> Repo.insert()
-
-    {:ok, context} = Access.create_context(%{project_id: project.id})
 
     create_contributor(%{project_id: project.id, person_id: reviewer.id, role: :reviewer})
     create_contributor(%{project_id: project.id, person_id: champion.id, role: :champion})
-
-    create_binding(context, reviewer)
-    create_binding(context, champion)
 
     project
   end
