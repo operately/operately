@@ -176,42 +176,37 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                 )}
               </p>
             </div>
+
             {linkEnabled && props.domainRestriction && (
               <div className="mt-8 border-t border-surface-outline pt-8">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {props.domainRestriction.label ?? "Restrict by email domain"}
-                    </h3>
-                    <p className="mt-1 text-sm text-content-dimmed">
-                      {props.domainRestriction.helperText ??
-                        "Limit who can use the link. Personal invites work for anyone."}
-                    </p>
-                  </div>
-                  <SwitchToggle
-                    value={props.domainRestriction.enabled}
-                    setValue={handleDomainToggle}
-                    label={props.domainRestriction.toggleLabel ?? "Restrict domains"}
-                    labelHidden
-                    testId={props.domainRestriction.testId ?? "invite-people-domain-toggle"}
-                  />
-                </div>
+                <SwitchToggle
+                  value={props.domainRestriction.enabled}
+                  setValue={handleDomainToggle}
+                  label="Trusted Email Domain List"
+                  labelHidden
+                  testId={props.domainRestriction.testId ?? "invite-people-domain-toggle"}
+                />
 
                 {props.domainRestriction.enabled && (
-                  <div className="mt-6 space-y-2">
-                    <TextField
-                      variant="form-field"
-                      text={props.domainRestriction.value}
-                      onChange={handleDomainChange}
-                      placeholder={props.domainRestriction.placeholder ?? "e.g. @acme.com, @example.org"}
-                      label="Allowed domains"
-                      error={props.domainRestriction.error}
-                      className="sm:max-w-md"
-                      testId="invite-people-domain-input"
-                      readonly={!props.domainRestriction.onChange}
-                    />
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center gap-4">
+                      <TextField
+                        variant="form-field"
+                        text={props.domainRestriction.value}
+                        onChange={handleDomainChange}
+                        placeholder={props.domainRestriction.placeholder ?? "e.g. @acme.com, @example.org"}
+                        error={props.domainRestriction.error}
+                        className={classNames(
+                          "sm:max-w-md",
+                          (!props.domainRestriction.enabled || !props.domainRestriction.onChange) && "opacity-60",
+                        )}
+                        testId="invite-people-domain-input"
+                        readonly={!props.domainRestriction.enabled || !props.domainRestriction.onChange}
+                      />
+                    </div>
                     <p className="text-xs text-content-dimmed">
-                      Separate multiple domains with commas. Leave empty to allow any domain while the link is on.
+                      {props.domainRestriction.helperText ??
+                        "Separate multiple domains with commas. Leave empty to allow any domain while the link is on."}
                     </p>
                   </div>
                 )}
