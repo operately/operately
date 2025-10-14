@@ -19,6 +19,7 @@ defimpl OperatelyWeb.Api.Serializable, for: Operately.Projects.Milestone do
       permissions: OperatelyWeb.Api.Serializer.serialize(milestone.permissions),
       timeframe: OperatelyWeb.Api.Serializer.serialize(milestone.timeframe),
       space: OperatelyWeb.Api.Serializer.serialize(milestone.space),
+      subscription_list: OperatelyWeb.Api.Serializer.serialize(milestone.subscription_list),
     }
   end
 
