@@ -341,22 +341,6 @@ const getMilestonesWithStats = (allMilestones: Types.Milestone[] | undefined, or
         stats,
         hasTasks,
       };
-    })
-    .sort((a, b) => {
-      const dateA = a.milestone.dueDate?.date;
-      const dateB = b.milestone.dueDate?.date;
-
-      // If both have due dates, sort by date (earlier dates first)
-      if (dateA && dateB) {
-        return new Date(dateA).getTime() - new Date(dateB).getTime();
-      }
-
-      // If only one has a due date, prioritize the one with a due date
-      if (dateA && !dateB) return -1;
-      if (!dateA && dateB) return 1;
-
-      // If neither has a due date, sort by milestone ID for consistency
-      return a.milestone.id.localeCompare(b.milestone.id);
     });
 };
 
