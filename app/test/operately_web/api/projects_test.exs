@@ -958,8 +958,6 @@ defmodule OperatelyWeb.Api.ProjectsTest do
         name: "Release v1.0",
       })
 
-
-
       assert {200, res} = mutation(ctx.conn, [:projects, :update_milestone], %{
         project_id: Paths.project_id(ctx.project),
         milestone_id: Paths.milestone_id(milestone),
