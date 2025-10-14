@@ -64,6 +64,7 @@ defmodule Operately.MixProject do
 
       # llm
       {:langchain, "0.4.0-rc.0"},
+      {:hermes_mcp, "~> 0.14.1"},
 
       # only in dev
       {:phoenix_live_reload, "~> 1.5", only: :dev},
