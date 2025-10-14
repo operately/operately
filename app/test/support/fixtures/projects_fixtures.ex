@@ -28,26 +28,32 @@ defmodule Operately.ProjectsFixtures do
 
     {:ok, project} = Operately.Projects.create_project(attrs)
 
-    Operately.Repo.preload(project, :subscription_list)
+    project
   end
 
   @doc """
   Generate a milestone.
   """
   def milestone_fixture(attrs) do
+    {:ok, subscription_list} = Operately.Notifications.create_subscription_list()
+
     attrs = attrs
       |> Enum.into(%{
         title: "some title",
         timeframe: %{
           contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
           contextual_end_date: ContextualDate.create_day_date(~D[2023-05-10]),
-        }
+        },
+        subscription_list_id: subscription_list.id,
       })
 
     {:ok, milestone} = Operately.Projects.create_milestone(attrs)
+    {:ok, _} = Operately.Notifications.update_subscription_list(subscription_list, %{
+      parent_type: :project_milestone,
+      parent_id: milestone.id,
+    })
 
-    milestone = Operately.Repo.preload(milestone, [:project, :subscription_list])
-    project = milestone.project
+    project = Operately.Repo.preload(milestone, :project).project
 
     updated_state =
       project.milestones_ordering_state

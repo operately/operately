@@ -8,8 +8,6 @@ defmodule Operately.Projects do
   alias Operately.Activities
   alias Operately.Access.Fetch
 
-  alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
-
   alias Operately.Projects.{
     Project,
     PhaseHistory,
@@ -135,20 +133,8 @@ defmodule Operately.Projects do
   end
 
   def create_milestone(attrs) do
-    Multi.new()
-    |> SubscriptionListOps.insert(%{subscription_parent_type: :project_milestone})
-    |> Multi.insert(:milestone, fn changes ->
-      attrs
-      |> Map.put(:subscription_list_id, changes.subscription_list.id)
-      |> Milestone.changeset()
-    end)
-    |> SubscriptionListOps.update(:milestone)
-    |> Repo.transaction()
-    |> Repo.extract_result(:milestone)
-    |> case do
-      {:ok, milestone} -> {:ok, Repo.preload(milestone, :subscription_list)}
-      error -> error
-    end
+    Milestone.changeset(attrs)
+    |> Repo.insert()
   end
 
   def update_milestone(%Milestone{} = milestone, attrs) do

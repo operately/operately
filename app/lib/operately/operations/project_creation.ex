@@ -35,10 +35,6 @@ defmodule Operately.Operations.ProjectCreation do
     |> insert_activity(params)
     |> Repo.transaction()
     |> Repo.extract_result(:project)
-    |> case do
-      {:ok, project} -> {:ok, Repo.preload(project, :subscription_list)}
-      error -> error
-    end
   end
 
   defp insert_project(multi, params) do
