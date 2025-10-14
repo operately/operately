@@ -30,7 +30,7 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
                  emoji: "👍"
                })
 
-      reaction_id = add_res.reaction.id
+      {:ok, reaction_id} = OperatelyWeb.Api.Helpers.decode_id(add_res.reaction.id)
 
       # Verify the reaction exists
       reactions = Updates.list_reactions(ctx.hello_message.id, :message)
@@ -93,8 +93,8 @@ defmodule OperatelyWeb.Api.Mutations.RemoveReactionTest do
                  emoji: "❤️"
                })
 
-      thumbs_up_id = add_res1.reaction.id
-      heart_id = add_res2.reaction.id
+      {:ok, thumbs_up_id} = OperatelyWeb.Api.Helpers.decode_id(add_res1.reaction.id)
+      {:ok, heart_id} = OperatelyWeb.Api.Helpers.decode_id(add_res2.reaction.id)
 
       # Verify both reactions exist
       reactions = Updates.list_reactions(ctx.hello_message.id, :message)

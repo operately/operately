@@ -5,9 +5,14 @@ defmodule OperatelyWeb.Api.Mutations.CompleteCompanySetupTest do
   alias Operately.Groups
 
   setup ctx do
-    ctx
+    ctx = ctx
     |> Factory.setup()
     |> Factory.add_company_member(:member)
+
+    # Reset setup_completed to false so we can test the mutation
+    {:ok, company} = Operately.Companies.update_company(ctx.company, %{setup_completed: false})
+
+    Map.put(ctx, :company, company)
   end
 
   describe "authentication and permissions" do
