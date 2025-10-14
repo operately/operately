@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 
 import { SecondaryButton } from "../Button";
-import { IconCopy, IconUserPlus, IconUsers } from "../icons";
+import { IconCopy, IconUserPlus } from "../icons";
 import { ActionLink } from "../Link";
 import { PageNew } from "../Page";
 import { SwitchToggle } from "../SwitchToggle";
@@ -106,19 +106,15 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
     <PageNew title="Invite People" size="medium" testId={props.testId}>
       <div className="px-6 py-10 md:w-[760px]">
         <header className="text-center">
-          <div className="flex items-center justify-center gap-3 text-content-dimmed">
-            <IconUsers size={14} />
-            <span className="text-xs font-medium uppercase tracking-wide">Invite to {props.companyName}</span>
-          </div>
-          <h1 className="mt-3 text-3xl font-semibold text-content-strong">Invite your team</h1>
-          <p className="mt-2 text-content-dimmed text-base">Invite everyone at once or send personal invitations.</p>
+          <h1 className="text-3xl font-semibold text-content-strong">Bring your team on board</h1>
+          <p className="mt-2 text-content-dimmed text-base">Share one link with everyone or create individual invitations.</p>
         </header>
 
         <div className="mt-8 space-y-8">
           <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-content-strong">Invite everyone at once</h2>
+                <h2 className="text-xl font-semibold text-content-strong">Share one link with everyone</h2>
                 <p className="mt-1 text-sm text-content-dimmed">
                   Share it in Slack, email, or wherever your crew hangs out.
                 </p>
@@ -228,7 +224,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
           <section className="rounded-2xl border border-surface-outline bg-surface-base p-8 shadow-lg">
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-xl font-semibold text-content-strong">Send personal invites</h2>
+                <h2 className="text-xl font-semibold text-content-strong">Create individual invitations</h2>
                 <p className="mt-1 text-sm text-content-dimmed">
                   Generate a personal invite link for someone specific.
                 </p>
@@ -241,7 +237,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                 testId="invite-people-individual"
                 disabled={!canInviteIndividually}
               >
-                Invite
+                Create invite
               </SecondaryButton>
             </div>
           </section>
