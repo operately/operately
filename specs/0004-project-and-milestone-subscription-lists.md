@@ -14,7 +14,7 @@
   - Update schemas in `app/lib/operately/projects/milestone.ex` and `app/lib/operately/projects/project.ex` to include `belongs_to :subscription_list, Operately.Notifications.SubscriptionList` and ensure preload helpers/tests compile.
   - Adjust Ecto changesets so that new structs require the association (e.g., `cast_assoc` or `put_assoc`), mirroring the task schema patterns, and ensure any multi-step creation flows (such as those using `Operately.Operations.ProjectCreation`) pass the association through.
 - **Step 2 — Create subscription lists for new records**
-  - Update milestone creation flows in `app/lib/operately_web/api/project_milestones.ex`, any context helpers (e.g., `Operately.Projects.create_milestone/2`), and supporting operations so they always build a subscription list alongside the milestone; ensure related fixtures (`app/test/support/fixtures/milestones_fixtures.ex`) follow suit.
+  - Update milestone creation flows in `app/lib/operately_web/api/project_milestones.ex`, any context helpers, and supporting operations so they always build a subscription list alongside the milestone; ensure related fixtures (`app/test/support/fixtures/milestones_fixtures.ex`) follow suit.
   - Do the same for projects (check creation in `app/lib/operately_web/api/projects.ex`, any project creation operations, seeds, factories, and fixtures such as `app/test/support/fixtures/projects_fixtures.ex`).
   - Confirm API serializers include the subscription list relationship if required downstream and update GraphQL schema/types if exposure is needed for the UI toggle state.
 - **Step 3 — Backfill existing rows**

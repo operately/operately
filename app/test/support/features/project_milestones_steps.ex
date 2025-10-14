@@ -9,7 +9,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   alias Wallaby.QueryError
 
   step :given_that_a_milestone_exists, ctx, title do
-    {:ok, milestone} = Operately.Projects.create_milestone(%{
+    milestone = Operately.ProjectsFixtures.milestone_fixture(%{
       project_id: ctx.project.id,
       title: title,
       timeframe: %{
