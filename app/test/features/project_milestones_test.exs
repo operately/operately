@@ -1,8 +1,10 @@
 defmodule Operately.Features.ProjectMilestonesTest do
   use Operately.FeatureCase
 
+  alias Operately.Comments
   alias Operately.Support.Features.ProjectSteps
   alias Operately.Support.Features.ProjectMilestonesSteps, as: Steps
+  alias Operately.Support.RichText
 
   setup ctx do
     ctx = ProjectSteps.create_project(ctx, name: "Live support")
@@ -85,7 +87,11 @@ defmodule Operately.Features.ProjectMilestonesTest do
       ctx
       |> Steps.given_that_a_milestone_exists("My milestone")
       |> Steps.visit_project_page()
-      |> Steps.edit_milestone(name: "My milestone", new_name: "Edited milestone", new_due_date: next_friday)
+      |> Steps.edit_milestone(
+        name: "My milestone",
+        new_name: "Edited milestone",
+        new_due_date: next_friday
+      )
       |> Steps.assert_milestone_updated(name: "Edited milestone", due_date: formatted_date)
       |> Steps.reload_project_page()
       |> Steps.assert_milestone_updated(name: "Edited milestone", due_date: formatted_date)
@@ -260,6 +266,27 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_comment_visible_in_feed(comment)
       |> Steps.assert_comment_email_sent_to_project_reviewer()
       |> Steps.assert_comment_notification_sent_to_project_reviewer()
+    end
+
+    feature "mentioning a teammate in a milestone comment sends alerts", ctx do
+      ctx = Steps.given_space_member_exists(ctx)
+
+      mention = RichText.rich_text(mentioned_people: [ctx.space_member]) |> Jason.decode!()
+
+      {:ok, _comment} =
+        Comments.create_milestone_comment(ctx.champion, ctx.milestone, "none", %{
+          content: %{"message" => mention},
+          author_id: ctx.champion.id,
+          entity_id: ctx.milestone.id,
+          entity_type: :project_milestone
+        })
+
+      ctx
+      |> Steps.visit_milestone_page()
+      |> Steps.assert_comment(ctx.space_member.full_name)
+      |> Steps.assert_comment_visible_in_feed(ctx.space_member.full_name)
+      |> Steps.assert_comment_email_sent_to_space_member()
+      |> Steps.assert_comment_notification_sent_to_space_member()
     end
 
     feature "edit milestone comment", ctx do
