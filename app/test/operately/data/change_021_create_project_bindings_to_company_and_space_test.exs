@@ -6,10 +6,8 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
   import Operately.GroupsFixtures
   import Operately.ProjectsFixtures
 
-  alias Operately.Repo
   alias Operately.Access
   alias Operately.Access.Binding
-  alias Operately.Projects.Project
 
   setup do
     company = company_fixture()
@@ -151,15 +149,32 @@ defmodule Operately.Data.Change021CreateProjectBindingsToCompanyAndSpaceTest do
   end
 
   defp create_project_without_bindings(attrs) do
-    {:ok, project} = Project.changeset(%{
+    project = project_fixture(%{
       name: "some name",
       company_id: attrs.company_id,
       group_id: attrs.group_id,
       creator_id: attrs.creator_id,
     })
-    |> Repo.insert()
 
-    Access.create_context(%{project_id: project.id})
+    context = Access.get_context!(project_id: project.id)
+
+    full_access = Access.get_group!(group_id: attrs.group_id, tag: :full_access)
+    standard = Access.get_group!(group_id: attrs.group_id, tag: :standard)
+
+    Access.get_binding(context_id: context.id, group_id: full_access.id)
+    |> Access.delete_binding()
+
+    Access.get_binding(context_id: context.id, group_id: standard.id)
+    |> Access.delete_binding()
+
+    full_access = Access.get_group!(company_id: attrs.company_id, tag: :full_access)
+    standard = Access.get_group!(company_id: attrs.company_id, tag: :standard)
+
+    Access.get_binding(context_id: context.id, group_id: full_access.id)
+    |> Access.delete_binding()
+
+    Access.get_binding(context_id: context.id, group_id: standard.id)
+    |> Access.delete_binding()
 
     project
   end
