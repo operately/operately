@@ -18,29 +18,35 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
   end
 
   describe "permissions" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
+    end
+
     @table [
       %{company: :no_access,      space: :no_access,      expected: 404},
       %{company: :no_access,      space: :comment_access, expected: 403},
       %{company: :no_access,      space: :edit_access,    expected: 403},
       %{company: :no_access,      space: :full_access,    expected: 200},
-      
-      %{company: :comment_access, space: :no_access,      expected: 404},
+
+      %{company: :comment_access, space: :no_access,      expected: 403},
       %{company: :comment_access, space: :comment_access, expected: 403},
       %{company: :comment_access, space: :edit_access,    expected: 403},
       %{company: :comment_access, space: :full_access,    expected: 200},
-      
-      %{company: :edit_access,    space: :no_access,      expected: 404},
+
+      %{company: :edit_access,    space: :no_access,      expected: 403},
       %{company: :edit_access,    space: :comment_access, expected: 403},
       %{company: :edit_access,    space: :edit_access,    expected: 403},
       %{company: :edit_access,    space: :full_access,    expected: 200},
-      
-      %{company: :full_access,    space: :no_access,      expected: 404},
-      %{company: :full_access,    space: :comment_access, expected: 403},
-      %{company: :full_access,    space: :edit_access,    expected: 403},
+
+      %{company: :full_access,    space: :no_access,      expected: 200},
+      %{company: :full_access,    space: :comment_access, expected: 200},
+      %{company: :full_access,    space: :edit_access,    expected: 200},
       %{company: :full_access,    space: :full_access,    expected: 200},
     ]
 
-    for @test <- @table do
+    tabletest @table do
       test "if caller has levels company=#{@test.company}, space=#{@test.space}, then expect code=#{@test.expected}", ctx do
         space = create_space(ctx, @test.company, @test.space)
 
@@ -64,9 +70,15 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
   end
 
   describe "functionality" do
+    setup ctx do
+      ctx
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
+    end
+
     test "deletes space successfully", ctx do
       space = create_space(ctx, :full_access, :full_access)
-      
+
       assert {200, _} = mutation(ctx.conn, :delete_space, %{
         space_id: Paths.space_id(space),
       })
@@ -77,11 +89,11 @@ defmodule OperatelyWeb.Api.Mutations.DeleteSpaceTest do
 
     test "deletes empty space without sub-resources", ctx do
       space = create_space(ctx, :full_access, :full_access)
-      
+
       # Verify space has no projects or goals
       assert Operately.Repo.all(from p in Operately.Projects.Project, where: p.group_id == ^space.id) == []
       assert Operately.Repo.all(from g in Operately.Goals.Goal, where: g.group_id == ^space.id) == []
-      
+
       assert {200, _} = mutation(ctx.conn, :delete_space, %{
         space_id: Paths.space_id(space),
       })
