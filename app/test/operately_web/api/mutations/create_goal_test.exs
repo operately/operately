@@ -3,7 +3,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
 
   import Operately.GroupsFixtures
 
-  alias Operately.Access
   alias Operately.Access.Binding
   alias Operately.ContextualDates.Timeframe
 
@@ -15,10 +14,11 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
 
   describe "company permissions" do
     setup ctx do
-      ctx = register_and_log_in_account(ctx)
-      space = Operately.Groups.get_group!(ctx.company.company_space_id)
-
-      Map.merge(ctx, %{space: space})
+      ctx
+      |> Factory.setup()
+      |> Factory.add_space(:space, company_permissions: Binding.view_access())
+      |> Factory.add_company_member(:person)
+      |> Factory.log_in_person(:person)
     end
 
     test "company member can see only their company", ctx do
@@ -28,24 +28,24 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
       assert res.message == "The requested resource was not found"
     end
 
-    # test "company members without edit access can't create goal", ctx do
-    #   assert {403, res} = request(ctx.conn, ctx)
-    #   assert res.message == "You don't have permission to perform this action"
-    # end
+    test "company members without edit access can't create goal", ctx do
+      assert {403, res} = request(ctx.conn, ctx)
+      assert res.message == "You don't have permission to perform this action"
+    end
 
     test "company members with edit access can create goal", ctx do
-      give_person_edit_access(ctx)
+      ctx = Factory.add_space(ctx, :space, company_permissions: Binding.edit_access())
 
       assert {200, res} = request(ctx.conn, ctx)
       assert_goal_created(res)
     end
 
     test "company owners can create goal", ctx do
-      # # Not owner
-      # assert {403, _} = request(ctx.conn, ctx)
+      # Not owner
+      assert {403, _} = request(ctx.conn, ctx)
 
       # Owner
-      {:ok, _} = Operately.Companies.add_owner(ctx.company_creator, ctx.person.id)
+      {:ok, _} = Operately.Companies.add_owner(ctx.creator, ctx.person.id)
 
       assert {200, res} = request(ctx.conn, ctx)
       assert_goal_created(res)
@@ -193,14 +193,6 @@ defmodule OperatelyWeb.Api.Mutations.CreateGoalTest do
   #
   # Helpers
   #
-
-  defp give_person_edit_access(ctx) do
-    group = Access.get_group!(company_id: ctx.company.id, tag: :standard)
-    context = Access.get_context!(group_id: ctx.company.company_space_id)
-
-    Access.get_binding!(group_id: group.id, context_id: context.id)
-    |> Access.update_binding(%{access_level: Binding.edit_access()})
-  end
 
   defp add_person_to_space(ctx, access_level) do
     Operately.Groups.add_members(ctx.person, ctx.space.id, [%{

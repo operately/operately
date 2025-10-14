@@ -2,8 +2,8 @@ defmodule Operately.Support.Factory.Spaces do
   alias Operately.Support.Factory.Utils
 
   def add_space(ctx, testid, opts \\ []) do
-    name = Keyword.get(opts, :name, "Product Space")
-    space = Operately.GroupsFixtures.group_fixture(ctx.creator, %{name: name})
+    attrs = Enum.into(opts, %{name: "Product Space"})
+    space = Operately.GroupsFixtures.group_fixture(ctx.creator, attrs)
 
     Map.put(ctx, testid, space)
   end
