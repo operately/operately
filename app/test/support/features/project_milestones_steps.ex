@@ -18,7 +18,7 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
       }
     })
 
-    Map.put(ctx, :milestone, Operately.Repo.preload(milestone, :subscription_list))
+    Map.put(ctx, :milestone, milestone)
   end
 
   step :given_that_milestone_is_completed, ctx do
