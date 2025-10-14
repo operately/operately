@@ -209,7 +209,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                       variant="form-field"
                       text={props.domainRestriction.value}
                       onChange={handleDomainChange}
-                      placeholder={props.domainRestriction.placeholder ?? "e.g. acme.com, example.org"}
+                      placeholder={props.domainRestriction.placeholder ?? "e.g. @acme.com, @example.org"}
                       label="Allowed domains"
                       error={props.domainRestriction.error}
                       className="sm:max-w-md"
