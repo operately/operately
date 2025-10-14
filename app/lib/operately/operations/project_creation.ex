@@ -3,6 +3,7 @@ defmodule Operately.Operations.ProjectCreation do
   alias Operately.Activities
   alias Operately.Access
   alias Operately.Access.{Binding, Context}
+  alias Operately.Operations.Notifications.SubscriptionList, as: SubscriptionListOps
   alias Operately.Projects.{Project, Contributor}
   alias Operately.ContextualDates.ContextualDate
   alias Ecto.Multi
@@ -37,7 +38,9 @@ defmodule Operately.Operations.ProjectCreation do
   end
 
   defp insert_project(multi, params) do
-    Multi.insert(multi, :project, fn _changes ->
+    multi
+    |> SubscriptionListOps.insert(%{subscription_parent_type: :project})
+    |> Multi.insert(:project, fn changes ->
       Project.changeset(%{
         :company_id => params.company_id,
         :group_id => params.group_id,
@@ -51,9 +54,11 @@ defmodule Operately.Operations.ProjectCreation do
           contextual_end_date: nil,
         },
         :next_check_in_scheduled_at => Operately.Time.first_friday_from_today(),
-        :health => :on_track
+        :health => :on_track,
+        :subscription_list_id => changes.subscription_list.id
       })
     end)
+    |> SubscriptionListOps.update(:project)
   end
 
   defp insert_access_context(multi, _params) do
