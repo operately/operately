@@ -86,7 +86,7 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
       <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
         <Header assignmentsCount={urgentCount} />
 
-        <div className="flex flex-col">
+        <div className="flex flex-col mt-2">
           <Section
             title="Needs my action"
             infoTooltip="Assignments, check-ins, and milestones you own that are coming due now."
@@ -157,7 +157,7 @@ function Section({ title, description, infoTooltip, groups, emptyState, testId }
   return (
     <section data-test-id={testId}>
       <div className="px-4 py-4">
-        <div className=" border-b-2 border-surface-outline mb-4">
+        <div className="border-b border-surface-outline mb-4">
           <div className="flex items-center gap-2 mb-1">
             <h2 className="font-bold text-content-strong">{title}</h2>
             {infoTooltip ? (
@@ -172,7 +172,7 @@ function Section({ title, description, infoTooltip, groups, emptyState, testId }
               </Tooltip>
             ) : null}
             {groups.length > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
+              <span className="inline-flex items-center px-0.5 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
                 {groups.reduce((sum, group) => sum + group.assignments.length, 0)} items
               </span>
             )}
