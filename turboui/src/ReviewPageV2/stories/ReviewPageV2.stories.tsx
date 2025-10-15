@@ -51,6 +51,14 @@ export const WithoutUpcomingWorkSmallPlate: Story = {
   },
 };
 
+export const WithoutUpcomingWorkOnlyTasks: Story = {
+  render: (args) => <ReviewPageV2 {...args} />,
+  args: {
+    assignments: data.taskOnlyDueSoon,
+    showUpcomingSection: false,
+  },
+};
+
 export const UrgentFocus: Story = {
   render: (args) => <ReviewPageV2 {...args} />,
   args: {

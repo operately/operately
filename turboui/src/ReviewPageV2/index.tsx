@@ -74,6 +74,11 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
   const showUpcomingSection = props.showUpcomingSection ?? true;
   const categorized = React.useMemo(() => categorizeAssignments(assignments), [assignments]);
 
+  const hasDueSoon = categorized.dueSoon.length > 0;
+  const hasNeedsReview = categorized.needsReview.length > 0;
+  const hasUpcoming = showUpcomingSection && categorized.upcoming.length > 0;
+  const hasAnyAssignments = hasDueSoon || hasNeedsReview || hasUpcoming;
+
   // Count only urgent items (due soon + needs review), not upcoming
   const urgentCount =
     categorized.dueSoon.reduce((sum, group) => sum + group.assignments.length, 0) +
@@ -87,32 +92,37 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
         <Header assignmentsCount={urgentCount} />
 
         <div className="flex flex-col mt-2">
-          <Section
-            title="Needs my action"
-            infoTooltip="Assignments, check-ins, and milestones you own that are coming due now."
-            groups={categorized.dueSoon}
-            testId="due-soon-section"
-            emptyState={<EmptyState title="Nothing needs your action" description="You're all caught up." />}
-          />
+          {hasAnyAssignments ? (
+            <>
+              {hasDueSoon && (
+                <Section
+                  title="Needs my action"
+                  infoTooltip="Assignments, check-ins, and milestones you own that are coming due now."
+                  groups={categorized.dueSoon}
+                  testId="due-soon-section"
+                />
+              )}
 
-          <Section
-            title="Awaiting my review"
-            infoTooltip="Updates submitted by your teammates that are waiting for your acknowledgement."
-            groups={categorized.needsReview}
-            testId="needs-review-section"
-            emptyState={
-              <EmptyState title="Nothing to review" description="No check-ins are waiting for your feedback." />
-            }
-          />
+              {hasNeedsReview && (
+                <Section
+                  title="Awaiting my review"
+                  infoTooltip="Updates submitted by your teammates that are waiting for your acknowledgement."
+                  groups={categorized.needsReview}
+                  testId="needs-review-section"
+                />
+              )}
 
-          {showUpcomingSection && (
-            <Section
-              title="My upcoming work"
-              description="Work assigned to you with future due dates, sorted chronologically."
-              groups={categorized.upcoming}
-              testId="upcoming-section"
-              emptyState={<EmptyState title="No upcoming work" description="Nothing else is scheduled for you yet." />}
-            />
+              {hasUpcoming && (
+                <Section
+                  title="My upcoming work"
+                  description="Work assigned to you with future due dates, sorted chronologically."
+                  groups={categorized.upcoming}
+                  testId="upcoming-section"
+                />
+              )}
+            </>
+          ) : (
+            <CaughtUpState />
           )}
         </div>
       </div>
@@ -150,10 +160,13 @@ interface SectionProps extends TestableElement {
   description?: string;
   infoTooltip?: string;
   groups: ReviewPageV2.AssignmentGroup[];
-  emptyState: React.ReactNode;
 }
 
-function Section({ title, description, infoTooltip, groups, emptyState, testId }: SectionProps) {
+function Section({ title, description, infoTooltip, groups, testId }: SectionProps) {
+  if (groups.length === 0) {
+    return null;
+  }
+
   return (
     <section data-test-id={testId}>
       <div className="px-4 py-4">
@@ -172,7 +185,7 @@ function Section({ title, description, infoTooltip, groups, emptyState, testId }
               </Tooltip>
             ) : null}
             {groups.length > 0 && (
-              <span className="inline-flex items-center px-0.5 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
                 {groups.reduce((sum, group) => sum + group.assignments.length, 0)} items
               </span>
             )}
@@ -180,20 +193,22 @@ function Section({ title, description, infoTooltip, groups, emptyState, testId }
           {description ? <p className="text-sm text-content-base mb-4">{description}</p> : null}
         </div>
 
-        {groups.length === 0 ? emptyState : <AssignmentGroups groups={groups} />}
+        <AssignmentGroups groups={groups} />
       </div>
     </section>
   );
 }
 
-function EmptyState({ title, description }: { title: string; description: string }) {
+function CaughtUpState() {
   return (
-    <div className="flex flex-col items-center justify-center gap-1.5 py-4 text-center">
-      <div className="w-8 h-8 bg-callout-success-bg rounded-full flex items-center justify-center">
-        <IconSparkles size={16} className="text-callout-success-content" />
+    <div className="mx-auto mt-10 flex max-w-md flex-col items-center gap-4 rounded-xl border border-surface-outline bg-surface-base px-8 py-14 text-center shadow-sm">
+      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-callout-success-bg">
+        <IconSparkles size={20} className="text-callout-success-content" />
       </div>
-      <div className="text-sm font-semibold text-content-strong">{title}</div>
-      <p className="text-xs text-content-dimmed max-w-sm">{description}</p>
+      <p className="text-lg font-semibold text-content-strong">You're all caught up</p>
+      <p className="text-sm text-content-dimmed">
+        No assignments, check-ins, milestones, or reviews need your attention right now.
+      </p>
     </div>
   );
 }
