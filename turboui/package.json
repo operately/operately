@@ -13,7 +13,7 @@
     "dev": "tsc --watch",
     "lint": "eslint \"src/**/*.ts*\"",
     "clean": "rm -rf node_modules && rm -rf dist",
-    "storybook": "storybook dev -p 4020",
+    "storybook": "storybook dev -p $PORT_STORYBOOK_SERVER",
     "build-storybook": "storybook build",
     "test": "jest"
   },
