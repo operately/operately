@@ -3,7 +3,6 @@ import React from "react";
 import { BlackLink, DivLink } from "../Link";
 import { FormattedTime } from "../FormattedTime";
 import { IconCalendar, IconFlag, IconGoalPlain, IconMessage, IconProjectPlain, IconSquare } from "../icons";
-import { StatusBadge } from "../StatusBadge";
 import { createTestId } from "../TestableElement";
 
 import { ReviewPageV2 } from ".";
@@ -67,7 +66,7 @@ function GroupHeader({ origin }: { origin: ReviewPageV2.AssignmentOrigin }) {
 
 function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWithMeta }) {
   const displayLabel = assignment.actionLabel ?? assignment.name;
-  const urgencyBadgeProps = getUrgencyBadgeProps(assignment.dueStatus, assignment.dueDate);
+  const urgencyDetails = getUrgencyDetails(assignment.dueStatus, assignment.dueDate);
 
   return (
     <DivLink
@@ -88,7 +87,9 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
               <FormattedTime time={assignment.dueDate} format="short-date" />
             </span>
           )}
-          {urgencyBadgeProps && <StatusBadge {...urgencyBadgeProps} />}
+          {urgencyDetails ? (
+            <span className={`text-xs font-medium ${urgencyDetails.className}`}>{urgencyDetails.label}</span>
+          ) : null}
         </div>
       </div>
     </DivLink>
@@ -100,8 +101,7 @@ function renderLeadingIndicator(assignment: ReviewPageV2.AssignmentWithMeta) {
   return <Icon size={16} className="text-content-base" />;
 }
 
-function getUrgencyBadgeProps(status: ReviewPageV2.DueStatus, dueDate: Date | null) {
-  // Only show urgency badges for overdue and due soon items
+function getUrgencyDetails(status: ReviewPageV2.DueStatus, dueDate: Date | null) {
   if (!dueDate || (status !== "overdue" && status !== "due_today" && status !== "due_soon")) {
     return null;
   }
@@ -110,11 +110,11 @@ function getUrgencyBadgeProps(status: ReviewPageV2.DueStatus, dueDate: Date | nu
     case "overdue":
       const daysOverdue = calculateDaysOverdue(dueDate);
       const overdueText = daysOverdue === 1 ? "1 day overdue" : `${daysOverdue} days overdue`;
-      return { status: "missed" as const, hideIcon: true, customLabel: overdueText };
+      return { label: overdueText, className: "text-callout-error-content" };
     case "due_today":
-      return { status: "caution" as const, hideIcon: true, customLabel: "Due today" };
+      return { label: "Due today", className: "text-callout-warning-content" };
     case "due_soon":
-      return { status: "caution" as const, hideIcon: true, customLabel: "Due tomorrow" };
+      return { label: "Due tomorrow", className: "text-callout-warning-content" };
     default:
       return null;
   }
