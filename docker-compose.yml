@@ -10,10 +10,10 @@ services:
       - ./screenshots:/tmp/screenshots
       - ./tmp/certs:/home/dev/certs
     ports:
-      - "127.0.0.1:${PORT_DEV_SERVER}:4000"       # development server
-      - "127.0.0.1:${PORT_TEST_SERVER}:4002"      # test server
-      - "127.0.0.1:${PORT_VITE_SERVER}:4005"      # vite server for serving JS files in development
-      - "127.0.0.1:${PORT_STORYBOOK_SERVER}:4020" # storybook server
+      - "127.0.0.1:${PORT_DEV_SERVER}:4000"                           # development server
+      - "127.0.0.1:${PORT_TEST_SERVER}:4002"                          # test server
+      - "127.0.0.1:${PORT_VITE_SERVER}:4005"                          # vite server for serving JS files in development
+      - "127.0.0.1:${PORT_STORYBOOK_SERVER}:${PORT_STORYBOOK_SERVER}" # storybook server
     depends_on:
       - db
       - s3mock
@@ -28,6 +28,7 @@ services:
       - OPERATELY_DEMO_BUILDER_ALLOWED=true
       - CERT_DOMAIN=localhost
       - CERT_DB_DIR=/home/dev/certs
+      - PORT_STORYBOOK_SERVER=${PORT_STORYBOOK_SERVER}
     env_file:
       - .env
     profiles:
