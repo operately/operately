@@ -262,6 +262,22 @@ defmodule Operately.Features.ProjectMilestonesTest do
       |> Steps.assert_comment_notification_sent_to_project_reviewer()
     end
 
+    feature "mentioning a teammate in a milestone comment sends alerts", ctx do
+      ctx = Steps.given_space_member_exists(ctx)
+
+      person_first_name = Operately.People.Person.first_name(ctx.space_member)
+
+      ctx
+      |> Steps.visit_milestone_page()
+      |> Steps.post_comment_with_mention(ctx.space_member)
+      |> Steps.assert_comment(person_first_name)
+      |> Steps.reload_milestone_page()
+      |> Steps.assert_comment(person_first_name)
+      |> Steps.assert_comment_visible_in_feed(person_first_name)
+      |> Steps.assert_comment_email_sent_to_space_member()
+      |> Steps.assert_comment_notification_sent_to_space_member()
+    end
+
     feature "edit milestone comment", ctx do
       new_comment = "Edited comment"
 
