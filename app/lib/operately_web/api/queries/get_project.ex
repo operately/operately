@@ -24,12 +24,13 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
     field? :include_retrospective, :boolean, null: true
     field? :include_potential_subscribers, :boolean, null: true
     field? :include_unread_notifications, :boolean, null: true
+    field? :include_subscription_list, :boolean, null: true
 
     field? :include_markdown, :boolean
   end
 
   outputs do
-    field? :project, :project
+    field :project, :project
     field? :markdown, :string
   end
 
@@ -73,7 +74,8 @@ defmodule OperatelyWeb.Api.Queries.GetProject do
       include_champion: [:champion],
       include_reviewer: [:reviewer],
       include_last_check_in: [last_check_in: :author],
-      include_retrospective: [:retrospective]
+      include_retrospective: [:retrospective],
+      include_subscription_list: [subscription_list: [subscriptions: :person]]
     )
   end
 

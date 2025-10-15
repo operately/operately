@@ -17,6 +17,7 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
       ctx = register_and_log_in_account(ctx)
 
       project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+
       check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
       {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
 
@@ -37,6 +38,34 @@ defmodule OperatelyWeb.Api.Mutations.UnsubscribeFromNotificationsTest do
       })
 
       refute Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
+    end
+  end
+
+  describe "project subscriptions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+
+      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+
+      {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: project.id)
+
+      {:ok, _} = Notifications.create_subscription(%{
+        person_id: ctx.person.id,
+        subscription_list_id: subscription_list.id,
+        type: :joined,
+      })
+
+      Map.merge(ctx, %{project_subscription_list: subscription_list})
+    end
+
+    test "unsubscribes from project notifications", ctx do
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
+
+      assert {200, _} = mutation(ctx.conn, :unsubscribe_from_notifications, %{
+        id: Paths.subscription_list_id(ctx.project_subscription_list),
+      })
+
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
     end
   end
 end

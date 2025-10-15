@@ -37,13 +37,13 @@
 
 ### Stage 3 – Project Subscription Toggle & Notifications Plumbing
 - **Step 1 — Subscription list usage in API**
-  - Ensure project loading endpoints (GraphQL queries used by `ProjectPage/OverviewSidebar`) expose whether the current user is subscribed; adjust serializers/resolvers as needed so the frontend can render the toggle state and maintain compatibility with existing consumers.
+  - Ensure the project loading query under `app/lib/operately_web/api/queries` (the `GetProject` query used by `ProjectPage/OverviewSidebar`) exposes whether the current user is subscribed. Update serializers or supporting loaders so the returned payload includes the subscription list with enough detail for the client to derive the viewer’s subscription state without breaking existing consumers.
   - Reuse the existing mutations in `app/lib/operately_web/api/mutations/subscribe_to_notifications.ex` and `unsubscribe_from_notifications.ex` for projects. Extend their permission checks so projects are accepted as targets, then rely on the current code paths to create/remove `:joined` subscriptions against the project's subscription list (no new mutation modules or subscription types). When expanding `check_permissions`, treat project viewers with `:can_view` access as authorized to subscribe or unsubscribe; anything below that level must be rejected consistently across both mutations.
   - Update `Operately.Notifications.get_subscription_list_access_level/3` (and any similar helper invoked by the mutations) to resolve access levels for projects so permission checks receive the correct context.
   - Guard against duplicate subscriptions, handle concurrent requests safely, and ensure audit/logging remains accurate. Consider using `Repo.insert_all` with `on_conflict` if necessary.
 - **Step 2 — Frontend enablement**
   - Reveal the toggle in `turboui/src/ProjectPage/OverviewSidebar.tsx` by replacing the hard-coded hidden state with logic based on the subscription status returned by the API. Follow TurboUI styling guidelines.
-  - Implement handlers that call the subscribe/unsubscribe mutations and refresh the Apollo cache/state so the UI stays in sync (ensure optimistic updates or loading indicators as per existing patterns).
+  - Implement handlers that call the subscribe/unsubscribe mutations through our generated client in `app/assets/js/api/index.tsx` and update the Project page state (invalidate caches or refresh data) so the UI stays in sync. Remember to re-run `make gen` after updating queries, mutations, or types so the client reflects the latest schema.
   - Add tests or stories if the TurboUI instructions require (check `turboui/AGENTS.md` for component testing expectations) and document any manual QA steps for the toggle.
 - **Step 3 — Future notification hook (placeholder)**
   - Document TODOs or comments (without implementing) indicating where project-level notifications will plug in once defined, ensuring no dead code paths. Prefer inline module documentation over code comments when possible.
