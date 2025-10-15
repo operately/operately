@@ -24,6 +24,7 @@ export namespace Page {
     children?: React.ReactNode;
     navigation?: Navigation.Item[];
     testId?: string;
+    className?: string;
   }
 }
 
@@ -59,7 +60,7 @@ export function PageNew(props: Page.Props) {
   useHtmlTitle(props.title);
 
   const containerClass = classNames("absolute inset-0 mt-10 lg:mt-11");
-  const innerClass = classNames("bg-surface-base", "flex flex-col", "min-h-full");
+  const innerClass = classNames("bg-surface-base", "flex flex-col", "min-h-full", props.className);
   const contentClass = classNames(sizeClasses[props.size || "medium"]);
 
   return (

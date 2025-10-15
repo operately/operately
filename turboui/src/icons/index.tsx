@@ -123,6 +123,7 @@ import IconQuestionMark from "@tabler/icons-react/dist/esm/icons/IconQuestionMar
 import IconRefresh from "@tabler/icons-react/dist/esm/icons/IconRefresh.mjs";
 import IconReplace from "@tabler/icons-react/dist/esm/icons/IconReplace.mjs";
 import IconRobotFace from "@tabler/icons-react/dist/esm/icons/IconRobotFace.mjs";
+import IconRotate from "@tabler/icons-react/dist/esm/icons/IconRotate.mjs";
 import IconRotateDot from "@tabler/icons-react/dist/esm/icons/IconRotateDot.mjs";
 import IconRss from "@tabler/icons-react/dist/esm/icons/IconRss.mjs";
 import IconSearch from "@tabler/icons-react/dist/esm/icons/IconSearch.mjs";
@@ -280,6 +281,7 @@ export {
   IconRefresh,
   IconReplace,
   IconRobotFace,
+  IconRotate,
   IconRotateDot,
   IconRss,
   IconSearch,
