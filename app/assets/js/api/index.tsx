@@ -1319,6 +1319,7 @@ export interface Milestone {
   tasksKanbanState?: string | null;
   tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
+  subscriptionList?: SubscriptionList | null;
   space?: Space | null;
 }
 
@@ -1404,6 +1405,7 @@ export interface Project {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  subscriptionList?: SubscriptionList | null;
   milestonesOrderingState?: string[] | null;
 }
 
@@ -1526,8 +1528,8 @@ export interface Reaction {
 }
 
 export interface ResourceHub {
-  id?: string | null;
-  name?: string | null;
+  id: string;
+  name: string;
   description?: string | null;
   space?: Space | null;
   nodes?: ResourceHubNode[] | null;
@@ -3452,6 +3454,8 @@ export interface EditResourceHubDocumentInput {
   documentId?: Id | null;
   name?: string | null;
   content?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface EditResourceHubDocumentResult {
@@ -4067,9 +4071,11 @@ export interface PublishDiscussionResult {
 }
 
 export interface PublishResourceHubDocumentInput {
-  documentId?: Id | null;
-  name?: string | null;
-  content?: string | null;
+  documentId: Id;
+  name: string;
+  content: Json;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface PublishResourceHubDocumentResult {
