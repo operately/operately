@@ -62,6 +62,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePrivacy: true,
           includeRetrospective: true,
           includeUnreadNotifications: true,
+          includeSubscriptionList: true,
         }).then((d) => d.project!),
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
@@ -165,6 +166,8 @@ function Page() {
       setMilestones,
       refresh,
     });
+
+  const subscriptions = useSubscription(project, refresh);
 
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
@@ -284,6 +287,8 @@ function Page() {
     onResourceRemove: removeResource,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
+
+    subscriptions,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
@@ -444,11 +449,7 @@ function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
 
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
   assertPresent(project.milestones);
-  const parsedMilestones = parseMilestonesForTurboUi(
-    paths,
-    project.milestones,
-    project.milestonesOrderingState || [],
-  );
+  const parsedMilestones = parseMilestonesForTurboUi(paths, project.milestones, project.milestonesOrderingState || []);
 
   const { milestones, setMilestones, reorderMilestones, orderingState } = Projects.useProjectMilestoneOrdering({
     projectId: project.id,
@@ -589,4 +590,57 @@ function useResources(project: Projects.Project) {
   };
 
   return { resources, createResource, updateResource, removeResource };
+}
+
+function useSubscription(project: Projects.Project, refresh?: () => Promise<void>) {
+  const currentUser = useMe();
+  const { subscriptionList } = project;
+  const hidden = Boolean(!subscriptionList?.subscriptions || !currentUser);
+
+  const [isSubscribed, setIsSubscribed] = React.useState(() => {
+    if (!subscriptionList?.subscriptions || !currentUser) return false;
+
+    return subscriptionList.subscriptions.some(
+      (subscription) => subscription.person?.id === currentUser.id && subscription.canceled !== true,
+    );
+  });
+
+  const onToggle = React.useCallback(
+    async (isSubscribed: boolean) => {
+      if (!subscriptionList?.id) return;
+
+      const prevValue = isSubscribed;
+      setIsSubscribed(isSubscribed);
+
+      try {
+        if (isSubscribed) {
+          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
+        } else {
+          await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
+        }
+
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        await refresh?.();
+      } catch (error) {
+        setIsSubscribed(prevValue);
+
+        console.error("Failed to toggle project subscription", error);
+        showErrorToast(
+          "Error",
+          prevValue
+            ? "Failed to subscribe to project notifications."
+            : "Failed to unsubscribe from project notifications.",
+        );
+      }
+    },
+    [subscriptionList?.id, project.id, refresh, isSubscribed],
+  );
+
+  return {
+    isSubscribed,
+    onToggle,
+    hidden,
+    entityType: "project" as const,
+  };
 }

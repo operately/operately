@@ -11,6 +11,7 @@ import { createMockRichEditorHandlers } from "../utils/storybook/richEditor";
 import { asRichText, asRichTextWithList } from "../utils/storybook/richContent";
 import { spaceSearchFn } from "../utils/storybook/spaceSearchFn";
 import { ProjectPage } from "./index";
+import { useMockSubscriptions } from "../utils/storybook/subscriptions";
 
 // Date helpers for dynamic, credible timelines
 function addDays(date: Date, days: number): Date {
@@ -325,6 +326,8 @@ export const Default: Story = {
       setResources(updatedResources);
     };
 
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -396,6 +399,7 @@ export const Default: Story = {
         discussions={mockDiscussions}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },
@@ -413,6 +417,7 @@ export const ReadOnly: Story = {
       return createContextualDate(oneMonthFromToday, "day");
     })();
     const [space, setSpace] = useState(defaultSpace);
+    const subscriptions = useMockSubscriptions({ initial: false, entityType: "project" });
 
     return (
       <ProjectPage
@@ -479,6 +484,7 @@ export const ReadOnly: Story = {
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },
@@ -545,6 +551,8 @@ export const EmptyTasks: Story = {
       setResources(updatedResources);
     };
 
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -606,6 +614,7 @@ export const EmptyTasks: Story = {
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },
@@ -658,6 +667,8 @@ export const EmptyProject: Story = {
       const updatedResources = resources.filter((resource) => resource.id !== id);
       setResources(updatedResources);
     };
+
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
 
     return (
       <ProjectPage
@@ -718,6 +729,7 @@ export const EmptyProject: Story = {
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },
@@ -730,6 +742,7 @@ export const EmptyProjectReadOnly: Story = {
     const startedAt = null; // No start date for empty read-only project
     const dueAt = null; // No due date for empty read-only project
     const [space, setSpace] = useState(defaultSpace);
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
 
     return (
       <ProjectPage
@@ -790,6 +803,7 @@ export const EmptyProjectReadOnly: Story = {
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },
@@ -878,6 +892,8 @@ export const PausedProject: Story = {
       setResources(updatedResources);
     };
 
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
+
     return (
       <ProjectPage
         workmapLink="#"
@@ -945,6 +961,7 @@ export const PausedProject: Story = {
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },
@@ -969,6 +986,8 @@ export const ClosedProject: Story = {
     const startedAt = createContextualDate("2025-03-01", "day"); // March 1, 2025
     const dueAt = createContextualDate("2025-05-26", "day"); // June 26, 2025
     const closedAt = new Date(2025, 5, 26); // June 26, 2025
+
+    const subscriptions = useMockSubscriptions({ entityType: "project" });
 
     return (
       <ProjectPage
@@ -1032,6 +1051,7 @@ export const ClosedProject: Story = {
         discussions={[]}
         onProjectDelete={() => {}}
         canDelete={true}
+        subscriptions={subscriptions}
       />
     );
   },

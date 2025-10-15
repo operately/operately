@@ -1,5 +1,6 @@
 import React from "react";
 import classNames from "../utils/classnames";
+import { NotificationToggle } from "../NotificationToggle";
 
 export function SidebarSection({
   title,
@@ -22,3 +23,21 @@ export function SidebarSection({
   );
 }
 
+export function SidebarNotificationSection(props: SidebarNotificationSection.Props) {
+  if (props.hidden) return null;
+
+  return (
+    <div className={props.className}>
+      <SidebarSection title="Notifications">
+        <NotificationToggle {...props} />
+      </SidebarSection>
+    </div>
+  );
+}
+
+export namespace SidebarNotificationSection {
+  export interface Props extends NotificationToggle.Props {
+    hidden: boolean;
+    className?: string;
+  }
+}
