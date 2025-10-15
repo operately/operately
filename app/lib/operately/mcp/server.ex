@@ -38,7 +38,7 @@ defmodule Operately.MCP.Server do
   end
 
   @impl true
-  def handle_tool("switch_organization", %{company_id: company_id, person_id: person_id}, frame) do
+  def handle_tool_call("switch_organization", %{company_id: company_id, person_id: person_id}, frame) do
     # Validate that the company and person exist and are accessible
     with {:ok, company} <- get_company(company_id),
          {:ok, person} <- get_person(person_id),
@@ -76,8 +76,8 @@ defmodule Operately.MCP.Server do
     end
   end
 
-  @impl true  
-  def handle_tool("get_work_map", _params, frame) do
+  @impl true
+  def handle_tool_call("get_work_map", _params, frame) do
     case get_current_context(frame) do
       {:ok, person, company} ->
         case Operately.WorkMaps.GetWorkMapQuery.execute(person, %{company_id: company.id}) do
@@ -96,7 +96,7 @@ defmodule Operately.MCP.Server do
   end
 
   @impl true
-  def handle_tool("get_goal", %{id: goal_id}, frame) do
+  def handle_tool_call("get_goal", %{id: goal_id}, frame) do
     case get_current_context(frame) do
       {:ok, person, _company} ->
         conn = %{assigns: %{current_person: person}}
@@ -135,7 +135,7 @@ defmodule Operately.MCP.Server do
   end
 
   @impl true
-  def handle_tool("get_project", %{id: project_id}, frame) do
+  def handle_tool_call("get_project", %{id: project_id}, frame) do
     case get_current_context(frame) do
       {:ok, person, _company} ->
         with {:ok, decoded_id} <- OperatelyWeb.Api.Helpers.decode_id(project_id),
@@ -281,7 +281,7 @@ defmodule Operately.MCP.Server do
   @impl true
   def handle_resource_read("operately://goals", frame) do
     case get_current_context(frame) do
-      {:ok, person, company} ->
+      {:ok, person, _company} ->
         conn = %{assigns: %{current_person: person}}
         
         case OperatelyWeb.Api.Queries.GetGoals.call(conn, %{}) do
@@ -296,8 +296,8 @@ defmodule Operately.MCP.Server do
             
             {:reply, %{goals: goals}, frame}
             
-          {:error, error} ->
-            Logger.error("Error fetching goals list: #{inspect(error)}")
+          other ->
+            Logger.error("Error fetching goals list: #{inspect(other)}")
             {:error, %{code: -32603, message: "Failed to fetch goals"}, frame}
         end
         
@@ -363,8 +363,8 @@ defmodule Operately.MCP.Server do
             
             {:reply, %{projects: projects}, frame}
             
-          {:error, error} ->
-            Logger.error("Error fetching projects list: #{inspect(error)}")
+          other ->
+            Logger.error("Error fetching projects list: #{inspect(other)}")
             {:error, %{code: -32603, message: "Failed to fetch projects"}, frame}
         end
         
