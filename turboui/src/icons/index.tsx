@@ -353,6 +353,15 @@ export function IconGoal({ size = 16, className = "" }: IconProps) {
   );
 }
 
+export function IconGoalPlain({ size = 16, className = "" }: IconProps) {
+  const outer = classNames(
+    "flex-shrink-0 rounded-full flex items-center justify-center",
+    "text-red-500 dark:text-red-400 dark:bg-red-900/30",
+    className,
+  );
+  return <IconTarget size={size} className={outer} />;
+}
+
 export function IconProject({ size = 16, className = "" }: IconProps) {
   const outer = classNames(
     "flex-shrink-0 w-5 rounded-full flex items-center justify-center",
@@ -367,6 +376,16 @@ export function IconProject({ size = 16, className = "" }: IconProps) {
       <IconChecklist size={innerSize} />
     </div>
   );
+}
+
+export function IconProjectPlain({ size = 16, className = "" }: IconProps) {
+  const outer = classNames(
+    "flex-shrink-0 w-5 rounded-full flex items-center justify-center",
+    "text-blue-500 dark:text-blue-400 dark:bg-blue-900/30",
+    className,
+  );
+
+  return <IconChecklist size={size} className={outer} />;
 }
 
 export function IconPaintBucket({

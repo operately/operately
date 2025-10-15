@@ -2,7 +2,7 @@ import React from "react";
 
 import { BlackLink, DivLink } from "../Link";
 import { FormattedTime } from "../FormattedTime";
-import { IconCalendar, IconChevronRight, IconFlag, IconMessage, IconSquare } from "../icons";
+import { IconCalendar, IconFlag, IconGoalPlain, IconMessage, IconProjectPlain, IconSquare } from "../icons";
 import { StatusBadge } from "../StatusBadge";
 import { createTestId } from "../TestableElement";
 
@@ -13,6 +13,11 @@ const TYPE_ICON: Partial<Record<ReviewPageV2.AssignmentType, typeof IconSquare>>
   goal_update: IconMessage,
   milestone: IconFlag,
   project_task: IconSquare,
+};
+
+const ORIGIN_ICON: Record<ReviewPageV2.AssignmentOrigin["type"], typeof IconSquare> = {
+  goal: IconGoalPlain,
+  project: IconProjectPlain,
 };
 
 export function AssignmentGroups({ groups }: { groups: ReviewPageV2.AssignmentGroup[] }) {
@@ -43,33 +48,19 @@ function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
 }
 
 function GroupHeader({ origin }: { origin: ReviewPageV2.AssignmentOrigin }) {
-  return (
-    <div className="flex items-center gap-2 text-sm mb-3">
-      {origin.spaceName ? (
-        <>
-          <span className="text-content-dimmed">{origin.spaceName}</span>
-          <IconChevronRight size={10} className="text-content-dimmed" />
-        </>
-      ) : null}
-      <span className="text-content-dimmed">{origin.type === "project" ? "Project" : "Goal"}</span>
-      <IconChevronRight size={10} className="text-content-dimmed" />
-      <div className="flex flex-wrap items-center gap-2">
-        <BlackLink
-          to={origin.path}
-          underline="hover"
-          testId={createTestId("origin", origin.id)}
-          className="font-medium text-content-strong"
-        >
-          {origin.name}
-        </BlackLink>
+  const Icon = ORIGIN_ICON[origin.type];
 
-        {origin.dueDate ? (
-          <span className="flex items-center gap-1 text-xs text-content-dimmed">
-            <IconCalendar size={12} />
-            <FormattedTime time={origin.dueDate} format="short-date" />
-          </span>
-        ) : null}
-      </div>
+  return (
+    <div className="flex flex-wrap items-center gap-2 mb-1">
+      <BlackLink
+        to={origin.path}
+        underline="hover"
+        testId={createTestId("origin", origin.id)}
+        className="font-medium text-base text-content-strong flex items-center gap-2"
+      >
+        <Icon size={16} />
+        <span>{origin.name}</span>
+      </BlackLink>
     </div>
   );
 }
@@ -81,7 +72,7 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
   return (
     <DivLink
       to={assignment.path}
-      className="group relative flex items-center gap-3 py-2 px-2 transition-colors hover:bg-surface-highlight rounded"
+      className="group relative flex items-center gap-3 py-2 pl-6 pr-2 transition-colors hover:bg-surface-highlight rounded"
       testId={createTestId("assignment", assignment.resourceId)}
     >
       <div className="flex h-6 w-6 items-center justify-center text-content-base">
