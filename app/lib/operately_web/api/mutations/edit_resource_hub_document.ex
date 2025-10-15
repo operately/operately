@@ -9,6 +9,8 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubDocument do
     field? :document_id, :id, null: true
     field? :name, :string, null: true
     field? :content, :string, null: true
+    field? :send_notifications_to_everyone, :boolean, null: true
+    field? :subscriber_ids, list_of(:id), null: true
   end
 
   outputs do
@@ -39,7 +41,12 @@ defmodule OperatelyWeb.Api.Mutations.EditResourceHubDocument do
 
   defp parse_attrs(inputs) do
     content = Jason.decode!(inputs.content)
-    {:ok, Map.put(inputs, :content, content)}
+    {:ok,
+      Map.merge(inputs, %{
+        content: content,
+        send_to_everyone: inputs[:send_notifications_to_everyone],
+        subscriber_ids: inputs[:subscriber_ids],
+      })}
   end
 
   defp find_document(me, inputs) do
