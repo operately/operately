@@ -254,3 +254,7 @@ export const allAssignments: ReviewPageV2.Assignment[] = [
 ];
 
 export const emptyStateAssignments: ReviewPageV2.Assignment[] = [];
+
+export const smallPlateDueSoon: ReviewPageV2.Assignment[] = dueSoonAssignments.slice(0, 2);
+
+export const smallPlateReview: ReviewPageV2.Assignment[] = reviewAssignments.slice(0, 1);

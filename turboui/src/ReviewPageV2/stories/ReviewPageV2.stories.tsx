@@ -35,6 +35,22 @@ export const Default: Story = {
   },
 };
 
+export const WithoutUpcomingWork: Story = {
+  render: (args) => <ReviewPageV2 {...args} />,
+  args: {
+    assignments: [...data.dueSoonAssignments, ...data.reviewAssignments],
+    showUpcomingSection: false,
+  },
+};
+
+export const WithoutUpcomingWorkSmallPlate: Story = {
+  render: (args) => <ReviewPageV2 {...args} />,
+  args: {
+    assignments: [...data.smallPlateDueSoon, ...data.smallPlateReview],
+    showUpcomingSection: false,
+  },
+};
+
 export const UrgentFocus: Story = {
   render: (args) => <ReviewPageV2 {...args} />,
   args: {

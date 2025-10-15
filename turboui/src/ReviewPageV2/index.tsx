@@ -64,11 +64,13 @@ export namespace ReviewPageV2 {
   export interface Props {
     assignments: Assignment[];
     assignmentsCount?: number;
+    showUpcomingSection?: boolean;
   }
 }
 
 export function ReviewPageV2(props: ReviewPageV2.Props) {
   const assignments = props.assignments || [];
+  const showUpcomingSection = props.showUpcomingSection ?? true;
   const categorized = React.useMemo(() => categorizeAssignments(assignments), [assignments]);
 
   // Count only urgent items (due soon + needs review), not upcoming
@@ -104,13 +106,15 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
             }
           />
 
-          <Section
-            title="My upcoming work"
-            description="Work assigned to you with future due dates, sorted chronologically."
-            groups={categorized.upcoming}
-            testId="upcoming-section"
-            emptyState={<EmptyState title="No upcoming work" description="Nothing else is scheduled for you yet." />}
-          />
+          {showUpcomingSection && (
+            <Section
+              title="My upcoming work"
+              description="Work assigned to you with future due dates, sorted chronologically."
+              groups={categorized.upcoming}
+              testId="upcoming-section"
+              emptyState={<EmptyState title="No upcoming work" description="Nothing else is scheduled for you yet." />}
+            />
+          )}
         </div>
       </div>
     </PageNew>
