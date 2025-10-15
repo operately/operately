@@ -18,18 +18,28 @@ export interface SubscriptionsState {
 interface Opts {
   notifyPrioritySubscribers?: boolean;
   ignoreMe?: boolean;
+  sendNotificationsToEveryone?: boolean;
+  initialSubscriptionType?: Options;
 }
 
 export function useSubscriptions(allSubscribers: Subscriber[], opts?: Opts): SubscriptionsState {
   const me = useMe();
 
   const subscribers = opts?.ignoreMe ? allSubscribers.filter((s) => !compareIds(s.person!.id, me?.id)) : allSubscribers;
-  const alwaysNotify = useMemo(() => findPrioritySubscribers(subscribers, opts), []);
-
-  const [selectedSubscribers, setSelectedSubscribers] = useState<Subscriber[]>(
-    findAlreadySelected(subscribers, alwaysNotify),
+  const alwaysNotify = useMemo(
+    () => findPrioritySubscribers(subscribers, opts),
+    [subscribers, opts?.notifyPrioritySubscribers],
   );
-  const [subscriptionType, setSubscriptionType] = useState(Options.ALL);
+
+  const initialSelectedSubscribers = useMemo(
+    () => findAlreadySelected(subscribers, alwaysNotify),
+    [subscribers, alwaysNotify],
+  );
+
+  const [selectedSubscribers, setSelectedSubscribers] = useState<Subscriber[]>(initialSelectedSubscribers);
+  const [subscriptionType, setSubscriptionType] = useState<Options>(() =>
+    determineInitialSubscriptionType(opts, initialSelectedSubscribers, alwaysNotify),
+  );
 
   const currentSubscribersList = useMemo(() => {
     switch (subscriptionType) {
@@ -63,4 +73,30 @@ function findAlreadySelected(subscribers: Subscriber[], alwaysNotify: Subscriber
   const alreadySubscribed = subscribers.filter((subscriber) => subscriber.isSubscribed);
 
   return [...alwaysNotify, ...alreadySubscribed];
+}
+
+function determineInitialSubscriptionType(
+  opts: Opts | undefined,
+  selectedSubscribers: Subscriber[],
+  alwaysNotify: Subscriber[],
+): Options {
+  if (opts?.initialSubscriptionType) return opts.initialSubscriptionType;
+
+  if (opts?.sendNotificationsToEveryone === true) {
+    return Options.ALL;
+  }
+
+  if (opts?.sendNotificationsToEveryone === false) {
+    const additionalSelected = selectedSubscribers.filter(
+      (subscriber) => !isSubscriberInList(alwaysNotify, subscriber),
+    );
+
+    return additionalSelected.length > 0 ? Options.SELECTED : Options.NONE;
+  }
+
+  return Options.ALL;
+}
+
+function isSubscriberInList(list: Subscriber[], subscriber: Subscriber) {
+  return list.some((item) => compareIds(item.person?.id, subscriber.person?.id));
 }
