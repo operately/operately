@@ -162,21 +162,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> UI.sleep(300)
   end
 
-  step :change_champion, ctx, name: name do
-    ctx
-    |> UI.click(testid: "champion-field")
-    |> UI.click(testid: "champion-field-assign-another")
-    |> UI.click(testid: UI.testid(["champion-field-search-result", name]))
-    |> UI.sleep(300)
-  end
-
-  step :remove_champion, ctx do
-    ctx
-    |> UI.click(testid: "champion-field")
-    |> UI.click(testid: "champion-field-clear-assignment")
-    |> UI.sleep(300)
-  end
-
   step :assert_goal_connected, ctx, goal_name: goal_name do
     ctx
     |> UI.assert_text(goal_name, testid: "parent-goal-field")
@@ -599,34 +584,6 @@ defmodule Operately.Support.Features.ProjectSteps do
     |> NotificationsSteps.assert_no_unread_notifications()
   end
 
-  step :assert_champion_changed, ctx, name: name do
-    ctx
-    |> UI.assert_text(name, testid: "champion-field")
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text(name, testid: "champion-field")
-  end
-
-  step :assert_champion_changed_feed_posted, ctx, champion: champion do
-    title = "assigned #{Person.short_name(champion)} as the champion"
-    title_long = "assigned #{Person.short_name(champion)} as the champion on #{ctx.project.name}"
-
-    assert_feed(ctx, title, title_long)
-  end
-
-  step :assert_champion_removed, ctx do
-    ctx
-    |> UI.assert_text("Set champion", testid: "champion-field")
-    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
-    |> UI.assert_text("Set champion", testid: "champion-field")
-  end
-
-  step :assert_champion_removed_feed_posted, ctx do
-    title = "removed the champion"
-    title_long = "removed the champion on #{ctx.project.name}"
-
-    assert_feed(ctx, title, title_long)
-  end
-
   step :given_project_has_description, ctx, description: description do
     {:ok, _project} =
       Operately.Projects.update_project(ctx.project, %{
@@ -819,6 +776,91 @@ defmodule Operately.Support.Features.ProjectSteps do
     assert_feed(ctx, title, title_long)
   end
 
+   step :assert_reviewer_change_notification_sent_to_subscriber, ctx do
+    ctx
+    |> UI.login_as(ctx.subscriber)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Changed the reviewer for #{ctx.project.name}"
+    })
+  end
+
+  step :assert_reviewer_change_email_sent_to_subscriber, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.subscriber,
+      author: ctx.creator,
+      action: "changed the reviewer"
+    })
+  end
+
+  #
+  # Champion steps
+  #
+
+  step :change_champion, ctx, name: name do
+    ctx
+    |> UI.click(testid: "champion-field")
+    |> UI.click(testid: "champion-field-assign-another")
+    |> UI.click(testid: UI.testid(["champion-field-search-result", name]))
+    |> UI.sleep(300)
+  end
+
+  step :remove_champion, ctx do
+    ctx
+    |> UI.click(testid: "champion-field")
+    |> UI.click(testid: "champion-field-clear-assignment")
+    |> UI.sleep(300)
+  end
+
+  step :assert_champion_changed, ctx, name: name do
+    ctx
+    |> UI.assert_text(name, testid: "champion-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text(name, testid: "champion-field")
+  end
+
+  step :assert_champion_changed_feed_posted, ctx, champion: champion do
+    title = "assigned #{Person.short_name(champion)} as the champion"
+    title_long = "assigned #{Person.short_name(champion)} as the champion on #{ctx.project.name}"
+
+    assert_feed(ctx, title, title_long)
+  end
+
+  step :assert_champion_removed, ctx do
+    ctx
+    |> UI.assert_text("Set champion", testid: "champion-field")
+    |> UI.visit(Paths.project_path(ctx.company, ctx.project))
+    |> UI.assert_text("Set champion", testid: "champion-field")
+  end
+
+  step :assert_champion_removed_feed_posted, ctx do
+    title = "removed the champion"
+    title_long = "removed the champion on #{ctx.project.name}"
+
+    assert_feed(ctx, title, title_long)
+  end
+
+  step :assert_champion_change_notification_sent_to_subscriber, ctx do
+    ctx
+    |> UI.login_as(ctx.subscriber)
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.creator,
+      action: "Changed the champion for #{ctx.project.name}"
+    })
+  end
+
+  step :assert_champion_change_email_sent_to_subscriber, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.subscriber,
+      author: ctx.creator,
+      action: "changed the champion"
+    })
+  end
+
   defp assert_feed(ctx, title, long_tile) do
     ctx
     |> UI.visit(Paths.project_path(ctx.company, ctx.project, tab: "activity"))
@@ -875,5 +917,31 @@ defmodule Operately.Support.Features.ProjectSteps do
     ctx
     |> UI.click_button("Save")
     |> UI.sleep(200)
+  end
+
+  #
+  # Subscription steps
+  #
+
+  step :given_subscriber_exists, ctx do
+    Factory.add_company_member(ctx,:subscriber)
+  end
+
+  step :log_in_as_subscriber, ctx do
+    UI.login_as(ctx, ctx.subscriber)
+  end
+
+  step :log_in_as_creator, ctx do
+    UI.login_as(ctx, ctx.creator)
+  end
+
+  step :subscribe_to_project, ctx do
+    ctx
+    |> UI.take_screenshot()
+    |> UI.click(testid: "project-subscribe-button")
+    |> UI.sleep(300)
+    |> UI.take_screenshot()
+    |> UI.refute_has(testid: "project-subscribe-button")
+    |> UI.assert_has(testid: "project-unsubscribe-button")
   end
 end

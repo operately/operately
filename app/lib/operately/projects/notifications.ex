@@ -51,6 +51,13 @@ defmodule Operately.Projects.Notifications do
     SubscribersLoader.load_for_notifications(milestone, [], ignore)
   end
 
+  def get_project_subscribers(project, opts \\ []) do
+    ignore = Keyword.get(opts, :ignore, [])
+    project = Operately.Repo.preload(project, :access_context)
+
+    SubscribersLoader.load_for_notifications(project, [], ignore)
+  end
+
   #
   # Helpers
   #

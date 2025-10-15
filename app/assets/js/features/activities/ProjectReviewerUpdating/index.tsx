@@ -63,11 +63,23 @@ const ProjectReviewerUpdating: ActivityHandler = {
   },
 
   NotificationTitle(props: { activity: Activity }) {
-    return People.firstName(props.activity.author!) + " assigned you as the reviewer";
+    const { project } = content(props.activity);
+
+    if (!project) {
+      return "";
+    }
+
+    return People.firstName(props.activity.author!) + " changed the reviewer for " + project.name;
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    return content(props.activity).project!.name!;
+    const { project } = content(props.activity);
+
+    if (!project) {
+      return "";
+    }
+
+    return project.name;
   },
 };
 

@@ -606,14 +606,14 @@ function useSubscription(project: Projects.Project, refresh?: () => Promise<void
   });
 
   const onToggle = React.useCallback(
-    async (isSubscribed: boolean) => {
+    async (notSubscribed: boolean) => {
       if (!subscriptionList?.id) return;
 
-      const prevValue = isSubscribed;
-      setIsSubscribed(isSubscribed);
+      const prevValue = notSubscribed;
+      setIsSubscribed(notSubscribed);
 
       try {
-        if (isSubscribed) {
+        if (notSubscribed) {
           await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
         } else {
           await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
