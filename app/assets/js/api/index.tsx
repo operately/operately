@@ -1405,6 +1405,7 @@ export interface Project {
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
   milestonesOrderingState?: string[] | null;
+  subscriptionList?: SubscriptionList | null;
 }
 
 export interface ProjectCheckIn {
@@ -1743,6 +1744,7 @@ export interface Subscriber {
 export interface Subscription {
   id?: string | null;
   type?: string | null;
+  canceled?: boolean | null;
   person?: Person | null;
 }
 
@@ -2398,6 +2400,7 @@ export interface GetProjectInput {
   includeRetrospective?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includeSubscriptionList?: boolean | null;
   includeMarkdown?: boolean;
 }
 

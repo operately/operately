@@ -107,6 +107,7 @@ defmodule Operately.Notifications do
         end)
 
         {:ok, notifications}
+
       {:error, _} ->
         {:error, :failed_to_create_notifications}
     end
@@ -119,7 +120,6 @@ defmodule Operately.Notifications do
 
     Repo.one(query)
   end
-
 
   alias Operately.Notifications.SubscriptionList
 
@@ -158,6 +158,11 @@ defmodule Operately.Notifications do
       :resource_hub_link ->
         from(l in Operately.ResourceHubs.Link, as: :resource,
           join: s in assoc(l, :subscription_list), as: :subscription_list,
+          where: s.id == ^id
+        )
+      :project ->
+        from(p in Operately.Projects.Project, as: :resource,
+          join: s in assoc(p, :subscription_list), as: :subscription_list,
           where: s.id == ^id
         )
       :comment_thread ->
@@ -207,6 +212,11 @@ defmodule Operately.Notifications do
           join: s in assoc(l, :subscription_list),
           where: s.id == ^id
         )
+      :project ->
+        from(p in Operately.Projects.Project, as: :resource,
+          join: s in assoc(p, :subscription_list),
+          where: s.id == ^id
+        )
       :comment_thread ->
         from(a in Operately.Activities.Activity, as: :resource,
           join: c in assoc(a, :comment_thread),
@@ -230,10 +240,10 @@ defmodule Operately.Notifications do
     |> Repo.update()
   end
 
-
   alias Operately.Notifications.Subscription
 
   def list_subscriptions(%SubscriptionList{} = subscription_list), do: list_subscriptions(subscription_list.id)
+
   def list_subscriptions(subscription_list_id) do
     from(s in Subscription, where: s.subscription_list_id == ^subscription_list_id)
     |> Repo.all()
