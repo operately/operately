@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ActionList } from "../ActionList";
 import { SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -240,16 +240,20 @@ function Contributors(props: ProjectPage.State) {
   );
 }
 
-function NotificationSection(_props: ProjectPage.State) {
-  const [isSubscribed, setIsSubscribed] = useState(true);
+function NotificationSection(props: ProjectPage.State) {
+  if (!props.notifications) return null;
 
   const handleToggle = (subscribed: boolean) => {
-    setIsSubscribed(subscribed);
+    props.notifications?.onToggle(subscribed);
   };
 
   return (
     <SidebarSection title="Notifications">
-      <NotificationToggle isSubscribed={isSubscribed} onToggle={handleToggle} entityType="project" />
+      <NotificationToggle
+        isSubscribed={props.notifications.isSubscribed}
+        onToggle={handleToggle}
+        entityType="project"
+      />
     </SidebarSection>
   );
 }

@@ -1,4 +1,13 @@
 defmodule Operately.Projects.Notifications do
+  @moduledoc """
+  Helpers for loading subscribers for project-scoped resources.
+
+  The project overview subscription toggle wires project membership into
+  subscription lists so that future project-level notifications can reuse
+  these helpers. When we introduce project-specific activities, extend this
+  module to fetch the appropriate subscriber sets instead of creating new
+  ad-hoc loaders.
+  """
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
@@ -35,6 +44,7 @@ defmodule Operately.Projects.Notifications do
     preload = [subscription_list: [subscriptions: :person], access_context: []]
 
     {:ok, discussion} = Operately.Comments.CommentThread.get(:system, id: discussion_id, opts: [preload: preload])
+
     people = discussion.subscription_list.subscriptions |> Enum.map(& &1.person)
 
     SubscribersLoader.load_for_notifications(discussion, people, ignore)
