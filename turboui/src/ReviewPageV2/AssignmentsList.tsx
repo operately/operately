@@ -56,7 +56,7 @@ function GroupHeader({ origin }: { origin: ReviewPageV2.AssignmentOrigin }) {
         to={origin.path}
         underline="hover"
         testId={createTestId("origin", origin.id)}
-        className="font-medium text-base text-content-strong flex items-center gap-2"
+        className="font-medium flex items-center gap-2"
       >
         <Icon size={16} />
         <span>{origin.name}</span>
@@ -72,7 +72,7 @@ function AssignmentRow({ assignment }: { assignment: ReviewPageV2.AssignmentWith
   return (
     <DivLink
       to={assignment.path}
-      className="group relative flex items-center gap-3 py-2 pl-6 pr-2 transition-colors hover:bg-surface-highlight rounded"
+      className="group relative flex items-center gap-3 py-1 pl-6 pr-2 transition-colors hover:bg-surface-highlight rounded"
       testId={createTestId("assignment", assignment.resourceId)}
     >
       <div className="flex h-6 w-6 items-center justify-center text-content-base">
