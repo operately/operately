@@ -74,10 +74,20 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
   const showUpcomingSection = props.showUpcomingSection ?? true;
   const categorized = React.useMemo(() => categorizeAssignments(assignments), [assignments]);
 
-  const hasDueSoon = categorized.dueSoon.length > 0;
-  const hasNeedsReview = categorized.needsReview.length > 0;
+  const urgentGroups = React.useMemo(() => {
+    const dueSoonAssignments = categorized.dueSoon.flatMap((group) => group.assignments);
+    const reviewAssignments = categorized.needsReview.flatMap((group) => group.assignments);
+
+    if (dueSoonAssignments.length === 0 && reviewAssignments.length === 0) {
+      return [];
+    }
+
+    return groupAssignmentsByOrigin([...dueSoonAssignments, ...reviewAssignments]);
+  }, [categorized]);
+
+  const hasUrgent = urgentGroups.length > 0;
   const hasUpcoming = showUpcomingSection && categorized.upcoming.length > 0;
-  const hasAnyAssignments = hasDueSoon || hasNeedsReview || hasUpcoming;
+  const hasAnyAssignments = hasUrgent || hasUpcoming;
 
   // Count only urgent items (due soon + needs review), not upcoming
   const urgentCount =
@@ -94,22 +104,8 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
         <div className="flex flex-col mt-2">
           {hasAnyAssignments ? (
             <>
-              {hasDueSoon && (
-                <Section
-                  title="Needs my action"
-                  infoTooltip="Assignments, check-ins, and milestones you own that are coming due now."
-                  groups={categorized.dueSoon}
-                  testId="due-soon-section"
-                />
-              )}
-
-              {hasNeedsReview && (
-                <Section
-                  title="Awaiting my review"
-                  infoTooltip="Updates submitted by your teammates that are waiting for your acknowledgement."
-                  groups={categorized.needsReview}
-                  testId="needs-review-section"
-                />
+              {hasUrgent && (
+                <Section title="Needs my attention" groups={urgentGroups} testId="due-soon-section" />
               )}
 
               {hasUpcoming && (
@@ -149,7 +145,7 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
             {headline}
           </span>
         </div>
-        <p className="text-sm text-content-dimmed">Stay on top of your responsibilities</p>
+        <p className="text-sm text-content-dimmed">Catch up on work that's due soon or waiting for your review.</p>
       </div>
     </div>
   );

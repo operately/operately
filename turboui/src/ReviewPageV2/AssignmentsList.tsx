@@ -33,9 +33,11 @@ export function AssignmentGroups({ groups }: { groups: ReviewPageV2.AssignmentGr
 }
 
 function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
+  const relationships = getGroupRelationshipLabels(group.assignments);
+
   return (
     <div className="flex flex-col">
-      <GroupHeader origin={group.origin} />
+      <GroupHeader origin={group.origin} relationships={relationships} />
 
       <div className="flex flex-col gap-1">
         {group.assignments.map((assignment) => (
@@ -46,7 +48,13 @@ function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
   );
 }
 
-function GroupHeader({ origin }: { origin: ReviewPageV2.AssignmentOrigin }) {
+function GroupHeader({
+  origin,
+  relationships,
+}: {
+  origin: ReviewPageV2.AssignmentOrigin;
+  relationships: string[];
+}) {
   const Icon = ORIGIN_ICON[origin.type];
 
   return (
@@ -60,6 +68,11 @@ function GroupHeader({ origin }: { origin: ReviewPageV2.AssignmentOrigin }) {
         <Icon size={16} />
         <span>{origin.name}</span>
       </BlackLink>
+      {relationships.length > 0 ? (
+        <span className="text-[10px] font-semibold tracking-wide uppercase text-content-dimmed">
+          {relationships.join(" / ")}
+        </span>
+      ) : null}
     </div>
   );
 }
@@ -131,4 +144,37 @@ function calculateDaysOverdue(dueDate: Date): number {
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
   return Math.max(1, diffDays); // At least 1 day overdue
+}
+
+function getGroupRelationshipLabels(assignments: ReviewPageV2.AssignmentWithMeta[]): string[] {
+  let champion = false;
+  let reviewer = false;
+  let contributor = false;
+
+  assignments.forEach((assignment) => {
+    if (assignment.role === "reviewer") {
+      reviewer = true;
+      return;
+    }
+
+    if (assignment.type === "project_task") {
+      contributor = true;
+      return;
+    }
+
+    champion = true;
+  });
+
+  const labels: string[] = [];
+  if (champion) {
+    labels.push("CHAMPION");
+  }
+  if (reviewer) {
+    labels.push("REVIEWER");
+  }
+  if (contributor) {
+    labels.push("CONTRIBUTOR");
+  }
+
+  return labels;
 }
