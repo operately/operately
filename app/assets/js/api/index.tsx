@@ -1319,6 +1319,7 @@ export interface Milestone {
   tasksKanbanState?: string | null;
   tasksOrderingState?: string[] | null;
   permissions?: ProjectPermissions | null;
+  subscriptionList?: SubscriptionList | null;
   space?: Space | null;
 }
 
@@ -1404,6 +1405,7 @@ export interface Project {
   accessLevels?: AccessLevels | null;
   potentialSubscribers?: Subscriber[] | null;
   notifications?: Notification[] | null;
+  subscriptionList?: SubscriptionList | null;
   milestonesOrderingState?: string[] | null;
 }
 
@@ -1741,16 +1743,17 @@ export interface Subscriber {
 }
 
 export interface Subscription {
-  id?: string | null;
-  type?: string | null;
-  person?: Person | null;
+  id: string;
+  type: string;
+  canceled: boolean;
+  person: Person | null;
 }
 
 export interface SubscriptionList {
-  id?: string | null;
-  parentType?: string | null;
-  sendToEveryone?: boolean | null;
-  subscriptions?: Subscription[] | null;
+  id: string;
+  parentType: string;
+  sendToEveryone: boolean;
+  subscriptions: Subscription[] | null;
 }
 
 export interface Target {
@@ -2398,11 +2401,12 @@ export interface GetProjectInput {
   includeRetrospective?: boolean | null;
   includePotentialSubscribers?: boolean | null;
   includeUnreadNotifications?: boolean | null;
+  includeSubscriptionList?: boolean | null;
   includeMarkdown?: boolean;
 }
 
 export interface GetProjectResult {
-  project?: Project;
+  project: Project;
   markdown?: string;
 }
 

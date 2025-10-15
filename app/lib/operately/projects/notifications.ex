@@ -1,4 +1,7 @@
 defmodule Operately.Projects.Notifications do
+  @moduledoc """
+  Helpers for loading subscribers for project-scoped resources.
+  """
   import Ecto.Query, only: [from: 2]
 
   alias Operately.Repo
@@ -35,6 +38,7 @@ defmodule Operately.Projects.Notifications do
     preload = [subscription_list: [subscriptions: :person], access_context: []]
 
     {:ok, discussion} = Operately.Comments.CommentThread.get(:system, id: discussion_id, opts: [preload: preload])
+
     people = discussion.subscription_list.subscriptions |> Enum.map(& &1.person)
 
     SubscribersLoader.load_for_notifications(discussion, people, ignore)
