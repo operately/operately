@@ -1,15 +1,20 @@
 defmodule Operately.Comments.CreateMilestoneCommentOperation do
+  require Logger
+
   alias Operately.Repo
   alias Ecto.Multi
 
-  alias Operately.Updates.Comment
   alias Operately.Activities
   alias Operately.Comments.MilestoneComment
+  alias Operately.Notifications.SubscriptionList
+  alias Operately.Operations.Notifications.Subscription, as: SubscriptionOperations
   alias Operately.Projects.Project
+  alias Operately.Updates.Comment
 
   def run(author, milestone, action, comment_attrs) do
     Multi.new()
     |> Multi.insert(:comment, Comment.changeset(comment_attrs))
+    |> maybe_track_mentions(milestone, action, comment_attrs)
     |> insert_milestone_comment(milestone, action)
     |> apply_comment_action(milestone, action)
     |> load_project(milestone)
@@ -23,6 +28,19 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
     Multi.run(multi, :project, fn _, _ ->
       Project.get(:system, id: milestone.project_id, opts: [preload: [:champion]])
     end)
+  end
+
+  defp maybe_track_mentions(multi, _milestone, action, _attrs) when action in ["complete", "reopen"],
+    do: multi
+
+  defp maybe_track_mentions(multi, milestone, _action, attrs) do
+    multi
+    |> Multi.run(:subscription_list, fn _, _ ->
+      SubscriptionList.get(:system, id: milestone.subscription_list_id, opts: [
+        preload: :subscriptions
+      ])
+    end)
+    |> SubscriptionOperations.update_mentioned_people(attrs.content["message"])
   end
 
   defp insert_milestone_comment(multi, milestone, action) do
@@ -49,6 +67,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
         })
 
         Multi.update(multi, :milestone, changeset)
+
       "reopen" ->
         changeset = Operately.Projects.Milestone.changeset(milestone, %{
           status: :pending,
@@ -56,6 +75,7 @@ defmodule Operately.Comments.CreateMilestoneCommentOperation do
         })
 
         Multi.update(multi, :milestone, changeset)
+
       _ ->
         multi
     end

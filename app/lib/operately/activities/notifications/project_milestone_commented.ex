@@ -1,23 +1,51 @@
 defmodule Operately.Activities.Notifications.ProjectMilestoneCommented do
-  alias Operately.{Projects, Notifications}
+  @moduledoc """
+  Notifies the following people:
+  - Project champion
+  - Subscriber
+
+  The person who authored the comment is excluded from notifications.
+  """
+
+  require Logger
+
+  alias Operately.Repo
+  alias Operately.Projects.Notifications
+  alias Operately.Projects.Milestone
 
   def dispatch(activity) do
-    author_id = activity.author_id
-    project_id = activity.content["project_id"]
-    comment = Operately.Updates.get_comment!(activity.content["comment_id"])
-    people = Projects.list_notification_subscribers(project_id, exclude: author_id)
+    with {:ok, milestone} <- fetch_milestone(activity.content["milestone_id"]) do
+      subscriber_ids = Notifications.get_milestone_subscribers(milestone)
 
-    mentioned = Operately.RichContent.lookup_mentioned_people(comment.content["message"])
-    people = Enum.uniq_by(people ++ mentioned, & &1.id)
+      subscriber_ids
+      |> Enum.uniq()
+      |> Enum.filter(fn id -> id != activity.author_id end)
+      |> Enum.map(fn person_id ->
+        %{
+          person_id: person_id,
+          activity_id: activity.id,
+          should_send_email: true
+        }
+      end)
+      |> Operately.Notifications.bulk_create()
+    end
+  end
 
-    notifications = Enum.map(people, fn person ->
-      %{
-        person_id: person.id,
-        activity_id: activity.id,
-        should_send_email: true,
-      }
-    end)
+  defp fetch_milestone(milestone_id) do
+    case Milestone.get(:system, id: milestone_id, opts: [preload: [:project]]) do
+      {:ok, milestone} ->
+        {:ok,
+         Repo.preload(milestone, [
+           :access_context,
+           subscription_list: :subscriptions
+         ])}
 
-    Notifications.bulk_create(notifications)
+      {:error, reason} ->
+        Logger.warning(
+          "Unable to load milestone #{milestone_id} for comment notifications: #{inspect(reason)}"
+        )
+
+        {:error, reason}
+    end
   end
 end
