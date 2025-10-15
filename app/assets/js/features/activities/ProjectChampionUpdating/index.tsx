@@ -62,12 +62,28 @@ const ProjectChampionUpdating: ActivityHandler = {
     throw new Error("Not implemented");
   },
 
-  NotificationTitle(_props: { activity: Activity }) {
-    return "Assigned you as the champion";
+  NotificationTitle({ activity }: { activity: Activity }) {
+    const { newChampion, project } = content(activity);
+
+    if (!project) {
+      return "";
+    }
+
+    if (newChampion) {
+      return `Changed the champion for ${project.name}`;
+    } else {
+      return `Removed the champion for ${project.name}`;
+    }
   },
 
   NotificationLocation(props: { activity: Activity }) {
-    return content(props.activity).project!.name!;
+    const { project } = content(props.activity);
+
+    if (!project) {
+      return "";
+    }
+
+    return project.name;
   },
 };
 

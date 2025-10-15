@@ -22,9 +22,11 @@ export function NotificationToggle({
   const subscribedMessage = `You're receiving notifications because you're subscribed to this ${entityType}.`;
   const unsubscribedMessage = `You're not receiving notifications from this ${entityType}.`;
 
+  const testId = isSubscribed ? "project-unsubscribe-button" : "project-subscribe-button"
+
   return (
     <div className="space-y-2">
-      <SecondaryButton size="xs" onClick={handleToggle} icon={isSubscribed ? IconBell : IconBellOff}>
+      <SecondaryButton size="xs" onClick={handleToggle} icon={isSubscribed ? IconBell : IconBellOff} testId={testId}>
         {isSubscribed ? "Unsubscribe" : "Subscribe"}
       </SecondaryButton>
 
