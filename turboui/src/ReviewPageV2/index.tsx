@@ -184,11 +184,6 @@ function Section({ title, description, infoTooltip, groups, testId }: SectionPro
                 </button>
               </Tooltip>
             ) : null}
-            {groups.length > 0 && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
-                {groups.reduce((sum, group) => sum + group.assignments.length, 0)} items
-              </span>
-            )}
           </div>
           {description ? <p className="text-sm text-content-base mb-4">{description}</p> : null}
         </div>
