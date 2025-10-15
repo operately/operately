@@ -101,12 +101,10 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
       <div className="p-4 max-w-3xl mx-auto my-6 overflow-auto">
         <Header assignmentsCount={urgentCount} />
 
-        <div className="flex flex-col mt-2">
+        <div className="flex flex-col mt-8 gap-6">
           {hasAnyAssignments ? (
             <>
-              {hasUrgent && (
-                <Section title="Needs my attention" groups={urgentGroups} testId="due-soon-section" />
-              )}
+              {hasUrgent && <AssignmentGroups groups={urgentGroups} />}
 
               {hasUpcoming && (
                 <Section
@@ -133,19 +131,21 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
       : "All caught up";
 
   return (
-    <div className="mt-4 px-4 flex items-center gap-3" data-test-id="page-header">
-      <div className="w-10 h-10 bg-brand-2 rounded-lg flex items-center justify-center">
-        <IconCoffee size={20} className="text-brand-1" />
-      </div>
-
-      <div>
-        <div className="flex items-baseline gap-2">
-          <h1 className="text-lg font-semibold text-content-strong">Review</h1>
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
-            {headline}
-          </span>
+    <div className="mt-4 pr-4" data-test-id="page-header">
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 bg-brand-2 rounded-lg flex items-center justify-center">
+          <IconCoffee size={20} className="text-brand-1" />
         </div>
-        <p className="text-sm text-content-dimmed">Catch up on work that's due soon or waiting for your review.</p>
+
+        <div>
+          <div className="flex items-baseline gap-2">
+            <h1 className="text-lg font-semibold text-content-strong">Review</h1>
+            <span className="text-sm text-content-dimmed">{headline}</span>
+          </div>
+          <p className="text-sm text-content-dimmed mt-1">
+            Catch up on work that's due soon or waiting for your review.
+          </p>
+        </div>
       </div>
     </div>
   );

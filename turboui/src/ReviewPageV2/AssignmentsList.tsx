@@ -33,11 +33,11 @@ export function AssignmentGroups({ groups }: { groups: ReviewPageV2.AssignmentGr
 }
 
 function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
-  const relationships = getGroupRelationshipLabels(group.assignments);
+  const relationship = getGroupRelationshipLabel(group.assignments);
 
   return (
     <div className="flex flex-col">
-      <GroupHeader origin={group.origin} relationships={relationships} />
+      <GroupHeader origin={group.origin} relationship={relationship} />
 
       <div className="flex flex-col gap-1">
         {group.assignments.map((assignment) => (
@@ -50,10 +50,10 @@ function AssignmentGroup({ group }: { group: ReviewPageV2.AssignmentGroup }) {
 
 function GroupHeader({
   origin,
-  relationships,
+  relationship,
 }: {
   origin: ReviewPageV2.AssignmentOrigin;
-  relationships: string[];
+  relationship: string | null;
 }) {
   const Icon = ORIGIN_ICON[origin.type];
 
@@ -68,10 +68,8 @@ function GroupHeader({
         <Icon size={16} />
         <span>{origin.name}</span>
       </BlackLink>
-      {relationships.length > 0 ? (
-        <span className="text-[10px] font-semibold tracking-wide uppercase text-content-dimmed">
-          {relationships.join(" / ")}
-        </span>
+      {relationship ? (
+        <span className="text-[10px] font-semibold tracking-wide uppercase text-content-dimmed">{relationship}</span>
       ) : null}
     </div>
   );
@@ -146,35 +144,26 @@ function calculateDaysOverdue(dueDate: Date): number {
   return Math.max(1, diffDays); // At least 1 day overdue
 }
 
-function getGroupRelationshipLabels(assignments: ReviewPageV2.AssignmentWithMeta[]): string[] {
-  let champion = false;
-  let reviewer = false;
-  let contributor = false;
+function getGroupRelationshipLabel(assignments: ReviewPageV2.AssignmentWithMeta[]): string | null {
+  let label: string | null = null;
 
   assignments.forEach((assignment) => {
+    if (label) {
+      return;
+    }
+
     if (assignment.role === "reviewer") {
-      reviewer = true;
+      label = "REVIEWER";
       return;
     }
 
     if (assignment.type === "project_task") {
-      contributor = true;
+      label = "CONTRIBUTOR";
       return;
     }
 
-    champion = true;
+    label = "CHAMPION";
   });
 
-  const labels: string[] = [];
-  if (champion) {
-    labels.push("CHAMPION");
-  }
-  if (reviewer) {
-    labels.push("REVIEWER");
-  }
-  if (contributor) {
-    labels.push("CONTRIBUTOR");
-  }
-
-  return labels;
+  return label;
 }
