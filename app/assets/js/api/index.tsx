@@ -3452,6 +3452,8 @@ export interface EditResourceHubDocumentInput {
   documentId?: Id | null;
   name?: string | null;
   content?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface EditResourceHubDocumentResult {
@@ -4070,6 +4072,8 @@ export interface PublishResourceHubDocumentInput {
   documentId?: Id | null;
   name?: string | null;
   content?: string | null;
+  sendNotificationsToEveryone?: boolean | null;
+  subscriberIds?: Id[] | null;
 }
 
 export interface PublishResourceHubDocumentResult {
