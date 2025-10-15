@@ -93,14 +93,6 @@ function Page() {
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
 
-  const subscriptionList = project.subscriptionList;
-  const currentUserId = currentUser?.id ?? null;
-  const [isSubscribed, setIsSubscribed] = React.useState(() => isPersonSubscribed(subscriptionList, currentUserId));
-
-  React.useEffect(() => {
-    setIsSubscribed(isPersonSubscribed(subscriptionList, currentUserId));
-  }, [subscriptionList?.id, subscriptionList?.subscriptions, currentUserId]);
-
   const workmapLink = paths.spaceWorkMapPath(project.space.id, "projects" as const);
 
   const [projectName, setProjectName] = usePageField({
@@ -175,39 +167,12 @@ function Page() {
       refresh,
     });
 
+  const subscriptions = useSubscription(project, refresh);
+
   const parentGoalSearch = useParentGoalSearch(project);
   const spaceSearch = useSpaceSearch();
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
-
-  const handleProjectSubscriptionToggle = React.useCallback(
-    async (next: boolean) => {
-      if (!subscriptionList?.id) return;
-
-      const previous = isSubscribed;
-      setIsSubscribed(next);
-
-      try {
-        if (next) {
-          await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
-        } else {
-          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
-        }
-
-        PageCache.invalidate(pageCacheKey(project.id));
-
-        await refresh?.();
-      } catch (error) {
-        setIsSubscribed(previous);
-        console.error("Failed to toggle project subscription", error);
-        showErrorToast(
-          "Error",
-          next ? "Failed to subscribe to project notifications." : "Failed to unsubscribe from project notifications.",
-        );
-      }
-    },
-    [subscriptionList?.id, project.id, refresh, isSubscribed],
-  );
 
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
@@ -323,13 +288,7 @@ function Page() {
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
 
-    notifications:
-      subscriptionList?.id && currentUserId
-        ? {
-            isSubscribed,
-            onToggle: handleProjectSubscriptionToggle,
-          }
-        : undefined,
+    subscriptions,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
@@ -633,13 +592,63 @@ function useResources(project: Projects.Project) {
   return { resources, createResource, updateResource, removeResource };
 }
 
-function isPersonSubscribed(
-  subscriptionList: Projects.Project["subscriptionList"] | null | undefined,
-  personId: string | null,
-): boolean {
-  if (!subscriptionList?.subscriptions || !personId) return false;
+function useSubscription(project: Projects.Project, refresh?: () => Promise<void>) {
+  const currentUser = useMe();
+  const { subscriptionList } = project;
 
-  return subscriptionList.subscriptions.some(
-    (subscription) => subscription?.person?.id === personId && subscription?.canceled !== true,
+  const [isSubscribed, setIsSubscribed] = React.useState(() => {
+    if (!subscriptionList?.subscriptions || !currentUser) return false;
+
+    return subscriptionList.subscriptions.some(
+      (subscription) => subscription.person?.id === currentUser.id && subscription.canceled !== true,
+    );
+  });
+
+  const onToggle = React.useCallback(
+    async (isSubscribed: boolean) => {
+      if (!subscriptionList?.id) return;
+
+      const prevValue = isSubscribed;
+      setIsSubscribed(isSubscribed);
+
+      try {
+        if (isSubscribed) {
+          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
+        } else {
+          await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
+        }
+
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        await refresh?.();
+      } catch (error) {
+        setIsSubscribed(prevValue);
+
+        console.error("Failed to toggle project subscription", error);
+        showErrorToast(
+          "Error",
+          prevValue
+            ? "Failed to subscribe to project notifications."
+            : "Failed to unsubscribe from project notifications.",
+        );
+      }
+    },
+    [subscriptionList?.id, project.id, refresh, isSubscribed],
   );
+
+  if (!subscriptionList?.subscriptions || !currentUser) {
+    return {
+      isSubscribed,
+      onToggle: () => {},
+      hidden: true,
+      entityType: "project" as const,
+    };
+  }
+
+  return {
+    isSubscribed,
+    onToggle,
+    hidden: false,
+    entityType: "project" as const,
+  };
 }
