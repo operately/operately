@@ -201,14 +201,16 @@ function Section({ title, description, infoTooltip, groups, testId }: SectionPro
 
 function CaughtUpState() {
   return (
-    <div className="mx-auto mt-10 flex max-w-md flex-col items-center gap-4 rounded-xl border border-surface-outline bg-surface-base px-8 py-14 text-center shadow-sm">
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-callout-success-bg">
-        <IconSparkles size={20} className="text-callout-success-content" />
+    <div className="px-4 py-10">
+      <div className="flex max-w-md flex-col items-center gap-4 rounded-xl border border-surface-outline bg-surface-base px-8 py-14 text-center shadow-sm">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-callout-success-bg">
+          <IconSparkles size={20} className="text-callout-success-content" />
+        </div>
+        <p className="text-lg font-semibold text-content-strong">You're all caught up</p>
+        <p className="text-sm text-content-dimmed">
+          No assignments, check-ins, milestones, or reviews need your attention right now.
+        </p>
       </div>
-      <p className="text-lg font-semibold text-content-strong">You're all caught up</p>
-      <p className="text-sm text-content-dimmed">
-        No assignments, check-ins, milestones, or reviews need your attention right now.
-      </p>
     </div>
   );
 }
