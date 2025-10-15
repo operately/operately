@@ -53,6 +53,24 @@ const teamProductivity: ReviewPageV2.AssignmentOrigin = {
   dueDate: getDateOffset(60),
 };
 
+const retentionPlaybook: ReviewPageV2.AssignmentOrigin = {
+  id: "project-retention-playbook",
+  name: "Retention Playbook Refresh",
+  type: "project",
+  path: "/projects/retention-playbook",
+  spaceName: "Customer Success",
+  dueDate: getDateOffset(7),
+};
+
+const engagementGoal: ReviewPageV2.AssignmentOrigin = {
+  id: "goal-engagement-growth",
+  name: "Boost Customer Engagement",
+  type: "goal",
+  path: "/goals/customer-engagement",
+  spaceName: "Marketing",
+  dueDate: getDateOffset(9),
+};
+
 export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
   // Overdue items
   {
@@ -61,7 +79,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     due: getDateOffset(-3),
     type: "milestone",
     role: "owner",
-    actionLabel: "Complete beta release",
+    actionLabel: "Beta release",
     path: "/projects/mobile-app/milestones/beta-release",
     origin: mobileAppLaunch,
     taskStatus: null,
@@ -72,7 +90,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     due: getDateOffset(-1),
     type: "project_task",
     role: "owner",
-    actionLabel: "Complete security audit",
+    actionLabel: "Get hard copy of security audit",
     path: "/projects/mobile-app/tasks/security-audit",
     origin: mobileAppLaunch,
     taskStatus: "in_progress",
@@ -84,7 +102,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     due: getDateOffset(0),
     type: "check_in",
     role: "owner",
-    actionLabel: "Submit weekly check-in",
+    actionLabel: "Submit project check-in",
     path: "/projects/mobile-app/check-ins/8",
     origin: mobileAppLaunch,
     taskStatus: null,
@@ -95,7 +113,7 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
     due: getDateOffset(0),
     type: "goal_update",
     role: "owner",
-    actionLabel: "Submit goal progress update",
+    actionLabel: "Submit goal check-in",
     path: "/goals/customer-satisfaction/updates/latest",
     origin: customerSatisfaction,
     taskStatus: null,
@@ -114,11 +132,11 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
   },
   {
     resourceId: "task-design-system",
-    name: "Complete design system documentation",
+    name: "Document design system",
     due: getDateOffset(1),
     type: "project_task",
     role: "owner",
-    actionLabel: "Complete design system documentation",
+    actionLabel: "Document design system",
     path: "/projects/website-redesign/tasks/design-system",
     origin: websiteRedesign,
     taskStatus: "todo",
@@ -138,40 +156,40 @@ export const dueSoonAssignments: ReviewPageV2.Assignment[] = [
 
 export const reviewAssignments: ReviewPageV2.Assignment[] = [
   {
-    resourceId: "check-in-review-mobile",
-    name: "Mobile App Launch – Week 7 check-in",
+    resourceId: "check-in-review-retention",
+    name: "Retention Playbook – Week 5 check-in",
     due: getDateOffset(-2),
     type: "check_in",
     role: "reviewer",
-    actionLabel: "Review weekly check-in",
-    path: "/projects/mobile-app/check-ins/7",
-    origin: mobileAppLaunch,
+    actionLabel: "Review project check-in",
+    path: "/projects/retention-playbook/check-ins/5",
+    origin: retentionPlaybook,
     authorId: "user-123",
     authorName: "Sarah Chen",
     taskStatus: null,
   },
   {
-    resourceId: "goal-update-review-productivity",
-    name: "Team Productivity Goal Update",
+    resourceId: "goal-update-review-engagement",
+    name: "Customer Engagement Goal Update",
     due: getDateOffset(-1),
     type: "goal_update",
     role: "reviewer",
-    actionLabel: "Review goal progress update",
-    path: "/goals/team-productivity/updates/latest",
-    origin: teamProductivity,
+    actionLabel: "Review goal check-in",
+    path: "/goals/customer-engagement/updates/latest",
+    origin: engagementGoal,
     authorId: "user-456",
     authorName: "Alex Rodriguez",
     taskStatus: null,
   },
   {
-    resourceId: "check-in-review-website",
-    name: "Website Redesign – Week 3 check-in",
+    resourceId: "check-in-review-retention-dependencies",
+    name: "Retention Playbook – Dependencies review",
     due: getDateOffset(0),
-    type: "check_in",
+    type: "project_task",
     role: "reviewer",
-    actionLabel: "Review weekly check-in",
-    path: "/projects/website-redesign/check-ins/3",
-    origin: websiteRedesign,
+    actionLabel: "Share with the team",
+    path: "/projects/retention-playbook/check-ins/dependencies",
+    origin: retentionPlaybook,
     authorId: "user-789",
     authorName: "Maria Garcia",
     taskStatus: null,
@@ -254,3 +272,34 @@ export const allAssignments: ReviewPageV2.Assignment[] = [
 ];
 
 export const emptyStateAssignments: ReviewPageV2.Assignment[] = [];
+
+export const smallPlateDueSoon: ReviewPageV2.Assignment[] = dueSoonAssignments.slice(0, 2);
+
+export const smallPlateReview: ReviewPageV2.Assignment[] = reviewAssignments.slice(0, 1);
+
+export const taskOnlyDueSoon: ReviewPageV2.Assignment[] = [
+  {
+    resourceId: "task-copy-refresh",
+    name: "Refresh onboarding copy",
+    due: getDateOffset(-1),
+    type: "project_task",
+    role: "owner",
+    actionLabel: "Refresh onboarding copy",
+    path: "/projects/mobile-app/tasks/onboarding-copy",
+    origin: mobileAppLaunch,
+    taskStatus: "in_progress",
+    description: null,
+  },
+  {
+    resourceId: "task-crm-audit",
+    name: "Audit CRM automations",
+    due: getDateOffset(0),
+    type: "project_task",
+    role: "owner",
+    actionLabel: "Audit CRM automations",
+    path: "/projects/mobile-app/tasks/crm-audit",
+    origin: mobileAppLaunch,
+    taskStatus: "todo",
+    description: null,
+  },
+];
