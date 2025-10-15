@@ -9,22 +9,24 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   alias Wallaby.QueryError
 
   step :given_that_a_milestone_exists, ctx, title do
-    milestone = Operately.ProjectsFixtures.milestone_fixture(%{
-      project_id: ctx.project.id,
-      title: title,
-      timeframe: %{
-        contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
-        contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17]),
-      }
-    })
+    milestone =
+      Operately.ProjectsFixtures.milestone_fixture(%{
+        project_id: ctx.project.id,
+        title: title,
+        timeframe: %{
+          contextual_start_date: ContextualDate.create_day_date(Date.utc_today()),
+          contextual_end_date: ContextualDate.create_day_date(~D[2023-06-17])
+        }
+      })
 
     Map.put(ctx, :milestone, milestone)
   end
 
   step :given_that_milestone_is_completed, ctx do
-    {:ok, milestone} = Operately.Projects.update_milestone(ctx.milestone, %{
-      status: :done
-    })
+    {:ok, milestone} =
+      Operately.Projects.update_milestone(ctx.milestone, %{
+        status: :done
+      })
 
     Map.put(ctx, :milestone, milestone)
   end
@@ -479,6 +481,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     })
   end
 
+  step :assert_comment_email_sent_to_space_member, ctx do
+    ctx
+    |> EmailSteps.assert_activity_email_sent(%{
+      where: ctx.project.name,
+      to: ctx.space_member,
+      action: "commented on the #{ctx.milestone.title} milestone",
+      author: ctx.champion
+    })
+  end
+
   #
   # Notifications
   #
@@ -513,6 +525,16 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
   step :assert_comment_notification_sent_to_project_reviewer, ctx do
     ctx
     |> UI.login_as(ctx.reviewer)
+    |> UI.visit(Paths.notifications_path(ctx.company))
+    |> NotificationsSteps.assert_activity_notification(%{
+      author: ctx.champion,
+      action: "Re: #{ctx.milestone.title}"
+    })
+  end
+
+  step :assert_comment_notification_sent_to_space_member, ctx do
+    ctx
+    |> UI.login_as(ctx.space_member)
     |> UI.visit(Paths.notifications_path(ctx.company))
     |> NotificationsSteps.assert_activity_notification(%{
       author: ctx.champion,
