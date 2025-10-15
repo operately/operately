@@ -3,9 +3,10 @@ import * as React from "react";
 import { differenceInCalendarDays, isValid, startOfDay } from "date-fns";
 
 import { PageNew } from "../Page";
-import { IconCoffee, IconSparkles } from "../icons";
+import { IconCoffee, IconInfoCircle, IconSparkles } from "../icons";
 import { parseDate } from "../utils/time";
 import { TestableElement } from "../TestableElement";
+import { Tooltip } from "../Tooltip";
 
 import { AssignmentGroups } from "./AssignmentsList";
 
@@ -87,22 +88,20 @@ export function ReviewPageV2(props: ReviewPageV2.Props) {
 
         <div className="flex flex-col">
           <Section
-            title="Due soon"
-            description="Updates, tasks, and milestones that need your attention right away."
+            title="Needs my action"
+            infoTooltip="Assignments, check-ins, and milestones you own that are coming due now."
             groups={categorized.dueSoon}
             testId="due-soon-section"
-            emptyState={
-              <EmptyState title="No urgent work" description="You're all caught up on immediate priorities." />
-            }
+            emptyState={<EmptyState title="Nothing needs your action" description="You're all caught up." />}
           />
 
           <Section
-            title="Needs my review"
-            description="Updates from others waiting for your approval or acknowledgement."
+            title="Awaiting my review"
+            infoTooltip="Updates submitted by your teammates that are waiting for your acknowledgement."
             groups={categorized.needsReview}
             testId="needs-review-section"
             emptyState={
-              <EmptyState title="Nothing to review" description="No check-ins or updates need your review." />
+              <EmptyState title="Nothing to review" description="No check-ins are waiting for your feedback." />
             }
           />
 
@@ -148,25 +147,37 @@ function Header({ assignmentsCount }: { assignmentsCount: number }) {
 
 interface SectionProps extends TestableElement {
   title: string;
-  description: string;
+  description?: string;
+  infoTooltip?: string;
   groups: ReviewPageV2.AssignmentGroup[];
   emptyState: React.ReactNode;
 }
 
-function Section({ title, description, groups, emptyState, testId }: SectionProps) {
+function Section({ title, description, infoTooltip, groups, emptyState, testId }: SectionProps) {
   return (
     <section data-test-id={testId}>
       <div className="px-4 py-4">
-        <div className=" border-b-2 border-stroke-base mb-4">
-          <div className="flex items-baseline gap-2 mb-2">
+        <div className=" border-b-2 border-surface-outline mb-4">
+          <div className="flex items-center gap-2 mb-1">
             <h2 className="font-bold text-content-strong">{title}</h2>
+            {infoTooltip ? (
+              <Tooltip content={infoTooltip} delayDuration={150}>
+                <button
+                  type="button"
+                  aria-label={`More information about ${title}`}
+                  className="inline-flex items-center justify-center text-content-dimmed hover:text-content-strong"
+                >
+                  <IconInfoCircle size={14} className="relative top-px" />
+                </button>
+              </Tooltip>
+            ) : null}
             {groups.length > 0 && (
               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-content-dimmed/10 text-content-dimmed">
                 {groups.reduce((sum, group) => sum + group.assignments.length, 0)} items
               </span>
             )}
           </div>
-          <p className="text-sm text-content-base mb-4">{description}</p>
+          {description ? <p className="text-sm text-content-base mb-4">{description}</p> : null}
         </div>
 
         {groups.length === 0 ? emptyState : <AssignmentGroups groups={groups} />}
