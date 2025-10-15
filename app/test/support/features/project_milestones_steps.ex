@@ -212,6 +212,18 @@ defmodule Operately.Support.Features.ProjectMilestonesSteps do
     |> UI.sleep(300)
   end
 
+  step :post_comment_with_mention, ctx, person do
+    ctx
+    |> UI.find(UI.query(testid: "timeline-section"), fn el ->
+      el
+      |> UI.click_text("Write a comment here...")
+      |> UI.mention_person_in_rich_text(person)
+      |> UI.click_button("Post")
+    end)
+    |> UI.refute_has(testid: "new-comment-form")
+    |> UI.sleep(300)
+  end
+
   step :edit_comment, ctx, comment do
     id =
       Repo.preload(ctx.comment, :comment).comment

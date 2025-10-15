@@ -15,22 +15,13 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
   @action "project_milestone_commented"
 
   setup ctx do
-    ctx =
-      ctx
-      |> Factory.setup()
-      |> Factory.add_space(:space)
-      |> Factory.add_project(:project, :space)
-      |> Factory.add_project_milestone(:milestone, :project)
-      |> Factory.add_project_contributor(:reviewer, :project)
-      |> Factory.add_project_contributor(:teammate_contributor, :project)
-
-    teammate = Repo.preload(ctx.teammate_contributor, :person).person
-    milestone = Repo.preload(ctx.milestone, :subscription_list)
-
-    {:ok,
-     ctx
-     |> Map.put(:milestone, milestone)
-     |> Map.put(:teammate, teammate)}
+    ctx
+    |> Factory.setup()
+    |> Factory.add_space(:space)
+    |> Factory.add_project(:project, :space)
+    |> Factory.add_project_milestone(:milestone, :project)
+    |> Factory.preload(:milestone, :subscription_list)
+    |> Factory.add_project_contributor(:teammate, :project, :as_person)
   end
 
   describe "mentioned people" do
@@ -90,8 +81,11 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
   end
 
   describe "notifications" do
-    test "only mentioned subscribers receive notifications", ctx do
-      content = RichText.rich_text(mentioned_people: [ctx.teammate]) |> Jason.decode!()
+    test "mentioned subscribers and contributors receive notifications", ctx do
+      ctx = Factory.add_company_member(ctx, :member)
+      ctx = Factory.add_company_member(ctx, :another)
+
+      content = RichText.rich_text(mentioned_people: [ctx.member]) |> Jason.decode!()
 
       {:ok, comment} =
         Oban.Testing.with_testing_mode(:manual, fn ->
@@ -109,10 +103,13 @@ defmodule Operately.Comments.CreateMilestoneCommentOperationTest do
 
       perform_job(activity.id)
 
-      assert notifications_count(action: @action) == 1
+      assert notifications_count(action: @action) == 2
 
-      assert [ctx.teammate.id] ==
-               Enum.map(fetch_notifications(activity.id, action: @action), & &1.person_id)
+      notifications = fetch_notifications(activity.id)
+
+      assert Enum.any?(notifications, & &1.person_id == ctx.teammate.id)
+      assert Enum.any?(notifications, & &1.person_id == ctx.member.id)
+      refute Enum.any?(notifications, & &1.person_id == ctx.another.id)
     end
   end
 
