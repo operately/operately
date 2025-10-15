@@ -31,7 +31,7 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
       %{company: :view_access,    space: :no_access,      project: :no_access,      expected: 200},
       %{company: :comment_access, space: :no_access,      project: :no_access,      expected: 200},
       %{company: :edit_access,    space: :no_access,      project: :no_access,      expected: 200},
-      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200},
+      %{company: :full_access,    space: :no_access,      project: :no_access,      expected: 200}
     ]
 
     setup ctx do
@@ -56,10 +56,13 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
         assert code == @test.expected
 
         case @test.expected do
-          200 -> assert Notifications.is_subscriber?(ctx.person.id, subscription_list.id)
+          200 ->
+            assert Notifications.is_subscriber?(ctx.person.id, subscription_list.id)
+
           403 ->
             refute Notifications.is_subscriber?(ctx.person.id, subscription_list.id)
             assert res.message == "You don't have permission to perform this action"
+
           404 ->
             refute Notifications.is_subscriber?(ctx.person.id, subscription_list.id)
             assert res.message == "The requested resource was not found"
@@ -70,8 +73,14 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
 
   describe "subscribe_to_notifications functionality" do
     setup :register_and_log_in_account
+
     setup ctx do
-      project = project_fixture(%{company_id: ctx.company.id, creator_id: ctx.person.id, group_id: ctx.company.company_space_id})
+      project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
+        group_id: ctx.company.company_space_id,
+      })
+
       check_in = check_in_fixture(%{author_id: ctx.person.id, project_id: project.id})
 
       {:ok, subscription_list} = SubscriptionList.get(:system, parent_id: check_in.id)
@@ -91,11 +100,12 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
     end
 
     test "updates canceled subscription", ctx do
-      {:ok, subscription} = Notifications.create_subscription(%{
-        person_id: ctx.person.id,
-        subscription_list_id: ctx.subscription_list.id,
-        type: :joined
-      })
+      {:ok, subscription} =
+        Notifications.create_subscription(%{
+          person_id: ctx.person.id,
+          subscription_list_id: ctx.subscription_list.id,
+          type: :joined
+        })
 
       assert Notifications.is_subscriber?(ctx.person.id, ctx.subscription_list.id)
 
@@ -112,6 +122,58 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
     end
   end
 
+  describe "project subscriptions" do
+    setup ctx do
+      ctx = register_and_log_in_account(ctx)
+
+      accessible_project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.person.id,
+        group_id: ctx.company.company_space_id,
+      })
+
+      {:ok, accessible_list} = SubscriptionList.get(:system, parent_id: accessible_project.id)
+
+      outsider = person_fixture(%{company_id: ctx.company.id})
+
+      space = group_fixture(outsider, %{company_id: ctx.company.id, company_permissions: Binding.no_access()})
+
+      restricted_project = project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: outsider.id,
+        group_id: space.id,
+        company_access_level: Binding.no_access(),
+        space_access_level: Binding.no_access(),
+      })
+
+      {:ok, restricted_list} = SubscriptionList.get(:system, parent_id: restricted_project.id)
+
+      Map.merge(ctx, %{project_subscription_list: accessible_list, restricted_project_subscription_list: restricted_list})
+    end
+
+    test "subscribes to project notifications", ctx do
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
+
+      assert {200, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+        id: Paths.subscription_list_id(ctx.project_subscription_list),
+        type: "project",
+      })
+
+      assert Notifications.is_subscriber?(ctx.person.id, ctx.project_subscription_list.id)
+    end
+
+    test "rejects when caller lacks project access", ctx do
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.restricted_project_subscription_list.id)
+
+      assert {404, _} = mutation(ctx.conn, :subscribe_to_notifications, %{
+        id: Paths.subscription_list_id(ctx.restricted_project_subscription_list),
+        type: "project",
+      })
+
+      refute Notifications.is_subscriber?(ctx.person.id, ctx.restricted_project_subscription_list.id)
+    end
+  end
+
   #
   # Helpers
   #
@@ -121,28 +183,31 @@ defmodule OperatelyWeb.Api.Mutations.SubscribeToNotificationsTest do
   end
 
   def create_project(ctx, space, company_members_level, space_members_level, project_member_level) do
-    project = project_fixture(%{
-      company_id: ctx.company.id,
-      creator_id: ctx.creator.id,
-      group_id: space.id,
-      company_access_level: Binding.from_atom(company_members_level),
-      space_access_level: Binding.from_atom(space_members_level),
-    })
+    project =
+      project_fixture(%{
+        company_id: ctx.company.id,
+        creator_id: ctx.creator.id,
+        group_id: space.id,
+        company_access_level: Binding.from_atom(company_members_level),
+        space_access_level: Binding.from_atom(space_members_level)
+      })
 
     if space_members_level != :no_access do
-      {:ok, _} = Operately.Groups.add_members(ctx.creator, space.id, [%{
-        id: ctx.person.id,
-        access_level: Binding.from_atom(space_members_level)
-      }])
+      {:ok, _} =
+        Operately.Groups.add_members(ctx.creator, space.id, [%{
+          id: ctx.person.id,
+          access_level: Binding.from_atom(space_members_level)
+        }])
     end
 
     if project_member_level != :no_access do
-      {:ok, _} = Operately.Projects.create_contributor(ctx.creator, %{
-        project_id: project.id,
-        person_id: ctx.person.id,
-        permissions: Binding.from_atom(project_member_level),
-        responsibility: "some responsibility"
-      })
+      {:ok, _} =
+        Operately.Projects.create_contributor(ctx.creator, %{
+          project_id: project.id,
+          person_id: ctx.person.id,
+          permissions: Binding.from_atom(project_member_level),
+          responsibility: "some responsibility"
+        })
     end
 
     project

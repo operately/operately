@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { ActionList } from "../ActionList";
 import { SecondaryButton } from "../Button";
 import { DateField } from "../DateField";
@@ -14,10 +14,9 @@ import {
   IconTrash,
 } from "../icons";
 import { LastCheckIn } from "../LastCheckIn";
-import { NotificationToggle } from "../NotificationToggle";
 import { PersonField } from "../PersonField";
 import { Tooltip } from "../Tooltip";
-import { SidebarSection } from "../SidebarSection";
+import { SidebarNotificationSection, SidebarSection } from "../SidebarSection";
 import { ProjectPage } from ".";
 
 export function OverviewSidebar(props: ProjectPage.State) {
@@ -35,11 +34,7 @@ export function OverviewSidebar(props: ProjectPage.State) {
         <Contributors {...props} />
       </div>
 
-      {props.notifications && (
-        <div className="pt-6 mt-6 border-t border-surface-outline">
-          <NotificationSection {...props} />
-        </div>
-      )}
+      <SidebarNotificationSection {...props.subscriptions} className="pt-6 mt-6 border-t border-surface-outline" />
 
       <div className="pt-6 mt-6 border-t border-surface-outline">
         <Actions {...props} />
@@ -236,20 +231,6 @@ function Contributors(props: ProjectPage.State) {
           </div>
         )}
       </div>
-    </SidebarSection>
-  );
-}
-
-function NotificationSection(_props: ProjectPage.State) {
-  const [isSubscribed, setIsSubscribed] = useState(true);
-
-  const handleToggle = (subscribed: boolean) => {
-    setIsSubscribed(subscribed);
-  };
-
-  return (
-    <SidebarSection title="Notifications">
-      <NotificationToggle isSubscribed={isSubscribed} onToggle={handleToggle} entityType="project" />
     </SidebarSection>
   );
 }

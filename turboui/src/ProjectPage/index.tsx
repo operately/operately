@@ -17,6 +17,7 @@ import { DeleteModal } from "./DeleteModal";
 import { Discussions } from "./Discussions";
 import { Overview } from "./Overview";
 import { RichEditorHandlers } from "../RichEditor/useEditor";
+import { SidebarNotificationSection } from "../SidebarSection";
 
 export namespace ProjectPage {
   export interface Space {
@@ -152,7 +153,7 @@ export namespace ProjectPage {
     onResourceRemove: (id: string) => void;
 
     moveModalOpen?: boolean;
-    notifications?: any;
+    subscriptions: SidebarNotificationSection.Props;
   }
 
   export interface State extends Props {
