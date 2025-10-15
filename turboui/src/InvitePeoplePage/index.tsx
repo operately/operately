@@ -145,7 +145,7 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
               />
             </div>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-6 space-y-2">
               <div className="flex flex-col gap-2 sm:flex-row sm:items-stretch">
                 <input
                   className={classNames(
@@ -158,15 +158,6 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                   disabled={!linkEnabled}
                   onFocus={(event) => event.currentTarget.select()}
                 />
-                <SecondaryButton
-                  onClick={handleOpenResetConfirm}
-                  size="sm"
-                  disabled={isResettingLink}
-                  testId="invite-people-reset-link"
-                  icon={IconRotate}
-                >
-                  {" "}
-                </SecondaryButton>
                 <PrimaryButton
                   onClick={handleCopyLink}
                   disabled={!canCopy}
@@ -177,6 +168,31 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                   {copyState === "copied" ? "Copied" : "Copy"}
                 </PrimaryButton>
               </div>
+
+              {linkEnabled ? (
+                <p className="text-xs text-content-dimmed">
+                  Only company admins can see and share this link.
+                  {props.onResetLink ? (
+                    <>
+                      {" "}
+                      You can also{" "}
+                      <button
+                        type="button"
+                        onClick={handleOpenResetConfirm}
+                        disabled={isResettingLink}
+                        data-test-id="invite-people-reset-link"
+                        className={classNames(
+                          "font-medium text-content-link underline focus:outline-none",
+                          isResettingLink && "cursor-not-allowed opacity-60",
+                        )}
+                      >
+                        generate a new link
+                      </button>
+                      .
+                    </>
+                  ) : null}
+                </p>
+              ) : null}
 
               {copyState === "error" && (
                 <div className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
@@ -275,11 +291,12 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
           isOpen={showResetConfirm}
           onConfirm={handleConfirmResetLink}
           onCancel={handleCancelResetConfirm}
-          title="Revoke invite link?"
-          message="This will disable the current invite link and generate a new one. Anyone with the old link will no longer be able to join."
-          confirmText="Revoke link"
+          title="Generate a new link"
+          message="We’ll disable the current invite link and create a new one. Anyone holding the old link won’t be able to join anymore."
+          confirmText="Generate new link"
           cancelText="Cancel"
           variant="danger"
+          icon={IconRotate}
           testId="invite-people-reset-confirm"
         />
       </div>
