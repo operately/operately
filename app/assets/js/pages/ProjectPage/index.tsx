@@ -62,6 +62,7 @@ async function loader({ params, refreshCache = false }): Promise<LoaderResult> {
           includePrivacy: true,
           includeRetrospective: true,
           includeUnreadNotifications: true,
+          includeSubscriptionList: true,
         }).then((d) => d.project!),
         checkIns: Api.getProjectCheckIns({ projectId: params.id, includeAuthor: true }).then((d) => d.projectCheckIns!),
         discussions: Api.project_discussions.list({ projectId: params.id }).then((d) => d.discussions!),
@@ -91,6 +92,14 @@ function Page() {
   assertPresent(project.state);
   assertPresent(project.permissions?.canEditName);
   assertPresent(project.contributors);
+
+  const subscriptionList = project.subscriptionList;
+  const currentUserId = currentUser?.id ?? null;
+  const [isSubscribed, setIsSubscribed] = React.useState(() => isPersonSubscribed(subscriptionList, currentUserId));
+
+  React.useEffect(() => {
+    setIsSubscribed(isPersonSubscribed(subscriptionList, currentUserId));
+  }, [subscriptionList?.id, subscriptionList?.subscriptions, currentUserId]);
 
   const workmapLink = paths.spaceWorkMapPath(project.space.id, "projects" as const);
 
@@ -170,6 +179,35 @@ function Page() {
   const spaceSearch = useSpaceSearch();
 
   const richEditorHandlers = useRichEditorHandlers({ scope: { type: "project", id: project.id } });
+
+  const handleProjectSubscriptionToggle = React.useCallback(
+    async (next: boolean) => {
+      if (!subscriptionList?.id) return;
+
+      const previous = isSubscribed;
+      setIsSubscribed(next);
+
+      try {
+        if (next) {
+          await Api.subscribeToNotifications({ id: subscriptionList.id, type: "project" });
+        } else {
+          await Api.unsubscribeFromNotifications({ id: subscriptionList.id });
+        }
+
+        PageCache.invalidate(pageCacheKey(project.id));
+
+        await refresh?.();
+      } catch (error) {
+        setIsSubscribed(previous);
+        console.error("Failed to toggle project subscription", error);
+        showErrorToast(
+          "Error",
+          next ? "Failed to subscribe to project notifications." : "Failed to unsubscribe from project notifications.",
+        );
+      }
+    },
+    [subscriptionList?.id, project.id, refresh, isSubscribed],
+  );
 
   const championSearch = People.usePersonFieldSearch({
     scope: { type: "space", id: project.space.id },
@@ -284,6 +322,14 @@ function Page() {
     onResourceRemove: removeResource,
 
     activityFeed: <ProjectFeedItems projectId={project.id} />,
+
+    notifications:
+      subscriptionList?.id && currentUserId
+        ? {
+            isSubscribed,
+            onToggle: handleProjectSubscriptionToggle,
+          }
+        : undefined,
   };
 
   return <ProjectPage key={project.id!} {...props} />;
@@ -444,11 +490,7 @@ function prepareResource(resource: Projects.Resource): ProjectPage.Resource {
 
 function useMilestones(paths: Paths, project: Projects.Project, refresh?: () => Promise<void>) {
   assertPresent(project.milestones);
-  const parsedMilestones = parseMilestonesForTurboUi(
-    paths,
-    project.milestones,
-    project.milestonesOrderingState || [],
-  );
+  const parsedMilestones = parseMilestonesForTurboUi(paths, project.milestones, project.milestonesOrderingState || []);
 
   const { milestones, setMilestones, reorderMilestones, orderingState } = Projects.useProjectMilestoneOrdering({
     projectId: project.id,
@@ -589,4 +631,15 @@ function useResources(project: Projects.Project) {
   };
 
   return { resources, createResource, updateResource, removeResource };
+}
+
+function isPersonSubscribed(
+  subscriptionList: Projects.Project["subscriptionList"] | null | undefined,
+  personId: string | null,
+): boolean {
+  if (!subscriptionList?.subscriptions || !personId) return false;
+
+  return subscriptionList.subscriptions.some(
+    (subscription) => subscription?.person?.id === personId && subscription?.canceled !== true,
+  );
 }

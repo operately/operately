@@ -152,7 +152,10 @@ export namespace ProjectPage {
     onResourceRemove: (id: string) => void;
 
     moveModalOpen?: boolean;
-    notifications?: any;
+    notifications?: {
+      isSubscribed: boolean;
+      onToggle: (subscribed: boolean) => void;
+    };
   }
 
   export interface State extends Props {
