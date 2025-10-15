@@ -1979,16 +1979,17 @@ defmodule OperatelyWeb.Api.Types do
   end
 
   object :subscription_list do
-    field? :id, :string, null: true
-    field? :parent_type, :string, null: true
-    field? :send_to_everyone, :boolean, null: true
-    field? :subscriptions, list_of(:subscription), null: true
+    field :id, :string, null: false
+    field :parent_type, :string, null: false
+    field :send_to_everyone, :boolean, null: false
+    field :subscriptions, list_of(:subscription), null: true
   end
 
   object :subscription do
-    field? :id, :string, null: true
-    field? :type, :string, null: true
-    field? :person, :person, null: true
+    field :id, :string, null: false
+    field :type, :string, null: false
+    field :canceled, :boolean, null: false
+    field :person, :person, null: true
   end
 
   object :project_contributor_input do
