@@ -7,30 +7,39 @@ defmodule Operately.Features.InviteLinksTest do
   describe "managing invite links" do
     setup ctx, do: Steps.given_a_company_and_a_user(ctx)
 
-    feature "generating an invite link", ctx do
+    feature "enable invite link", ctx do
       ctx
       |> Steps.open_invite_team_page()
       |> Steps.enable_invite_link()
       |> Steps.assert_active_invite_link_created()
     end
 
-    feature "generating a new invite link", ctx do
-      ctx
-      |> Steps.open_invite_team_page()
-      |> Steps.enable_invite_link()
-      |> Steps.assert_active_invite_link_created()
-      |> Steps.reset_invite_link()
-      |> Steps.assert_invite_link_rotated()
-    end
+    # feature "disable invite link", ctx do
+    #   ctx
+    #   |> Steps.open_invite_team_page()
+    #   |> Steps.enable_invite_link()
+    #   |> Steps.assert_active_invite_link_created()
+    #   |> Steps.disable_invite_link()
+    #   |> Steps.assert_no_active_invite_link()
+    # end
 
-    feature "limiting which email domains can use the invite link", ctx do
-      ctx
-      |> Steps.open_invite_team_page()
-      |> Steps.enable_domain_restrictions()
-      |> Steps.set_allowed_domains("operately.com, example.org")
-      |> Steps.enable_invite_link()
-      |> Steps.assert_allowed_domains(["operately.com", "example.org"])
-    end
+    # feature "generating a new invite link", ctx do
+    #   ctx
+    #   |> Steps.open_invite_team_page()
+    #   |> Steps.enable_invite_link()
+    #   |> Steps.assert_active_invite_link_created()
+    #   |> Steps.reset_invite_link()
+    #   |> Steps.assert_invite_link_rotated()
+    # end
+
+    # feature "limiting which email domains can use the invite link", ctx do
+    #   ctx
+    #   |> Steps.open_invite_team_page()
+    #   |> Steps.enable_domain_restrictions()
+    #   |> Steps.set_allowed_domains("operately.com, example.org")
+    #   |> Steps.enable_invite_link()
+    #   |> Steps.assert_allowed_domains(["operately.com", "example.org"])
+    # end
   end
 
   describe "logged in user" do

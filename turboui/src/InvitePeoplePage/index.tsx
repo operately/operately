@@ -34,8 +34,6 @@ export namespace InvitePeoplePage {
     onChange?: (value: string) => void;
     toggleLabel?: string;
     label?: string;
-    helperText?: string;
-    placeholder?: string;
     error?: string;
     testId?: string;
   }
@@ -262,15 +260,13 @@ export function InvitePeoplePage(props: InvitePeoplePage.Props) {
                           variant="form-field"
                           text={props.domainRestriction.value}
                           onChange={handleDomainChange}
-                          placeholder={props.domainRestriction.placeholder ?? "e.g. @acme.com, @example.org"}
+                          placeholder="e.g. @acme.com, @example.org"
                           error={props.domainRestriction.error}
                           className={classNames("sm:max-w-md", !props.domainRestriction.onChange && "opacity-60")}
                           testId="invite-people-domain-input"
                           readonly={!props.domainRestriction.onChange}
                         />
-                        <p className="text-xs text-content-dimmed">
-                          {props.domainRestriction.helperText ?? "Separate multiple domains with commas."}
-                        </p>
+                        <p className="text-xs text-content-dimmed">Separate multiple domains with commas.</p>
                       </div>
                     )}
                   </div>
