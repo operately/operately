@@ -2,12 +2,12 @@ defmodule OperatelyWeb.Api.Invitations do
   alias Operately.Repo
   alias Operately.InviteLinks
 
-  defmodule GetInviteLink do
+  defmodule GetInviteLinkByToken do
     use TurboConnect.Query
     use OperatelyWeb.Api.Helpers
 
     inputs do
-      field?(:token, :string, null: false)
+      field(:token, :string)
     end
 
     outputs do
