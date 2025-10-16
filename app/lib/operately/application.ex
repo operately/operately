@@ -27,7 +27,7 @@ defmodule Operately.Application do
        ]},
       # MCP Server Registry and Server
       Hermes.Server.Registry,
-      {Operately.MCP.Server, transport: :streamable_http}
+      {Operately.MCP.Server, transport: {:streamable_http, start: true}}
     ]
 
     :ok = Oban.Telemetry.attach_default_logger()

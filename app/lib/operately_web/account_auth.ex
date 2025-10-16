@@ -99,21 +99,19 @@ defmodule OperatelyWeb.AccountAuth do
   end
 
   def fetch_current_company(conn, _opts) do
-    case get_req_header(conn, "x-company-id") do
-      [company_id] ->
-        id = OperatelyWeb.Api.Helpers.id_without_comments(company_id)
+    identifier =
+      case get_req_header(conn, "x-company-id") do
+        [company_id | _] -> company_id
+        _ -> conn.path_params["company_id"]
+      end
 
-        case Operately.Companies.ShortId.decode(id) do
-          {:ok, id} ->
-            company = Operately.Companies.get_company!(id)
-            assign(conn, :current_company, company)
-
-          {:error, _} ->
-            conn
-        end
-
-      _ ->
-        conn
+    with id when is_binary(id) <- identifier,
+         stripped <- OperatelyWeb.Api.Helpers.id_without_comments(id),
+         {:ok, company_id} <- Operately.Companies.ShortId.decode(stripped) do
+      company = Operately.Companies.get_company!(company_id)
+      assign(conn, :current_company, company)
+    else
+      _ -> conn
     end
   end
 

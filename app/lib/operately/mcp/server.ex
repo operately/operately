@@ -3,6 +3,8 @@ defmodule Operately.MCP.Server do
   MCP server that exposes Operately data through `search` and `fetch` tools.
   """
 
+  alias Hermes.Server.Response
+
   use Hermes.Server,
     name: "Operately MCP Server",
     version: "1.0.0",
@@ -30,12 +32,12 @@ defmodule Operately.MCP.Server do
     case get_current_context(frame) do
       {:ok, person, company} ->
         case build_search_results(person, company, query) do
-          {:ok, results} -> {:reply, text_content(%{results: results}), frame}
-          {:error, message} -> {:reply, text_content(%{error: message}), frame}
+          {:ok, results} -> {:reply, text_response(%{results: results}), frame}
+          {:error, message} -> {:reply, text_response(%{error: message}), frame}
         end
 
       {:error, message} ->
-        {:reply, text_content(%{error: message}), frame}
+        {:reply, text_response(%{error: message}), frame}
     end
   end
 
@@ -46,12 +48,12 @@ defmodule Operately.MCP.Server do
     case get_current_context(frame) do
       {:ok, person, _company} ->
         case fetch_document(person, document_id) do
-          {:ok, document} -> {:reply, text_content(document), frame}
-          {:error, message} -> {:reply, text_content(%{error: message}), frame}
+          {:ok, document} -> {:reply, text_response(document), frame}
+          {:error, message} -> {:reply, text_response(%{error: message}), frame}
         end
 
       {:error, message} ->
-        {:reply, text_content(%{error: message}), frame}
+        {:reply, text_response(%{error: message}), frame}
     end
   end
 
@@ -244,7 +246,7 @@ defmodule Operately.MCP.Server do
 
     case {company_id, person_id} do
       {nil, _} ->
-        {:error, "No organization context available for this MCP session. Access the /:org_id/sso endpoint to initialize it."}
+        {:error, "No organization context available for this MCP session. Access the /:org_id/mcp endpoint to initialize it."}
 
       {_, nil} ->
         {:error, "No person context available for this MCP session. Sign in to Operately before calling tools."}
@@ -306,7 +308,8 @@ defmodule Operately.MCP.Server do
     )
   end
 
-  defp text_content(data) do
-    %{content: [%{type: "text", text: Jason.encode!(data)}]}
+  defp text_response(data) do
+    Response.tool()
+    |> Response.json(data)
   end
 end
